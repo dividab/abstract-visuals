@@ -1,6 +1,6 @@
 {
   "name": "abstract-image",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Abstract Image",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib-cjs/index.js",
