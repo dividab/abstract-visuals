@@ -1,0 +1,26 @@
+{
+  "name": "abstract-chart",
+  "version": "1.0.3",
+  "description": "Abstract Chart",
+  "repository": "https://github.com/dividab/abstract-visuals",
+  "main": "lib-cjs/index.js",
+  "module": "lib-esm/index.js",
+  "types": "lib-cjs/index",
+  "license": "MIT",
+  "dependencies": {
+    "abstract-image": "^1.0.3",
+    "ramda": "^0.22.1",
+    "ts-exhaustive-check": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/ramda": "^0.25.29"
+  },
+  "scripts": {
+    "build": "yarn build:clean && yarn build:cjs && yarn build:esm",
+    "build:clean": "rm -rf ./lib-cjs ./lib-esm",
+    "build:cjs": "tsc",
+    "build:esm": "tsc --module es2015 --outDir ./lib-esm",
+    "test": "rm -rf test/lib && mocha --colors",
+    "test:build": "cd test && tsc"
+  }
+}

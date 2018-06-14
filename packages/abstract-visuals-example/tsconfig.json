@@ -1,0 +1,52 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "skipLibCheck": false,
+    "declaration": false,
+    "jsx": "react",
+    "module": "commonjs",
+    "target": "es6",
+    "newLine": "LF",
+    "noEmitOnError": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noResolve": false,
+    "outDir": "./lib",
+    "preserveConstEnums": true,
+    "pretty": false,
+    "removeComments": true,
+    "isolatedModules": false,
+    "sourceMap": false,
+    "experimentalDecorators": false,
+    "emitDecoratorMetadata": false,
+    "moduleResolution": "node",
+    "allowUnusedLabels": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowUnreachableCode": false,
+    "typeRoots": ["../node_modules/@types/"],
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitUseStrict": false,
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "es5",
+      "es2015",
+      "dom",
+      "es2016.array.include",
+      "es2015.promise",
+      "es2017.object",
+      "es2015.iterable",
+      "es2015.symbol"
+    ],
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["../custom-typings/*"]
+    }
+  },
+  "include": ["**/*"],
+  "exclude": ["node_modules/**/", "jspm_packages/**/"]
+}

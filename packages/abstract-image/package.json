@@ -1,0 +1,30 @@
+{
+  "name": "abstract-image",
+  "version": "1.0.3",
+  "description": "Abstract Image",
+  "repository": "https://github.com/dividab/abstract-visuals",
+  "main": "lib-cjs/index.js",
+  "module": "lib-esm/index.js",
+  "types": "lib-cjs/index",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^15.6.1",
+    "react-dom": "^15.4.2"
+  },
+  "devDependencies": {
+    "@types/react": "^15.0.34",
+    "@types/react-dom": "^15.5.1"
+  },
+  "scripts": {
+    "start": "yarn run storybook",
+    "build": "yarn build:clean && yarn build:cjs && yarn build:esm",
+    "build:clean": "rm -rf ./lib-cjs ./lib-esm",
+    "build:cjs": "tsc",
+    "build:esm": "tsc --module es2015 --outDir ./lib-esm",
+    "test": "rm -rf test/lib && mocha --colors",
+    "test:build": "cd test && tsc",
+    "tsc:stories": "tsc -p stories --noEmit",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  }
+}

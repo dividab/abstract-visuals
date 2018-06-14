@@ -1,0 +1,31 @@
+{
+  "private": true,
+  "name": "abstract-visuals-example",
+  "version": "1.0.3",
+  "description": "abstract-visuals-example",
+  "repository": "https://github.com/dividab/abstract-visuals",
+  "main": "lib-cjs/index.js",
+  "module": "lib-esm/index.js",
+  "types": "lib-cjs/index",
+  "license": "MIT",
+  "dependencies": {
+    "abstract-chart": "^1.0.3",
+    "abstract-document": "^1.0.3",
+    "abstract-image": "^1.0.3",
+    "base64-js": "^1.2.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.4.2"
+  },
+  "devDependencies": {
+    "@types/base64-js": "^1.2.5",
+    "@types/react": "^15.0.34",
+    "@types/react-dom": "^15.5.1"
+  },
+  "scripts": {
+    "start":
+      "webpack-dev-server --config webpack.config.js --content-base ./src",
+    "lint": "tslint -t msbuild './{src,test}/**/*.ts{,x}'",
+    "build": "tsc",
+    "clean": "rm -rf ./lib"
+  }
+}
