@@ -1,6 +1,6 @@
 {
   "name": "abstract-document",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "abstract-document",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib-cjs/index.js",

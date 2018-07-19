@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "abstract-visuals-example",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "abstract-visuals-example",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib-cjs/index.js",
@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "abstract-chart": "^1.0.4",
-    "abstract-document": "^1.0.4",
+    "abstract-document": "^1.0.5",
     "abstract-image": "^1.0.4",
     "base64-js": "^1.2.0",
     "react": "^15.6.1",
