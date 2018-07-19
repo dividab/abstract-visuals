@@ -20,57 +20,59 @@ function preProcessMarkdownAst(
     return { atoms, paragraphs };
   } // Need to convice TS that we never go below this line with a Str element.
 
-  ast.children.forEach(child => {
-    let style = styles.slice(); // create a new copy of styles
-    switch (ast.type) {
-      case "Header":
-        style.push("H" + ast.depth);
-        break;
-      case "Emphasis":
-        style.push("Emphasis");
-        break;
-      case "Strong":
-        style.push("Strong");
-        break;
-      default:
-        break;
-    }
+  if (ast.children) {
+    ast.children.forEach(child => {
+      let style = styles.slice(); // create a new copy of styles
+      switch (ast.type) {
+        case "Header":
+          style.push("H" + ast.depth);
+          break;
+        case "Emphasis":
+          style.push("Emphasis");
+          break;
+        case "Strong":
+          style.push("Strong");
+          break;
+        default:
+          break;
+      }
 
-    // Recurse down the rabbit hole until we find a Str.
-    ({ atoms, paragraphs } = preProcessMarkdownAst(
-      child,
-      style,
-      atoms,
-      paragraphs,
-      d + 1
-    ));
-    // After child, check if we should create a new paragraph.
-    if (child.type === "Paragraph" || child.type === "Header") {
-      const paragraphStyle =
-        child.type === "Header" ? "H" + child.depth : undefined;
+      // Recurse down the rabbit hole until we find a Str.
+      ({ atoms, paragraphs } = preProcessMarkdownAst(
+        child,
+        style,
+        atoms,
+        paragraphs,
+        d + 1
+      ));
+      // After child, check if we should create a new paragraph.
+      if (child.type === "Paragraph" || child.type === "Header") {
+        const paragraphStyle =
+          child.type === "Header" ? "H" + child.depth : undefined;
 
-      paragraphs.push(
-        Paragraph.create({
-          styleName: paragraphStyle,
-          children: atoms,
-          numbering: undefined //paragraph.numbering
-        })
-      );
-      atoms = []; // Flush the Atoms-array for the next paragraph.
-    } else if (child.type === "Str") {
-      atoms = atoms.concat(
-        child.value.split("\n").map(
-          (v: string) =>
-            ({
-              type: "TextRun",
-              text: v,
-              styleName: style[style.length - 1],
-              textProperties: {}
-            } as TextRun.TextRun)
-        )
-      );
-    }
-  });
+        paragraphs.push(
+          Paragraph.create({
+            styleName: paragraphStyle,
+            children: atoms,
+            numbering: undefined //paragraph.numbering
+          })
+        );
+        atoms = []; // Flush the Atoms-array for the next paragraph.
+      } else if (child.type === "Str") {
+        atoms = atoms.concat(
+          child.value.split("\n").map(
+            (v: string) =>
+              ({
+                type: "TextRun",
+                text: v,
+                styleName: style[style.length - 1],
+                textProperties: {}
+              } as TextRun.TextRun)
+          )
+        );
+      }
+    });
+  }
 
   return { atoms, paragraphs };
 }
