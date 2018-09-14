@@ -78,7 +78,7 @@ function abstractComponentToPdf(
           origin: [component.position.x, component.position.y]
         });
       }
-      pdf.font("Helvetica").fontSize(component.fontSize);
+      pdf.font(component.fontFamily).fontSize(component.fontSize);
       const stringWidth = pdf.widthOfString(component.text);
       const stringHeight = pdf.currentLineHeight();
       const dx =
@@ -94,7 +94,7 @@ function abstractComponentToPdf(
             ? -stringHeight * 0.5
             : 0;
       pdf
-        .font("Helvetica")
+        .font(component.fontFamily)
         .fontSize(component.fontSize)
         .fillColor(colorToRgb(component.textColor))
         .text(
