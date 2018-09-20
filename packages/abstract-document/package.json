@@ -2,7 +2,7 @@
   "name": "abstract-document",
   "version": "1.0.7",
   "description":
-    "Create documents using functions or JSX and render to any format",
+    "Dynamically create documents using code or JSX and render to any format",
   "repository":
     "https://github.com/dividab/abstract-visuals/packages/abstract-document",
   "main": "lib-cjs/index.js",
