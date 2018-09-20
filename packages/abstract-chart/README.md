@@ -98,7 +98,7 @@ function getLineRange(
 
 [version-image]: https://img.shields.io/npm/v/abstract-chart.svg?style=flat
 [version-url]: https://www.npmjs.com/package/abstract-chart
-[license-image]: https://img.shields.io/github/license/dividab/abstract-chart.svg?style=flat
+[license-image]: https://img.shields.io/github/license/dividab/abstract-visuals.svg?style=flat
 [license-url]: https://opensource.org/licenses/MIT
 [prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat
 [prettier-url]: https://github.com/prettier/prettier
