@@ -1,6 +1,6 @@
 {
   "name": "abstract-chart",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Drawing charts using multiple unit of measure axes as coordinate system",
   "repository": "https://github.com/dividab/abstract-visuals/packages/abstract-chart",
   "main": "lib-cjs/index.js",
@@ -8,7 +8,7 @@
   "types": "lib-cjs/index",
   "license": "MIT",
   "dependencies": {
-    "abstract-image": "^1.0.5",
+    "abstract-image": "^1.1.0",
     "ramda": "^0.22.1",
     "ts-exhaustive-check": "^1.0.0"
   },
