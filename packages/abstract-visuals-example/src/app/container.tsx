@@ -1,6 +1,7 @@
 import * as React from "react";
 import { merge } from "./utils";
-import { AbstractImageExample } from "./abstract-image-example";
+import { AbstractImageExampleReact } from "./abstract-image-example-react";
+import { AbstractImageExampleSvg } from "./abstract-image-example-svg";
 import { AbstractImageExampleDxf } from "./abstract-image-example-dxf";
 import { AbstractChartExample } from "./abstract-chart-example";
 // import { AbstractDocumentExample } from "./abstract-document-example";
@@ -29,13 +30,18 @@ export class Container extends React.Component<{}, State> {
           component: AbstractChartExample
         },
         {
-          name: "AbstractImage",
-          component: AbstractImageExample
+          name: "AbstractImageSvg",
+          component: AbstractImageExampleSvg
         },
         {
-          name: "DXF",
+          name: "AbstractImageReact",
+          component: AbstractImageExampleReact
+        },
+        {
+          name: "AbstractImageDxf",
           component: AbstractImageExampleDxf
-        } /* ,
+        }
+        /*
         {
           name: "AbstractDocument",
           component: AbstractDocumentExample

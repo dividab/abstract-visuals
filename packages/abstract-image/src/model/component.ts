@@ -36,20 +36,23 @@ export interface BinaryImage {
   readonly bottomRight: Point.Point;
   readonly format: string;
   readonly data: Uint8Array;
+  readonly id: string | undefined;
 }
 
 export function createBinaryImage(
   topLeft: Point.Point,
   bottomRight: Point.Point,
   format: string,
-  data: Uint8Array
+  data: Uint8Array,
+  id?: string
 ): BinaryImage {
   return {
     type: "binaryimage",
     topLeft: topLeft,
     bottomRight: bottomRight,
     format: format,
-    data: data
+    data: data,
+    id: id
   };
 }
 
@@ -60,6 +63,7 @@ export interface Ellipse {
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
   readonly fillColor: Color.Color;
+  readonly id: string | undefined;
 }
 
 export function createEllipse(
@@ -67,7 +71,8 @@ export function createEllipse(
   bottomRight: Point.Point,
   strokeColor: Color.Color,
   strokeThickness: number,
-  fillColor: Color.Color
+  fillColor: Color.Color,
+  id?: string
 ): Ellipse {
   return {
     type: "ellipse",
@@ -75,7 +80,8 @@ export function createEllipse(
     bottomRight: bottomRight,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
-    fillColor: fillColor
+    fillColor: fillColor,
+    id: id
   };
 }
 
@@ -85,20 +91,23 @@ export interface Line {
   readonly end: Point.Point;
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
+  readonly id: string | undefined;
 }
 
 export function createLine(
   start: Point.Point,
   end: Point.Point,
   strokeColor: Color.Color,
-  strokeThickness: number
+  strokeThickness: number,
+  id?: string
 ): Line {
   return {
     type: "line",
     start: start,
     end: end,
     strokeColor: strokeColor,
-    strokeThickness: strokeThickness
+    strokeThickness: strokeThickness,
+    id: id
   };
 }
 
@@ -107,18 +116,21 @@ export interface PolyLine {
   readonly points: Array<Point.Point>;
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
+  readonly id: string | undefined;
 }
 
 export function createPolyLine(
   points: Array<Point.Point>,
   strokeColor: Color.Color,
-  strokeThickness: number
+  strokeThickness: number,
+  id?: string
 ): PolyLine {
   return {
     type: "polyline",
     points: points,
     strokeColor: strokeColor,
-    strokeThickness: strokeThickness
+    strokeThickness: strokeThickness,
+    id: id
   };
 }
 
@@ -128,20 +140,23 @@ export interface Polygon {
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
   readonly fillColor: Color.Color;
+  readonly id: string | undefined;
 }
 
 export function createPolygon(
   points: Array<Point.Point>,
   strokeColor: Color.Color,
   strokeThickness: number,
-  fillColor: Color.Color
+  fillColor: Color.Color,
+  id?: string
 ): Polygon {
   return {
     type: "polygon",
     points: points,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
-    fillColor: fillColor
+    fillColor: fillColor,
+    id: id
   };
 }
 
@@ -152,6 +167,7 @@ export interface Rectangle {
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
   readonly fillColor: Color.Color;
+  readonly id: string | undefined;
 }
 
 export function createRectangle(
@@ -159,7 +175,8 @@ export function createRectangle(
   bottomRight: Point.Point,
   strokeColor: Color.Color,
   strokeThickness: number,
-  fillColor: Color.Color
+  fillColor: Color.Color,
+  id?: string
 ): Rectangle {
   return {
     type: "rectangle",
@@ -167,7 +184,8 @@ export function createRectangle(
     bottomRight: bottomRight,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
-    fillColor: fillColor
+    fillColor: fillColor,
+    id: id
   };
 }
 

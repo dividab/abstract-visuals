@@ -2,8 +2,16 @@ import * as R from "ramda";
 import * as React from "react";
 import * as AbstractImage from "../model/index";
 
+export interface ReactSvgCallbacks {
+  readonly onClick?: (id: string) => void;
+  readonly onDoubleClick?: (id: string) => void;
+  readonly onMouseEnter?: (id: string) => void;
+  readonly onMouseLeave?: (id: string) => void;
+}
+
 export function createReactSvg(
-  image: AbstractImage.AbstractImage
+  image: AbstractImage.AbstractImage,
+  callbacks?: ReactSvgCallbacks
 ): React.ReactElement<{}> {
   return (
     <svg
@@ -14,7 +22,7 @@ export function createReactSvg(
       {R.unnest(
         R.addIndex(R.map)(
           // tslint:disable-next-line:no-any
-          (c, i) => _visit(i.toString(), c as any),
+          (c, i) => _visit(i.toString(), c as any, callbacks || {}),
           image.components
         )
       )}
@@ -24,7 +32,8 @@ export function createReactSvg(
 
 function _visit(
   key: string,
-  component: AbstractImage.Component
+  component: AbstractImage.Component,
+  callbacks: ReactSvgCallbacks
 ): Array<React.ReactElement<{}>> {
   switch (component.type) {
     case "group":
@@ -33,7 +42,7 @@ function _visit(
           {R.unnest(
             R.addIndex(R.map)(
               // tslint:disable-next-line:no-any
-              (c, i) => _visit(i.toString(), c as any),
+              (c, i) => _visit(i.toString(), c as any, callbacks),
               component.children
             )
           )}
@@ -51,6 +60,24 @@ function _visit(
           y2={component.end.y}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          onClick={() =>
+            component.id && callbacks.onClick && callbacks.onClick(component.id)
+          }
+          onDoubleClick={() =>
+            component.id &&
+            callbacks.onDoubleClick &&
+            callbacks.onDoubleClick(component.id)
+          }
+          onMouseEnter={() =>
+            component.id &&
+            callbacks.onMouseEnter &&
+            callbacks.onMouseEnter(component.id)
+          }
+          onMouseLeave={() =>
+            component.id &&
+            callbacks.onMouseLeave &&
+            callbacks.onMouseLeave(component.id)
+          }
         />
       ];
     case "text":
@@ -126,6 +153,24 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           fill={colorToRgb(component.fillColor)}
+          onClick={() =>
+            component.id && callbacks.onClick && callbacks.onClick(component.id)
+          }
+          onDoubleClick={() =>
+            component.id &&
+            callbacks.onDoubleClick &&
+            callbacks.onDoubleClick(component.id)
+          }
+          onMouseEnter={() =>
+            component.id &&
+            callbacks.onMouseEnter &&
+            callbacks.onMouseEnter(component.id)
+          }
+          onMouseLeave={() =>
+            component.id &&
+            callbacks.onMouseLeave &&
+            callbacks.onMouseLeave(component.id)
+          }
         />
       ];
     case "polyline":
@@ -139,6 +184,24 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           fill="none"
+          onClick={() =>
+            component.id && callbacks.onClick && callbacks.onClick(component.id)
+          }
+          onDoubleClick={() =>
+            component.id &&
+            callbacks.onDoubleClick &&
+            callbacks.onDoubleClick(component.id)
+          }
+          onMouseEnter={() =>
+            component.id &&
+            callbacks.onMouseEnter &&
+            callbacks.onMouseEnter(component.id)
+          }
+          onMouseLeave={() =>
+            component.id &&
+            callbacks.onMouseLeave &&
+            callbacks.onMouseLeave(component.id)
+          }
         />
       ];
     case "polygon":
@@ -152,6 +215,24 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           fill={colorToRgb(component.fillColor)}
+          onClick={() =>
+            component.id && callbacks.onClick && callbacks.onClick(component.id)
+          }
+          onDoubleClick={() =>
+            component.id &&
+            callbacks.onDoubleClick &&
+            callbacks.onDoubleClick(component.id)
+          }
+          onMouseEnter={() =>
+            component.id &&
+            callbacks.onMouseEnter &&
+            callbacks.onMouseEnter(component.id)
+          }
+          onMouseLeave={() =>
+            component.id &&
+            callbacks.onMouseLeave &&
+            callbacks.onMouseLeave(component.id)
+          }
         />
       ];
     case "rectangle":
@@ -165,6 +246,24 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           fill={colorToRgb(component.fillColor)}
+          onClick={() =>
+            component.id && callbacks.onClick && callbacks.onClick(component.id)
+          }
+          onDoubleClick={() =>
+            component.id &&
+            callbacks.onDoubleClick &&
+            callbacks.onDoubleClick(component.id)
+          }
+          onMouseEnter={() =>
+            component.id &&
+            callbacks.onMouseEnter &&
+            callbacks.onMouseEnter(component.id)
+          }
+          onMouseLeave={() =>
+            component.id &&
+            callbacks.onMouseLeave &&
+            callbacks.onMouseLeave(component.id)
+          }
         />
       ];
     default:
