@@ -87,6 +87,7 @@ function _visit(
           y2={component.end.y}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
         />
       ];
     case "text":
@@ -162,6 +163,8 @@ function _visit(
           ry={ry}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
+          opacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];
@@ -176,6 +179,7 @@ function _visit(
           points={linePoints}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
           fill="none"
         />
       ];
@@ -190,6 +194,8 @@ function _visit(
           points={points}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
+          opacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];
@@ -204,6 +210,8 @@ function _visit(
           height={Math.abs(component.bottomRight.y - component.topLeft.y)}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
+          opacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];
@@ -248,4 +256,8 @@ function colorToRgb(color: AbstractImage.Color): string {
     color.b.toString() +
     ")"
   );
+}
+
+function colorToOpacity(color: AbstractImage.Color): string {
+  return (color.a / 255).toString();
 }
