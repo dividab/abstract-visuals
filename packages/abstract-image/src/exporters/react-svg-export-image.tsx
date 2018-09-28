@@ -3,37 +3,63 @@ import * as React from "react";
 import * as AbstractImage from "../model/index";
 
 export interface ReactSvgCallbacks {
-  readonly onClick?: (id: string) => void;
-  readonly onDoubleClick?: (id: string) => void;
-  readonly onMouseEnter?: (id: string) => void;
-  readonly onMouseLeave?: (id: string) => void;
+  readonly onClick?: MouseCallback;
+  readonly onDoubleClick?: MouseCallback;
+  readonly onMouseMove?: MouseCallback;
 }
+
+export type MouseCallback = (
+  id: string | undefined,
+  point: AbstractImage.Point
+) => void;
 
 export function createReactSvg(
   image: AbstractImage.AbstractImage,
   callbacks?: ReactSvgCallbacks
 ): React.ReactElement<{}> {
+  const cb = callbacks || {};
   return (
-    <svg
-      width={`${image.size.width}px`}
-      height={`${image.size.height}px`}
-      viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
+    <div
+      onClick={_callback(cb.onClick)}
+      onDoubleClick={_callback(cb.onDoubleClick)}
+      onMouseMove={_callback(cb.onMouseMove)}
     >
-      {R.unnest(
-        R.addIndex(R.map)(
-          // tslint:disable-next-line:no-any
-          (c, i) => _visit(i.toString(), c as any, callbacks || {}),
-          image.components
-        )
-      )}
-    </svg>
+      <svg
+        width={`${image.size.width}px`}
+        height={`${image.size.height}px`}
+        viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
+      >
+        {R.unnest(
+          R.addIndex(R.map)(
+            // tslint:disable-next-line:no-any
+            (c, i) => _visit(i.toString(), c as any),
+            image.components
+          )
+        )}
+      </svg>
+    </div>
   );
+}
+
+function _callback(
+  callback: MouseCallback | undefined
+): React.MouseEventHandler<Element> | undefined {
+  if (!callback) {
+    return undefined;
+  }
+  return (e: React.MouseEvent<Element>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    const mousePoint = AbstractImage.createPoint(offsetX, offsetY);
+    const id = e.target && (e.target as Element).id;
+    callback(id !== "" ? id : undefined, mousePoint);
+  };
 }
 
 function _visit(
   key: string,
-  component: AbstractImage.Component,
-  callbacks: ReactSvgCallbacks
+  component: AbstractImage.Component
 ): Array<React.ReactElement<{}>> {
   switch (component.type) {
     case "group":
@@ -42,7 +68,7 @@ function _visit(
           {R.unnest(
             R.addIndex(R.map)(
               // tslint:disable-next-line:no-any
-              (c, i) => _visit(i.toString(), c as any, callbacks),
+              (c, i) => _visit(i.toString(), c as any),
               component.children
             )
           )}
@@ -53,6 +79,7 @@ function _visit(
     case "line":
       return [
         <line
+          id={component.id}
           key={key}
           x1={component.start.x}
           y1={component.start.y}
@@ -60,24 +87,6 @@ function _visit(
           y2={component.end.y}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
-          onClick={() =>
-            component.id && callbacks.onClick && callbacks.onClick(component.id)
-          }
-          onDoubleClick={() =>
-            component.id &&
-            callbacks.onDoubleClick &&
-            callbacks.onDoubleClick(component.id)
-          }
-          onMouseEnter={() =>
-            component.id &&
-            callbacks.onMouseEnter &&
-            callbacks.onMouseEnter(component.id)
-          }
-          onMouseLeave={() =>
-            component.id &&
-            callbacks.onMouseLeave &&
-            callbacks.onMouseLeave(component.id)
-          }
         />
       ];
     case "text":
@@ -145,6 +154,7 @@ function _visit(
       const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
       return [
         <ellipse
+          id={component.id}
           key={key}
           cx={cx}
           cy={cy}
@@ -153,24 +163,6 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           fill={colorToRgb(component.fillColor)}
-          onClick={() =>
-            component.id && callbacks.onClick && callbacks.onClick(component.id)
-          }
-          onDoubleClick={() =>
-            component.id &&
-            callbacks.onDoubleClick &&
-            callbacks.onDoubleClick(component.id)
-          }
-          onMouseEnter={() =>
-            component.id &&
-            callbacks.onMouseEnter &&
-            callbacks.onMouseEnter(component.id)
-          }
-          onMouseLeave={() =>
-            component.id &&
-            callbacks.onMouseLeave &&
-            callbacks.onMouseLeave(component.id)
-          }
         />
       ];
     case "polyline":
@@ -179,29 +171,12 @@ function _visit(
         .join(" ");
       return [
         <polyline
+          id={component.id}
           key={key}
           points={linePoints}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           fill="none"
-          onClick={() =>
-            component.id && callbacks.onClick && callbacks.onClick(component.id)
-          }
-          onDoubleClick={() =>
-            component.id &&
-            callbacks.onDoubleClick &&
-            callbacks.onDoubleClick(component.id)
-          }
-          onMouseEnter={() =>
-            component.id &&
-            callbacks.onMouseEnter &&
-            callbacks.onMouseEnter(component.id)
-          }
-          onMouseLeave={() =>
-            component.id &&
-            callbacks.onMouseLeave &&
-            callbacks.onMouseLeave(component.id)
-          }
         />
       ];
     case "polygon":
@@ -210,34 +185,18 @@ function _visit(
         .join(" ");
       return [
         <polygon
+          id={component.id}
           key={key}
           points={points}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           fill={colorToRgb(component.fillColor)}
-          onClick={() =>
-            component.id && callbacks.onClick && callbacks.onClick(component.id)
-          }
-          onDoubleClick={() =>
-            component.id &&
-            callbacks.onDoubleClick &&
-            callbacks.onDoubleClick(component.id)
-          }
-          onMouseEnter={() =>
-            component.id &&
-            callbacks.onMouseEnter &&
-            callbacks.onMouseEnter(component.id)
-          }
-          onMouseLeave={() =>
-            component.id &&
-            callbacks.onMouseLeave &&
-            callbacks.onMouseLeave(component.id)
-          }
         />
       ];
     case "rectangle":
       return [
         <rect
+          id={component.id}
           key={key}
           x={component.topLeft.x}
           y={component.topLeft.y}
@@ -246,24 +205,6 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           fill={colorToRgb(component.fillColor)}
-          onClick={() =>
-            component.id && callbacks.onClick && callbacks.onClick(component.id)
-          }
-          onDoubleClick={() =>
-            component.id &&
-            callbacks.onDoubleClick &&
-            callbacks.onDoubleClick(component.id)
-          }
-          onMouseEnter={() =>
-            component.id &&
-            callbacks.onMouseEnter &&
-            callbacks.onMouseEnter(component.id)
-          }
-          onMouseLeave={() =>
-            component.id &&
-            callbacks.onMouseLeave &&
-            callbacks.onMouseLeave(component.id)
-          }
         />
       ];
     default:

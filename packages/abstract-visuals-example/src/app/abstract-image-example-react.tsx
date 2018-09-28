@@ -32,12 +32,12 @@ export function AbstractImageExampleReact(): JSX.Element {
     components
   );
   const svg = AbstractImage.createReactSvg(image, {
-    onClick: id => window.alert(id)
+    onClick: (id, position) => window.alert(JSON.stringify({ id, position }))
   });
   return (
     <div>
       <h1>React</h1>
-      {svg}
+      <div>{svg}</div>
     </div>
   );
 }
