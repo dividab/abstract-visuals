@@ -40,17 +40,22 @@ function _visit(
         </g>
       ];
     case "binaryimage":
-      return [
-        <g
-          key={key}
-          dangerouslySetInnerHTML={{
-            __html: component.data.reduce(
-              (a, b) => a + String.fromCharCode(b),
-              ""
-            )
-          }}
-        />
-      ];
+      switch (component.format) {
+        case "svg":
+          return [
+            <g
+              key={key}
+              dangerouslySetInnerHTML={{
+                __html: component.data.reduce(
+                  (a, b) => a + String.fromCharCode(b),
+                  ""
+                )
+              }}
+            />
+          ];
+        default:
+          return [];
+      }
     case "line":
       return [
         <line
