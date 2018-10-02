@@ -1,6 +1,7 @@
 {
   "private": true,
   "workspaces": ["packages/*"],
+  "repository": "https://github.com/dividab/abstract-visuals",
   "devDependencies": {
     "@storybook/react": "^3.3.12",
     "@types/assertion-error": "^1.0.30",

@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as AbstractChart from "abstract-chart";
-import * as AbstractImage from "abstract-image";
+import * as AbstractChart from "../../../../packages/abstract-chart/src";
+import * as AbstractImage from "../../../../packages/abstract-image/src";
 
 function getLineRange(
   series: AbstractChart.ChartLine[],

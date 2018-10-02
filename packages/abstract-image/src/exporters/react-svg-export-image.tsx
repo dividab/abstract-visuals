@@ -2,24 +2,59 @@ import * as R from "ramda";
 import * as React from "react";
 import * as AbstractImage from "../model/index";
 
+export interface ReactSvgCallbacks {
+  readonly onClick?: MouseCallback;
+  readonly onDoubleClick?: MouseCallback;
+  readonly onMouseMove?: MouseCallback;
+}
+
+export type MouseCallback = (
+  id: string | undefined,
+  point: AbstractImage.Point
+) => void;
+
 export function createReactSvg(
-  image: AbstractImage.AbstractImage
+  image: AbstractImage.AbstractImage,
+  callbacks?: ReactSvgCallbacks
 ): React.ReactElement<{}> {
+  const cb = callbacks || {};
   return (
-    <svg
-      width={`${image.size.width}px`}
-      height={`${image.size.height}px`}
-      viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
+    <div
+      onClick={_callback(cb.onClick)}
+      onDoubleClick={_callback(cb.onDoubleClick)}
+      onMouseMove={_callback(cb.onMouseMove)}
     >
-      {R.unnest(
-        R.addIndex(R.map)(
-          // tslint:disable-next-line:no-any
-          (c, i) => _visit(i.toString(), c as any),
-          image.components
-        )
-      )}
-    </svg>
+      <svg
+        width={`${image.size.width}px`}
+        height={`${image.size.height}px`}
+        viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
+      >
+        {R.unnest(
+          R.addIndex(R.map)(
+            // tslint:disable-next-line:no-any
+            (c, i) => _visit(i.toString(), c as any),
+            image.components
+          )
+        )}
+      </svg>
+    </div>
   );
+}
+
+function _callback(
+  callback: MouseCallback | undefined
+): React.MouseEventHandler<Element> | undefined {
+  if (!callback) {
+    return undefined;
+  }
+  return (e: React.MouseEvent<Element>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    const mousePoint = AbstractImage.createPoint(offsetX, offsetY);
+    const id = e.target && (e.target as Element).id;
+    callback(id !== "" ? id : undefined, mousePoint);
+  };
 }
 
 function _visit(
@@ -59,6 +94,7 @@ function _visit(
     case "line":
       return [
         <line
+          id={component.id}
           key={key}
           x1={component.start.x}
           y1={component.start.y}
@@ -66,6 +102,7 @@ function _visit(
           y2={component.end.y}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
         />
       ];
     case "text":
@@ -133,6 +170,7 @@ function _visit(
       const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
       return [
         <ellipse
+          id={component.id}
           key={key}
           cx={cx}
           cy={cy}
@@ -140,6 +178,8 @@ function _visit(
           ry={ry}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
+          opacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];
@@ -149,10 +189,12 @@ function _visit(
         .join(" ");
       return [
         <polyline
+          id={component.id}
           key={key}
           points={linePoints}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
           fill="none"
         />
       ];
@@ -162,16 +204,20 @@ function _visit(
         .join(" ");
       return [
         <polygon
+          id={component.id}
           key={key}
           points={points}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
+          opacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];
     case "rectangle":
       return [
         <rect
+          id={component.id}
           key={key}
           x={component.topLeft.x}
           y={component.topLeft.y}
@@ -179,6 +225,8 @@ function _visit(
           height={Math.abs(component.bottomRight.y - component.topLeft.y)}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
+          strokeOpacity={colorToOpacity(component.strokeColor)}
+          opacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];
@@ -223,4 +271,8 @@ function colorToRgb(color: AbstractImage.Color): string {
     color.b.toString() +
     ")"
   );
+}
+
+function colorToOpacity(color: AbstractImage.Color): string {
+  return (color.a / 255).toString();
 }
