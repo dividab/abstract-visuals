@@ -40,7 +40,17 @@ function _visit(
         </g>
       ];
     case "binaryimage":
-      return [];
+      return [
+        <g
+          key={key}
+          dangerouslySetInnerHTML={{
+            __html: component.data.reduce(
+              (a, b) => a + String.fromCharCode(b),
+              ""
+            )
+          }}
+        />
+      ];
     case "line":
       return [
         <line
