@@ -32,7 +32,14 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
         component.children.map(c => abstractComponentToSVG(c))
       );
     case "binaryimage":
-      return "";
+      switch (component.format) {
+        case "svg":
+          return createElement("g", {}, [
+            component.data.reduce((a, b) => a + String.fromCharCode(b), "")
+          ]);
+        default:
+          return "";
+      }
     case "subimage":
       return "";
     case "line":

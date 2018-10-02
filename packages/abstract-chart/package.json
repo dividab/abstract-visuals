@@ -1,8 +1,10 @@
 {
   "name": "abstract-chart",
   "version": "1.1.2",
-  "description": "Drawing charts using multiple unit of measure axes as coordinate system",
-  "repository": "https://github.com/dividab/abstract-visuals/packages/abstract-chart",
+  "description":
+    "Drawing charts using multiple unit of measure axes as coordinate system",
+  "repository":
+    "https://github.com/dividab/abstract-visuals/packages/abstract-chart",
   "main": "lib-cjs/index.js",
   "module": "lib-esm/index.js",
   "types": "lib-cjs/index",
