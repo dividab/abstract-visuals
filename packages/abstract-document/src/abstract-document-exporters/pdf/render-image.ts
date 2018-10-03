@@ -56,6 +56,7 @@ function abstractComponentToPdf(
         .lineWidth(component.strokeThickness)
         .moveTo(component.start.x, component.start.y)
         .lineTo(component.end.x, component.end.y)
+        .strokeOpacity(colorToOpacity(component.strokeColor))
         .stroke(colorToRgb(component.strokeColor));
       break;
     case "polyline":
@@ -69,6 +70,7 @@ function abstractComponentToPdf(
       }
       pdf
         .lineWidth(component.strokeThickness)
+        .strokeOpacity(colorToOpacity(component.strokeColor))
         .stroke(colorToRgb(component.strokeColor));
       break;
     case "text":
@@ -114,6 +116,8 @@ function abstractComponentToPdf(
       pdf
         .lineWidth(component.strokeThickness)
         .ellipse(centerX, centerY, width * 0.5, height * 0.5)
+        .strokeOpacity(colorToOpacity(component.strokeColor))
+        .fillOpacity(colorToOpacity(component.fillColor))
         .fillAndStroke(
           colorToRgb(component.fillColor),
           colorToRgb(component.strokeColor)
@@ -122,6 +126,8 @@ function abstractComponentToPdf(
     case "polygon":
       pdf
         .lineWidth(component.strokeThickness)
+        .strokeOpacity(colorToOpacity(component.strokeColor))
+        .fillOpacity(colorToOpacity(component.fillColor))
         .polygon(...component.points.map(p => [p.x, p.y]))
         .fillAndStroke(
           colorToRgb(component.fillColor),
@@ -133,6 +139,8 @@ function abstractComponentToPdf(
       const rHeight = component.bottomRight.y - component.topLeft.y;
       pdf
         .lineWidth(component.strokeThickness)
+        .strokeOpacity(colorToOpacity(component.strokeColor))
+        .fillOpacity(colorToOpacity(component.fillColor))
         .rect(component.topLeft.x, component.topLeft.y, rWidth, rHeight)
         .fillAndStroke(
           colorToRgb(component.fillColor),
@@ -142,6 +150,10 @@ function abstractComponentToPdf(
     default:
       break;
   }
+}
+
+function colorToOpacity(color: AbstractImage.Color): number {
+  return color.a / 255;
 }
 
 function colorToRgb(color: AbstractImage.Color): Array<number> {
