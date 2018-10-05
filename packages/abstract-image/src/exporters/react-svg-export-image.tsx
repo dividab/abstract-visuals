@@ -19,20 +19,22 @@ export function createReactSvg(
   callbacks?: ReactSvgCallbacks
 ): React.ReactElement<{}> {
   const cb = callbacks || {};
+  const id = Math.random().toString();
   return (
     <svg
+      id={id}
       width={`${image.size.width}px`}
       height={`${image.size.height}px`}
       viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
-      onClick={_callback(cb.onClick)}
-      onDoubleClick={_callback(cb.onDoubleClick)}
-      onMouseMove={_callback(cb.onMouseMove)}
-      onContextMenu={_callback(cb.onContextMenu)}
+      onClick={_callback(cb.onClick, id)}
+      onDoubleClick={_callback(cb.onDoubleClick, id)}
+      onMouseMove={_callback(cb.onMouseMove, id)}
+      onContextMenu={_callback(cb.onContextMenu, id)}
     >
       {R.unnest(
         R.addIndex(R.map)(
           // tslint:disable-next-line:no-any
-          (c, i) => _visit(i.toString(), c as any),
+          (c, i) => _visit(i.toString(), c as any, id),
           image.components
         )
       )}
@@ -41,7 +43,8 @@ export function createReactSvg(
 }
 
 function _callback(
-  callback: MouseCallback | undefined
+  callback: MouseCallback | undefined,
+  rootId: string
 ): React.MouseEventHandler<Element> | undefined {
   if (!callback) {
     return undefined;
@@ -51,14 +54,40 @@ function _callback(
     const offsetX = e.clientX - rect.left;
     const offsetY = e.clientY - rect.top;
     const mousePoint = AbstractImage.createPoint(offsetX, offsetY);
-    const id = e.target && (e.target as Element).id;
-    callback(id !== "" ? id : undefined, mousePoint);
+    const id = getIdAttr(e.target as Element, rootId);
+    callback(id && id !== "" ? id : undefined, mousePoint);
   };
+}
+
+function makeIdAttr(
+  id: string | undefined,
+  rootId: string
+): string | undefined {
+  if (!id) {
+    return undefined;
+  }
+  return `ai${rootId}%${id}`;
+}
+
+function getIdAttr(
+  target: Element | undefined,
+  rootId: string
+): string | undefined {
+  if (!target || target.id === rootId) {
+    return undefined;
+  }
+  const id = target.id;
+  const parts = id.split("%");
+  if (parts.length !== 2 || parts[0] !== "ai" + rootId) {
+    return getIdAttr(target.parentElement || undefined, rootId);
+  }
+  return parts[1];
 }
 
 function _visit(
   key: string,
-  component: AbstractImage.Component
+  component: AbstractImage.Component,
+  rootId: string
 ): Array<React.ReactElement<{}>> {
   switch (component.type) {
     case "group":
@@ -67,7 +96,7 @@ function _visit(
           {R.unnest(
             R.addIndex(R.map)(
               // tslint:disable-next-line:no-any
-              (c, i) => _visit(i.toString(), c as any),
+              (c, i) => _visit(i.toString(), c as any, rootId),
               component.children
             )
           )}
@@ -79,7 +108,7 @@ function _visit(
           return [
             <g
               key={key}
-              id={component.id}
+              id={makeIdAttr(component.id, rootId)}
               dangerouslySetInnerHTML={{
                 __html: component.data.reduce(
                   (a, b) => a + String.fromCharCode(b),
@@ -94,7 +123,7 @@ function _visit(
     case "line":
       return [
         <line
-          id={component.id}
+          id={makeIdAttr(component.id, rootId)}
           key={key}
           x1={component.start.x}
           y1={component.start.y}
@@ -170,7 +199,7 @@ function _visit(
       const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
       return [
         <ellipse
-          id={component.id}
+          id={makeIdAttr(component.id, rootId)}
           key={key}
           cx={cx}
           cy={cy}
@@ -189,7 +218,7 @@ function _visit(
         .join(" ");
       return [
         <polyline
-          id={component.id}
+          id={makeIdAttr(component.id, rootId)}
           key={key}
           points={linePoints}
           stroke={colorToRgb(component.strokeColor)}
@@ -204,7 +233,7 @@ function _visit(
         .join(" ");
       return [
         <polygon
-          id={component.id}
+          id={makeIdAttr(component.id, rootId)}
           key={key}
           points={points}
           stroke={colorToRgb(component.strokeColor)}
@@ -217,7 +246,7 @@ function _visit(
     case "rectangle":
       return [
         <rect
-          id={component.id}
+          id={makeIdAttr(component.id, rootId)}
           key={key}
           x={component.topLeft.x}
           y={component.topLeft.y}

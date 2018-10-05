@@ -1,7 +1,25 @@
 import * as React from "react";
-import * as AbstractImage from "abstract-image";
+import * as AbstractImage from "../../../abstract-image";
 
 export function AbstractImageExampleReact(): JSX.Element {
+  const subComponents = [
+    AbstractImage.createLine(
+      AbstractImage.createPoint(50, 50),
+      AbstractImage.createPoint(80, 60),
+      AbstractImage.red,
+      2,
+      "subLine"
+    )
+  ];
+  const subImage = AbstractImage.createAbstractImage(
+    AbstractImage.createPoint(0, 0),
+    AbstractImage.createSize(400, 400),
+    AbstractImage.white,
+    subComponents
+  );
+  const subSvg = AbstractImage.createSVG(subImage);
+  const subData = new TextEncoder().encode(subSvg);
+
   const components = [
     AbstractImage.createLine(
       AbstractImage.createPoint(25, 25),
@@ -17,12 +35,12 @@ export function AbstractImageExampleReact(): JSX.Element {
       AbstractImage.fromArgb(100, 0, 0, 0),
       "rect"
     ),
-    AbstractImage.createRectangle(
-      AbstractImage.createPoint(60, 50),
-      AbstractImage.createPoint(90, 80),
-      AbstractImage.blue,
-      2,
-      AbstractImage.transparent
+    AbstractImage.createBinaryImage(
+      AbstractImage.createPoint(0, 0),
+      AbstractImage.createPoint(300, 300),
+      "svg",
+      subData,
+      "subImage"
     )
   ];
   const image = AbstractImage.createAbstractImage(
