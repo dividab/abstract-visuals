@@ -6,6 +6,7 @@ export interface ReactSvgCallbacks {
   readonly onClick?: MouseCallback;
   readonly onDoubleClick?: MouseCallback;
   readonly onMouseMove?: MouseCallback;
+  readonly onContextMenu?: MouseCallback;
 }
 
 export type MouseCallback = (
@@ -19,25 +20,23 @@ export function createReactSvg(
 ): React.ReactElement<{}> {
   const cb = callbacks || {};
   return (
-    <div
+    <svg
+      width={`${image.size.width}px`}
+      height={`${image.size.height}px`}
+      viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
       onClick={_callback(cb.onClick)}
       onDoubleClick={_callback(cb.onDoubleClick)}
       onMouseMove={_callback(cb.onMouseMove)}
+      onContextMenu={_callback(cb.onContextMenu)}
     >
-      <svg
-        width={`${image.size.width}px`}
-        height={`${image.size.height}px`}
-        viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
-      >
-        {R.unnest(
-          R.addIndex(R.map)(
-            // tslint:disable-next-line:no-any
-            (c, i) => _visit(i.toString(), c as any),
-            image.components
-          )
-        )}
-      </svg>
-    </div>
+      {R.unnest(
+        R.addIndex(R.map)(
+          // tslint:disable-next-line:no-any
+          (c, i) => _visit(i.toString(), c as any),
+          image.components
+        )
+      )}
+    </svg>
   );
 }
 
@@ -80,6 +79,7 @@ function _visit(
           return [
             <g
               key={key}
+              id={component.id}
               dangerouslySetInnerHTML={{
                 __html: component.data.reduce(
                   (a, b) => a + String.fromCharCode(b),
