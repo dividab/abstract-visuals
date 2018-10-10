@@ -10,4 +10,4 @@ For more information, please see the readme for each package:
 
 There is also a package with examples:
 
-* [abstract-image](packages/abstract-visuals-example)
+* [abstract-visuals-example](packages/abstract-visuals-example)
