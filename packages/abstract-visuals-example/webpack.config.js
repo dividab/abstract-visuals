@@ -7,7 +7,7 @@ module.exports = {
   stats: "minimal",
   context: path.resolve(__dirname, "./src"),
   devtool: "sourcemap",
-  entry: "./app/start",
+  entry: ["@babel/polyfill", "./text-encoder-polyfill", "./app/start"],
   output: {
     path: path.join(__dirname, "../dist/example"),
     filename: "example-bundle.js",
