@@ -19,7 +19,7 @@ export function createReactSvg(
   callbacks?: ReactSvgCallbacks
 ): React.ReactElement<{}> {
   const cb = callbacks || {};
-  const id = Math.random().toString();
+  const id = "ai_root";
   return (
     <svg
       id={id}
@@ -34,7 +34,7 @@ export function createReactSvg(
       {R.unnest(
         R.addIndex(R.map)(
           // tslint:disable-next-line:no-any
-          (c, i) => _visit(i.toString(), c as any, id),
+          (c, i) => _visit(i.toString(), c as any),
           image.components
         )
       )}
@@ -59,14 +59,11 @@ function _callback(
   };
 }
 
-function makeIdAttr(
-  id: string | undefined,
-  rootId: string
-): string | undefined {
+function makeIdAttr(id: string | undefined): string | undefined {
   if (!id) {
     return undefined;
   }
-  return `ai${rootId}%${id}`;
+  return `ai%${id}`;
 }
 
 function getIdAttr(
@@ -78,7 +75,7 @@ function getIdAttr(
   }
   const id = target.id;
   const parts = id.split("%");
-  if (parts.length !== 2 || parts[0] !== "ai" + rootId) {
+  if (parts.length !== 2 || parts[0] !== "ai") {
     return getIdAttr(target.parentElement || undefined, rootId);
   }
   return parts[1];
@@ -86,8 +83,7 @@ function getIdAttr(
 
 function _visit(
   key: string,
-  component: AbstractImage.Component,
-  rootId: string
+  component: AbstractImage.Component
 ): Array<React.ReactElement<{}>> {
   switch (component.type) {
     case "group":
@@ -96,7 +92,7 @@ function _visit(
           {R.unnest(
             R.addIndex(R.map)(
               // tslint:disable-next-line:no-any
-              (c, i) => _visit(i.toString(), c as any, rootId),
+              (c, i) => _visit(i.toString(), c as any),
               component.children
             )
           )}
@@ -108,7 +104,7 @@ function _visit(
           return [
             <g
               key={key}
-              id={makeIdAttr(component.id, rootId)}
+              id={makeIdAttr(component.id)}
               dangerouslySetInnerHTML={{
                 __html: component.data.reduce(
                   (a, b) => a + String.fromCharCode(b),
@@ -123,7 +119,7 @@ function _visit(
     case "line":
       return [
         <line
-          id={makeIdAttr(component.id, rootId)}
+          id={makeIdAttr(component.id)}
           key={key}
           x1={component.start.x}
           y1={component.start.y}
@@ -199,7 +195,7 @@ function _visit(
       const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
       return [
         <ellipse
-          id={makeIdAttr(component.id, rootId)}
+          id={makeIdAttr(component.id)}
           key={key}
           cx={cx}
           cy={cy}
@@ -218,7 +214,7 @@ function _visit(
         .join(" ");
       return [
         <polyline
-          id={makeIdAttr(component.id, rootId)}
+          id={makeIdAttr(component.id)}
           key={key}
           points={linePoints}
           stroke={colorToRgb(component.strokeColor)}
@@ -233,7 +229,7 @@ function _visit(
         .join(" ");
       return [
         <polygon
-          id={makeIdAttr(component.id, rootId)}
+          id={makeIdAttr(component.id)}
           key={key}
           points={points}
           stroke={colorToRgb(component.strokeColor)}
@@ -246,7 +242,7 @@ function _visit(
     case "rectangle":
       return [
         <rect
-          id={makeIdAttr(component.id, rootId)}
+          id={makeIdAttr(component.id)}
           key={key}
           x={component.topLeft.x}
           y={component.topLeft.y}
