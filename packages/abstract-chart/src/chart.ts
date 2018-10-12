@@ -482,11 +482,14 @@ export function generateYAxisLeft(
     chart
   );
 
+  const labelPaddingLeft =
+    5 + labelPadding(formatNumber(yAxisLeft.max).length, chart.fontSize, 0.5);
+
   let yLabel: AbstractImage.Component;
   switch (chart.labelLayout) {
     case "original":
       yLabel = generateYAxisLabel(
-        xMin - 0.5 * padding,
+        xMin - labelPaddingLeft,
         yMax + 0.5 * padding,
         "uniform",
         "up",
@@ -497,7 +500,7 @@ export function generateYAxisLeft(
 
     case "end":
       yLabel = generateYAxisLabel(
-        xMin - 25,
+        xMin - labelPaddingLeft,
         yMax,
         "left",
         "up",
@@ -508,7 +511,7 @@ export function generateYAxisLeft(
 
     case "center":
       yLabel = generateYAxisLabel(
-        xMin - 25,
+        xMin - labelPaddingLeft,
         (yMin + yMax) / 2,
         "uniform",
         "up",
@@ -555,11 +558,14 @@ export function generateYAxisRight(
     chart
   );
 
+  const labelPaddingRight =
+    7 + labelPadding(formatNumber(yAxisRight.max).length, chart.fontSize, 1.5);
+
   let yLabel2: AbstractImage.Component;
   switch (chart.labelLayout) {
     case "original":
       yLabel2 = generateYAxisLabel(
-        xMax + 35,
+        xMax + labelPaddingRight,
         yMax + 0.5 * padding,
         "uniform",
         "up",
@@ -570,7 +576,7 @@ export function generateYAxisRight(
 
     case "end":
       yLabel2 = generateYAxisLabel(
-        xMax + 30,
+        xMax + labelPaddingRight,
         yMax,
         "left",
         "up",
@@ -581,7 +587,7 @@ export function generateYAxisRight(
 
     case "center":
       yLabel2 = generateYAxisLabel(
-        xMax + 35,
+        xMax + labelPaddingRight,
         (yMin + yMax) / 2,
         "uniform",
         "up",
@@ -1003,4 +1009,12 @@ function formatNumber(n: number): string {
 
 function numberToString(n: number): string {
   return parseFloat(n.toPrecision(5)).toString();
+}
+
+function labelPadding(
+  numberOfCharacters: number,
+  fontSize: number,
+  characterOffset: number
+): number {
+  return (numberOfCharacters + 1 + characterOffset) * fontSize * 3 / 4;
 }
