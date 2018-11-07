@@ -104,10 +104,10 @@ function epsExportComponent(c: AI.Component, height: number): Array<string> {
         `/${c.fontFamily} findfont`,
         `${c.fontSize} scalefont setfont`,
         `${c.position.x} ${height - c.position.y} moveto`,
-        `-${c.clockwiseRotationDegrees} rotate`,
         getTextXOffset(c),
         getTextYOffset(c),
         `rmoveto`,
+        `${-c.clockwiseRotationDegrees} rotate`,
         `(${c.text}) show`,
         `grestore`
       ]);
@@ -129,9 +129,13 @@ function getTextXOffset(c: AI.Text): string {
 
 function getTextYOffset(c: AI.Text): string {
   if (c.verticalGrowthDirection === "down") {
-    return `(${c.text}) stringwidth exch pop neg`;
+    return `gsave (${
+      c.text
+    }) true charpath pathbbox exch pop 3 -1 roll pop sub grestore`;
   } else if (c.verticalGrowthDirection === "uniform") {
-    return `(${c.text}) stringwidth exch pop neg 0.5 mul`;
+    return `gsave (${
+      c.text
+    }) true charpath pathbbox exch pop 3 -1 roll pop sub 0.5 mul grestore`;
   } else {
     return `0`;
   }
