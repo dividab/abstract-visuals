@@ -1,43 +1,71 @@
 import * as React from "react";
-import * as AbstractImage from "abstract-image";
+import * as AI from "abstract-image";
 
 export function AbstractImageExampleDxf(): JSX.Element {
   const components = [
-    AbstractImage.createLine(
-      AbstractImage.createPoint(25, 25),
-      AbstractImage.createPoint(80, 60),
-      AbstractImage.green,
+    AI.createLine(AI.createPoint(25, 25), AI.createPoint(80, 60), AI.green, 2),
+    AI.createRectangle(
+      AI.createPoint(10, 50),
+      AI.createPoint(40, 80),
+      AI.blue,
+      2,
+      AI.red
+    ),
+    AI.createText(
+      AI.createPoint(200, 100),
+      "Test",
+      "Helvetica",
+      12,
+      AI.black,
+      "normal",
+      30,
+      "center",
+      "uniform",
+      "uniform",
+      0,
+      AI.black
+    ),
+    AI.createEllipse(
+      AI.createPoint(80, 40),
+      AI.createPoint(100, 60),
+      AI.black,
+      1,
+      AI.blue
+    ),
+    AI.createPolyLine(
+      [
+        AI.createPoint(10, 10),
+        AI.createPoint(390, 390),
+        AI.createPoint(390, 10)
+      ],
+      AI.brown,
       2
     ),
-    AbstractImage.createRectangle(
-      AbstractImage.createPoint(10, 50),
-      AbstractImage.createPoint(40, 80),
-      AbstractImage.blue,
+    AI.createPolygon(
+      [
+        AI.createPoint(200, 250),
+        AI.createPoint(250, 250),
+        AI.createPoint(200, 200)
+      ],
+      AI.yellow,
       2,
-      AbstractImage.red
-    ),
-    AbstractImage.createEllipse(
-      AbstractImage.createPoint(80, 40),
-      AbstractImage.createPoint(100, 60),
-      AbstractImage.black,
-      1,
-      AbstractImage.transparent
+      AI.gray
     )
   ];
-  const image = AbstractImage.createAbstractImage(
-    AbstractImage.createPoint(0, 0),
-    AbstractImage.createSize(400, 400),
-    AbstractImage.white,
+  const image = AI.createAbstractImage(
+    AI.createPoint(0, 0),
+    AI.createSize(400, 400),
+    AI.white,
     components
   );
-  const dxf = AbstractImage.dxf2dExportImage(image);
-  const svg = AbstractImage.createSVG(image);
+  const svg = AI.createSVG(image);
   const base64 = btoa(svg);
 
-  // Create a new blob from the data.
-  const blob = new Blob([dxf], { type: "text/plain", endings: "native" });
-  // Create a data:url which points to that data.
-  const url = URL.createObjectURL(blob);
+  const dxf = AI.dxf2dExportImage(image);
+  const dxfUrl = toDataUrl("text/plain", dxf);
+
+  const eps = AI.epsExportImage(image);
+  const epsUrl = toDataUrl("text/plain", eps);
 
   return (
     <div>
@@ -47,10 +75,19 @@ export function AbstractImageExampleDxf(): JSX.Element {
         height="400"
         src={`data:image/svg+xml;base64,${base64}`}
       />
-      <a href={url} download={"abstract_image_demo1.dxf"}>
+      <a href={dxfUrl} download={"abstract_image_demo1.dxf"}>
         Download DXF
       </a>
       <pre>{dxf}</pre>
+      <a href={epsUrl} download={"abstract_image_demo1.eps"}>
+        Download EPS
+      </a>
+      <pre>{eps}</pre>
     </div>
   );
+}
+
+function toDataUrl(mime: string, data: string): string {
+  const base64 = btoa(data);
+  return `data:${mime};base64,${base64}`;
 }
