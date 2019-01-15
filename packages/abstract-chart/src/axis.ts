@@ -62,28 +62,32 @@ export function getLinearTicks(
   min: number,
   max: number
 ): Array<number> {
-  const alternatives = linearPowers.reduce(
-    (currAlts: Array<Array<number>>, power: number) => {
-      const base = Math.pow(10, power);
-      const baseAlternatives = linearMultiples.map(multiple => {
-        const step = base * multiple;
-        const cMin = Math.ceil(min / step);
-        const cMax = Math.floor(max / step);
-        const lines = cMax - cMin + 1;
-        const bestMin = cMin * step;
-        return R.range(0, lines).map(l => bestMin + l * step);
-      });
-      return currAlts.concat(baseAlternatives);
-    },
-    []
-  );
-  const bestLines = alternatives.reduce(
-    (prev: Array<number>, alt: Array<number>) =>
-      Math.abs(alt.length - desiredTicks) < Math.abs(prev.length - desiredTicks)
+  const alternatives: Array<Array<number>> = [];
+  for (const power of linearPowers) {
+    const base = Math.pow(10, power);
+    for (const multiple of linearMultiples) {
+      const step = base * multiple;
+      const cMin = Math.ceil(min / step);
+      const cMax = Math.floor(max / step);
+      const lines = cMax - cMin + 1;
+      const bestMin = cMin * step;
+      const baseAlternatives: Array<number> = [];
+      for (let l = 0; l < lines; l++) {
+        baseAlternatives.push(bestMin + l * step);
+      }
+      alternatives.push(baseAlternatives);
+    }
+  }
+
+  let bestLines: Array<number> = [];
+
+  for (const alt of alternatives) {
+    bestLines =
+      Math.abs(alt.length - desiredTicks) <
+      Math.abs(bestLines.length - desiredTicks)
         ? alt
-        : prev,
-    []
-  );
+        : bestLines;
+  }
   return bestLines;
 }
 
