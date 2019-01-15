@@ -20,7 +20,6 @@ export interface State {
 
 export class Container extends React.Component<{}, State> {
   constructor() {
-    console.log(123);
     super();
     this.state = {
       selectedExample: 0,
