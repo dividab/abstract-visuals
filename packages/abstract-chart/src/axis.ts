@@ -57,38 +57,44 @@ export function getTicks(desiredTicks: number, axis: Axis): Array<number> {
   }
 }
 
+interface Alternative {
+  readonly min: number;
+  readonly step: number;
+  readonly ticks: number;
+}
+
 export function getLinearTicks(
   desiredTicks: number,
   min: number,
   max: number
 ): Array<number> {
-  const alternatives: Array<Array<number>> = [];
+  let best: Alternative | undefined;
   for (const power of linearPowers) {
     const base = Math.pow(10, power);
     for (const multiple of linearMultiples) {
       const step = base * multiple;
       const cMin = Math.ceil(min / step);
       const cMax = Math.floor(max / step);
-      const lines = cMax - cMin + 1;
-      const bestMin = cMin * step;
-      const baseAlternatives: Array<number> = [];
-      for (let l = 0; l < lines; l++) {
-        baseAlternatives.push(bestMin + l * step);
+      const ticks = cMax - cMin + 1;
+
+      if (
+        !best ||
+        Math.abs(best.ticks - desiredTicks) > Math.abs(ticks - desiredTicks)
+      ) {
+        best = {
+          min: cMin * step,
+          step: step,
+          ticks: ticks
+        };
       }
-      alternatives.push(baseAlternatives);
     }
   }
 
-  let bestLines: Array<number> = [];
-
-  for (const alt of alternatives) {
-    bestLines =
-      Math.abs(alt.length - desiredTicks) <
-      Math.abs(bestLines.length - desiredTicks)
-        ? alt
-        : bestLines;
+  if (!best) {
+    return [];
   }
-  return bestLines;
+  const b = best;
+  return R.range(0, b.ticks).map(l => b.min + b.step * l);
 }
 
 const logarithmicAlternatives = [
