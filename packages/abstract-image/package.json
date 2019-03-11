@@ -1,8 +1,10 @@
 {
   "name": "abstract-image",
-  "version": "2.2.1",
-  "description": "Dynamically create images using code or JSX and render to any format",
-  "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-image",
+  "version": "2.2.2",
+  "description":
+    "Dynamically create images using code or JSX and render to any format",
+  "repository":
+    "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-image",
   "main": "lib-cjs/index.js",
   "module": "lib-esm/index.js",
   "types": "lib-cjs/index",
