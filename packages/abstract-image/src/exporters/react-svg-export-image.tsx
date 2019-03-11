@@ -204,7 +204,7 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
-          opacity={colorToOpacity(component.fillColor)}
+          fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];
@@ -235,7 +235,7 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
-          opacity={colorToOpacity(component.fillColor)}
+          fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];
@@ -251,7 +251,7 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
-          opacity={colorToOpacity(component.fillColor)}
+          fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       ];

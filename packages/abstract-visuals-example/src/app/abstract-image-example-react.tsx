@@ -41,6 +41,13 @@ export function AbstractImageExampleReact(): JSX.Element {
       "svg",
       subData,
       "subImage"
+    ),
+    AbstractImage.createEllipse(
+      AbstractImage.createPoint(20, 20),
+      AbstractImage.createPoint(60, 60),
+      AbstractImage.red,
+      1,
+      AbstractImage.transparent
     )
   ];
   const image = AbstractImage.createAbstractImage(
