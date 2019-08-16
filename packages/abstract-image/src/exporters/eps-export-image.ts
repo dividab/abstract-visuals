@@ -80,7 +80,6 @@ function epsExportComponent(c: AI.Component, height: number): Array<string> {
       return getColored(c.strokeColor, [
         `${c.points[0].x} ${height - c.points[0].y} moveto`,
         ...c.points.map(p => `${p.x} ${height - p.y} lineto`),
-        "closepath",
         `${c.strokeThickness} setlinewidth`,
         "stroke"
       ]);
