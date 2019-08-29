@@ -387,12 +387,13 @@ function measureText(
       features: features
     }) + 2
   );
-  const height = pdf.heightOfString(text, {
-    width: width,
-    height: availableSize.height,
-    underline: textStyle.underline || false,
-    features: features
-  });
+  const height =
+    pdf.heightOfString(text, {
+      width: width,
+      height: availableSize.height,
+      underline: textStyle.underline || false,
+      features: features
+    }) + 2;
   return AD.Size.create(width, height);
   // let font = style.fontFamily || "Helvetica";
   // if (style.bold && style.italic) { font += "-BoldOblique"; }
