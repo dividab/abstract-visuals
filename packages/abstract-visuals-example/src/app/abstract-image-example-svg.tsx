@@ -22,6 +22,20 @@ export function AbstractImageExampleSvg(): JSX.Element {
       AbstractImage.blue,
       2,
       AbstractImage.transparent
+    ),
+    AbstractImage.createText(
+      AbstractImage.createPoint(60, 50),
+      "Hej<sub>12</sub>",
+      "Helvetica",
+      12,
+      AbstractImage.black,
+      "normal",
+      0,
+      "center",
+      "uniform",
+      "uniform",
+      0,
+      AbstractImage.black
     )
   ];
   const image = AbstractImage.createAbstractImage(

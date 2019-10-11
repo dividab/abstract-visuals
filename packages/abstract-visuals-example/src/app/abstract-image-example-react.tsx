@@ -48,6 +48,20 @@ export function AbstractImageExampleReact(): JSX.Element {
       AbstractImage.red,
       1,
       AbstractImage.transparent
+    ),
+    AbstractImage.createText(
+      AbstractImage.createPoint(60, 50),
+      "Hej<sub>12</sub>",
+      "Helvetica",
+      12,
+      AbstractImage.black,
+      "normal",
+      0,
+      "center",
+      "uniform",
+      "uniform",
+      0,
+      AbstractImage.black
     )
   ];
   const image = AbstractImage.createAbstractImage(

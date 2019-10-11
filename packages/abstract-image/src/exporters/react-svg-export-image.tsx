@@ -164,16 +164,15 @@ function _visit(
 
       const lines: Array<string> =
         component.text !== null ? component.text.split("\n") : [];
-      const tSpans = lines.map(t => (
-        <tspan
-          key={t}
-          x={component.position.x}
-          y={component.position.y + (lines.indexOf(t) + dy) * lineHeight}
-          height={lineHeight.toString() + "px"}
-        >
-          {t}
-        </tspan>
-      ));
+      const tSpans = lines.map(t =>
+        renderLine(
+          t,
+          component.position.x,
+          component.position.y + (lines.indexOf(t) + dy) * lineHeight,
+          component.fontSize,
+          lineHeight
+        )
+      );
       let cs: Array<React.ReactElement<{}>> = [];
       if (component.strokeThickness > 0 && component.strokeColor) {
         cs.push(
@@ -258,6 +257,40 @@ function _visit(
     default:
       return [];
   }
+}
+
+function renderLine(
+  text: string,
+  x: number,
+  y: number,
+  fontSize: number,
+  lineHeight: number
+): JSX.Element {
+  const split = R.unnest<string>(
+    text.split("<sub>").map(t => t.split("</sub>"))
+  );
+  let inside = false;
+  const tags: Array<JSX.Element> = [];
+  for (const text of split) {
+    if (inside) {
+      tags.push(
+        <tspan
+          baselineShift="sub"
+          style={{ fontSize: (fontSize * 0.8).toString() + "px" }}
+        >
+          {text}
+        </tspan>
+      );
+    } else {
+      tags.push(<tspan>{text}</tspan>);
+    }
+    inside = !inside;
+  }
+  return (
+    <tspan key={text} x={x} y={y} height={lineHeight.toString() + "px"}>
+      {tags}
+    </tspan>
+  );
 }
 
 function getBaselineAdjustment(d: AbstractImage.GrowthDirection): number {

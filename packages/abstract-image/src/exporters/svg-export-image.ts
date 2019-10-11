@@ -120,7 +120,15 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
             ).toString(),
             height: lineHeight.toString() + "px"
           },
-          [t]
+          [
+            t
+              .replace(
+                "<sub>",
+                `<tspan style="font-size: ${component.fontSize *
+                  0.8}px" baseline-shift="sub">`
+              )
+              .replace("</sub>", "</tspan>")
+          ]
         )
       );
 
