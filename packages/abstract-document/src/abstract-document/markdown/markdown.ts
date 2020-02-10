@@ -1,5 +1,5 @@
 import { SectionElement } from "../section-elements/section-element";
-import { parse } from "markdown-to-ast";
+import { parse } from "@textlint/markdown-to-ast";
 import { AstElements, MarkDownProcessData } from "./types";
 import * as Paragraph from "../section-elements/paragraph";
 import * as Atom from "../atoms/atom";
