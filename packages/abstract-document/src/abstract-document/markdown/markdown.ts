@@ -4,9 +4,11 @@ import { AstElements, MarkDownProcessData } from "./types";
 import * as Paragraph from "../section-elements/paragraph";
 import * as Atom from "../atoms/atom";
 import * as TextRun from "../atoms/text-run";
+import * as Group from "../section-elements/group";
 
 export interface MarkdownProps {
   readonly text: string;
+  readonly keepTogetherSections?: boolean;
 }
 
 function preProcessMarkdownAst(
@@ -77,7 +79,26 @@ function preProcessMarkdownAst(
   return { atoms, paragraphs };
 }
 
-export function create({ text }: MarkdownProps): Array<SectionElement> {
+export function create({
+  text,
+  keepTogetherSections
+}: MarkdownProps): Array<SectionElement> {
   const ast = parse(text);
-  return preProcessMarkdownAst(ast, [], [], [], 0).paragraphs;
+  const { paragraphs } = preProcessMarkdownAst(ast, [], [], [], 0);
+  if (keepTogetherSections !== true) {
+    return paragraphs;
+  } else {
+    const groups: Array<Array<SectionElement>> = [[]];
+    paragraphs.forEach(p => {
+      const group = groups[groups.length - 1];
+      if (group.length !== 0 && p.styleName.startsWith("H")) {
+        groups.push([p]);
+      } else {
+        group.push(p);
+      }
+    });
+    return groups.map(group =>
+      Group.create({ children: group, keepTogether: true })
+    );
+  }
 }
