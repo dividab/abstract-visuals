@@ -85,7 +85,7 @@ export function exportToStream(
 
 function renderSection(
   parentResources: AD.Resources.Resources,
-  pdf: {},
+  pdf: any,
   desiredSizes: Map<{}, AD.Size.Size>,
   section: AD.Section.Section,
   pageNo: number
@@ -93,6 +93,10 @@ function renderSection(
   pageNo++;
   const resources = AD.Resources.mergeResources([parentResources, section]);
   const contentRect = renderPage(resources, pdf, desiredSizes, section, pageNo);
+
+  if (section.id !== "" && pdf.addNamedDestination) {
+    pdf.addNamedDestination(section.id);
+  }
 
   let y = contentRect.y;
   for (let element of section.children) {
@@ -404,6 +408,7 @@ function drawHyperLink(
   if (textStyle.subScript) features.push("subs");
   if (textStyle.superScript) features.push("sups");
 
+  const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   pdf
     .font(font)
     .fontSize(textStyle.fontSize || 10)
@@ -412,18 +417,21 @@ function drawHyperLink(
       width: finalRect.width,
       height: finalRect.height,
       underline: textStyle.underline || false,
-      features: features
+      features: features,
+      goTo: isInternalLink ? hyperLink.target.substr(1) : undefined
     })
     .underline(finalRect.x, finalRect.y, finalRect.width, finalRect.height, {
       color: "blue"
-    })
-    .link(
+    });
+  if (!isInternalLink) {
+    pdf.link(
       finalRect.x,
       finalRect.y,
       finalRect.width,
       finalRect.height,
       hyperLink.target
     );
+  }
 }
 
 function drawText(
