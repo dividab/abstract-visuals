@@ -1,8 +1,10 @@
 {
   "name": "abstract-document",
-  "version": "2.2.6",
-  "description": "Dynamically create documents using code or JSX and render to any format",
-  "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
+  "version": "2.2.7",
+  "description":
+    "Dynamically create documents using code or JSX and render to any format",
+  "repository":
+    "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
   "main": "lib-cjs/index.js",
   "module": "lib-esm/index.js",
   "types": "lib-cjs/index",
