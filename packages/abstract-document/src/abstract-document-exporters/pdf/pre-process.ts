@@ -66,7 +66,7 @@ function preProcessSection(
   const children = R.unnest<AD.SectionElement.SectionElement>(
     s.children.map(e => preProcessSectionElement(e, resources))
   );
-  return AD.Section.create({ page: page, children });
+  return AD.Section.create({ page: page, id: s.id, children });
 }
 
 function preProcessSectionElement(
