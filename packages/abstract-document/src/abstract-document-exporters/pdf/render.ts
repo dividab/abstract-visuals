@@ -50,9 +50,22 @@ export function exportToStream(
       pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
     }
   }
+
+  let totalPages = 0;
+  for (let section of document.children) {
+    totalPages = pagesForSection(desiredSizes, section, totalPages);
+  }
+
   let pageNo = 0;
   for (let section of document.children) {
-    pageNo = renderSection(document, pdf, desiredSizes, section, pageNo);
+    pageNo = renderSection(
+      document,
+      pdf,
+      desiredSizes,
+      section,
+      pageNo,
+      totalPages
+    );
   }
   pdf.pipe(blobStream);
   pdf.end();
@@ -83,16 +96,83 @@ export function exportToStream(
 //   pdf.end();
 // }
 
+function pagesForSection(
+  desiredSizes: Map<{}, AD.Size.Size>,
+  section: AD.Section.Section,
+  totalPages: number
+) {
+  totalPages++;
+  const contentRect = pagesForPage(desiredSizes, section);
+
+  let y = contentRect.y;
+  for (let element of section.children) {
+    const elementSize = getDesiredSize(element, desiredSizes);
+    if (y + elementSize.height > contentRect.y + contentRect.height) {
+      totalPages++;
+      y = contentRect.y;
+    }
+
+    y += elementSize.height;
+  }
+  return totalPages;
+}
+
+function pagesForPage(
+  desiredSizes: Map<{}, AD.Size.Size>,
+  section: AD.Section.Section
+): AD.Rect.Rect {
+  const style = section.page.style;
+  const pageWidth = AD.PageStyle.getWidth(style);
+  const pageHeight = AD.PageStyle.getHeight(style);
+
+  const headerHeight = section.page.header.reduce(
+    (a, b) => a + getDesiredSize(b, desiredSizes).height,
+    style.headerMargins.top + style.headerMargins.bottom
+  );
+  const footerHeight = section.page.footer.reduce(
+    (a, b) => a + getDesiredSize(b, desiredSizes).height,
+    style.footerMargins.top + style.footerMargins.bottom
+  );
+
+  let headerY = style.headerMargins.top;
+  for (let element of section.page.header) {
+    const elementSize = getDesiredSize(element, desiredSizes);
+    headerY += elementSize.height;
+  }
+  headerY += style.headerMargins.bottom;
+
+  const rectX = style.contentMargins.left;
+  const rectY = headerY + style.contentMargins.top;
+  const rectWidth =
+    pageWidth - (style.contentMargins.left + style.contentMargins.right);
+  const rectHeight =
+    pageHeight -
+    headerHeight -
+    footerHeight -
+    style.contentMargins.top -
+    style.contentMargins.bottom;
+
+  return AD.Rect.create(rectX, rectY, rectWidth, rectHeight);
+}
+
 function renderSection(
   parentResources: AD.Resources.Resources,
   pdf: any,
   desiredSizes: Map<{}, AD.Size.Size>,
   section: AD.Section.Section,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   pageNo++;
   const resources = AD.Resources.mergeResources([parentResources, section]);
-  const contentRect = renderPage(resources, pdf, desiredSizes, section, pageNo);
+  const contentRect = renderPage(
+    resources,
+    pdf,
+    desiredSizes,
+    section,
+    pageNo,
+    totalPages
+  );
 
   if (section.id !== "" && pdf.addNamedDestination) {
     pdf.addNamedDestination(section.id);
@@ -103,7 +183,7 @@ function renderSection(
     const elementSize = getDesiredSize(element, desiredSizes);
     if (y + elementSize.height > contentRect.y + contentRect.height) {
       pageNo++;
-      renderPage(resources, pdf, desiredSizes, section, pageNo);
+      renderPage(resources, pdf, desiredSizes, section, pageNo, totalPages);
       y = contentRect.y;
     }
     renderSectionElement(
@@ -112,7 +192,8 @@ function renderSection(
       desiredSizes,
       AD.Rect.create(contentRect.x, y, elementSize.width, elementSize.height),
       element,
-      pageNo
+      pageNo,
+      totalPages
     );
     y += elementSize.height;
   }
@@ -124,7 +205,8 @@ function renderPage(
   pdf: any,
   desiredSizes: Map<{}, AD.Size.Size>,
   section: AD.Section.Section,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ): AD.Rect.Rect {
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getWidth(style);
@@ -161,7 +243,8 @@ function renderPage(
       desiredSizes,
       AD.Rect.create(headerX, headerY, elementSize.width, elementSize.height),
       element,
-      pageNo
+      pageNo,
+      totalPages
     );
     headerY += elementSize.height;
   }
@@ -177,7 +260,8 @@ function renderPage(
       desiredSizes,
       AD.Rect.create(footerX, footerY, elementSize.width, elementSize.height),
       element,
-      pageNo
+      pageNo,
+      totalPages
     );
     footerY += elementSize.height;
   }
@@ -202,18 +286,43 @@ function renderSectionElement(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   element: AD.SectionElement.SectionElement,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
-      renderParagraph(resources, pdf, desiredSizes, finalRect, element, pageNo);
+      renderParagraph(
+        resources,
+        pdf,
+        desiredSizes,
+        finalRect,
+        element,
+        pageNo,
+        totalPages
+      );
       return;
     case "Table":
-      renderTable(resources, pdf, desiredSizes, finalRect, element, pageNo);
+      renderTable(
+        resources,
+        pdf,
+        desiredSizes,
+        finalRect,
+        element,
+        pageNo,
+        totalPages
+      );
       return;
     case "Group":
-      renderGroup(resources, pdf, desiredSizes, finalRect, element, pageNo);
+      renderGroup(
+        resources,
+        pdf,
+        desiredSizes,
+        finalRect,
+        element,
+        pageNo,
+        totalPages
+      );
       return;
   }
 }
@@ -224,7 +333,8 @@ function renderParagraph(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   paragraph: AD.Paragraph.Paragraph,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   const style = AD.Resources.getStyle(
     undefined,
@@ -273,7 +383,8 @@ function renderParagraph(
         AD.Rect.create(x, y, atomSize.width, atomSize.height),
         style.textStyle,
         atom,
-        pageNo
+        pageNo,
+        totalPages
       );
       x += atomSize.width;
       rowHeight = Math.max(rowHeight, atomSize.height);
@@ -289,7 +400,8 @@ function renderGroup(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   group: AD.Group.Group,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   let y = finalRect.y;
   for (const element of group.children) {
@@ -300,7 +412,8 @@ function renderGroup(
       desiredSizes,
       AD.Rect.create(finalRect.x, y, elementSize.width, elementSize.height),
       element,
-      pageNo
+      pageNo,
+      totalPages
     );
     y += elementSize.height;
   }
@@ -312,11 +425,20 @@ function renderAtom(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   switch (atom.type) {
     case "TextField":
-      renderTextField(resources, pdf, finalRect, textStyle, atom, pageNo);
+      renderTextField(
+        resources,
+        pdf,
+        finalRect,
+        textStyle,
+        atom,
+        pageNo,
+        totalPages
+      );
       return;
     case "TextRun":
       renderTextRun(resources, pdf, finalRect, textStyle, atom);
@@ -336,7 +458,8 @@ function renderTextField(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textField: AD.TextField.TextField,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -351,6 +474,9 @@ function renderTextField(
       return;
     case "PageNumber":
       drawText(pdf, finalRect, style, pageNo.toString());
+      return;
+    case "TotalPages":
+      drawText(pdf, finalRect, style, totalPages.toString());
       return;
   }
 }
@@ -408,7 +534,8 @@ function drawHyperLink(
   if (textStyle.subScript) features.push("subs");
   if (textStyle.superScript) features.push("sups");
 
-  const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
+  const isInternalLink =
+    hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   pdf
     .font(font)
     .fontSize(textStyle.fontSize || 10)
@@ -471,7 +598,8 @@ function renderTable(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   table: AD.Table.Table,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   const style = AD.Resources.getStyle(
     undefined,
@@ -492,7 +620,8 @@ function renderTable(
       rowRect,
       style.cellStyle,
       row,
-      pageNo
+      pageNo,
+      totalPages
     );
     y += rowSize.height;
   }
@@ -505,7 +634,8 @@ function renderRow(
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   row: AD.TableRow.TableRow,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   let x = finalRect.x;
   for (const cell of row.children) {
@@ -523,7 +653,8 @@ function renderRow(
       cellRect,
       tableCellStyle,
       cell,
-      pageNo
+      pageNo,
+      totalPages
     );
     x += cellSize.width;
   }
@@ -536,7 +667,8 @@ function renderCell(
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   cell: AD.TableCell.TableCell,
-  pageNo: number
+  pageNo: number,
+  totalPages: number
 ) {
   const style = AD.Resources.getStyle(
     tableCellStyle,
@@ -567,7 +699,8 @@ function renderCell(
       desiredSizes,
       elementRect,
       element,
-      pageNo
+      pageNo,
+      totalPages
     );
     y += elementSize.height;
   }

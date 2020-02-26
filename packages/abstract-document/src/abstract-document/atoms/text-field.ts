@@ -1,6 +1,6 @@
 import * as TextStyle from "../styles/text-style";
 
-export type FieldType = "Date" | "PageNumber";
+export type FieldType = "Date" | "PageNumber" | "TotalPages";
 
 export interface TextField {
   readonly type: "TextField";
