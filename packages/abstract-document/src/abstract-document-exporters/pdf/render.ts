@@ -122,8 +122,8 @@ function pagesForPage(
   section: AD.Section.Section
 ): AD.Rect.Rect {
   const style = section.page.style;
-  const pageWidth = AD.PageStyle.getWidth(style);
-  const pageHeight = AD.PageStyle.getHeight(style);
+  const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
+  const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
 
   const headerHeight = section.page.header.reduce(
     (a, b) => a + getDesiredSize(b, desiredSizes).height,
@@ -209,8 +209,8 @@ function renderPage(
   totalPages: number
 ): AD.Rect.Rect {
   const style = section.page.style;
-  const pageWidth = AD.PageStyle.getWidth(style);
-  const pageHeight = AD.PageStyle.getHeight(style);
+  const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
+  const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
   const layout = style.orientation === "Landscape" ? "landscape" : "portrait";
   const pageOptions = {
     size: [pageWidth, pageHeight],
