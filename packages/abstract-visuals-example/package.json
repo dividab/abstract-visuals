@@ -8,6 +8,15 @@
   "module": "lib-esm/index.js",
   "types": "lib-cjs/index",
   "license": "MIT",
+  "files": [
+    "/lib-cjs",
+    "/lib-esm",
+    "/src",
+    "package.json",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "abstract-chart": "^2.2.6",
@@ -23,7 +32,8 @@
     "@types/react-dom": "^15.5.1"
   },
   "scripts": {
-    "start": "webpack-dev-server --config webpack.config.js --content-base ./src",
+    "start":
+      "webpack-dev-server --config webpack.config.js --content-base ./src",
     "lint": "tslint -t msbuild './{src,test}/**/*.ts{,x}'",
     "build": "tsc",
     "clean": "rm -rf ./lib"
