@@ -12,7 +12,12 @@ import {
   Image as Image1,
   Markdown as Markdown1,
   TextField as TextField1,
-  TextRun as TextRun1
+  TextRun as TextRun1,
+  Resources,
+  MasterPage,
+  ParagraphStyle,
+  ParagraphNumbering,
+  TableStyle
 } from "../abstract-document/index";
 
 // tslint:disable:variable-name no-any
