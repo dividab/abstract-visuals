@@ -5,7 +5,7 @@ export type AbstractDoc = Resources & {
   readonly children: ReadonlyArray<Section>;
 };
 
-export type AbstractDocProps = Resources;
+export type AbstractDocProps = Resources & {};
 
 export function create(
   props?: AbstractDocProps,

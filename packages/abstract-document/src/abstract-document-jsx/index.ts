@@ -13,7 +13,7 @@ import {
   Markdown as Markdown1,
   TextField as TextField1,
   TextRun as TextRun1
-} from "../abstract-document";
+} from "../abstract-document/index";
 
 // tslint:disable:variable-name no-any
 
