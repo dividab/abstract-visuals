@@ -1,16 +1,17 @@
 import { TableCell } from "./table-cell";
 
 export interface TableRow {
-  readonly children: Array<TableCell>;
+  readonly children: ReadonlyArray<TableCell>;
 }
 
-export interface TableRowProps {
-  readonly children?: Array<TableCell>;
-}
+export interface TableRowProps {}
 
-export function create(props?: TableRowProps): TableRow {
-  const { children = [] } = props || {};
+export function create(
+  props?: TableRowProps,
+  children?: ReadonlyArray<TableCell>
+): TableRow {
+  const {} = props || {};
   return {
-    children
+    children: children || []
   };
 }

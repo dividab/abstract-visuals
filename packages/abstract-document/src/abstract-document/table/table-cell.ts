@@ -5,28 +5,25 @@ export interface TableCell {
   readonly styleName: string;
   readonly columnSpan: number;
   readonly style?: TableCellStyle.TableCellStyle;
-  readonly children: Array<SectionElement.SectionElement>;
+  readonly children: ReadonlyArray<SectionElement.SectionElement>;
 }
 
 export interface TableCellProps {
   readonly styleName?: string;
   readonly columnSpan?: number;
   readonly style?: TableCellStyle.TableCellStyle;
-  readonly children?: Array<SectionElement.SectionElement>;
 }
 
-export function create(props?: TableCellProps): TableCell {
-  const {
-    styleName = "",
-    columnSpan = 1,
-    style = TableCellStyle.create(),
-    children = []
-  } =
+export function create(
+  props?: TableCellProps,
+  children?: ReadonlyArray<SectionElement.SectionElement>
+): TableCell {
+  const { styleName = "", columnSpan = 1, style = TableCellStyle.create() } =
     props || {};
   return {
     styleName,
     columnSpan,
     style,
-    children
+    children: children || []
   };
 }

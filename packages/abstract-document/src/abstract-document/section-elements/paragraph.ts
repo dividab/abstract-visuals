@@ -8,22 +8,23 @@ export type Paragraph = Resources & {
   readonly styleName: string;
   readonly style: ParagraphStyle.ParagraphStyle;
   readonly numbering: ParagraphNumbering | undefined;
-  readonly children: Atom[];
+  readonly children: ReadonlyArray<Atom>;
 };
 
 export type ParagraphProps = Resources & {
   readonly styleName?: string;
   readonly style?: ParagraphStyle.ParagraphStyle;
   readonly numbering?: ParagraphNumbering;
-  readonly children?: Atom[];
 };
 
-export function create(props?: ParagraphProps): Paragraph {
+export function create(
+  props?: ParagraphProps,
+  children?: ReadonlyArray<Atom>
+): Paragraph {
   const {
     styleName = "",
     style = ParagraphStyle.create(),
     numbering = undefined,
-    children = [],
     ...rest
   } =
     props || {};
@@ -32,7 +33,7 @@ export function create(props?: ParagraphProps): Paragraph {
     styleName,
     style,
     numbering,
-    children,
+    children: children || [],
     ...rest
   };
 }

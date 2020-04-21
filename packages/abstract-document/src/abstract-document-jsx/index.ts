@@ -17,18 +17,27 @@ import {
 
 // tslint:disable:variable-name no-any
 
-export const AbstractDoc = (props: AbstractDoc1.AbstractDocProps) =>
-  AbstractDoc1.create(props) as any;
-export const Section = (props: Section1.SectionProps) =>
-  Section1.create(props) as any;
-export const Group = (props: Group1.GroupProps) => Group1.create(props) as any;
-export const Paragraph = (props: Paragraph1.ParagraphProps) =>
-  Paragraph1.create(props) as any;
-export const Table = (props: Table1.TableProps) => Table1.create(props) as any;
-export const TableRow = (props: TableRow1.TableRowProps) =>
-  TableRow1.create(props) as any;
-export const TableCell = (props: TableCell1.TableCellProps) =>
-  TableCell1.create(props) as any;
+export interface ChildrenProp {
+  readonly children?: Child;
+}
+export type Child = JSX.Element | Children;
+export interface Children extends ReadonlyArray<Child> {}
+
+export const AbstractDoc = (
+  props?: AbstractDoc1.AbstractDocProps & ChildrenProp
+) => AbstractDoc1.create(props, props && (props.children as any)) as any;
+export const Section = (props?: Section1.SectionProps & ChildrenProp) =>
+  Section1.create(props, props && (props.children as any)) as any;
+export const Group = (props: Group1.GroupProps & ChildrenProp) =>
+  Group1.create(props, props && (props.children as any)) as any;
+export const Paragraph = (props: Paragraph1.ParagraphProps & ChildrenProp) =>
+  Paragraph1.create(props, props && (props.children as any)) as any;
+export const Table = (props: Table1.TableProps & ChildrenProp) =>
+  Table1.create(props, props && (props.children as any)) as any;
+export const TableRow = (props: TableRow1.TableRowProps & ChildrenProp) =>
+  TableRow1.create(props, props && (props.children as any)) as any;
+export const TableCell = (props: TableCell1.TableCellProps & ChildrenProp) =>
+  TableCell1.create(props, props && (props.children as any)) as any;
 export const HyperLink = (props: HyperLink1.HyperLinkProps) =>
   HyperLink1.create(props) as any;
 export const Image = (props: Image1.ImageProps) => Image1.create(props) as any;

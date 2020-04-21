@@ -53,11 +53,13 @@ function preProcessMarkdownAst(
           child.type === "Header" ? "H" + child.depth : undefined;
 
         paragraphs.push(
-          Paragraph.create({
-            styleName: paragraphStyle,
-            children: atoms,
-            numbering: undefined //paragraph.numbering
-          })
+          Paragraph.create(
+            {
+              styleName: paragraphStyle,
+              numbering: undefined //paragraph.numbering
+            },
+            atoms
+          )
         );
         atoms = []; // Flush the Atoms-array for the next paragraph.
       } else if (child.type === "Str") {
@@ -97,8 +99,6 @@ export function create({
         group.push(p);
       }
     });
-    return groups.map(group =>
-      Group.create({ children: group, keepTogether: true })
-    );
+    return groups.map(group => Group.create({ keepTogether: true }, group));
   }
 }

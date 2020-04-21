@@ -37,14 +37,16 @@ export function preProcess(
   doc: AD.AbstractDoc.AbstractDoc
 ): AD.AbstractDoc.AbstractDoc {
   const children = doc.children.map(s => preProcessSection(s, doc));
-  return AD.AbstractDoc.create({
-    children: children,
-    fonts: doc.fonts,
-    imageResources: doc.imageResources,
-    styles: doc.styles,
-    numberings: doc.numberings,
-    numberingDefinitions: doc.numberingDefinitions
-  });
+  return AD.AbstractDoc.create(
+    {
+      fonts: doc.fonts,
+      imageResources: doc.imageResources,
+      styles: doc.styles,
+      numberings: doc.numberings,
+      numberingDefinitions: doc.numberingDefinitions
+    },
+    children
+  );
 }
 
 function preProcessSection(
@@ -66,7 +68,7 @@ function preProcessSection(
   const children = R.unnest<AD.SectionElement.SectionElement>(
     s.children.map(e => preProcessSectionElement(e, resources))
   );
-  return AD.Section.create({ page: page, id: s.id, children });
+  return AD.Section.create({ page: page, id: s.id }, children);
 }
 
 function preProcessSectionElement(
@@ -132,37 +134,35 @@ function preProcessParagraph(
   children.push(AD.TableCell.create());
 
   children.push(
-    AD.TableCell.create({
-      children: [
-        AD.Paragraph.create({
-          styleName: paragraph.styleName,
-          children: [
-            AD.TextRun.create({
-              style: paragraph.style.textStyle,
-              text: numberText
-            })
-          ]
-        })
-      ]
-    })
+    AD.TableCell.create({}, [
+      AD.Paragraph.create(
+        {
+          styleName: paragraph.styleName
+        },
+        [
+          AD.TextRun.create({
+            style: paragraph.style.textStyle,
+            text: numberText
+          })
+        ]
+      )
+    ])
   );
 
-  children.push(
-    AD.TableCell.create({
-      children: adjustedParagraphs
-    })
-  );
+  children.push(AD.TableCell.create({}, adjustedParagraphs));
   rows.push(AD.TableRow.create({ children }));
 
   return [
-    AD.Table.create({
-      style: AD.TableStyle.create({
-        alignment: "Left",
-        cellStyle: AD.TableCellStyle.create({ verticalAlignment: "Top" })
-      }),
-      columnWidths: [indentationWidth - 40, 40, Infinity],
-      children: rows
-    })
+    AD.Table.create(
+      {
+        style: AD.TableStyle.create({
+          alignment: "Left",
+          cellStyle: AD.TableCellStyle.create({ verticalAlignment: "Top" })
+        }),
+        columnWidths: [indentationWidth - 40, 40, Infinity]
+      },
+      rows
+    )
   ];
 }
 
@@ -293,12 +293,14 @@ function preProcessTable(
   resources: AD.Resources.Resources
 ): AD.SectionElement.SectionElement {
   const children = table.children.map(r => preProcessTableRow(r, resources));
-  return AD.Table.create({
-    columnWidths: table.columnWidths,
-    styleName: table.styleName,
-    style: table.style,
-    children: children
-  });
+  return AD.Table.create(
+    {
+      columnWidths: table.columnWidths,
+      styleName: table.styleName,
+      style: table.style
+    },
+    children
+  );
 }
 
 function preProcessTableRow(
@@ -316,12 +318,14 @@ function preProcessTableCell(
   const children = R.unnest<AD.SectionElement.SectionElement>(
     c.children.map(e => preProcessSectionElement(e, resources))
   );
-  return AD.TableCell.create({
-    styleName: c.styleName,
-    columnSpan: c.columnSpan,
-    style: c.style,
-    children: children
-  });
+  return AD.TableCell.create(
+    {
+      styleName: c.styleName,
+      columnSpan: c.columnSpan,
+      style: c.style
+    },
+    children
+  );
 }
 
 function preProcessGroup(
@@ -332,9 +336,7 @@ function preProcessGroup(
     group.children.map(e => preProcessSectionElement(e, parentResources))
   );
   if (group.keepTogether) {
-    return [
-      AD.Group.create({ keepTogether: group.keepTogether, children: children })
-    ];
+    return [AD.Group.create({ keepTogether: group.keepTogether }, children)];
   }
   return children;
 }
