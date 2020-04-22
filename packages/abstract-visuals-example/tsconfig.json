@@ -10,7 +10,7 @@
     "noEmitOnError": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "noResolve": false,
     "outDir": "./lib",

@@ -4,7 +4,7 @@ import { AbstractImageExampleReact } from "./abstract-image-example-react";
 import { AbstractImageExampleSvg } from "./abstract-image-example-svg";
 import { AbstractImageExampleDxf } from "./abstract-image-example-dxf";
 import { AbstractChartExample } from "./abstract-chart-example";
-// import { AbstractDocumentExample } from "./abstract-document-example";
+import { AbstractDocumentExample } from "./abstract-document-example";
 
 // tslint:disable
 
@@ -39,12 +39,11 @@ export class Container extends React.Component<{}, State> {
         {
           name: "AbstractImageDxf",
           component: AbstractImageExampleDxf
+        },
+        {
+          name: "AbstractDocument",
+          component: AbstractDocumentExample
         }
-
-        // {
-        //   name: "AbstractDocument",
-        //   component: AbstractDocumentExample
-        // }
       ]
     };
   }

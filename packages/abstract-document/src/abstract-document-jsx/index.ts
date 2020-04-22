@@ -20,7 +20,8 @@ import {
   TableStyle
 } from "../abstract-document/index";
 
-// tslint:disable:variable-name no-any
+// tslint:disable:variable-name no-any no-console
+// console.log(Resources, MasterPage, ParagraphStyle, ParagraphNumbering, TableStyle);
 
 export interface ChildrenProp {
   readonly children?: Child;

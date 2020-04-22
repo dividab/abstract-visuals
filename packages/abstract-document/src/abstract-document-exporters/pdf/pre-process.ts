@@ -150,7 +150,7 @@ function preProcessParagraph(
   );
 
   children.push(AD.TableCell.create({}, adjustedParagraphs));
-  rows.push(AD.TableRow.create({ children }));
+  rows.push(AD.TableRow.create({}, children));
 
   return [
     AD.Table.create(
@@ -308,7 +308,7 @@ function preProcessTableRow(
   resources: AD.Resources.Resources
 ): AD.TableRow.TableRow {
   const children = r.children.map(c => preProcessTableCell(c, resources));
-  return AD.TableRow.create({ children: children });
+  return AD.TableRow.create({}, children);
 }
 
 function preProcessTableCell(
