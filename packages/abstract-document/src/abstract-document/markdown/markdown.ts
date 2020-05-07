@@ -87,18 +87,25 @@ export function create({
 }: MarkdownProps): Array<SectionElement> {
   const ast = parse(text);
   const { paragraphs } = preProcessMarkdownAst(ast, [], [], [], 0);
-  if (keepTogetherSections !== true) {
+  if (!keepTogetherSections) {
     return paragraphs;
-  } else {
-    const groups: Array<Array<SectionElement>> = [[]];
-    paragraphs.forEach(p => {
-      const group = groups[groups.length - 1];
-      if (group.length !== 0 && p.styleName.startsWith("H")) {
-        groups.push([p]);
-      } else {
-        group.push(p);
-      }
-    });
-    return groups.map(group => Group.create({ keepTogether: true }, group));
   }
+  const groups: Array<Array<SectionElement>> = [[]];
+  let group: Array<SectionElement> = [];
+  let i = 0;
+  while (i < paragraphs.length) {
+    while (i < paragraphs.length && paragraphs[i].styleName.startsWith("H")) {
+      group.push(paragraphs[i]);
+      ++i;
+    }
+    if (i < paragraphs.length) {
+      group.push(paragraphs[i]);
+    }
+    if (group.length > 0) {
+      groups.push(group);
+      group = [];
+    }
+    ++i;
+  }
+  return groups.map(group => Group.create({ keepTogether: true }, group));
 }
