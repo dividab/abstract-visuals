@@ -271,18 +271,20 @@ function renderLine(
   );
   let inside = false;
   const tags: Array<JSX.Element> = [];
-  for (const text of split) {
+  for (let i = 0; i < split.length; ++i) {
+    const splitText = split[i];
     if (inside) {
       tags.push(
         <tspan
+          key={i}
           baselineShift="sub"
           style={{ fontSize: (fontSize * 0.8).toString() + "px" }}
         >
-          {text}
+          {splitText}
         </tspan>
       );
     } else {
-      tags.push(<tspan>{text}</tspan>);
+      tags.push(<tspan key={i}>{splitText}</tspan>);
     }
     inside = !inside;
   }
