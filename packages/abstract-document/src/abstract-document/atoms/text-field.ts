@@ -1,26 +1,34 @@
 import * as TextStyle from "../styles/text-style";
 
-export type FieldType = "Date" | "PageNumber" | "TotalPages";
+export type FieldType = "Date" | "PageNumber" | "TotalPages" | "PageNumberOf";
 
 export interface TextField {
   readonly type: "TextField";
   readonly styleName: string;
   readonly fieldType: FieldType;
   readonly style: TextStyle.TextStyle;
+  readonly target: string;
 }
 
 export interface TextFieldProps {
   readonly styleName?: string;
   readonly fieldType: FieldType;
   readonly style?: TextStyle.TextStyle;
+  readonly target?: string;
 }
 
 export function create(props: TextFieldProps): TextField {
-  const { styleName = "", fieldType, style = TextStyle.create() } = props;
+  const {
+    styleName = "",
+    fieldType,
+    style = TextStyle.create(),
+    target = ""
+  } = props;
   return {
     type: "TextField",
     styleName,
     fieldType,
-    style
+    style,
+    target
   };
 }

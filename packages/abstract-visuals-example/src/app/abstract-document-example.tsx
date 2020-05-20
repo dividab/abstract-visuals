@@ -5,6 +5,7 @@ import {
   Section,
   Paragraph,
   TextRun,
+  TextField,
   Table,
   TableRow,
   TableCell,
@@ -17,29 +18,52 @@ export function AbstractDocumentExample(): JSX.Element {
   const doc = render(
     <AbstractDoc>
       <Section page={page}>
-        <Table columnWidths={[Infinity, Infinity]}>
+        <Paragraph>
+          <TextField fieldType="PageNumber" />
+        </Paragraph>
+        <Table columnWidths={[Infinity, Infinity, Infinity]}>
           <TableRow>
             <TableCell>
               <Paragraph>
-                <TextRun text="Cell1" />
+                <TextField fieldType="PageNumberOf" target="chapter1" />
               </Paragraph>
             </TableCell>
             <TableCell>
               <Paragraph>
-                <TextRun text="Cell2" />
+                <TextField fieldType="PageNumberOf" target="chapter2" />
+              </Paragraph>
+            </TableCell>
+            <TableCell>
+              <Paragraph>
+                <TextField fieldType="PageNumberOf" target="chapter3" />
               </Paragraph>
             </TableCell>
           </TableRow>
         </Table>
-        {/* <Paragraph>
-          <TextRun text="Test" />
+      </Section>
+      <Section page={page} id="chapter1">
+        <Paragraph>
+          <TextField fieldType="PageNumber" />
         </Paragraph>
-        {["a", "b", "c"].map((c) => (
-          <Paragraph key={c}>
-            <TextRun text={c} />
-          </Paragraph>
-        ))}
-        <Paragraph /> */}
+        <Paragraph>
+          <TextRun text="Page1" />
+        </Paragraph>
+      </Section>
+      <Section page={page} id="chapter2">
+        <Paragraph>
+          <TextField fieldType="PageNumber" />
+        </Paragraph>
+        <Paragraph>
+          <TextRun text="Page2" />
+        </Paragraph>
+      </Section>
+      <Section page={page} id="chapter3">
+        <Paragraph>
+          <TextField fieldType="PageNumber" />
+        </Paragraph>
+        <Paragraph>
+          <TextRun text="Page3" />
+        </Paragraph>
       </Section>
     </AbstractDoc>
   );

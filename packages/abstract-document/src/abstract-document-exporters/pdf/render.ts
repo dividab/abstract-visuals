@@ -23,6 +23,15 @@ export function exportToHTML5Blob(
   });
 }
 
+interface PageNoOf {
+  readonly pageNo: number;
+  readonly finalRect: AD.Rect.Rect;
+  readonly style: AD.TextStyle.TextStyle;
+  readonly textField: AD.TextField.TextField;
+}
+
+let pageNoOfs: Array<PageNoOf> = [];
+
 /**
  * On the client side the stream can be a BlobStream from the blob-stream package.
  * On the server-side the stream can be a file stream from the fs package.
@@ -39,8 +48,13 @@ export function exportToStream(
   const document = preProcess(doc);
   const desiredSizes = measure(pdfKit, document);
   const resources = getResources(document);
+  pageNoOfs = [];
 
-  let pdf = new PDFDocument({ compress: false, autoFirstPage: false }) as any;
+  let pdf = new PDFDocument({
+    compress: false,
+    autoFirstPage: false,
+    bufferPages: true
+  }) as any;
   if (resources.fonts) {
     for (let fontName of R.keys(document.fonts as {})) {
       const font = resources.fonts[fontName];
@@ -162,7 +176,7 @@ function renderSection(
   section: AD.Section.Section,
   pageNo: number,
   totalPages: number
-) {
+): number {
   pageNo++;
   const resources = AD.Resources.mergeResources([parentResources, section]);
   const contentRect = renderPage(
@@ -174,8 +188,28 @@ function renderSection(
     totalPages
   );
 
-  if (section.id !== "" && pdf.addNamedDestination) {
-    pdf.addNamedDestination(section.id);
+  console.log(section);
+  console.log(pageNoOfs);
+  if (section.id !== "") {
+    if (pdf.addNamedDestination) {
+      pdf.addNamedDestination(section.id);
+    }
+    for (const pageNoOf of pageNoOfs.filter(
+      p => p.textField.target === section.id
+    )) {
+      pdf.switchToPage(pageNoOf.pageNo - 1);
+      renderAtom(
+        resources,
+        pdf,
+        pageNoOf.finalRect,
+        pageNoOf.style,
+        pageNoOf.textField,
+        pageNoOf.pageNo,
+        totalPages,
+        pageNo
+      );
+      pdf.switchToPage(pageNo - 1);
+    }
   }
 
   let y = contentRect.y;
@@ -426,8 +460,9 @@ function renderAtom(
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
   pageNo: number,
-  totalPages: number
-) {
+  totalPages: number,
+  pageNoOfPage?: number
+): void {
   switch (atom.type) {
     case "TextField":
       renderTextField(
@@ -437,7 +472,8 @@ function renderAtom(
         textStyle,
         atom,
         pageNo,
-        totalPages
+        totalPages,
+        pageNoOfPage
       );
       return;
     case "TextRun":
@@ -459,8 +495,9 @@ function renderTextField(
   textStyle: AD.TextStyle.TextStyle,
   textField: AD.TextField.TextField,
   pageNo: number,
-  totalPages: number
-) {
+  totalPages: number,
+  pageNoOfPage: number | undefined
+): void {
   const style = AD.Resources.getStyle(
     textStyle,
     textField.style,
@@ -478,6 +515,12 @@ function renderTextField(
     case "TotalPages":
       drawText(pdf, finalRect, style, totalPages.toString());
       return;
+    case "PageNumberOf":
+      if (pageNoOfPage !== undefined) {
+        drawText(pdf, finalRect, style, pageNoOfPage.toString());
+      } else {
+        pageNoOfs.push({ pageNo, finalRect, style, textField });
+      }
   }
 }
 

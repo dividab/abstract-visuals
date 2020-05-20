@@ -333,6 +333,7 @@ function measureTextField(
       );
     case "PageNumber":
     case "TotalPages":
+    case "PageNumberOf":
       return measureText(pdf, "999", style, availableSize);
     default:
       return exhaustiveCheck(textField.fieldType);
