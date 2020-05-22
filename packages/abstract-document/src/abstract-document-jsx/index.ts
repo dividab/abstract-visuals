@@ -13,6 +13,7 @@ import {
   Markdown as Markdown1,
   TextField as TextField1,
   TextRun as TextRun1,
+  PageBreak as PageBreak1,
   Resources,
   MasterPage,
   ParagraphStyle,
@@ -53,6 +54,8 @@ export const TextField = (props: TextField1.TextFieldProps) =>
   TextField1.create(props) as any;
 export const TextRun = (props: TextRun1.TextRunProps) =>
   TextRun1.create(props) as any;
+export const PageBreak = (props: PageBreak1.PageBreakProps) =>
+  PageBreak1.create(props) as any;
 
 export function render(element: any): any {
   if (typeof element.type !== "function") {

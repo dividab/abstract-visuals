@@ -82,9 +82,20 @@ function measureSectionElement(
       return measureTable(pdf, resources, availableSize, element);
     case "Group":
       return measureGroup(pdf, resources, availableSize, element);
+    case "PageBreak":
+      return measurePageBreak(availableSize, element);
     default:
       return exhaustiveCheck(element);
   }
+}
+
+function measurePageBreak(
+  availableSize: AD.Size.Size,
+  pageBreak: AD.PageBreak.PageBreak
+): Map<any, AD.Size.Size> {
+  let desiredSizes = new Map<any, AD.Size.Size>();
+  desiredSizes.set(pageBreak, availableSize);
+  return desiredSizes;
 }
 
 function measureParagraph(

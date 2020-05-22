@@ -9,6 +9,7 @@ import {
   Table,
   TableRow,
   TableCell,
+  PageBreak,
   render
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
@@ -53,6 +54,7 @@ export function AbstractDocumentExample(): JSX.Element {
         <Paragraph>
           <TextField fieldType="PageNumber" />
         </Paragraph>
+        <PageBreak />
         <Paragraph>
           <TextRun text="Page2" />
         </Paragraph>

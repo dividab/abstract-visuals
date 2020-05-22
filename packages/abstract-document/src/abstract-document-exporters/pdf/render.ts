@@ -116,7 +116,7 @@ function pagesForSection(
   totalPages: number
 ) {
   totalPages++;
-  const contentRect = pagesForPage(desiredSizes, section);
+  const contentRect = contentRectForPage(desiredSizes, section.page);
 
   let y = contentRect.y;
   for (let element of section.children) {
@@ -131,25 +131,25 @@ function pagesForSection(
   return totalPages;
 }
 
-function pagesForPage(
+function contentRectForPage(
   desiredSizes: Map<{}, AD.Size.Size>,
-  section: AD.Section.Section
+  page: AD.MasterPage.MasterPage
 ): AD.Rect.Rect {
-  const style = section.page.style;
+  const style = page.style;
   const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
   const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
 
-  const headerHeight = section.page.header.reduce(
+  const headerHeight = page.header.reduce(
     (a, b) => a + getDesiredSize(b, desiredSizes).height,
     style.headerMargins.top + style.headerMargins.bottom
   );
-  const footerHeight = section.page.footer.reduce(
+  const footerHeight = page.footer.reduce(
     (a, b) => a + getDesiredSize(b, desiredSizes).height,
     style.footerMargins.top + style.footerMargins.bottom
   );
 
   let headerY = style.headerMargins.top;
-  for (let element of section.page.header) {
+  for (let element of page.header) {
     const elementSize = getDesiredSize(element, desiredSizes);
     headerY += elementSize.height;
   }
@@ -188,8 +188,6 @@ function renderSection(
     totalPages
   );
 
-  console.log(section);
-  console.log(pageNoOfs);
   if (section.id !== "") {
     if (pdf.addNamedDestination) {
       pdf.addNamedDestination(section.id);
@@ -213,7 +211,13 @@ function renderSection(
   }
 
   let y = contentRect.y;
-  for (let element of section.children) {
+  for (const element of section.children) {
+    if (element.type === "PageBreak") {
+      pageNo++;
+      renderPage(resources, pdf, desiredSizes, section, pageNo, totalPages);
+      y = contentRect.y;
+      continue;
+    }
     const elementSize = getDesiredSize(element, desiredSizes);
     if (y + elementSize.height > contentRect.y + contentRect.height) {
       pageNo++;

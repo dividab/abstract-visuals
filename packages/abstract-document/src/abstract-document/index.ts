@@ -35,6 +35,7 @@ import * as DefaultStyles from "./default-styles";
 import * as Markdown from "./markdown/markdown";
 import * as Resources from "./resources";
 import * as Types from "./types";
+import * as PageBreak from "./section-elements/page-break";
 
 export {
   AbstractDoc,
@@ -73,5 +74,6 @@ export {
   TableRow,
   DefaultStyles,
   Resources,
-  Types
+  Types,
+  PageBreak
 };

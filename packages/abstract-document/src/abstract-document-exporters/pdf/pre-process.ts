@@ -83,6 +83,8 @@ function preProcessSectionElement(
       return [preProcessTable(e, resources)];
     case "Group":
       return preProcessGroup(e, resources);
+    case "PageBreak":
+      return [e];
     default:
       return exhaustiveCheck(e);
   }

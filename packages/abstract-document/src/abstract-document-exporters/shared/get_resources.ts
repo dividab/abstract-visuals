@@ -31,6 +31,8 @@ function getResourcesSectionElement(
       return getResourcesTable(e);
     case "Group":
       return getResourcesGroup(e);
+    case "PageBreak":
+      return e;
     default:
       return exhaustiveCheck(e);
   }
