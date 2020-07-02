@@ -45,6 +45,8 @@ export function AbstractDocumentExample(): JSX.Element {
       <Section page={page} id="chapter1">
         <Paragraph>
           <TextField fieldType="PageNumber" />
+          <TextRun text=" / " />
+          <TextField fieldType="TotalPages" />
         </Paragraph>
         <Paragraph>
           <TextRun text="Page1" />
@@ -53,6 +55,8 @@ export function AbstractDocumentExample(): JSX.Element {
       <Section page={page} id="chapter2">
         <Paragraph>
           <TextField fieldType="PageNumber" />
+          <TextRun text=" / " />
+          <TextField fieldType="TotalPages" />
         </Paragraph>
         <PageBreak />
         <Paragraph>
@@ -62,6 +66,8 @@ export function AbstractDocumentExample(): JSX.Element {
       <Section page={page} id="chapter3">
         <Paragraph>
           <TextField fieldType="PageNumber" />
+          <TextRun text=" / " />
+          <TextField fieldType="TotalPages" />
         </Paragraph>
         <Paragraph>
           <TextRun text="Page3" />

@@ -23,14 +23,15 @@ export function exportToHTML5Blob(
   });
 }
 
-interface PageNoOf {
+interface PageNoReference {
+  readonly type: "PageNoOf" | "TotalPages";
   readonly pageNo: number;
   readonly finalRect: AD.Rect.Rect;
   readonly style: AD.TextStyle.TextStyle;
   readonly textField: AD.TextField.TextField;
 }
 
-let pageNoOfs: Array<PageNoOf> = [];
+let pageNoRefs: Array<PageNoReference> = [];
 
 /**
  * On the client side the stream can be a BlobStream from the blob-stream package.
@@ -48,7 +49,7 @@ export function exportToStream(
   const document = preProcess(doc);
   const desiredSizes = measure(pdfKit, document);
   const resources = getResources(document);
-  pageNoOfs = [];
+  pageNoRefs = [];
 
   let pdf = new PDFDocument({
     compress: false,
@@ -65,21 +66,22 @@ export function exportToStream(
     }
   }
 
-  let totalPages = 0;
-  for (let section of document.children) {
-    totalPages = pagesForSection(desiredSizes, section, totalPages);
-  }
-
   let pageNo = 0;
   for (let section of document.children) {
-    pageNo = renderSection(
-      document,
+    pageNo = renderSection(document, pdf, desiredSizes, section, pageNo);
+  }
+  for (const pageNoRef of pageNoRefs.filter(p => p.type === "TotalPages")) {
+    pdf.switchToPage(pageNoRef.pageNo - 1);
+    renderAtom(
+      resources,
       pdf,
-      desiredSizes,
-      section,
-      pageNo,
-      totalPages
+      pageNoRef.finalRect,
+      pageNoRef.style,
+      pageNoRef.textField,
+      pageNoRef.pageNo,
+      pageNo
     );
+    pdf.switchToPage(pageNo - 1);
   }
   pdf.pipe(blobStream);
   pdf.end();
@@ -110,90 +112,23 @@ export function exportToStream(
 //   pdf.end();
 // }
 
-function pagesForSection(
-  desiredSizes: Map<{}, AD.Size.Size>,
-  section: AD.Section.Section,
-  totalPages: number
-) {
-  totalPages++;
-  const contentRect = contentRectForPage(desiredSizes, section.page);
-
-  let y = contentRect.y;
-  for (let element of section.children) {
-    const elementSize = getDesiredSize(element, desiredSizes);
-    if (y + elementSize.height > contentRect.y + contentRect.height) {
-      totalPages++;
-      y = contentRect.y;
-    }
-
-    y += elementSize.height;
-  }
-  return totalPages;
-}
-
-function contentRectForPage(
-  desiredSizes: Map<{}, AD.Size.Size>,
-  page: AD.MasterPage.MasterPage
-): AD.Rect.Rect {
-  const style = page.style;
-  const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
-  const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
-
-  const headerHeight = page.header.reduce(
-    (a, b) => a + getDesiredSize(b, desiredSizes).height,
-    style.headerMargins.top + style.headerMargins.bottom
-  );
-  const footerHeight = page.footer.reduce(
-    (a, b) => a + getDesiredSize(b, desiredSizes).height,
-    style.footerMargins.top + style.footerMargins.bottom
-  );
-
-  let headerY = style.headerMargins.top;
-  for (let element of page.header) {
-    const elementSize = getDesiredSize(element, desiredSizes);
-    headerY += elementSize.height;
-  }
-  headerY += style.headerMargins.bottom;
-
-  const rectX = style.contentMargins.left;
-  const rectY = headerY + style.contentMargins.top;
-  const rectWidth =
-    pageWidth - (style.contentMargins.left + style.contentMargins.right);
-  const rectHeight =
-    pageHeight -
-    headerHeight -
-    footerHeight -
-    style.contentMargins.top -
-    style.contentMargins.bottom;
-
-  return AD.Rect.create(rectX, rectY, rectWidth, rectHeight);
-}
-
 function renderSection(
   parentResources: AD.Resources.Resources,
   pdf: any,
   desiredSizes: Map<{}, AD.Size.Size>,
   section: AD.Section.Section,
-  pageNo: number,
-  totalPages: number
+  pageNo: number
 ): number {
   pageNo++;
   const resources = AD.Resources.mergeResources([parentResources, section]);
-  const contentRect = renderPage(
-    resources,
-    pdf,
-    desiredSizes,
-    section,
-    pageNo,
-    totalPages
-  );
+  const contentRect = renderPage(resources, pdf, desiredSizes, section, pageNo);
 
   if (section.id !== "") {
     if (pdf.addNamedDestination) {
       pdf.addNamedDestination(section.id);
     }
-    for (const pageNoOf of pageNoOfs.filter(
-      p => p.textField.target === section.id
+    for (const pageNoOf of pageNoRefs.filter(
+      p => p.type === "PageNoOf" && p.textField.target === section.id
     )) {
       pdf.switchToPage(pageNoOf.pageNo - 1);
       renderAtom(
@@ -203,7 +138,6 @@ function renderSection(
         pageNoOf.style,
         pageNoOf.textField,
         pageNoOf.pageNo,
-        totalPages,
         pageNo
       );
       pdf.switchToPage(pageNo - 1);
@@ -214,14 +148,14 @@ function renderSection(
   for (const element of section.children) {
     if (element.type === "PageBreak") {
       pageNo++;
-      renderPage(resources, pdf, desiredSizes, section, pageNo, totalPages);
+      renderPage(resources, pdf, desiredSizes, section, pageNo);
       y = contentRect.y;
       continue;
     }
     const elementSize = getDesiredSize(element, desiredSizes);
     if (y + elementSize.height > contentRect.y + contentRect.height) {
       pageNo++;
-      renderPage(resources, pdf, desiredSizes, section, pageNo, totalPages);
+      renderPage(resources, pdf, desiredSizes, section, pageNo);
       y = contentRect.y;
     }
     renderSectionElement(
@@ -230,8 +164,7 @@ function renderSection(
       desiredSizes,
       AD.Rect.create(contentRect.x, y, elementSize.width, elementSize.height),
       element,
-      pageNo,
-      totalPages
+      pageNo
     );
     y += elementSize.height;
   }
@@ -243,8 +176,7 @@ function renderPage(
   pdf: any,
   desiredSizes: Map<{}, AD.Size.Size>,
   section: AD.Section.Section,
-  pageNo: number,
-  totalPages: number
+  pageNo: number
 ): AD.Rect.Rect {
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
@@ -281,8 +213,7 @@ function renderPage(
       desiredSizes,
       AD.Rect.create(headerX, headerY, elementSize.width, elementSize.height),
       element,
-      pageNo,
-      totalPages
+      pageNo
     );
     headerY += elementSize.height;
   }
@@ -298,8 +229,7 @@ function renderPage(
       desiredSizes,
       AD.Rect.create(footerX, footerY, elementSize.width, elementSize.height),
       element,
-      pageNo,
-      totalPages
+      pageNo
     );
     footerY += elementSize.height;
   }
@@ -324,43 +254,18 @@ function renderSectionElement(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   element: AD.SectionElement.SectionElement,
-  pageNo: number,
-  totalPages: number
+  pageNo: number
 ) {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
-      renderParagraph(
-        resources,
-        pdf,
-        desiredSizes,
-        finalRect,
-        element,
-        pageNo,
-        totalPages
-      );
+      renderParagraph(resources, pdf, desiredSizes, finalRect, element, pageNo);
       return;
     case "Table":
-      renderTable(
-        resources,
-        pdf,
-        desiredSizes,
-        finalRect,
-        element,
-        pageNo,
-        totalPages
-      );
+      renderTable(resources, pdf, desiredSizes, finalRect, element, pageNo);
       return;
     case "Group":
-      renderGroup(
-        resources,
-        pdf,
-        desiredSizes,
-        finalRect,
-        element,
-        pageNo,
-        totalPages
-      );
+      renderGroup(resources, pdf, desiredSizes, finalRect, element, pageNo);
       return;
   }
 }
@@ -371,8 +276,7 @@ function renderParagraph(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   paragraph: AD.Paragraph.Paragraph,
-  pageNo: number,
-  totalPages: number
+  pageNo: number
 ) {
   const style = AD.Resources.getStyle(
     undefined,
@@ -421,8 +325,7 @@ function renderParagraph(
         AD.Rect.create(x, y, atomSize.width, atomSize.height),
         style.textStyle,
         atom,
-        pageNo,
-        totalPages
+        pageNo
       );
       x += atomSize.width;
       rowHeight = Math.max(rowHeight, atomSize.height);
@@ -438,8 +341,7 @@ function renderGroup(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   group: AD.Group.Group,
-  pageNo: number,
-  totalPages: number
+  pageNo: number
 ) {
   let y = finalRect.y;
   for (const element of group.children) {
@@ -450,8 +352,7 @@ function renderGroup(
       desiredSizes,
       AD.Rect.create(finalRect.x, y, elementSize.width, elementSize.height),
       element,
-      pageNo,
-      totalPages
+      pageNo
     );
     y += elementSize.height;
   }
@@ -464,7 +365,6 @@ function renderAtom(
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
   pageNo: number,
-  totalPages: number,
   pageNoOfPage?: number
 ): void {
   switch (atom.type) {
@@ -476,7 +376,6 @@ function renderAtom(
         textStyle,
         atom,
         pageNo,
-        totalPages,
         pageNoOfPage
       );
       return;
@@ -499,8 +398,7 @@ function renderTextField(
   textStyle: AD.TextStyle.TextStyle,
   textField: AD.TextField.TextField,
   pageNo: number,
-  totalPages: number,
-  pageNoOfPage: number | undefined
+  pageNoToRender: number | undefined
 ): void {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -517,13 +415,29 @@ function renderTextField(
       drawText(pdf, finalRect, style, pageNo.toString());
       return;
     case "TotalPages":
-      drawText(pdf, finalRect, style, totalPages.toString());
+      if (pageNoToRender !== undefined) {
+        drawText(pdf, finalRect, style, pageNoToRender.toString());
+      } else {
+        pageNoRefs.push({
+          type: "TotalPages",
+          pageNo,
+          finalRect,
+          style,
+          textField
+        });
+      }
       return;
     case "PageNumberOf":
-      if (pageNoOfPage !== undefined) {
-        drawText(pdf, finalRect, style, pageNoOfPage.toString());
+      if (pageNoToRender !== undefined) {
+        drawText(pdf, finalRect, style, pageNoToRender.toString());
       } else {
-        pageNoOfs.push({ pageNo, finalRect, style, textField });
+        pageNoRefs.push({
+          type: "PageNoOf",
+          pageNo,
+          finalRect,
+          style,
+          textField
+        });
       }
   }
 }
@@ -645,8 +559,7 @@ function renderTable(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   table: AD.Table.Table,
-  pageNo: number,
-  totalPages: number
+  pageNo: number
 ) {
   const style = AD.Resources.getStyle(
     undefined,
@@ -667,8 +580,7 @@ function renderTable(
       rowRect,
       style.cellStyle,
       row,
-      pageNo,
-      totalPages
+      pageNo
     );
     y += rowSize.height;
   }
@@ -681,9 +593,8 @@ function renderRow(
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   row: AD.TableRow.TableRow,
-  pageNo: number,
-  totalPages: number
-) {
+  pageNo: number
+): void {
   let x = finalRect.x;
   for (const cell of row.children) {
     const cellSize = getDesiredSize(cell, desiredSizes);
@@ -700,8 +611,7 @@ function renderRow(
       cellRect,
       tableCellStyle,
       cell,
-      pageNo,
-      totalPages
+      pageNo
     );
     x += cellSize.width;
   }
@@ -714,9 +624,8 @@ function renderCell(
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   cell: AD.TableCell.TableCell,
-  pageNo: number,
-  totalPages: number
-) {
+  pageNo: number
+): void {
   const style = AD.Resources.getStyle(
     tableCellStyle,
     cell.style,
@@ -746,8 +655,7 @@ function renderCell(
       desiredSizes,
       elementRect,
       element,
-      pageNo,
-      totalPages
+      pageNo
     );
     y += elementSize.height;
   }
