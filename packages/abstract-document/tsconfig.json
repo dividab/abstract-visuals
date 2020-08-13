@@ -17,6 +17,7 @@
     "module": "commonjs",
     "jsx": "react",
     "noUnusedLocals": false,
+    //"esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     // Module resolution (this will default to classic when you specify es2015 as module system)
     "moduleResolution": "node",
     // Lib options
