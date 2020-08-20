@@ -370,7 +370,6 @@ function measureText(
   textStyle: AD.TextStyle.TextStyle,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  let features: Array<string> = [];
   let font = textStyle.fontFamily || "Helvetica";
   if (textStyle.bold && textStyle.italic) {
     font += "-BoldOblique";
@@ -379,14 +378,7 @@ function measureText(
   } else if (textStyle.italic) {
     font += "-Oblique";
   }
-
-  if (textStyle.subScript) {
-    features.push("subs");
-  }
-  if (textStyle.superScript) {
-    features.push("sups");
-  }
-
+  const padding = text === "" ? 2 : 0;
   pdf
     .font(font)
     .fontSize(textStyle.fontSize || 10)
@@ -396,16 +388,14 @@ function measureText(
     pdf.widthOfString(text, {
       width: availableSize.width,
       height: availableSize.height,
-      underline: textStyle.underline || false,
-      features: features
-    }) + 2
+      underline: textStyle.underline || false
+    }) + padding
   );
   const height =
     pdf.heightOfString(text, {
       width: width,
       height: availableSize.height,
-      underline: textStyle.underline || false,
-      features: features
+      underline: textStyle.underline || false
     }) + 2;
   return AD.Size.create(width, height);
   // let font = style.fontFamily || "Helvetica";
