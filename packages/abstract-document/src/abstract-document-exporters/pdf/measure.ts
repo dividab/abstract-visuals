@@ -2,23 +2,24 @@ import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { getResources } from "../shared/get_resources";
 import { exhaustiveCheck } from "ts-exhaustive-check";
+import * as PDFKit from "pdfkit";
 
 //tslint:disable:no-any variable-name
 
 export function measure(
-  PDFDocument: any,
+  PDFDocument: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc
 ): Map<any, AD.Size.Size> {
   const resources = getResources(document);
-  let pdf = new PDFDocument();
+  let pdf = PDFDocument;
 
   if (resources.fonts) {
     for (let fontName of R.keys(resources.fonts)) {
       const font = resources.fonts[fontName];
-      pdf.registerFont(fontName, font.normal);
-      pdf.registerFont(fontName + "-Bold", font.bold);
-      pdf.registerFont(fontName + "-Oblique", font.italic);
-      pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
+      pdf.registerFont(fontName, font.normal as string);
+      pdf.registerFont(fontName + "-Bold", font.bold as string);
+      pdf.registerFont(fontName + "-Oblique", font.italic as string);
+      pdf.registerFont(fontName + "-BoldOblique", font.boldItalic as string);
     }
   }
   return mergeMaps(

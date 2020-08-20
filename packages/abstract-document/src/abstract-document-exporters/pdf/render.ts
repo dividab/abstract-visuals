@@ -51,11 +51,7 @@ export function exportToStream(
   const resources = getResources(document);
   pageNoRefs = [];
 
-  let pdf = new PDFDocument({
-    compress: false,
-    autoFirstPage: false,
-    bufferPages: true
-  }) as any;
+  let pdf = pdfKit;
   if (resources.fonts) {
     for (let fontName of R.keys(document.fonts as {})) {
       const font = resources.fonts[fontName];
