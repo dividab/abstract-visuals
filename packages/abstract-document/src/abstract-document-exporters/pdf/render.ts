@@ -482,7 +482,6 @@ function drawHyperLink(
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink
 ) {
-  let features: Array<string> = [];
   let font = textStyle.fontFamily || "Helvetica";
   if (textStyle.bold && textStyle.italic) {
     font += "-BoldOblique";
@@ -491,21 +490,18 @@ function drawHyperLink(
   } else if (textStyle.italic) {
     font += "-Oblique";
   }
-
-  if (textStyle.subScript) features.push("subs");
-  if (textStyle.superScript) features.push("sups");
-
   const isInternalLink =
     hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
+  const fontSize = textStyle.fontSize || 10;
+  const offset = calculateTextOffset(textStyle, fontSize);
   pdf
     .font(font)
     .fontSize(textStyle.fontSize || 10)
     .fillColor(textStyle.color || "blue")
-    .text(hyperLink.text, finalRect.x, finalRect.y, {
-      width: finalRect.width,
+    .text(hyperLink.text, finalRect.x, finalRect.y + offset, {
+      width: finalRect.width + 2,
       height: finalRect.height,
       underline: textStyle.underline || false,
-      features: features,
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined
     })
     .underline(finalRect.x, finalRect.y, finalRect.width, finalRect.height, {
@@ -528,7 +524,6 @@ function drawText(
   textStyle: AD.TextStyle.TextStyle,
   text: string
 ) {
-  let features: Array<string> = [];
   let font = textStyle.fontFamily || "Helvetica";
   if (textStyle.bold && textStyle.italic) {
     font += "-BoldOblique";
@@ -537,19 +532,16 @@ function drawText(
   } else if (textStyle.italic) {
     font += "-Oblique";
   }
-
-  if (textStyle.subScript) features.push("subs");
-  if (textStyle.superScript) features.push("sups");
-
+  const fontSize = textStyle.fontSize || 10;
+  const offset = calculateTextOffset(textStyle, fontSize);
   pdf
     .font(font)
-    .fontSize(textStyle.fontSize || 10)
+    .fontSize(fontSize)
     .fillColor(textStyle.color || "black")
-    .text(text, finalRect.x, finalRect.y, {
-      width: finalRect.width,
+    .text(text, finalRect.x, finalRect.y + offset, {
+      width: finalRect.width + 2,
       height: finalRect.height,
-      underline: textStyle.underline || false,
-      features: features
+      underline: textStyle.underline || false
     });
 }
 
@@ -697,4 +689,19 @@ function getDesiredSize(
     return size;
   }
   throw new Error("Could not find size for element!");
+}
+
+function calculateTextOffset(
+  textStyle: AD.TextStyle.TextStyle,
+  defaultFontSize: number
+): number {
+  const defaultPosition = textStyle.superScript
+    ? -0.5
+    : textStyle.subScript ? 0.5 : 0;
+  const position =
+    textStyle.verticalPosition !== undefined
+      ? textStyle.verticalPosition
+      : defaultPosition;
+  const fontSize = textStyle.fontSize || defaultFontSize;
+  return fontSize * position;
 }

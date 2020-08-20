@@ -8,6 +8,7 @@ export interface TextStyle {
   readonly subScript?: boolean;
   readonly superScript?: boolean;
   readonly underline?: boolean;
+  readonly verticalPosition?: number;
 }
 
 export interface TextStyleProps {
@@ -19,6 +20,7 @@ export interface TextStyleProps {
   readonly subScript?: boolean;
   readonly superScript?: boolean;
   readonly underline?: boolean;
+  readonly verticalPosition?: number;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
@@ -42,6 +44,7 @@ export function overrideWith(
     italic: a.italic || b.italic,
     subScript: a.subScript || b.subScript,
     superScript: a.superScript || b.superScript,
-    underline: a.underline || b.underline
+    underline: a.underline || b.underline,
+    verticalPosition: a.verticalPosition || b.verticalPosition
   });
 }

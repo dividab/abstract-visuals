@@ -61,7 +61,9 @@ export function createStandardStyles(): Indexer<Style.Style> {
       })
     ],
     ["Emphasis", TextStyle.create({ italic: true })],
-    ["Strong", TextStyle.create({ bold: true })]
+    ["Strong", TextStyle.create({ bold: true })],
+    ["Subscript", TextStyle.create({ subScript: true, fontSize: 6 })],
+    ["Superscript", TextStyle.create({ superScript: true, fontSize: 6 })]
     // <-- Markdown styles END //
   ]);
 }
