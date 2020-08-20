@@ -293,12 +293,13 @@ function measureTextRun(
   textRun: AD.TextRun.TextRun,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  const style = AD.Resources.getStyle(
+  const style = AD.Resources.getNestedStyle(
     textStyle,
     textRun.style,
     "TextStyle",
     textRun.styleName,
-    resources
+    resources,
+    textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
   return measureText(pdf, textRun.text, style, availableSize);
 }

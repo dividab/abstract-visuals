@@ -449,12 +449,13 @@ function renderTextRun(
   textStyle: AD.TextStyle.TextStyle,
   textRun: AD.TextRun.TextRun
 ) {
-  const style = AD.Resources.getStyle(
+  const style = AD.Resources.getNestedStyle(
     textStyle,
     textRun.style,
     "TextStyle",
     textRun.styleName,
-    resources
+    resources,
+    textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
   drawText(pdf, finalRect, style, textRun.text);
 }

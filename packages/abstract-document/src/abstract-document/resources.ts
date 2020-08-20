@@ -40,16 +40,37 @@ export function getStyle(
   name: string,
   resources: Resources
 ): Style | undefined {
+  return getNestedStyle(parentStyle, elementStyle, type, name, resources, []);
+}
+
+export function getNestedStyle(
+  parentStyle: Style | undefined,
+  elementStyle: Style | undefined,
+  type: string,
+  name: string,
+  resources: Resources,
+  nestedStyleNames: ReadonlyArray<string>
+): Style | undefined {
   const factoryDefault =
     defaultAndStandardStyles[StyleKey.create(type, "Default")];
   const documentDefault =
     resources.styles && resources.styles[StyleKey.create(type, "Default")];
   const namedStyle =
     resources.styles && resources.styles[StyleKey.create(type, name)];
+  const nestedStyle = nestedStyleNames
+    ? nestedStyleNames.reduce(
+        (sofar, name) =>
+          overrideWith(
+            sofar,
+            resources.styles && resources.styles[StyleKey.create(type, name)]
+          ),
+        namedStyle
+      )
+    : namedStyle;
   return overrideWith(
     elementStyle,
     overrideWith(
-      namedStyle,
+      nestedStyle,
       overrideWith(parentStyle, overrideWith(documentDefault, factoryDefault))
     )
   );

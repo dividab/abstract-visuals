@@ -78,6 +78,7 @@ function preProcessMarkdownAst(
                 type: "TextRun",
                 text: v,
                 styleName: style[style.length - 1],
+                nestedStyleNames: style,
                 textProperties: {}
               } as TextRun.TextRun)
           )
