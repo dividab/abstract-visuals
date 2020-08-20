@@ -378,7 +378,6 @@ function measureText(
   } else if (textStyle.italic) {
     font += "-Oblique";
   }
-  const padding = text === "" ? 2 : 0;
   pdf
     .font(font)
     .fontSize(textStyle.fontSize || 10)
@@ -389,11 +388,11 @@ function measureText(
       width: availableSize.width,
       height: availableSize.height,
       underline: textStyle.underline || false
-    }) + padding
+    })
   );
   const height =
     pdf.heightOfString(text, {
-      width: width,
+      width: width + 2,
       height: availableSize.height,
       underline: textStyle.underline || false
     }) + 2;
