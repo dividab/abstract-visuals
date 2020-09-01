@@ -9,6 +9,8 @@ export interface PageStyle {
   readonly contentMargins: LayoutFoundation.LayoutFoundation;
   readonly orientation: PageOrientation;
   readonly paperSize: PaperSize;
+  readonly noLeadingSpace: boolean;
+  readonly noTrailingSpace: boolean;
 }
 
 export interface PageStyleProps {
@@ -17,6 +19,8 @@ export interface PageStyleProps {
   readonly contentMargins?: LayoutFoundation.LayoutFoundation;
   readonly orientation?: PageOrientation;
   readonly paperSize?: PaperSize;
+  readonly noLeadingSpace?: boolean;
+  readonly noTrailingSpace?: boolean;
 }
 
 export function create(props?: PageStyleProps): PageStyle {
@@ -25,7 +29,9 @@ export function create(props?: PageStyleProps): PageStyle {
     footerMargins = LayoutFoundation.create(),
     contentMargins = LayoutFoundation.create(),
     orientation = "Portrait",
-    paperSize = "A4"
+    paperSize = "A4",
+    noLeadingSpace = false,
+    noTrailingSpace = false
   } =
     props || {};
   return {
@@ -33,7 +39,9 @@ export function create(props?: PageStyleProps): PageStyle {
     footerMargins,
     contentMargins,
     orientation,
-    paperSize
+    paperSize,
+    noLeadingSpace,
+    noTrailingSpace
   };
 }
 

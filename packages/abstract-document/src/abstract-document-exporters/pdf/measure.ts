@@ -26,7 +26,7 @@ export function measure(
   );
 }
 
-function measureSection(
+export function measureSection(
   pdf: any,
   parentResources: AD.Resources.Resources,
   section: AD.Section.Section
@@ -346,7 +346,7 @@ function measureTextField(
     case "PageNumber":
     case "TotalPages":
     case "PageNumberOf":
-      return measureText(pdf, "999", style, availableSize);
+      return measureText(pdf, textField.text || "999", style, availableSize);
     default:
       return exhaustiveCheck(textField.fieldType);
   }

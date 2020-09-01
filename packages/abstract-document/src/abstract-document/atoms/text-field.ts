@@ -8,6 +8,7 @@ export interface TextField {
   readonly fieldType: FieldType;
   readonly style: TextStyle.TextStyle;
   readonly target: string;
+  readonly text: string;
 }
 
 export interface TextFieldProps {
@@ -15,6 +16,7 @@ export interface TextFieldProps {
   readonly fieldType: FieldType;
   readonly style?: TextStyle.TextStyle;
   readonly target?: string;
+  readonly text?: string;
 }
 
 export function create(props: TextFieldProps): TextField {
@@ -22,13 +24,15 @@ export function create(props: TextFieldProps): TextField {
     styleName = "",
     fieldType,
     style = TextStyle.create(),
-    target = ""
+    target = "",
+    text = ""
   } = props;
   return {
     type: "TextField",
     styleName,
     fieldType,
     style,
-    target
+    target,
+    text
   };
 }
