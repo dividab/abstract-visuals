@@ -102,7 +102,7 @@ export function create({
   if (!keepTogetherSections) {
     return paragraphs;
   }
-  const groups: Array<Array<SectionElement>> = [[]];
+  const groups: Array<Array<SectionElement>> = [];
   let group: Array<SectionElement> = [];
   let i = 0;
   while (i < paragraphs.length) {
@@ -119,5 +119,9 @@ export function create({
     }
     ++i;
   }
-  return groups.map(group => Group.create({ keepTogether: true }, group));
+  if (groups.length > 0) {
+    return groups.map(group => Group.create({ keepTogether: true }, group));
+  } else {
+    return [Group.create({ keepTogether: true }, [])];
+  }
 }

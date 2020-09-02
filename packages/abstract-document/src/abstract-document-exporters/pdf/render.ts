@@ -101,13 +101,48 @@ function renderPage(
   page: Page
 ): void {
   const section = page.section;
+  const style = section.page.style;
   const resources = AD.Resources.mergeResources([parentResources, section]);
+  const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
   const contentRect = addPage(pdf, page);
 
   if (page.namedDestionation) {
     if (pdf.addNamedDestination) {
       pdf.addNamedDestination(page.namedDestionation);
     }
+  }
+
+  const headerX = style.headerMargins.left;
+  let headerY = style.headerMargins.top;
+  for (let element of page.header) {
+    const elementSize = getDesiredSize(element, desiredSizes);
+    renderSectionElement(
+      resources,
+      pdf,
+      desiredSizes,
+      AD.Rect.create(headerX, headerY, elementSize.width, elementSize.height),
+      element
+    );
+    headerY += elementSize.height;
+  }
+  headerY += style.headerMargins.bottom;
+
+  const footerHeight = page.footer.reduce(
+    (a, b) => a + getDesiredSize(b, desiredSizes).height,
+    style.footerMargins.top + style.footerMargins.bottom
+  );
+  const footerX = style.footerMargins.left;
+  let footerY = pageHeight - (style.footerMargins.bottom + footerHeight);
+  for (let element of page.footer) {
+    const elementSize = getDesiredSize(element, desiredSizes);
+    renderSectionElement(
+      resources,
+      pdf,
+      desiredSizes,
+      AD.Rect.create(footerX, footerY, elementSize.width, elementSize.height),
+      element
+    );
+    footerY += elementSize.height;
   }
 
   let y = contentRect.y;
