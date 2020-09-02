@@ -2,6 +2,7 @@ import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { getResources } from "../shared/get_resources";
 import { exhaustiveCheck } from "ts-exhaustive-check";
+import { Page } from "./paginate";
 
 //tslint:disable:no-any variable-name
 
@@ -26,7 +27,26 @@ export function measure(
   );
 }
 
-export function measureSection(
+export function measurePage(
+  pdfKit: any,
+  parentResources: AD.Resources.Resources,
+  page: Page
+): Map<any, AD.Size.Size> {
+  const PDFDocument = pdfKit;
+  let pdf = new PDFDocument();
+  const section = {
+    ...page.section,
+    page: {
+      ...page.section.page,
+      header: page.header as Array<AD.SectionElement.SectionElement>,
+      footer: page.footer as Array<AD.SectionElement.SectionElement>
+    },
+    children: page.elements
+  };
+  return measureSection(pdf, parentResources, section);
+}
+
+function measureSection(
   pdf: any,
   parentResources: AD.Resources.Resources,
   section: AD.Section.Section

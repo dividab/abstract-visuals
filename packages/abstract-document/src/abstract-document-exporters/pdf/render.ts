@@ -1,8 +1,9 @@
 import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { preProcess } from "./pre-process";
-import { measure } from "./measure";
-import { splitDocument, updatePageRefs, measurePage, Page } from "./page";
+import { measure, measurePage } from "./measure";
+import { paginate, Page } from "./paginate";
+import { updatePageRefs } from "./update-refs";
 import * as BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
 import { getResources } from "../shared/get_resources";
@@ -56,7 +57,7 @@ export function exportToStream(
   }
 
   const desiredSizes = measure(pdfKit, document);
-  const pages = splitDocument(pdfKit, document, desiredSizes);
+  const pages = paginate(pdfKit, document, desiredSizes);
   const updatedPages = pages.map(page => updatePageRefs(page, pages));
 
   for (let page of updatedPages) {

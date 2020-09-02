@@ -1,9 +1,8 @@
 import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { getResources } from "../shared/get_resources";
-import { measureSection } from "./measure";
 
-//tslint:disable
+/* tslint:disable:no-any */
 
 export interface Page {
   readonly pageNo: number;
@@ -16,14 +15,13 @@ export interface Page {
   readonly footer: ReadonlyArray<AD.SectionElement.SectionElement>;
 }
 
-export function splitDocument(
+export function paginate(
   pdfKit: any,
   document: AD.AbstractDoc.AbstractDoc,
   desiredSizes: Map<any, AD.Size.Size>
 ): ReadonlyArray<Page> {
-  const PDFDocument = pdfKit;
   const resources = getResources(document);
-  let pdf = new PDFDocument({
+  let pdf = new pdfKit({
     compress: false,
     autoFirstPage: false,
     bufferPages: true
@@ -48,182 +46,6 @@ export function splitDocument(
   return pages;
 }
 
-export function updatePageRefs(page: Page, pages: ReadonlyArray<Page>): Page {
-  const updatedElements = updateRefsInElements(page.elements, page, pages);
-  const updatedHeader = updateRefsInElements(page.header, page, pages);
-  const updatedFooter = updateRefsInElements(page.footer, page, pages);
-  return {
-    ...page,
-    elements: updatedElements,
-    header: updatedHeader,
-    footer: updatedFooter
-  };
-}
-
-export function measurePage(
-  pdfKit: any,
-  parentResources: AD.Resources.Resources,
-  page: Page
-): Map<any, AD.Size.Size> {
-  const PDFDocument = pdfKit;
-  let pdf = new PDFDocument();
-  const section = {
-    ...page.section,
-    page: {
-      ...page.section.page,
-      header: page.header as Array<AD.SectionElement.SectionElement>,
-      footer: page.footer as Array<AD.SectionElement.SectionElement>
-    },
-    children: page.elements
-  };
-  return measureSection(pdf, parentResources, section);
-}
-
-function updateRefsInElements(
-  elements: ReadonlyArray<AD.SectionElement.SectionElement>,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): ReadonlyArray<AD.SectionElement.SectionElement> {
-  const updatedElements = new Array<AD.SectionElement.SectionElement>();
-  for (let element of elements) {
-    const updatedElement = updateRefsInElement(element, page, pages);
-    updatedElements.push(updatedElement);
-  }
-  return updatedElements;
-}
-
-function updateRefsInElement(
-  element: AD.SectionElement.SectionElement,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.SectionElement.SectionElement {
-  switch (element.type) {
-    case "Paragraph":
-      return updateRefsInParagraph(element, page, pages);
-    case "Table":
-      return updateRefsInTable(element, page, pages);
-    case "Group":
-      return updateRefsInGroup(element, page, pages);
-    default:
-      return element;
-  }
-}
-
-function updateRefsInParagraph(
-  paragraph: AD.Paragraph.Paragraph,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.SectionElement.SectionElement {
-  const updatedChildren = paragraph.children.map(atom =>
-    updateRefInAtom(atom, page, pages)
-  );
-  return {
-    ...paragraph,
-    children: updatedChildren
-  };
-}
-
-function updateRefsInTable(
-  table: AD.Table.Table,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.SectionElement.SectionElement {
-  const updatedChildren = table.children.map(row =>
-    updateRefsInTableRow(row, page, pages)
-  );
-  return {
-    ...table,
-    children: updatedChildren
-  };
-}
-
-function updateRefsInTableRow(
-  row: AD.TableRow.TableRow,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.TableRow.TableRow {
-  const updatedChildren = row.children.map(cell =>
-    updateRefsInTableCell(cell, page, pages)
-  );
-  return {
-    ...row,
-    children: updatedChildren
-  };
-}
-
-function updateRefsInTableCell(
-  cell: AD.TableCell.TableCell,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.TableCell.TableCell {
-  const updatedChildren = cell.children.map(element =>
-    updateRefsInElement(element, page, pages)
-  );
-  return {
-    ...cell,
-    children: updatedChildren
-  };
-}
-
-function updateRefsInGroup(
-  group: AD.Group.Group,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.SectionElement.SectionElement {
-  const updatedChildren = group.children.map(element =>
-    updateRefsInElement(element, page, pages)
-  );
-  return {
-    ...group,
-    children: updatedChildren
-  };
-}
-
-function updateRefInAtom(
-  atom: AD.Atom.Atom,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.Atom.Atom {
-  if (atom.type === "TextField") {
-    return updateRefInTextField(atom, page, pages);
-  } else {
-    return atom;
-  }
-}
-
-function updateRefInTextField(
-  textField: AD.TextField.TextField,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.TextField.TextField {
-  switch (textField.fieldType) {
-    case "PageNumber":
-      return {
-        ...textField,
-        text: page.pageNo.toString()
-      };
-    case "TotalPages":
-      return {
-        ...textField,
-        text: pages.length.toString()
-      };
-    case "PageNumberOf":
-      const targetPage = pages.find(
-        p => p.namedDestionation === textField.target
-      );
-      if (targetPage) {
-        return {
-          ...textField,
-          text: targetPage.pageNo.toString()
-        };
-      } else {
-        return textField;
-      }
-    default:
-      return textField;
-  }
-}
-
 function splitSection(
   parentResources: AD.Resources.Resources,
   desiredSizes: Map<{}, AD.Size.Size>,
@@ -232,70 +54,64 @@ function splitSection(
 ): Array<Page> {
   const resources = AD.Resources.mergeResources([parentResources, section]);
   const pages = new Array<Page>();
-  const { noLeadingSpace, noTrailingSpace } = section.page.style;
   const contentRect = getPageContentRect(desiredSizes, section);
 
-  let leadingSpace = 0;
   let elements = new Array<AD.SectionElement.SectionElement>();
-  let y = contentRect.y;
+  let elementsHeight = 0;
   let currentPage = previousPage;
   for (let i = 0; i < section.children.length; ++i) {
     const element = section.children[i];
     if (element.type === "PageBreak") {
       currentPage = createPage(
+        resources,
         desiredSizes,
         currentPage,
         section,
         elements,
-        leadingSpace,
         pages.length === 0
       );
       pages.push(currentPage);
       elements = [];
-      y = contentRect.y;
-      leadingSpace = 0;
+      elementsHeight = 0;
       continue;
     }
 
+    elements.push(element);
     const elementSize = getDesiredSize(element, desiredSizes);
-    const elementMargin = getSectionElementMargin(resources, element);
+    elementsHeight += elementSize.height;
 
-    if (elements.length === 0) {
-      leadingSpace = noLeadingSpace ? elementMargin.top : 0;
-    }
+    const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(
+      resources,
+      section,
+      elements
+    );
+    const availableHeight = contentRect.height + leadingSpace + trailingSpace;
 
-    const trailingSpace = noTrailingSpace ? elementMargin.bottom : 0;
-    const elementHeight = elementSize.height - trailingSpace;
-    const heightLeft = contentRect.height + leadingSpace - y;
-    if (elementHeight > heightLeft) {
+    if (elementsHeight > availableHeight) {
+      const overflowingElement =
+        elements.length > 1 ? elements.pop() : undefined;
       currentPage = createPage(
+        resources,
         desiredSizes,
         currentPage,
         section,
         elements,
-        leadingSpace,
         pages.length === 0
       );
       pages.push(currentPage);
-      elements = [];
-      y = contentRect.y;
-      leadingSpace = 0;
+      elements = overflowingElement ? [overflowingElement] : [];
+      elementsHeight = 0;
     }
-
-    // TODO: noLeadingSpace not accounted for if this is a new page
-
-    elements.push(element);
-    y += elementSize.height;
   }
 
   if (elements.length > 0) {
     pages.push(
       createPage(
+        resources,
         desiredSizes,
         currentPage,
         section,
         elements,
-        leadingSpace,
         pages.length === 0
       )
     );
@@ -305,11 +121,11 @@ function splitSection(
 }
 
 function createPage(
+  resources: AD.Resources.Resources,
   desiredSizes: Map<{}, AD.Size.Size>,
   previousPage: Page | undefined,
   section: AD.Section.Section,
   elements: ReadonlyArray<AD.SectionElement.SectionElement>,
-  leadingSpace: number,
   isFirst: boolean
 ): Page {
   const style = section.page.style;
@@ -326,16 +142,23 @@ function createPage(
       bottom: 0
     }
   };
+  const pageNo = previousPage ? previousPage.pageNo + 1 : 1;
   const namedDestionation =
     isFirst && section.id !== "" ? section.id : undefined;
+
+  // Ignore leading space by expanding the content rect upwards
   const rect = getPageContentRect(desiredSizes, section);
+  const [leadingSpace] = getLeadingAndTrailingSpace(
+    resources,
+    section,
+    elements
+  );
   const contentRect = AD.Rect.create(
     rect.x,
     rect.y - leadingSpace,
     rect.width,
     rect.height + leadingSpace
   );
-  const pageNo = previousPage ? previousPage.pageNo + 1 : 1;
 
   return {
     pageNo: pageNo,
@@ -356,17 +179,6 @@ function getPageContentRect(
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
   const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
-  const layout = style.orientation === "Landscape" ? "landscape" : "portrait";
-  const pageOptions = {
-    size: [pageWidth, pageHeight],
-    layout: layout,
-    margins: {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0
-    }
-  };
 
   const headerHeight = section.page.header.reduce(
     (a, b) => a + getDesiredSize(b, desiredSizes).height,
@@ -396,6 +208,24 @@ function getPageContentRect(
     style.contentMargins.bottom;
 
   return AD.Rect.create(rectX, rectY, rectWidth, rectHeight);
+}
+
+function getLeadingAndTrailingSpace(
+  resources: AD.Resources.Resources,
+  section: AD.Section.Section,
+  elements: ReadonlyArray<AD.SectionElement.SectionElement>
+): [number, number] {
+  const { noLeadingSpace, noTrailingSpace } = section.page.style;
+
+  const first = elements[0];
+  const firstMargins = first && getSectionElementMargin(resources, first);
+  const leadingSpace = firstMargins && noLeadingSpace ? firstMargins.top : 0;
+
+  const last = elements.length > 0 ? elements[elements.length - 1] : undefined;
+  const lastMargins = last && getSectionElementMargin(resources, last);
+  const trailingSpace = lastMargins && noTrailingSpace ? lastMargins.bottom : 0;
+
+  return [leadingSpace, trailingSpace];
 }
 
 function getSectionElementMargin(
@@ -463,7 +293,7 @@ function getGroupMargins(
 function getTableMargins(
   resources: AD.Resources.Resources,
   table: AD.Table.Table
-) {
+): AD.LayoutFoundation.LayoutFoundation {
   const style = AD.Resources.getStyle(
     undefined,
     table.style,
