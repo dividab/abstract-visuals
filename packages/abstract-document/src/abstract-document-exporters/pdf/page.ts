@@ -267,7 +267,7 @@ function splitSection(
     const trailingSpace = noTrailingSpace ? elementMargin.bottom : 0;
     const elementHeight = elementSize.height - trailingSpace;
     const heightLeft = contentRect.height + leadingSpace - y;
-    if (elementHeight <= heightLeft) {
+    if (elementHeight > heightLeft) {
       currentPage = createPage(
         desiredSizes,
         currentPage,
@@ -281,6 +281,8 @@ function splitSection(
       y = contentRect.y;
       leadingSpace = 0;
     }
+
+    // TODO: noLeadingSpace not accounted for if this is a new page
 
     elements.push(element);
     y += elementSize.height;
