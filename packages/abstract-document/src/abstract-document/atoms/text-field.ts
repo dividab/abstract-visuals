@@ -8,6 +8,7 @@ export interface TextField {
   readonly fieldType: FieldType;
   readonly style: TextStyle.TextStyle;
   readonly target: string;
+  readonly text: string;
 }
 
 export interface TextFieldProps {
@@ -29,6 +30,7 @@ export function create(props: TextFieldProps): TextField {
     styleName,
     fieldType,
     style,
-    target
+    target,
+    text: ""
   };
 }
