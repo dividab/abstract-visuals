@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { preProcess } from "./pre-process";
-import { measure, measurePage } from "./measure";
+import { measure, measurePages } from "./measure";
 import { paginate, Page } from "./paginate";
 import { updatePageRefs } from "./update-refs";
 import * as BlobStream from "blob-stream";
@@ -59,9 +59,9 @@ export function exportToStream(
   const desiredSizes = measure(pdfKit, document);
   const pages = paginate(pdfKit, document, desiredSizes);
   const updatedPages = pages.map(page => updatePageRefs(page, pages));
+  const pageDesiredSizes = measurePages(pdfKit, document, updatedPages);
 
   for (let page of updatedPages) {
-    const pageDesiredSizes = measurePage(pdfKit, document, page);
     renderPage(document, pdf, pageDesiredSizes, page);
   }
 
@@ -102,7 +102,7 @@ function renderPage(
 ): void {
   const section = page.section;
   const resources = AD.Resources.mergeResources([parentResources, section]);
-  const contentRect = addPage(resources, pdf, desiredSizes, page);
+  const contentRect = addPage(pdf, page);
 
   if (page.namedDestionation) {
     if (pdf.addNamedDestination) {
@@ -113,10 +113,6 @@ function renderPage(
   let y = contentRect.y;
   for (const element of page.elements) {
     const elementSize = getDesiredSize(element, desiredSizes);
-    if (y + elementSize.height > contentRect.y + contentRect.height) {
-      addPage(resources, pdf, desiredSizes, page);
-      y = contentRect.y;
-    }
     renderSectionElement(
       resources,
       pdf,
@@ -128,15 +124,8 @@ function renderPage(
   }
 }
 
-function addPage(
-  resources: AD.Resources.Resources,
-  pdf: any,
-  desiredSizes: Map<{}, AD.Size.Size>,
-  page: Page
-): AD.Rect.Rect {
+function addPage(pdf: any, page: Page): AD.Rect.Rect {
   const section = page.section;
-  const header = page.header;
-  const footer = page.footer;
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
   const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
@@ -152,57 +141,7 @@ function addPage(
     }
   };
   pdf.addPage(pageOptions);
-
-  const headerHeight = header.reduce(
-    (a, b) => a + getDesiredSize(b, desiredSizes).height,
-    style.headerMargins.top + style.headerMargins.bottom
-  );
-  const footerHeight = footer.reduce(
-    (a, b) => a + getDesiredSize(b, desiredSizes).height,
-    style.footerMargins.top + style.footerMargins.bottom
-  );
-
-  const headerX = style.headerMargins.left;
-  let headerY = style.headerMargins.top;
-  for (let element of header) {
-    const elementSize = getDesiredSize(element, desiredSizes);
-    renderSectionElement(
-      resources,
-      pdf,
-      desiredSizes,
-      AD.Rect.create(headerX, headerY, elementSize.width, elementSize.height),
-      element
-    );
-    headerY += elementSize.height;
-  }
-  headerY += style.headerMargins.bottom;
-
-  const footerX = style.footerMargins.left;
-  let footerY = pageHeight - (style.footerMargins.bottom + footerHeight);
-  for (let element of footer) {
-    const elementSize = getDesiredSize(element, desiredSizes);
-    renderSectionElement(
-      resources,
-      pdf,
-      desiredSizes,
-      AD.Rect.create(footerX, footerY, elementSize.width, elementSize.height),
-      element
-    );
-    footerY += elementSize.height;
-  }
-
-  const rectX = style.contentMargins.left;
-  const rectY = headerY + style.contentMargins.top;
-  const rectWidth =
-    pageWidth - (style.contentMargins.left + style.contentMargins.right);
-  const rectHeight =
-    pageHeight -
-    headerHeight -
-    footerHeight -
-    style.contentMargins.top -
-    style.contentMargins.bottom;
-
-  return AD.Rect.create(rectX, rectY, rectWidth, rectHeight);
+  return page.contentRect;
 }
 
 function renderSectionElement(

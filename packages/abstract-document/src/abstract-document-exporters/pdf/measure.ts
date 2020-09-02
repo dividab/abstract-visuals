@@ -27,30 +27,49 @@ export function measure(
   );
 }
 
-export function measurePage(
-  pdfKit: any,
-  parentResources: AD.Resources.Resources,
-  page: Page
+export function measurePages(
+  PDFDocument: any,
+  document: AD.AbstractDoc.AbstractDoc,
+  pages: ReadonlyArray<Page>
 ): Map<any, AD.Size.Size> {
-  const PDFDocument = pdfKit;
+  const resources = getResources(document);
   let pdf = new PDFDocument();
-  const section = {
-    ...page.section,
-    page: {
-      ...page.section.page,
-      header: page.header as Array<AD.SectionElement.SectionElement>,
-      footer: page.footer as Array<AD.SectionElement.SectionElement>
-    },
-    children: page.elements
-  };
-  return measureSection(pdf, parentResources, section);
+
+  if (resources.fonts) {
+    for (let fontName of R.keys(resources.fonts)) {
+      const font = resources.fonts[fontName];
+      pdf.registerFont(fontName, font.normal);
+      pdf.registerFont(fontName + "-Bold", font.bold);
+      pdf.registerFont(fontName + "-Oblique", font.italic);
+      pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
+    }
+  }
+  return mergeMaps(
+    pages.map(page =>
+      measureSection(
+        pdf,
+        document,
+        page.section,
+        page.header,
+        page.footer,
+        page.elements
+      )
+    )
+  );
 }
 
 function measureSection(
   pdf: any,
   parentResources: AD.Resources.Resources,
-  section: AD.Section.Section
+  section: AD.Section.Section,
+  separateHeader?: ReadonlyArray<AD.SectionElement.SectionElement>,
+  separateFooter?: ReadonlyArray<AD.SectionElement.SectionElement>,
+  separateChildren?: ReadonlyArray<AD.SectionElement.SectionElement>
 ): Map<any, AD.Size.Size> {
+  const header = separateHeader || section.page.header;
+  const footer = separateFooter || section.page.footer;
+  const children = separateChildren || section.children;
+
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
   const resources = AD.Resources.mergeResources([section, parentResources]);
@@ -63,7 +82,7 @@ function measureSection(
     contentAvailableWidth,
     pageHeight
   );
-  const sectionSizes = section.children.map(e =>
+  const sectionSizes = children.map(e =>
     measureSectionElement(pdf, resources, contentAvailableSize, e)
   );
 
@@ -72,7 +91,7 @@ function measureSection(
     (section.page.style.headerMargins.left +
       section.page.style.headerMargins.right);
   const headerAvailableSize = AD.Size.create(headerAvailableWidth, pageHeight);
-  const headerSizes = section.page.header.map(e =>
+  const headerSizes = header.map(e =>
     measureSectionElement(pdf, resources, headerAvailableSize, e)
   );
 
@@ -81,7 +100,7 @@ function measureSection(
     (section.page.style.footerMargins.left +
       section.page.style.footerMargins.right);
   const footerAvailableSize = AD.Size.create(footerAvailableWidth, pageHeight);
-  const footerSizes = section.page.footer.map(e =>
+  const footerSizes = footer.map(e =>
     measureSectionElement(pdf, resources, footerAvailableSize, e)
   );
 

@@ -88,8 +88,10 @@ function splitSection(
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
 
     if (elementsHeight > availableHeight) {
-      const overflowingElement =
-        elements.length > 1 ? elements.pop() : undefined;
+      if (elements.length > 1) {
+        elements.pop();
+        i--;
+      }
       currentPage = createPage(
         resources,
         desiredSizes,
@@ -99,7 +101,7 @@ function splitSection(
         pages.length === 0
       );
       pages.push(currentPage);
-      elements = overflowingElement ? [overflowingElement] : [];
+      elements = [];
       elementsHeight = 0;
     }
   }
@@ -215,15 +217,16 @@ function getLeadingAndTrailingSpace(
   section: AD.Section.Section,
   elements: ReadonlyArray<AD.SectionElement.SectionElement>
 ): [number, number] {
-  const { noLeadingSpace, noTrailingSpace } = section.page.style;
+  const { noTopBottomMargin } = section.page.style;
 
   const first = elements[0];
   const firstMargins = first && getSectionElementMargin(resources, first);
-  const leadingSpace = firstMargins && noLeadingSpace ? firstMargins.top : 0;
+  const leadingSpace = firstMargins && noTopBottomMargin ? firstMargins.top : 0;
 
   const last = elements.length > 0 ? elements[elements.length - 1] : undefined;
   const lastMargins = last && getSectionElementMargin(resources, last);
-  const trailingSpace = lastMargins && noTrailingSpace ? lastMargins.bottom : 0;
+  const trailingSpace =
+    lastMargins && noTopBottomMargin ? lastMargins.bottom : 0;
 
   return [leadingSpace, trailingSpace];
 }
