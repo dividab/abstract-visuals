@@ -103,7 +103,7 @@ function renderPage(
   const section = page.section;
   const style = section.page.style;
   const resources = AD.Resources.mergeResources([parentResources, section]);
-  const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
+  const pageHeight = AD.PageStyle.getHeight(style);
   const contentRect = addPage(pdf, page);
 
   if (page.namedDestionation) {
@@ -132,7 +132,7 @@ function renderPage(
     style.footerMargins.top + style.footerMargins.bottom
   );
   const footerX = style.footerMargins.left;
-  let footerY = pageHeight - (style.footerMargins.bottom + footerHeight);
+  let footerY = pageHeight - (footerHeight - style.footerMargins.top);
   for (let element of page.footer) {
     const elementSize = getDesiredSize(element, desiredSizes);
     renderSectionElement(
@@ -162,6 +162,7 @@ function renderPage(
 function addPage(pdf: any, page: Page): AD.Rect.Rect {
   const section = page.section;
   const style = section.page.style;
+  // This is rotated later depending on the orientation.
   const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
   const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
   const layout = style.orientation === "Landscape" ? "landscape" : "portrait";

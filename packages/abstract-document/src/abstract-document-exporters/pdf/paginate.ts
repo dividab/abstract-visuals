@@ -131,8 +131,8 @@ function createPage(
   isFirst: boolean
 ): Page {
   const style = section.page.style;
-  const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
-  const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
+  const pageWidth = AD.PageStyle.getWidth(style);
+  const pageHeight = AD.PageStyle.getHeight(style);
   const layout = style.orientation === "Landscape" ? "landscape" : "portrait";
   const pageOptions = {
     size: [pageWidth, pageHeight],
@@ -179,8 +179,8 @@ function getPageContentRect(
   section: AD.Section.Section
 ): AD.Rect.Rect {
   const style = section.page.style;
-  const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
-  const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
+  const pageWidth = AD.PageStyle.getWidth(style);
+  const pageHeight = AD.PageStyle.getHeight(style);
 
   const headerHeight = section.page.header.reduce(
     (a, b) => a + getDesiredSize(b, desiredSizes).height,
