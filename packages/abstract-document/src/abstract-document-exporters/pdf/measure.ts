@@ -418,9 +418,10 @@ function measureText(
   } else if (textStyle.italic) {
     font += "-Oblique";
   }
+  const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   pdf
     .font(font)
-    .fontSize(textStyle.fontSize || 10)
+    .fontSize(fontSize)
     .fillColor(textStyle.color || "black");
   const width = Math.min(
     availableSize.width,

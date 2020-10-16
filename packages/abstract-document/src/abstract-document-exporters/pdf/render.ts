@@ -387,11 +387,11 @@ function drawHyperLink(
   }
   const isInternalLink =
     hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
-  const fontSize = textStyle.fontSize || 10;
+  const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
   pdf
     .font(font)
-    .fontSize(textStyle.fontSize || 10)
+    .fontSize(fontSize)
     .fillColor(textStyle.color || "blue")
     .text(hyperLink.text, finalRect.x, finalRect.y + offset, {
       width: finalRect.width + 2,
@@ -427,7 +427,7 @@ function drawText(
   } else if (textStyle.italic) {
     font += "-Oblique";
   }
-  const fontSize = textStyle.fontSize || 10;
+  const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
   pdf
     .font(font)
@@ -571,6 +571,6 @@ function calculateTextOffset(
     textStyle.verticalPosition !== undefined
       ? textStyle.verticalPosition
       : defaultPosition;
-  const fontSize = textStyle.fontSize || defaultFontSize;
+  const fontSize = AD.TextStyle.calculateFontSize(textStyle, defaultFontSize);
   return fontSize * position;
 }
