@@ -436,7 +436,8 @@ function drawText(
     .text(text, finalRect.x, finalRect.y + offset, {
       width: finalRect.width + 2,
       height: finalRect.height,
-      underline: textStyle.underline || false
+      underline: textStyle.underline || false,
+      indent: textStyle.indent || 0
     });
 }
 

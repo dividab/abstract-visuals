@@ -10,6 +10,7 @@ export interface TextStyle {
   readonly superScript?: boolean;
   readonly underline?: boolean;
   readonly verticalPosition?: number;
+  readonly indent?: number;
 }
 
 export interface TextStyleProps {
@@ -23,6 +24,7 @@ export interface TextStyleProps {
   readonly superScript?: boolean;
   readonly underline?: boolean;
   readonly verticalPosition?: number;
+  readonly indent?: number;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
@@ -48,7 +50,8 @@ export function overrideWith(
     subScript: a.subScript || b.subScript,
     superScript: a.superScript || b.superScript,
     underline: a.underline || b.underline,
-    verticalPosition: a.verticalPosition || b.verticalPosition
+    verticalPosition: a.verticalPosition || b.verticalPosition,
+    indent: a.indent !== undefined ? a.indent : b.indent
   });
 }
 

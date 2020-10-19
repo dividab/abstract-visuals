@@ -428,7 +428,8 @@ function measureText(
     pdf.widthOfString(text, {
       width: availableSize.width,
       height: availableSize.height,
-      underline: textStyle.underline || false
+      underline: textStyle.underline || false,
+      indent: textStyle.indent || 0
     })
   );
   const height =
