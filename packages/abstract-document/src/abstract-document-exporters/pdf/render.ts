@@ -399,7 +399,7 @@ function drawHyperLink(
       underline: textStyle.underline || false,
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
       indent: textStyle.indent || 0,
-      lineGap: textStyle.lineGap || 0
+      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
     })
     .underline(finalRect.x, finalRect.y, finalRect.width, finalRect.height, {
       color: "blue"
@@ -440,7 +440,7 @@ function drawText(
       height: finalRect.height,
       underline: textStyle.underline || false,
       indent: textStyle.indent || 0,
-      lineGap: textStyle.lineGap || 0
+      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
     });
 }
 
