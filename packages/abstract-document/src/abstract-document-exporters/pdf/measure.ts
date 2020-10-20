@@ -429,7 +429,8 @@ function measureText(
       width: availableSize.width,
       height: availableSize.height,
       underline: textStyle.underline || false,
-      indent: textStyle.indent || 0
+      indent: textStyle.indent || 0,
+      lineGap: textStyle.lineGap || 0
     })
   );
   const height =

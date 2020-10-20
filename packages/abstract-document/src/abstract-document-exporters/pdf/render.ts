@@ -397,7 +397,9 @@ function drawHyperLink(
       width: finalRect.width + 2,
       height: finalRect.height,
       underline: textStyle.underline || false,
-      goTo: isInternalLink ? hyperLink.target.substr(1) : undefined
+      goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
+      indent: textStyle.indent || 0,
+      lineGap: textStyle.lineGap || 0
     })
     .underline(finalRect.x, finalRect.y, finalRect.width, finalRect.height, {
       color: "blue"
@@ -437,7 +439,8 @@ function drawText(
       width: finalRect.width + 2,
       height: finalRect.height,
       underline: textStyle.underline || false,
-      indent: textStyle.indent || 0
+      indent: textStyle.indent || 0,
+      lineGap: textStyle.lineGap || 0
     });
 }
 
