@@ -423,33 +423,26 @@ function measureText(
     .font(font)
     .fontSize(fontSize)
     .fillColor(textStyle.color || "black");
+  const textOptions = {
+    underline: textStyle.underline || false,
+    indent: textStyle.indent || 0,
+    ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
+  };
   const width = Math.min(
     availableSize.width,
     pdf.widthOfString(text, {
       width: availableSize.width,
       height: availableSize.height,
-      underline: textStyle.underline || false,
-      indent: textStyle.indent || 0,
-      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
+      ...textOptions
     })
   );
   const height =
     pdf.heightOfString(text, {
       width: width + 2,
       height: availableSize.height,
-      underline: textStyle.underline || false
+      ...textOptions
     }) + 2;
   return AD.Size.create(width, height);
-  // let font = style.fontFamily || "Helvetica";
-  // if (style.bold && style.italic) { font += "-BoldOblique"; }
-  // else if (style.bold) { font += "-Bold"; }
-  // else if (style.italic) { font += "-Oblique"; }
-
-  // pdf.font(font).fontSize(style.fontSize || 10);
-  // const width = Math.min(availableSize.width, pdf.widthOfString(text));
-  // const height = Math.min(availableSize.height, pdf.heightOfString(text));
-
-  // return AD.Size.create(width, height);
 }
 
 function mergeMaps(
