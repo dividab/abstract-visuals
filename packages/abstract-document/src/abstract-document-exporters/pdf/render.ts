@@ -7,6 +7,7 @@ import { updatePageRefs } from "./update-refs";
 import * as BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
 import { getResources } from "../shared/get_resources";
+import { registerFonts, getFontName } from "./font";
 
 //tslint:disable
 
@@ -39,22 +40,18 @@ export function exportToStream(
 ): void {
   const PDFDocument = pdfKit;
   const document = preProcess(doc);
-  const resources = getResources(document);
 
   let pdf = new PDFDocument({
     compress: false,
     autoFirstPage: false,
     bufferPages: true
   }) as any;
-  if (resources.fonts) {
-    for (let fontName of R.keys(document.fonts as {})) {
-      const font = resources.fonts[fontName];
-      pdf.registerFont(fontName, font.normal);
-      pdf.registerFont(fontName + "-Bold", font.bold);
-      pdf.registerFont(fontName + "-Oblique", font.italic);
-      pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
-    }
-  }
+
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource) =>
+      pdf.registerFont(fontName, fontSource),
+    document
+  );
 
   const desiredSizes = measure(pdfKit, document);
   const pages = paginate(pdfKit, document, desiredSizes);
@@ -74,18 +71,12 @@ export function exportToStream(
 //   const PDFDocument = pdfKit;
 //   const document = preProcess(doc);
 //   const desiredSizes = measure(pdfKit, document);
-//   const resources = getResources(document);
-//
 //   let pdf = new PDFDocument({compress: false, autoFirstPage: false}) as any;
-//   if (resources.fonts) {
-//     for (let fontName of R.keys(resources.fonts)) {
-//       const font = resources.fonts[fontName];
-//       pdf.registerFont(fontName, font.normal);
-//       pdf.registerFont(fontName + "-Bold", font.bold);
-//       pdf.registerFont(fontName + "-Oblique", font.italic);
-//       pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
-//     }
-//   }
+//   registerFonts(
+//     (fontName: string, fontSource: AD.Font.FontSource) =>
+//       pdf.registerFont(fontName, fontSource),
+//     document
+//   );
 //   let pageNo = 0;
 //   for (let section of document.children){
 //     pageNo = renderSection(document, pdf, desiredSizes, section, pageNo);
@@ -377,14 +368,7 @@ function drawHyperLink(
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink
 ) {
-  let font = textStyle.fontFamily || "Helvetica";
-  if (textStyle.bold && textStyle.italic) {
-    font += "-BoldOblique";
-  } else if (textStyle.bold) {
-    font += "-Bold";
-  } else if (textStyle.italic) {
-    font += "-Oblique";
-  }
+  const font = getFontName(textStyle);
   const isInternalLink =
     hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -421,14 +405,7 @@ function drawText(
   textStyle: AD.TextStyle.TextStyle,
   text: string
 ) {
-  let font = textStyle.fontFamily || "Helvetica";
-  if (textStyle.bold && textStyle.italic) {
-    font += "-BoldOblique";
-  } else if (textStyle.bold) {
-    font += "-Bold";
-  } else if (textStyle.italic) {
-    font += "-Oblique";
-  }
+  const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
   pdf

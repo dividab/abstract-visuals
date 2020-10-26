@@ -2,6 +2,7 @@ export interface TextStyle {
   readonly type: "TextStyle";
   readonly fontFamily?: string;
   readonly bold?: boolean;
+  readonly mediumBold?: boolean;
   readonly color?: string;
   readonly fontSize?: number;
   readonly fontScale?: number;
@@ -17,6 +18,7 @@ export interface TextStyle {
 export interface TextStyleProps {
   readonly fontFamily?: string;
   readonly bold?: boolean;
+  readonly mediumBold?: boolean;
   readonly color?: string;
   readonly fontSize?: number;
   readonly fontScale?: number;
@@ -45,6 +47,7 @@ export function overrideWith(
   return create({
     fontFamily: a.fontFamily || b.fontFamily,
     bold: a.bold || b.bold,
+    mediumBold: a.mediumBold || b.mediumBold,
     color: a.color || b.color,
     fontSize: a.fontSize || b.fontSize,
     fontScale: a.fontScale || b.fontScale,
@@ -52,12 +55,9 @@ export function overrideWith(
     subScript: a.subScript || b.subScript,
     superScript: a.superScript || b.superScript,
     underline: a.underline || b.underline,
-    verticalPosition:
-      a.verticalPosition !== undefined
-        ? a.verticalPosition
-        : b.verticalPosition,
-    indent: a.indent !== undefined ? a.indent : b.indent,
-    lineGap: a.lineGap !== undefined ? a.lineGap : b.lineGap
+    verticalPosition: a.verticalPosition || b.verticalPosition,
+    indent: a.indent || b.indent,
+    lineGap: a.lineGap || b.lineGap
   });
 }
 

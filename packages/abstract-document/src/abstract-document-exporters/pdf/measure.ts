@@ -1,8 +1,8 @@
 import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
-import { getResources } from "../shared/get_resources";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import { Page } from "./paginate";
+import { registerFonts, getFontName } from "./font";
 
 //tslint:disable:no-any variable-name
 
@@ -10,18 +10,12 @@ export function measure(
   PDFDocument: any,
   document: AD.AbstractDoc.AbstractDoc
 ): Map<any, AD.Size.Size> {
-  const resources = getResources(document);
   let pdf = new PDFDocument();
-
-  if (resources.fonts) {
-    for (let fontName of R.keys(resources.fonts)) {
-      const font = resources.fonts[fontName];
-      pdf.registerFont(fontName, font.normal);
-      pdf.registerFont(fontName + "-Bold", font.bold);
-      pdf.registerFont(fontName + "-Oblique", font.italic);
-      pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
-    }
-  }
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource) =>
+      pdf.registerFont(fontName, fontSource),
+    document
+  );
   return mergeMaps(
     document.children.map(s => measureSection(pdf, document, s))
   );
@@ -32,18 +26,12 @@ export function measurePages(
   document: AD.AbstractDoc.AbstractDoc,
   pages: ReadonlyArray<Page>
 ): Map<any, AD.Size.Size> {
-  const resources = getResources(document);
   let pdf = new PDFDocument();
-
-  if (resources.fonts) {
-    for (let fontName of R.keys(resources.fonts)) {
-      const font = resources.fonts[fontName];
-      pdf.registerFont(fontName, font.normal);
-      pdf.registerFont(fontName + "-Bold", font.bold);
-      pdf.registerFont(fontName + "-Oblique", font.italic);
-      pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
-    }
-  }
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource) =>
+      pdf.registerFont(fontName, fontSource),
+    document
+  );
   return mergeMaps(
     pages.map(page =>
       measureSection(
@@ -410,14 +398,7 @@ function measureText(
   textStyle: AD.TextStyle.TextStyle,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  let font = textStyle.fontFamily || "Helvetica";
-  if (textStyle.bold && textStyle.italic) {
-    font += "-BoldOblique";
-  } else if (textStyle.bold) {
-    font += "-Bold";
-  } else if (textStyle.italic) {
-    font += "-Oblique";
-  }
+  const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   pdf
     .font(font)

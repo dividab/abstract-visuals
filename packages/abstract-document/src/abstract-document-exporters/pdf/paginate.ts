@@ -1,6 +1,7 @@
 import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { getResources } from "../shared/get_resources";
+import { registerFonts } from "./font";
 
 /* tslint:disable:no-any */
 
@@ -27,15 +28,11 @@ export function paginate(
     bufferPages: true
   }) as any;
 
-  if (resources.fonts) {
-    for (let fontName of R.keys(document.fonts as {})) {
-      const font = resources.fonts[fontName];
-      pdf.registerFont(fontName, font.normal);
-      pdf.registerFont(fontName + "-Bold", font.bold);
-      pdf.registerFont(fontName + "-Oblique", font.italic);
-      pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
-    }
-  }
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource) =>
+      pdf.registerFont(fontName, fontSource),
+    document
+  );
 
   let pages = new Array<Page>();
   for (let section of document.children) {
