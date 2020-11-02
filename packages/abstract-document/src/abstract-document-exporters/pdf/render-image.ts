@@ -102,7 +102,8 @@ function abstractComponentToPdf(
         .text(
           component.text,
           component.position.x + dx,
-          component.position.y + dy
+          component.position.y + dy,
+          { lineBreak: false }
         );
       if (component.clockwiseRotationDegrees !== 0) {
         pdf.restore();
