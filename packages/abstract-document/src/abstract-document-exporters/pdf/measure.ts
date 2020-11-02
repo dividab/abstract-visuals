@@ -1,7 +1,8 @@
 import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
-import { getResources } from "../shared/get_resources";
 import { exhaustiveCheck } from "ts-exhaustive-check";
+import { Page } from "./paginate";
+import { registerFonts, getFontName } from "./font";
 
 //tslint:disable:no-any variable-name
 
@@ -9,28 +10,54 @@ export function measure(
   PDFDocument: any,
   document: AD.AbstractDoc.AbstractDoc
 ): Map<any, AD.Size.Size> {
-  const resources = getResources(document);
   let pdf = new PDFDocument();
-
-  if (resources.fonts) {
-    for (let fontName of R.keys(resources.fonts)) {
-      const font = resources.fonts[fontName];
-      pdf.registerFont(fontName, font.normal);
-      pdf.registerFont(fontName + "-Bold", font.bold);
-      pdf.registerFont(fontName + "-Oblique", font.italic);
-      pdf.registerFont(fontName + "-BoldOblique", font.boldItalic);
-    }
-  }
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource) =>
+      pdf.registerFont(fontName, fontSource),
+    document
+  );
   return mergeMaps(
     document.children.map(s => measureSection(pdf, document, s))
+  );
+}
+
+export function measurePages(
+  PDFDocument: any,
+  document: AD.AbstractDoc.AbstractDoc,
+  pages: ReadonlyArray<Page>
+): Map<any, AD.Size.Size> {
+  let pdf = new PDFDocument();
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource) =>
+      pdf.registerFont(fontName, fontSource),
+    document
+  );
+  return mergeMaps(
+    pages.map(page =>
+      measureSection(
+        pdf,
+        document,
+        page.section,
+        page.header,
+        page.footer,
+        page.elements
+      )
+    )
   );
 }
 
 function measureSection(
   pdf: any,
   parentResources: AD.Resources.Resources,
-  section: AD.Section.Section
+  section: AD.Section.Section,
+  separateHeader?: ReadonlyArray<AD.SectionElement.SectionElement>,
+  separateFooter?: ReadonlyArray<AD.SectionElement.SectionElement>,
+  separateChildren?: ReadonlyArray<AD.SectionElement.SectionElement>
 ): Map<any, AD.Size.Size> {
+  const header = separateHeader || section.page.header;
+  const footer = separateFooter || section.page.footer;
+  const children = separateChildren || section.children;
+
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
   const resources = AD.Resources.mergeResources([section, parentResources]);
@@ -43,7 +70,7 @@ function measureSection(
     contentAvailableWidth,
     pageHeight
   );
-  const sectionSizes = section.children.map(e =>
+  const sectionSizes = children.map(e =>
     measureSectionElement(pdf, resources, contentAvailableSize, e)
   );
 
@@ -52,7 +79,7 @@ function measureSection(
     (section.page.style.headerMargins.left +
       section.page.style.headerMargins.right);
   const headerAvailableSize = AD.Size.create(headerAvailableWidth, pageHeight);
-  const headerSizes = section.page.header.map(e =>
+  const headerSizes = header.map(e =>
     measureSectionElement(pdf, resources, headerAvailableSize, e)
   );
 
@@ -61,7 +88,7 @@ function measureSection(
     (section.page.style.footerMargins.left +
       section.page.style.footerMargins.right);
   const footerAvailableSize = AD.Size.create(footerAvailableWidth, pageHeight);
-  const footerSizes = section.page.footer.map(e =>
+  const footerSizes = footer.map(e =>
     measureSectionElement(pdf, resources, footerAvailableSize, e)
   );
 
@@ -293,12 +320,13 @@ function measureTextRun(
   textRun: AD.TextRun.TextRun,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  const style = AD.Resources.getStyle(
+  const style = AD.Resources.getNestedStyle(
     textStyle,
     textRun.style,
     "TextStyle",
     textRun.styleName,
-    resources
+    resources,
+    textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
   return measureText(pdf, textRun.text, style, availableSize);
 }
@@ -345,7 +373,7 @@ function measureTextField(
     case "PageNumber":
     case "TotalPages":
     case "PageNumberOf":
-      return measureText(pdf, "999", style, availableSize);
+      return measureText(pdf, textField.text || "999", style, availableSize);
     default:
       return exhaustiveCheck(textField.fieldType);
   }
@@ -370,54 +398,32 @@ function measureText(
   textStyle: AD.TextStyle.TextStyle,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  let features: Array<string> = [];
-  let font = textStyle.fontFamily || "Helvetica";
-  if (textStyle.bold && textStyle.italic) {
-    font += "-BoldOblique";
-  } else if (textStyle.bold) {
-    font += "-Bold";
-  } else if (textStyle.italic) {
-    font += "-Oblique";
-  }
-
-  if (textStyle.subScript) {
-    features.push("subs");
-  }
-  if (textStyle.superScript) {
-    features.push("sups");
-  }
-
+  const font = getFontName(textStyle);
+  const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   pdf
     .font(font)
-    .fontSize(textStyle.fontSize || 10)
+    .fontSize(fontSize)
     .fillColor(textStyle.color || "black");
+  const textOptions = {
+    underline: textStyle.underline || false,
+    indent: textStyle.indent || 0,
+    ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
+  };
   const width = Math.min(
     availableSize.width,
     pdf.widthOfString(text, {
       width: availableSize.width,
       height: availableSize.height,
-      underline: textStyle.underline || false,
-      features: features
-    }) + 2
+      ...textOptions
+    })
   );
   const height =
     pdf.heightOfString(text, {
-      width: width,
+      width: width + 2,
       height: availableSize.height,
-      underline: textStyle.underline || false,
-      features: features
+      ...textOptions
     }) + 2;
   return AD.Size.create(width, height);
-  // let font = style.fontFamily || "Helvetica";
-  // if (style.bold && style.italic) { font += "-BoldOblique"; }
-  // else if (style.bold) { font += "-Bold"; }
-  // else if (style.italic) { font += "-Oblique"; }
-
-  // pdf.font(font).fontSize(style.fontSize || 10);
-  // const width = Math.min(availableSize.width, pdf.widthOfString(text));
-  // const height = Math.min(availableSize.height, pdf.heightOfString(text));
-
-  // return AD.Size.create(width, height);
 }
 
 function mergeMaps(

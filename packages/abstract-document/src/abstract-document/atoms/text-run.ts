@@ -3,6 +3,7 @@ import * as TextStyle from "../styles/text-style";
 export interface TextRun {
   readonly type: "TextRun";
   readonly styleName: string;
+  readonly nestedStyleNames?: ReadonlyArray<string>;
   readonly text: string;
   readonly style?: TextStyle.TextStyle;
 }

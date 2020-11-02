@@ -1,6 +1,8 @@
 import { SectionElement } from "../section-elements/section-element";
-import { parse } from "@textlint/markdown-to-ast";
-import { AstElements, MarkDownProcessData } from "./types";
+import { AstElements, MarkDownProcessData, AstRoot } from "./types";
+import * as unified from "unified";
+import * as remarkParse from "remark-parse";
+import * as remarkSubSuper from "remark-sub-super";
 import * as Paragraph from "../section-elements/paragraph";
 import * as Atom from "../atoms/atom";
 import * as TextRun from "../atoms/text-run";
@@ -18,7 +20,7 @@ function preProcessMarkdownAst(
   paragraphs: Array<Paragraph.Paragraph>,
   d: number
 ): MarkDownProcessData {
-  if (ast.type === "Str") {
+  if (ast.type === "text") {
     return { atoms, paragraphs };
   } // Need to convice TS that we never go below this line with a Str element.
 
@@ -26,14 +28,20 @@ function preProcessMarkdownAst(
     ast.children.forEach(child => {
       let style = styles.slice(); // create a new copy of styles
       switch (ast.type) {
-        case "Header":
+        case "heading":
           style.push("H" + ast.depth);
           break;
-        case "Emphasis":
+        case "emphasis":
           style.push("Emphasis");
           break;
-        case "Strong":
+        case "strong":
           style.push("Strong");
+          break;
+        case "sub":
+          style.push("Subscript");
+          break;
+        case "sup":
+          style.push("Superscript");
           break;
         default:
           break;
@@ -48,9 +56,9 @@ function preProcessMarkdownAst(
         d + 1
       ));
       // After child, check if we should create a new paragraph.
-      if (child.type === "Paragraph" || child.type === "Header") {
+      if (child.type === "paragraph" || child.type === "heading") {
         const paragraphStyle =
-          child.type === "Header" ? "H" + child.depth : undefined;
+          child.type === "heading" ? "H" + child.depth : undefined;
 
         paragraphs.push(
           Paragraph.create(
@@ -62,7 +70,7 @@ function preProcessMarkdownAst(
           )
         );
         atoms = []; // Flush the Atoms-array for the next paragraph.
-      } else if (child.type === "Str") {
+      } else if (child.type === "text") {
         atoms = atoms.concat(
           child.value.split("\n").map(
             (v: string) =>
@@ -70,6 +78,7 @@ function preProcessMarkdownAst(
                 type: "TextRun",
                 text: v,
                 styleName: style[style.length - 1],
+                nestedStyleNames: style,
                 textProperties: {}
               } as TextRun.TextRun)
           )
@@ -85,12 +94,15 @@ export function create({
   text,
   keepTogetherSections
 }: MarkdownProps): Array<SectionElement> {
-  const ast = parse(text);
-  const { paragraphs } = preProcessMarkdownAst(ast, [], [], [], 0);
+  const ast = unified()
+    .use(remarkParse, { commonmark: true })
+    .use(remarkSubSuper)
+    .parse(text);
+  const { paragraphs } = preProcessMarkdownAst(ast as AstRoot, [], [], [], 0);
   if (!keepTogetherSections) {
     return paragraphs;
   }
-  const groups: Array<Array<SectionElement>> = [[]];
+  const groups: Array<Array<SectionElement>> = [];
   let group: Array<SectionElement> = [];
   let i = 0;
   while (i < paragraphs.length) {
@@ -107,5 +119,9 @@ export function create({
     }
     ++i;
   }
-  return groups.map(group => Group.create({ keepTogether: true }, group));
+  if (groups.length > 0) {
+    return groups.map(group => Group.create({ keepTogether: true }, group));
+  } else {
+    return [Group.create({ keepTogether: true }, [])];
+  }
 }

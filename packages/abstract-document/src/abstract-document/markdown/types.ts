@@ -1,12 +1,14 @@
 import * as AD from "../../abstract-document/index";
 
 export type AstChildElements =
-  | AstHeader
-  | AstStr
+  | AstHeading
+  | AstText
   | AstParagraph
   | AstEmphasis
-  | AstStrong;
-export type AstElements = AstDocument | AstChildElements;
+  | AstStrong
+  | AstSubscript
+  | AstSuperscript;
+export type AstElements = AstRoot | AstChildElements;
 
 export interface AstMetaLoc {
   readonly start: { readonly line: number; readonly column: number };
@@ -14,54 +16,44 @@ export interface AstMetaLoc {
 }
 
 export interface AstParagraph {
-  readonly type: "Paragraph";
+  readonly type: "paragraph";
   readonly children: Array<AstChildElements>;
-  readonly loc: AstMetaLoc;
-  readonly range: Array<number>;
-  readonly raw: string;
 }
 
 export interface AstEmphasis {
-  readonly type: "Emphasis";
-  readonly value: string;
+  readonly type: "emphasis";
   readonly children: Array<AstChildElements>;
-  readonly loc: AstMetaLoc;
-  readonly range: Array<number>;
-  readonly raw: string;
 }
 
 export interface AstStrong {
-  readonly type: "Strong";
-  readonly value: string;
+  readonly type: "strong";
   readonly children: Array<AstChildElements>;
-  readonly loc: AstMetaLoc;
-  readonly range: Array<number>;
-  readonly raw: string;
 }
 
-export interface AstStr {
-  readonly type: "Str";
+export interface AstSubscript {
+  readonly type: "sub";
+  readonly children: Array<AstChildElements>;
+}
+
+export interface AstSuperscript {
+  readonly type: "sup";
+  readonly children: Array<AstChildElements>;
+}
+
+export interface AstText {
+  readonly type: "text";
   readonly value: string;
-  readonly loc: AstMetaLoc;
-  readonly range: Array<number>;
-  readonly raw: string;
 }
 
-export interface AstHeader {
-  readonly type: "Header";
+export interface AstHeading {
+  readonly type: "heading";
   readonly depth: number;
   readonly children: Array<AstChildElements>;
-  readonly loc: AstMetaLoc;
-  readonly range: Array<number>;
-  readonly raw: string;
 }
 
-export interface AstDocument {
-  readonly type: "Document";
+export interface AstRoot {
+  readonly type: "root";
   readonly children: Array<AstChildElements>;
-  readonly loc: AstMetaLoc;
-  readonly range: Array<number>;
-  readonly raw: string;
 }
 
 export interface MarkDownProcessData {
