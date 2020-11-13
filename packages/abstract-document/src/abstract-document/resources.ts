@@ -33,6 +33,30 @@ export function mergeResources(resources: Array<Resources>): Resources {
   };
 }
 
+export function hasResources(resources: Resources): boolean {
+  return (
+    !!resources.fonts ||
+    !!resources.imageResources ||
+    !!resources.styles ||
+    !!resources.numberings ||
+    !!resources.numberingDefinitions
+  );
+}
+
+export function extractResources(resources: Resources): Resources {
+  return {
+    ...(resources.fonts ? { fonts: resources.fonts } : {}),
+    ...(resources.imageResources
+      ? { imageResources: resources.imageResources }
+      : {}),
+    ...(resources.styles ? { styles: resources.styles } : {}),
+    ...(resources.numberings ? { numberings: resources.numberings } : {}),
+    ...(resources.numberingDefinitions
+      ? { numberingDefinitions: resources.numberingDefinitions }
+      : {})
+  };
+}
+
 export function getStyle(
   parentStyle: Style | undefined,
   elementStyle: Style | undefined,
