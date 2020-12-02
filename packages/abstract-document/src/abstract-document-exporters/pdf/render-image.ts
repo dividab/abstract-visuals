@@ -1,6 +1,7 @@
 import * as AbstractImage from "abstract-image";
 import * as AD from "../../abstract-document";
 import * as base64 from "base64-js";
+import * as svgToPdfKit from "svg-to-pdfkit";
 
 export function renderImage(
   // tslint:disable-next-line:no-any
@@ -46,6 +47,15 @@ function abstractComponentToPdf(
           "data:image/jpeg;base64," + base64.fromByteArray(component.data);
         pdf.image(data, component.topLeft.x, component.topLeft.y, {
           fit: [imageWidth, imageHeight]
+        });
+      } else if (format === "svg") {
+        const svg = new TextDecoder().decode(component.data);
+        const imageWidth = component.bottomRight.x - component.topLeft.x;
+        const imageHeight = component.bottomRight.y - component.topLeft.y;
+        svgToPdfKit(pdf, svg, component.topLeft.x, component.topLeft.y, {
+          width: imageWidth,
+          height: imageHeight,
+          preserveAspectRatio: "xMinYMin"
         });
       }
       break;
