@@ -1,6 +1,7 @@
 import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { exhaustiveCheck } from "ts-exhaustive-check/lib-cjs";
+import * as TextStyle from "../../abstract-document/styles/text-style";
 
 const alphabet = [
   "a",
@@ -110,30 +111,34 @@ function preProcessParagraph(
     );
   }
 
+  const numberOverride = paragraph.numbering.numberOverride;
+  const append = paragraph.numbering.append;
   let numberText = levelDefinitions[level].levelText;
-  const indentationWidth = levelDefinitions[level].levelIndention;
-  if (!_numberingLevelItems.has(key)) {
+  if (numberOverride !== undefined) {
+    _numberingLevelItems.set(key, numberOverride);
+  } else if (!_numberingLevelItems.has(key)) {
     _numberingLevelItems.set(key, levelDefinitions[level].start);
-  } else {
+  } else if (append !== true) {
     _numberingLevelItems.set(key, (_numberingLevelItems.get(key) || 0) + 1);
   }
 
   for (let levelDefinition of levelDefinitions.filter(l => l.level <= level)) {
     const numberingLevel = numbering + "_" + levelDefinition.level.toString();
-    const levelText = generateLevelText(
-      levelDefinition.format,
-      _numberingLevelItems.get(numberingLevel) || 0
-    );
-    numberText = numberText.replace(
-      "%" + (levelDefinition.level + 1).toString(),
-      levelText
-    );
+    const currentNumber = _numberingLevelItems.get(numberingLevel) || 0;
+    const levelText = generateLevelText(levelDefinition.format, currentNumber);
+    const levelKey = "%" + (levelDefinition.level + 1).toString();
+    numberText = numberText.replace(levelKey, levelText);
   }
 
   let rows: Array<AD.TableRow.TableRow> = [];
   let children: Array<AD.TableCell.TableCell> = [];
 
   children.push(AD.TableCell.create());
+
+  const numberTextStyle = TextStyle.overrideWith(
+    levelDefinitions[level].style,
+    paragraph.style.textStyle
+  );
 
   children.push(
     AD.TableCell.create({}, [
@@ -143,8 +148,8 @@ function preProcessParagraph(
         },
         [
           AD.TextRun.create({
-            style: paragraph.style.textStyle,
-            text: numberText
+            style: numberTextStyle,
+            text: paragraph.numbering.append !== true ? numberText : ""
           })
         ]
       )
@@ -154,6 +159,8 @@ function preProcessParagraph(
   children.push(AD.TableCell.create({}, adjustedParagraphs));
   rows.push(AD.TableRow.create({}, children));
 
+  const indentationWidth = levelDefinitions[level].levelIndention;
+  const numberingWidth = levelDefinitions[level].numberingWidth;
   return [
     AD.Table.create(
       {
@@ -161,7 +168,11 @@ function preProcessParagraph(
           alignment: "Left",
           cellStyle: AD.TableCellStyle.create({ verticalAlignment: "Top" })
         }),
-        columnWidths: [indentationWidth - 40, 40, Infinity]
+        columnWidths: [
+          indentationWidth - numberingWidth,
+          numberingWidth,
+          Infinity
+        ]
       },
       rows
     )

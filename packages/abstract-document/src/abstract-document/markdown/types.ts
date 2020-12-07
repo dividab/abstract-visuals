@@ -7,7 +7,9 @@ export type AstChildElements =
   | AstEmphasis
   | AstStrong
   | AstSubscript
-  | AstSuperscript;
+  | AstSuperscript
+  | AstList
+  | AstListItem;
 export type AstElements = AstRoot | AstChildElements;
 
 export interface AstMetaLoc {
@@ -53,6 +55,20 @@ export interface AstHeading {
 
 export interface AstRoot {
   readonly type: "root";
+  readonly children: Array<AstChildElements>;
+}
+
+export interface AstList {
+  readonly type: "list";
+  readonly ordered?: boolean;
+  readonly start?: number;
+  readonly spread?: boolean;
+  readonly children: Array<AstChildElements>; // technically only AstListItem appears hear
+}
+
+export interface AstListItem {
+  readonly type: "listItem";
+  readonly spread?: boolean;
   readonly children: Array<AstChildElements>;
 }
 

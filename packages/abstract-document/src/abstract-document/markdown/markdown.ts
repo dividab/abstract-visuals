@@ -13,12 +13,20 @@ export interface MarkdownProps {
   readonly keepTogetherSections?: boolean;
 }
 
+interface ListItemParams {
+  readonly ordered: boolean;
+  readonly start: number;
+  readonly level: number;
+  readonly firstChild: AstElements;
+}
+
 function preProcessMarkdownAst(
   ast: AstElements,
   styles: Array<string>,
   atoms: Array<Atom.Atom>,
   paragraphs: Array<Paragraph.Paragraph>,
-  d: number
+  d: number,
+  listItemParams: ListItemParams | undefined = undefined
 ): MarkDownProcessData {
   if (ast.type === "text") {
     return { atoms, paragraphs };
@@ -47,24 +55,48 @@ function preProcessMarkdownAst(
           break;
       }
 
+      const newListItemParams =
+        child.type === "list"
+          ? {
+              ordered: child.ordered === true,
+              start: child.start || 1,
+              level: listItemParams ? listItemParams.level + 1 : 0,
+              firstChild: child.children[0]
+            }
+          : listItemParams;
+
       // Recurse down the rabbit hole until we find a Str.
       ({ atoms, paragraphs } = preProcessMarkdownAst(
         child,
         style,
         atoms,
         paragraphs,
-        d + 1
+        d + 1,
+        newListItemParams
       ));
+
       // After child, check if we should create a new paragraph.
       if (child.type === "paragraph" || child.type === "heading") {
         const paragraphStyle =
           child.type === "heading" ? "H" + child.depth : undefined;
 
+        const paragraphNumbering = listItemParams
+          ? {
+              level: listItemParams.level,
+              numberingId: listItemParams.ordered ? "Ordered" : "Unordered",
+              numberOverride:
+                ast === listItemParams.firstChild
+                  ? listItemParams.start
+                  : undefined,
+              append: ast.type === "listItem" && child !== ast.children[0]
+            }
+          : undefined;
+
         paragraphs.push(
           Paragraph.create(
             {
               styleName: paragraphStyle,
-              numbering: undefined //paragraph.numbering
+              numbering: paragraphNumbering
             },
             atoms
           )

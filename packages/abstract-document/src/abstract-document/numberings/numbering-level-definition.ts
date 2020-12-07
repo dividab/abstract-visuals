@@ -1,3 +1,4 @@
+import * as TextStyle from "../styles/text-style";
 import { NumberingFormat } from "./numbering-format";
 
 export interface NumberingLevelDefinition {
@@ -6,6 +7,8 @@ export interface NumberingLevelDefinition {
   readonly start: number;
   readonly levelText: string;
   readonly levelIndention: number;
+  readonly numberingWidth: number;
+  readonly style: TextStyle.TextStyle;
 }
 
 export interface NumberingLevelDefinitionProps {
@@ -14,6 +17,8 @@ export interface NumberingLevelDefinitionProps {
   readonly start: number;
   readonly levelText: string;
   readonly levelIndention: number;
+  readonly numberingWidth?: number;
+  readonly style?: TextStyle.TextStyle;
 }
 
 export function create({
@@ -21,13 +26,17 @@ export function create({
   format,
   start,
   levelText,
-  levelIndention
+  levelIndention,
+  numberingWidth,
+  style
 }: NumberingLevelDefinitionProps): NumberingLevelDefinition {
   return {
     level,
     format,
     start,
     levelText,
-    levelIndention
+    levelIndention,
+    numberingWidth: numberingWidth || 40,
+    style: style || TextStyle.create()
   };
 }
