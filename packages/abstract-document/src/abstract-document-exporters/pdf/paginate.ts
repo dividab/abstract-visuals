@@ -53,11 +53,12 @@ function splitSection(
   const pages = new Array<Page>();
   const contentRect = getPageContentRect(desiredSizes, section);
 
+  let children = section.children;
   let elements = new Array<AD.SectionElement.SectionElement>();
   let elementsHeight = 0;
   let currentPage = previousPage;
-  for (let i = 0; i < section.children.length; ++i) {
-    const element = section.children[i];
+  for (let i = 0; i < children.length; ++i) {
+    const element = children[i];
     if (element.type === "PageBreak") {
       currentPage = createPage(
         resources,
@@ -83,6 +84,23 @@ function splitSection(
       elements
     );
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
+
+    // Collapse group if it's keep-together and taller than one page
+    if (
+      elementSize.height > availableHeight &&
+      element.type === "Group" &&
+      element.keepTogether === true
+    ) {
+      children = [
+        ...children.slice(0, i),
+        ...element.children,
+        ...children.slice(i + 1)
+      ];
+      elements.pop();
+      elementsHeight -= elementSize.height;
+      i--;
+      continue;
+    }
 
     if (elementsHeight > availableHeight) {
       if (elements.length > 1) {
