@@ -73,9 +73,20 @@ function splitSection(
       elementsHeight = 0;
       continue;
     }
+    const elementSize = getDesiredSize(element, desiredSizes);
+
+    // Collapse groups the doesn't fit on empty page
+    if (elementSize.height > contentRect.height && element.type === "Group") {
+      children = [
+        ...children.slice(0, i),
+        ...element.children,
+        ...children.slice(i + 1)
+      ];
+      i--;
+      continue;
+    }
 
     elements.push(element);
-    const elementSize = getDesiredSize(element, desiredSizes);
     elementsHeight += elementSize.height;
 
     const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(
@@ -84,24 +95,6 @@ function splitSection(
       elements
     );
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
-
-    // Collapse group if it's keep-together and taller than one page
-    if (
-      elementSize.height > availableHeight &&
-      element.type === "Group" &&
-      element.keepTogether === true
-    ) {
-      children = [
-        ...children.slice(0, i),
-        ...element.children,
-        ...children.slice(i + 1)
-      ];
-      elements.pop();
-      elementsHeight -= elementSize.height;
-      i--;
-      continue;
-    }
-
     if (elementsHeight > availableHeight) {
       if (elements.length > 1) {
         elements.pop();
