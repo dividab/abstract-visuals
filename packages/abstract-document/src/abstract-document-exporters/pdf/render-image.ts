@@ -2,12 +2,14 @@ import * as AbstractImage from "abstract-image";
 import * as AD from "../../abstract-document";
 import * as base64 from "base64-js";
 import * as svgToPdfKit from "svg-to-pdfkit";
+import { getFontName } from "./font";
 
 export function renderImage(
   // tslint:disable-next-line:no-any
   pdf: any,
   finalRect: AD.Rect.Rect,
-  image: AD.Image.Image
+  image: AD.Image.Image,
+  textStyle: AD.TextStyle.TextStyle
   // tslint:disable-next-line:no-any
 ): any {
   const aImage = image.imageResource.abstractImage;
@@ -18,7 +20,7 @@ export function renderImage(
   pdf.save();
   pdf.translate(position.x, position.y).scale(scale);
   aImage.components.forEach((c: AbstractImage.Component) =>
-    abstractComponentToPdf(pdf, c)
+    abstractComponentToPdf(pdf, c, textStyle)
   );
   pdf.restore();
 }
@@ -26,11 +28,14 @@ export function renderImage(
 function abstractComponentToPdf(
   // tslint:disable-next-line:no-any
   pdf: any,
-  component: AbstractImage.Component
+  component: AbstractImage.Component,
+  textStyle: AD.TextStyle.TextStyle
 ): void {
   switch (component.type) {
     case "group":
-      component.children.forEach(c => abstractComponentToPdf(pdf, c));
+      component.children.forEach(c =>
+        abstractComponentToPdf(pdf, c, textStyle)
+      );
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
@@ -55,7 +60,15 @@ function abstractComponentToPdf(
         svgToPdfKit(pdf, svg, component.topLeft.x, component.topLeft.y, {
           width: imageWidth,
           height: imageHeight,
-          preserveAspectRatio: "xMinYMin"
+          preserveAspectRatio: "xMinYMin",
+          //fontCallback: component.overrideSvgFont
+          //  ? (_family: string, _bold: boolean, _italic: boolean) => {
+          //      return getFontName(textStyle);
+          //    }
+          //  : undefined,
+          fontCallback: (_family: string, _bold: boolean, _italic: boolean) => {
+            return getFontName(textStyle);
+          }
         });
       }
       break;

@@ -1,4 +1,3 @@
-import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { preProcess } from "./pre-process";
 import { measure, measurePages } from "./measure";
@@ -6,7 +5,6 @@ import { paginate, Page } from "./paginate";
 import { updatePageRefs } from "./update-refs";
 import * as BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
-import { getResources } from "../shared/get_resources";
 import { registerFonts, getFontName } from "./font";
 
 //tslint:disable
@@ -291,7 +289,7 @@ function renderAtom(
       renderTextRun(resources, pdf, finalRect, textStyle, atom);
       return;
     case "Image":
-      renderImage(pdf, finalRect, atom);
+      renderImage(pdf, finalRect, atom, textStyle);
       return;
     case "HyperLink":
       renderHyperLink(resources, pdf, finalRect, textStyle, atom);
