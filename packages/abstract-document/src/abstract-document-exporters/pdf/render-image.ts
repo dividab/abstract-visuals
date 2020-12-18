@@ -2,9 +2,10 @@ import * as AbstractImage from "abstract-image";
 import * as AD from "../../abstract-document";
 import * as base64 from "base64-js";
 import * as svgToPdfKit from "svg-to-pdfkit";
-import { getFontName } from "./font";
+import { getFontName, isFontAvailable } from "./font";
 
 export function renderImage(
+  resources: AD.Resources.Resources,
   // tslint:disable-next-line:no-any
   pdf: any,
   finalRect: AD.Rect.Rect,
@@ -20,12 +21,13 @@ export function renderImage(
   pdf.save();
   pdf.translate(position.x, position.y).scale(scale);
   aImage.components.forEach((c: AbstractImage.Component) =>
-    abstractComponentToPdf(pdf, c, textStyle)
+    abstractComponentToPdf(resources, pdf, c, textStyle)
   );
   pdf.restore();
 }
 
 function abstractComponentToPdf(
+  resources: AD.Resources.Resources,
   // tslint:disable-next-line:no-any
   pdf: any,
   component: AbstractImage.Component,
@@ -34,7 +36,7 @@ function abstractComponentToPdf(
   switch (component.type) {
     case "group":
       component.children.forEach(c =>
-        abstractComponentToPdf(pdf, c, textStyle)
+        abstractComponentToPdf(resources, pdf, c, textStyle)
       );
       break;
     case "binaryimage":
@@ -61,13 +63,12 @@ function abstractComponentToPdf(
           width: imageWidth,
           height: imageHeight,
           preserveAspectRatio: "xMinYMin",
-          //fontCallback: component.overrideSvgFont
-          //  ? (_family: string, _bold: boolean, _italic: boolean) => {
-          //      return getFontName(textStyle);
-          //    }
-          //  : undefined,
-          fontCallback: (_family: string, _bold: boolean, _italic: boolean) => {
-            return getFontName(textStyle);
+          fontCallback: (family: string, _bold: boolean, _italic: boolean) => {
+            if (isFontAvailable(family, resources)) {
+              return family;
+            } else {
+              return getFontName(textStyle);
+            }
           }
         });
       }

@@ -289,7 +289,7 @@ function renderAtom(
       renderTextRun(resources, pdf, finalRect, textStyle, atom);
       return;
     case "Image":
-      renderImage(pdf, finalRect, atom, textStyle);
+      renderImage(resources, pdf, finalRect, atom, textStyle);
       return;
     case "HyperLink":
       renderHyperLink(resources, pdf, finalRect, textStyle, atom);
