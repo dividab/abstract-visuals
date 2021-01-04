@@ -294,6 +294,9 @@ function renderAtom(
     case "HyperLink":
       renderHyperLink(resources, pdf, finalRect, textStyle, atom);
       return;
+    case "WhiteSpace":
+      renderWhiteSpace(resources, pdf, finalRect, textStyle, atom);
+      return;
   }
 }
 
@@ -360,6 +363,16 @@ function renderHyperLink(
   drawHyperLink(pdf, finalRect, style, hyperLink);
 }
 
+function renderWhiteSpace(
+  _resources: AD.Resources.Resources,
+  pdf: {},
+  finalRect: AD.Rect.Rect,
+  textStyle: AD.TextStyle.TextStyle,
+  _whiteSpace: AD.WhiteSpace.WhiteSpace
+) {
+  drawDottedLine(pdf, finalRect, textStyle);
+}
+
 function drawHyperLink(
   pdf: any,
   finalRect: AD.Rect.Rect,
@@ -416,6 +429,45 @@ function drawText(
       underline: textStyle.underline || false,
       indent: textStyle.indent || 0,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
+    });
+}
+
+function drawDottedLine(
+  pdf: any,
+  finalRect: AD.Rect.Rect,
+  textStyle: AD.TextStyle.TextStyle
+) {
+  const font = getFontName(textStyle);
+  const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
+  const offset = calculateTextOffset(textStyle, fontSize);
+
+  const oneDotW = pdf.widthOfString(".", {
+    width: finalRect.width,
+    height: finalRect.height,
+    characterSpacing: 5
+  });
+  const twoDotsW = pdf.widthOfString("..", {
+    width: finalRect.width,
+    height: finalRect.height,
+    characterSpacing: 5
+  });
+  const numberOfDots =
+    Math.floor((finalRect.width - oneDotW) / (twoDotsW - oneDotW)) + 1;
+  console.log(oneDotW, twoDotsW, numberOfDots, finalRect.width);
+  if (twoDotsW - oneDotW === 0 || numberOfDots < 1) {
+    return;
+  }
+
+  const dotsText = ".".repeat(numberOfDots);
+  pdf
+    .font(font)
+    .fontSize(fontSize)
+    .fillColor(textStyle.color || "black")
+    .text(dotsText, finalRect.x, finalRect.y + offset, {
+      width: finalRect.width + 2,
+      height: finalRect.height,
+      align: "right",
+      characterSpacing: 5
     });
 }
 

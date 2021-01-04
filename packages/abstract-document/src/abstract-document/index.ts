@@ -4,6 +4,7 @@ import * as Image from "./atoms/image";
 import * as TextField from "./atoms/text-field";
 import * as TextRun from "./atoms/text-run";
 import * as HyperLink from "./atoms/hyper-link";
+import * as WhiteSpace from "./atoms/white-space";
 import * as Font from "./primitives/font";
 import * as Numbering from "./numberings/numbering";
 import * as NumberingDefinition from "./numberings/numbering-definition";
@@ -44,6 +45,7 @@ export {
   TextField,
   TextRun,
   HyperLink,
+  WhiteSpace,
   Font,
   Numbering,
   NumberingDefinition,

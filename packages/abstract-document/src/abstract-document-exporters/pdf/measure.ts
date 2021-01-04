@@ -157,6 +157,7 @@ function measureParagraph(
       resources,
       style.textStyle,
       contentAvailableSize,
+      contentAvailableSize.width - currentRowWidth,
       atom
     );
     desiredSizes.set(atom, atomSize);
@@ -297,6 +298,7 @@ function measureAtom(
   resources: AD.Resources.Resources,
   textStyle: AD.TextStyle.TextStyle,
   availableSize: AD.Size.Size,
+  availableRowSpace: number,
   atom: AD.Atom.Atom
 ): AD.Size.Size {
   switch (atom.type) {
@@ -308,6 +310,15 @@ function measureAtom(
       return measureImage(availableSize, atom);
     case "HyperLink":
       return measureHyperLink(pdf, resources, textStyle, atom, availableSize);
+    case "WhiteSpace":
+      return measureWhiteSpace(
+        pdf,
+        resources,
+        textStyle,
+        atom,
+        availableSize,
+        availableRowSpace
+      );
     default:
       return exhaustiveCheck(atom);
   }
@@ -377,6 +388,21 @@ function measureTextField(
     default:
       return exhaustiveCheck(textField.fieldType);
   }
+}
+
+function measureWhiteSpace(
+  pdf: any,
+  _resources: AD.Resources.Resources,
+  textStyle: AD.TextStyle.TextStyle,
+  _whiteSpace: AD.WhiteSpace.WhiteSpace,
+  availableSize: AD.Size.Size,
+  availableRowSpace: number
+): AD.Size.Size {
+  const size = measureText(pdf, ".", textStyle, availableSize);
+  return {
+    height: size.height,
+    width: availableRowSpace - 5
+  };
 }
 
 function measureImage(
