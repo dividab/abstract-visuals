@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "abstract-visuals-example",
-  "version": "4.2.17",
+  "version": "4.2.18",
   "description": "abstract-visuals-example",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib-cjs/index.js",
@@ -20,7 +20,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "abstract-chart": "^3.0.0",
-    "abstract-document": "^4.3.15",
+    "abstract-document": "^4.3.16",
     "abstract-image": "^3.0.0",
     "base64-js": "^1.2.0",
     "react": "^15.6.1",
