@@ -4,6 +4,7 @@ import * as Image from "./atoms/image";
 import * as TextField from "./atoms/text-field";
 import * as TextRun from "./atoms/text-run";
 import * as HyperLink from "./atoms/hyper-link";
+import * as LinkTarget from "./atoms/link-target";
 import * as TocSeparator from "./atoms/toc-separator";
 import * as Font from "./primitives/font";
 import * as Numbering from "./numberings/numbering";
@@ -45,6 +46,7 @@ export {
   TextField,
   TextRun,
   HyperLink,
+  LinkTarget,
   TocSeparator,
   Font,
   Numbering,

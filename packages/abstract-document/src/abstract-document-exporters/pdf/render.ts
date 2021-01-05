@@ -53,7 +53,7 @@ export function exportToStream(
 
   const desiredSizes = measure(pdfKit, document);
   const pages = paginate(pdfKit, document, desiredSizes);
-  const updatedPages = pages.map(page => updatePageRefs(page, pages));
+  const updatedPages = updatePageRefs(pages);
   const pageDesiredSizes = measurePages(pdfKit, document, updatedPages);
 
   for (let page of updatedPages) {
@@ -95,11 +95,11 @@ function renderPage(
   const pageHeight = AD.PageStyle.getHeight(style);
   const contentRect = addPage(pdf, page);
 
-  if (page.namedDestionation) {
+  page.namedDestionations.forEach(dest => {
     if (pdf.addNamedDestination) {
-      pdf.addNamedDestination(page.namedDestionation);
+      pdf.addNamedDestination(dest);
     }
-  }
+  });
 
   const headerX = style.headerMargins.left;
   let headerY = style.headerMargins.top;
@@ -297,6 +297,8 @@ function renderAtom(
     case "TocSeparator":
       renderTocSeparator(pdf, finalRect, textStyle);
       return;
+    case "LinkTarget":
+      return;
   }
 }
 
@@ -462,7 +464,7 @@ function drawDottedLine(
     .fontSize(fontSize)
     .fillColor(textStyle.color || "black")
     .text(dotsText, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width + 2,
+      width: finalRect.width,
       height: finalRect.height,
       align: "right",
       characterSpacing: 5

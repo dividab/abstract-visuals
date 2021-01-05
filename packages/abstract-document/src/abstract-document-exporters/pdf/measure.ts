@@ -317,6 +317,11 @@ function measureAtom(
         availableSize,
         availableRowSpace
       );
+    case "LinkTarget":
+      return {
+        width: availableSize.width,
+        height: 0
+      };
     default:
       return exhaustiveCheck(atom);
   }
@@ -397,7 +402,7 @@ function measureTocSeparator(
   const size = measureText(pdf, ".", textStyle, availableSize);
   return {
     height: size.height,
-    width: availableRowSpace - 5
+    width: availableRowSpace - 1
   };
 }
 

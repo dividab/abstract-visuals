@@ -1,7 +1,11 @@
 import * as AD from "../../abstract-document/index";
 import { Page } from "./paginate";
 
-export function updatePageRefs(page: Page, pages: ReadonlyArray<Page>): Page {
+export function updatePageRefs(pages: ReadonlyArray<Page>): Array<Page> {
+  return pages.map(page => updateRefsOnPage(page, pages));
+}
+
+export function updateRefsOnPage(page: Page, pages: ReadonlyArray<Page>): Page {
   const updatedElements = updateRefsInElements(page.elements, page, pages);
   const updatedHeader = updateRefsInElements(page.header, page, pages);
   const updatedFooter = updateRefsInElements(page.footer, page, pages);
@@ -142,8 +146,8 @@ function updateRefInTextField(
         text: pages.length.toString()
       };
     case "PageNumberOf":
-      const targetPage = pages.find(
-        p => p.namedDestionation === textField.target
+      const targetPage = pages.find(p =>
+        p.namedDestionations.some(dest => dest === textField.target)
       );
       if (targetPage) {
         return {

@@ -9,6 +9,7 @@ import {
   TableRow as TableRow1,
   TableCell as TableCell1,
   HyperLink as HyperLink1,
+  LinkTarget as LinkTarget1,
   TocSeparator as TocSeparator1,
   Image as Image1,
   Markdown as Markdown1,
@@ -48,6 +49,8 @@ export const TableCell = (props: TableCell1.TableCellProps & ChildrenProp) =>
   TableCell1.create(props, props && (props.children as any)) as any;
 export const HyperLink = (props: HyperLink1.HyperLinkProps) =>
   HyperLink1.create(props) as any;
+export const LinkTarget = (props: LinkTarget1.LinkTargetProps) =>
+  LinkTarget1.create(props) as any;
 export const Image = (props: Image1.ImageProps) => Image1.create(props) as any;
 export const TocSeparator = (props: TocSeparator1.TocSeparatorProps) =>
   TocSeparator1.create(props) as any;

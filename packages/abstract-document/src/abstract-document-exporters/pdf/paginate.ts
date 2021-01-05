@@ -7,7 +7,7 @@ import { registerFonts } from "./font";
 
 export interface Page {
   readonly pageNo: number;
-  readonly namedDestionation: string | undefined;
+  readonly namedDestionations: ReadonlyArray<string>;
   readonly pageOptions: any;
   readonly section: AD.Section.Section;
   readonly contentRect: AD.Rect.Rect;
@@ -153,8 +153,18 @@ function createPage(
     }
   };
   const pageNo = previousPage ? previousPage.pageNo + 1 : 1;
-  const namedDestionation =
-    isFirst && section.id !== "" ? section.id : undefined;
+
+  const sectionName = isFirst && section.id !== "" ? [section.id] : [];
+  // For now, only support link targets at base level. Tree search would be needed to find all targets.
+  const targetNames = R.unnest(
+    elements.map(
+      e =>
+        e.type === "Paragraph"
+          ? e.children.map(c => (c.type === "LinkTarget" ? c.name : ""))
+          : []
+    )
+  ).filter(t => t !== "");
+  const namedDestionations = [...sectionName, ...targetNames];
 
   // Ignore leading space by expanding the content rect upwards
   const rect = getPageContentRect(desiredSizes, section);
@@ -172,7 +182,7 @@ function createPage(
 
   return {
     pageNo: pageNo,
-    namedDestionation: namedDestionation,
+    namedDestionations: namedDestionations,
     pageOptions: pageOptions,
     section: section,
     contentRect: contentRect,
