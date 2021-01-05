@@ -294,8 +294,8 @@ function renderAtom(
     case "HyperLink":
       renderHyperLink(resources, pdf, finalRect, textStyle, atom);
       return;
-    case "WhiteSpace":
-      renderWhiteSpace(resources, pdf, finalRect, textStyle, atom);
+    case "TocSeparator":
+      renderTocSeparator(pdf, finalRect, textStyle);
       return;
   }
 }
@@ -363,12 +363,10 @@ function renderHyperLink(
   drawHyperLink(pdf, finalRect, style, hyperLink);
 }
 
-function renderWhiteSpace(
-  _resources: AD.Resources.Resources,
+function renderTocSeparator(
   pdf: {},
   finalRect: AD.Rect.Rect,
-  textStyle: AD.TextStyle.TextStyle,
-  _whiteSpace: AD.WhiteSpace.WhiteSpace
+  textStyle: AD.TextStyle.TextStyle
 ) {
   drawDottedLine(pdf, finalRect, textStyle);
 }

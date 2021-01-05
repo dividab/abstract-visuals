@@ -9,17 +9,17 @@ import {
   TableRow as TableRow1,
   TableCell as TableCell1,
   HyperLink as HyperLink1,
-  WhiteSpace as WhiteSpace1,
+  TocSeparator as TocSeparator1,
   Image as Image1,
   Markdown as Markdown1,
   TextField as TextField1,
   TextRun as TextRun1,
-  PageBreak as PageBreak1,
-  Resources,
-  MasterPage,
-  ParagraphStyle,
-  ParagraphNumbering,
-  TableStyle
+  PageBreak as PageBreak1
+  //Resources,
+  //MasterPage,
+  //ParagraphStyle,
+  //ParagraphNumbering,
+  //TableStyle,
 } from "../abstract-document/index";
 
 // tslint:disable:variable-name no-any no-console
@@ -49,8 +49,8 @@ export const TableCell = (props: TableCell1.TableCellProps & ChildrenProp) =>
 export const HyperLink = (props: HyperLink1.HyperLinkProps) =>
   HyperLink1.create(props) as any;
 export const Image = (props: Image1.ImageProps) => Image1.create(props) as any;
-export const WhiteSpace = (props: WhiteSpace1.WhiteSpaceProps) =>
-  WhiteSpace1.create(props) as any;
+export const TocSeparator = (props: TocSeparator1.TocSeparatorProps) =>
+  TocSeparator1.create(props) as any;
 export const Markdown = (props: Markdown1.MarkdownProps) =>
   Markdown1.create(props) as any;
 export const TextField = (props: TextField1.TextFieldProps) =>

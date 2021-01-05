@@ -310,12 +310,10 @@ function measureAtom(
       return measureImage(availableSize, atom);
     case "HyperLink":
       return measureHyperLink(pdf, resources, textStyle, atom, availableSize);
-    case "WhiteSpace":
-      return measureWhiteSpace(
+    case "TocSeparator":
+      return measureTocSeparator(
         pdf,
-        resources,
         textStyle,
-        atom,
         availableSize,
         availableRowSpace
       );
@@ -390,11 +388,9 @@ function measureTextField(
   }
 }
 
-function measureWhiteSpace(
+function measureTocSeparator(
   pdf: any,
-  _resources: AD.Resources.Resources,
   textStyle: AD.TextStyle.TextStyle,
-  _whiteSpace: AD.WhiteSpace.WhiteSpace,
   availableSize: AD.Size.Size,
   availableRowSpace: number
 ): AD.Size.Size {
