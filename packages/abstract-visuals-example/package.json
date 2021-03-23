@@ -31,8 +31,6 @@
   },
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.js --content-base ./src",
-    "lint": "tslint -t msbuild './{src,test}/**/*.ts{,x}'",
-    "build": "tsc",
-    "clean": "rm -rf ./lib"
+    "lint": "tslint -t msbuild './{src,test}/**/*.ts{,x}'"
   }
 }

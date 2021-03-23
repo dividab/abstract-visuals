@@ -37,11 +37,6 @@
     "@types/react-dom": "^15.5.1"
   },
   "scripts": {
-    "build": "yarn tscversion && yarn build:clean && yarn build:cjs && yarn build:esm",
-    "tscversion": "tsc --version",
-    "build:clean": "rm -rf ./lib-cjs ./lib-esm",
-    "build:cjs": "tsc",
-    "build:esm": "tsc --module es2015 --outDir ./lib-esm",
     "test": "rm -rf test/lib && mocha --colors",
     "test:build": "cd test && tsc"
   }
