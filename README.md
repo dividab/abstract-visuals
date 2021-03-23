@@ -24,7 +24,7 @@ There is also a package with examples:
 
 For development of the react components, use `yarn storybook` to start storybook in development mode.
 
-For the other packages, use `yarn test:packagename` to test them, or run `yarn test` to test all packages.
+For the other packages, use `yarn test` to test them.
 
 ## How to publish
 
