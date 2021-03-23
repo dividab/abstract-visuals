@@ -28,7 +28,7 @@ For the other packages, use `yarn test:packagename` to test them, or run `yarn t
 
 ## How to publish
 
-The packages are published under the @promaster-sdk orgnization on npmjs.org. To publish run this command:
+The packages are published on npmjs.org. To publish run this command:
 
 ```
 yarn publish-npm
@@ -44,7 +44,7 @@ It will build the packages and call `lerna publish` which will figure out which 
 [prettier-url]: https://github.com/prettier/prettier
 [types-image]: https://img.shields.io/npm/types/scrub-js.svg
 [types-url]: https://www.typescriptlang.org/
-[license-image]: https://img.shields.io/github/license/promaster-sdk/property.svg?style=flat
+[license-image]: https://img.shields.io/github/license/dividab/abstract-visuals.svg?style=flat
 [license-url]: https://opensource.org/licenses/MIT
 [i-ai]: https://img.shields.io/npm/v/abstract-image.svg?style=flat
 [u-ai]: https://www.npmjs.com/package/abstract-image
