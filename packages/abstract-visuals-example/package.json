@@ -28,8 +28,5 @@
     "@types/base64-js": "^1.2.5",
     "@types/react": "^15.0.34",
     "@types/react-dom": "^15.5.1"
-  },
-  "scripts": {
-    "start": "webpack-dev-server --config webpack.config.js --content-base ./src"
   }
 }
