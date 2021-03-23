@@ -44,7 +44,9 @@
     "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
     "build": "tsc -b packages",
     "start": "cd packages/abstract-visuals-example && webpack-cli serve --content-base ./src",
-    "dist": "cd packages/abstract-visuals-example && webpack"
+    "dist": "cd packages/abstract-visuals-example && webpack",
+    "storybook": "start-storybook -p 6006 --ci",
+    "build-storybook": "build-storybook"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --ext .ts,.tsx -f visualstudio",
