@@ -1,3 +1,5 @@
+export type TextAlignment = "left" | "center" | "right" | "justify";
+
 export interface TextStyle {
   readonly type: "TextStyle";
   readonly fontFamily?: string;
@@ -13,7 +15,7 @@ export interface TextStyle {
   readonly verticalPosition?: number;
   readonly indent?: number;
   readonly lineGap?: number;
-  readonly alignment?: string;
+  readonly alignment?: TextAlignment;
 }
 
 export interface TextStyleProps {
@@ -30,7 +32,7 @@ export interface TextStyleProps {
   readonly verticalPosition?: number;
   readonly indent?: number;
   readonly lineGap?: number;
-  readonly alignment?: string;
+  readonly alignment?: TextAlignment;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
