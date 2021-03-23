@@ -39,7 +39,7 @@
     "publish-npm": "run-s verify && lerna publish",
     "verify": "run-s lint build test",
     "updated": "lerna updated",
-    "test": "run-s test:abstract-document test:abstract-image",
+    "test": "run-s test:abstract-document",
     "test:abstract-chart": "cd packages/abstract-chart && rm -rf test/lib && mocha --colors",
     "test:abstract-document": "cd packages/abstract-document && rm -rf test/lib && mocha --colors",
     "test:abstract-image": "cd packages/abstract-image && rm -rf test/lib && mocha --colors",
@@ -49,10 +49,15 @@
     "build": "tsc -b packages"
   },
   "lint-staged": {
-    "*.{ts,tsx}": "tslint",
-    "*.{ts,tsx,json,css}": [
+    "*.{ts,tsx}": "eslint --ext .ts,.tsx -f visualstudio",
+    "*.{ts,tsx,js,json,css,md}": [
       "prettier --write",
       "git add"
     ]
+  },
+  "prettier": {
+    "printWidth": 120,
+    "trailingComma": "es5",
+    "arrowParens": "always"
   }
 }
