@@ -17,5 +17,6 @@
     "paths": {
       "*": ["./custom_typings/*"]
     }
-  }
+  },
+  "references": [{ "path": "../abstract-image" }]
 }
