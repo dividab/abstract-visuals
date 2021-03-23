@@ -11,8 +11,8 @@
     "@babel/polyfill": "^7.0.0",
     "abstract-image": "^3.0.0",
     "base64-js": "^1.2.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.4.2"
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
