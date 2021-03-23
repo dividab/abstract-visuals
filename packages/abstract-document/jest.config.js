@@ -4,4 +4,7 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   testMatch: ["<rootDir>/src/**/*.test.{ts,tsx}"],
+  collectCoverage: true,
+  coverageDirectory: "<rootDir>/coverage/",
+  collectCoverageFrom: ["**/src/**/!(*.test).{ts,tsx}", "!(**/__tests__/**)"],
 };

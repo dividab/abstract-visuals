@@ -36,6 +36,7 @@
     "verify": "run-s lint build test",
     "updated": "lerna updated",
     "test": "jest",
+    "test-coverage": "jest --coverage",
     "lint": "eslint './packages/*/src/**/*.ts{,x}' --ext .js,.ts,.tsx -f visualstudio",
     "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
     "build": "tsc -b packages"
