@@ -1,6 +1,5 @@
 import * as React from "react";
-import * as AbstractImage from "../../src/index";
-import * as AbstractImageExporters from "../../src/index";
+import * as AbstractImage from "abstract-image";
 
 export function ReactSvgExportExample1(): React.ReactElement<{}> {
   const components = [
@@ -29,7 +28,7 @@ export function ReactSvgExportExample1(): React.ReactElement<{}> {
       "down",
       0,
       AbstractImage.black
-    )
+    ),
   ];
   const image = AbstractImage.createAbstractImage(
     AbstractImage.createPoint(0, 0),
@@ -37,7 +36,7 @@ export function ReactSvgExportExample1(): React.ReactElement<{}> {
     AbstractImage.white,
     components
   );
-  const svg = AbstractImageExporters.createReactSvg(image);
+  const svg = AbstractImage.createReactSvg(image);
   return (
     <div>
       <h1>React Svg</h1>
