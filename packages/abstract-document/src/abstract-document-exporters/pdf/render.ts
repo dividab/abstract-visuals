@@ -427,6 +427,7 @@ function drawText(
       width: finalRect.width + 2,
       height: finalRect.height,
       underline: textStyle.underline || false,
+      align: textStyle.alignment || "left",
       indent: textStyle.indent || 0,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
     });
