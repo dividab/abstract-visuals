@@ -41,7 +41,7 @@
     "lint": "eslint './packages/*/src/**/*.ts{,x}' --ext .js,.ts,.tsx -f visualstudio",
     "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
     "build": "tsc -b packages",
-    "start": "cd packages/abstract-visuals-example && webpack-dev-server --config webpack.config.js --content-base ./src",
+    "start": "cd packages/abstract-visuals-example && webpack-cli serve --content-base ./src",
     "dist": "cd packages/abstract-visuals-example && webpack"
   },
   "lint-staged": {
