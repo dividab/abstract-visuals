@@ -4,13 +4,6 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "types": ["node", "mocha", "chai"],
-    "lib": [
-      "dom",
-      "es2015",
-      "es2015.promise",
-      "es2015.iterable",
-      "es2015.symbol"
-    ]
+    "lib": ["dom", "es2015", "es2015.promise", "es2015.iterable", "es2015.symbol"]
   }
 }

@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import * as AbstractImage from "../../../src/index";
 
 describe("svg export", () => {
@@ -26,6 +25,6 @@ describe("svg export", () => {
     );
     const svg = AbstractImage.createSVG(image);
     // console.log(svg);
-    assert.equal(svg !== "", true);
+    expect(svg !== "").toEqual(true);
   });
 });
