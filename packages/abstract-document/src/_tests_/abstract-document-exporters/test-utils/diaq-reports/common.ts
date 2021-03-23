@@ -40,45 +40,45 @@ export interface ProductDescriptionData {
   readonly measureSystem: string;
 }
 
-export function createImageResource({ image, width, height }: CombinedImageProps): CombinedImageResource {
-  let actualWidth = image.width;
-  let actualHeight = image.height;
-  if (width !== undefined && height !== undefined) {
-    actualWidth = width;
-    actualHeight = height;
-  } else if (width !== undefined && height === undefined) {
-    const ratio = image.width / image.height;
-    actualWidth = width;
-    actualHeight = width / ratio;
-  } else if (width === undefined && height !== undefined) {
-    const ratio = image.width / image.height;
-    actualWidth = height * ratio;
-    actualHeight = height;
-  }
+// export function createImageResource({ image, width, height }: CombinedImageProps): CombinedImageResource {
+//   let actualWidth = image.width;
+//   let actualHeight = image.height;
+//   if (width !== undefined && height !== undefined) {
+//     actualWidth = width;
+//     actualHeight = height;
+//   } else if (width !== undefined && height === undefined) {
+//     const ratio = image.width / image.height;
+//     actualWidth = width;
+//     actualHeight = width / ratio;
+//   } else if (width === undefined && height !== undefined) {
+//     const ratio = image.width / image.height;
+//     actualWidth = height * ratio;
+//     actualHeight = height;
+//   }
 
-  const components = [
-    AbstractImage.createBitmapImage(
-      AbstractImage.createPoint(0, 0),
-      AbstractImage.createPoint(actualWidth, actualHeight),
-      "png",
-      image.data
-    ),
-  ];
-  const abstractImage = AbstractImage.createAbstractImage(
-    AbstractImage.createPoint(0, 0),
-    AbstractImage.createSize(actualWidth, actualHeight),
-    AbstractImage.white,
-    components
-  );
-  const imageResource = ImageResource.create({
-    id: image.name,
-    abstractImage: abstractImage,
-  });
+//   const components = [
+//     AbstractImage.createBitmapImage(
+//       AbstractImage.createPoint(0, 0),
+//       AbstractImage.createPoint(actualWidth, actualHeight),
+//       "png",
+//       image.data
+//     ),
+//   ];
+//   const abstractImage = AbstractImage.createAbstractImage(
+//     AbstractImage.createPoint(0, 0),
+//     AbstractImage.createSize(actualWidth, actualHeight),
+//     AbstractImage.white,
+//     components
+//   );
+//   const imageResource = ImageResource.create({
+//     id: image.name,
+//     abstractImage: abstractImage,
+//   });
 
-  const imageImage = Image.create({
-    imageResource: imageResource,
-    width: actualWidth,
-    height: actualHeight,
-  });
-  return { image: imageImage, resource: imageResource };
-}
+//   const imageImage = Image.create({
+//     imageResource: imageResource,
+//     width: actualWidth,
+//     height: actualHeight,
+//   });
+//   return { image: imageImage, resource: imageResource };
+// }
