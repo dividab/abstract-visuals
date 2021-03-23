@@ -11,3 +11,4 @@ lib-*/
 coverage/
 test_out/
 *.tsbuildinfo
+dist/

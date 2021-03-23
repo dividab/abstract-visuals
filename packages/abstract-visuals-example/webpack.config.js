@@ -1,54 +1,28 @@
 const path = require("path");
-const webpack = require("webpack");
-const atl = require("awesome-typescript-loader");
 
 module.exports = {
-  // context - The base directory, an absolute path, for resolving entry points and loaders from configuration.
-  stats: "minimal",
+  mode: "development",
+  devtool: "inline-source-map",
+  stats: "errors-warnings",
   context: path.resolve(__dirname, "./src"),
-  devtool: "sourcemap",
   entry: ["@babel/polyfill", "./text-encoder-polyfill", "./app/start"],
   output: {
-    path: path.join(__dirname, "../dist/example"),
+    filename: "bundle.js",
+  },
+  output: {
+    path: path.join(__dirname, "./dist"),
     filename: "example-bundle.js",
     // the url to the output directory resolved relative to the HTML page
-    publicPath: "/assets/"
+    publicPath: "/assets/",
+  },
+  resolve: {
+    // Add `.ts` and `.tsx` as a resolvable extension.
+    extensions: [".ts", ".tsx", ".js"],
   },
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        loader: "awesome-typescript-loader",
-        exclude: /^node_modules/,
-        query: {
-          configFileName: "./tsconfig.json"
-        }
-      }
-    ]
+      // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+      { test: /\.tsx?$/, loader: "ts-loader" },
+    ],
   },
-  node: {
-    fs: "empty"
-  },
-  performance: {
-    hints: false
-  },
-  resolve: {
-    extensions: [".ts", ".tsx", ".js"],
-    plugins: [
-      new atl.TsConfigPathsPlugin({
-        configFileName: "./src/client/tsconfig.json"
-      })
-    ]
-  },
-  plugins: [new atl.CheckerPlugin()],
-  devServer: {
-    stats: {
-      assets: false,
-      hash: false,
-      chunks: false,
-      errors: true,
-      errorDetails: true
-    },
-    overlay: true
-  }
 };
