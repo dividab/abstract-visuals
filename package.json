@@ -37,7 +37,7 @@
     "publish-npm": "run-s verify && lerna publish",
     "verify": "run-s lint build test",
     "updated": "lerna updated",
-    "test": "run-s test:abstract-chart test:abstract-document test:abstract-image",
+    "test": "run-s test:abstract-document test:abstract-image",
     "test:abstract-chart": "cd packages/abstract-chart && rm -rf test/lib && mocha --colors",
     "test:abstract-document": "cd packages/abstract-document && rm -rf test/lib && mocha --colors",
     "test:abstract-image": "cd packages/abstract-image && rm -rf test/lib && mocha --colors",
