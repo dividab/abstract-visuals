@@ -1,18 +1,17 @@
-import { assert } from "chai";
 import { XmlWriter } from "../../../../src/abstract-document-exporters/docx/xml-writer";
 
 describe("XmlWriter", () => {
   it("should write xml processing instruction at start-document", () => {
     const writer = new XmlWriter();
     writer.WriteStartDocument(true);
-    assert.equal(writer.getXml(), `<?xml version="1.0" encoding="utf-8" standalone="yes"?>`);
+    expect(writer.getXml()).toEqual(`<?xml version="1.0" encoding="utf-8" standalone="yes"?>`);
   });
 
   it("should shorthand close tag if no content and no attribute", () => {
     const writer = new XmlWriter();
     writer.WriteStartElement("localName");
     writer.WriteEndElement();
-    assert.equal(writer.getXml(), `<localName />`);
+    expect(writer.getXml()).toEqual(`<localName />`);
   });
 
   it("should shorthand close tag if no content but attribute", () => {
@@ -20,7 +19,7 @@ describe("XmlWriter", () => {
     writer.WriteStartElement("localName");
     writer.WriteAttributeString("localName", "value");
     writer.WriteEndElement();
-    assert.equal(writer.getXml(), `<localName localName="value" />`);
+    expect(writer.getXml()).toEqual(`<localName localName="value" />`);
   });
 
   it("should write without namespace", () => {
@@ -29,7 +28,7 @@ describe("XmlWriter", () => {
     writer.WriteAttributeString("localName", "value");
     writer.WriteString("Some content");
     writer.WriteEndElement();
-    assert.equal(writer.getXml(), `<localName localName="value">Some content</localName>`);
+    expect(writer.getXml()).toEqual(`<localName localName="value">Some content</localName>`);
   });
 
   it("should write with namespace and prefix", () => {
@@ -38,8 +37,7 @@ describe("XmlWriter", () => {
     writer.WriteAttributeString("localName", "value", "ns", "prefix");
     writer.WriteString("Some content");
     writer.WriteEndElement();
-    assert.equal(
-      writer.getXml(),
+    expect(writer.getXml()).toEqual(
       `<prefix:localName prefix:localName="value" xmlns:prefix="ns">Some content</prefix:localName>`
     );
   });
@@ -50,7 +48,9 @@ describe("XmlWriter", () => {
     writer.WriteAttributeString("localName", "value", "ns");
     writer.WriteString("Some content");
     writer.WriteEndElement();
-    assert.equal(writer.getXml(), `<localName p1:localName="value" xmlns="ns" xmlns:p1="ns">Some content</localName>`);
+    expect(writer.getXml()).toEqual(
+      `<localName p1:localName="value" xmlns="ns" xmlns:p1="ns">Some content</localName>`
+    );
   });
 
   it("should not repeat namespaces in elements", () => {
@@ -61,7 +61,7 @@ describe("XmlWriter", () => {
     writer.WriteEndElement();
     writer.WriteEndElement();
     writer.WriteEndElement();
-    assert.equal(writer.getXml(), `<parent xmlns="ns">\n  <child>\n    <grandChild />\n  </child>\n</parent>`);
+    expect(writer.getXml()).toEqual(`<parent xmlns="ns">\n  <child>\n    <grandChild />\n  </child>\n</parent>`);
   });
 
   it("should invent new prefix for attributes if the namespace has blank prefix", () => {
@@ -69,7 +69,7 @@ describe("XmlWriter", () => {
     writer.WriteStartElement("parent", "ns");
     writer.WriteAttributeString("foo", "bar", "ns");
     writer.WriteEndElement();
-    assert.equal(writer.getXml(), `<parent p1:foo="bar" xmlns="ns" xmlns:p1="ns" />`);
+    expect(writer.getXml()).toEqual(`<parent p1:foo="bar" xmlns="ns" xmlns:p1="ns" />`);
   });
 
   it("should not not invent new prefix for attributes if the  namespace already has a prefix", () => {
@@ -77,7 +77,7 @@ describe("XmlWriter", () => {
     writer.WriteStartElement("root", "ns", "prefix");
     writer.WriteAttributeString("foo", "bar", "ns");
     writer.WriteEndElement();
-    assert.equal(writer.getXml(), `<prefix:root prefix:foo="bar" xmlns:prefix="ns" />`);
+    expect(writer.getXml()).toEqual(`<prefix:root prefix:foo="bar" xmlns:prefix="ns" />`);
   });
 
   // it("should error if writing passed root", () => {
@@ -90,12 +90,12 @@ describe("XmlWriter", () => {
   it("should WriteElementString", () => {
     const writer = new XmlWriter();
     writer.WriteElementString("root", "value", "ns", "prefix");
-    assert.equal(writer.getXml(), `<prefix:root xmlns:prefix="ns">value</prefix:root>`);
+    expect(writer.getXml()).toEqual(`<prefix:root xmlns:prefix="ns">value</prefix:root>`);
   });
 
   it("should self-close WriteElementString if value is blank", () => {
     const writer = new XmlWriter();
     writer.WriteElementString("root", "", "ns", "prefix");
-    assert.equal(writer.getXml(), `<prefix:root xmlns:prefix="ns" />`);
+    expect(writer.getXml()).toEqual(`<prefix:root xmlns:prefix="ns" />`);
   });
 });
