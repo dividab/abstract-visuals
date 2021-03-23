@@ -10,3 +10,4 @@ lib-*/
 .nyc_output/
 coverage/
 test_out/
+*.tsbuildinfo

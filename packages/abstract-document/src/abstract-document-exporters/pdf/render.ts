@@ -3,7 +3,7 @@ import { preProcess } from "./pre-process";
 import { measure, measurePages } from "./measure";
 import { paginate, Page } from "./paginate";
 import { updatePageRefs } from "./update-refs";
-import * as BlobStream from "blob-stream";
+import BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
 import { registerFonts, getFontName } from "./font";
 
@@ -14,7 +14,7 @@ export function exportToHTML5Blob(
   pdfKit: any,
   doc: AD.AbstractDoc.AbstractDoc
 ): Promise<Blob> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const stream = BlobStream();
     exportToStream(pdfKit, stream, doc);
     stream.on("finish", () => {
@@ -42,7 +42,7 @@ export function exportToStream(
   let pdf = new PDFDocument({
     compress: false,
     autoFirstPage: false,
-    bufferPages: true
+    bufferPages: true,
   }) as any;
 
   registerFonts(
@@ -95,7 +95,7 @@ function renderPage(
   const pageHeight = AD.PageStyle.getHeight(style);
   const contentRect = addPage(pdf, page);
 
-  page.namedDestionations.forEach(dest => {
+  page.namedDestionations.forEach((dest) => {
     if (pdf.addNamedDestination) {
       pdf.addNamedDestination(dest);
     }
@@ -162,8 +162,8 @@ function addPage(pdf: any, page: Page): AD.Rect.Rect {
       top: 0,
       left: 0,
       right: 0,
-      bottom: 0
-    }
+      bottom: 0,
+    },
   };
   pdf.addPage(pageOptions);
   return page.contentRect;
@@ -394,10 +394,12 @@ function drawHyperLink(
       underline: textStyle.underline || false,
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
       indent: textStyle.indent || 0,
-      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
+      ...(textStyle.lineGap !== undefined
+        ? { lineGap: textStyle.lineGap }
+        : {}),
     })
     .underline(finalRect.x, finalRect.y, finalRect.width, finalRect.height, {
-      color: "blue"
+      color: "blue",
     });
   if (!isInternalLink) {
     pdf.link(
@@ -429,7 +431,9 @@ function drawText(
       underline: textStyle.underline || false,
       align: textStyle.alignment || "left",
       indent: textStyle.indent || 0,
-      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {})
+      ...(textStyle.lineGap !== undefined
+        ? { lineGap: textStyle.lineGap }
+        : {}),
     });
 }
 
@@ -445,12 +449,12 @@ function drawDottedLine(
   const oneDotW = pdf.widthOfString(".", {
     width: finalRect.width,
     height: finalRect.height,
-    characterSpacing: 5
+    characterSpacing: 5,
   });
   const twoDotsW = pdf.widthOfString("..", {
     width: finalRect.width,
     height: finalRect.height,
-    characterSpacing: 5
+    characterSpacing: 5,
   });
   const numberOfDots =
     Math.floor((finalRect.width - oneDotW) / (twoDotsW - oneDotW)) + 1;
@@ -468,7 +472,7 @@ function drawDottedLine(
       width: finalRect.width,
       height: finalRect.height,
       align: "right",
-      characterSpacing: 5
+      characterSpacing: 5,
     });
 }
 
@@ -598,7 +602,9 @@ function calculateTextOffset(
 ): number {
   const defaultPosition = textStyle.superScript
     ? -0.5
-    : textStyle.subScript ? 0.5 : 0;
+    : textStyle.subScript
+    ? 0.5
+    : 0;
   const position =
     textStyle.verticalPosition !== undefined
       ? textStyle.verticalPosition
