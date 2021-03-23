@@ -21,9 +21,5 @@
   },
   "devDependencies": {
     "@types/ramda": "^0.25.29"
-  },
-  "scripts": {
-    "test": "rm -rf test/lib && mocha --colors",
-    "test:build": "cd test && tsc"
   }
 }

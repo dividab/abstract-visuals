@@ -29,11 +29,14 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "publish-npm": "yarn verify && lerna publish",
-    "verify": "lerna run lint && lerna run build && lerna run circular && lerna run test && lerna run coverage",
+    "publish-npm": "run-s verify && lerna publish",
+    "verify": "run-s lint build test",
     "updated": "lerna updated",
+    "test": "run-s test:abstract-chart test:abstract-document test:abstract-image",
+    "test:abstract-chart": "cd packages/abstract-chart && rm -rf test/lib && mocha --colors",
+    "test:abstract-document": "cd packages/abstract-document && rm -rf test/lib && mocha --colors",
+    "test:abstract-image": "cd packages/abstract-image && rm -rf test/lib && mocha --colors",
     "lint": "tslint -t msbuild './packages/*/{src,test}/**/*.ts{,x}'",
-    "test": "lerna run test",
     "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
     "build": "tsc -b packages"
   },

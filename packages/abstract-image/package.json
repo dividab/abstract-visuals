@@ -24,8 +24,6 @@
   },
   "scripts": {
     "start": "yarn run storybook",
-    "test": "rm -rf test/lib && mocha --colors",
-    "test:build": "cd test && tsc",
     "tsc:stories": "tsc -p stories --noEmit",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
