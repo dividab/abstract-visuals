@@ -1,0 +1,2 @@
+_tests_/
+*.test.{js,ts,tsx}

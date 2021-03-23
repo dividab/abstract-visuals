@@ -40,11 +40,7 @@ export interface ProductDescriptionData {
   readonly measureSystem: string;
 }
 
-export function createImageResource({
-  image,
-  width,
-  height
-}: CombinedImageProps): CombinedImageResource {
+export function createImageResource({ image, width, height }: CombinedImageProps): CombinedImageResource {
   let actualWidth = image.width;
   let actualHeight = image.height;
   if (width !== undefined && height !== undefined) {
@@ -66,7 +62,7 @@ export function createImageResource({
       AbstractImage.createPoint(actualWidth, actualHeight),
       "png",
       image.data
-    )
+    ),
   ];
   const abstractImage = AbstractImage.createAbstractImage(
     AbstractImage.createPoint(0, 0),
@@ -76,13 +72,13 @@ export function createImageResource({
   );
   const imageResource = ImageResource.create({
     id: image.name,
-    abstractImage: abstractImage
+    abstractImage: abstractImage,
   });
 
   const imageImage = Image.create({
     imageResource: imageResource,
     width: actualWidth,
-    height: actualHeight
+    height: actualHeight,
   });
   return { image: imageImage, resource: imageResource };
 }

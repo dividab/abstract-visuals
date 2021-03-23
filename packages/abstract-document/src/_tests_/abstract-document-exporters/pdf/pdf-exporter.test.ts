@@ -96,116 +96,94 @@ describe("PdfExporter", () => {
   //   ADPdf.exportToStream(pdfKit, stream, doc);
   // });
 
-  it("should render tables correctly", done => {
+  it("should render tables correctly", (done) => {
     const tableCellStyle = AD.TableCellStyle.create({
       background: "#AAAAFF",
       padding: AD.LayoutFoundation.create({
         top: 10,
         bottom: 20,
         left: 30,
-        right: 40
-      })
+        right: 40,
+      }),
     });
     const text = R.range(0, 30)
-      .map(i => "Test" + i.toString())
+      .map((i) => "Test" + i.toString())
       .join(" ");
     const defaultTextStyle = AD.TextStyle.create({ fontSize: 20 });
     const styles: AD.Types.Indexer<AD.Style.Style> = {};
-    styles[
-      AD.StyleKey.create("ParagraphStyle", "Default")
-    ] = AD.ParagraphStyle.create({ textStyle: defaultTextStyle });
+    styles[AD.StyleKey.create("ParagraphStyle", "Default")] = AD.ParagraphStyle.create({ textStyle: defaultTextStyle });
     styles[AD.StyleKey.create("TextStyle", "Default")] = defaultTextStyle;
 
     const doc = AD.AbstractDoc.create(
       {
-        styles: styles
+        styles: styles,
       },
       [
         AD.Section.create({}, [
           AD.Table.create(
             {
-              columnWidths: [Infinity, 200]
+              columnWidths: [Infinity, 200],
             },
             [
               AD.TableRow.create({}, [
                 AD.TableCell.create(
                   {
-                    style: tableCellStyle
+                    style: tableCellStyle,
                   },
                   [AD.Paragraph.create({}, [AD.TextRun.create({ text: text })])]
                 ),
                 AD.TableCell.create(
                   {
-                    style: tableCellStyle
+                    style: tableCellStyle,
                   },
                   [AD.Paragraph.create({}, [AD.TextRun.create({ text: text })])]
-                )
+                ),
               ]),
               AD.TableRow.create({}, [
                 AD.TableCell.create(
                   {
-                    style: tableCellStyle
+                    style: tableCellStyle,
                   },
-                  [
-                    AD.Paragraph.create({}, [
-                      AD.TextRun.create({ text: "Apa apa" })
-                    ])
-                  ]
+                  [AD.Paragraph.create({}, [AD.TextRun.create({ text: "Apa apa" })])]
                 ),
                 AD.TableCell.create(
                   {
-                    style: tableCellStyle
+                    style: tableCellStyle,
                   },
-                  [
-                    AD.Paragraph.create({}, [
-                      AD.TextRun.create({ text: "123.33 Pa" })
-                    ])
-                  ]
-                )
+                  [AD.Paragraph.create({}, [AD.TextRun.create({ text: "123.33 Pa" })])]
+                ),
               ]),
               AD.TableRow.create({}, [
                 AD.TableCell.create(
                   {
-                    style: tableCellStyle
+                    style: tableCellStyle,
                   },
-                  [
-                    AD.Paragraph.create({}, [
-                      AD.TextRun.create({ text: "Torsk" })
-                    ])
-                  ]
+                  [AD.Paragraph.create({}, [AD.TextRun.create({ text: "Torsk" })])]
                 ),
                 AD.TableCell.create(
                   {
-                    style: tableCellStyle
+                    style: tableCellStyle,
                   },
-                  [
-                    AD.Paragraph.create({}, [
-                      AD.TextRun.create({ text: "5.5 l/s" })
-                    ])
-                  ]
-                )
+                  [AD.Paragraph.create({}, [AD.TextRun.create({ text: "5.5 l/s" })])]
+                ),
               ]),
               AD.TableRow.create({}, [
                 AD.TableCell.create(
                   {
-                    style: tableCellStyle
+                    style: tableCellStyle,
                   },
-                  [
-                    AD.Paragraph.create({}, [
-                      AD.TextRun.create({ text: "Mugg" })
-                    ])
-                  ]
+                  [AD.Paragraph.create({}, [AD.TextRun.create({ text: "Mugg" })])]
                 ),
                 AD.TableCell.create(
                   {
-                    style: tableCellStyle
+                    style: tableCellStyle,
                   },
                   [AD.Paragraph.create({}, [AD.TextRun.create({ text: "23" })])]
-                )
-              ])
+                ),
+              ]),
             ]
-          )
-        ])
+          ),
+        ]),
       ]
     );
     let stream = createWriteStreamInOutDir("test_table.pdf");
@@ -215,7 +193,7 @@ describe("PdfExporter", () => {
     ADPdf.exportToStream(pdfKit, stream, doc);
   });
 
-  it("should render paragraphs in Daxline correctly", done => {
+  it("should render paragraphs in Daxline correctly", (done) => {
     const loadFile = (fileName: string) => {
       const buffer = fs.readFileSync(fileName);
       const array = new Uint8Array(buffer);
@@ -223,50 +201,50 @@ describe("PdfExporter", () => {
     };
     const fonts = {
       Daxline: AD.Font.create({
-        normal: loadFile("test/src/fonts/DaxlinePro-Regular_13131.ttf"),
-        bold: loadFile("test/src/fonts/DaxlinePro-Regular_13131.ttf"),
-        italic: loadFile("test/src/fonts/DaxlinePro-Regular_13131.ttf"),
-        boldItalic: loadFile("test/src/fonts/DaxlinePro-Regular_13131.ttf")
-      })
+        normal: loadFile(path.join(__dirname, "../../fonts/DaxlinePro-Regular_13131.ttf")),
+        bold: loadFile(path.join(__dirname, "../../fonts/DaxlinePro-Regular_13131.ttf")),
+        italic: loadFile(path.join(__dirname, "../../fonts/DaxlinePro-Regular_13131.ttf")),
+        boldItalic: loadFile(path.join(__dirname, "../../fonts/DaxlinePro-Regular_13131.ttf")),
+      }),
     };
     const fontStyle = AD.TextStyle.create({ fontFamily: "Daxline" });
     const doc = AD.AbstractDoc.create(
       {
-        fonts: fonts
+        fonts: fonts,
       },
       [
         AD.Section.create({}, [
           AD.Paragraph.create(
             {
-              styleName: "H1"
+              styleName: "H1",
             },
             [AD.TextRun.create({ text: "Testing" })]
           ),
           AD.Paragraph.create(
             {
-              styleName: "H2"
+              styleName: "H2",
             },
             [AD.TextRun.create({ style: fontStyle, text: "Testing" })]
           ),
           AD.Paragraph.create(
             {
-              styleName: "H3"
+              styleName: "H3",
             },
             [AD.TextRun.create({ style: fontStyle, text: "Testing" })]
           ),
           AD.Paragraph.create({}, [
             AD.TextRun.create({
               style: fontStyle,
-              text: "Testing paragraph 1"
-            })
+              text: "Testing paragraph 1",
+            }),
           ]),
           AD.Paragraph.create({}, [
             AD.TextRun.create({
               style: fontStyle,
-              text: "Testing paragraph 2"
-            })
-          ])
-        ])
+              text: "Testing paragraph 2",
+            }),
+          ]),
+        ]),
       ]
     );
     let stream = createWriteStreamInOutDir("test_paragraphstyling_daxline.pdf");
@@ -433,7 +411,7 @@ describe("PdfExporter", () => {
   //   ADPdf.exportToStream(pdfKit, stream, doc);
   // });
 
-  it("should handle styling correctly", done => {
+  it("should handle styling correctly", (done) => {
     const textBlue = AD.TextStyle.create({ fontSize: 20 });
     const textRed = AD.TextStyle.create({ fontSize: 7 });
 
@@ -448,83 +426,81 @@ describe("PdfExporter", () => {
 
     const doc = AD.AbstractDoc.create(
       {
-        styles: styles
+        styles: styles,
       },
       [
         AD.Section.create({}, [
           AD.Paragraph.create({}, [
             AD.TextRun.create({
-              text: "Blue from default style"
-            })
+              text: "Blue from default style",
+            }),
           ]),
           AD.Paragraph.create(
             {
-              styleName: "Red"
+              styleName: "Red",
             },
             [
               AD.TextRun.create({
-                text: "Red from paragraph style name"
-              })
+                text: "Red from paragraph style name",
+              }),
             ]
           ),
           AD.Paragraph.create({}, [
             AD.TextRun.create({
               styleName: "Red",
-              text: "Red from text style name"
-            })
+              text: "Red from text style name",
+            }),
           ]),
           AD.Paragraph.create(
             {
-              style: paragraphRed
+              style: paragraphRed,
             },
             [
               AD.TextRun.create({
-                text: "Red from paragraph element"
-              })
+                text: "Red from paragraph element",
+              }),
             ]
           ),
           AD.Paragraph.create({}, [
             AD.TextRun.create({
               style: textRed,
-              text: "Red from text element"
-            })
+              text: "Red from text element",
+            }),
           ]),
           AD.Paragraph.create(
             {
-              style: paragraphBlue
+              style: paragraphBlue,
             },
             [
               AD.TextRun.create({
                 styleName: "Red",
-                text: "Red from paragraph element, overriding parent style"
-              })
+                text: "Red from paragraph element, overriding parent style",
+              }),
             ]
-          )
-        ])
+          ),
+        ]),
       ]
     );
-    let stream = createWriteStreamInOutDir(
-      "test_paragraphstyling_hierarchy.pdf"
-    );
+    let stream = createWriteStreamInOutDir("test_paragraphstyling_hierarchy.pdf");
     stream.on("finish", () => {
       done();
     });
     ADPdf.exportToStream(pdfKit, stream, doc);
   });
 
-  it("should handle new lines correctly", done => {
+  it("should handle new lines correctly", (done) => {
     const paragraphStyle = AD.ParagraphStyle.create({
       textStyle: AD.TextStyle.create({
-        fontSize: 12
-      })
+        fontSize: 12,
+      }),
     });
     const cellStyle = AD.TableCellStyle.create({
       padding: AD.LayoutFoundation.create({
         top: 20,
         bottom: 20,
         left: 50,
-        right: 50
-      })
+        right: 50,
+      }),
     });
 
     const doc = AD.AbstractDoc.create({}, [
@@ -533,34 +509,34 @@ describe("PdfExporter", () => {
           header: [
             AD.Table.create(
               {
-                columnWidths: [Infinity]
+                columnWidths: [Infinity],
               },
               [
                 AD.TableRow.create({}, [
                   AD.TableCell.create(
                     {
-                      style: cellStyle
+                      style: cellStyle,
                     },
                     [
                       AD.Paragraph.create(
                         {
-                          style: paragraphStyle
+                          style: paragraphStyle,
                         },
                         [
                           AD.TextRun.create({
-                            text: "THOR-100, THOR-100, THOR-100, THOR-100"
-                          })
+                            text: "THOR-100, THOR-100, THOR-100, THOR-100",
+                          }),
                         ]
-                      )
+                      ),
                     ]
                   ),
-                  AD.TableCell.create()
-                ])
+                  AD.TableCell.create(),
+                ]),
               ]
-            )
-          ]
-        })
-      })
+            ),
+          ],
+        }),
+      }),
     ]);
     let stream = createWriteStreamInOutDir("test_new_line.pdf");
     stream.on("finish", () => {

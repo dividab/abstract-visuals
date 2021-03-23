@@ -91,7 +91,7 @@
 //   const productImage = Diaq.createImageResource({image: data.productImage, width: (MasterPage.getPrintableWidth(page) * 0.5)});
 //
 //   const doc = AbstractDoc.create({
-//     imageResources: {"logo": imageLogo.resource },
+//     imageResources: {"logo": imageLogo.resource},
 //
 //     children: [
 //       Section.create({

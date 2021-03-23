@@ -1,6 +1,5 @@
 import { assert } from "chai";
 import * as AbstractImage from "../../../src/index";
-import * as AbstractImageExporters from "../../../src/index";
 
 describe("svg export", () => {
   it("doesnt throw exception and produces output", () => {
@@ -17,7 +16,7 @@ describe("svg export", () => {
         AbstractImage.blue,
         2,
         AbstractImage.red
-      )
+      ),
     ];
     const image = AbstractImage.createAbstractImage(
       AbstractImage.createPoint(0, 0),
@@ -25,7 +24,7 @@ describe("svg export", () => {
       AbstractImage.white,
       components
     );
-    const svg = AbstractImageExporters.createSVG(image);
+    const svg = AbstractImage.createSVG(image);
     // console.log(svg);
     assert.equal(svg !== "", true);
   });
