@@ -3,13 +3,11 @@
   "version": "4.3.16",
   "description": "Dynamically create documents using code or JSX and render to any format",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
-  "main": "lib-cjs/index.js",
-  "module": "lib-esm/index.js",
-  "types": "lib-cjs/index",
+  "main": "lib/index.js",
+  "types": "lib/index",
   "license": "MIT",
   "files": [
-    "/lib-cjs",
-    "/lib-esm",
+    "/lib",
     "/src",
     "package.json",
     "CHANGELOG.md",
@@ -30,21 +28,12 @@
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
-    "@types/blob-stream": "^0.1.29",
+    "@types/blob-stream": "^0.1.30",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/jszip": "0.0.31",
     "@types/pdfkit": "^0.7.31",
     "@types/ramda": "^0.25.29",
     "@types/react": "^15.0.34",
     "@types/react-dom": "^15.5.1"
-  },
-  "scripts": {
-    "build": "yarn tscversion && yarn build:clean && yarn build:cjs && yarn build:esm",
-    "tscversion": "tsc --version",
-    "build:clean": "rm -rf ./lib-cjs ./lib-esm",
-    "build:cjs": "tsc",
-    "build:esm": "tsc --module es2015 --outDir ./lib-esm",
-    "test": "rm -rf test/lib && mocha --colors",
-    "test:build": "cd test && tsc"
   }
 }

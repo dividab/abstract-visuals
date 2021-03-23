@@ -1,24 +1,9 @@
 {
-  "extends": "../../tsconfig-base.json",
-  "include": ["src/**/*"],
+  "extends": "../tsconfig.settings.json",
   "compilerOptions": {
-    "outDir": "./lib-cjs",
-    "rootDir": "./src",
+    "outDir": "lib",
+    "rootDir": "src",
     "types": ["node", "mocha", "chai"],
-    // Paths options
-    "baseUrl": ".",
-    "paths": {
-      "*": ["./custom_typings/*"]
-    },
-    // Output options
-    "declaration": true,
-    "sourceMap": true,
-    "target": "es5",
-    "module": "commonjs",
-    "jsx": "react",
-    // Module resolution (this will default to classic when you specify es2015 as module system)
-    "moduleResolution": "node",
-    // Lib options
     "lib": [
       "dom",
       "es2015",
@@ -26,5 +11,6 @@
       "es2015.iterable",
       "es2015.symbol"
     ]
-  }
+  },
+  "references": [{ "path": "../abstract-image" }]
 }

@@ -3,13 +3,11 @@
   "version": "3.0.0",
   "description": "Drawing charts using multiple unit of measure axes as coordinate system",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-chart",
-  "main": "lib-cjs/index.js",
-  "module": "lib-esm/index.js",
-  "types": "lib-cjs/index",
+  "main": "lib/index.js",
+  "types": "lib/index",
   "license": "MIT",
   "files": [
-    "/lib-cjs",
-    "/lib-esm",
+    "/lib",
     "/src",
     "package.json",
     "CHANGELOG.md",
@@ -23,13 +21,5 @@
   },
   "devDependencies": {
     "@types/ramda": "^0.25.29"
-  },
-  "scripts": {
-    "build": "yarn build:clean && yarn build:cjs && yarn build:esm",
-    "build:clean": "rm -rf ./lib-cjs ./lib-esm",
-    "build:cjs": "tsc",
-    "build:esm": "tsc --module es2015 --outDir ./lib-esm",
-    "test": "rm -rf test/lib && mocha --colors",
-    "test:build": "cd test && tsc"
   }
 }

@@ -1,0 +1,10 @@
+{
+  // all packages
+  "files": [],
+  "references": [
+    { "path": "abstract-chart/tsconfig.json" },
+    { "path": "abstract-document" },
+    { "path": "abstract-image" },
+    { "path": "abstract-visuals-example" }
+  ]
+}
