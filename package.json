@@ -51,9 +51,9 @@
     "publish-npm": "yarn verify && lerna publish",
     "verify": "lerna run lint && lerna run build && lerna run circular && lerna run test && lerna run coverage",
     "updated": "lerna updated",
-    "clean": "tsc -b packages --clean && rm -rf packages/*/lib packages/*/lib-cjs packages/*/lib-esm",
     "lint": "tslint -t msbuild './packages/*/{src,test}/**/*.ts{,x}'",
     "test": "lerna run test",
+    "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
     "build": "tsc -b packages"
   },
   "lint-staged": {
