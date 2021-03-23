@@ -1,6 +1,6 @@
 # abstract-visuals
 
-[![travis build][travis-image]][travis-url]
+[![build][build-image]][build-url]
 [![Coverage Status][codecov-image]][codecov-url]
 [![code style: prettier][prettier-image]][prettier-url]
 [![types][types-image]][types-url]
@@ -36,8 +36,8 @@ yarn publish-npm
 
 It will build the packages and call `lerna publish` which will figure out which packages has changed, ask for new versions of them, and then publish them.
 
-[travis-image]: https://travis-ci.com/dividab/abstract-visuals.svg?branch=master&style=flat
-[travis-url]: https://travis-ci.com/dividab/abstract-visuals
+[build-image]: https://github.com/dividab/abstract-visuals/workflows/Build/badge.svg
+[build-url]: https://github.com/dividab/abstract-visuals/actions?query=workflow%3ABuild+branch%3Amaster
 [codecov-image]: https://codecov.io/gh/dividab/abstract-visuals/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/dividab/abstract-visuals
 [prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat
