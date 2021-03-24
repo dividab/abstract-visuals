@@ -31,11 +31,7 @@ export function exportToHTML5Blob(
  * @param blobStream
  * @param doc
  */
-export function exportToStream(
-  pdfKit: any,
-  blobStream: {},
-  doc: AD.AbstractDoc.AbstractDoc
-): void {
+export function exportToStream(pdfKit: any, blobStream: {}, doc: AD.AbstractDoc.AbstractDoc): void {
   const PDFDocument = pdfKit;
   const document = preProcess(doc);
 
@@ -45,11 +41,7 @@ export function exportToStream(
     bufferPages: true,
   }) as any;
 
-  registerFonts(
-    (fontName: string, fontSource: AD.Font.FontSource) =>
-      pdf.registerFont(fontName, fontSource),
-    document
-  );
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
 
   const desiredSizes = measure(pdfKit, document);
   const pages = paginate(pdfKit, document, desiredSizes);
@@ -204,8 +196,7 @@ function renderParagraph(
     paragraph.styleName,
     resources
   ) as AD.ParagraphStyle.ParagraphStyle;
-  const availableWidth =
-    finalRect.width - (style.margins.left + style.margins.right);
+  const availableWidth = finalRect.width - (style.margins.left + style.margins.right);
 
   let rows: Array<Array<AD.Atom.Atom>> = [];
   let currentRow: Array<AD.Atom.Atom> = [];
@@ -227,10 +218,7 @@ function renderParagraph(
   let y = finalRect.y + style.margins.top;
 
   for (let row of rows) {
-    const rowWidth = row.reduce(
-      (a, b) => a + getDesiredSize(b, desiredSizes).width,
-      0
-    );
+    const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
     let x = finalRect.x + style.margins.left;
     if (style.alignment === "Center") x += 0.5 * (availableWidth - rowWidth);
     else if (style.alignment === "End") x += availableWidth - rowWidth;
@@ -243,13 +231,29 @@ function renderParagraph(
         pdf,
         AD.Rect.create(x, y, atomSize.width, atomSize.height),
         style.textStyle,
-        atom
+        atom,
+        parseAlignment(style.alignment)
       );
       x += atomSize.width;
       rowHeight = Math.max(rowHeight, atomSize.height);
     }
 
     y += rowHeight;
+  }
+}
+
+function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | undefined): AD.TextStyle.TextAlignment {
+  switch (paragraphAlignment) {
+    case "Start":
+      return "left";
+    case "Center":
+      return "center";
+    case "End":
+      return "right";
+    case "Justify":
+      return "justify";
+    default:
+      return "left";
   }
 }
 
@@ -279,14 +283,15 @@ function renderAtom(
   pdf: {},
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  atom: AD.Atom.Atom
+  atom: AD.Atom.Atom,
+  alignment: AD.TextStyle.TextAlignment
 ): void {
   switch (atom.type) {
     case "TextField":
-      renderTextField(resources, pdf, finalRect, textStyle, atom);
+      renderTextField(resources, pdf, finalRect, textStyle, atom, "left");
       return;
     case "TextRun":
-      renderTextRun(resources, pdf, finalRect, textStyle, atom);
+      renderTextRun(resources, pdf, finalRect, textStyle, atom, alignment);
       return;
     case "Image":
       renderImage(resources, pdf, finalRect, atom, textStyle);
@@ -307,7 +312,8 @@ function renderTextField(
   pdf: {},
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  textField: AD.TextField.TextField
+  textField: AD.TextField.TextField,
+  alignment: AD.TextStyle.TextAlignment
 ): void {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -318,13 +324,13 @@ function renderTextField(
   ) as AD.TextStyle.TextStyle;
   switch (textField.fieldType) {
     case "Date":
-      drawText(pdf, finalRect, style, new Date(Date.now()).toDateString());
+      drawText(pdf, finalRect, style, new Date(Date.now()).toDateString(), alignment);
       return;
     case "PageNumber":
     case "TotalPages":
     case "PageNumberOf":
       if (textField.text) {
-        drawText(pdf, finalRect, style, textField.text);
+        drawText(pdf, finalRect, style, textField.text, alignment);
       }
       return;
   }
@@ -335,7 +341,8 @@ function renderTextRun(
   pdf: {},
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  textRun: AD.TextRun.TextRun
+  textRun: AD.TextRun.TextRun,
+  alignment: AD.TextStyle.TextAlignment
 ) {
   const style = AD.Resources.getNestedStyle(
     textStyle,
@@ -345,7 +352,7 @@ function renderTextRun(
     resources,
     textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
-  drawText(pdf, finalRect, style, textRun.text);
+  drawText(pdf, finalRect, style, textRun.text, alignment);
 }
 
 function renderHyperLink(
@@ -365,11 +372,7 @@ function renderHyperLink(
   drawHyperLink(pdf, finalRect, style, hyperLink);
 }
 
-function renderTocSeparator(
-  pdf: {},
-  finalRect: AD.Rect.Rect,
-  textStyle: AD.TextStyle.TextStyle
-) {
+function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
   drawDottedLine(pdf, finalRect, textStyle);
 }
 
@@ -380,8 +383,7 @@ function drawHyperLink(
   hyperLink: AD.HyperLink.HyperLink
 ) {
   const font = getFontName(textStyle);
-  const isInternalLink =
-    hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
+  const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
   pdf
@@ -389,26 +391,18 @@ function drawHyperLink(
     .fontSize(fontSize)
     .fillColor(textStyle.color || "blue")
     .text(hyperLink.text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width + 2,
+      width: finalRect.width,
       height: finalRect.height,
       underline: textStyle.underline || false,
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
       indent: textStyle.indent || 0,
-      ...(textStyle.lineGap !== undefined
-        ? { lineGap: textStyle.lineGap }
-        : {}),
+      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     })
     .underline(finalRect.x, finalRect.y, finalRect.width, finalRect.height, {
       color: "blue",
     });
   if (!isInternalLink) {
-    pdf.link(
-      finalRect.x,
-      finalRect.y,
-      finalRect.width,
-      finalRect.height,
-      hyperLink.target
-    );
+    pdf.link(finalRect.x, finalRect.y, finalRect.width, finalRect.height, hyperLink.target);
   }
 }
 
@@ -416,7 +410,8 @@ function drawText(
   pdf: any,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  text: string
+  text: string,
+  alignment: AD.TextStyle.TextAlignment
 ) {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -426,22 +421,16 @@ function drawText(
     .fontSize(fontSize)
     .fillColor(textStyle.color || "black")
     .text(text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width + 2,
+      width: finalRect.width,
       height: finalRect.height,
       underline: textStyle.underline || false,
-      align: textStyle.alignment || "left",
+      align: alignment,
       indent: textStyle.indent || 0,
-      ...(textStyle.lineGap !== undefined
-        ? { lineGap: textStyle.lineGap }
-        : {}),
+      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
 }
 
-function drawDottedLine(
-  pdf: any,
-  finalRect: AD.Rect.Rect,
-  textStyle: AD.TextStyle.TextStyle
-) {
+function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
@@ -456,8 +445,7 @@ function drawDottedLine(
     height: finalRect.height,
     characterSpacing: 5,
   });
-  const numberOfDots =
-    Math.floor((finalRect.width - oneDotW) / (twoDotsW - oneDotW)) + 1;
+  const numberOfDots = Math.floor((finalRect.width - oneDotW) / (twoDotsW - oneDotW)) + 1;
   console.log(oneDotW, twoDotsW, numberOfDots, finalRect.width);
   if (twoDotsW - oneDotW === 0 || numberOfDots < 1) {
     return;
@@ -490,10 +478,13 @@ function renderTable(
     table.styleName,
     resources
   ) as AD.TableStyle.TableStyle;
-  const x = finalRect.x + style.margins.left;
+  const availableWidth = finalRect.width;
   let y = finalRect.y + style.margins.top;
   for (let row of table.children) {
     const rowSize = getDesiredSize(row, desiredSizes);
+    let x = finalRect.x + style.margins.left;
+    if (style.alignment === "Center") x += 0.5 * (availableWidth - rowSize.width);
+    else if (style.alignment === "Right") x += availableWidth - rowSize.width;
     const rowRect = AD.Rect.create(x, y, rowSize.width, rowSize.height);
     renderRow(resources, pdf, desiredSizes, rowRect, style.cellStyle, row);
     y += rowSize.height;
@@ -511,12 +502,7 @@ function renderRow(
   let x = finalRect.x;
   for (const cell of row.children) {
     const cellSize = getDesiredSize(cell, desiredSizes);
-    const cellRect = AD.Rect.create(
-      x,
-      finalRect.y,
-      cellSize.width,
-      cellSize.height
-    );
+    const cellRect = AD.Rect.create(x, finalRect.y, cellSize.width, cellSize.height);
     renderCell(resources, pdf, desiredSizes, cellRect, tableCellStyle, cell);
     x += cellSize.width;
   }
@@ -538,21 +524,14 @@ function renderCell(
     resources
   ) as AD.TableCellStyle.TableCellStyle;
   if (style.background) {
-    pdf
-      .rect(finalRect.x, finalRect.y, finalRect.width, finalRect.height)
-      .fill(style.background);
+    pdf.rect(finalRect.x, finalRect.y, finalRect.width, finalRect.height).fill(style.background);
   }
 
   let x = finalRect.x + style.padding.left;
   let y = finalRect.y + style.padding.top;
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
-    const elementRect = AD.Rect.create(
-      x,
-      y,
-      elementSize.width,
-      elementSize.height
-    );
+    const elementRect = AD.Rect.create(x, y, elementSize.width, elementSize.height);
     renderSectionElement(resources, pdf, desiredSizes, elementRect, element);
     y += elementSize.height;
   }
@@ -585,10 +564,7 @@ function renderCell(
   }
 }
 
-function getDesiredSize(
-  element: {},
-  desiredSizes: Map<{}, AD.Size.Size>
-): AD.Size.Size {
+function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Size.Size {
   const size = desiredSizes.get(element);
   if (size) {
     return size;
@@ -596,19 +572,9 @@ function getDesiredSize(
   throw new Error("Could not find size for element!");
 }
 
-function calculateTextOffset(
-  textStyle: AD.TextStyle.TextStyle,
-  defaultFontSize: number
-): number {
-  const defaultPosition = textStyle.superScript
-    ? -0.5
-    : textStyle.subScript
-    ? 0.5
-    : 0;
-  const position =
-    textStyle.verticalPosition !== undefined
-      ? textStyle.verticalPosition
-      : defaultPosition;
+function calculateTextOffset(textStyle: AD.TextStyle.TextStyle, defaultFontSize: number): number {
+  const defaultPosition = textStyle.superScript ? -0.5 : textStyle.subScript ? 0.5 : 0;
+  const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, defaultFontSize);
   return fontSize * position;
 }

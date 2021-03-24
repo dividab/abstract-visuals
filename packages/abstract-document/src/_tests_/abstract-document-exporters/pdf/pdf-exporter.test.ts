@@ -544,6 +544,174 @@ describe("PdfExporter", () => {
     });
     ADPdf.exportToStream(pdfKit, stream, doc);
   });
+
+  it("should handle line breaks and wrapping correctly", (done) => {
+    // const loadFile = (fileName: string) => {
+    //   const buffer = fs.readFileSync(fileName);
+    //   const array = new Uint8Array(buffer);
+    //   return array;
+    // };
+    const longString =
+      "Testing with a very long text that should either be wrapped or" +
+      " truncated depending on the text setting. So here we go trying to figureoutif that works or not.";
+    const oneString =
+      "Testingwithaverytextthatshouldeitheraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaa" +
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.";
+    const shortString = "Short string";
+
+    const cellStyle = AD.TableCellStyle.create({
+      borders: AD.LayoutFoundation.create({
+        top: 1,
+        right: 1,
+        bottom: 1,
+        left: 1,
+      }),
+      borderColor: "blue",
+    });
+
+    const r1 = AD.TableRow.create({}, [
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
+          AD.TextRun.create({
+            text: "top left" + longString,
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
+          AD.TextRun.create({
+            text: "top center" + longString,
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
+          AD.TextRun.create({
+            text: "top right" + longString,
+          }),
+        ]),
+      ]),
+    ]);
+
+    const r2 = AD.TableRow.create({}, [
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
+          AD.TextRun.create({
+            text: "middle left" + oneString,
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
+          AD.TextRun.create({
+            text: "middle center" + oneString,
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
+          AD.TextRun.create({
+            text: "middle right" + oneString,
+          }),
+        ]),
+      ]),
+    ]);
+
+    const r3 = AD.TableRow.create({}, [
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
+          AD.TextRun.create({
+            text: "bottom left" + shortString,
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
+          AD.TextRun.create({
+            text: "bottom center" + shortString,
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
+          AD.TextRun.create({
+            text: "bottom right" + shortString,
+          }),
+        ]),
+      ]),
+    ]);
+    const rNested = AD.TableRow.create({}, [
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
+          AD.TextRun.create({
+            text: "bottom left" + shortString,
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
+          AD.TextRun.create({
+            text: "bottom center" + shortString,
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
+          AD.TextRun.create({
+            text: "bottom right" + shortString,
+          }),
+        ]),
+      ]),
+    ]);
+
+    const r4 = AD.TableRow.create({}, [
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
+          AD.TextRun.create({
+            text: "empty",
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Table.create(
+          {
+            columnWidths: [50, 50, 50],
+            style: AD.TableStyle.create({ cellStyle: cellStyle, alignment: "Center" }),
+          },
+          [rNested]
+        ),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
+          AD.TextRun.create({
+            text: "empty",
+          }),
+        ]),
+      ]),
+    ]);
+
+    const doc = AD.AbstractDoc.create({}, [
+      AD.Section.create({}, [
+        AD.Paragraph.create({}, [
+          AD.TextRun.create({
+            text: oneString,
+          }),
+        ]),
+        AD.Table.create(
+          {
+            columnWidths: [100, 200, 100],
+            style: AD.TableStyle.create({ cellStyle: cellStyle, alignment: "Center" }),
+          },
+          [r1, r2, r3, r4]
+        ),
+      ]),
+    ]);
+    let stream = createWriteStreamInOutDir("test_line_break.pdf");
+    stream.on("finish", () => {
+      done();
+    });
+    ADPdf.exportToStream(pdfKit, stream, doc);
+  });
 });
 
 function createWriteStreamInOutDir(pathToStream: string): fs.WriteStream {

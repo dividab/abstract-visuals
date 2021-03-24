@@ -15,7 +15,6 @@ export interface TextStyle {
   readonly verticalPosition?: number;
   readonly indent?: number;
   readonly lineGap?: number;
-  readonly alignment?: TextAlignment;
 }
 
 export interface TextStyleProps {
@@ -32,20 +31,16 @@ export interface TextStyleProps {
   readonly verticalPosition?: number;
   readonly indent?: number;
   readonly lineGap?: number;
-  readonly alignment?: TextAlignment;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
   return {
     type: "TextStyle",
-    ...(props || {})
+    ...(props || {}),
   };
 }
 
-export function overrideWith(
-  overrider: TextStyle | undefined,
-  toOverride: TextStyle | undefined
-): TextStyle {
+export function overrideWith(overrider: TextStyle | undefined, toOverride: TextStyle | undefined): TextStyle {
   const a: TextStyleProps = overrider || {};
   const b: TextStyleProps = toOverride || {};
   return create({
@@ -62,17 +57,11 @@ export function overrideWith(
     verticalPosition: a.verticalPosition || b.verticalPosition,
     indent: a.indent || b.indent,
     lineGap: a.lineGap || b.lineGap,
-    alignment: a.alignment || b.alignment
   });
 }
 
-export function calculateFontSize(
-  textStyle: TextStyle | undefined,
-  defaultFontSize: number
-): number {
-  const fontSize =
-    textStyle && textStyle.fontSize ? textStyle.fontSize : defaultFontSize;
-  const fontScale =
-    textStyle && textStyle.fontScale ? textStyle.fontScale : 1.0;
+export function calculateFontSize(textStyle: TextStyle | undefined, defaultFontSize: number): number {
+  const fontSize = textStyle && textStyle.fontSize ? textStyle.fontSize : defaultFontSize;
+  const fontScale = textStyle && textStyle.fontScale ? textStyle.fontScale : 1.0;
   return fontSize * fontScale;
 }
