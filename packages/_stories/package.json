@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "stories",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Abstract Visuals Stories",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib/index.js",
@@ -9,7 +9,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
-    "abstract-image": "^3.0.0",
+    "abstract-image": "^3.1.0",
     "base64-js": "^1.2.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
