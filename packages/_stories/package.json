@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "_stories",
+  "name": "stories",
   "version": "0.1.0",
   "description": "Abstract Visuals Stories",
   "repository": "https://github.com/dividab/abstract-visuals",
