@@ -337,6 +337,7 @@ function measureText(
   const textOptions = {
     underline: textStyle.underline || false,
     indent: textStyle.indent || 0,
+    lineBreak: textStyle.lineBreak ?? true,
     ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
   };
   const width = Math.min(
@@ -347,12 +348,12 @@ function measureText(
       ...textOptions,
     })
   );
-  const height =
-    pdf.heightOfString(text, {
-      width: width + 2,
-      height: availableSize.height,
-      ...textOptions,
-    }) + 2;
+  const lineWidth = textStyle.lineBreak === false ? Infinity : width;
+  const height = pdf.heightOfString(text, {
+    width: lineWidth,
+    height: availableSize.height,
+    ...textOptions,
+  });
   return AD.Size.create(width, height);
 }
 

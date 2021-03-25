@@ -500,9 +500,10 @@ function renderRow(
   row: AD.TableRow.TableRow
 ): void {
   let x = finalRect.x;
+  const rowSize = getDesiredSize(row, desiredSizes);
   for (const cell of row.children) {
     const cellSize = getDesiredSize(cell, desiredSizes);
-    const cellRect = AD.Rect.create(x, finalRect.y, cellSize.width, cellSize.height);
+    const cellRect = AD.Rect.create(x, finalRect.y, cellSize.width, rowSize.height);
     renderCell(resources, pdf, desiredSizes, cellRect, tableCellStyle, cell);
     x += cellSize.width;
   }
@@ -528,9 +529,14 @@ function renderCell(
   }
 
   let x = finalRect.x + style.padding.left;
-  let y = finalRect.y + style.padding.top;
+  const availableHeight = finalRect.height;
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
+
+    let y = finalRect.y + style.padding.top;
+    if (style.verticalAlignment === "Middle") y += 0.5 * (availableHeight - elementSize.height);
+    else if (style.verticalAlignment === "Bottom") y += availableHeight - elementSize.height;
+
     const elementRect = AD.Rect.create(x, y, elementSize.width, elementSize.height);
     renderSectionElement(resources, pdf, desiredSizes, elementRect, element);
     y += elementSize.height;
@@ -576,5 +582,5 @@ function calculateTextOffset(textStyle: AD.TextStyle.TextStyle, defaultFontSize:
   const defaultPosition = textStyle.superScript ? -0.5 : textStyle.subScript ? 0.5 : 0;
   const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, defaultFontSize);
-  return fontSize * position;
+  return fontSize * (position + 0.2); // 20% extra offset based on text rendering (might depend on font...)
 }

@@ -546,11 +546,6 @@ describe("PdfExporter", () => {
   });
 
   it("should handle line breaks and wrapping correctly", (done) => {
-    // const loadFile = (fileName: string) => {
-    //   const buffer = fs.readFileSync(fileName);
-    //   const array = new Uint8Array(buffer);
-    //   return array;
-    // };
     const longString =
       "Testing with a very long text that should either be wrapped or" +
       " truncated depending on the text setting. So here we go trying to figureoutif that works or not.";
@@ -567,13 +562,17 @@ describe("PdfExporter", () => {
         left: 1,
       }),
       borderColor: "blue",
+      verticalAlignment: "Middle",
     });
+
+    const breakStyle = AD.TextStyle.create({ lineBreak: false, fontSize: 6 });
 
     const r1 = AD.TableRow.create({}, [
       AD.TableCell.create({}, [
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
           AD.TextRun.create({
             text: "top left" + longString,
+            style: breakStyle,
           }),
         ]),
       ]),
@@ -581,6 +580,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
           AD.TextRun.create({
             text: "top center" + longString,
+            style: breakStyle,
           }),
         ]),
       ]),
@@ -588,6 +588,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
           AD.TextRun.create({
             text: "top right" + longString,
+            style: breakStyle,
           }),
         ]),
       ]),
@@ -598,6 +599,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
           AD.TextRun.create({
             text: "middle left" + oneString,
+            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5 }),
           }),
         ]),
       ]),
@@ -605,6 +607,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
           AD.TextRun.create({
             text: "middle center" + oneString,
+            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5 }),
           }),
         ]),
       ]),
@@ -612,6 +615,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
           AD.TextRun.create({
             text: "middle right" + oneString,
+            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5 }),
           }),
         ]),
       ]),
@@ -622,6 +626,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
           AD.TextRun.create({
             text: "bottom left" + shortString,
+            style: AD.TextStyle.create({ fontSize: 20 }),
           }),
         ]),
       ]),
@@ -629,6 +634,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
           AD.TextRun.create({
             text: "bottom center" + shortString,
+            style: AD.TextStyle.create({ fontSize: 20 }),
           }),
         ]),
       ]),
@@ -636,6 +642,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
           AD.TextRun.create({
             text: "bottom right" + shortString,
+            style: AD.TextStyle.create({ fontSize: 20 }),
           }),
         ]),
       ]),
