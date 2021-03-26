@@ -546,6 +546,28 @@ describe("PdfExporter", () => {
   });
 
   it("should handle line breaks and wrapping correctly", (done) => {
+    const loadFile = (fileName: string) => {
+      const buffer = fs.readFileSync(fileName);
+      const array = new Uint8Array(buffer);
+      return array;
+    };
+    // const fonts = {
+    //   ArialUnicodeMS: AD.Font.create({
+    //     normal: loadFile(path.join(__dirname, "../../fonts/Arial-Unicode-Regular.ttf")),
+    //     bold: loadFile(path.join(__dirname, "../../fonts/Arial-Unicode-Bold.ttf")),
+    //     italic: loadFile(path.join(__dirname, "../../fonts/Arial-Unicode-Italic.ttf")),
+    //     boldItalic: loadFile(path.join(__dirname, "../../fonts/Arial-Unicode-Bold-Italic.ttf")),
+    //   }),
+    // };
+    const fonts = {
+      Daxline: AD.Font.create({
+        normal: loadFile(path.join(__dirname, "../../fonts/DaxlinePro-Regular_13131.ttf")),
+        bold: loadFile(path.join(__dirname, "../../fonts/DaxlinePro-Regular_13131.ttf")),
+        italic: loadFile(path.join(__dirname, "../../fonts/DaxlinePro-Regular_13131.ttf")),
+        boldItalic: loadFile(path.join(__dirname, "../../fonts/DaxlinePro-Regular_13131.ttf")),
+      }),
+    };
+
     const longString =
       "Testing with a very long text that should either be wrapped or" +
       " truncated depending on the text setting. So here we go trying to figureoutif that works or not.";
@@ -565,7 +587,18 @@ describe("PdfExporter", () => {
       verticalAlignment: "Middle",
     });
 
-    const breakStyle = AD.TextStyle.create({ lineBreak: false, fontSize: 6 });
+    const fontSelection = "Daxline"; //"ArialUnicodeMS"; // "Helvetica"; //
+    const breakStyle = AD.TextStyle.create({
+      bold: false,
+      italic: false,
+      fontSize: 6,
+      fontFamily: fontSelection,
+      color: undefined,
+      subScript: false,
+      superScript: false,
+      underline: false,
+      lineBreak: false,
+    });
 
     const r1 = AD.TableRow.create({}, [
       AD.TableCell.create({}, [
@@ -599,7 +632,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
           AD.TextRun.create({
             text: "middle left" + oneString,
-            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5 }),
+            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5, fontFamily: fontSelection }),
           }),
         ]),
       ]),
@@ -607,7 +640,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
           AD.TextRun.create({
             text: "middle center" + oneString,
-            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5 }),
+            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5, fontFamily: fontSelection }),
           }),
         ]),
       ]),
@@ -615,7 +648,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
           AD.TextRun.create({
             text: "middle right" + oneString,
-            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5 }),
+            style: AD.TextStyle.create({ lineBreak: true, fontSize: 5, fontFamily: fontSelection }),
           }),
         ]),
       ]),
@@ -626,7 +659,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
           AD.TextRun.create({
             text: "bottom left" + shortString,
-            style: AD.TextStyle.create({ fontSize: 20 }),
+            style: AD.TextStyle.create({ fontSize: 20, fontFamily: fontSelection }),
           }),
         ]),
       ]),
@@ -634,7 +667,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
           AD.TextRun.create({
             text: "bottom center" + shortString,
-            style: AD.TextStyle.create({ fontSize: 20 }),
+            style: AD.TextStyle.create({ fontSize: 20, fontFamily: fontSelection }),
           }),
         ]),
       ]),
@@ -642,7 +675,7 @@ describe("PdfExporter", () => {
         AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
           AD.TextRun.create({
             text: "bottom right" + shortString,
-            style: AD.TextStyle.create({ fontSize: 20 }),
+            style: AD.TextStyle.create({ fontSize: 20, fontFamily: fontSelection }),
           }),
         ]),
       ]),
@@ -697,7 +730,7 @@ describe("PdfExporter", () => {
       ]),
     ]);
 
-    const doc = AD.AbstractDoc.create({}, [
+    const doc = AD.AbstractDoc.create({ fonts: fonts }, [
       AD.Section.create({}, [
         AD.Paragraph.create({}, [
           AD.TextRun.create({

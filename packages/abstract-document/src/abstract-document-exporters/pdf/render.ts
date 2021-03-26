@@ -582,5 +582,5 @@ function calculateTextOffset(textStyle: AD.TextStyle.TextStyle, defaultFontSize:
   const defaultPosition = textStyle.superScript ? -0.5 : textStyle.subScript ? 0.5 : 0;
   const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, defaultFontSize);
-  return fontSize * (position + 0.2); // 20% extra offset based on text rendering (might depend on font...)
+  return fontSize * position;
 }
