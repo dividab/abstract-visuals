@@ -530,13 +530,13 @@ function renderCell(
 
   let x = finalRect.x + style.padding.left;
   const availableHeight = finalRect.height;
+  let contentHeight = cell.children.map((c) => getDesiredSize(c, desiredSizes).height).reduce((a, b) => a + b, 0);
+  let y = finalRect.y + style.padding.top;
+  if (style.verticalAlignment === "Middle") y += 0.5 * (availableHeight - contentHeight);
+  else if (style.verticalAlignment === "Bottom") y += availableHeight - contentHeight;
+
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
-
-    let y = finalRect.y + style.padding.top;
-    if (style.verticalAlignment === "Middle") y += 0.5 * (availableHeight - elementSize.height);
-    else if (style.verticalAlignment === "Bottom") y += availableHeight - elementSize.height;
-
     const elementRect = AD.Rect.create(x, y, elementSize.width, elementSize.height);
     renderSectionElement(resources, pdf, desiredSizes, elementRect, element);
     y += elementSize.height;

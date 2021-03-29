@@ -703,6 +703,29 @@ describe("PdfExporter", () => {
         ]),
       ]),
     ]);
+    const rNested2 = AD.TableRow.create({}, [
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Start" }) }, [
+          AD.TextRun.create({
+            text: "bottomLeft2",
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "Center" }) }, [
+          AD.TextRun.create({
+            text: "bottomCenter2",
+          }),
+        ]),
+      ]),
+      AD.TableCell.create({}, [
+        AD.Paragraph.create({ style: AD.ParagraphStyle.create({ alignment: "End" }) }, [
+          AD.TextRun.create({
+            text: "bottomRight2",
+          }),
+        ]),
+      ]),
+    ]);
 
     const r4 = AD.TableRow.create({}, [
       AD.TableCell.create({}, [
@@ -719,6 +742,13 @@ describe("PdfExporter", () => {
             style: AD.TableStyle.create({ cellStyle: cellStyle, alignment: "Center" }),
           },
           [rNested]
+        ),
+        AD.Table.create(
+          {
+            columnWidths: [50, 50, 50],
+            style: AD.TableStyle.create({ cellStyle: cellStyle, alignment: "Center" }),
+          },
+          [rNested2]
         ),
       ]),
       AD.TableCell.create({}, [
