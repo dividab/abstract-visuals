@@ -17,23 +17,14 @@ export type ParagraphProps = Resources & {
   readonly numbering?: ParagraphNumbering;
 };
 
-export function create(
-  props?: ParagraphProps,
-  children?: ReadonlyArray<Atom>
-): Paragraph {
-  const {
-    styleName = "",
-    style = ParagraphStyle.create(),
-    numbering = undefined,
-    ...rest
-  } =
-    props || {};
+export function create(props?: ParagraphProps, children?: ReadonlyArray<Atom>): Paragraph {
+  const { styleName = "", style = ParagraphStyle.create(), numbering = undefined, ...rest } = props || {};
   return {
     type: "Paragraph",
     styleName,
     style,
     numbering,
     children: children || [],
-    ...rest
+    ...rest,
   };
 }
