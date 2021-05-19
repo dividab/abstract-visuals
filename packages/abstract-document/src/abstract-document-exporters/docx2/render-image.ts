@@ -4,12 +4,16 @@ import * as DOCXJS from "docx";
 
 export function renderImage(image: AD.Image.Image, textStyle: AD.TextStyle.TextStyle): DOCXJS.ImageRun {
   const aImage = image.imageResource.abstractImage;
-  const images = aImage.components.map((c: AbstractImage.Component) => abstractComponentToDocX(c, textStyle));
+  const images = aImage.components.map((c: AbstractImage.Component) =>
+    abstractComponentToDocX(c, image.width, image.height, textStyle)
+  );
   return images[0]!;
 }
 
 function abstractComponentToDocX(
   component: AbstractImage.Component,
+  width: number,
+  height: number,
   _textStyle: AD.TextStyle.TextStyle
 ): DOCXJS.ImageRun | undefined {
   switch (component.type) {
@@ -18,14 +22,12 @@ function abstractComponentToDocX(
     //   break;
     case "binaryimage":
       const format = component.format.toLowerCase();
-      const imageWidth = component.bottomRight.x - component.topLeft.x;
-      const imageHeight = component.bottomRight.y - component.topLeft.y;
       if (format === "png" || format === "jpg") {
         return new DOCXJS.ImageRun({
           data: Buffer.from(component.data),
           transformation: {
-            width: imageWidth,
-            height: imageHeight,
+            width: width,
+            height: height,
           },
         });
         // return DOCXJS.Media.addImage(
