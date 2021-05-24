@@ -1,10 +1,5 @@
 import * as AD from "../../abstract-document";
-import * as AI from "../../../../abstract-image";
-// import * as BlobStream from "blob-stream";
 import * as DOCXJS from "docx";
-// import { preprocess } from "./pre-process";
-// import * as HyperLinks from "./hyperlinks";
-// import * as ADDOCXHelp from "./ad-to-docx-helper";
 import { renderImage } from "./render-image";
 import { Readable } from "stream";
 
@@ -39,15 +34,9 @@ export function exportToStream(blobStream: NodeJS.WritableStream, doc: AD.Abstra
  */
 
 function createDocument(doc: AD.AbstractDoc.AbstractDoc): DOCXJS.Document {
-  //   const preprocessResult = preprocess(doc);
-
   const docx = new DOCXJS.Document({
     sections: doc.children.map((s) => renderSection(s, doc)),
   });
-
-  for (let section of doc.children) {
-    renderSection(section, doc);
-  }
   return docx;
 }
 
@@ -90,12 +79,53 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
       }),
     },
     children: [
+      new DOCXJS.Paragraph({
+        spacing: { before: 0, after: 0, line: 1 },
+        children: [
+          new DOCXJS.Bookmark({
+            id: section.id,
+            children: [],
+          }),
+        ],
+      }),
       ...section.children.reduce((sofar, c) => {
         sofar.push(...renderSectionElement(c, resources));
         return sofar;
       }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
     ],
   };
+}
+
+function renderHyperLink(
+  hyperLink: AD.HyperLink.HyperLink,
+  style: AD.TextStyle.TextStyle
+): DOCXJS.InternalHyperlink | DOCXJS.ExternalHyperlink {
+  const fontSize = AD.TextStyle.calculateFontSize(style, 10) * 2;
+  const textRun = new DOCXJS.TextRun({
+    text: hyperLink.text,
+    font: "Arial",
+    size: fontSize,
+    color: style.color || "blue",
+    bold: style.bold,
+    underline: style.underline
+      ? {
+          color: style.color || "blue",
+          type: DOCXJS.UnderlineType.SINGLE,
+        }
+      : undefined,
+  });
+
+  if (hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=")) {
+    return new DOCXJS.InternalHyperlink({
+      anchor: hyperLink.target,
+      child: textRun,
+    });
+  } else {
+    return new DOCXJS.ExternalHyperlink({
+      link: hyperLink.target,
+      child: textRun,
+    });
+  }
 }
 
 function renderSectionElement(
@@ -286,6 +316,8 @@ function renderAtom(
   | DOCXJS.FootnoteReferenceRun
   | DOCXJS.InsertedTextRun
   | DOCXJS.DeletedTextRun
+  | DOCXJS.InternalHyperlink
+  | DOCXJS.ExternalHyperlink
   | DOCXJS.Math {
   switch (atom.type) {
     case "TextField":
@@ -295,7 +327,7 @@ function renderAtom(
     case "Image":
       return renderImage(atom, textStyle);
     case "HyperLink":
-      return new DOCXJS.TextRun({ text: "" });
+      return renderHyperLink(atom, textStyle);
     default:
       return new DOCXJS.TextRun({ text: "missed" }); // TODO
   }
