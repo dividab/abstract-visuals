@@ -57,6 +57,12 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
   return {
     properties: {
       page: {
+        size: {
+          orientation:
+            section.page.style.orientation === "Landscape"
+              ? DOCXJS.PageOrientation.LANDSCAPE
+              : DOCXJS.PageOrientation.PORTRAIT,
+        },
         margin: {
           bottom: section.page.style.contentMargins.bottom * abstractDocPixelToDocxDXARatio,
           top: section.page.style.contentMargins.top * abstractDocPixelToDocxDXARatio,
