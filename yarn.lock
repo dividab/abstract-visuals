@@ -2966,6 +2966,13 @@
   dependencies:
     "@types/react" "^15"
 
+"@types/react-dom@^16.9.0":
+  version "16.9.13"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.13.tgz#5898f0ee68fe200685e6b61d3d7d8828692814d0"
+  integrity sha512-34Hr3XnmUSJbUVDxIw/e7dhQn2BJZhJmlAaPyPwfTQyuVS9mV/CeyghFcXyvkJXxI7notQJz8mF8FeCVvloJrA==
+  dependencies:
+    "@types/react" "^16"
+
 "@types/react-syntax-highlighter@11.0.4":
   version "11.0.4"
   resolved "https://registry.yarnpkg.com/@types/react-syntax-highlighter/-/react-syntax-highlighter-11.0.4.tgz#d86d17697db62f98046874f62fdb3e53a0bbc4cd"
@@ -2986,6 +2993,15 @@
   version "15.7.0"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-15.7.0.tgz#6bc6dda07c8eefe7c02bba083f5afa5e53022f7b"
   integrity sha512-fROvMBKisHbCUGMRXqAVAhZeehNQkeLYRZW/PhYI+Ahd+HdC1DWNWktiFYUy44Iys7qvBo7O8J5UNneWEVxAQw==
+
+"@types/react@^16", "@types/react@^16.9.0":
+  version "16.14.8"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.8.tgz#4aee3ab004cb98451917c9b7ada3c7d7e52db3fe"
+  integrity sha512-QN0/Qhmx+l4moe7WJuTxNiTsjBwlBGHqKGvInSQCBdo7Qio0VtOqwsC0Wq7q3PbJlB0cR4Y4CVo1OOe6BOsOmA==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
 
 "@types/reactcss@*":
   version "1.2.3"
