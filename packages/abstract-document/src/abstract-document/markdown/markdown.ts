@@ -1,12 +1,12 @@
+import unified from "unified";
+import remarkParse from "remark-parse";
+import remarkSubSuper from "remark-sub-super";
 import { SectionElement } from "../section-elements/section-element";
-import { AstElements, MarkDownProcessData, AstRoot } from "./types";
-import * as unified from "unified";
-import * as remarkParse from "remark-parse";
-import * as remarkSubSuper from "remark-sub-super";
 import * as Paragraph from "../section-elements/paragraph";
 import * as Atom from "../atoms/atom";
 import * as TextRun from "../atoms/text-run";
 import * as Group from "../section-elements/group";
+import { AstElements, MarkDownProcessData, AstRoot } from "./types";
 
 export interface MarkdownProps {
   readonly text: string;
@@ -33,7 +33,7 @@ function preProcessMarkdownAst(
   } // Need to convice TS that we never go below this line with a Str element.
 
   if (ast.children) {
-    ast.children.forEach(child => {
+    ast.children.forEach((child) => {
       let style = styles.slice(); // create a new copy of styles
       switch (ast.type) {
         case "heading":
@@ -61,34 +61,23 @@ function preProcessMarkdownAst(
               ordered: child.ordered === true,
               start: child.start || 1,
               level: listItemParams ? listItemParams.level + 1 : 0,
-              firstChild: child.children[0]
+              firstChild: child.children[0],
             }
           : listItemParams;
 
       // Recurse down the rabbit hole until we find a Str.
-      ({ atoms, paragraphs } = preProcessMarkdownAst(
-        child,
-        style,
-        atoms,
-        paragraphs,
-        d + 1,
-        newListItemParams
-      ));
+      ({ atoms, paragraphs } = preProcessMarkdownAst(child, style, atoms, paragraphs, d + 1, newListItemParams));
 
       // After child, check if we should create a new paragraph.
       if (child.type === "paragraph" || child.type === "heading") {
-        const paragraphStyle =
-          child.type === "heading" ? "H" + child.depth : undefined;
+        const paragraphStyle = child.type === "heading" ? "H" + child.depth : undefined;
 
         const paragraphNumbering = listItemParams
           ? {
               level: listItemParams.level,
               numberingId: listItemParams.ordered ? "Ordered" : "Unordered",
-              numberOverride:
-                ast === listItemParams.firstChild
-                  ? listItemParams.start
-                  : undefined,
-              append: ast.type === "listItem" && child !== ast.children[0]
+              numberOverride: ast === listItemParams.firstChild ? listItemParams.start : undefined,
+              append: ast.type === "listItem" && child !== ast.children[0],
             }
           : undefined;
 
@@ -96,7 +85,7 @@ function preProcessMarkdownAst(
           Paragraph.create(
             {
               styleName: paragraphStyle,
-              numbering: paragraphNumbering
+              numbering: paragraphNumbering,
             },
             atoms
           )
@@ -111,7 +100,7 @@ function preProcessMarkdownAst(
                 text: v,
                 styleName: style[style.length - 1],
                 nestedStyleNames: style,
-                textProperties: {}
+                textProperties: {},
               } as TextRun.TextRun)
           )
         );
@@ -122,14 +111,8 @@ function preProcessMarkdownAst(
   return { atoms, paragraphs };
 }
 
-export function create({
-  text,
-  keepTogetherSections
-}: MarkdownProps): Array<SectionElement> {
-  const ast = unified()
-    .use(remarkParse, { commonmark: true })
-    .use(remarkSubSuper)
-    .parse(text);
+export function create({ text, keepTogetherSections }: MarkdownProps): Array<SectionElement> {
+  const ast = unified().use(remarkParse, { commonmark: true }).use(remarkSubSuper).parse(text);
   const { paragraphs } = preProcessMarkdownAst(ast as AstRoot, [], [], [], 0);
   if (!keepTogetherSections) {
     return paragraphs;
@@ -152,7 +135,7 @@ export function create({
     ++i;
   }
   if (groups.length > 0) {
-    return groups.map(group => Group.create({ keepTogether: true }, group));
+    return groups.map((group) => Group.create({ keepTogether: true }, group));
   } else {
     return [Group.create({ keepTogether: true }, [])];
   }

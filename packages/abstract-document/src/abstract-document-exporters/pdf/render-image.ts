@@ -1,7 +1,7 @@
 import * as AbstractImage from "abstract-image";
-import * as AD from "../../abstract-document";
 import * as base64 from "base64-js";
-import * as svgToPdfKit from "svg-to-pdfkit";
+import svgToPdfKit from "svg-to-pdfkit";
+import * as AD from "../../abstract-document";
 import { getFontName, isFontAvailable } from "./font";
 
 export function renderImage(
@@ -20,9 +20,7 @@ export function renderImage(
   const scale = Math.min(scaleX, scaleY);
   pdf.save();
   pdf.translate(position.x, position.y).scale(scale);
-  aImage.components.forEach((c: AbstractImage.Component) =>
-    abstractComponentToPdf(resources, pdf, c, textStyle)
-  );
+  aImage.components.forEach((c: AbstractImage.Component) => abstractComponentToPdf(resources, pdf, c, textStyle));
   pdf.restore();
 }
 
@@ -35,25 +33,21 @@ function abstractComponentToPdf(
 ): void {
   switch (component.type) {
     case "group":
-      component.children.forEach(c =>
-        abstractComponentToPdf(resources, pdf, c, textStyle)
-      );
+      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle));
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
       const imageWidth = component.bottomRight.x - component.topLeft.x;
       const imageHeight = component.bottomRight.y - component.topLeft.y;
       if (format === "png") {
-        const data =
-          "data:image/png;base64," + base64.fromByteArray(component.data);
+        const data = "data:image/png;base64," + base64.fromByteArray(component.data);
         pdf.image(data, component.topLeft.x, component.topLeft.y, {
-          fit: [imageWidth, imageHeight]
+          fit: [imageWidth, imageHeight],
         });
       } else if (format === "jpg") {
-        const data =
-          "data:image/jpeg;base64," + base64.fromByteArray(component.data);
+        const data = "data:image/jpeg;base64," + base64.fromByteArray(component.data);
         pdf.image(data, component.topLeft.x, component.topLeft.y, {
-          fit: [imageWidth, imageHeight]
+          fit: [imageWidth, imageHeight],
         });
       } else if (format === "svg") {
         const svg = new TextDecoder().decode(component.data);
@@ -69,7 +63,7 @@ function abstractComponentToPdf(
             } else {
               return getFontName(textStyle);
             }
-          }
+          },
         });
       }
       break;
@@ -101,7 +95,7 @@ function abstractComponentToPdf(
       if (component.clockwiseRotationDegrees !== 0) {
         pdf.save();
         pdf.rotate(component.clockwiseRotationDegrees, {
-          origin: [component.position.x, component.position.y]
+          origin: [component.position.x, component.position.y],
         });
       }
       pdf.font(component.fontFamily).fontSize(component.fontSize);
@@ -111,24 +105,19 @@ function abstractComponentToPdf(
         component.horizontalGrowthDirection === "left"
           ? -stringWidth
           : component.horizontalGrowthDirection === "uniform"
-            ? -stringWidth * 0.5
-            : 0;
+          ? -stringWidth * 0.5
+          : 0;
       const dy =
         component.verticalGrowthDirection === "up"
           ? -stringHeight
           : component.verticalGrowthDirection === "uniform"
-            ? -stringHeight * 0.5
-            : 0;
+          ? -stringHeight * 0.5
+          : 0;
       pdf
         .font(component.fontFamily)
         .fontSize(component.fontSize)
         .fillColor(colorToRgb(component.textColor))
-        .text(
-          component.text,
-          component.position.x + dx,
-          component.position.y + dy,
-          { lineBreak: false }
-        );
+        .text(component.text, component.position.x + dx, component.position.y + dy, { lineBreak: false });
       if (component.clockwiseRotationDegrees !== 0) {
         pdf.restore();
       }
@@ -143,21 +132,15 @@ function abstractComponentToPdf(
         .ellipse(centerX, centerY, width * 0.5, height * 0.5)
         .strokeOpacity(colorToOpacity(component.strokeColor))
         .fillOpacity(colorToOpacity(component.fillColor))
-        .fillAndStroke(
-          colorToRgb(component.fillColor),
-          colorToRgb(component.strokeColor)
-        );
+        .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
     case "polygon":
       pdf
         .lineWidth(component.strokeThickness)
         .strokeOpacity(colorToOpacity(component.strokeColor))
         .fillOpacity(colorToOpacity(component.fillColor))
-        .polygon(...component.points.map(p => [p.x, p.y]))
-        .fillAndStroke(
-          colorToRgb(component.fillColor),
-          colorToRgb(component.strokeColor)
-        );
+        .polygon(...component.points.map((p) => [p.x, p.y]))
+        .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
     case "rectangle":
       const rWidth = component.bottomRight.x - component.topLeft.x;
@@ -167,10 +150,7 @@ function abstractComponentToPdf(
         .strokeOpacity(colorToOpacity(component.strokeColor))
         .fillOpacity(colorToOpacity(component.fillColor))
         .rect(component.topLeft.x, component.topLeft.y, rWidth, rHeight)
-        .fillAndStroke(
-          colorToRgb(component.fillColor),
-          colorToRgb(component.strokeColor)
-        );
+        .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
     default:
       break;
