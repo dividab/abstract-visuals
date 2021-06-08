@@ -9,10 +9,7 @@ export interface ReactSvgCallbacks {
   readonly onContextMenu?: MouseCallback;
 }
 
-export type MouseCallback = (
-  id: string | undefined,
-  point: AbstractImage.Point
-) => void;
+export type MouseCallback = (id: string | undefined, point: AbstractImage.Point) => void;
 
 export function createReactSvg(
   image: AbstractImage.AbstractImage,
@@ -42,10 +39,7 @@ export function createReactSvg(
   );
 }
 
-function _callback(
-  callback: MouseCallback | undefined,
-  rootId: string
-): React.MouseEventHandler<Element> | undefined {
+function _callback(callback: MouseCallback | undefined, rootId: string): React.MouseEventHandler<Element> | undefined {
   if (!callback) {
     return undefined;
   }
@@ -66,10 +60,7 @@ function makeIdAttr(id: string | undefined): string | undefined {
   return `ai%${id}`;
 }
 
-function getIdAttr(
-  target: Element | undefined,
-  rootId: string
-): string | undefined {
+function getIdAttr(target: Element | undefined, rootId: string): string | undefined {
   if (!target || target.id === rootId) {
     return undefined;
   }
@@ -81,10 +72,7 @@ function getIdAttr(
   return parts[1];
 }
 
-function _visit(
-  key: string,
-  component: AbstractImage.Component
-): Array<React.ReactElement<{}>> {
+function _visit(key: string, component: AbstractImage.Component): Array<React.ReactElement<{}>> {
   switch (component.type) {
     case "group":
       return [
@@ -96,7 +84,7 @@ function _visit(
               component.children
             )
           )}
-        </g>
+        </g>,
       ];
     case "binaryimage":
       switch (component.format) {
@@ -106,12 +94,9 @@ function _visit(
               key={key}
               id={makeIdAttr(component.id)}
               dangerouslySetInnerHTML={{
-                __html: component.data.reduce(
-                  (a, b) => a + String.fromCharCode(b),
-                  ""
-                )
+                __html: component.data.reduce((a, b) => a + String.fromCharCode(b), ""),
               }}
-            />
+            />,
           ];
         default:
           return [];
@@ -128,7 +113,7 @@ function _visit(
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
-        />
+        />,
       ];
     case "text":
       if (!component.text) {
@@ -142,14 +127,14 @@ function _visit(
         fontWeight: component.fontWeight,
         fontFamily: component.fontFamily,
         stroke: colorToRgb(component.strokeColor),
-        strokeWidth: component.strokeThickness
+        strokeWidth: component.strokeThickness,
       };
       const style = {
         textAnchor: getTextAnchor(component.horizontalGrowthDirection),
         fontSize: component.fontSize.toString() + "px",
         fontWeight: component.fontWeight,
         fontFamily: component.fontFamily,
-        fill: colorToRgb(component.textColor)
+        fill: colorToRgb(component.textColor),
       };
       const dy = getBaselineAdjustment(component.verticalGrowthDirection);
 
@@ -162,9 +147,8 @@ function _visit(
         component.position.y.toString() +
         ")";
 
-      const lines: Array<string> =
-        component.text !== null ? component.text.split("\n") : [];
-      const tSpans = lines.map(t =>
+      const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
+      const tSpans = lines.map((t) =>
         renderLine(
           t,
           component.position.x,
@@ -205,12 +189,10 @@ function _visit(
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />
+        />,
       ];
     case "polyline":
-      let linePoints = component.points
-        .map(p => p.x.toString() + "," + p.y.toString())
-        .join(" ");
+      let linePoints = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
       return [
         <polyline
           id={makeIdAttr(component.id)}
@@ -220,12 +202,10 @@ function _visit(
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fill="none"
-        />
+        />,
       ];
     case "polygon":
-      let points = component.points
-        .map(p => p.x.toString() + "," + p.y.toString())
-        .join(" ");
+      let points = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
       return [
         <polygon
           id={makeIdAttr(component.id)}
@@ -236,7 +216,7 @@ function _visit(
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />
+        />,
       ];
     case "rectangle":
       return [
@@ -252,34 +232,22 @@ function _visit(
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />
+        />,
       ];
     default:
       return [];
   }
 }
 
-function renderLine(
-  text: string,
-  x: number,
-  y: number,
-  fontSize: number,
-  lineHeight: number
-): JSX.Element {
-  const split = R.unnest<string>(
-    text.split("<sub>").map(t => t.split("</sub>"))
-  );
+function renderLine(text: string, x: number, y: number, fontSize: number, lineHeight: number): JSX.Element {
+  const split = R.unnest<string>(text.split("<sub>").map((t) => t.split("</sub>")));
   let inside = false;
   const tags: Array<JSX.Element> = [];
   for (let i = 0; i < split.length; ++i) {
     const splitText = split[i];
     if (inside) {
       tags.push(
-        <tspan
-          key={i}
-          baselineShift="sub"
-          style={{ fontSize: (fontSize * 0.8).toString() + "px" }}
-        >
+        <tspan key={i} baselineShift="sub" style={{ fontSize: (fontSize * 0.8).toString() + "px" }}>
           {splitText}
         </tspan>
       );
@@ -308,7 +276,7 @@ function getBaselineAdjustment(d: AbstractImage.GrowthDirection): number {
   throw "Unknown text alignment " + d;
 }
 
-function getTextAnchor(d: AbstractImage.GrowthDirection): string {
+function getTextAnchor(d: AbstractImage.GrowthDirection): "end" | "middle" | "start" {
   if (d === "left") {
     return "end";
   }
@@ -322,15 +290,7 @@ function getTextAnchor(d: AbstractImage.GrowthDirection): string {
 }
 
 function colorToRgb(color: AbstractImage.Color): string {
-  return (
-    "rgb(" +
-    color.r.toString() +
-    "," +
-    color.g.toString() +
-    "," +
-    color.b.toString() +
-    ")"
-  );
+  return "rgb(" + color.r.toString() + "," + color.g.toString() + "," + color.b.toString() + ")";
 }
 
 function colorToOpacity(color: AbstractImage.Color): string {

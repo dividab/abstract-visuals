@@ -20,37 +20,36 @@ export interface State {
 
 export class Container extends React.Component<{}, State> {
   constructor() {
-    super();
+    super({});
     this.state = {
       selectedExample: 0,
       examples: [
         {
           name: "AbstractChart",
-          component: AbstractChartExample
+          component: AbstractChartExample,
         },
         {
           name: "AbstractImageSvg",
-          component: AbstractImageExampleSvg
+          component: AbstractImageExampleSvg,
         },
         {
           name: "AbstractImageReact",
-          component: AbstractImageExampleReact
+          component: AbstractImageExampleReact,
         },
         {
           name: "AbstractImageDxf",
-          component: AbstractImageExampleDxf
+          component: AbstractImageExampleDxf,
         },
         {
           name: "AbstractDocument",
-          component: AbstractDocumentExample
-        }
-      ]
+          component: AbstractDocumentExample,
+        },
+      ],
     };
   }
 
   render() {
-    const SelectedComponent = this.state.examples[this.state.selectedExample]
-      .component;
+    const SelectedComponent = this.state.examples[this.state.selectedExample].component;
 
     return (
       <div>
@@ -58,9 +57,7 @@ export class Container extends React.Component<{}, State> {
           <ExampleSelector
             examples={this.state.examples}
             selectedExample={this.state.selectedExample}
-            selectedExampleChanged={index =>
-              this.setState(merge(this.state, { selectedExample: index }))
-            }
+            selectedExampleChanged={(index) => this.setState(merge(this.state, { selectedExample: index }))}
           />
         </div>
         <div>
@@ -82,16 +79,9 @@ interface ExampleSelectorProps {
   readonly selectedExampleChanged: (index: number) => void;
 }
 
-function ExampleSelector({
-  examples,
-  selectedExample,
-  selectedExampleChanged
-}: ExampleSelectorProps) {
+function ExampleSelector({ examples, selectedExample, selectedExampleChanged }: ExampleSelectorProps) {
   return (
-    <select
-      value={selectedExample}
-      onChange={e => selectedExampleChanged((e.target as any).value)}
-    >
+    <select value={selectedExample} onChange={(e) => selectedExampleChanged((e.target as any).value)}>
       {examples.map((example, index) => (
         <option key={example.name} value={index}>
           {example.name}
