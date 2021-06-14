@@ -532,8 +532,10 @@ function renderCell(
   const availableHeight = finalRect.height;
   let contentHeight = cell.children.map((c) => getDesiredSize(c, desiredSizes).height).reduce((a, b) => a + b, 0);
   let y = finalRect.y + style.padding.top;
-  if (style.verticalAlignment === "Middle") y += 0.5 * (availableHeight - contentHeight);
-  else if (style.verticalAlignment === "Bottom") y += availableHeight - contentHeight;
+  if (style.verticalAlignment === "Middle")
+    y += 0.5 * (availableHeight - contentHeight - style.padding.top - style.padding.bottom);
+  else if (style.verticalAlignment === "Bottom")
+    y += availableHeight - contentHeight - style.padding.top - style.padding.bottom;
 
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
