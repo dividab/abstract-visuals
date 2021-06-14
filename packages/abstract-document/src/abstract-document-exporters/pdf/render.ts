@@ -421,7 +421,7 @@ function drawText(
     .fontSize(fontSize)
     .fillColor(textStyle.color || "black")
     .text(text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width,
+      width: finalRect.width + 1,
       height: finalRect.height,
       underline: textStyle.underline || false,
       align: alignment,
