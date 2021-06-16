@@ -43,6 +43,7 @@
     "lint": "eslint ./packages/*/src/**/*.ts{,x} --ext .js,.ts,.tsx -f visualstudio",
     "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
     "build": "tsc -b packages",
+    "build-watch": "tsc -b -w --preserveWatchOutput packages",
     "start": "cd packages/abstract-visuals-example && webpack-cli serve --content-base ./src",
     "dist": "cd packages/abstract-visuals-example && webpack",
     "storybook": "start-storybook -p 6006 --ci",
