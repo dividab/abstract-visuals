@@ -348,8 +348,8 @@ function measureText(
       ...textOptions,
     })
   );
-  // The +1 is to compensate that pdfKit thinks text doesn't actually fit within widthOfString().
-  const lineWidth = textStyle.lineBreak === false ? Infinity : width + 1;
+  // The +2 is to compensate that pdfKit thinks text doesn't actually fit within widthOfString().
+  const lineWidth = textStyle.lineBreak === false ? Infinity : width + 2;
   const height = pdf.heightOfString(text, {
     width: lineWidth,
     height: availableSize.height,

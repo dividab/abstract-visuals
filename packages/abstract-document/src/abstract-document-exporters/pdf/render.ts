@@ -388,7 +388,7 @@ function drawHyperLink(
 ) {
   //compensation needed as pdfKit's widthOfString may return a slightly
   //lower value than the actual size due to loss of precision
-  const compensatePdfKitSize = 1;
+  const compensatePdfKitSize = 2;
   const font = getFontName(textStyle);
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -425,7 +425,7 @@ function drawText(
 ) {
   //compensation needed as pdfKit's widthOfString may return a slightly
   //lower value than the actual size due to loss of precision
-  const compensatePdfKitSize = 1;
+  const compensatePdfKitSize = 2;
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
