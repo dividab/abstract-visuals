@@ -408,7 +408,7 @@ function drawHyperLink(
       indent: textStyle.indent || 0,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     })
-    .underline(finalRect.x, finalRect.y + 2, finalRect.width, finalRect.height, {
+    .underline(finalRect.x - alignmentOffset, finalRect.y + 2, finalRect.width, finalRect.height, {
       color: "blue",
     });
   if (!isInternalLink) {
