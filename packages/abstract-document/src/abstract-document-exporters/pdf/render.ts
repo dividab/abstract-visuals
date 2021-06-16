@@ -297,7 +297,7 @@ function renderAtom(
       renderImage(resources, pdf, finalRect, atom, textStyle);
       return;
     case "HyperLink":
-      renderHyperLink(resources, pdf, finalRect, textStyle, atom);
+      renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment);
       return;
     case "TocSeparator":
       renderTocSeparator(pdf, finalRect, textStyle);
@@ -352,7 +352,8 @@ function renderTextRun(
     resources,
     textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
-  drawText(pdf, finalRect, style, textRun.text, alignment);
+  const textAlignment = style.alignment ? style.alignment : alignment;
+  drawText(pdf, finalRect, style, textRun.text, textAlignment);
 }
 
 function renderHyperLink(
@@ -360,7 +361,8 @@ function renderHyperLink(
   pdf: {},
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  hyperLink: AD.HyperLink.HyperLink
+  hyperLink: AD.HyperLink.HyperLink,
+  alignment: AD.TextStyle.TextAlignment
 ) {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -369,7 +371,8 @@ function renderHyperLink(
     hyperLink.styleName,
     resources
   ) as AD.TextStyle.TextStyle;
-  drawHyperLink(pdf, finalRect, style, hyperLink);
+  const textAlignment = style.alignment ? style.alignment : alignment;
+  drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment);
 }
 
 function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
@@ -380,25 +383,32 @@ function drawHyperLink(
   pdf: any,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  hyperLink: AD.HyperLink.HyperLink
+  hyperLink: AD.HyperLink.HyperLink,
+  alignment: AD.TextStyle.TextAlignment
 ) {
+  //compensation needed as pdfKit's widthOfString may return a slightly
+  //lower value than the actual size due to loss of precision
+  const compensatePdfKitSize = 1;
   const font = getFontName(textStyle);
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
+  const alignmentOffset = calculateTextAlignmentOffset(alignment, compensatePdfKitSize);
+
   pdf
     .font(font)
     .fontSize(fontSize)
     .fillColor(textStyle.color || "blue")
-    .text(hyperLink.text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width,
-      height: finalRect.height,
+    .text(hyperLink.text, finalRect.x - alignmentOffset, finalRect.y + offset, {
+      width: finalRect.width + compensatePdfKitSize,
+      height: finalRect.height + compensatePdfKitSize,
       underline: textStyle.underline || false,
+      align: alignment,
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
       indent: textStyle.indent || 0,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     })
-    .underline(finalRect.x, finalRect.y, finalRect.width, finalRect.height, {
+    .underline(finalRect.x - alignmentOffset, finalRect.y + 2, finalRect.width, finalRect.height, {
       color: "blue",
     });
   if (!isInternalLink) {
@@ -413,16 +423,21 @@ function drawText(
   text: string,
   alignment: AD.TextStyle.TextAlignment
 ) {
+  //compensation needed as pdfKit's widthOfString may return a slightly
+  //lower value than the actual size due to loss of precision
+  const compensatePdfKitSize = 1;
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
+  const alignmentOffset = calculateTextAlignmentOffset(alignment, compensatePdfKitSize);
+
   pdf
     .font(font)
     .fontSize(fontSize)
     .fillColor(textStyle.color || "black")
-    .text(text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width + 1,
-      height: finalRect.height,
+    .text(text, finalRect.x - alignmentOffset, finalRect.y + offset, {
+      width: finalRect.width + compensatePdfKitSize,
+      height: finalRect.height + compensatePdfKitSize,
       underline: textStyle.underline || false,
       align: alignment,
       indent: textStyle.indent || 0,
@@ -446,7 +461,6 @@ function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextSty
     characterSpacing: 5,
   });
   const numberOfDots = Math.floor((finalRect.width - oneDotW) / (twoDotsW - oneDotW)) + 1;
-  console.log(oneDotW, twoDotsW, numberOfDots, finalRect.width);
   if (twoDotsW - oneDotW === 0 || numberOfDots < 1) {
     return;
   }
@@ -585,4 +599,17 @@ function calculateTextOffset(textStyle: AD.TextStyle.TextStyle, defaultFontSize:
   const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, defaultFontSize);
   return fontSize * position;
+}
+
+function calculateTextAlignmentOffset(alignment: AD.TextStyle.TextAlignment, compensatePdfKitSize: number): number {
+  switch (alignment) {
+    case "left":
+      return 0;
+    case "center":
+      return compensatePdfKitSize * 0.5;
+    case "right":
+      return compensatePdfKitSize;
+    default:
+      return 0;
+  }
 }

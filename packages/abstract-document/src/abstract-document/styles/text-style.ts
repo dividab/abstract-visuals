@@ -16,6 +16,7 @@ export interface TextStyle {
   readonly indent?: number;
   readonly lineGap?: number;
   readonly lineBreak?: boolean;
+  readonly alignment?: TextAlignment;
 }
 
 export interface TextStyleProps {
@@ -33,6 +34,7 @@ export interface TextStyleProps {
   readonly indent?: number;
   readonly lineGap?: number;
   readonly lineBreak?: boolean;
+  readonly alignment?: TextAlignment;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
@@ -60,6 +62,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
     indent: a.indent || b.indent,
     lineGap: a.lineGap || b.lineGap,
     lineBreak: a.lineBreak ?? b.lineBreak,
+    alignment: a.alignment ?? b.alignment,
   });
 }
 
