@@ -340,19 +340,10 @@ function measureText(
     lineBreak: textStyle.lineBreak ?? true,
     ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
   };
-  const width = Math.min(
-    availableSize.width,
-    pdf.widthOfString(text, {
-      width: availableSize.width,
-      height: availableSize.height,
-      ...textOptions,
-    })
-  );
-  // The +2 is to compensate that pdfKit thinks text doesn't actually fit within widthOfString().
-  const lineWidth = textStyle.lineBreak === false ? Infinity : width + 2;
+  const width = Math.min(availableSize.width, pdf.widthOfString(text, textOptions));
+  const lineWidth = textStyle.lineBreak === false ? Infinity : availableSize.width;
   const height = pdf.heightOfString(text, {
     width: lineWidth,
-    height: availableSize.height,
     ...textOptions,
   });
   return AD.Size.create(width, height);
