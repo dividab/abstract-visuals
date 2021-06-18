@@ -218,27 +218,47 @@ function renderParagraph(
   let y = finalRect.y + style.margins.top;
 
   for (let row of rows) {
+    if (row.length === 0) {
+      continue;
+    }
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
-    let x = finalRect.x + style.margins.left;
-    if (style.alignment === "Center") x += 0.5 * (availableWidth - rowWidth);
-    else if (style.alignment === "End") x += availableWidth - rowWidth;
+    const startX = finalRect.x + style.margins.left;
 
-    let rowHeight = 0;
-    for (const atom of row) {
-      const atomSize = getDesiredSize(atom, desiredSizes);
+    const atomSize = getDesiredSize(row[0], desiredSizes);
+    //We need to use pdfKits alignment if theres only one atom in the row, because then theres a risk of it linebreaking. If there are multiple lines we need to center each line
+    if (atomSize?.availableWidth !== undefined && row.length === 1) {
       renderAtom(
         resources,
         pdf,
-        AD.Rect.create(x, y, atomSize.width, atomSize.height),
+        AD.Rect.create(startX, y, availableWidth, atomSize.height),
         style.textStyle,
-        atom,
-        parseAlignment(style.alignment)
+        row[0],
+        parseAlignment(style.alignment),
+        atomSize.width
       );
-      x += atomSize.width;
-      rowHeight = Math.max(rowHeight, atomSize.height);
-    }
+      y += atomSize.height;
+    } else {
+      let x = startX;
+      if (style.alignment === "Center") x += 0.5 * (availableWidth - rowWidth);
+      else if (style.alignment === "End") x += availableWidth - rowWidth;
+      let rowHeight = 0;
+      for (const atom of row) {
+        const atomSize = getDesiredSize(atom, desiredSizes);
+        renderAtom(
+          resources,
+          pdf,
+          AD.Rect.create(x, y, atomSize.availableWidth ?? atomSize.width, atomSize.height),
+          style.textStyle,
+          atom,
+          "left",
+          atomSize.width
+        );
+        x += atomSize.width;
+        rowHeight = Math.max(rowHeight, atomSize.height);
+      }
 
-    y += rowHeight;
+      y += rowHeight;
+    }
   }
 }
 
@@ -284,7 +304,8 @@ function renderAtom(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  measureTextWidth: number
 ): void {
   switch (atom.type) {
     case "TextField":
@@ -297,7 +318,7 @@ function renderAtom(
       renderImage(resources, pdf, finalRect, atom, textStyle);
       return;
     case "HyperLink":
-      renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment);
+      renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment, measureTextWidth);
       return;
     case "TocSeparator":
       renderTocSeparator(pdf, finalRect, textStyle);
@@ -362,7 +383,8 @@ function renderHyperLink(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  measureTextWidth: number
 ) {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -372,7 +394,7 @@ function renderHyperLink(
     resources
   ) as AD.TextStyle.TextStyle;
   const textAlignment = style.alignment ? style.alignment : alignment;
-  drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment);
+  drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, measureTextWidth);
 }
 
 function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
@@ -384,35 +406,34 @@ function drawHyperLink(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  measureTextWidth: number
 ) {
-  //compensation needed as pdfKit's widthOfString may return a slightly
-  //lower value than the actual size due to loss of precision
-  const compensatePdfKitSize = 2;
   const font = getFontName(textStyle);
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
-  const alignmentOffset = calculateTextAlignmentOffset(alignment, compensatePdfKitSize);
 
+  //the + 2 is compensation that's needed as pdfKit's widthOfString may return a slightly
+  //lower value than the actual size due to loss of precision
   pdf
     .font(font)
     .fontSize(fontSize)
     .fillColor(textStyle.color || "blue")
-    .text(hyperLink.text, finalRect.x - alignmentOffset, finalRect.y + offset, {
-      width: finalRect.width + compensatePdfKitSize,
-      height: finalRect.height + compensatePdfKitSize,
+    .text(hyperLink.text, finalRect.x, finalRect.y + offset, {
+      width: finalRect.width,
+      height: finalRect.height + 2,
       underline: textStyle.underline || false,
       align: alignment,
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
       indent: textStyle.indent || 0,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     })
-    .underline(finalRect.x - alignmentOffset, finalRect.y + 2, finalRect.width, finalRect.height, {
+    .underline(finalRect.x, finalRect.y + 2, measureTextWidth, finalRect.height, {
       color: "blue",
     });
   if (!isInternalLink) {
-    pdf.link(finalRect.x, finalRect.y, finalRect.width, finalRect.height, hyperLink.target);
+    pdf.link(finalRect.x, finalRect.y, measureTextWidth, finalRect.height, hyperLink.target);
   }
 }
 
@@ -423,21 +444,19 @@ function drawText(
   text: string,
   alignment: AD.TextStyle.TextAlignment
 ) {
-  //compensation needed as pdfKit's widthOfString may return a slightly
-  //lower value than the actual size due to loss of precision
-  const compensatePdfKitSize = 2;
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
-  const alignmentOffset = calculateTextAlignmentOffset(alignment, compensatePdfKitSize);
 
+  //the + 2 is compensation that's needed as pdfKit's widthOfString may return a slightly
+  //lower value than the actual size due to loss of precision
   pdf
     .font(font)
     .fontSize(fontSize)
     .fillColor(textStyle.color || "black")
-    .text(text, finalRect.x - alignmentOffset, finalRect.y + offset, {
-      width: finalRect.width + compensatePdfKitSize,
-      height: finalRect.height + compensatePdfKitSize,
+    .text(text, finalRect.x, finalRect.y + offset, {
+      width: finalRect.width,
+      height: finalRect.height + 2,
       underline: textStyle.underline || false,
       align: alignment,
       indent: textStyle.indent || 0,
@@ -599,17 +618,4 @@ function calculateTextOffset(textStyle: AD.TextStyle.TextStyle, defaultFontSize:
   const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, defaultFontSize);
   return fontSize * position;
-}
-
-function calculateTextAlignmentOffset(alignment: AD.TextStyle.TextAlignment, compensatePdfKitSize: number): number {
-  switch (alignment) {
-    case "left":
-      return 0;
-    case "center":
-      return compensatePdfKitSize * 0.5;
-    case "right":
-      return compensatePdfKitSize;
-    default:
-      return 0;
-  }
 }

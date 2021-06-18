@@ -346,7 +346,7 @@ function measureText(
     width: lineWidth,
     ...textOptions,
   });
-  return AD.Size.create(width, height);
+  return AD.Size.create(width, height, availableSize.width);
 }
 
 function mergeMaps(maps: Array<Map<any, AD.Size.Size>>): Map<any, AD.Size.Size> {
