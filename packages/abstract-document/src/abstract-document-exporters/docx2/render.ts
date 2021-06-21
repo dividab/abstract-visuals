@@ -196,10 +196,7 @@ function getLengthOfFiniteColumns(table: AD.Table.Table): number {
   );
 }
 
-function abstractColumnWidthToDocxDxaWidth(
-  table: AD.Table.Table,
-  tableWidth: number
-): [ReadonlyArray<number>, boolean] {
+function abstractColumnWidthToDocxDxaWidth(table: AD.Table.Table, tableWidth: number): [Array<number>, boolean] {
   const numberOfColumns = getTableColumns(table);
   const lengthOfFiniteColumns = getLengthOfFiniteColumns(table);
   // All columns have infinite length, spreed them evenly where tableLength = 100%
@@ -260,7 +257,7 @@ function renderTable(
       size: totalWidth,
     },
     layout: DOCXJS.TableLayoutType.FIXED,
-    columnWidths: columnWidthsDxa.slice(0),
+    columnWidths: columnWidthsDxa,
     borders: {
       top: {
         color: style.cellStyle.borderColor ?? "",
