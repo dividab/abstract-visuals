@@ -220,8 +220,9 @@ function abstractColumnWidthToDocxDxaWidth(table: AD.Table.Table, tableWidth: nu
     // All columns have specific width, not one is infinite, we add one more cell the length of the remaining space
     return [
       [
+        ...(table.style.alignment === "Right" ? [tableWidth - lengthOfFiniteColumns] : []),
         ...table.columnWidths.map((columnWidth) => columnWidth * abstractDocPixelToDocxDXARatio),
-        tableWidth - lengthOfFiniteColumns,
+        ...(table.style.alignment === "Left" ? [tableWidth - lengthOfFiniteColumns] : []),
       ],
       false,
     ];
