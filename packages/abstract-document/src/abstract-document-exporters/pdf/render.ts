@@ -203,13 +203,13 @@ function renderParagraph(
   let currentWidth = 0;
   for (const atom of paragraph.children) {
     const atomSize = getDesiredSize(atom, desiredSizes);
+    currentRow.push(atom);
+    currentWidth += atomSize.width;
     if (currentWidth + atomSize.width >= availableWidth) {
       rows.push(currentRow);
       currentRow = [];
       currentWidth = 0;
     }
-    currentRow.push(atom);
-    currentWidth += atomSize.width;
   }
   if (currentRow.length > 0)
     // Add any remaning children to a new row.

@@ -116,13 +116,13 @@ function measureParagraph(
       atom
     );
     desiredSizes.set(atom, atomSize);
+    currentRowWidth += atomSize.width;
+    currentRowHeight = Math.max(atomSize.height, currentRowHeight);
     if (currentRowWidth + atomSize.width > contentAvailableSize.width) {
       desiredHeight += currentRowHeight;
       currentRowWidth = 0;
       currentRowHeight = 0;
     }
-    currentRowWidth += atomSize.width;
-    currentRowHeight = Math.max(atomSize.height, currentRowHeight);
   }
   desiredHeight += currentRowHeight;
 
