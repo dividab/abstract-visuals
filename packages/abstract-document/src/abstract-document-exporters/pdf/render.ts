@@ -250,7 +250,7 @@ function renderParagraph(
           AD.Rect.create(x, y, atomSize.availableWidth ?? atomSize.width, atomSize.height),
           style.textStyle,
           atom,
-          "left",
+          parseAlignment(style.alignment),
           atomSize.width
         );
         x += atomSize.width;
