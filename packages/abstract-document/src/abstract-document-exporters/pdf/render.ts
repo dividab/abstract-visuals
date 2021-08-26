@@ -201,19 +201,56 @@ function renderParagraph(
   let rows: Array<Array<AD.Atom.Atom>> = [];
   let currentRow: Array<AD.Atom.Atom> = [];
   let currentWidth = 0;
+  let previousAtomType: string | undefined;
   for (const atom of paragraph.children) {
-    const atomSize = getDesiredSize(atom, desiredSizes);
-    currentRow.push(atom);
-    currentWidth += atomSize.width;
-    if (currentWidth + atomSize.width >= availableWidth) {
-      rows.push(currentRow);
-      currentRow = [];
-      currentWidth = 0;
+    if (!previousAtomType) {
+      // First atom
+      previousAtomType = atom.type;
+      currentRow.push(atom);
+      const atomSize = getDesiredSize(atom, desiredSizes);
+      currentWidth = atomSize.width;
+      continue;
+    }
+
+    if (atom.type !== "Image") {
+      // Text
+      if (previousAtomType === "Image") {
+        // Previous was image
+        rows.push(currentRow);
+        currentRow = [];
+        currentWidth = 0;
+        previousAtomType = atom.type;
+      }
+      currentRow.push(atom);
+      continue;
+    }
+
+    if (atom.type === "Image") {
+      // Image
+      if (previousAtomType !== "Image") {
+        // Previous was not image
+        rows.push(currentRow);
+        currentRow = [];
+        currentWidth = 0;
+        previousAtomType = atom.type;
+      }
+      const atomSize = getDesiredSize(atom, desiredSizes);
+      if (currentWidth + atomSize.width < availableWidth || currentRow.length === 0) {
+        // Image fits in current row
+        currentRow.push(atom);
+        currentWidth += atomSize.width;
+      } else {
+        // Image does not fit in current row
+        rows.push(currentRow);
+        currentRow = [atom];
+        currentWidth = atomSize.width;
+      }
     }
   }
-  if (currentRow.length > 0)
+  if (currentRow.length > 0) {
     // Add any remaning children to a new row.
     rows.push(currentRow);
+  }
 
   let y = finalRect.y + style.margins.top;
 
@@ -222,26 +259,27 @@ function renderParagraph(
       continue;
     }
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
-    const startX = finalRect.x + style.margins.left;
+    let x = finalRect.x + style.margins.left;
 
-    const atomSize = getDesiredSize(row[0], desiredSizes);
-    //We need to use pdfKits alignment if theres only one atom in the row, because then theres a risk of it linebreaking. If there are multiple lines we need to center each line
-    if (atomSize?.availableWidth !== undefined && row.length === 1) {
+    if (style.alignment === "Center") {
+      x += 0.5 * (availableWidth - rowWidth);
+    } else if (style.alignment === "End") {
+      x += availableWidth - rowWidth;
+    }
+
+    let rowHeight = 0;
+    if (row[0].type !== "Image") {
+      // Do i make a new function renderText and renderImage?
       renderAtom(
         resources,
         pdf,
-        AD.Rect.create(startX, y, availableWidth, atomSize.height),
+        AD.Rect.create(x, y, atomSize.availableWidth ?? atomSize.width, atomSize.height), // How to get height of whole string?
         style.textStyle,
-        row[0],
-        parseAlignment(style.alignment),
+        row,
+        "left",
         atomSize.width
       );
-      y += atomSize.height;
     } else {
-      let x = startX;
-      if (style.alignment === "Center") x += 0.5 * (availableWidth - rowWidth);
-      else if (style.alignment === "End") x += availableWidth - rowWidth;
-      let rowHeight = 0;
       for (const atom of row) {
         const atomSize = getDesiredSize(atom, desiredSizes);
         renderAtom(
@@ -256,9 +294,9 @@ function renderParagraph(
         x += atomSize.width;
         rowHeight = Math.max(rowHeight, atomSize.height);
       }
-
-      y += rowHeight;
     }
+
+    y += rowHeight;
   }
 }
 
