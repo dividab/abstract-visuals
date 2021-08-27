@@ -9,32 +9,6 @@ import { loadTests, onlySkip } from "../test-data-utils";
 export const tests = loadTests<ExportTestDef>("docx2/test-defs/");
 
 describe("export docx", () => {
-  // it("simple render", async () => {
-  //   console.log("Hej");
-  //   // Arrage
-  //   const abstractDoc = render(
-  //     <AbstractDoc>
-  //       <Section>
-  //         <Paragraph></Paragraph>
-  //       </Section>
-  //     </AbstractDoc>
-  //   );
-
-  //   // Act
-  //   // Get the DOCX (which by defintiion is a zipfile following open packaging convention)
-  //   const docxStream = new S.PassThrough();
-  //   exportToStream(docxStream, abstractDoc);
-  //   const docxBuffer = await streamToBuffer(docxStream);
-  //   // const docxString = streamToString(docxStream);
-  //   const docxZip = await jszip.loadAsync(docxBuffer);
-
-  //   const docxWordDocumentXml = await docxZip.file("word/document.xml")?.async("string");
-
-  //   console.log(docxWordDocumentXml);
-
-  //   // Assert
-  // });
-
   onlySkip(tests).forEach((item) => {
     test(item.name, async () => {
       const abstractDoc = render(item.abstractDocJsx);
