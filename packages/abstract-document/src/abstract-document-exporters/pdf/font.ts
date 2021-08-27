@@ -1,4 +1,3 @@
-import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { getResources } from "../shared/get_resources";
 
@@ -8,7 +7,7 @@ export function registerFonts(
 ): void {
   const resources = getResources(document);
   if (resources.fonts) {
-    for (const fontName of R.keys(resources.fonts)) {
+    for (const fontName of Object.keys(resources.fonts)) {
       const font = resources.fonts[fontName];
       registerFont(fontName, font.normal);
       registerFont(fontName + "-Medium", font.medium || font.normal);
@@ -17,14 +16,8 @@ export function registerFonts(
       registerFont(fontName + "-Italic", font.italic);
       registerFont(fontName + "-BoldOblique", font.boldItalic);
       registerFont(fontName + "-BoldItalic", font.boldItalic);
-      registerFont(
-        fontName + "-MediumOblique",
-        font.mediumItalic || font.italic
-      );
-      registerFont(
-        fontName + "-MediumItalic",
-        font.mediumItalic || font.italic
-      );
+      registerFont(fontName + "-MediumOblique", font.mediumItalic || font.italic);
+      registerFont(fontName + "-MediumItalic", font.mediumItalic || font.italic);
     }
   }
 }
@@ -46,12 +39,9 @@ export function getFontName(textStyle: AD.TextStyle.TextStyle): string {
   }
 }
 
-export function isFontAvailable(
-  fontName: string,
-  resources: AD.Resources.Resources
-): boolean {
+export function isFontAvailable(fontName: string, resources: AD.Resources.Resources): boolean {
   if (resources.fonts) {
-    for (const name of R.keys(resources.fonts)) {
+    for (const name of Object.keys(resources.fonts)) {
       const font = resources.fonts[name];
       if (font.normal && fontName === name) {
         return true;
@@ -62,24 +52,13 @@ export function isFontAvailable(
       if (font.bold && fontName === `${name}-Bold`) {
         return true;
       }
-      if (
-        font.italic &&
-        (fontName === `${name}-Oblique` || fontName === `${name}-Italic`)
-      ) {
+      if (font.italic && (fontName === `${name}-Oblique` || fontName === `${name}-Italic`)) {
         return true;
       }
-      if (
-        font.boldItalic &&
-        (fontName === `${name}-BoldOblique` ||
-          fontName === `${name}-BoldItalic`)
-      ) {
+      if (font.boldItalic && (fontName === `${name}-BoldOblique` || fontName === `${name}-BoldItalic`)) {
         return true;
       }
-      if (
-        font.mediumItalic &&
-        (fontName === `${name}-MediumOblique` ||
-          fontName === `${name}-MediumItalic`)
-      ) {
+      if (font.mediumItalic && (fontName === `${name}-MediumOblique` || fontName === `${name}-MediumItalic`)) {
         return true;
       }
     }
