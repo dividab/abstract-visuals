@@ -1,7 +1,7 @@
 import * as S from "stream";
 import path from "path";
 import * as DiffJsXml from "diff-js-xml";
-import { loadTests, onlySkip } from "@abstract-visuals/test-utils";
+import { loadTests, onlySkip, streamToBuffer } from "@abstract-visuals/test-utils";
 import { exportToStream } from "../../../abstract-document-exporters/docx2/render";
 import { render } from "../../../abstract-document-jsx";
 import jszip from "jszip";
@@ -62,14 +62,5 @@ async function diffXmlStrings(lhs: string, rhs: string): Promise<ReadonlyArray<D
     } catch (e) {
       resolve([{ path: "", resultType: "ERROR", message: "ERROR while calling diffAsXml(): " + e.message }]);
     }
-  });
-}
-
-async function streamToBuffer(stream: S.Stream): Promise<Buffer> {
-  const chunks: Buffer[] = [];
-  return new Promise((resolve, reject) => {
-    stream.on("data", (chunk) => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks)));
   });
 }

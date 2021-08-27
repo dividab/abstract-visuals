@@ -36,6 +36,7 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "jszip": "^3.7.1",
-    "diff-js-xml": "^1.0.6"
+    "diff-js-xml": "^1.0.6",
+    "pdf2json": "^1.2.3"
   }
 }
