@@ -1,2 +1,2 @@
-_tests_/
+__tests__/
 *.test.{js,ts,tsx}
