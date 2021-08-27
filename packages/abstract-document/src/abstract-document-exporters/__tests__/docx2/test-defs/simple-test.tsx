@@ -19,8 +19,8 @@ export const test: ExportTestDef = {
               <w:pPr>
                   <w:spacing w:before="0" w:after="0" w:line="1" />
               </w:pPr>
-              <w:bookmarkStart w:name="" w:id="yqadz7yalogalufzqdncb" />
-              <w:bookmarkEnd w:id="yqadz7yalogalufzqdncb" />
+              <w:bookmarkStart w:name="" w:id="*" />
+              <w:bookmarkEnd w:id="*" />
           </w:p>
           <w:p>
               <w:pPr>

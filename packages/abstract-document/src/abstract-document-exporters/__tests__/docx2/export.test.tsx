@@ -22,8 +22,8 @@ describe("export docx", () => {
         if (docxWordDocumentXml !== undefined) {
           if (filename.endsWith(".xml")) {
             const result = await diffXmlStrings(content, docxWordDocumentXml);
-            // const result = await diffXmlStrings(content, "<root></root>");
-            console.log("result", result);
+            // console.log("result", result);
+            expect(result).toEqual([]);
           } else {
             expect(docxWordDocumentXml).toEqual(content);
           }
@@ -39,6 +39,10 @@ type DiffResult = {
   readonly message: string;
 };
 
+/**
+ * It can be very handy to compare with wildcards if for exammple you are not interested in all the data.
+ * You can put an * in the first (lhs) xml file. The result of this compare will be no differences.
+ */
 async function diffXmlStrings(lhs: string, rhs: string): Promise<ReadonlyArray<DiffResult>> {
   return new Promise((resolve) => {
     try {
