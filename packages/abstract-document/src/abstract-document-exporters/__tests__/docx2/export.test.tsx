@@ -1,6 +1,6 @@
 import * as S from "stream";
 import { exportToStream } from "../../../abstract-document-exporters/docx2/render";
-import { Paragraph, AbstractDoc, Section, render } from "../../../abstract-document-jsx";
+import { render } from "../../../abstract-document-jsx";
 import jszip from "jszip";
 import { ExportTestDef } from "./export-test-def";
 import { loadTests, onlySkip } from "../test-data-utils";

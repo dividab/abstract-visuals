@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Meta } from "@storybook/react";
 import * as AbstractImage from "abstract-image";
 
 export function ReactSvgExportExample1(): React.ReactElement<{}> {
@@ -44,3 +45,9 @@ export function ReactSvgExportExample1(): React.ReactElement<{}> {
     </div>
   );
 }
+
+// eslint-disable-next-line import/no-default-export
+export default {
+  component: ReactSvgExportExample1,
+  title: "ReactSvgExportExample1",
+} as Meta;
