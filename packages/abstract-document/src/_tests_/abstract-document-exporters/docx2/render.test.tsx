@@ -1,13 +1,13 @@
 import React from "react";
 import * as S from "stream";
 import { exportToStream } from "../../../abstract-document-exporters/docx2/render";
-import { Paragraph, AbstractDoc, Section } from "../../../abstract-document-jsx";
+import { Paragraph, AbstractDoc, Section, render } from "../../../abstract-document-jsx";
 
 describe("docx rendering", () => {
   it("simple render", () => {
     console.log("Hej");
     // Setup
-    const abstractDoc = (
+    const abstractDoc = render(
       <AbstractDoc>
         <Section>
           <Paragraph></Paragraph>
@@ -16,7 +16,7 @@ describe("docx rendering", () => {
     );
 
     // Act
-    const docxStream: NodeJS.WritableStream = new Buffer();
+    const docxStream = new S.PassThrough();
     exportToStream(docxStream, abstractDoc);
     const docxString = streamToString(docxStream);
 
