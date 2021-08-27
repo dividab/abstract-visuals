@@ -4,6 +4,7 @@ import { render } from "../../../abstract-document-jsx";
 import jszip from "jszip";
 import { ExportTestDef } from "./export-test-def";
 import { loadTests, onlySkip } from "../test-data-utils";
+import * as DiffJsXml from "diff-js-xml";
 
 export const tests = loadTests<ExportTestDef>("docx2/test-defs/");
 
@@ -18,11 +19,46 @@ describe("export docx", () => {
       const docxZip = await jszip.loadAsync(docxBuffer);
       for (const [filename, content] of Object.entries(item.expectedDocxZipContexts)) {
         const docxWordDocumentXml = await docxZip.file(filename)?.async("string");
-        expect(docxWordDocumentXml).toEqual(content);
+        if (docxWordDocumentXml !== undefined) {
+          if (filename.endsWith(".xml")) {
+            const result = await diffXmlStrings(content, docxWordDocumentXml);
+            // const result = await diffXmlStrings(content, "<root></root>");
+            console.log("result", result);
+          } else {
+            expect(docxWordDocumentXml).toEqual(content);
+          }
+        }
       }
     });
   });
 });
+
+type DiffResult = {
+  readonly path: string;
+  readonly resultType: string;
+  readonly message: string;
+};
+
+async function diffXmlStrings(lhs: string, rhs: string): Promise<ReadonlyArray<DiffResult>> {
+  return new Promise((resolve) => {
+    try {
+      DiffJsXml.diffAsXml(
+        lhs,
+        rhs,
+        {},
+        {
+          compareElementValues: true,
+          xml2jsOptions: { ignoreAttributes: false },
+        },
+        (result: ReadonlyArray<DiffResult>) => {
+          resolve(result);
+        }
+      );
+    } catch (e) {
+      resolve([{ path: "", resultType: "ERROR", message: "ERROR while calling diffAsXml(): " + e.message }]);
+    }
+  });
+}
 
 async function streamToBuffer(stream: S.Stream): Promise<Buffer> {
   const chunks: Buffer[] = [];
