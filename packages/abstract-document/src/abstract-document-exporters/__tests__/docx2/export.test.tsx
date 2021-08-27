@@ -1,4 +1,3 @@
-import React from "react";
 import * as S from "stream";
 import { exportToStream } from "../../../abstract-document-exporters/docx2/render";
 import { Paragraph, AbstractDoc, Section, render } from "../../../abstract-document-jsx";
@@ -16,7 +15,6 @@ describe("export docx", () => {
       exportToStream(docxStream, abstractDoc);
       // Get the DOCX (which by defintiion is a zipfile following open packaging convention)
       const docxBuffer = await streamToBuffer(docxStream);
-      // const docxString = streamToString(docxStream);
       const docxZip = await jszip.loadAsync(docxBuffer);
       for (const [filename, content] of Object.entries(item.expectedDocxZipContexts)) {
         const docxWordDocumentXml = await docxZip.file(filename)?.async("string");
