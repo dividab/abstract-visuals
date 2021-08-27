@@ -182,6 +182,27 @@ function renderSectionElement(
   }
 }
 
+function renderGroup(
+  resources: AD.Resources.Resources,
+  pdf: {},
+  desiredSizes: Map<{}, AD.Size.Size>,
+  finalRect: AD.Rect.Rect,
+  group: AD.Group.Group
+) {
+  let y = finalRect.y;
+  for (const element of group.children) {
+    const elementSize = getDesiredSize(element, desiredSizes);
+    renderSectionElement(
+      resources,
+      pdf,
+      desiredSizes,
+      AD.Rect.create(finalRect.x, y, elementSize.width, elementSize.height),
+      element
+    );
+    y += elementSize.height;
+  }
+}
+
 function renderParagraph(
   resources: AD.Resources.Resources,
   pdf: {},
@@ -213,7 +234,7 @@ function renderParagraph(
     }
 
     if (atom.type !== "Image") {
-      // Text
+      // Atom is Text
       if (previousAtomType === "Image") {
         // Previous was image
         rows.push(currentRow);
@@ -226,7 +247,7 @@ function renderParagraph(
     }
 
     if (atom.type === "Image") {
-      // Image
+      // Atom is Image
       if (previousAtomType !== "Image") {
         // Previous was not image
         rows.push(currentRow);
@@ -236,7 +257,7 @@ function renderParagraph(
       }
       const atomSize = getDesiredSize(atom, desiredSizes);
       if (currentWidth + atomSize.width < availableWidth || currentRow.length === 0) {
-        // Image fits in current row
+        // Image fits in current row/current row is empty
         currentRow.push(atom);
         currentWidth += atomSize.width;
       } else {
@@ -258,6 +279,7 @@ function renderParagraph(
     if (row.length === 0) {
       continue;
     }
+
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
     let x = finalRect.x + style.margins.left;
 
@@ -268,35 +290,51 @@ function renderParagraph(
     }
 
     let rowHeight = 0;
-    if (row[0].type !== "Image") {
-      // Do i make a new function renderText and renderImage?
+
+    const lastIndex = row.length - 1;
+    for (const [i, atom] of row.entries()) {
+      const atomSize = getDesiredSize(atom, desiredSizes);
       renderAtom(
         resources,
         pdf,
-        AD.Rect.create(x, y, atomSize.availableWidth ?? atomSize.width, atomSize.height), // How to get height of whole string?
+        AD.Rect.create(x, y, atomSize.width, atomSize.height),
         style.textStyle,
-        row,
-        "left",
-        atomSize.width
+        atom,
+        parseAlignment(style.alignment),
+        atomSize.width,
+        availableWidth,
+        i !== lastIndex,
+        i === 0
       );
-    } else {
-      for (const atom of row) {
-        const atomSize = getDesiredSize(atom, desiredSizes);
-        renderAtom(
-          resources,
-          pdf,
-          AD.Rect.create(x, y, atomSize.availableWidth ?? atomSize.width, atomSize.height),
-          style.textStyle,
-          atom,
-          "left",
-          atomSize.width
-        );
-        x += atomSize.width;
-        rowHeight = Math.max(rowHeight, atomSize.height);
-      }
+
+      x += atomSize.width;
+      rowHeight = Math.max(rowHeight, atomSize.height);
     }
 
     y += rowHeight;
+
+    // if (row[0].type === "Image") {
+    //   y += rowHeight;
+    // } else {
+    //   y = pdf.y;
+    // }
+
+    // if text
+    // y += ceil(sum(atomSize.width) / availableWidth) * row.height;
+
+    // atom
+
+    // max(for(atom of row)
+    //   pdf.heightOfString("Test", {
+    //     width: pageWidth,
+    //     ...atom.textOptions,
+    //   });
+    // )
+
+    // pdf.heightOfString(concatinatedText, {
+    //   width: pageWidth,
+    //   ...textOptions,
+    // });
   }
 }
 
@@ -315,27 +353,6 @@ function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | un
   }
 }
 
-function renderGroup(
-  resources: AD.Resources.Resources,
-  pdf: {},
-  desiredSizes: Map<{}, AD.Size.Size>,
-  finalRect: AD.Rect.Rect,
-  group: AD.Group.Group
-) {
-  let y = finalRect.y;
-  for (const element of group.children) {
-    const elementSize = getDesiredSize(element, desiredSizes);
-    renderSectionElement(
-      resources,
-      pdf,
-      desiredSizes,
-      AD.Rect.create(finalRect.x, y, elementSize.width, elementSize.height),
-      element
-    );
-    y += elementSize.height;
-  }
-}
-
 function renderAtom(
   resources: AD.Resources.Resources,
   pdf: {},
@@ -343,20 +360,23 @@ function renderAtom(
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
   alignment: AD.TextStyle.TextAlignment,
-  measureTextWidth: number
+  measureTextWidth: number,
+  availableWidth: number,
+  concatenate: boolean,
+  isFirstAtom: boolean
 ): void {
   switch (atom.type) {
     case "TextField":
-      renderTextField(resources, pdf, finalRect, textStyle, atom, "left");
+      renderTextField(resources, pdf, finalRect, textStyle, atom, "left", concatenate, isFirstAtom, availableWidth);
       return;
     case "TextRun":
-      renderTextRun(resources, pdf, finalRect, textStyle, atom, alignment);
+      renderTextRun(resources, pdf, finalRect, textStyle, atom, alignment, concatenate, isFirstAtom, availableWidth);
       return;
     case "Image":
-      renderImage(resources, pdf, finalRect, atom, textStyle);
+      renderImage(resources, pdf, finalRect, textStyle, atom);
       return;
     case "HyperLink":
-      renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment, measureTextWidth);
+      renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment, concatenate, isFirstAtom, availableWidth);
       return;
     case "TocSeparator":
       renderTocSeparator(pdf, finalRect, textStyle);
@@ -372,7 +392,10 @@ function renderTextField(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textField: AD.TextField.TextField,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  concatenate: boolean,
+  isFirstAtom: boolean,
+  availableWidth: number
 ): void {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -383,13 +406,22 @@ function renderTextField(
   ) as AD.TextStyle.TextStyle;
   switch (textField.fieldType) {
     case "Date":
-      drawText(pdf, finalRect, style, new Date(Date.now()).toDateString(), alignment);
+      drawText(
+        pdf,
+        finalRect,
+        style,
+        new Date(Date.now()).toDateString(),
+        alignment,
+        concatenate,
+        isFirstAtom,
+        availableWidth
+      );
       return;
     case "PageNumber":
     case "TotalPages":
     case "PageNumberOf":
       if (textField.text) {
-        drawText(pdf, finalRect, style, textField.text, alignment);
+        drawText(pdf, finalRect, style, textField.text, alignment, concatenate, isFirstAtom, availableWidth);
       }
       return;
   }
@@ -401,7 +433,10 @@ function renderTextRun(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textRun: AD.TextRun.TextRun,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  concatenate: boolean,
+  isFirstAtom: boolean,
+  availableWidth: number
 ) {
   const style = AD.Resources.getNestedStyle(
     textStyle,
@@ -412,7 +447,7 @@ function renderTextRun(
     textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
   const textAlignment = style.alignment ? style.alignment : alignment;
-  drawText(pdf, finalRect, style, textRun.text, textAlignment);
+  drawText(pdf, finalRect, style, textRun.text, textAlignment, concatenate, isFirstAtom, availableWidth);
 }
 
 function renderHyperLink(
@@ -422,7 +457,9 @@ function renderHyperLink(
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
   alignment: AD.TextStyle.TextAlignment,
-  measureTextWidth: number
+  concatenate: boolean,
+  isFirstAtom: boolean,
+  availableWidth: number
 ) {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -432,7 +469,7 @@ function renderHyperLink(
     resources
   ) as AD.TextStyle.TextStyle;
   const textAlignment = style.alignment ? style.alignment : alignment;
-  drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, measureTextWidth);
+  drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, concatenate, isFirstAtom, availableWidth);
 }
 
 function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
@@ -445,33 +482,39 @@ function drawHyperLink(
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
   alignment: AD.TextStyle.TextAlignment,
-  measureTextWidth: number
+  concatenate: boolean,
+  isFirstAtom: boolean,
+  availableWidth: number
 ) {
   const font = getFontName(textStyle);
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
-  const offset = calculateTextOffset(textStyle, fontSize);
 
   //the + 2 is compensation that's needed as pdfKit's widthOfString may return a slightly
   //lower value than the actual size due to loss of precision
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "blue")
-    .text(hyperLink.text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width,
-      height: finalRect.height + 2,
+    .fillColor(textStyle.color || "blue");
+
+  applyTextOffset(pdf, textStyle);
+  pdf
+    .text(hyperLink.text, finalRect.x, finalRect.y, {
       underline: textStyle.underline || false,
       align: alignment,
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
       indent: textStyle.indent || 0,
+      continued: concatenate,
+      ...(isFirstAtom ? { width: finalRect.width, height: finalRect.height + 2 } : {}),
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     })
-    .underline(finalRect.x, finalRect.y + 2, measureTextWidth, finalRect.height, {
+    .underline(finalRect.x, finalRect.y + 2, finalRect.width, finalRect.height, {
       color: "blue",
     });
+  resetTextOffset(pdf, textStyle);
+
   if (!isInternalLink) {
-    pdf.link(finalRect.x, finalRect.y, measureTextWidth, finalRect.height, hyperLink.target);
+    pdf.link(finalRect.x, finalRect.y, finalRect.width, finalRect.height, hyperLink.target);
   }
 }
 
@@ -480,32 +523,46 @@ function drawText(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   text: string,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  concatenate: boolean,
+  isFirstAtom: boolean,
+  availableWidth: number
 ) {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
-  const offset = calculateTextOffset(textStyle, fontSize);
 
-  //the + 2 is compensation that's needed as pdfKit's widthOfString may return a slightly
-  //lower value than the actual size due to loss of precision
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black")
-    .text(text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width,
-      height: finalRect.height + 2,
+    .fillColor(textStyle.color || "black");
+
+  applyTextOffset(pdf, textStyle);
+
+  if (isFirstAtom) {
+    pdf.text(text, finalRect.x, finalRect.y, {
+      width: availableWidth,
       underline: textStyle.underline || false,
       align: alignment,
       indent: textStyle.indent || 0,
+      continued: concatenate,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
+  } else {
+    pdf.text(text, {
+      underline: textStyle.underline || false,
+      align: alignment,
+      indent: textStyle.indent || 0,
+      continued: concatenate,
+      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+    });
+  }
+
+  resetTextOffset(pdf, textStyle);
 }
 
 function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
-  const offset = calculateTextOffset(textStyle, fontSize);
 
   const oneDotW = pdf.widthOfString(".", {
     width: finalRect.width,
@@ -526,13 +583,16 @@ function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextSty
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black")
-    .text(dotsText, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width,
-      height: finalRect.height,
-      align: "right",
-      characterSpacing: 5,
-    });
+    .fillColor(textStyle.color || "black");
+
+  applyTextOffset(pdf, textStyle);
+  pdf.text(dotsText, finalRect.x, finalRect.y, {
+    width: finalRect.width,
+    height: finalRect.height,
+    align: "right",
+    characterSpacing: 5,
+  });
+  resetTextOffset(pdf, textStyle);
 }
 
 function renderTable(
@@ -651,9 +711,26 @@ function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Si
   throw new Error("Could not find size for element!");
 }
 
-function calculateTextOffset(textStyle: AD.TextStyle.TextStyle, defaultFontSize: number): number {
+function applyTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle) {
+  const offset = calculateTextOffset(textStyle);
+  if (offset < 0) {
+    pdf.moveDown(Math.abs(offset));
+  } else {
+    pdf.moveUp(offset);
+  }
+}
+
+function resetTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle) {
+  const offset = calculateTextOffset(textStyle);
+  if (offset < 0) {
+    pdf.moveUp(Math.abs(offset));
+  } else {
+    pdf.moveDown(offset);
+  }
+}
+
+function calculateTextOffset(textStyle: AD.TextStyle.TextStyle): number {
   const defaultPosition = textStyle.superScript ? -0.5 : textStyle.subScript ? 0.5 : 0;
   const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
-  const fontSize = AD.TextStyle.calculateFontSize(textStyle, defaultFontSize);
-  return fontSize * position;
+  return position;
 }
