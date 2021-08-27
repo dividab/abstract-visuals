@@ -11,5 +11,5 @@
       "*": ["./custom_typings/*"]
     }
   },
-  "references": [{ "path": "../abstract-image" }]
+  "references": [{ "path": "../abstract-image" }, { "path": "../test-utils" }]
 }

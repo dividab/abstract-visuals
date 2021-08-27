@@ -1,12 +1,10 @@
 import * as fs from "fs";
-import * as path from "path";
 
 export function loadTests<T>(testsPath: string): ReadonlyArray<T> {
-  const testBasePath = path.join(__dirname, testsPath);
   const importedTests = fs
-    .readdirSync(testBasePath)
+    .readdirSync(testsPath)
     // .filter(f => f.match(/\.test\.ts$/i))
-    .map((f) => require(testBasePath + f))
+    .map((f) => require(testsPath + f))
     .map((importedModule) => importedModule.test as T);
 
   return importedTests;

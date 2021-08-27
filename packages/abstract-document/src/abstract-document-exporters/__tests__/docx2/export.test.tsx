@@ -1,12 +1,13 @@
 import * as S from "stream";
+import path from "path";
+import * as DiffJsXml from "diff-js-xml";
+import { loadTests, onlySkip } from "@abstract-visuals/test-utils";
 import { exportToStream } from "../../../abstract-document-exporters/docx2/render";
 import { render } from "../../../abstract-document-jsx";
 import jszip from "jszip";
 import { ExportTestDef } from "./export-test-def";
-import { loadTests, onlySkip } from "../test-data-utils";
-import * as DiffJsXml from "diff-js-xml";
 
-export const tests = loadTests<ExportTestDef>("docx2/test-defs/");
+export const tests = loadTests<ExportTestDef>(path.join(__dirname, "test-defs/"));
 
 describe("export docx", () => {
   onlySkip(tests).forEach((item) => {
