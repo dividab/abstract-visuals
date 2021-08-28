@@ -3389,7 +3389,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^4.19.0":
+"@typescript-eslint/eslint-plugin@^4.29.3":
   version "4.29.3"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.29.3.tgz#95cb8029a8bd8bd9c7f4ab95074a7cb2115adefa"
   integrity sha512-tBgfA3K/3TsZY46ROGvoRxQr1wBkclbVqRQep97MjVHJzcRBURRY3sNFqLk0/Xr//BY5hM9H2p/kp+6qim85SA==
@@ -3414,7 +3414,7 @@
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
 
-"@typescript-eslint/parser@^4.19.0":
+"@typescript-eslint/parser@^4.29.3":
   version "4.29.3"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-4.29.3.tgz#2ac25535f34c0e98f50c0e6b28c679c2357d45f2"
   integrity sha512-jrHOV5g2u8ROghmspKoW7pN8T/qUzk0+DITun0MELptvngtMrwUJ1tv5zMI04CYVEUsSrN4jV7AKSv+I0y0EfQ==
@@ -6779,10 +6779,10 @@ escodegen@~1.2.0:
   optionalDependencies:
     source-map "~0.1.30"
 
-eslint-config-divid@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/eslint-config-divid/-/eslint-config-divid-0.5.1.tgz#a28a033c66a59712639601a9310972c022a22f17"
-  integrity sha512-3xOWBStQbA5A5OwrJhl8f7IMYbV79XIdawjvfgDsxGMRCtG2lOacajaP8+vAS2Gx9rzspkBa8Nm0VjSo3ho1/A==
+eslint-config-divid@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-divid/-/eslint-config-divid-0.6.0.tgz#4e0b4a2558ad831d79b8f09285eb00ba4cf7c70f"
+  integrity sha512-GtkXAd0LO1681+lQXwS2QmRIZaPK0czvgWuKXR0QpNgzKpZIkZkuXocSB3g2SUbdbXbxu1bpXUHIrDl6mC6JHg==
 
 eslint-import-resolver-node@^0.3.6:
   version "0.3.6"
@@ -6800,10 +6800,10 @@ eslint-module-utils@^2.6.2:
     debug "^3.2.7"
     pkg-dir "^2.0.0"
 
-eslint-plugin-functional@^3.2.1:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-functional/-/eslint-plugin-functional-3.6.0.tgz#566126a33cd05b64ffb1bcaa11c96ee280398a44"
-  integrity sha512-Utujj1dfQ5Bf79kN2BCoMHqnpM4KTMjQ5emMicaWHtcvySBc01+drGVEo9AEojUD9Rs9siprMCzbrT4zwFYzRA==
+eslint-plugin-functional@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-functional/-/eslint-plugin-functional-3.7.0.tgz#b8fadf2b8c597f9f05a67b9e96bb3f90c82f3345"
+  integrity sha512-nyea0v1CM7RmcnZf5/c2GTTvSSgrj468o75MpVRIs6nlAbFU/7694r6DFMc5YxV3Sso0fSgXbTPYSsff/r9T1g==
   dependencies:
     "@typescript-eslint/experimental-utils" "^4.9.1"
     array.prototype.flatmap "^1.2.4"
@@ -6811,7 +6811,7 @@ eslint-plugin-functional@^3.2.1:
     escape-string-regexp "^4.0.0"
     object.fromentries "^2.0.3"
 
-eslint-plugin-import@^2.22.1:
+eslint-plugin-import@^2.24.2:
   version "2.24.2"
   resolved "https://registry.yarnpkg.com/eslint-plugin-import/-/eslint-plugin-import-2.24.2.tgz#2c8cd2e341f3885918ee27d18479910ade7bb4da"
   integrity sha512-hNVtyhiEtZmpsabL4neEj+6M5DCLgpYyG9nzJY8lZQeQXEn5UPW1DpUdsMHMXsq98dbNm7nt1w9ZMSVpfJdi8Q==
@@ -6872,7 +6872,7 @@ eslint-visitor-keys@^2.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-2.1.0.tgz#f65328259305927392c938ed44eb0a5c9b2bd303"
   integrity sha512-0rSmRBzXgDzIsD6mGdJgevzgezI534Cer5L/vyMX0kHzT/jiB43jRhd9YUlMGYLQy2zprNmoT8qasCGtY+QaKw==
 
-eslint@^7.22.0:
+eslint@^7.32.0:
   version "7.32.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.32.0.tgz#c6d328a14be3fb08c8d1d21e12c02fdb7a2a812d"
   integrity sha512-VHZ8gX+EDfz+97jGcgyGCyRia/dPOd6Xh9yPv8Bl1+SoaIwD+a/vlrOmGRUyOYu7MwUhc7CxqeaDZU13S4+EpA==
