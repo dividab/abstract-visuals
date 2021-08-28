@@ -49,7 +49,8 @@
     "start": "cd packages/abstract-visuals-example && webpack-cli serve --content-base ./src",
     "dist": "cd packages/abstract-visuals-example && webpack",
     "storybook": "start-storybook -p 6006 --ci",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "clean-node-modules": "rm -rf node_modules && rm -rf ./packages/*/node_modules"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --ext .ts,.tsx -f visualstudio",
