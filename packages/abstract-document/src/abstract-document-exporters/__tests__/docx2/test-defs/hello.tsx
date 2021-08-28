@@ -4,7 +4,6 @@ import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-d
 
 export const test: ExportTestDef = {
   name: "hello",
-  only: true,
   abstractDocJsx: (
     <AbstractDoc>
       <Section>

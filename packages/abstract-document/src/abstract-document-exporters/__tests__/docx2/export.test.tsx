@@ -17,7 +17,7 @@ describe("export docx", () => {
       exportToStream(docxStream, abstractDoc);
       // Get the DOCX (which by defintion is a zipfile following open packaging convention)
       const docxBuffer = await streamToBuffer(docxStream);
-      saveBufferInTmpDir(path.join(__dirname, "tmp"), item.name, docxBuffer);
+      saveBufferInTmpDir(path.join(__dirname, "tmp"), item.name + ".docx", docxBuffer);
       const docxZip = await jszip.loadAsync(docxBuffer);
       for (const [filename, content] of Object.entries(item.expectedDocxZipContexts)) {
         const docxWordDocumentXml = await docxZip.file(filename)?.async("string");
