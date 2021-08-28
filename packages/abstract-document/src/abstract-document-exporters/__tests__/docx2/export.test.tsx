@@ -1,7 +1,7 @@
 import * as S from "stream";
 import path from "path";
 import * as DiffJsXml from "diff-js-xml";
-import { loadTests, onlySkip, streamToBuffer } from "@abstract-visuals/test-utils";
+import { loadTests, onlySkip, saveBufferInTmpDir, streamToBuffer } from "@abstract-visuals/test-utils";
 import { exportToStream } from "../../../abstract-document-exporters/docx2/render";
 import { render } from "../../../abstract-document-jsx";
 import jszip from "jszip";
@@ -15,8 +15,9 @@ describe("export docx", () => {
       const abstractDoc = render(item.abstractDocJsx);
       const docxStream = new S.PassThrough();
       exportToStream(docxStream, abstractDoc);
-      // Get the DOCX (which by defintiion is a zipfile following open packaging convention)
+      // Get the DOCX (which by defintion is a zipfile following open packaging convention)
       const docxBuffer = await streamToBuffer(docxStream);
+      saveBufferInTmpDir(path.join(__dirname, "tmp"), item.name, docxBuffer);
       const docxZip = await jszip.loadAsync(docxBuffer);
       for (const [filename, content] of Object.entries(item.expectedDocxZipContexts)) {
         const docxWordDocumentXml = await docxZip.file(filename)?.async("string");

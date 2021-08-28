@@ -3,12 +3,12 @@ import { ExportTestDef } from "../export-test-def";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-document-jsx";
 
 export const test: ExportTestDef = {
-  name: "simple test2",
+  name: "hello",
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
         <Paragraph>
-          <TextRun text={"HEJ"} />
+          <TextRun text={"Hello"} />
         </Paragraph>
       </Section>
     </AbstractDoc>
@@ -32,7 +32,7 @@ export const test: ExportTestDef = {
               sw: 0.32553125,
               clr: 0,
               A: "left",
-              R: [{ T: "HEJ", S: -1, TS: [0, 13, 0, 0] }],
+              R: [{ T: "Hello", S: -1, TS: [0, 13, 0, 0] }],
             },
           ],
           Fields: [],

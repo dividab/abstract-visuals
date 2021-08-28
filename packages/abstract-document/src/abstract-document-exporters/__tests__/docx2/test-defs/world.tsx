@@ -1,13 +1,15 @@
 import React from "react";
 import { ExportTestDef } from "../export-test-def";
-import { Paragraph, AbstractDoc, Section } from "../../../../abstract-document-jsx";
+import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-document-jsx";
 
 export const test: ExportTestDef = {
-  name: "simple test2",
+  name: "world",
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
-        <Paragraph></Paragraph>
+        <Paragraph>
+          <TextRun text={"World"} />
+        </Paragraph>
       </Section>
     </AbstractDoc>
   ),
