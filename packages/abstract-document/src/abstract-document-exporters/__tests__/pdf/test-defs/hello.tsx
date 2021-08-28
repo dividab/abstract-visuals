@@ -28,7 +28,7 @@ export const test: ExportTestDef = {
             {
               x: -0.25,
               y: -0.301,
-              w: 18.89,
+              w: 22.78,
               sw: 0.32553125,
               clr: 0,
               A: "left",

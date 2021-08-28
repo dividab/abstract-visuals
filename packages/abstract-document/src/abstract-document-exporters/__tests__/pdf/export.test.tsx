@@ -6,11 +6,10 @@ import { loadTests, onlySkip, streamToBuffer } from "@abstract-visuals/test-util
 import { exportToStream } from "../../../abstract-document-exporters/pdf/render";
 import { render } from "../../../abstract-document-jsx";
 import { ExportTestDef } from "./export-test-def";
-import fs from "fs";
 
 export const tests = loadTests<ExportTestDef>(path.join(__dirname, "test-defs/"));
 
-describe("export docx", () => {
+describe("export pdf", () => {
   onlySkip(tests).forEach((item) => {
     test(item.name, async () => {
       const abstractDoc = render(item.abstractDocJsx);

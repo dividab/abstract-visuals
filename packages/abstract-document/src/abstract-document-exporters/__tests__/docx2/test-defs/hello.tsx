@@ -4,6 +4,7 @@ import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-d
 
 export const test: ExportTestDef = {
   name: "hello",
+  only: true,
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
@@ -36,8 +37,8 @@ export const test: ExportTestDef = {
             <w:pPr>
                 <w:spacing w:before="0" w:after="0" w:line="1"/>
             </w:pPr>
-            <w:bookmarkStart w:name="" w:id="rdielg4b-2mxvnvdzq1ar"/>
-            <w:bookmarkEnd w:id="rdielg4b-2mxvnvdzq1ar"/>
+            <w:bookmarkStart w:name="" w:id="*"/>
+            <w:bookmarkEnd w:id="*"/>
         </w:p>
         <w:p>
             <w:pPr>
