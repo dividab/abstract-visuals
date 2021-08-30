@@ -10,7 +10,7 @@ import {
   TableRow,
   TableCell,
   PageBreak,
-  render
+  render,
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
 
@@ -41,6 +41,37 @@ export function AbstractDocumentExample(): JSX.Element {
             </TableCell>
           </TableRow>
         </Table>
+        <Paragraph>
+          <TextRun text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Egestas congue quisque egestas diam in arcu cursus. A cras semper auctor neque vitae tempus quam pellentesque. In fermentum et sollicitudin ac orci. Scelerisque viverra mauris in aliquam. Nunc lobortis mattis aliquam faucibus. " />
+          <TextRun
+            text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
+            style={AD.AbstractDoc.TextStyle.create({ color: "red" })}
+          />
+          <TextRun text=" Nulla aliquet enim tortor at." />
+          <TextRun
+            text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
+            style={AD.AbstractDoc.TextStyle.create({ color: "red" })}
+          />
+          <TextRun text=" Nulla aliquet enim tortor at." />
+          <TextRun
+            text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
+            style={AD.AbstractDoc.TextStyle.create({ color: "red" })}
+          />
+          <TextRun text=" Nulla aliquet enim tortor at." />
+          <TextRun
+            text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
+            style={AD.AbstractDoc.TextStyle.create({ color: "red" })}
+          />
+          <TextRun text=" Nulla aliquet enim tortor at." />
+        </Paragraph>
+        <Paragraph>
+          <TextRun text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Egestas congue quisque egestas diam in arcu cursus. A cras semper auctor neque vitae tempus quam pellentesque. In fermentum et sollicitudin ac orci. Scelerisque viverra mauris in aliquam. Nunc lobortis mattis aliquam faucibus. " />
+          <TextRun
+            text="Amet venenatis urna cursus eget. Sed elementum tempus egestas sed sed risus pretium quam vulputate. Tincidunt augue interdum velit euismod in."
+            style={AD.AbstractDoc.TextStyle.create({ bold: true })}
+          />
+          <TextRun text=" Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum. Nulla aliquet enim tortor at." />
+        </Paragraph>
       </Section>
       <Section page={page} id="chapter1">
         <Paragraph>
@@ -85,15 +116,10 @@ export function AbstractDocumentExample(): JSX.Element {
   );
 }
 
-async function generatePDF(
-  doc: AD.AbstractDoc.AbstractDoc.AbstractDoc
-): Promise<void> {
+async function generatePDF(doc: AD.AbstractDoc.AbstractDoc.AbstractDoc): Promise<void> {
   // tslint:disable-next-line:no-require-imports
   const pdfKit = require("../pdfkit");
-  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob(
-    pdfKit,
-    doc
-  );
+  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob(pdfKit, doc);
   const objectURL = URL.createObjectURL(blob);
   window.open(objectURL);
 }
