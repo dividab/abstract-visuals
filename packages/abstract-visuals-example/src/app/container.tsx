@@ -48,7 +48,7 @@ export class Container extends React.Component<{}, State> {
     };
   }
 
-  render() {
+  render(): JSX.Element {
     const SelectedComponent = this.state.examples[this.state.selectedExample].component;
 
     return (
@@ -79,7 +79,7 @@ interface ExampleSelectorProps {
   readonly selectedExampleChanged: (index: number) => void;
 }
 
-function ExampleSelector({ examples, selectedExample, selectedExampleChanged }: ExampleSelectorProps) {
+function ExampleSelector({ examples, selectedExample, selectedExampleChanged }: ExampleSelectorProps): JSX.Element {
   return (
     <select value={selectedExample} onChange={(e) => selectedExampleChanged((e.target as any).value)}>
       {examples.map((example, index) => (

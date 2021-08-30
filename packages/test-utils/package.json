@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "@abstract-visuals/test-utils",
+  "version": "0.1.0",
+  "description": "Internal testing utilities",
+  "main": "lib/index.js",
+  "types": "lib/index",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -167,7 +167,7 @@ function renderSectionElement(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   element: AD.SectionElement.SectionElement
-) {
+): void {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
@@ -188,7 +188,7 @@ function renderGroup(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   group: AD.Group.Group
-) {
+): void {
   let y = finalRect.y;
   for (const element of group.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
@@ -209,7 +209,7 @@ function renderParagraph(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   paragraph: AD.Paragraph.Paragraph
-) {
+): void {
   const style = AD.Resources.getStyle(
     undefined,
     paragraph.style,
@@ -437,7 +437,7 @@ function renderTextRun(
   concatenate: boolean,
   isFirstAtom: boolean,
   availableWidth: number
-) {
+): void {
   const style = AD.Resources.getNestedStyle(
     textStyle,
     textRun.style,
@@ -460,7 +460,7 @@ function renderHyperLink(
   concatenate: boolean,
   isFirstAtom: boolean,
   availableWidth: number
-) {
+): void {
   const style = AD.Resources.getStyle(
     textStyle,
     hyperLink.style,
@@ -472,7 +472,7 @@ function renderHyperLink(
   drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, concatenate, isFirstAtom, availableWidth);
 }
 
-function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
+function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
   drawDottedLine(pdf, finalRect, textStyle);
 }
 
@@ -485,7 +485,7 @@ function drawHyperLink(
   concatenate: boolean,
   isFirstAtom: boolean,
   availableWidth: number
-) {
+): void {
   const font = getFontName(textStyle);
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -527,7 +527,7 @@ function drawText(
   concatenate: boolean,
   isFirstAtom: boolean,
   availableWidth: number
-) {
+): void {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
 
@@ -560,7 +560,7 @@ function drawText(
   resetTextOffset(pdf, textStyle);
 }
 
-function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
+function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
 
@@ -601,7 +601,7 @@ function renderTable(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   table: AD.Table.Table
-) {
+): void {
   const style = AD.Resources.getStyle(
     undefined,
     table.style,
@@ -711,7 +711,7 @@ function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Si
   throw new Error("Could not find size for element!");
 }
 
-function applyTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle) {
+function applyTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle): void {
   const offset = calculateTextOffset(textStyle);
   if (offset < 0) {
     pdf.moveDown(Math.abs(offset));
@@ -720,7 +720,7 @@ function applyTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle) {
   }
 }
 
-function resetTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle) {
+function resetTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle): void {
   const offset = calculateTextOffset(textStyle);
   if (offset < 0) {
     pdf.moveUp(Math.abs(offset));
