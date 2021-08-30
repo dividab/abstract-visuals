@@ -312,29 +312,6 @@ function renderParagraph(
     }
 
     y += rowHeight;
-
-    // if (row[0].type === "Image") {
-    //   y += rowHeight;
-    // } else {
-    //   y = pdf.y;
-    // }
-
-    // if text
-    // y += ceil(sum(atomSize.width) / availableWidth) * row.height;
-
-    // atom
-
-    // max(for(atom of row)
-    //   pdf.heightOfString("Test", {
-    //     width: pageWidth,
-    //     ...atom.textOptions,
-    //   });
-    // )
-
-    // pdf.heightOfString(concatinatedText, {
-    //   width: pageWidth,
-    //   ...textOptions,
-    // });
   }
 }
 
