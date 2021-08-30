@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.settings.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "lib": ["dom", "es2015", "es2015.promise", "es2015.iterable", "es2015.symbol"]
+  },
+  "references": []
+}

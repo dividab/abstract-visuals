@@ -13,3 +13,4 @@ test_out/
 *.tsbuildinfo
 dist/
 storybook-static/
+tmp/
