@@ -585,6 +585,12 @@ function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextSty
     .fillColor(textStyle.color || "black");
 
   applyTextOffset(pdf, textStyle);
+
+  // Disable continued for the dotted line to get the positioning right
+  pdf.text("", {
+    continued: false,
+    goTo: undefined,
+  });
   pdf.text(dotsText, finalRect.x, finalRect.y, {
     width: finalRect.width,
     height: finalRect.height,
