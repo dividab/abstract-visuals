@@ -108,11 +108,11 @@ function measureParagraph(
   let currentRowHeight = 0;
   let desiredSizes = new Map<any, AD.Size.Size>();
   let concatenatedText = "";
-  let isAtomImage = false;
+  let hasAtomImage = false;
   let textOptions;
   for (let atom of paragraph.children) {
     if (atom.type === "Image") {
-      isAtomImage = true;
+      hasAtomImage = true;
     }
     const atomSize = measureAtom(
       pdf,
@@ -135,10 +135,9 @@ function measureParagraph(
       currentRowHeight = 0;
     }
   }
-  if (isAtomImage) {
+  if (hasAtomImage) {
     desiredHeight += currentRowHeight;
   } else {
-    console.log(concatenatedText);
     desiredHeight =
       initialHeight +
       pdf.heightOfString(concatenatedText, {
