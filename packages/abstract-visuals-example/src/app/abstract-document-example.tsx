@@ -6,6 +6,7 @@ import {
   Paragraph,
   TextRun,
   TextField,
+  HyperLink,
   Table,
   TableRow,
   TableCell,
@@ -73,7 +74,7 @@ export function AbstractDocumentExample(): JSX.Element {
           <TextRun text=" Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum. Nulla aliquet enim tortor at." />
         </Paragraph>
         <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-          <TextRun text="Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum" />
+          <TextRun text="This" />
           <TextRun text=" is" style={AD.AbstractDoc.TextStyle.create({ bold: true })} />
           <TextRun text=" centered" />
         </Paragraph>
@@ -81,6 +82,12 @@ export function AbstractDocumentExample(): JSX.Element {
           <TextRun text="This" />
           <TextRun text=" is" style={AD.AbstractDoc.TextStyle.create({ bold: true })} />
           <TextRun text=" right aligned" />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <HyperLink text="This is a centered link" target="" />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "End" })}>
+          <HyperLink text="This is a right aligned link" target="" />
         </Paragraph>
       </Section>
       <Section page={page} id="chapter1">
