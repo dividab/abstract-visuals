@@ -287,7 +287,7 @@ function renderParagraph(
       // Using continued with alignment "center" or "right" is broken:
       // https://github.com/foliojs/pdfkit/issues/240
       // Therefore we have to position it ourself
-      // NOTE: Texts with width over the available width are not supported.
+      // NOTE: Texts with multiple atoms with width over the available width are not supported.
       if (style.alignment === "Center") {
         x += 0.5 * (availableWidth - rowWidth);
       } else if (style.alignment === "End") {
@@ -549,6 +549,7 @@ function drawText(
   // Using continued with alignment "center" or "right" is broken:
   // https://github.com/foliojs/pdfkit/issues/240
   // so always set alignment to left and handle it through an x offset
+  // if its just a single atom then we can use its alignment to partially support multi-line texts for other alignments
   if (isFirstAtom || alignment !== "left") {
     pdf.text(text, finalRect.x, finalRect.y, {
       width: availableWidth,
