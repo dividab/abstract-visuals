@@ -1,6 +1,6 @@
 import React from "react";
 import { ExportTestDef } from "../export-test-def";
-import * as AI from "abstract-image";
+import * as AI from "../../../../../../abstract-image";
 import { Paragraph, AbstractDoc, Section, Image, TextRun } from "../../../../abstract-document-jsx";
 
 const pngEncoded =

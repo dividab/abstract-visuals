@@ -1,6 +1,6 @@
 import React from "react";
 import { ExportTestDef } from "../export-test-def";
-import * as AD from "abstract-document/src";
+import * as AD from "../../../../index";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-document-jsx";
 
 export const test: ExportTestDef = {

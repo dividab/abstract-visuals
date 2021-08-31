@@ -1,6 +1,6 @@
 import React from "react";
 import { ExportTestDef } from "../export-test-def";
-import * as AD from "abstract-document";
+import * as AD from "../../../../index";
 import { Paragraph, AbstractDoc, Section, TextRun, TextField, render } from "../../../../abstract-document-jsx";
 
 const header = [
