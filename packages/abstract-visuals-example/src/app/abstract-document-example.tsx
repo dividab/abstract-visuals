@@ -72,6 +72,16 @@ export function AbstractDocumentExample(): JSX.Element {
           />
           <TextRun text=" Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum. Nulla aliquet enim tortor at." />
         </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <TextRun text="Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum" />
+          <TextRun text=" is" style={AD.AbstractDoc.TextStyle.create({ bold: true })} />
+          <TextRun text=" centered" />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "End" })}>
+          <TextRun text="This" />
+          <TextRun text=" is" style={AD.AbstractDoc.TextStyle.create({ bold: true })} />
+          <TextRun text=" right aligned" />
+        </Paragraph>
       </Section>
       <Section page={page} id="chapter1">
         <Paragraph>
