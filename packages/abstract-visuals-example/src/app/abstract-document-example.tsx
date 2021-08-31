@@ -12,13 +12,43 @@ import {
   TableCell,
   PageBreak,
   render,
+  TocSeparator,
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
 
+const header = [
+  render(
+    <Paragraph>
+      <TextRun text="I am a header" />
+      <TextField fieldType="PageNumber" />
+      <TextRun text="/" />
+      <TextField fieldType="TotalPages" />
+    </Paragraph>
+  ),
+];
+
+const footer = [
+  render(
+    <Paragraph>
+      <TextRun text="I am a footer" />
+    </Paragraph>
+  ),
+];
+
 export function AbstractDocumentExample(): JSX.Element {
-  const page = AD.AbstractDoc.MasterPage.create();
+  const page = AD.AbstractDoc.MasterPage.create({ header: header, footer: footer });
   const doc = render(
     <AbstractDoc>
+      <Section page={page}>
+        <Paragraph>
+          <HyperLink text="Go to chapter1" target="#chapter1" />
+          <TocSeparator />
+        </Paragraph>
+        <Paragraph>
+          <HyperLink text="Go to page 2" target="#page=2" />
+          <TocSeparator />
+        </Paragraph>
+      </Section>
       <Section page={page}>
         <Paragraph>
           <TextField fieldType="PageNumber" />
