@@ -83,11 +83,42 @@ export function AbstractDocumentExample(): JSX.Element {
           <TextRun text=" is" style={AD.AbstractDoc.TextStyle.create({ bold: true })} />
           <TextRun text=" right aligned" />
         </Paragraph>
+
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <TextRun text=" " />
+        </Paragraph>
+
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Start" })}>
+          <TextRun text="Some text before. " />
+          <HyperLink text="This is a left aligned link" target="" />
+          <TextRun text=" with some text after" />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <TextRun text=" " />
+        </Paragraph>
         <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
           <HyperLink text="This is a centered link" target="" />
         </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <TextRun text=" " />
+        </Paragraph>
         <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "End" })}>
           <HyperLink text="This is a right aligned link" target="" />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <TextRun text=" " />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <TextRun text="This is a long text that is centered and should line break just fine. This is a long text that is centered and should line break just fine.  This is a long text that is centered and should line break just fine." />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <TextRun text=" " />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "End" })}>
+          <TextRun text="This is a long text that is right aligned and should line break just fine. This is a long text that is right aligned and should line break just fine.  This is a long text that is right aligned and should line break just fine." />
+        </Paragraph>
+        <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
+          <TextRun text=" " />
         </Paragraph>
       </Section>
       <Section page={page} id="chapter1">
