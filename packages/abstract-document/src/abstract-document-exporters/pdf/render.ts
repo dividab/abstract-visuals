@@ -301,7 +301,6 @@ function renderParagraph(
         style.textStyle,
         atom,
         parseAlignment(style.alignment),
-        atomSize.width,
         availableWidth,
         i !== lastIndex,
         i === 0
@@ -337,7 +336,6 @@ function renderAtom(
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
   alignment: AD.TextStyle.TextAlignment,
-  measureTextWidth: number,
   availableWidth: number,
   concatenate: boolean,
   isFirstAtom: boolean
@@ -475,19 +473,36 @@ function drawHyperLink(
     .fillColor(textStyle.color || "blue");
 
   applyTextOffset(pdf, textStyle);
-  pdf
-    .text(hyperLink.text, finalRect.x, finalRect.y, {
-      underline: textStyle.underline || false,
-      align: alignment,
-      goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
-      indent: textStyle.indent || 0,
-      continued: concatenate,
-      ...(isFirstAtom ? { width: finalRect.width, height: finalRect.height + 2 } : {}),
-      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
-    })
-    .underline(finalRect.x, finalRect.y + 2, finalRect.width, finalRect.height, {
-      color: "blue",
-    });
+
+  if (isFirstAtom) {
+    pdf
+      .text(hyperLink.text, finalRect.x, finalRect.y, {
+        width: availableWidth,
+        underline: textStyle.underline || false,
+        align: alignment,
+        goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
+        indent: textStyle.indent || 0,
+        continued: concatenate,
+        ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+      })
+      .underline(finalRect.x, finalRect.y + 2, finalRect.width, finalRect.height, {
+        color: "blue",
+      });
+  } else {
+    pdf
+      .text(hyperLink.text, {
+        underline: textStyle.underline || false,
+        align: alignment,
+        goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
+        indent: textStyle.indent || 0,
+        continued: concatenate,
+        ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+      })
+      .underline(finalRect.x, finalRect.y + 2, finalRect.width, finalRect.height, {
+        color: "blue",
+      });
+  }
+
   resetTextOffset(pdf, textStyle);
 
   if (!isInternalLink) {
