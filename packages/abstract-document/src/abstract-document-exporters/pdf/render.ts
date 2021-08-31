@@ -283,7 +283,7 @@ function renderParagraph(
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
     let x = finalRect.x;
 
-    if (row.length > 1) {
+    if (row.length > 1 || row[0].type === "Image") {
       // Using continued with alignment "center" or "right" is broken:
       // https://github.com/foliojs/pdfkit/issues/240
       // Therefore we have to position it ourself
