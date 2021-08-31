@@ -281,8 +281,11 @@ function renderParagraph(
     }
 
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
-    let x = finalRect.x + style.margins.left;
+    let x = finalRect.x;
 
+    // Using continued with alignment "center" or "right" is broken:
+    // https://github.com/foliojs/pdfkit/issues/240
+    // Therefore we have to position it ourself
     if (style.alignment === "Center") {
       x += 0.5 * (availableWidth - rowWidth);
     } else if (style.alignment === "End") {
@@ -342,7 +345,7 @@ function renderAtom(
 ): void {
   switch (atom.type) {
     case "TextField":
-      renderTextField(resources, pdf, finalRect, textStyle, atom, "left", concatenate, isFirstAtom, availableWidth);
+      renderTextField(resources, pdf, finalRect, textStyle, atom, alignment, concatenate, isFirstAtom, availableWidth);
       return;
     case "TextRun":
       renderTextRun(resources, pdf, finalRect, textStyle, atom, alignment, concatenate, isFirstAtom, availableWidth);
@@ -465,8 +468,6 @@ function drawHyperLink(
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
 
-  //the + 2 is compensation that's needed as pdfKit's widthOfString may return a slightly
-  //lower value than the actual size due to loss of precision
   pdf
     .font(font)
     .fontSize(fontSize)
@@ -474,15 +475,18 @@ function drawHyperLink(
 
   applyTextOffset(pdf, textStyle);
 
-  if (isFirstAtom) {
+  // Using continued with alignment "center" or "right" is broken:
+  // https://github.com/foliojs/pdfkit/issues/240
+  // so always set alignment to left and handle it through an x offset
+  if (isFirstAtom || alignment !== "left") {
     pdf
       .text(hyperLink.text, finalRect.x, finalRect.y, {
         width: availableWidth,
         underline: textStyle.underline || false,
-        align: alignment,
+        align: "left",
         goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
         indent: textStyle.indent || 0,
-        continued: concatenate,
+        continued: alignment !== "left" ? false : concatenate,
         ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
       })
       .underline(finalRect.x, finalRect.y + 2, finalRect.width, finalRect.height, {
@@ -492,7 +496,7 @@ function drawHyperLink(
     pdf
       .text(hyperLink.text, {
         underline: textStyle.underline || false,
-        align: alignment,
+        align: "left",
         goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
         indent: textStyle.indent || 0,
         continued: concatenate,
@@ -530,19 +534,22 @@ function drawText(
 
   applyTextOffset(pdf, textStyle);
 
-  if (isFirstAtom) {
+  // Using continued with alignment "center" or "right" is broken:
+  // https://github.com/foliojs/pdfkit/issues/240
+  // so always set alignment to left and handle it through an x offset
+  if (isFirstAtom || alignment !== "left") {
     pdf.text(text, finalRect.x, finalRect.y, {
       width: availableWidth,
       underline: textStyle.underline || false,
-      align: alignment,
+      align: "left",
       indent: textStyle.indent || 0,
-      continued: concatenate,
+      continued: alignment !== "left" ? false : concatenate,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
   } else {
     pdf.text(text, {
       underline: textStyle.underline || false,
-      align: alignment,
+      align: "left",
       indent: textStyle.indent || 0,
       continued: concatenate,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
