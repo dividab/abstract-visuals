@@ -7,8 +7,6 @@ import BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
 import { registerFonts, getFontName } from "./font";
 
-//tslint:disable
-
 export function exportToHTML5Blob(
   // tslint:disable-next-line:no-any
   pdfKit: any,
