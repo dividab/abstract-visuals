@@ -1,30 +1,38 @@
 type value = string | number | boolean;
 
-export function diffJSON(oldJSON: any, newJSON: any): void {
-  const [message, _] = diffObject(oldJSON, newJSON);
+export function diffJSON(oldJSON: any, newJSON: any): string {
+  let [message, _] = diffObject(oldJSON, newJSON);
   if (message !== "") {
-    console.log(message);
+    message = `\n- Expected\n+ Received${message}`;
   }
+  return message;
 }
 
 function diffObject(oldObject: any, newObject: any): [string, boolean] {
   let message = "";
   for (const [key, oldValue] of Object.entries(oldObject)) {
     if (!(key in newObject)) {
-      message += `\nExpected key missing: ${key}: ${oldValue}`;
+      message += `\n- ${key}: ${oldValue}`;
       continue;
     }
+
     const newValue = newObject[key];
     let [newMessage, directValuesAreWrong] = diffValues(oldValue, newValue);
     if (directValuesAreWrong) {
       message += newMessage;
-      message += `\nExpected: ${key}: ${oldValue}`;
-      message += `\nGot:      ${key}: ${newValue}`;
+      message += `\n- ${key}: ${oldValue}`;
+      message += `\n+ ${key}: ${newValue}`;
     } else if (newMessage !== "") {
-      message += `\n${key}: ${newMessage}`;
+      message += `\n${key}:${newMessage}`;
     }
   }
-  //TODO if newObject has more keys
+
+  for (const [key, newValue] of Object.entries(newObject)) {
+    if (!(key in oldObject)) {
+      message += `\n+ ${key}: ${newValue}`;
+    }
+  }
+
   if (message !== "") {
     message = appendWhitespace(message);
     message = `\n{${message}\n}`;
@@ -66,13 +74,10 @@ function diffValues(oldValue: any, newValue: any): [string, boolean] {
 }
 
 function compareValues(oldValue: value, newValue: value): boolean {
-  if ((typeof oldValue === "string" && oldValue === "*") || (typeof newValue === "string" && newValue === "*")) {
+  if (oldValue === "*" || newValue === "*") {
     return false;
   }
-  if (oldValue !== newValue) {
-    return true;
-  }
-  return false;
+  return oldValue !== newValue;
 }
 
 function appendWhitespace(message: string): string {

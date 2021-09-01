@@ -23,8 +23,11 @@ describe("export pdf", () => {
       pdfBuffer1.copy(pdfBuffer2);
       const parsed = await getJsonFromPdf(pdfBuffer2);
       // console.log("parsed", JSON.stringify(parsed));
-      diffJSON(item.expectedPdfJson, parsed);
-      expect(parsed).toEqual(item.expectedPdfJson);
+      // console.log(diffJSON(item.expectedPdfJson, parsed));
+      // expect(parsed).toEqual(item.expectedPdfJson);
+
+      const result = diffJSON(item.expectedPdfJson, parsed);
+      expect(result).toEqual("");
     });
   });
 });
