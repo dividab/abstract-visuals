@@ -7,8 +7,6 @@ import BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
 import { registerFonts, getFontName } from "./font";
 
-//tslint:disable
-
 export function exportToHTML5Blob(
   // tslint:disable-next-line:no-any
   pdfKit: any,
@@ -182,101 +180,6 @@ function renderSectionElement(
   }
 }
 
-function renderParagraph(
-  resources: AD.Resources.Resources,
-  pdf: {},
-  desiredSizes: Map<{}, AD.Size.Size>,
-  finalRect: AD.Rect.Rect,
-  paragraph: AD.Paragraph.Paragraph
-): void {
-  const style = AD.Resources.getStyle(
-    undefined,
-    paragraph.style,
-    "ParagraphStyle",
-    paragraph.styleName,
-    resources
-  ) as AD.ParagraphStyle.ParagraphStyle;
-  const availableWidth = finalRect.width - (style.margins.left + style.margins.right);
-
-  let rows: Array<Array<AD.Atom.Atom>> = [];
-  let currentRow: Array<AD.Atom.Atom> = [];
-  let currentWidth = 0;
-  for (const atom of paragraph.children) {
-    const atomSize = getDesiredSize(atom, desiredSizes);
-    currentRow.push(atom);
-    currentWidth += atomSize.width;
-    if (currentWidth + atomSize.width >= availableWidth) {
-      rows.push(currentRow);
-      currentRow = [];
-      currentWidth = 0;
-    }
-  }
-  if (currentRow.length > 0)
-    // Add any remaning children to a new row.
-    rows.push(currentRow);
-
-  let y = finalRect.y + style.margins.top;
-
-  for (let row of rows) {
-    if (row.length === 0) {
-      continue;
-    }
-    const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
-    const startX = finalRect.x + style.margins.left;
-
-    const atomSize = getDesiredSize(row[0], desiredSizes);
-    //We need to use pdfKits alignment if theres only one atom in the row, because then theres a risk of it linebreaking. If there are multiple lines we need to center each line
-    if (atomSize?.availableWidth !== undefined && row.length === 1) {
-      renderAtom(
-        resources,
-        pdf,
-        AD.Rect.create(startX, y, availableWidth, atomSize.height),
-        style.textStyle,
-        row[0],
-        parseAlignment(style.alignment),
-        atomSize.width
-      );
-      y += atomSize.height;
-    } else {
-      let x = startX;
-      if (style.alignment === "Center") x += 0.5 * (availableWidth - rowWidth);
-      else if (style.alignment === "End") x += availableWidth - rowWidth;
-      let rowHeight = 0;
-      for (const atom of row) {
-        const atomSize = getDesiredSize(atom, desiredSizes);
-        renderAtom(
-          resources,
-          pdf,
-          AD.Rect.create(x, y, atomSize.availableWidth ?? atomSize.width, atomSize.height),
-          style.textStyle,
-          atom,
-          parseAlignment(style.alignment),
-          atomSize.width
-        );
-        x += atomSize.width;
-        rowHeight = Math.max(rowHeight, atomSize.height);
-      }
-
-      y += rowHeight;
-    }
-  }
-}
-
-function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | undefined): AD.TextStyle.TextAlignment {
-  switch (paragraphAlignment) {
-    case "Start":
-      return "left";
-    case "Center":
-      return "center";
-    case "End":
-      return "right";
-    case "Justify":
-      return "justify";
-    default:
-      return "left";
-  }
-}
-
 function renderGroup(
   resources: AD.Resources.Resources,
   pdf: {},
@@ -298,6 +201,138 @@ function renderGroup(
   }
 }
 
+function renderParagraph(
+  resources: AD.Resources.Resources,
+  pdf: {},
+  desiredSizes: Map<{}, AD.Size.Size>,
+  finalRect: AD.Rect.Rect,
+  paragraph: AD.Paragraph.Paragraph
+): void {
+  const style = AD.Resources.getStyle(
+    undefined,
+    paragraph.style,
+    "ParagraphStyle",
+    paragraph.styleName,
+    resources
+  ) as AD.ParagraphStyle.ParagraphStyle;
+  const availableWidth = finalRect.width - (style.margins.left + style.margins.right);
+
+  let rows: Array<Array<AD.Atom.Atom>> = [];
+  let currentRow: Array<AD.Atom.Atom> = [];
+  let currentWidth = 0;
+  let previousAtomType: string | undefined;
+  for (const atom of paragraph.children) {
+    if (!previousAtomType) {
+      // First atom
+      previousAtomType = atom.type;
+      currentRow.push(atom);
+      const atomSize = getDesiredSize(atom, desiredSizes);
+      currentWidth = atomSize.width;
+      continue;
+    }
+
+    if (atom.type !== "Image") {
+      // Atom is Text
+      if (previousAtomType === "Image") {
+        // Previous was image
+        rows.push(currentRow);
+        currentRow = [];
+        currentWidth = 0;
+        previousAtomType = atom.type;
+      }
+      currentRow.push(atom);
+      continue;
+    }
+
+    if (atom.type === "Image") {
+      // Atom is Image
+      if (previousAtomType !== "Image") {
+        // Previous was not image
+        rows.push(currentRow);
+        currentRow = [];
+        currentWidth = 0;
+        previousAtomType = atom.type;
+      }
+      const atomSize = getDesiredSize(atom, desiredSizes);
+      if (currentWidth + atomSize.width < availableWidth || currentRow.length === 0) {
+        // Image fits in current row/current row is empty
+        currentRow.push(atom);
+        currentWidth += atomSize.width;
+      } else {
+        // Image does not fit in current row
+        rows.push(currentRow);
+        currentRow = [atom];
+        currentWidth = atomSize.width;
+      }
+    }
+  }
+  if (currentRow.length > 0) {
+    // Add any remaning children to a new row.
+    rows.push(currentRow);
+  }
+
+  let y = finalRect.y + style.margins.top;
+
+  for (let row of rows) {
+    if (row.length === 0) {
+      continue;
+    }
+
+    const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
+    let x = finalRect.x;
+
+    if (row.length > 1 || row[0].type === "Image") {
+      // Using continued with alignment "center" or "right" is broken:
+      // https://github.com/foliojs/pdfkit/issues/240
+      // Therefore we have to position it ourself
+      // NOTE: Texts with multiple atoms with width over the available width are not supported.
+      if (style.alignment === "Center") {
+        x += 0.5 * (availableWidth - rowWidth);
+      } else if (style.alignment === "End") {
+        x += availableWidth - rowWidth;
+      }
+    }
+
+    let rowHeight = 0;
+
+    const lastIndex = row.length - 1;
+    for (const [i, atom] of row.entries()) {
+      const atomSize = getDesiredSize(atom, desiredSizes);
+      renderAtom(
+        resources,
+        pdf,
+        AD.Rect.create(x, y, atomSize.width, atomSize.height),
+        style.textStyle,
+        atom,
+        parseAlignment(style.alignment),
+        availableWidth,
+        i === 0,
+        i === lastIndex
+      );
+
+      x += atomSize.width;
+      rowHeight = Math.max(rowHeight, atomSize.height);
+    }
+
+    y += rowHeight;
+  }
+}
+
+function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | undefined): AD.TextStyle.TextAlignment {
+  switch (paragraphAlignment) {
+    case "Start":
+      return "left";
+    case "Center":
+      return "center";
+    case "End":
+      return "right";
+    case "Justify":
+      return "justify";
+    default:
+      return "left";
+  }
+}
+
 function renderAtom(
   resources: AD.Resources.Resources,
   pdf: {},
@@ -305,20 +340,22 @@ function renderAtom(
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
   alignment: AD.TextStyle.TextAlignment,
-  measureTextWidth: number
+  availableWidth: number,
+  isFirstAtom: boolean,
+  isLastAtom: boolean
 ): void {
   switch (atom.type) {
     case "TextField":
-      renderTextField(resources, pdf, finalRect, textStyle, atom, "left");
+      renderTextField(resources, pdf, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
       return;
     case "TextRun":
-      renderTextRun(resources, pdf, finalRect, textStyle, atom, alignment);
+      renderTextRun(resources, pdf, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
       return;
     case "Image":
-      renderImage(resources, pdf, finalRect, atom, textStyle);
+      renderImage(resources, pdf, finalRect, textStyle, atom);
       return;
     case "HyperLink":
-      renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment, measureTextWidth);
+      renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
       return;
     case "TocSeparator":
       renderTocSeparator(pdf, finalRect, textStyle);
@@ -334,7 +371,10 @@ function renderTextField(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textField: AD.TextField.TextField,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  isFirstAtom: boolean,
+  isLastAtom: boolean,
+  availableWidth: number
 ): void {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -345,13 +385,22 @@ function renderTextField(
   ) as AD.TextStyle.TextStyle;
   switch (textField.fieldType) {
     case "Date":
-      drawText(pdf, finalRect, style, new Date(Date.now()).toDateString(), alignment);
+      drawText(
+        pdf,
+        finalRect,
+        style,
+        new Date(Date.now()).toDateString(),
+        alignment,
+        isFirstAtom,
+        isLastAtom,
+        availableWidth
+      );
       return;
     case "PageNumber":
     case "TotalPages":
     case "PageNumberOf":
       if (textField.text) {
-        drawText(pdf, finalRect, style, textField.text, alignment);
+        drawText(pdf, finalRect, style, textField.text, alignment, isFirstAtom, isLastAtom, availableWidth);
       }
       return;
   }
@@ -363,7 +412,10 @@ function renderTextRun(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textRun: AD.TextRun.TextRun,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  isFirstAtom: boolean,
+  isLastAtom: boolean,
+  availableWidth: number
 ): void {
   const style = AD.Resources.getNestedStyle(
     textStyle,
@@ -374,7 +426,7 @@ function renderTextRun(
     textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
   const textAlignment = style.alignment ? style.alignment : alignment;
-  drawText(pdf, finalRect, style, textRun.text, textAlignment);
+  drawText(pdf, finalRect, style, textRun.text, textAlignment, isFirstAtom, isLastAtom, availableWidth);
 }
 
 function renderHyperLink(
@@ -384,7 +436,9 @@ function renderHyperLink(
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
   alignment: AD.TextStyle.TextAlignment,
-  measureTextWidth: number
+  isFirstAtom: boolean,
+  isLastAtom: boolean,
+  availableWidth: number
 ): void {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -394,7 +448,7 @@ function renderHyperLink(
     resources
   ) as AD.TextStyle.TextStyle;
   const textAlignment = style.alignment ? style.alignment : alignment;
-  drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, measureTextWidth);
+  drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, isFirstAtom, isLastAtom, availableWidth);
 }
 
 function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
@@ -407,33 +461,66 @@ function drawHyperLink(
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
   alignment: AD.TextStyle.TextAlignment,
-  measureTextWidth: number
+  isFirstAtom: boolean,
+  isLastAtom: boolean,
+  availableWidth: number
 ): void {
   const font = getFontName(textStyle);
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
-  const offset = calculateTextOffset(textStyle, fontSize);
+  const isSingleAtom = isFirstAtom && isLastAtom;
+  let xUnderline = finalRect.x;
+  if (alignment === "center") {
+    xUnderline += 0.5 * (availableWidth - finalRect.width);
+  } else if (alignment === "right") {
+    xUnderline += availableWidth - finalRect.width;
+  }
 
-  //the + 2 is compensation that's needed as pdfKit's widthOfString may return a slightly
-  //lower value than the actual size due to loss of precision
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "blue")
-    .text(hyperLink.text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width,
-      height: finalRect.height + 2,
-      underline: textStyle.underline || false,
-      align: alignment,
-      goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
-      indent: textStyle.indent || 0,
-      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
-    })
-    .underline(finalRect.x, finalRect.y + 2, measureTextWidth, finalRect.height, {
-      color: "blue",
-    });
+    .fillColor(textStyle.color || "blue");
+
+  applyTextOffset(pdf, textStyle);
+
+  // Using continued with alignment "center" or "right" is broken:
+  // https://github.com/foliojs/pdfkit/issues/240
+  // so always set alignment to left and handle it through an x offset
+  // if its just a single atom then we can use its alignment to partially support multi-line texts for other alignments
+  if (isFirstAtom || alignment !== "left") {
+    pdf
+      .text(hyperLink.text, finalRect.x, finalRect.y, {
+        width: availableWidth,
+        underline: textStyle.underline || false,
+        align: isSingleAtom ? alignment : "left",
+        goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
+        indent: textStyle.indent || 0,
+        continued: alignment !== "left" ? false : !isLastAtom,
+        ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+      })
+      .underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
+        align: isSingleAtom ? alignment : "left",
+        color: "blue",
+      });
+  } else {
+    pdf
+      .text(hyperLink.text, {
+        underline: textStyle.underline || false,
+        align: "left",
+        goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
+        indent: textStyle.indent || 0,
+        continued: !isLastAtom,
+        ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+      })
+      .underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
+        color: "blue",
+      });
+  }
+
+  resetTextOffset(pdf, textStyle);
+
   if (!isInternalLink) {
-    pdf.link(finalRect.x, finalRect.y, measureTextWidth, finalRect.height, hyperLink.target);
+    pdf.link(xUnderline, finalRect.y, finalRect.width, finalRect.height, hyperLink.target);
   }
 }
 
@@ -442,32 +529,50 @@ function drawText(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   text: string,
-  alignment: AD.TextStyle.TextAlignment
+  alignment: AD.TextStyle.TextAlignment,
+  isFirstAtom: boolean,
+  isLastAtom: boolean,
+  availableWidth: number
 ): void {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
-  const offset = calculateTextOffset(textStyle, fontSize);
-
-  //the + 2 is compensation that's needed as pdfKit's widthOfString may return a slightly
-  //lower value than the actual size due to loss of precision
+  const isSingleAtom = isFirstAtom && isLastAtom;
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black")
-    .text(text, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width,
-      height: finalRect.height + 2,
+    .fillColor(textStyle.color || "black");
+
+  applyTextOffset(pdf, textStyle);
+
+  // Using continued with alignment "center" or "right" is broken:
+  // https://github.com/foliojs/pdfkit/issues/240
+  // so always set alignment to left and handle it through an x offset
+  // if its just a single atom then we can use its alignment to partially support multi-line texts for other alignments
+  if (isFirstAtom || alignment !== "left") {
+    pdf.text(text, finalRect.x, finalRect.y, {
+      width: availableWidth,
       underline: textStyle.underline || false,
-      align: alignment,
+      align: isSingleAtom ? alignment : "left",
       indent: textStyle.indent || 0,
+      continued: alignment !== "left" ? false : !isLastAtom,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
+  } else {
+    pdf.text(text, {
+      underline: textStyle.underline || false,
+      align: "left",
+      indent: textStyle.indent || 0,
+      continued: !isLastAtom,
+      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+    });
+  }
+
+  resetTextOffset(pdf, textStyle);
 }
 
 function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
-  const offset = calculateTextOffset(textStyle, fontSize);
 
   const oneDotW = pdf.widthOfString(".", {
     width: finalRect.width,
@@ -488,13 +593,22 @@ function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextSty
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black")
-    .text(dotsText, finalRect.x, finalRect.y + offset, {
-      width: finalRect.width,
-      height: finalRect.height,
-      align: "right",
-      characterSpacing: 5,
-    });
+    .fillColor(textStyle.color || "black");
+
+  applyTextOffset(pdf, textStyle);
+
+  // Disable continued for the dotted line to get the positioning right
+  pdf.text("", {
+    continued: false,
+    goTo: undefined,
+  });
+  pdf.text(dotsText, finalRect.x, finalRect.y, {
+    width: finalRect.width,
+    height: finalRect.height,
+    align: "right",
+    characterSpacing: 5,
+  });
+  resetTextOffset(pdf, textStyle);
 }
 
 function renderTable(
@@ -613,9 +727,26 @@ function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Si
   throw new Error("Could not find size for element!");
 }
 
-function calculateTextOffset(textStyle: AD.TextStyle.TextStyle, defaultFontSize: number): number {
+function applyTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle): void {
+  const offset = calculateTextOffset(textStyle);
+  if (offset < 0) {
+    pdf.moveDown(Math.abs(offset));
+  } else {
+    pdf.moveUp(offset);
+  }
+}
+
+function resetTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle): void {
+  const offset = calculateTextOffset(textStyle);
+  if (offset < 0) {
+    pdf.moveUp(Math.abs(offset));
+  } else {
+    pdf.moveDown(offset);
+  }
+}
+
+function calculateTextOffset(textStyle: AD.TextStyle.TextStyle): number {
   const defaultPosition = textStyle.superScript ? -0.5 : textStyle.subScript ? 0.5 : 0;
   const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
-  const fontSize = AD.TextStyle.calculateFontSize(textStyle, defaultFontSize);
-  return fontSize * position;
+  return position;
 }

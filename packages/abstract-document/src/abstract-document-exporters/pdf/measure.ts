@@ -102,11 +102,18 @@ function measureParagraph(
   const contentAvailableHeight = availableSize.height - (style.margins.top + style.margins.bottom);
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, contentAvailableHeight);
 
-  let desiredHeight = style.margins.top + style.margins.bottom;
+  const initialHeight = style.margins.top + style.margins.bottom;
+  let desiredHeight = initialHeight;
   let currentRowWidth = 0;
   let currentRowHeight = 0;
   let desiredSizes = new Map<any, AD.Size.Size>();
+  let concatenatedText = "";
+  let hasAtomImage = false;
+  let textOptions;
   for (let atom of paragraph.children) {
+    if (atom.type === "Image") {
+      hasAtomImage = true;
+    }
     const atomSize = measureAtom(
       pdf,
       resources,
@@ -115,20 +122,58 @@ function measureParagraph(
       contentAvailableSize.width - currentRowWidth,
       atom
     );
+    if (atom.type === "TextRun" || atom.type === "TextField" || atom.type === "HyperLink") {
+      concatenatedText += atom.text;
+      textOptions = getBiggestStyle(atom, style, resources, textOptions);
+    }
     desiredSizes.set(atom, atomSize);
     currentRowWidth += atomSize.width;
     currentRowHeight = Math.max(atomSize.height, currentRowHeight);
-    if (currentRowWidth + atomSize.width > contentAvailableSize.width) {
+    if (currentRowWidth > contentAvailableSize.width) {
       desiredHeight += currentRowHeight;
       currentRowWidth = 0;
       currentRowHeight = 0;
     }
   }
-  desiredHeight += currentRowHeight;
+  if (hasAtomImage) {
+    desiredHeight += currentRowHeight;
+  } else {
+    desiredHeight =
+      initialHeight +
+      pdf.heightOfString(concatenatedText, {
+        width: textOptions && textOptions.lineBreak === false ? Infinity : availableSize.width,
+        ...textOptions,
+      });
+  }
 
   desiredSizes.set(paragraph, AD.Size.create(availableSize.width, desiredHeight));
 
   return desiredSizes;
+}
+
+function getBiggestStyle(
+  atom: AD.TextField.TextField | AD.TextRun.TextRun | AD.HyperLink.HyperLink,
+  style: AD.ParagraphStyle.ParagraphStyle,
+  resources: AD.Resources.Resources,
+  textOptions: AD.TextStyle.TextStyle | undefined
+): AD.TextStyle.TextStyle | undefined {
+  const textStyle = AD.Resources.getNestedStyle(
+    style.textStyle,
+    atom.style,
+    "TextStyle",
+    atom.styleName,
+    resources,
+    atom.type === "TextRun" && atom.nestedStyleNames ? atom.nestedStyleNames : []
+  ) as AD.TextStyle.TextStyle;
+
+  if (textOptions) {
+    if ((textOptions.fontSize ?? 100) < (textStyle.fontSize ?? 100)) {
+      return atom.style;
+    }
+  } else {
+    return textStyle;
+  }
+  return textOptions;
 }
 
 function measureTable(
@@ -334,6 +379,7 @@ function measureText(
     .font(font)
     .fontSize(fontSize)
     .fillColor(textStyle.color || "black");
+
   const textOptions = {
     underline: textStyle.underline || false,
     indent: textStyle.indent || 0,
