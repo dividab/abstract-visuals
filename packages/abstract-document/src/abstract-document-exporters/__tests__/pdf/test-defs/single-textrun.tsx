@@ -3,7 +3,7 @@ import { ExportTestDef } from "../export-test-def";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-document-jsx";
 
 export const test: ExportTestDef = {
-  name: "hello",
+  name: "Single textrun",
   abstractDocJsx: (
     <AbstractDoc>
       <Section>

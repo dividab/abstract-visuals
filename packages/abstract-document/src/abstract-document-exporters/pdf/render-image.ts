@@ -9,8 +9,8 @@ export function renderImage(
   // tslint:disable-next-line:no-any
   pdf: any,
   finalRect: AD.Rect.Rect,
-  image: AD.Image.Image,
-  textStyle: AD.TextStyle.TextStyle
+  textStyle: AD.TextStyle.TextStyle,
+  image: AD.Image.Image
   // tslint:disable-next-line:no-any
 ): any {
   const aImage = image.imageResource.abstractImage;
