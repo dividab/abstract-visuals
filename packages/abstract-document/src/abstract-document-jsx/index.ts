@@ -15,7 +15,7 @@ import {
   Markdown as Markdown1,
   TextField as TextField1,
   TextRun as TextRun1,
-  PageBreak as PageBreak1
+  PageBreak as PageBreak1,
   //Resources,
   //MasterPage,
   //ParagraphStyle,
@@ -32,36 +32,28 @@ export interface ChildrenProp {
 export type Child = JSX.Element | Children;
 export interface Children extends ReadonlyArray<Child> {}
 
-export const AbstractDoc = (
-  props?: AbstractDoc1.AbstractDocProps & ChildrenProp
-) => AbstractDoc1.create(props, props && (props.children as any)) as any;
-export const Section = (props?: Section1.SectionProps & ChildrenProp) =>
+export const AbstractDoc = (props?: AbstractDoc1.AbstractDocProps & ChildrenProp): JSX.Element =>
+  AbstractDoc1.create(props, props && (props.children as any)) as any;
+export const Section = (props?: Section1.SectionProps & ChildrenProp): JSX.Element =>
   Section1.create(props, props && (props.children as any)) as any;
-export const Group = (props: Group1.GroupProps & ChildrenProp) =>
+export const Group = (props: Group1.GroupProps & ChildrenProp): JSX.Element =>
   Group1.create(props, props && (props.children as any)) as any;
-export const Paragraph = (props: Paragraph1.ParagraphProps & ChildrenProp) =>
+export const Paragraph = (props: Paragraph1.ParagraphProps & ChildrenProp): JSX.Element =>
   Paragraph1.create(props, props && (props.children as any)) as any;
-export const Table = (props: Table1.TableProps & ChildrenProp) =>
+export const Table = (props: Table1.TableProps & ChildrenProp): JSX.Element =>
   Table1.create(props, props && (props.children as any)) as any;
-export const TableRow = (props: TableRow1.TableRowProps & ChildrenProp) =>
+export const TableRow = (props: TableRow1.TableRowProps & ChildrenProp): JSX.Element =>
   TableRow1.create(props, props && (props.children as any)) as any;
-export const TableCell = (props: TableCell1.TableCellProps & ChildrenProp) =>
+export const TableCell = (props: TableCell1.TableCellProps & ChildrenProp): JSX.Element =>
   TableCell1.create(props, props && (props.children as any)) as any;
-export const HyperLink = (props: HyperLink1.HyperLinkProps) =>
-  HyperLink1.create(props) as any;
-export const LinkTarget = (props: LinkTarget1.LinkTargetProps) =>
-  LinkTarget1.create(props) as any;
-export const Image = (props: Image1.ImageProps) => Image1.create(props) as any;
-export const TocSeparator = (props: TocSeparator1.TocSeparatorProps) =>
-  TocSeparator1.create(props) as any;
-export const Markdown = (props: Markdown1.MarkdownProps) =>
-  Markdown1.create(props) as any;
-export const TextField = (props: TextField1.TextFieldProps) =>
-  TextField1.create(props) as any;
-export const TextRun = (props: TextRun1.TextRunProps) =>
-  TextRun1.create(props) as any;
-export const PageBreak = (props: PageBreak1.PageBreakProps) =>
-  PageBreak1.create(props) as any;
+export const HyperLink = (props: HyperLink1.HyperLinkProps): JSX.Element => HyperLink1.create(props) as any;
+export const LinkTarget = (props: LinkTarget1.LinkTargetProps): JSX.Element => LinkTarget1.create(props) as any;
+export const Image = (props: Image1.ImageProps): JSX.Element => Image1.create(props) as any;
+export const TocSeparator = (props: TocSeparator1.TocSeparatorProps): JSX.Element => TocSeparator1.create(props) as any;
+export const Markdown = (props: Markdown1.MarkdownProps): JSX.Element => Markdown1.create(props) as any;
+export const TextField = (props: TextField1.TextFieldProps): JSX.Element => TextField1.create(props) as any;
+export const TextRun = (props: TextRun1.TextRunProps): JSX.Element => TextRun1.create(props) as any;
+export const PageBreak = (props: PageBreak1.PageBreakProps): JSX.Element => PageBreak1.create(props) as any;
 
 export function render(element: any): any {
   if (typeof element.type !== "function") {

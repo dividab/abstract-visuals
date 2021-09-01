@@ -167,7 +167,7 @@ function renderSectionElement(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   element: AD.SectionElement.SectionElement
-) {
+): void {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
@@ -188,7 +188,7 @@ function renderParagraph(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   paragraph: AD.Paragraph.Paragraph
-) {
+): void {
   const style = AD.Resources.getStyle(
     undefined,
     paragraph.style,
@@ -283,7 +283,7 @@ function renderGroup(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   group: AD.Group.Group
-) {
+): void {
   let y = finalRect.y;
   for (const element of group.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
@@ -364,7 +364,7 @@ function renderTextRun(
   textStyle: AD.TextStyle.TextStyle,
   textRun: AD.TextRun.TextRun,
   alignment: AD.TextStyle.TextAlignment
-) {
+): void {
   const style = AD.Resources.getNestedStyle(
     textStyle,
     textRun.style,
@@ -385,7 +385,7 @@ function renderHyperLink(
   hyperLink: AD.HyperLink.HyperLink,
   alignment: AD.TextStyle.TextAlignment,
   measureTextWidth: number
-) {
+): void {
   const style = AD.Resources.getStyle(
     textStyle,
     hyperLink.style,
@@ -397,7 +397,7 @@ function renderHyperLink(
   drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, measureTextWidth);
 }
 
-function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
+function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
   drawDottedLine(pdf, finalRect, textStyle);
 }
 
@@ -408,7 +408,7 @@ function drawHyperLink(
   hyperLink: AD.HyperLink.HyperLink,
   alignment: AD.TextStyle.TextAlignment,
   measureTextWidth: number
-) {
+): void {
   const font = getFontName(textStyle);
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -443,7 +443,7 @@ function drawText(
   textStyle: AD.TextStyle.TextStyle,
   text: string,
   alignment: AD.TextStyle.TextAlignment
-) {
+): void {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
@@ -464,7 +464,7 @@ function drawText(
     });
 }
 
-function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle) {
+function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
   const font = getFontName(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const offset = calculateTextOffset(textStyle, fontSize);
@@ -503,7 +503,7 @@ function renderTable(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   table: AD.Table.Table
-) {
+): void {
   const style = AD.Resources.getStyle(
     undefined,
     table.style,

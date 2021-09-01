@@ -6,6 +6,6 @@
     { "path": "abstract-document" },
     { "path": "abstract-image" },
     { "path": "abstract-visuals-example" },
-    { "path": "_stories" }
+    { "path": "test-utils" }
   ]
 }
