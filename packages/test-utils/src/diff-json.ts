@@ -12,7 +12,7 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
   let message = "";
   for (const [key, oldValue] of Object.entries(oldObject)) {
     if (!(key in newObject)) {
-      message += `\n- ${key}: ${oldValue}`;
+      message += `\n- ${key}: ${stringify(oldValue)}`;
       continue;
     }
 
@@ -20,8 +20,8 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
     let [newMessage, wrongKeyValues] = diffValues(oldValue, newValue);
     if (wrongKeyValues) {
       message += newMessage;
-      message += `\n- ${key}: ${oldValue}`;
-      message += `\n+ ${key}: ${newValue}`;
+      message += `\n- ${key}: ${stringify(oldValue)}`;
+      message += `\n+ ${key}: ${stringify(newValue)}`;
     } else if (newMessage !== "") {
       message += `\n${key}:${newMessage}`;
     }
@@ -29,7 +29,7 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
 
   for (const [key, newValue] of Object.entries(newObject)) {
     if (!(key in oldObject)) {
-      message += `\n+ ${key}: ${newValue}`;
+      message += `\n+ ${key}: ${stringify(newValue)}`;
     }
   }
 
@@ -77,9 +77,26 @@ function compareValues(oldValue: value, newValue: value): boolean {
   if (oldValue === "*" || newValue === "*") {
     return false;
   }
+  if (typeof oldValue === "string" && typeof newValue === "string" && oldValue !== newValue) {
+    console.log(oldValue, newValue);
+  }
   return oldValue !== newValue;
 }
 
 function appendWhitespace(message: string): string {
   return message.replace(/\n/g, "\n  ");
+}
+
+function stringify(value: any): string {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  const jsonStringified = JSON.stringify(value, null, 2);
+
+  const noQuotesOnKeys = jsonStringified.replace(/^[\t ]*"[^:\n\r]+(?<!\\)":/gm, function (match) {
+    return match.replace(/"/g, "");
+  });
+
+  return noQuotesOnKeys.replace(/"/g, "'");
 }
