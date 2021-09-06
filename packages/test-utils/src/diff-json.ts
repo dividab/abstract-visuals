@@ -17,8 +17,8 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
     }
 
     const newValue = newObject[key];
-    let [newMessage, directValuesAreWrong] = diffValues(oldValue, newValue);
-    if (directValuesAreWrong) {
+    let [newMessage, wrongKeyValues] = diffValues(oldValue, newValue);
+    if (wrongKeyValues) {
       message += newMessage;
       message += `\n- ${key}: ${oldValue}`;
       message += `\n+ ${key}: ${newValue}`;
@@ -42,17 +42,17 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
 
 function diffArray(oldArray: Array<any>, newArray: Array<any>): [string, boolean] {
   let message = "";
-  let hasDirectDifference = false;
+  let hasDifference = false;
   if (oldArray.length !== newArray.length) {
     return ["", true];
   }
 
   for (const [index, oldValue] of oldArray.entries()) {
     const newValue = newArray[index];
-    let [newMessage, directValuesAreWrong] = diffValues(oldValue, newValue);
+    let [newMessage, mismatchValues] = diffValues(oldValue, newValue);
     message += newMessage;
-    if (directValuesAreWrong) {
-      hasDirectDifference = true;
+    if (mismatchValues) {
+      hasDifference = true;
     }
   }
 
@@ -60,7 +60,7 @@ function diffArray(oldArray: Array<any>, newArray: Array<any>): [string, boolean
     message = appendWhitespace(message);
     message = `\n[${message}\n]`;
   }
-  return [message, hasDirectDifference];
+  return [message, hasDifference];
 }
 
 function diffValues(oldValue: any, newValue: any): [string, boolean] {
