@@ -1,6 +1,6 @@
 type value = string | number | boolean;
 
-export function diffJSON(oldJSON: any, newJSON: any): string {
+export function diffJson(oldJSON: any, newJSON: any): string {
   let [message, _] = diffObject(oldJSON, newJSON);
   if (message !== "") {
     message = `\n- Expected\n+ Received${message}`;
