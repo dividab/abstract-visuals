@@ -2,20 +2,58 @@ import React from "react";
 import { ExportTestDef } from "../export-test-def";
 import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../../abstract-document-jsx";
 
+const fillerString = "a b c d e f g h i j k l m n o p q r s t u v x y z å ä ö 1 2 3 4 5 6 7 8 9 0 ! # ¤ % & / ( ) = ?";
+
+const group = (
+  <Group>
+    <Paragraph>
+      <TextRun text={"Heading"} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+    <Paragraph>
+      <TextRun text={fillerString} />
+    </Paragraph>
+  </Group>
+);
+
 export const test: ExportTestDef = {
-  name: "Group",
+  name: "Group Paratraphs",
+  only: true,
   abstractDocJsx: (
     <AbstractDoc>
-      <Section>
-        <Group>
-          <Paragraph>
-            <TextRun text={"Hello"} />
-          </Paragraph>
-          <Paragraph>
-            <TextRun text={"Hello2"} />
-          </Paragraph>
-        </Group>
-      </Section>
+      <Section>{[group, group, group, group, group, group]}</Section>
     </AbstractDoc>
   ),
   expectedPdfJson: {
