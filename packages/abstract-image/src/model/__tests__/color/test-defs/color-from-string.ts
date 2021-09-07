@@ -21,7 +21,6 @@ const colorStrings = [
 ];
 
 const fromColor = colorStrings.map((color) => AbstractImage.fromString(color));
-console.log(fromColor);
 
 export const test: ExportTestDef = {
   name: "color from string",
