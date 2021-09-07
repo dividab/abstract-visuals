@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Changed
 
+- Positioning for sub/super script has been changed.
 - New logic for concatinating textatoms within the same paragraph.
 - Fixed alignment offset for underscore.
 - Fixed so vertical alignment in cells consider cell padding.
