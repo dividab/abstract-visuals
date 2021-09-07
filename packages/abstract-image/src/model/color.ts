@@ -18,14 +18,18 @@ export function toString6Hex(color: Color): string {
 }
 
 export function fromString(s: string): Color | undefined {
-  if (s === null || s === undefined || s.length !== 9 || s[0] !== "#") {
+  if (s === null || s === undefined || (s.length !== 9 && s.length !== 7) || s[0] !== "#") {
     return undefined;
   }
 
-  const a: number = parseInt(s.substring(1, 1 + 2), 16);
-  const r: number = parseInt(s.substring(3, 3 + 2), 16);
-  const g: number = parseInt(s.substring(5, 5 + 2), 16);
-  const b: number = parseInt(s.substring(7, 7 + 2), 16);
+  let offset = 1;
+  const a: number = s.length === 7 ? 255 : parseInt(s.substring(offset, offset + 2), 16);
+  offset += s.length === 7 ? 0 : 2;
+  const r: number = parseInt(s.substring(offset, offset + 2), 16);
+  offset += 2;
+  const g: number = parseInt(s.substring(offset, offset + 2), 16);
+  offset += 2;
+  const b: number = parseInt(s.substring(offset, offset + 2), 16);
 
   if (isNaN(a) || isNaN(r) || isNaN(g) || isNaN(b)) {
     return undefined;
@@ -34,7 +38,7 @@ export function fromString(s: string): Color | undefined {
   return fromArgb(a, r, g, b);
 }
 
-export const black: Color = fromArgb(0xff, 0, 0, 0);
+export const black: Color = fromArgb(0xff, 0x00, 0x00, 0x00);
 export const blue: Color = fromArgb(0xff, 0x00, 0x00, 0xff);
 export const brown: Color = fromArgb(0xff, 0xa5, 0x2a, 0x2a);
 export const cyan: Color = fromArgb(0xff, 0x00, 0xff, 0xff);
