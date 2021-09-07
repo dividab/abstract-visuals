@@ -25,7 +25,7 @@ All notable changes to this project will be documented in this file. The format 
 - New logic for concatinating textatoms within the same paragraph.
 - Fixed alignment offset for underscore.
 - Fixed so vertical alignment in cells consider cell padding.
-- Update react from 15.0.34 to 16.9.0
+- Update react from 15.0.34 to 16.9.0.
 - Fixes a crash when creating pdfs with markdown/svgs. Importing with \* no longer works after the build/ts change.
 
 ## [v5.1.2](https://github.com/dividab/abstract-visuals/compare/abstract-document@5.0.3...abstract-document@5.1.2) - 2021-05-25
