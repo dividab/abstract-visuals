@@ -38,7 +38,7 @@ const elementList = [];
 //eslint-disable-next-line
 for (let i = 0; i < 25; i++) {
   elementList.push(
-    <Paragraph>
+    <Paragraph key={i}>
       <TextRun text={"I am a body and I have padding " + fillerString} />
     </Paragraph>
   );

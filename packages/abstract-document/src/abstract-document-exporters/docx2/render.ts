@@ -44,20 +44,13 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
   const resources = AD.Resources.mergeResources([parentResources, section]);
 
   const headerChildren = section.page.header.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, 0, 0));
+    sofar.push(...renderSectionElement(c, resources));
     return sofar;
   }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>);
 
   const footerChildren = [
     ...section.page.footer.reduce((sofar, c) => {
-      sofar.push(
-        ...renderSectionElement(
-          c,
-          resources,
-          section.page.style.footerMargins.left,
-          section.page.style.footerMargins.right
-        )
-      );
+      sofar.push(...renderSectionElement(c, resources));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   ];
@@ -73,14 +66,7 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
       ],
     }),
     ...section.children.reduce((sofar, c) => {
-      sofar.push(
-        ...renderSectionElement(
-          c,
-          resources,
-          section.page.style.contentMargins.left,
-          section.page.style.contentMargins.right
-        )
-      );
+      sofar.push(...renderSectionElement(c, resources));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   ];
@@ -97,8 +83,8 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
         margin: {
           bottom: section.page.style.contentMargins.bottom * abstractDocPixelToDocxDXARatio,
           top: section.page.style.contentMargins.top * abstractDocPixelToDocxDXARatio,
-          right: 0,
-          left: 0,
+          right: section.page.style.contentMargins.right * abstractDocPixelToDocxDXARatio,
+          left: section.page.style.contentMargins.left * abstractDocPixelToDocxDXARatio,
           header: section.page.style.headerMargins.top * abstractDocPixelToDocxDXARatio,
           footer: section.page.style.footerMargins.bottom * abstractDocPixelToDocxDXARatio,
         },
@@ -152,18 +138,16 @@ function renderHyperLink(
 
 function renderSectionElement(
   element: AD.SectionElement.SectionElement,
-  parentResources: AD.Resources.Resources,
-  left: number,
-  right: number
+  parentResources: AD.Resources.Resources
 ): ReadonlyArray<DOCXJS.Paragraph | DOCXJS.Table> /*| DOCXJS.TableOfContents | DOCXJS.HyperlinkRef */ {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
-      return [renderParagraph(element, resources, left, right)];
+      return [renderParagraph(element, resources)];
     case "Group":
-      return [...renderGroup(element, parentResources, left, right)];
+      return [...renderGroup(element, parentResources)];
     case "Table":
-      return [renderTable(element, resources, left, right)];
+      return [renderTable(element, resources)];
     case "PageBreak":
       return [
         new DOCXJS.Paragraph({
@@ -175,66 +159,7 @@ function renderSectionElement(
   }
 }
 
-function getTableColumns(table: AD.Table.Table): ReadonlyArray<string> {
-  let i = [];
-  for (const row of table.children) {
-    for (const _cell of row.children) {
-      i.push("");
-    }
-  }
-  return i;
-}
-
-function getLengthOfFiniteColumns(table: AD.Table.Table): number {
-  return (
-    table.columnWidths.reduce((sofar, columnWidth) => {
-      if (isFinite(columnWidth)) {
-        sofar += columnWidth;
-      }
-      return sofar;
-    }, 0) * abstractDocPixelToDocxDXARatio
-  );
-}
-
-function abstractColumnWidthToDocxDxaWidth(table: AD.Table.Table, tableWidth: number): [Array<number>, boolean] {
-  const numberOfColumns = getTableColumns(table);
-  const lengthOfFiniteColumns = getLengthOfFiniteColumns(table);
-  // All columns have infinite length, spreed them evenly where tableLength = 100%
-  if (table.columnWidths.every((columnWidth) => !isFinite(columnWidth))) {
-    return [numberOfColumns.map((_c) => tableWidth / numberOfColumns.length), true];
-  } else if (table.columnWidths.find((columnWidth) => !isFinite(columnWidth))) {
-    const spaceLeft = tableWidth - lengthOfFiniteColumns;
-    const infiniteColumns = table.columnWidths.filter((columnWidth) => !isFinite(columnWidth));
-    return [
-      // One or more columns are infinite, but not all
-      table.columnWidths.map((columnWidth) => {
-        if (isFinite(columnWidth)) {
-          return columnWidth * abstractDocPixelToDocxDXARatio;
-        } else {
-          return spaceLeft / infiniteColumns.length;
-        }
-      }),
-      true,
-    ];
-  } else {
-    // All columns have specific width, not one is infinite, we add one more cell the length of the remaining space
-    return [
-      [
-        ...(table.style.alignment === "Right" ? [tableWidth - lengthOfFiniteColumns] : []),
-        ...table.columnWidths.map((columnWidth) => columnWidth * abstractDocPixelToDocxDXARatio),
-        ...(table.style.alignment === "Left" ? [tableWidth - lengthOfFiniteColumns] : []),
-      ],
-      false,
-    ];
-  }
-}
-
-function renderTable(
-  table: AD.Table.Table,
-  resources: AD.Resources.Resources,
-  left: number,
-  right: number
-): DOCXJS.Table {
+function renderTable(table: AD.Table.Table, resources: AD.Resources.Resources): DOCXJS.Table {
   const style = AD.Resources.getStyle(
     undefined,
     table.style,
@@ -243,22 +168,30 @@ function renderTable(
     resources
   ) as AD.TableStyle.TableStyle;
 
-  //Temporary workaround for margins/indent not working as expected on Table.
-  //Waiting for a new version of docx to fix https://github.com/dolanmiu/docx/issues/801 for tables aswell
-  //Indent will be added for tables which then can be used for a cleaner solution
-  const docxPageWidthDxa = 11890;
-  const totalWidth = docxPageWidthDxa - left * abstractDocPixelToDocxDXARatio - right * abstractDocPixelToDocxDXARatio;
-  const [columnWidthsDxa, hasInfinite] = abstractColumnWidthToDocxDxaWidth(table, totalWidth);
-
+  const fullWidth = table.columnWidths.some((c) => !Number.isFinite(c));
+  const columnWidths = table.columnWidths.map((c) => c * abstractDocPixelToDocxDXARatio);
   return new DOCXJS.Table({
-    alignment: DOCXJS.AlignmentType.CENTER,
-
-    width: {
-      type: DOCXJS.WidthType.DXA,
-      size: totalWidth,
+    alignment:
+      style.alignment === "Left"
+        ? DOCXJS.AlignmentType.LEFT
+        : style.alignment === "Right"
+        ? DOCXJS.AlignmentType.RIGHT
+        : DOCXJS.AlignmentType.CENTER,
+    margins: {
+      top: style.margins.top * abstractDocPixelToDocxDXARatio,
+      bottom: style.margins.bottom * abstractDocPixelToDocxDXARatio,
+      left: style.margins.left * abstractDocPixelToDocxDXARatio,
+      right: style.margins.right * abstractDocPixelToDocxDXARatio,
     },
-    layout: DOCXJS.TableLayoutType.FIXED,
-    columnWidths: columnWidthsDxa,
+    width: fullWidth
+      ? {
+          size: 100,
+          type: DOCXJS.WidthType.PERCENTAGE,
+        }
+      : {
+          type: DOCXJS.WidthType.DXA,
+          size: columnWidths.reduce((a, b) => a + b),
+        },
     borders: {
       top: {
         color: style.cellStyle.borderColor ?? "",
@@ -291,7 +224,7 @@ function renderTable(
         style: DOCXJS.BorderStyle.NONE,
       },
     },
-    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, hasInfinite, table.style.alignment)),
+    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths)),
   });
 }
 
@@ -299,32 +232,19 @@ function renderRow(
   row: AD.TableRow.TableRow,
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
-  hasInfinite: boolean,
-  alignment: AD.TableStyle.TableAlignment | undefined
+  columnWidths: ReadonlyArray<number>
 ): DOCXJS.TableRow {
-  const children = row.children.map((c, ix) => renderCell(c, resources, tableCellStyle));
-  const emptyColumn = new DOCXJS.TableCell({
-    children: [new DOCXJS.Paragraph("")],
-  });
-
   return new DOCXJS.TableRow({
     cantSplit: true,
-    height: {
-      value: 250,
-      rule: DOCXJS.HeightRule.ATLEAST,
-    },
-    children: [
-      ...(alignment === "Right" && !hasInfinite ? [emptyColumn] : []),
-      ...children,
-      ...(alignment === "Left" && !hasInfinite ? [emptyColumn] : []),
-    ],
+    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix])),
   });
 }
 
 function renderCell(
   cell: AD.TableCell.TableCell,
   resources: AD.Resources.Resources,
-  tableCellStyle: AD.TableCellStyle.TableCellStyle
+  tableCellStyle: AD.TableCellStyle.TableCellStyle,
+  width: number
 ): DOCXJS.TableCell {
   const style = AD.Resources.getStyle(
     tableCellStyle,
@@ -344,13 +264,22 @@ function renderCell(
     shading: {
       fill: style.background ? style.background : undefined,
     },
+    columnSpan: cell.columnSpan,
+    width: isFinite(width)
+      ? {
+          type: DOCXJS.WidthType.DXA,
+          size: width,
+        }
+      : {
+          type: DOCXJS.WidthType.AUTO,
+          size: "",
+        },
     margins: {
       top: Math.max(style.padding.top, 0) * abstractDocPixelToDocxDXARatio,
       bottom: Math.max(style.padding.bottom, 0) * abstractDocPixelToDocxDXARatio,
       left: Math.max(style.padding.left, 0) * abstractDocPixelToDocxDXARatio,
       right: Math.max(style.padding.right, 0) * abstractDocPixelToDocxDXARatio,
     },
-    columnSpan: cell.columnSpan,
     borders: {
       top: {
         color: style.borderColor ?? "",
@@ -375,7 +304,7 @@ function renderCell(
     },
 
     children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, 0, 0));
+      sofar.push(...renderSectionElement(c, resources));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   });
@@ -505,24 +434,14 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): DOCXJS.TextRun
   });
 }
 
-function renderGroup(
-  group: AD.Group.Group,
-  resources: AD.Resources.Resources,
-  left: number,
-  right: number
-): Array<DOCXJS.Paragraph | DOCXJS.Table> {
+function renderGroup(group: AD.Group.Group, resources: AD.Resources.Resources): Array<DOCXJS.Paragraph | DOCXJS.Table> {
   return group.children.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, left, right));
+    sofar.push(...renderSectionElement(c, resources));
     return sofar;
   }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>);
 }
 
-function renderParagraph(
-  paragraph: AD.Paragraph.Paragraph,
-  resources: AD.Resources.Resources,
-  left: number,
-  right: number
-): DOCXJS.Paragraph {
+function renderParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Resources.Resources): DOCXJS.Paragraph {
   const style = AD.Resources.getStyle(
     undefined,
     paragraph.style,
@@ -546,8 +465,8 @@ function renderParagraph(
       after: Math.max(style.margins.bottom, 0) * abstractDocPixelToDocxDXARatio,
     },
     indent: {
-      left: Math.max(style.margins.left, 0) * abstractDocPixelToDocxDXARatio + left * abstractDocPixelToDocxDXARatio,
-      right: Math.max(style.margins.right, 0) * abstractDocPixelToDocxDXARatio + right * abstractDocPixelToDocxDXARatio,
+      left: Math.max(style.margins.left, 0) * abstractDocPixelToDocxDXARatio,
+      right: Math.max(style.margins.right, 0) * abstractDocPixelToDocxDXARatio,
     },
     children: paragraph.children.map((atom) => renderAtom(resources, style.textStyle, atom)),
   });

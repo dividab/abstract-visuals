@@ -28,6 +28,8 @@ For the other packages, use `yarn test` to test them.
 
 ## How to publish
 
+First update changelog.
+
 The packages are published on npmjs.org. To publish run this command:
 
 ```
