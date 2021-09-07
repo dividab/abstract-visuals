@@ -7,7 +7,6 @@ export const tests = loadTests<ExportTestDef>(path.join(__dirname, "test-defs/")
 describe("dxf", () => {
   onlySkip(tests).forEach((item) => {
     test(item.name, async () => {
-      // const abstractDoc = render(item.abstractDocJsx);
       expect(item.abstractImage).toEqual(item.expectedImage);
     });
   });
