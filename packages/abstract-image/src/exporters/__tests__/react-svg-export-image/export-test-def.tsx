@@ -8,6 +8,6 @@ export type ExportTestDef = {
   readonly name: string;
   readonly only?: boolean;
   readonly skip?: boolean;
-  readonly abstractImage: React.ReactElement<{}, string | React.JSXElementConstructor<any>>;
+  readonly abstractImage: React.ReactElement<{}, string | React.JSXElementConstructor<any>> | string;
   readonly expectedSerializedJsx: string;
 };

@@ -4,10 +4,10 @@ import { ExportTestDef } from "./export-test-def";
 
 export const tests = loadTests<ExportTestDef>(path.join(__dirname, "test-defs/"));
 
-describe("react svg", () => {
+describe("png-export-image", () => {
   onlySkip(tests).forEach((item) => {
     test(item.name, async () => {
-      expect(JSON.stringify(item.abstractImage)).toEqual(item.expectedSerializedJsx);
+      expect(item.abstractImage).toEqual(item.expectedImage);
     });
   });
 });
