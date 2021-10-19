@@ -12,8 +12,6 @@ import {
 
 export const test: ExportTestDef = {
   name: "Simple table",
-
-  only: true,
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
