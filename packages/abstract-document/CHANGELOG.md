@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. The format 
 ### Changed
 
 - Catch-up of the changelog.
+- Parsing svg colors to lower case to work with Svg-To-PdfKit.
 
 ### Removed
 
