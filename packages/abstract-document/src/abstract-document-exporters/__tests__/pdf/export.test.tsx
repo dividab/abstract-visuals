@@ -2,7 +2,7 @@ import * as S from "stream";
 import path from "path";
 import PDFParser from "pdf2json";
 import PdfKit from "pdfkit";
-import { loadTests, onlySkip, saveBufferInTmpDir, streamToBuffer } from "@abstract-visuals/test-utils";
+import { loadTests, onlySkip, saveBufferInTmpDir, streamToBuffer, diffJson } from "@abstract-visuals/test-utils";
 import { exportToStream } from "../../../abstract-document-exporters/pdf/render";
 import { render } from "../../../abstract-document-jsx";
 import { ExportTestDef } from "./export-test-def";
@@ -23,7 +23,11 @@ describe("export pdf", () => {
       pdfBuffer1.copy(pdfBuffer2);
       const parsed = await getJsonFromPdf(pdfBuffer2);
       // console.log("parsed", JSON.stringify(parsed));
-      expect(parsed).toEqual(item.expectedPdfJson);
+      // console.log(diffJson(item.expectedPdfJson, parsed));
+      // expect(parsed).toEqual(item.expectedPdfJson);
+
+      const result = diffJson(item.expectedPdfJson, parsed);
+      expect(result).toEqual("");
     });
   });
 });

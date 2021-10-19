@@ -9,27 +9,26 @@ import {
   TableCell,
   TextRun,
 } from "../../../../abstract-document-jsx";
+import * as TableStyle from "../../../../abstract-document/styles/table-style";
+import * as TableCellStyle from "../../../../abstract-document/styles/table-cell-style";
 
+const borders = { left: 2, bottom: 2, right: 2, top: 2 };
 export const test: ExportTestDef = {
-  name: "Simple table",
+  name: "Simple table center alignment",
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
-        <Table columnWidths={[150, 100, 50]}>
+        <Table
+          columnWidths={[400]}
+          style={TableStyle.create({
+            alignment: "Center",
+            cellStyle: TableCellStyle.create({ borders: borders, borderColor: "black" }),
+          })}
+        >
           <TableRow>
             <TableCell>
               <Paragraph>
-                <TextRun text="Hello 1" />
-              </Paragraph>
-            </TableCell>
-            <TableCell>
-              <Paragraph>
-                <TextRun text="Hello 2" />
-              </Paragraph>
-            </TableCell>
-            <TableCell>
-              <Paragraph>
-                <TextRun text="Hello 3" />
+                <TextRun text="CenterAlignedTable" />
               </Paragraph>
             </TableCell>
           </TableRow>
@@ -60,7 +59,20 @@ export const test: ExportTestDef = {
               y: 0,
             },
           ],
-          HLines: [],
+          HLines: [
+            {
+              x: 6.094,
+              y: 0,
+              w: 1.5,
+              l: 25,
+            },
+            {
+              x: 6.094,
+              y: 0.723,
+              w: 1.5,
+              l: 25,
+            },
+          ],
           Height: 52.625,
           Texts: [
             {
@@ -68,48 +80,31 @@ export const test: ExportTestDef = {
               R: [
                 {
                   S: -1,
-                  T: "Hello%201",
+                  T: "CenterAlignedTable",
                   TS: [0, 13, 0, 0],
                 },
               ],
               clr: 0,
               sw: 0.32553125,
-              w: 31.12,
-              x: -0.25,
-              y: -0.301,
-            },
-            {
-              A: "left",
-              R: [
-                {
-                  S: -1,
-                  T: "Hello%202",
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-              clr: 0,
-              sw: 0.32553125,
-              w: 31.12,
-              x: 9.125,
-              y: -0.301,
-            },
-            {
-              A: "left",
-              R: [
-                {
-                  S: -1,
-                  T: "Hello%203",
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-              clr: 0,
-              sw: 0.32553125,
-              w: 31.12,
-              x: 15.375,
+              w: 88.37,
+              x: 5.844,
               y: -0.301,
             },
           ],
-          VLines: [],
+          VLines: [
+            {
+              x: 6.094,
+              y: 0,
+              w: 1.5,
+              l: 0.723,
+            },
+            {
+              x: 31.094,
+              y: 0,
+              w: 1.5,
+              l: 0.723,
+            },
+          ],
         },
       ],
       Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
