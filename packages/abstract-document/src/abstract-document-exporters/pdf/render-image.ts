@@ -51,9 +51,32 @@ function abstractComponentToPdf(
         });
       } else if (format === "svg") {
         const svg = new TextDecoder().decode(component.data);
+
+        // Special to compensate for pdfKit demanding lower case
+        // Remove when Svg-To-PdfKit has fixed "toLowerCase"
+        // https://github.com/alafr/SVG-to-PDFKit/issues/152
+        let svgUpdated = svg;
+        ["fill=", "stroke=", "color="].forEach((t) => {
+          let index = 0;
+          while (true) {
+            index = svgUpdated.indexOf(t, index);
+            if (index === -1) break;
+            let indexStart = svgUpdated.indexOf('"', index);
+            let indexEnd = svgUpdated.indexOf('"', indexStart + 1);
+            index = indexEnd;
+
+            const color = svgUpdated.substring(indexStart, indexEnd);
+            if (color !== color.toLocaleLowerCase())
+              svgUpdated =
+                svgUpdated.substring(0, indexStart) +
+                color.toLocaleLowerCase() +
+                svgUpdated.substring(indexEnd, svgUpdated.length);
+          }
+        });
+
         const imageWidth = component.bottomRight.x - component.topLeft.x;
         const imageHeight = component.bottomRight.y - component.topLeft.y;
-        svgToPdfKit(pdf, svg, component.topLeft.x, component.topLeft.y, {
+        svgToPdfKit(pdf, svgUpdated, component.topLeft.x, component.topLeft.y, {
           width: imageWidth,
           height: imageHeight,
           preserveAspectRatio: "xMinYMin",
