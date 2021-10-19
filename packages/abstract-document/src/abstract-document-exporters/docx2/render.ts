@@ -147,7 +147,10 @@ function renderSectionElement(
     case "Group":
       return [...renderGroup(element, parentResources)];
     case "Table":
-      return [renderTable(element, resources)];
+      return [
+        renderTable(element, resources),
+        new DOCXJS.Paragraph({ children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] }),
+      ];
     case "PageBreak":
       return [
         new DOCXJS.Paragraph({
