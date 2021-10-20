@@ -66,10 +66,10 @@ function abstractComponentToPdf(
             index = indexEnd;
 
             const color = svgUpdated.substring(indexStart, indexEnd);
-            if (color !== color.toLocaleLowerCase() && color.toLowerCase().indexOf("url") === -1)
+            if (color !== color.toLowerCase() && color.toLowerCase().indexOf("url") === -1)
               svgUpdated =
                 svgUpdated.substring(0, indexStart) +
-                color.toLocaleLowerCase() +
+                color.toLowerCase() +
                 svgUpdated.substring(indexEnd, svgUpdated.length);
           }
         });
