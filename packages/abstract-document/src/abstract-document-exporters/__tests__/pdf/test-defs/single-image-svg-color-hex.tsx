@@ -31,7 +31,6 @@ const imageResource = {
 
 export const test: ExportTestDef = {
   name: "Single image svg color hex",
-  only: true,
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
