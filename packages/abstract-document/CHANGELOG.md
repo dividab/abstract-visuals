@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file. The format 
 - Catch-up of the changelog.
 - Parsing svg colors to lower case to work with Svg-To-PdfKit.
 - Splitting tables if they are directly after each other.
+- Fix crash when tables has no rows
+- Fix table layout when using Infinity on column widths
 
 ### Removed
 
