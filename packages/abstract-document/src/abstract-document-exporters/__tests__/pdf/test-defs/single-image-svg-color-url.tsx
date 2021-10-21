@@ -14,6 +14,7 @@ const svgEncoded =
   "</linearGradient>" +
   "</defs>" +
   '<svg> <rect x="0" y="0" width="20" height="20" fill="url(#GradientRed)"/></svg>' +
+  '<svg> <rect x="30" y="30" width="20" height="20" fill="Burlywood"/></svg>' +
   "</svg>";
 
 const imageResource = {
@@ -73,6 +74,14 @@ export const test: ExportTestDef = {
               w: 4,
               x: 0,
               y: 0,
+            },
+            {
+              clr: -1,
+              h: 4,
+              oc: "#deb887",
+              w: 4,
+              x: 6,
+              y: 6,
             },
           ],
           HLines: [],
