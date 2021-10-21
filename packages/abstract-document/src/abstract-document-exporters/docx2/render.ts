@@ -41,16 +41,21 @@ function createDocument(doc: AD.AbstractDoc.AbstractDoc): DOCXJS.Document {
 }
 
 function renderSection(section: AD.Section.Section, parentResources: AD.Resources.Resources): DOCXJS.ISectionOptions {
+  const pageWidth = AD.PageStyle.getWidth(section.page.style);
+
+  const contentAvailableWidth =
+    pageWidth - (section.page.style.contentMargins.left + section.page.style.contentMargins.right);
+
   const resources = AD.Resources.mergeResources([parentResources, section]);
 
   const headerChildren = section.page.header.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources));
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
     return sofar;
   }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>);
 
   const footerChildren = [
     ...section.page.footer.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources));
+      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   ];
@@ -66,7 +71,7 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
       ],
     }),
     ...section.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources));
+      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   ];
@@ -138,19 +143,20 @@ function renderHyperLink(
 
 function renderSectionElement(
   element: AD.SectionElement.SectionElement,
-  parentResources: AD.Resources.Resources
+  parentResources: AD.Resources.Resources,
+  contentAvailableWidth: number
 ): ReadonlyArray<DOCXJS.Paragraph | DOCXJS.Table> /*| DOCXJS.TableOfContents | DOCXJS.HyperlinkRef */ {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
       return [renderParagraph(element, resources)];
     case "Group":
-      return [...renderGroup(element, parentResources)];
+      return [...renderGroup(element, parentResources, contentAvailableWidth)];
     case "Table":
-      return [
-        renderTable(element, resources),
-        new DOCXJS.Paragraph({ children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] }),
-      ];
+      const table = renderTable(element, resources, contentAvailableWidth);
+      return table
+        ? [table, new DOCXJS.Paragraph({ children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] })]
+        : [];
     case "PageBreak":
       return [
         new DOCXJS.Paragraph({
@@ -162,7 +168,11 @@ function renderSectionElement(
   }
 }
 
-function renderTable(table: AD.Table.Table, resources: AD.Resources.Resources): DOCXJS.Table {
+function renderTable(
+  table: AD.Table.Table,
+  resources: AD.Resources.Resources,
+  contentAvailableWidth: number
+): DOCXJS.Table | undefined {
   const style = AD.Resources.getStyle(
     undefined,
     table.style,
@@ -171,8 +181,20 @@ function renderTable(table: AD.Table.Table, resources: AD.Resources.Resources): 
     resources
   ) as AD.TableStyle.TableStyle;
 
-  const fullWidth = table.columnWidths.some((c) => !Number.isFinite(c));
-  const columnWidths = table.columnWidths.map((c) => c * abstractDocPixelToDocxDXARatio);
+  if (table.children.length === 0) {
+    return undefined;
+  }
+
+  const tableWidthWithoutInfinity = table.columnWidths.reduce(
+    (sofar, c) => (Number.isFinite(c) ? sofar + c : sofar),
+    0
+  );
+  const amountOfInfinity = table.columnWidths.reduce((sofar, c) => (!Number.isFinite(c) ? sofar + 1 : sofar), 0);
+  const infinityCellWidth = (contentAvailableWidth - tableWidthWithoutInfinity) / amountOfInfinity;
+  const columnWidths = table.columnWidths.map((w) =>
+    Number.isFinite(w) ? w * abstractDocPixelToDocxDXARatio : infinityCellWidth * abstractDocPixelToDocxDXARatio
+  );
+
   return new DOCXJS.Table({
     alignment:
       style.alignment === "Left"
@@ -186,15 +208,10 @@ function renderTable(table: AD.Table.Table, resources: AD.Resources.Resources): 
       left: style.margins.left * abstractDocPixelToDocxDXARatio,
       right: style.margins.right * abstractDocPixelToDocxDXARatio,
     },
-    width: fullWidth
-      ? {
-          size: 100,
-          type: DOCXJS.WidthType.PERCENTAGE,
-        }
-      : {
-          type: DOCXJS.WidthType.DXA,
-          size: columnWidths.reduce((a, b) => a + b),
-        },
+    width: {
+      type: DOCXJS.WidthType.DXA,
+      size: columnWidths.reduce((a, b) => a + b),
+    },
     borders: {
       top: {
         color: style.cellStyle.borderColor ?? "",
@@ -268,15 +285,10 @@ function renderCell(
       fill: style.background ? style.background : undefined,
     },
     columnSpan: cell.columnSpan,
-    width: isFinite(width)
-      ? {
-          type: DOCXJS.WidthType.DXA,
-          size: width,
-        }
-      : {
-          type: DOCXJS.WidthType.AUTO,
-          size: "",
-        },
+    width: {
+      type: DOCXJS.WidthType.DXA,
+      size: width,
+    },
     margins: {
       top: Math.max(style.padding.top, 0) * abstractDocPixelToDocxDXARatio,
       bottom: Math.max(style.padding.bottom, 0) * abstractDocPixelToDocxDXARatio,
@@ -307,7 +319,7 @@ function renderCell(
     },
 
     children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources));
+      sofar.push(...renderSectionElement(c, resources, width));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   });
@@ -437,9 +449,13 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): DOCXJS.TextRun
   });
 }
 
-function renderGroup(group: AD.Group.Group, resources: AD.Resources.Resources): Array<DOCXJS.Paragraph | DOCXJS.Table> {
+function renderGroup(
+  group: AD.Group.Group,
+  resources: AD.Resources.Resources,
+  availabelWidth: number
+): Array<DOCXJS.Paragraph | DOCXJS.Table> {
   return group.children.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources));
+    sofar.push(...renderSectionElement(c, resources, availabelWidth));
     return sofar;
   }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>);
 }

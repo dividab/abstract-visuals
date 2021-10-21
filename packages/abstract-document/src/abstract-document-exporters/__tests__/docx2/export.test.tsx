@@ -24,7 +24,7 @@ describe("export docx", () => {
         if (docxWordDocumentXml !== undefined) {
           if (filename.endsWith(".xml")) {
             const result = await diffXmlStrings(content, docxWordDocumentXml);
-            // console.log("result", result);
+            // console.log("result", docxWordDocumentXml);
             expect(result).toEqual([]);
           } else {
             expect(docxWordDocumentXml).toEqual(content);
