@@ -16,6 +16,7 @@ import * as Section from "./page/section";
 import * as Length from "./primitives/length";
 import * as ImageResource from "./primitives/image-resource";
 import * as LayoutFoundation from "./primitives/layout-foundation";
+import * as LayoutFoundationColor from "./primitives/layout-foundation-color";
 import * as Point from "./primitives/point";
 import * as Rect from "./primitives/rect";
 import * as Size from "./primitives/size";
@@ -58,6 +59,7 @@ export {
   Length,
   ImageResource,
   LayoutFoundation,
+  LayoutFoundationColor,
   Point,
   Rect,
   Size,
@@ -79,5 +81,5 @@ export {
   DefaultStyles,
   Resources,
   Types,
-  PageBreak
+  PageBreak,
 };

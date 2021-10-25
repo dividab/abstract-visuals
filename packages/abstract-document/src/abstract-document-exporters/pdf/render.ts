@@ -627,13 +627,15 @@ function renderTable(
   ) as AD.TableStyle.TableStyle;
   const availableWidth = finalRect.width;
   let y = finalRect.y + style.margins.top;
-  for (let row of table.children) {
+  for (let [index, row] of table.children.entries()) {
     const rowSize = getDesiredSize(row, desiredSizes);
     let x = finalRect.x + style.margins.left;
     if (style.alignment === "Center") x += 0.5 * (availableWidth - rowSize.width);
     else if (style.alignment === "Right") x += availableWidth - rowSize.width;
     const rowRect = AD.Rect.create(x, y, rowSize.width, rowSize.height);
-    renderRow(resources, pdf, desiredSizes, rowRect, style.cellStyle, row);
+    const isTop = index === 0;
+    const isBottom = index === table.children.length - 1;
+    renderRow(resources, pdf, desiredSizes, rowRect, style.cellStyle, row, isTop, isBottom);
     y += rowSize.height;
   }
 }
@@ -644,14 +646,18 @@ function renderRow(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
-  row: AD.TableRow.TableRow
+  row: AD.TableRow.TableRow,
+  isTop: boolean,
+  isBottom: boolean
 ): void {
   let x = finalRect.x;
   const rowSize = getDesiredSize(row, desiredSizes);
-  for (const cell of row.children) {
+  for (const [index, cell] of row.children.entries()) {
     const cellSize = getDesiredSize(cell, desiredSizes);
     const cellRect = AD.Rect.create(x, finalRect.y, cellSize.width, rowSize.height);
-    renderCell(resources, pdf, desiredSizes, cellRect, tableCellStyle, cell);
+    const isFirst = index === 0;
+    const isLast = index === row.children.length - 1;
+    renderCell(resources, pdf, desiredSizes, cellRect, tableCellStyle, cell, isFirst, isLast, isTop, isBottom);
     x += cellSize.width;
   }
 }
@@ -662,7 +668,11 @@ function renderCell(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
-  cell: AD.TableCell.TableCell
+  cell: AD.TableCell.TableCell,
+  isFirst: boolean,
+  isLast: boolean,
+  isTop: boolean,
+  isBottom: boolean
 ): void {
   const style = AD.Resources.getStyle(
     tableCellStyle,
@@ -691,32 +701,57 @@ function renderCell(
     y += elementSize.height;
   }
 
-  if (style.borderColor) {
-    if (style.borders.top) {
-      pdf
-        .moveTo(finalRect.x, finalRect.y)
-        .lineTo(finalRect.x + finalRect.width, finalRect.y)
-        .stroke(style.borderColor);
-    }
-    if (style.borders.bottom) {
-      pdf
-        .moveTo(finalRect.x, finalRect.y + finalRect.height)
-        .lineTo(finalRect.x + finalRect.width, finalRect.y + finalRect.height)
-        .stroke(style.borderColor);
-    }
-    if (style.borders.left) {
-      pdf
-        .moveTo(finalRect.x, finalRect.y)
-        .lineTo(finalRect.x, finalRect.y + finalRect.height)
-        .stroke(style.borderColor);
-    }
-    if (style.borders.right) {
-      pdf
-        .moveTo(finalRect.x + finalRect.width, finalRect.y)
-        .lineTo(finalRect.x + finalRect.width, finalRect.y + finalRect.height)
-        .stroke(style.borderColor);
-    }
+  //Needed to counter aliasing caused by the cells background fill
+  const pixelFix = 0.3;
+
+  if (style.borders.bottom) {
+    const widthOffset = isBottom ? style.borders.bottom / 2 - pixelFix : 0;
+    pdf
+      .lineWidth(style.borders.bottom)
+      .moveTo(finalRect.x, finalRect.y + finalRect.height - widthOffset)
+      .lineTo(finalRect.x + finalRect.width, finalRect.y + finalRect.height - widthOffset)
+      .stroke(borderColor(style, "bottom"));
   }
+  if (style.borders.right) {
+    const hasBottomBorderOffset = style.borders.bottom ? pixelFix : 0;
+    const widthOffset = isLast ? style.borders.right / 2 - pixelFix : 0;
+    pdf
+      .lineWidth(style.borders.right)
+      .moveTo(finalRect.x + finalRect.width - widthOffset, finalRect.y)
+      .lineTo(finalRect.x + finalRect.width - widthOffset, finalRect.y + finalRect.height + hasBottomBorderOffset)
+      .stroke(borderColor(style, "right"));
+  }
+  if (style.borders.left) {
+    const hasBottomBorderOffset = style.borders.bottom ? pixelFix : 0;
+    const widthOffset = isFirst ? style.borders.left / 2 - pixelFix : 0;
+    pdf
+      .lineWidth(style.borders.left)
+      .moveTo(finalRect.x + widthOffset, finalRect.y)
+      .lineTo(finalRect.x + widthOffset, finalRect.y + finalRect.height + hasBottomBorderOffset)
+      .stroke(borderColor(style, "left"));
+  }
+  if (style.borders.top) {
+    const hasRightBorderOffset = style.borders.right ? pixelFix : 0;
+    const hasLeftBorderOffset = style.borders.left ? pixelFix : 0;
+    const halfWidth = style.borders.top / 2 - pixelFix;
+    const widthOffset = isTop ? halfWidth : 0;
+    const notFirstOffset = !isFirst ? halfWidth : 0;
+    pdf
+      .lineWidth(style.borders.top)
+      .moveTo(finalRect.x - notFirstOffset - hasLeftBorderOffset, finalRect.y + widthOffset)
+      .lineTo(finalRect.x + finalRect.width + hasRightBorderOffset, finalRect.y + widthOffset)
+      .stroke(borderColor(style, "top"));
+  }
+}
+
+function borderColor(style: AD.TableCellStyle.TableCellStyle, edge: "top" | "bottom" | "left" | "right"): string {
+  if (style.borderColors && style.borderColors[edge]) {
+    return style.borderColors[edge];
+  }
+  if (style.borderColor) {
+    return style.borderColor;
+  }
+  return "black";
 }
 
 function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Size.Size {
