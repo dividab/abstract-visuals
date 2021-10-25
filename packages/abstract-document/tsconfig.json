@@ -4,12 +4,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["dom", "es2015", "es2015.promise", "es2015.iterable", "es2015.symbol"],
-    // Paths options
-    "baseUrl": ".",
-    "paths": {
-      "*": ["./custom_typings/*"]
-    }
+    "lib": ["dom", "es2015", "es2015.promise", "es2015.iterable", "es2015.symbol"]
   },
   "references": [{ "path": "../abstract-image" }, { "path": "../test-utils" }]
 }
