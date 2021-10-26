@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file. The format 
 - Splitting tables if they are directly after each other.
 - Fix crash when tables has no rows
 - Fix table layout when using Infinity on column widths
+- Add feature to allow setting border colors of cells separately
+- Fix cell border widths not setting properly
 
 ### Removed
 

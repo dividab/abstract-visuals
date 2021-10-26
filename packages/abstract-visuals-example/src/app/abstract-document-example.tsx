@@ -15,6 +15,12 @@ import {
   TocSeparator,
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
+import {
+  LayoutFoundation,
+  LayoutFoundationColor,
+  TableCellStyle,
+  TableStyle,
+} from "abstract-document/src/abstract-document";
 
 const header = [
   render(
@@ -35,6 +41,44 @@ const footer = [
   ),
 ];
 
+const cellstyle = TableCellStyle.create({
+  borders: { left: 1, right: 1, top: 1, bottom: 1 },
+  borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+  background: "blue",
+  padding: { left: 2, right: 2, top: 2, bottom: 0 },
+});
+
+const cellStyleRightBorders = TableCellStyle.create({
+  borders: { left: 1, right: 1, top: 1, bottom: 0 },
+  borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+  background: "blue",
+  padding: { left: 2, right: 2, top: 2, bottom: 0 },
+});
+const cellStyleMiddleBorders = TableCellStyle.create({
+  borders: { left: 1, right: 1, top: 1, bottom: 0 },
+  borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+  background: "blue",
+  padding: { left: 2, right: 2, top: 2, bottom: 0 },
+});
+const cellStyleLeftBorders = TableCellStyle.create({
+  borders: { left: 1, right: 1, top: 1, bottom: 0 },
+  borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+  background: "blue",
+  padding: { left: 2, right: 2, top: 2, bottom: 0 },
+});
+
+const cellStyleWithBorders = TableCellStyle.create({
+  borders: { left: 1, bottom: 1, right: 1, top: 1 },
+  borderColors: LayoutFoundationColor.create({ top: "blue", left: "green", right: "white", bottom: "red" }),
+  background: "white",
+  padding: { left: 2, right: 2, top: 2, bottom: 0 },
+});
+
+const cellStyleNoBorders = TableCellStyle.create({
+  background: "blue",
+  padding: { left: 2, right: 2, top: 2, bottom: 0 },
+});
+
 export function AbstractDocumentExample(): JSX.Element {
   const page = AD.AbstractDoc.MasterPage.create({ header: header, footer: footer });
   const doc = render(
@@ -48,6 +92,132 @@ export function AbstractDocumentExample(): JSX.Element {
           <HyperLink text="Go to page 2" target="#page=2" />
           <TocSeparator />
         </Paragraph>
+
+        <Table
+          columnWidths={[100]}
+          style={TableStyle.create({ margins: LayoutFoundation.create({ top: 10, left: 10 }) })}
+        >
+          <TableRow>
+            <TableCell style={cellstyle}>
+              <Paragraph>
+                <TextRun text="Table cell 1" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+        </Table>
+
+        <Table
+          columnWidths={[100, 100, 100]}
+          style={TableStyle.create({ margins: LayoutFoundation.create({ top: 10, left: 10 }) })}
+        >
+          <TableRow>
+            <TableCell style={cellStyleRightBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 1" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleMiddleBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 2" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleLeftBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 3" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={cellStyleRightBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 1" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleMiddleBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 2" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleLeftBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 3" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={cellStyleWithBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 4" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleWithBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 5" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleWithBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 6" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={cellStyleWithBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 7" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleWithBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 8" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleWithBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 9" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+        </Table>
+        <Table
+          columnWidths={[100, 100, 100]}
+          style={TableStyle.create({ margins: LayoutFoundation.create({ top: 10, left: 10 }) })}
+        >
+          <TableRow>
+            <TableCell style={cellStyleNoBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 4" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleNoBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 5" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleNoBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 6" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={cellStyleNoBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 7" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleNoBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 8" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellStyleNoBorders}>
+              <Paragraph>
+                <TextRun text="Table cell 9" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+        </Table>
       </Section>
       <Section page={page}>
         <Paragraph>

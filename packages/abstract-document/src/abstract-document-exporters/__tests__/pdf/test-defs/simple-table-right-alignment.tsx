@@ -39,76 +39,76 @@ export const test: ExportTestDef = {
   ),
   expectedPdfJson: {
     formImage: {
+      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
       Agency: "",
       Id: {
         AgencyId: "",
+        Name: "",
         MC: false,
         Max: 1,
-        Name: "",
         Parent: "",
       },
       Pages: [
         {
-          Boxsets: [],
-          Fields: [],
-          Fills: [
-            {
-              clr: 1,
-              h: 0,
-              w: 0,
-              x: 0,
-              y: 0,
-            },
-          ],
+          Height: 52.625,
           HLines: [
             {
               x: 12.188,
-              y: 0,
-              w: 1.5,
+              y: 0.679,
+              w: 3,
               l: 25,
             },
             {
-              x: 12.188,
-              y: 0.723,
-              w: 1.5,
-              l: 25,
-            },
-          ],
-          Height: 52.625,
-          Texts: [
-            {
-              A: "left",
-              R: [
-                {
-                  S: -1,
-                  T: "RightAlignedTable",
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-              clr: 0,
-              sw: 0.32553125,
-              w: 81.7,
-              x: 11.938,
-              y: -0.301,
+              x: 12.169,
+              y: 0.044,
+              w: 3,
+              l: 25.037,
             },
           ],
           VLines: [
             {
-              x: 12.188,
+              x: 37.144,
               y: 0,
-              w: 1.5,
-              l: 0.723,
+              w: 3,
+              l: 0.741,
             },
             {
-              x: 37.188,
+              x: 12.231,
               y: 0,
-              w: 1.5,
-              l: 0.723,
+              w: 3,
+              l: 0.741,
             },
           ],
+          Fills: [
+            {
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              clr: 1,
+            },
+          ],
+          Texts: [
+            {
+              x: 11.938,
+              y: -0.301,
+              w: 81.7,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "RightAlignedTable",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+          ],
+          Fields: [],
+          Boxsets: [],
         },
       ],
-      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
       Width: 37.188,
     },
   },
