@@ -1,0 +1,811 @@
+import React from "react";
+import { ExportTestDef } from "../export-test-def";
+import {
+  Paragraph,
+  AbstractDoc,
+  Section,
+  TextRun,
+  PageBreak,
+  LinkTarget,
+  HyperLink,
+} from "../../../../abstract-document-jsx";
+
+const paragraph = (
+  <Paragraph>
+    <TextRun text={"Hello"} />
+    <HyperLink target={"#first"} text={"first "} />
+    <HyperLink target={"#second"} text={"second "} />
+    <HyperLink target={"#third"} text={"third "} />
+    <HyperLink target={"#fourth"} text={"fourth "} />
+    <HyperLink target={"#fifth"} text={"fifth "} />
+    <HyperLink target={"#sixth"} text={"sixth "} />
+  </Paragraph>
+);
+
+export const test: ExportTestDef = {
+  name: "Hyperlink internal",
+  abstractDocJsx: (
+    <AbstractDoc>
+      <Section id={"first"}>
+        {paragraph}
+        <PageBreak />
+      </Section>
+
+      <Section id={"second"}>
+        {paragraph}
+        <PageBreak />
+      </Section>
+
+      <Section id={"third"}>
+        {paragraph}
+        <PageBreak />
+      </Section>
+
+      <Section id={"fourth"}>
+        {paragraph}
+        <PageBreak />
+      </Section>
+
+      <Section id={"fifth"}>
+        {paragraph}
+        <PageBreak />
+      </Section>
+
+      <Section id={"sixth"}>{paragraph}</Section>
+    </AbstractDoc>
+  ),
+  expectedPdfJson: {
+    formImage: {
+      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
+      Agency: "",
+      Id: {
+        AgencyId: "",
+        Name: "",
+        MC: false,
+        Max: 1,
+        Parent: "",
+      },
+      Pages: [
+        {
+          Height: 52.625,
+          HLines: [],
+          VLines: [],
+          Fills: [
+            {
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              clr: 1,
+            },
+          ],
+          Texts: [
+            {
+              x: -0.25,
+              y: -0.301,
+              w: 22.78,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 1.174,
+              y: -0.301,
+              w: 18.89,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "first%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 2.354,
+              y: -0.301,
+              w: 35.02,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "second%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 4.543,
+              y: -0.301,
+              w: 22.23,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "third%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 5.933,
+              y: -0.301,
+              w: 28.35,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fourth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 7.711,
+              y: -0.301,
+              w: 18.9,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fifth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 8.892,
+              y: -0.301,
+              w: 23.34,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "sixth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+          ],
+          Fields: [],
+          Boxsets: [],
+        },
+        {
+          Height: 52.625,
+          HLines: [],
+          VLines: [],
+          Fills: [
+            {
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              clr: 1,
+            },
+          ],
+          Texts: [
+            {
+              x: -0.25,
+              y: -0.301,
+              w: 22.78,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 1.174,
+              y: -0.301,
+              w: 18.89,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "first%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 2.354,
+              y: -0.301,
+              w: 35.02,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "second%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 4.543,
+              y: -0.301,
+              w: 22.23,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "third%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 5.933,
+              y: -0.301,
+              w: 28.35,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fourth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 7.711,
+              y: -0.301,
+              w: 18.9,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fifth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 8.892,
+              y: -0.301,
+              w: 23.34,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "sixth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+          ],
+          Fields: [],
+          Boxsets: [],
+        },
+        {
+          Height: 52.625,
+          HLines: [],
+          VLines: [],
+          Fills: [
+            {
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              clr: 1,
+            },
+          ],
+          Texts: [
+            {
+              x: -0.25,
+              y: -0.301,
+              w: 22.78,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 1.174,
+              y: -0.301,
+              w: 18.89,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "first%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 2.354,
+              y: -0.301,
+              w: 35.02,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "second%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 4.543,
+              y: -0.301,
+              w: 22.23,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "third%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 5.933,
+              y: -0.301,
+              w: 28.35,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fourth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 7.711,
+              y: -0.301,
+              w: 18.9,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fifth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 8.892,
+              y: -0.301,
+              w: 23.34,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "sixth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+          ],
+          Fields: [],
+          Boxsets: [],
+        },
+        {
+          Height: 52.625,
+          HLines: [],
+          VLines: [],
+          Fills: [
+            {
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              clr: 1,
+            },
+          ],
+          Texts: [
+            {
+              x: -0.25,
+              y: -0.301,
+              w: 22.78,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 1.174,
+              y: -0.301,
+              w: 18.89,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "first%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 2.354,
+              y: -0.301,
+              w: 35.02,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "second%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 4.543,
+              y: -0.301,
+              w: 22.23,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "third%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 5.933,
+              y: -0.301,
+              w: 28.35,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fourth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 7.711,
+              y: -0.301,
+              w: 18.9,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fifth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 8.892,
+              y: -0.301,
+              w: 23.34,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "sixth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+          ],
+          Fields: [],
+          Boxsets: [],
+        },
+        {
+          Height: 52.625,
+          HLines: [],
+          VLines: [],
+          Fills: [
+            {
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              clr: 1,
+            },
+          ],
+          Texts: [
+            {
+              x: -0.25,
+              y: -0.301,
+              w: 22.78,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 1.174,
+              y: -0.301,
+              w: 18.89,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "first%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 2.354,
+              y: -0.301,
+              w: 35.02,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "second%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 4.543,
+              y: -0.301,
+              w: 22.23,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "third%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 5.933,
+              y: -0.301,
+              w: 28.35,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fourth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 7.711,
+              y: -0.301,
+              w: 18.9,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fifth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 8.892,
+              y: -0.301,
+              w: 23.34,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "sixth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+          ],
+          Fields: [],
+          Boxsets: [],
+        },
+        {
+          Height: 52.625,
+          HLines: [],
+          VLines: [],
+          Fills: [
+            {
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              clr: 1,
+            },
+          ],
+          Texts: [
+            {
+              x: -0.25,
+              y: -0.301,
+              w: 22.78,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 1.174,
+              y: -0.301,
+              w: 18.89,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "first%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 2.354,
+              y: -0.301,
+              w: 35.02,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "second%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 4.543,
+              y: -0.301,
+              w: 22.23,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "third%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 5.933,
+              y: -0.301,
+              w: 28.35,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fourth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 7.711,
+              y: -0.301,
+              w: 18.9,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "fifth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 8.892,
+              y: -0.301,
+              w: 23.34,
+              sw: 0.32553125,
+              clr: 35,
+              A: "left",
+              R: [
+                {
+                  T: "sixth%20",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+          ],
+          Fields: [],
+          Boxsets: [],
+        },
+      ],
+      Width: 37.188,
+    },
+  },
+};
