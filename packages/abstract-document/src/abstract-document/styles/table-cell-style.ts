@@ -52,7 +52,7 @@ export function overrideWith(
     background: a.background || b.background,
     borders: LayoutFoundation.overrideWith(a.borders, b.borders),
     borderColor: a.borderColor || b.borderColor,
-    borderColors: a.borderColors || b.borderColors,
+    borderColors: LayoutFoundationColor.overrideWith(a.borderColors, b.borderColors),
     padding: LayoutFoundation.overrideWith(a.padding, b.padding),
     verticalAlignment: a.verticalAlignment || b.verticalAlignment,
   });
