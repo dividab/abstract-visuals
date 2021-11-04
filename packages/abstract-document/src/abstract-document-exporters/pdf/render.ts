@@ -7,6 +7,8 @@ import BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
 import { registerFonts, getFontName } from "./font";
 
+type RowSpans = Map<number, { rowSpanLeft: number; colSpan: number }>;
+
 export function exportToHTML5Blob(
   // tslint:disable-next-line:no-any
   pdfKit: any,
@@ -635,7 +637,7 @@ function renderTable(
     const rowRect = AD.Rect.create(x, y, rowSize.width, rowSize.height);
     const isTop = index === 0;
     const isBottom = index === table.children.length - 1;
-    renderRow(resources, pdf, desiredSizes, rowRect, style.cellStyle, row, isTop, isBottom);
+    renderRow(resources, pdf, desiredSizes, rowRect, style.cellStyle, table, row, index, isTop, isBottom);
     y += rowSize.height;
   }
 }
@@ -646,19 +648,35 @@ function renderRow(
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
+  table: AD.Table.Table,
   row: AD.TableRow.TableRow,
+  rowIndex: number,
   isTop: boolean,
   isBottom: boolean
 ): void {
   let x = finalRect.x;
   const rowSize = getDesiredSize(row, desiredSizes);
-  for (const [index, cell] of row.children.entries()) {
+  let cellIndexSpan = 0;
+  for (const [cellIndex, cell] of row.children.entries()) {
+    if (cell.dummy) {
+      const dummySize = getDesiredSize(cell, desiredSizes);
+      x += dummySize.width;
+      continue;
+    }
+
+    let height = rowSize.height;
+    if ((cell.rowSpan || 1) > 1) {
+      for (let index = rowIndex + 1; index < rowIndex + cell.rowSpan; index++) {
+        height += getDesiredSize(table.children[index], desiredSizes).height;
+      }
+    }
     const cellSize = getDesiredSize(cell, desiredSizes);
-    const cellRect = AD.Rect.create(x, finalRect.y, cellSize.width, rowSize.height);
-    const isFirst = index === 0;
-    const isLast = index === row.children.length - 1;
+    const cellRect = AD.Rect.create(x, finalRect.y, cellSize.width, height);
+    const isFirst = cellIndex === 0;
+    const isLast = cellIndex === row.children.length - 1;
     renderCell(resources, pdf, desiredSizes, cellRect, tableCellStyle, cell, isFirst, isLast, isTop, isBottom);
     x += cellSize.width;
+    cellIndexSpan++;
   }
 }
 
