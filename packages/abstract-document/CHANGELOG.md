@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file. The format 
 - Fix table layout when using Infinity on column widths
 - Add feature to allow setting border colors of cells separately
 - Fix cell border widths not setting properly
+- Add table cell parameter "rowSpan" to allow setting the number of rows a cell should span
 
 ### Removed
 
