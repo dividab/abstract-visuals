@@ -18,7 +18,6 @@ const tablestyle = TableStyle.create({
 
 export const test: ExportTestDef = {
   name: "Simple table colSpan and rowSpan",
-  only: true,
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
