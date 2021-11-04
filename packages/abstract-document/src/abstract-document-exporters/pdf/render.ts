@@ -665,7 +665,7 @@ function renderRow(
     }
 
     let height = rowSize.height;
-    if ((cell.rowSpan || 1) > 1) {
+    if (cell.rowSpan > 1) {
       for (let index = rowIndex + 1; index < rowIndex + cell.rowSpan; index++) {
         height += getDesiredSize(table.children[index], desiredSizes).height;
       }
