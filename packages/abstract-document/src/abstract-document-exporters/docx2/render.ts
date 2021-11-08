@@ -285,6 +285,7 @@ function renderCell(
       fill: style.background ? style.background : undefined,
     },
     columnSpan: cell.columnSpan,
+    rowSpan: cell.rowSpan,
     width: {
       type: DOCXJS.WidthType.DXA,
       size: width,
