@@ -25,14 +25,10 @@ export function paginate(
   let pdf = new pdfKit({
     compress: false,
     autoFirstPage: false,
-    bufferPages: true
+    bufferPages: true,
   }) as any;
 
-  registerFonts(
-    (fontName: string, fontSource: AD.Font.FontSource) =>
-      pdf.registerFont(fontName, fontSource),
-    document
-  );
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
 
   let pages = new Array<Page>();
   for (let section of document.children) {
@@ -60,14 +56,7 @@ function splitSection(
   for (let i = 0; i < children.length; ++i) {
     const element = children[i];
     if (element.type === "PageBreak") {
-      currentPage = createPage(
-        resources,
-        desiredSizes,
-        currentPage,
-        section,
-        elements,
-        pages.length === 0
-      );
+      currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
       pages.push(currentPage);
       elements = [];
       elementsHeight = 0;
@@ -75,13 +64,9 @@ function splitSection(
     }
     const elementSize = getDesiredSize(element, desiredSizes);
 
-    // Collapse groups the doesn't fit on empty page
+    // Collapse groups that doesn't fit on empty page
     if (elementSize.height > contentRect.height && element.type === "Group") {
-      children = [
-        ...children.slice(0, i),
-        ...element.children,
-        ...children.slice(i + 1)
-      ];
+      children = [...children.slice(0, i), ...element.children, ...children.slice(i + 1)];
       i--;
       continue;
     }
@@ -89,25 +74,14 @@ function splitSection(
     elements.push(element);
     elementsHeight += elementSize.height;
 
-    const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(
-      resources,
-      section,
-      elements
-    );
+    const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
     if (elementsHeight > availableHeight) {
       if (elements.length > 1) {
         elements.pop();
         i--;
       }
-      currentPage = createPage(
-        resources,
-        desiredSizes,
-        currentPage,
-        section,
-        elements,
-        pages.length === 0
-      );
+      currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
       pages.push(currentPage);
       elements = [];
       elementsHeight = 0;
@@ -115,16 +89,7 @@ function splitSection(
   }
 
   if (elements.length > 0) {
-    pages.push(
-      createPage(
-        resources,
-        desiredSizes,
-        currentPage,
-        section,
-        elements,
-        pages.length === 0
-      )
-    );
+    pages.push(createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0));
   }
 
   return pages;
@@ -149,36 +114,22 @@ function createPage(
       top: 0,
       left: 0,
       right: 0,
-      bottom: 0
-    }
+      bottom: 0,
+    },
   };
   const pageNo = previousPage ? previousPage.pageNo + 1 : 1;
 
   const sectionName = isFirst && section.id !== "" ? [section.id] : [];
   // For now, only support link targets at base level. Tree search would be needed to find all targets.
   const targetNames = R.unnest(
-    elements.map(
-      e =>
-        e.type === "Paragraph"
-          ? e.children.map(c => (c.type === "LinkTarget" ? c.name : ""))
-          : []
-    )
-  ).filter(t => t !== "");
+    elements.map((e) => (e.type === "Paragraph" ? e.children.map((c) => (c.type === "LinkTarget" ? c.name : "")) : []))
+  ).filter((t) => t !== "");
   const namedDestionations = [...sectionName, ...targetNames];
 
   // Ignore leading space by expanding the content rect upwards
   const rect = getPageContentRect(desiredSizes, section);
-  const [leadingSpace] = getLeadingAndTrailingSpace(
-    resources,
-    section,
-    elements
-  );
-  const contentRect = AD.Rect.create(
-    rect.x,
-    rect.y - leadingSpace,
-    rect.width,
-    rect.height + leadingSpace
-  );
+  const [leadingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
+  const contentRect = AD.Rect.create(rect.x, rect.y - leadingSpace, rect.width, rect.height + leadingSpace);
 
   return {
     pageNo: pageNo,
@@ -188,14 +139,11 @@ function createPage(
     contentRect: contentRect,
     elements: elements,
     header: section.page.header,
-    footer: section.page.footer
+    footer: section.page.footer,
   };
 }
 
-function getPageContentRect(
-  desiredSizes: Map<{}, AD.Size.Size>,
-  section: AD.Section.Section
-): AD.Rect.Rect {
+function getPageContentRect(desiredSizes: Map<{}, AD.Size.Size>, section: AD.Section.Section): AD.Rect.Rect {
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getWidth(style);
   const pageHeight = AD.PageStyle.getHeight(style);
@@ -218,14 +166,8 @@ function getPageContentRect(
 
   const rectX = style.contentMargins.left;
   const rectY = headerY + style.contentMargins.top;
-  const rectWidth =
-    pageWidth - (style.contentMargins.left + style.contentMargins.right);
-  const rectHeight =
-    pageHeight -
-    headerHeight -
-    footerHeight -
-    style.contentMargins.top -
-    style.contentMargins.bottom;
+  const rectWidth = pageWidth - (style.contentMargins.left + style.contentMargins.right);
+  const rectHeight = pageHeight - headerHeight - footerHeight - style.contentMargins.top - style.contentMargins.bottom;
 
   return AD.Rect.create(rectX, rectY, rectWidth, rectHeight);
 }
@@ -243,8 +185,7 @@ function getLeadingAndTrailingSpace(
 
   const last = elements.length > 0 ? elements[elements.length - 1] : undefined;
   const lastMargins = last && getSectionElementMargin(resources, last);
-  const trailingSpace =
-    lastMargins && noTopBottomMargin ? lastMargins.bottom : 0;
+  const trailingSpace = lastMargins && noTopBottomMargin ? lastMargins.bottom : 0;
 
   return [leadingSpace, trailingSpace];
 }
@@ -266,7 +207,7 @@ function getSectionElementMargin(
         bottom: 0,
         left: 0,
         right: 0,
-        top: 0
+        top: 0,
       };
   }
 }
@@ -290,23 +231,20 @@ function getGroupMargins(
   group: AD.Group.Group
 ): AD.LayoutFoundation.LayoutFoundation {
   const first = group.children.length > 0 ? group.children[0] : undefined;
-  const last =
-    group.children.length > 0
-      ? group.children[group.children.length - 1]
-      : undefined;
+  const last = group.children.length > 0 ? group.children[group.children.length - 1] : undefined;
   const firstMargin = first && getSectionElementMargin(resources, first);
   const lastMargin = last && getSectionElementMargin(resources, last);
   if (firstMargin && lastMargin) {
     return {
       ...firstMargin,
-      bottom: lastMargin.bottom
+      bottom: lastMargin.bottom,
     };
   } else {
     return {
       bottom: 0,
       left: 0,
       right: 0,
-      top: 0
+      top: 0,
     };
   }
 }
@@ -325,10 +263,7 @@ function getTableMargins(
   return style.margins;
 }
 
-function getDesiredSize(
-  element: {},
-  desiredSizes: Map<{}, AD.Size.Size>
-): AD.Size.Size {
+function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Size.Size {
   const size = desiredSizes.get(element);
   if (size) {
     return size;
