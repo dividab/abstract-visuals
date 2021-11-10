@@ -8,6 +8,7 @@ import {
   TableRow,
   TableCell,
   TextRun,
+  Group,
 } from "../../../../abstract-document-jsx";
 import { LayoutFoundation, TableCellStyle, TableStyle } from "../../../../abstract-document";
 
@@ -21,7 +22,7 @@ const tablestylemargin = TableStyle.create({
 });
 
 export const test: ExportTestDef = {
-  name: "Pagebreak table with rowSpan",
+  name: "Pagebreak table with group",
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
@@ -34,56 +35,58 @@ export const test: ExportTestDef = {
             </TableCell>
           </TableRow>
         </Table>
-        <Table columnWidths={[150, 100, 50, 50]} style={tablestyle}>
-          <TableRow>
-            <TableCell columnSpan={2}>
-              <Paragraph>
-                <TextRun text="Hello 1" />
-              </Paragraph>
-            </TableCell>
-            <TableCell rowSpan={2}>
-              <Paragraph>
-                <TextRun text="Hello 2" />
-              </Paragraph>
-            </TableCell>
-            <TableCell rowSpan={4}>
-              <Paragraph>
-                <TextRun text="Hello 3" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Paragraph>
-                <TextRun text="Hello 4" />
-              </Paragraph>
-            </TableCell>
-            <TableCell rowSpan={3}>
-              <Paragraph>
-                <TextRun text="Hello 5" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell rowSpan={2}>
-              <Paragraph>
-                <TextRun text="Hello 6" />
-              </Paragraph>
-            </TableCell>
-            <TableCell>
-              <Paragraph>
-                <TextRun text="Hello 7" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <Paragraph>
-                <TextRun text="Hello 8" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-        </Table>
+        <Group keepTogether={true}>
+          <Table columnWidths={[150, 100, 50, 50]} style={tablestyle}>
+            <TableRow>
+              <TableCell columnSpan={2}>
+                <Paragraph>
+                  <TextRun text="Hello 1" />
+                </Paragraph>
+              </TableCell>
+              <TableCell rowSpan={2}>
+                <Paragraph>
+                  <TextRun text="Hello 2" />
+                </Paragraph>
+              </TableCell>
+              <TableCell rowSpan={4}>
+                <Paragraph>
+                  <TextRun text="Hello 3" />
+                </Paragraph>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Paragraph>
+                  <TextRun text="Hello 4" />
+                </Paragraph>
+              </TableCell>
+              <TableCell rowSpan={3}>
+                <Paragraph>
+                  <TextRun text="Hello 5" />
+                </Paragraph>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell rowSpan={2}>
+                <Paragraph>
+                  <TextRun text="Hello 6" />
+                </Paragraph>
+              </TableCell>
+              <TableCell>
+                <Paragraph>
+                  <TextRun text="Hello 7" />
+                </Paragraph>
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Paragraph>
+                  <TextRun text="Hello 8" />
+                </Paragraph>
+              </TableCell>
+            </TableRow>
+          </Table>
+        </Group>
       </Section>
     </AbstractDoc>
   ),
@@ -114,66 +117,6 @@ export const test: ExportTestDef = {
               w: 1.5,
               l: 9.412,
             },
-            {
-              x: 0,
-              y: 51.758,
-              w: 1.5,
-              l: 15.625,
-            },
-            {
-              x: -0.019,
-              y: 51.047,
-              w: 1.5,
-              l: 15.663,
-            },
-            {
-              x: 15.625,
-              y: 52.48,
-              w: 1.5,
-              l: 3.125,
-            },
-            {
-              x: 15.594,
-              y: 51.047,
-              w: 1.5,
-              l: 3.175,
-            },
-            {
-              x: 18.75,
-              y: 52.48,
-              w: 1.5,
-              l: 3.125,
-            },
-            {
-              x: 18.719,
-              y: 51.047,
-              w: 1.5,
-              l: 3.175,
-            },
-            {
-              x: 0,
-              y: 52.468,
-              w: 1.5,
-              l: 9.375,
-            },
-            {
-              x: -0.019,
-              y: 51.758,
-              w: 1.5,
-              l: 9.412,
-            },
-            {
-              x: 9.375,
-              y: 52.468,
-              w: 1.5,
-              l: 6.25,
-            },
-            {
-              x: 9.344,
-              y: 51.758,
-              w: 1.5,
-              l: 6.3,
-            },
           ],
           VLines: [
             {
@@ -185,66 +128,6 @@ export const test: ExportTestDef = {
             {
               x: 0.013,
               y: 0,
-              w: 1.5,
-              l: 0.741,
-            },
-            {
-              x: 15.625,
-              y: 51.035,
-              w: 1.5,
-              l: 0.741,
-            },
-            {
-              x: 0.013,
-              y: 51.035,
-              w: 1.5,
-              l: 0.741,
-            },
-            {
-              x: 18.75,
-              y: 51.035,
-              w: 1.5,
-              l: 1.464,
-            },
-            {
-              x: 15.625,
-              y: 51.035,
-              w: 1.5,
-              l: 1.464,
-            },
-            {
-              x: 21.863,
-              y: 51.035,
-              w: 1.5,
-              l: 1.464,
-            },
-            {
-              x: 18.75,
-              y: 51.035,
-              w: 1.5,
-              l: 1.464,
-            },
-            {
-              x: 9.375,
-              y: 51.758,
-              w: 1.5,
-              l: 0.741,
-            },
-            {
-              x: 0.013,
-              y: 51.758,
-              w: 1.5,
-              l: 0.741,
-            },
-            {
-              x: 15.625,
-              y: 51.758,
-              w: 1.5,
-              l: 0.741,
-            },
-            {
-              x: 9.375,
-              y: 51.758,
               w: 1.5,
               l: 0.741,
             },
@@ -274,81 +157,6 @@ export const test: ExportTestDef = {
                 },
               ],
             },
-            {
-              x: -0.25,
-              y: 50.734,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%201",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 15.375,
-              y: 51.095,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%202",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 18.5,
-              y: 51.095,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%203",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: -0.25,
-              y: 51.456,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%204",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 9.125,
-              y: 51.456,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%205",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
           ],
           Fields: [],
           Boxsets: [],
@@ -358,31 +166,19 @@ export const test: ExportTestDef = {
           HLines: [
             {
               x: 0,
-              y: 1.445,
+              y: 0.723,
               w: 1.5,
-              l: 9.375,
+              l: 15.625,
             },
             {
               x: -0.019,
               y: 0.013,
               w: 1.5,
-              l: 9.412,
-            },
-            {
-              x: 9.375,
-              y: 1.445,
-              w: 1.5,
-              l: 6.25,
-            },
-            {
-              x: 9.344,
-              y: 0.013,
-              w: 1.5,
-              l: 6.3,
+              l: 15.663,
             },
             {
               x: 15.625,
-              y: 0.723,
+              y: 1.445,
               w: 1.5,
               l: 3.125,
             },
@@ -394,7 +190,7 @@ export const test: ExportTestDef = {
             },
             {
               x: 18.75,
-              y: 1.445,
+              y: 2.89,
               w: 1.5,
               l: 3.125,
             },
@@ -405,69 +201,111 @@ export const test: ExportTestDef = {
               l: 3.175,
             },
             {
+              x: 0,
+              y: 1.445,
+              w: 1.5,
+              l: 9.375,
+            },
+            {
+              x: -0.019,
+              y: 0.723,
+              w: 1.5,
+              l: 9.412,
+            },
+            {
+              x: 9.375,
+              y: 2.89,
+              w: 1.5,
+              l: 6.25,
+            },
+            {
+              x: 9.344,
+              y: 0.723,
+              w: 1.5,
+              l: 6.3,
+            },
+            {
+              x: 0,
+              y: 2.89,
+              w: 1.5,
+              l: 9.375,
+            },
+            {
+              x: -0.019,
+              y: 1.445,
+              w: 1.5,
+              l: 9.412,
+            },
+            {
               x: 15.625,
-              y: 1.433,
+              y: 2.167,
               w: 1.5,
               l: 3.125,
             },
             {
               x: 15.594,
-              y: 0.723,
+              y: 1.445,
+              w: 1.5,
+              l: 3.175,
+            },
+            {
+              x: 15.625,
+              y: 2.877,
+              w: 1.5,
+              l: 3.125,
+            },
+            {
+              x: 15.594,
+              y: 2.167,
               w: 1.5,
               l: 3.175,
             },
           ],
           VLines: [
             {
-              x: 9.375,
+              x: 15.625,
               y: 0,
               w: 1.5,
-              l: 1.464,
+              l: 0.741,
             },
             {
               x: 0.013,
               y: 0,
               w: 1.5,
-              l: 1.464,
-            },
-            {
-              x: 15.625,
-              y: 0,
-              w: 1.5,
-              l: 1.464,
-            },
-            {
-              x: 9.375,
-              y: 0,
-              w: 1.5,
-              l: 1.464,
+              l: 0.741,
             },
             {
               x: 18.75,
               y: 0,
               w: 1.5,
-              l: 0.741,
+              l: 1.464,
             },
             {
               x: 15.625,
               y: 0,
               w: 1.5,
-              l: 0.741,
+              l: 1.464,
             },
             {
               x: 21.863,
               y: 0,
               w: 1.5,
-              l: 1.464,
+              l: 2.909,
             },
             {
               x: 18.75,
               y: 0,
               w: 1.5,
-              l: 1.464,
+              l: 2.909,
             },
             {
-              x: 18.75,
+              x: 9.375,
+              y: 0.723,
+              w: 1.5,
+              l: 0.741,
+            },
+            {
+              x: 0.013,
               y: 0.723,
               w: 1.5,
               l: 0.741,
@@ -475,6 +313,48 @@ export const test: ExportTestDef = {
             {
               x: 15.625,
               y: 0.723,
+              w: 1.5,
+              l: 2.186,
+            },
+            {
+              x: 9.375,
+              y: 0.723,
+              w: 1.5,
+              l: 2.186,
+            },
+            {
+              x: 9.375,
+              y: 1.445,
+              w: 1.5,
+              l: 1.464,
+            },
+            {
+              x: 0.013,
+              y: 1.445,
+              w: 1.5,
+              l: 1.464,
+            },
+            {
+              x: 18.75,
+              y: 1.445,
+              w: 1.5,
+              l: 0.741,
+            },
+            {
+              x: 15.625,
+              y: 1.445,
+              w: 1.5,
+              l: 0.741,
+            },
+            {
+              x: 18.75,
+              y: 2.167,
+              w: 1.5,
+              l: 0.741,
+            },
+            {
+              x: 15.625,
+              y: 2.167,
               w: 1.5,
               l: 0.741,
             },
@@ -491,7 +371,82 @@ export const test: ExportTestDef = {
           Texts: [
             {
               x: -0.25,
+              y: -0.301,
+              w: 31.12,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello%201",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 15.375,
               y: 0.06000000000000005,
+              w: 31.12,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello%202",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 18.5,
+              y: 0.782,
+              w: 31.12,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello%203",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: -0.25,
+              y: 0.42100000000000004,
+              w: 31.12,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello%204",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 9.125,
+              y: 1.144,
+              w: 31.12,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello%205",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: -0.25,
+              y: 1.505,
               w: 31.12,
               sw: 0.32553125,
               clr: 0,
@@ -506,7 +461,7 @@ export const test: ExportTestDef = {
             },
             {
               x: 15.375,
-              y: -0.301,
+              y: 1.144,
               w: 31.12,
               sw: 0.32553125,
               clr: 0,
@@ -521,7 +476,7 @@ export const test: ExportTestDef = {
             },
             {
               x: 15.375,
-              y: 0.42100000000000004,
+              y: 1.866,
               w: 31.12,
               sw: 0.32553125,
               clr: 0,
