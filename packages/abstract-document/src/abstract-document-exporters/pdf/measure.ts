@@ -176,7 +176,7 @@ function getBiggestStyle(
   return textOptions;
 }
 
-function measureTable(
+export function measureTable(
   pdf: any,
   resources: AD.Resources.Resources,
   availableSize: AD.Size.Size,

@@ -1,7 +1,10 @@
 import * as R from "ramda";
+import { split } from "ramda";
 import * as AD from "../../abstract-document/index";
+import { Table } from "../../abstract-document/section-elements/table";
 import { getResources } from "../shared/get_resources";
 import { registerFonts } from "./font";
+import { measureTable } from "./measure";
 
 /* tslint:disable:no-any */
 
@@ -33,13 +36,15 @@ export function paginate(
   let pages = new Array<Page>();
   for (let section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
-    pages.push(...splitSection(resources, desiredSizes, previousPage, section));
+    pages.push(...splitSection(pdfKit, document, resources, desiredSizes, previousPage, section));
   }
 
   return pages;
 }
 
 function splitSection(
+  pdfKit: any,
+  document: AD.AbstractDoc.AbstractDoc,
   parentResources: AD.Resources.Resources,
   desiredSizes: Map<{}, AD.Size.Size>,
   previousPage: Page | undefined,
@@ -77,6 +82,43 @@ function splitSection(
     const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
     if (elementsHeight > availableHeight) {
+      if (element.type === "Table") {
+        //Try to split table
+        elements.pop();
+        elementsHeight -= elementSize.height;
+        let tableHead = {} as AD.Table.Table;
+        let tableRest = {} as AD.Table.Table;
+
+        //Find where to split table
+        for (const [rowIndex, row] of element.children.entries()) {
+          const rowSize = getDesiredSize(row, desiredSizes);
+          elementsHeight += rowSize.height;
+          if (elementsHeight > availableHeight) {
+            const [newTableHead, newTableRest] = splitTableAt(
+              pdfKit,
+              document,
+              resources,
+              desiredSizes,
+              element,
+              rowIndex
+            );
+            tableHead = newTableHead;
+            tableRest = newTableRest;
+            break;
+          }
+        }
+
+        elements.push(tableHead);
+        currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
+        pages.push(currentPage);
+        elements = [];
+        elementsHeight = 0;
+
+        //Add split table to children to process tableRest
+        children = [...children.slice(0, i), tableHead, tableRest, ...children.slice(i + 1)];
+        continue;
+      }
+
       if (elements.length > 1) {
         elements.pop();
         i--;
@@ -269,4 +311,57 @@ function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Si
     return size;
   }
   throw new Error("Could not find size for element!");
+}
+
+function splitTableAt(
+  pdfKit: any,
+  document: AD.AbstractDoc.AbstractDoc,
+  resources: AD.Resources.Resources,
+  desiredSizes: Map<{}, AD.Size.Size>,
+  table: AD.Table.Table,
+  splitIndex: number
+): [AD.Table.Table, AD.Table.Table] {
+  //Push row/cells to head table while splitting rowspan
+  const headRows: AD.TableRow.TableRow[] = [];
+  for (const [rowIndex, row] of table.children.slice(0, splitIndex).entries()) {
+    const newRow: AD.TableCell.TableCell[] = [];
+    for (const cell of row.children) {
+      //If this cell would span over the split index
+      if (rowIndex + (cell.rowSpan || 1) - 1 >= splitIndex) {
+        newRow.push({ ...cell, rowSpan: splitIndex - rowIndex });
+      } else {
+        newRow.push(cell);
+      }
+    }
+    headRows.push({ ...row, children: newRow });
+  }
+
+  //Set dummy to false for all cells in the splitRow
+  //This causes them to be rendered like an empty cell
+  //while keeping the remaining rowspan which was calculated
+  //in the pre-process step
+  const splitRow = table.children[splitIndex];
+  const firstTailRow: AD.TableCell.TableCell[] = [];
+  for (const cell of splitRow.children) {
+    firstTailRow.push({ ...cell, dummy: false });
+  }
+
+  // Push the rest of the rows to tail table
+  const tailRows: AD.TableRow.TableRow[] = [{ ...splitRow, children: firstTailRow }];
+  tailRows.push(...table.children.slice(splitIndex + 1));
+
+  //Create tables and remeasure them
+  const tableHead = { ...table, children: headRows };
+  const tableTail = { ...table, children: tailRows };
+
+  const availableSize = getDesiredSize(table, desiredSizes);
+  let pdf = new pdfKit();
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  const headSizes = measureTable(pdf, resources, availableSize, tableHead);
+  const tailSizes = measureTable(pdf, resources, availableSize, tableTail);
+
+  headSizes.forEach((value, key) => desiredSizes.set(key, value));
+  tailSizes.forEach((value, key) => desiredSizes.set(key, value));
+
+  return [tableHead, tableTail];
 }
