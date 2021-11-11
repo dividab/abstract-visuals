@@ -1,7 +1,10 @@
 import * as R from "ramda";
+import { split } from "ramda";
 import * as AD from "../../abstract-document/index";
+import { Table } from "../../abstract-document/section-elements/table";
 import { getResources } from "../shared/get_resources";
 import { registerFonts } from "./font";
+import { measureTable } from "./measure";
 
 /* tslint:disable:no-any */
 
@@ -25,25 +28,23 @@ export function paginate(
   let pdf = new pdfKit({
     compress: false,
     autoFirstPage: false,
-    bufferPages: true
+    bufferPages: true,
   }) as any;
 
-  registerFonts(
-    (fontName: string, fontSource: AD.Font.FontSource) =>
-      pdf.registerFont(fontName, fontSource),
-    document
-  );
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
 
   let pages = new Array<Page>();
   for (let section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
-    pages.push(...splitSection(resources, desiredSizes, previousPage, section));
+    pages.push(...splitSection(pdfKit, document, resources, desiredSizes, previousPage, section));
   }
 
   return pages;
 }
 
 function splitSection(
+  pdfKit: any,
+  document: AD.AbstractDoc.AbstractDoc,
   parentResources: AD.Resources.Resources,
   desiredSizes: Map<{}, AD.Size.Size>,
   previousPage: Page | undefined,
@@ -60,14 +61,7 @@ function splitSection(
   for (let i = 0; i < children.length; ++i) {
     const element = children[i];
     if (element.type === "PageBreak") {
-      currentPage = createPage(
-        resources,
-        desiredSizes,
-        currentPage,
-        section,
-        elements,
-        pages.length === 0
-      );
+      currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
       pages.push(currentPage);
       elements = [];
       elementsHeight = 0;
@@ -75,13 +69,9 @@ function splitSection(
     }
     const elementSize = getDesiredSize(element, desiredSizes);
 
-    // Collapse groups the doesn't fit on empty page
+    // Collapse groups that doesn't fit on empty page
     if (elementSize.height > contentRect.height && element.type === "Group") {
-      children = [
-        ...children.slice(0, i),
-        ...element.children,
-        ...children.slice(i + 1)
-      ];
+      children = [...children.slice(0, i), ...element.children, ...children.slice(i + 1)];
       i--;
       continue;
     }
@@ -89,25 +79,51 @@ function splitSection(
     elements.push(element);
     elementsHeight += elementSize.height;
 
-    const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(
-      resources,
-      section,
-      elements
-    );
+    const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
     if (elementsHeight > availableHeight) {
+      if (element.type === "Table") {
+        //Try to split table
+        elements.pop();
+        elementsHeight -= elementSize.height;
+        let tableHead = {} as AD.Table.Table;
+        let tableRest = {} as AD.Table.Table;
+
+        //Find where to split table
+        for (const [rowIndex, row] of element.children.entries()) {
+          const rowSize = getDesiredSize(row, desiredSizes);
+          elementsHeight += rowSize.height;
+          if (elementsHeight > availableHeight) {
+            const [newTableHead, newTableRest] = splitTableAt(
+              pdfKit,
+              document,
+              resources,
+              desiredSizes,
+              element,
+              rowIndex
+            );
+            tableHead = newTableHead;
+            tableRest = newTableRest;
+            break;
+          }
+        }
+
+        elements.push(tableHead);
+        currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
+        pages.push(currentPage);
+        elements = [];
+        elementsHeight = 0;
+
+        //Add split table to children to process tableRest
+        children = [...children.slice(0, i), tableHead, tableRest, ...children.slice(i + 1)];
+        continue;
+      }
+
       if (elements.length > 1) {
         elements.pop();
         i--;
       }
-      currentPage = createPage(
-        resources,
-        desiredSizes,
-        currentPage,
-        section,
-        elements,
-        pages.length === 0
-      );
+      currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
       pages.push(currentPage);
       elements = [];
       elementsHeight = 0;
@@ -115,16 +131,7 @@ function splitSection(
   }
 
   if (elements.length > 0) {
-    pages.push(
-      createPage(
-        resources,
-        desiredSizes,
-        currentPage,
-        section,
-        elements,
-        pages.length === 0
-      )
-    );
+    pages.push(createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0));
   }
 
   return pages;
@@ -149,36 +156,22 @@ function createPage(
       top: 0,
       left: 0,
       right: 0,
-      bottom: 0
-    }
+      bottom: 0,
+    },
   };
   const pageNo = previousPage ? previousPage.pageNo + 1 : 1;
 
   const sectionName = isFirst && section.id !== "" ? [section.id] : [];
   // For now, only support link targets at base level. Tree search would be needed to find all targets.
   const targetNames = R.unnest(
-    elements.map(
-      e =>
-        e.type === "Paragraph"
-          ? e.children.map(c => (c.type === "LinkTarget" ? c.name : ""))
-          : []
-    )
-  ).filter(t => t !== "");
+    elements.map((e) => (e.type === "Paragraph" ? e.children.map((c) => (c.type === "LinkTarget" ? c.name : "")) : []))
+  ).filter((t) => t !== "");
   const namedDestionations = [...sectionName, ...targetNames];
 
   // Ignore leading space by expanding the content rect upwards
   const rect = getPageContentRect(desiredSizes, section);
-  const [leadingSpace] = getLeadingAndTrailingSpace(
-    resources,
-    section,
-    elements
-  );
-  const contentRect = AD.Rect.create(
-    rect.x,
-    rect.y - leadingSpace,
-    rect.width,
-    rect.height + leadingSpace
-  );
+  const [leadingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
+  const contentRect = AD.Rect.create(rect.x, rect.y - leadingSpace, rect.width, rect.height + leadingSpace);
 
   return {
     pageNo: pageNo,
@@ -188,14 +181,11 @@ function createPage(
     contentRect: contentRect,
     elements: elements,
     header: section.page.header,
-    footer: section.page.footer
+    footer: section.page.footer,
   };
 }
 
-function getPageContentRect(
-  desiredSizes: Map<{}, AD.Size.Size>,
-  section: AD.Section.Section
-): AD.Rect.Rect {
+function getPageContentRect(desiredSizes: Map<{}, AD.Size.Size>, section: AD.Section.Section): AD.Rect.Rect {
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getWidth(style);
   const pageHeight = AD.PageStyle.getHeight(style);
@@ -218,14 +208,8 @@ function getPageContentRect(
 
   const rectX = style.contentMargins.left;
   const rectY = headerY + style.contentMargins.top;
-  const rectWidth =
-    pageWidth - (style.contentMargins.left + style.contentMargins.right);
-  const rectHeight =
-    pageHeight -
-    headerHeight -
-    footerHeight -
-    style.contentMargins.top -
-    style.contentMargins.bottom;
+  const rectWidth = pageWidth - (style.contentMargins.left + style.contentMargins.right);
+  const rectHeight = pageHeight - headerHeight - footerHeight - style.contentMargins.top - style.contentMargins.bottom;
 
   return AD.Rect.create(rectX, rectY, rectWidth, rectHeight);
 }
@@ -243,8 +227,7 @@ function getLeadingAndTrailingSpace(
 
   const last = elements.length > 0 ? elements[elements.length - 1] : undefined;
   const lastMargins = last && getSectionElementMargin(resources, last);
-  const trailingSpace =
-    lastMargins && noTopBottomMargin ? lastMargins.bottom : 0;
+  const trailingSpace = lastMargins && noTopBottomMargin ? lastMargins.bottom : 0;
 
   return [leadingSpace, trailingSpace];
 }
@@ -266,7 +249,7 @@ function getSectionElementMargin(
         bottom: 0,
         left: 0,
         right: 0,
-        top: 0
+        top: 0,
       };
   }
 }
@@ -290,23 +273,20 @@ function getGroupMargins(
   group: AD.Group.Group
 ): AD.LayoutFoundation.LayoutFoundation {
   const first = group.children.length > 0 ? group.children[0] : undefined;
-  const last =
-    group.children.length > 0
-      ? group.children[group.children.length - 1]
-      : undefined;
+  const last = group.children.length > 0 ? group.children[group.children.length - 1] : undefined;
   const firstMargin = first && getSectionElementMargin(resources, first);
   const lastMargin = last && getSectionElementMargin(resources, last);
   if (firstMargin && lastMargin) {
     return {
       ...firstMargin,
-      bottom: lastMargin.bottom
+      bottom: lastMargin.bottom,
     };
   } else {
     return {
       bottom: 0,
       left: 0,
       right: 0,
-      top: 0
+      top: 0,
     };
   }
 }
@@ -325,13 +305,63 @@ function getTableMargins(
   return style.margins;
 }
 
-function getDesiredSize(
-  element: {},
-  desiredSizes: Map<{}, AD.Size.Size>
-): AD.Size.Size {
+function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Size.Size {
   const size = desiredSizes.get(element);
   if (size) {
     return size;
   }
   throw new Error("Could not find size for element!");
+}
+
+function splitTableAt(
+  pdfKit: any,
+  document: AD.AbstractDoc.AbstractDoc,
+  resources: AD.Resources.Resources,
+  desiredSizes: Map<{}, AD.Size.Size>,
+  table: AD.Table.Table,
+  splitIndex: number
+): [AD.Table.Table, AD.Table.Table] {
+  //Push row/cells to head table while splitting rowspan
+  const headRows: AD.TableRow.TableRow[] = [];
+  for (const [rowIndex, row] of table.children.slice(0, splitIndex).entries()) {
+    const newRow: AD.TableCell.TableCell[] = [];
+    for (const cell of row.children) {
+      //If this cell would span over the split index
+      if (rowIndex + (cell.rowSpan || 1) - 1 >= splitIndex) {
+        newRow.push({ ...cell, rowSpan: splitIndex - rowIndex });
+      } else {
+        newRow.push(cell);
+      }
+    }
+    headRows.push({ ...row, children: newRow });
+  }
+
+  //Set dummy to false for all cells in the splitRow
+  //This causes them to be rendered like an empty cell
+  //while keeping the remaining rowspan which was calculated
+  //in the pre-process step
+  const splitRow = table.children[splitIndex];
+  const firstTailRow: AD.TableCell.TableCell[] = [];
+  for (const cell of splitRow.children) {
+    firstTailRow.push({ ...cell, dummy: false });
+  }
+
+  // Push the rest of the rows to tail table
+  const tailRows: AD.TableRow.TableRow[] = [{ ...splitRow, children: firstTailRow }];
+  tailRows.push(...table.children.slice(splitIndex + 1));
+
+  //Create tables and remeasure them
+  const tableHead = { ...table, children: headRows };
+  const tableTail = { ...table, children: tailRows };
+
+  const availableSize = getDesiredSize(table, desiredSizes);
+  let pdf = new pdfKit();
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  const headSizes = measureTable(pdf, resources, availableSize, tableHead);
+  const tailSizes = measureTable(pdf, resources, availableSize, tableTail);
+
+  headSizes.forEach((value, key) => desiredSizes.set(key, value));
+  tailSizes.forEach((value, key) => desiredSizes.set(key, value));
+
+  return [tableHead, tableTail];
 }

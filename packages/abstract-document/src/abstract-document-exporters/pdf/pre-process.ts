@@ -3,8 +3,6 @@ import * as AD from "../../abstract-document/index";
 import { exhaustiveCheck } from "ts-exhaustive-check/lib-cjs";
 import * as TextStyle from "../../abstract-document/styles/text-style";
 
-type RowSpans = Map<number, { rowSpanLeft: number; colSpan: number }>;
-
 const alphabet = [
   "a",
   "b",
@@ -286,7 +284,7 @@ function toChar(num: number): string {
 
 function preProcessTable(table: AD.Table.Table, resources: AD.Resources.Resources): AD.SectionElement.SectionElement {
   const processedChildren = [];
-  let rowSpans: RowSpans = new Map();
+  let rowSpans: Map<number, AD.TableCell.TableCell> = new Map();
   for (const row of table.children) {
     const children = preProcessTableRow(row, rowSpans, resources);
     processedChildren.push(children);
@@ -303,53 +301,43 @@ function preProcessTable(table: AD.Table.Table, resources: AD.Resources.Resource
 
 function preProcessTableRow(
   r: AD.TableRow.TableRow,
-  rowSpans: RowSpans,
+  rowSpans: Map<number, AD.TableCell.TableCell>,
   resources: AD.Resources.Resources
 ): AD.TableRow.TableRow {
   const processedChildren = [];
-  let cellIndex = 0;
+  let columnIndex = 0;
   for (const cell of r.children) {
-    let rowSpan = rowSpans.get(cellIndex);
-    while (rowSpan) {
-      processedChildren.push(
-        AD.TableCell.create({
-          rowSpan: rowSpan.rowSpanLeft,
-          columnSpan: rowSpan.colSpan,
-          dummy: true,
-        })
-      );
-      rowSpan.rowSpanLeft -= 1;
-      if (rowSpan.rowSpanLeft < 1) {
-        rowSpans.delete(cellIndex);
+    let dummyCell = rowSpans.get(columnIndex);
+    while (dummyCell) {
+      processedChildren.push(dummyCell);
+      if (dummyCell.rowSpan <= 1) {
+        rowSpans.delete(columnIndex);
+      } else {
+        rowSpans.set(columnIndex, { ...dummyCell, rowSpan: dummyCell.rowSpan - 1 });
       }
-      cellIndex += rowSpan.colSpan || 1;
-      rowSpan = rowSpans.get(cellIndex);
+      columnIndex += dummyCell.columnSpan || 1;
+      dummyCell = rowSpans.get(columnIndex);
     }
 
     const processedCell = preProcessTableCell(cell, resources);
     processedChildren.push(processedCell);
     if ((processedCell.rowSpan || 1) > 1) {
-      rowSpans.set(cellIndex, { rowSpanLeft: processedCell.rowSpan - 1, colSpan: processedCell.columnSpan });
+      rowSpans.set(columnIndex, { ...processedCell, children: [], rowSpan: processedCell.rowSpan - 1, dummy: true });
     }
-    cellIndex += cell.columnSpan || 1;
+    columnIndex += cell.columnSpan || 1;
   }
 
   // Make sure to reduce the rowSpanLeft of any cell that is at the end
-  let rowSpan = rowSpans.get(cellIndex);
-  while (rowSpan) {
-    processedChildren.push(
-      AD.TableCell.create({
-        rowSpan: rowSpan.rowSpanLeft,
-        columnSpan: rowSpan.colSpan,
-        dummy: true,
-      })
-    );
-    rowSpan.rowSpanLeft -= 1;
-    if (rowSpan.rowSpanLeft < 1) {
-      rowSpans.delete(cellIndex);
+  let dummyCell = rowSpans.get(columnIndex);
+  while (dummyCell) {
+    processedChildren.push(dummyCell);
+    if (dummyCell.rowSpan <= 1) {
+      rowSpans.delete(columnIndex);
+    } else {
+      rowSpans.set(columnIndex, { ...dummyCell, rowSpan: dummyCell.rowSpan - 1 });
     }
-    cellIndex += rowSpan.colSpan || 1;
-    rowSpan = rowSpans.get(cellIndex);
+    columnIndex += dummyCell.columnSpan || 1;
+    dummyCell = rowSpans.get(columnIndex);
   }
 
   return AD.TableRow.create({}, processedChildren);
