@@ -82,10 +82,11 @@ function splitSection(
     const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
     if (elementsHeight > availableHeight) {
-      if (element.type === "Table") {
+      if (element.type === "Table" && element.children.length > 1) {
         //Try to split table
         elements.pop();
         elementsHeight -= elementSize.height;
+        let shouldPushTable = true;
         let tableHead = {} as AD.Table.Table;
         let tableRest = {} as AD.Table.Table;
 
@@ -94,13 +95,18 @@ function splitSection(
           const rowSize = getDesiredSize(row, desiredSizes);
           elementsHeight += rowSize.height;
           if (elementsHeight > availableHeight) {
+            if (rowIndex === 0 && elements.length !== 0) {
+              shouldPushTable = false;
+              break;
+            }
+
             const [newTableHead, newTableRest] = splitTableAt(
               pdfKit,
               document,
               resources,
               desiredSizes,
               element,
-              rowIndex
+              Math.max(rowIndex, 1)
             );
             tableHead = newTableHead;
             tableRest = newTableRest;
@@ -108,14 +114,24 @@ function splitSection(
           }
         }
 
-        elements.push(tableHead);
+        if (shouldPushTable) {
+          elements.push(tableHead);
+          const newChildren: AD.Table.Table[] = [];
+          if (shouldPushTable) {
+            newChildren.push(tableHead);
+          }
+          newChildren.push(tableRest);
+          //Add split table to children to process tableRest
+          children = [...children.slice(0, i), ...newChildren, ...children.slice(i + 1)];
+        } else {
+          i--;
+        }
+
         currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
         pages.push(currentPage);
         elements = [];
         elementsHeight = 0;
 
-        //Add split table to children to process tableRest
-        children = [...children.slice(0, i), tableHead, tableRest, ...children.slice(i + 1)];
         continue;
       }
 
