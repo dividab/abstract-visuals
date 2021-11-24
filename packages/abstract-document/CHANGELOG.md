@@ -8,17 +8,25 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Changed
 
+### Removed
+
+## [v6.4.0](https://github.com/dividab/property/compare/abstract-document@6.0.1...abstract-document@6.4.0) - 2021-11-24
+
+### Added
+
+- Add feature to allow setting border colors of cells separately
+- Add table cell parameter "rowSpan" to allow setting the number of rows a cell should span
+- Allow tables to be split and continue on the next page if they overflow a page
+- Add support for repeatable headers for tables
+
+### Changed
+
 - Catch-up of the changelog.
 - Parsing svg colors to lower case to work with Svg-To-PdfKit.
 - Splitting tables if they are directly after each other.
 - Fix crash when tables has no rows
 - Fix table layout when using Infinity on column widths
-- Add feature to allow setting border colors of cells separately
 - Fix cell border widths not setting properly
-- Add table cell parameter "rowSpan" to allow setting the number of rows a cell should span
-- Allow tables to be split and continue on the next page if they overflow a page
-
-### Removed
 
 ## [v6.0.1](https://github.com/dividab/property/compare/abstract-document@6.0.0...abstract-document@6.0.1) - 2021-09-02
 

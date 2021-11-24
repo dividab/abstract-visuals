@@ -41,9 +41,16 @@ const footer = [
   ),
 ];
 
-const cellstyle = TableCellStyle.create({
+const cellstyleborders = TableCellStyle.create({
   borders: { left: 1, right: 1, top: 1, bottom: 1 },
   borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+});
+const headerstyle = TableCellStyle.create({
+  background: "green",
+  padding: { left: 2, right: 2, top: 2, bottom: 0 },
+});
+
+const cellstyle = TableCellStyle.create({
   background: "blue",
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
@@ -79,6 +86,47 @@ const cellStyleNoBorders = TableCellStyle.create({
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
 
+const headerRows = [
+  render(
+    <TableRow>
+      <TableCell style={headerstyle}>
+        <Paragraph>
+          <TextRun text="Header 1" />
+        </Paragraph>
+      </TableCell>
+      <TableCell style={headerstyle}>
+        <Paragraph>
+          <TextRun text="Header 2" />
+        </Paragraph>
+      </TableCell>
+      <TableCell style={headerstyle}>
+        <Paragraph>
+          <TextRun text="Header 3" />
+        </Paragraph>
+      </TableCell>
+    </TableRow>
+  ),
+  render(
+    <TableRow>
+      <TableCell style={headerstyle}>
+        <Paragraph>
+          <TextRun text="Header 4" />
+        </Paragraph>
+      </TableCell>
+      <TableCell style={headerstyle}>
+        <Paragraph>
+          <TextRun text="Header 5" />
+        </Paragraph>
+      </TableCell>
+      <TableCell style={headerstyle}>
+        <Paragraph>
+          <TextRun text="Header 6" />
+        </Paragraph>
+      </TableCell>
+    </TableRow>
+  ),
+];
+
 export function AbstractDocumentExample(): JSX.Element {
   const page = AD.AbstractDoc.MasterPage.create({ header: header, footer: footer });
   const doc = render(
@@ -92,6 +140,50 @@ export function AbstractDocumentExample(): JSX.Element {
           <HyperLink text="Go to page 2" target="#page=2" />
           <TocSeparator />
         </Paragraph>
+
+        <Table
+          columnWidths={[100, 100, 100]}
+          style={TableStyle.create({
+            margins: LayoutFoundation.create({ top: 10, left: 10 }),
+            cellStyle: cellstyleborders,
+          })}
+          headerRows={headerRows}
+        >
+          <TableRow>
+            <TableCell style={cellstyle}>
+              <Paragraph>
+                <TextRun text="Table cell 1" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellstyle}>
+              <Paragraph>
+                <TextRun text="Table cell 2" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellstyle}>
+              <Paragraph>
+                <TextRun text="Table cell 3" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell style={cellstyle}>
+              <Paragraph>
+                <TextRun text="Table cell 4" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellstyle}>
+              <Paragraph>
+                <TextRun text="Table cell 5" />
+              </Paragraph>
+            </TableCell>
+            <TableCell style={cellstyle}>
+              <Paragraph>
+                <TextRun text="Table cell 6" />
+              </Paragraph>
+            </TableCell>
+          </TableRow>
+        </Table>
 
         <Table
           columnWidths={[100]}
