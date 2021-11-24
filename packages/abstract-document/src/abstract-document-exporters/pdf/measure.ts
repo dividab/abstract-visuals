@@ -195,8 +195,8 @@ export function measureTable(
   const infinityWidth = (tableAvailableWidth - fixedColumnsWidth) / numInfinityColumns;
   const columnWidths = table.columnWidths.map((w) => (isFinite(w) ? w : infinityWidth));
   const desiredSizes = new Map<any, AD.Size.Size>();
-
-  for (let row of table.children) {
+  const rows = [...table.headerRows, ...table.children];
+  for (let row of rows) {
     let column = 0;
     for (let cell of row.children) {
       const cellStyle = AD.Resources.getStyle(
@@ -229,7 +229,7 @@ export function measureTable(
     : table.columnWidths.reduce((a, b) => a + b, style.margins.left + style.margins.right);
 
   let desiredHeight = style.margins.top + style.margins.bottom;
-  for (let row of table.children) {
+  for (let row of rows) {
     let rowHeight = row.children.map((c) => getDesiredSize(c, desiredSizes).height).reduce((a, b) => Math.max(a, b), 0);
     desiredHeight += rowHeight;
     desiredSizes.set(row, AD.Size.create(desiredWidth, rowHeight));

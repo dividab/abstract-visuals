@@ -283,8 +283,15 @@ function toChar(num: number): string {
 // }
 
 function preProcessTable(table: AD.Table.Table, resources: AD.Resources.Resources): AD.SectionElement.SectionElement {
+  const processedHeaders = [];
   const processedChildren = [];
   let rowSpans: Map<number, AD.TableCell.TableCell> = new Map();
+  if (table.headerRows) {
+    for (const row of table.headerRows) {
+      const header = preProcessTableRow(row, rowSpans, resources);
+      processedHeaders.push(header);
+    }
+  }
   for (const row of table.children) {
     const children = preProcessTableRow(row, rowSpans, resources);
     processedChildren.push(children);
@@ -294,6 +301,7 @@ function preProcessTable(table: AD.Table.Table, resources: AD.Resources.Resource
       columnWidths: table.columnWidths,
       styleName: table.styleName,
       style: table.style,
+      headerRows: processedHeaders,
     },
     processedChildren
   );

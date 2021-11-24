@@ -629,14 +629,15 @@ function renderTable(
   ) as AD.TableStyle.TableStyle;
   const availableWidth = finalRect.width;
   let y = finalRect.y + style.margins.top;
-  for (let [index, row] of table.children.entries()) {
+  const rows = [...table.headerRows, ...table.children];
+  for (let [index, row] of rows.entries()) {
     const rowSize = getDesiredSize(row, desiredSizes);
     let x = finalRect.x + style.margins.left;
     if (style.alignment === "Center") x += 0.5 * (availableWidth - rowSize.width);
     else if (style.alignment === "Right") x += availableWidth - rowSize.width;
     const rowRect = AD.Rect.create(x, y, rowSize.width, rowSize.height);
     const isTop = index === 0;
-    const isBottom = index === table.children.length - 1;
+    const isBottom = index === rows.length - 1;
     renderRow(resources, pdf, desiredSizes, rowRect, style.cellStyle, table, row, index, isTop, isBottom);
     y += rowSize.height;
   }
@@ -656,7 +657,6 @@ function renderRow(
 ): void {
   let x = finalRect.x;
   const rowSize = getDesiredSize(row, desiredSizes);
-  let cellIndexSpan = 0;
   for (const [cellIndex, cell] of row.children.entries()) {
     if (cell.dummy) {
       const dummySize = getDesiredSize(cell, desiredSizes);
@@ -667,7 +667,7 @@ function renderRow(
     let height = rowSize.height;
     if (cell.rowSpan > 1) {
       for (let index = rowIndex + 1; index < rowIndex + cell.rowSpan; index++) {
-        height += getDesiredSize(table.children[index], desiredSizes).height;
+        height += getDesiredSize([...table.headerRows, ...table.children][index], desiredSizes).height;
       }
     }
     const cellSize = getDesiredSize(cell, desiredSizes);
@@ -676,7 +676,6 @@ function renderRow(
     const isLast = cellIndex === row.children.length - 1;
     renderCell(resources, pdf, desiredSizes, cellRect, tableCellStyle, cell, isFirst, isLast, isTop, isBottom);
     x += cellSize.width;
-    cellIndexSpan++;
   }
 }
 

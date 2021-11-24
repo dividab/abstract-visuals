@@ -152,6 +152,10 @@ function splitTable(
   let tableHead = undefined;
   let tableRest = undefined;
   elementsHeight += table.style.margins.top || 0;
+  if (table.headerRows.length > 0) {
+    const headerSize = table.headerRows.reduce((acc, row) => (acc += getDesiredSize(row, desiredSizes).height), 0);
+    elementsHeight += headerSize;
+  }
 
   //Find where to split table
   for (const [rowIndex, row] of table.children.entries()) {
