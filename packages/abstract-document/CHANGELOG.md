@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. The format 
 - Fix cell border widths not setting properly
 - Add table cell parameter "rowSpan" to allow setting the number of rows a cell should span
 - Allow tables to be split and continue on the next page if they overflow a page
+- Add support for repeatable headers for tables
 
 ### Removed
 
