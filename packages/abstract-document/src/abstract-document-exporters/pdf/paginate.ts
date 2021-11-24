@@ -83,49 +83,35 @@ function splitSection(
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
     if (elementsHeight > availableHeight) {
       if (element.type === "Table" && element.children.length > 1) {
-        //Try to split table
+        //Remove last element
         elements.pop();
         elementsHeight -= elementSize.height;
-        let shouldPushTable = true;
-        let tableHead = {} as AD.Table.Table;
-        let tableRest = {} as AD.Table.Table;
 
-        //Find where to split table
-        for (const [rowIndex, row] of element.children.entries()) {
-          const rowSize = getDesiredSize(row, desiredSizes);
-          elementsHeight += rowSize.height;
-          if (elementsHeight > availableHeight) {
-            if (rowIndex === 0 && elements.length !== 0) {
-              shouldPushTable = false;
-              break;
-            }
+        //Try to split table
+        const [tableHead, tableTail] = splitTable(
+          pdfKit,
+          document,
+          resources,
+          desiredSizes,
+          element,
+          elementsHeight,
+          availableHeight,
+          elements.length
+        );
 
-            const [newTableHead, newTableRest] = splitTableAt(
-              pdfKit,
-              document,
-              resources,
-              desiredSizes,
-              element,
-              Math.max(rowIndex, 1)
-            );
-            tableHead = newTableHead;
-            tableRest = newTableRest;
-            break;
-          }
-        }
-
-        if (shouldPushTable) {
+        const tableSplit: AD.Table.Table[] = [];
+        if (tableHead) {
           elements.push(tableHead);
-          const newChildren: AD.Table.Table[] = [];
-          if (shouldPushTable) {
-            newChildren.push(tableHead);
-          }
-          newChildren.push(tableRest);
-          //Add split table to children to process tableRest
-          children = [...children.slice(0, i), ...newChildren, ...children.slice(i + 1)];
+          tableSplit.push(tableHead);
         } else {
           i--;
         }
+        if (tableTail) {
+          tableSplit.push(tableTail);
+        }
+
+        //Add split table to children to process tableTail in next iteration
+        children = [...children.slice(0, i), ...tableSplit, ...children.slice(i + 1)];
 
         currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
         pages.push(currentPage);
@@ -151,6 +137,58 @@ function splitSection(
   }
 
   return pages;
+}
+
+function splitTable(
+  pdfKit: any,
+  document: AD.AbstractDoc.AbstractDoc,
+  resources: AD.Resources.Resources,
+  desiredSizes: Map<{}, AD.Size.Size>,
+  table: AD.Table.Table,
+  elementsHeight: number,
+  availableHeight: number,
+  elementsLength: number
+): [AD.Table.Table | undefined, AD.Table.Table | undefined] {
+  let tableHead = undefined;
+  let tableRest = undefined;
+  elementsHeight += table.style.margins.top || 0;
+
+  //Find where to split table
+  for (const [rowIndex, row] of table.children.entries()) {
+    const rowSize = getDesiredSize(row, desiredSizes);
+    elementsHeight += rowSize.height;
+
+    if (elementsHeight > availableHeight) {
+      if (rowIndex === 0 && elementsLength !== 0) {
+        //Not even first row fit on the page, shove it all to the next page
+        return [undefined, table];
+      }
+
+      const [newTableHead, newTableRest] = splitTableAt(
+        pdfKit,
+        document,
+        resources,
+        desiredSizes,
+        table,
+        Math.max(rowIndex, 1)
+      );
+
+      if (newTableHead.children.length > 0) {
+        tableHead = newTableHead;
+      }
+      if (newTableRest.children.length > 0) {
+        tableRest = newTableRest;
+      }
+      break;
+    }
+  }
+
+  if (!tableHead && !tableRest) {
+    //Didnt find a place to split the table, meaning the whole table fits on current page
+    return [table, undefined];
+  }
+
+  return [tableHead, tableRest];
 }
 
 function createPage(
@@ -367,8 +405,16 @@ function splitTableAt(
   tailRows.push(...table.children.slice(splitIndex + 1));
 
   //Create tables and remeasure them
-  const tableHead = { ...table, children: headRows };
-  const tableTail = { ...table, children: tailRows };
+  const tableHead = {
+    ...table,
+    style: { ...table.style, margins: { ...table.style.margins, bottom: 0 } },
+    children: headRows,
+  };
+  const tableTail = {
+    ...table,
+    style: { ...table.style, margins: { ...table.style.margins, top: 0 } },
+    children: tailRows,
+  };
 
   const availableSize = getDesiredSize(table, desiredSizes);
   let pdf = new pdfKit();
