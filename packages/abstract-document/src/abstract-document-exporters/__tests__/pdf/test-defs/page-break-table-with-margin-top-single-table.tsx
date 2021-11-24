@@ -14,29 +14,15 @@ import { LayoutFoundation, TableCellStyle, TableStyle } from "../../../../abstra
 const borders = { left: 1, bottom: 1, right: 1, top: 1 };
 const tablestyle = TableStyle.create({
   cellStyle: TableCellStyle.create({ borders: borders, borderColor: "black" }),
-  margins: LayoutFoundation.create({ top: 100, bottom: 200 }),
 });
-const tablestylemargin = TableStyle.create({
-  cellStyle: TableCellStyle.create({ borders: borders, borderColor: "black" }),
-});
-
 export const test: ExportTestDef = {
-  name: "Pagebreak table with margin",
+  name: "Pagebreak table with margin top single table",
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
-        <Table columnWidths={[150]} style={tablestylemargin}>
-          <TableRow>
-            <TableCell style={TableCellStyle.create({ padding: LayoutFoundation.create({ top: 500 }) })}>
-              <Paragraph>
-                <TextRun text="Test table starts below this line" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-        </Table>
         <Table columnWidths={[150, 100]} style={tablestyle}>
           <TableRow>
-            <TableCell style={TableCellStyle.create({ padding: LayoutFoundation.create({ top: 20, bottom: 20 }) })}>
+            <TableCell style={TableCellStyle.create({ padding: LayoutFoundation.create({ top: 400, bottom: 450 }) })}>
               <Paragraph>
                 <TextRun text="Hello 1" />
               </Paragraph>
@@ -68,15 +54,6 @@ export const test: ExportTestDef = {
             <TableCell>
               <Paragraph>
                 <TextRun text="Hello 2" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-        </Table>
-        <Table columnWidths={[150]} style={tablestylemargin}>
-          <TableRow>
-            <TableCell>
-              <Paragraph>
-                <TextRun text="Test table ended above this line" />
               </Paragraph>
             </TableCell>
           </TableRow>
@@ -101,7 +78,7 @@ export const test: ExportTestDef = {
           HLines: [
             {
               x: 0,
-              y: 31.96,
+              y: 53.835,
               w: 1.5,
               l: 9.375,
             },
@@ -112,162 +89,42 @@ export const test: ExportTestDef = {
               l: 9.412,
             },
             {
-              x: 0,
-              y: 41.445,
-              w: 1.5,
-              l: 9.375,
-            },
-            {
-              x: -0.019,
-              y: 38.235,
-              w: 1.5,
-              l: 9.412,
-            },
-            {
               x: 9.375,
-              y: 41.445,
+              y: 53.835,
               w: 1.5,
               l: 6.25,
             },
             {
               x: 9.344,
-              y: 38.235,
-              w: 1.5,
-              l: 6.3,
-            },
-            {
-              x: 0,
-              y: 44.667,
-              w: 1.5,
-              l: 9.375,
-            },
-            {
-              x: -0.019,
-              y: 41.445,
-              w: 1.5,
-              l: 9.412,
-            },
-            {
-              x: 9.375,
-              y: 44.667,
-              w: 1.5,
-              l: 6.25,
-            },
-            {
-              x: 9.344,
-              y: 41.445,
-              w: 1.5,
-              l: 6.3,
-            },
-            {
-              x: 0,
-              y: 47.877,
-              w: 1.5,
-              l: 9.375,
-            },
-            {
-              x: -0.019,
-              y: 44.667,
-              w: 1.5,
-              l: 9.412,
-            },
-            {
-              x: 9.375,
-              y: 47.877,
-              w: 1.5,
-              l: 6.25,
-            },
-            {
-              x: 9.344,
-              y: 44.667,
+              y: 0.013,
               w: 1.5,
               l: 6.3,
             },
           ],
           VLines: [
             {
-              x: 9.363,
+              x: 9.375,
               y: 0,
               w: 1.5,
-              l: 31.991,
+              l: 53.866,
             },
             {
               x: 0.013,
               y: 0,
               w: 1.5,
-              l: 31.991,
-            },
-            {
-              x: 9.375,
-              y: 38.222,
-              w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 0.013,
-              y: 38.222,
-              w: 1.5,
-              l: 3.241,
+              l: 53.866,
             },
             {
               x: 15.613,
-              y: 38.222,
+              y: 0,
               w: 1.5,
-              l: 3.241,
+              l: 53.866,
             },
             {
               x: 9.375,
-              y: 38.222,
+              y: 0,
               w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 9.375,
-              y: 41.445,
-              w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 0.013,
-              y: 41.445,
-              w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 15.613,
-              y: 41.445,
-              w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 9.375,
-              y: 41.445,
-              w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 9.375,
-              y: 44.667,
-              w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 0.013,
-              y: 44.667,
-              w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 15.613,
-              y: 44.667,
-              w: 1.5,
-              l: 3.241,
-            },
-            {
-              x: 9.375,
-              y: 44.667,
-              w: 1.5,
-              l: 3.241,
+              l: 53.866,
             },
           ],
           Fills: [
@@ -282,22 +139,7 @@ export const test: ExportTestDef = {
           Texts: [
             {
               x: -0.25,
-              y: 30.949,
-              w: 136.72,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Test%20table%20starts%20below%20this%20line",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: -0.25,
-              y: 39.171,
+              y: 24.699,
               w: 31.12,
               sw: 0.32553125,
               clr: 0,
@@ -312,67 +154,7 @@ export const test: ExportTestDef = {
             },
             {
               x: 9.125,
-              y: 39.171,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%202",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: -0.25,
-              y: 42.394,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%201",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 9.125,
-              y: 42.394,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%202",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: -0.25,
-              y: 45.616,
-              w: 31.12,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Hello%201",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 9.125,
-              y: 45.616,
+              y: 26.261,
               w: 31.12,
               sw: 0.32553125,
               clr: 0,
@@ -394,7 +176,7 @@ export const test: ExportTestDef = {
           HLines: [
             {
               x: 0,
-              y: 0.71,
+              y: 3.223,
               w: 1.5,
               l: 9.375,
             },
@@ -404,19 +186,91 @@ export const test: ExportTestDef = {
               w: 1.5,
               l: 9.412,
             },
+            {
+              x: 9.375,
+              y: 3.223,
+              w: 1.5,
+              l: 6.25,
+            },
+            {
+              x: 9.344,
+              y: 0.013,
+              w: 1.5,
+              l: 6.3,
+            },
+            {
+              x: 0,
+              y: 6.433,
+              w: 1.5,
+              l: 9.375,
+            },
+            {
+              x: -0.019,
+              y: 3.223,
+              w: 1.5,
+              l: 9.412,
+            },
+            {
+              x: 9.375,
+              y: 6.433,
+              w: 1.5,
+              l: 6.25,
+            },
+            {
+              x: 9.344,
+              y: 3.223,
+              w: 1.5,
+              l: 6.3,
+            },
           ],
           VLines: [
             {
-              x: 9.363,
+              x: 9.375,
               y: 0,
               w: 1.5,
-              l: 0.741,
+              l: 3.241,
             },
             {
               x: 0.013,
               y: 0,
               w: 1.5,
-              l: 0.741,
+              l: 3.241,
+            },
+            {
+              x: 15.613,
+              y: 0,
+              w: 1.5,
+              l: 3.241,
+            },
+            {
+              x: 9.375,
+              y: 0,
+              w: 1.5,
+              l: 3.241,
+            },
+            {
+              x: 9.375,
+              y: 3.223,
+              w: 1.5,
+              l: 3.241,
+            },
+            {
+              x: 0.013,
+              y: 3.223,
+              w: 1.5,
+              l: 3.241,
+            },
+            {
+              x: 15.613,
+              y: 3.223,
+              w: 1.5,
+              l: 3.241,
+            },
+            {
+              x: 9.375,
+              y: 3.223,
+              w: 1.5,
+              l: 3.241,
             },
           ],
           Fills: [
@@ -431,14 +285,59 @@ export const test: ExportTestDef = {
           Texts: [
             {
               x: -0.25,
-              y: -0.301,
-              w: 141.19,
+              y: 0.9490000000000001,
+              w: 31.12,
               sw: 0.32553125,
               clr: 0,
               A: "left",
               R: [
                 {
-                  T: "Test%20table%20ended%20above%20this%20line",
+                  T: "Hello%201",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 9.125,
+              y: 0.9490000000000001,
+              w: 31.12,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello%202",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: -0.25,
+              y: 4.171,
+              w: 31.12,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello%201",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 9.125,
+              y: 4.171,
+              w: 31.12,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello%202",
                   S: -1,
                   TS: [0, 13, 0, 0],
                 },
