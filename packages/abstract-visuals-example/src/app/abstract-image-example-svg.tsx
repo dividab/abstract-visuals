@@ -35,8 +35,9 @@ export function AbstractImageExampleSvg(): JSX.Element {
       "uniform",
       "uniform",
       0,
-      AbstractImage.black
-    )
+      AbstractImage.black,
+      false
+    ),
   ];
   const image = AbstractImage.createAbstractImage(
     AbstractImage.createPoint(0, 0),

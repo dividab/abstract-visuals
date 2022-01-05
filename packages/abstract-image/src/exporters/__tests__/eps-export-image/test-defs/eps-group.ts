@@ -15,7 +15,8 @@ const components = [
       "uniform",
       "uniform",
       0,
-      AbstractImage.black
+      AbstractImage.black,
+      false
     ),
     AbstractImage.createRectangle(
       AbstractImage.createPoint(10, 50),

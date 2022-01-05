@@ -42,9 +42,8 @@ export function createChart(props: ChartProps): Chart {
     gridColor = AbstractImage.gray,
     gridThickness = 1,
     fontSize = 12,
-    labelLayout = "original"
-  } =
-    props || {};
+    labelLayout = "original",
+  } = props || {};
   return {
     width,
     height,
@@ -59,7 +58,7 @@ export function createChart(props: ChartProps): Chart {
     gridColor,
     gridThickness,
     fontSize,
-    labelLayout
+    labelLayout,
   };
 }
 
@@ -88,9 +87,8 @@ export function createChartPoint(props?: ChartPointProps): ChartPoint {
     size = AbstractImage.createSize(6, 6),
     label = "",
     xAxis = "bottom",
-    yAxis = "left"
-  } =
-    props || {};
+    yAxis = "left",
+  } = props || {};
   return {
     shape,
     position,
@@ -98,7 +96,7 @@ export function createChartPoint(props?: ChartPointProps): ChartPoint {
     size,
     label,
     xAxis,
-    yAxis
+    yAxis,
   };
 }
 
@@ -120,16 +118,15 @@ export function createChartLine(props: ChartLineProps): ChartLine {
     thickness = 1,
     label = "",
     xAxis = "bottom",
-    yAxis = "left"
-  } =
-    props || {};
+    yAxis = "left",
+  } = props || {};
   return {
     points,
     color,
     thickness,
     label,
     xAxis,
-    yAxis
+    yAxis,
   };
 }
 
@@ -140,13 +137,11 @@ export interface ChartStackConfig {
 
 export type ChartStackConfigProps = Partial<ChartStackConfig>;
 
-export function createChartStackConfig(
-  props: ChartStackConfigProps
-): ChartStackConfig {
+export function createChartStackConfig(props: ChartStackConfigProps): ChartStackConfig {
   const { color = AbstractImage.black, label = "" } = props || {};
   return {
     color,
-    label
+    label,
   };
 }
 
@@ -165,18 +160,12 @@ export interface ChartStack {
 export type ChartStackProps = Partial<ChartStack>;
 
 export function createChartStack(props: ChartStackProps): ChartStack {
-  const {
-    points = [],
-    xAxis = "bottom",
-    yAxis = "left",
-    config = [createChartStackConfig({})]
-  } =
-    props || {};
+  const { points = [], xAxis = "bottom", yAxis = "left", config = [createChartStackConfig({})] } = props || {};
   return {
     points,
     xAxis,
     yAxis,
-    config
+    config,
   };
 }
 
@@ -192,18 +181,8 @@ export function inverseTransformPoint(
   const xMax = chart.width - padding;
   const yMin = chart.height - 0.5 * padding;
   const yMax = 0.5 * padding;
-  const x = Axis.inverseTransformValue(
-    point.x,
-    xMin,
-    xMax,
-    xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom
-  );
-  const y = Axis.inverseTransformValue(
-    point.y,
-    yMin,
-    yMax,
-    yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft
-  );
+  const x = Axis.inverseTransformValue(point.x, xMin, xMax, xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom);
+  const y = Axis.inverseTransformValue(point.y, yMin, yMax, yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft);
   if (x === undefined || y === undefined) {
     return undefined;
   }
@@ -224,42 +203,12 @@ export function renderChart(chart: Chart): AbstractImage.AbstractImage {
   const renderedBackground = generateBackground(xMin, xMax, yMin, yMax, chart);
 
   const xNumTicks = gridWidth / 40;
-  const renderedXAxisBottom = generateXAxisBottom(
-    xNumTicks,
-    xAxisBottom,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    chart
-  );
-  const renderedXAxisTop = generateXAxisTop(
-    xNumTicks,
-    xAxisTop,
-    xMin,
-    xMax,
-    yMax,
-    chart
-  );
+  const renderedXAxisBottom = generateXAxisBottom(xNumTicks, xAxisBottom, xMin, xMax, yMin, yMax, chart);
+  const renderedXAxisTop = generateXAxisTop(xNumTicks, xAxisTop, xMin, xMax, yMax, chart);
 
   const yNumTicks = gridHeight / 40;
-  const renderedYAxisLeft = generateYAxisLeft(
-    yNumTicks,
-    yAxisLeft,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    chart
-  );
-  const renderedYAxisRight = generateYAxisRight(
-    yNumTicks,
-    yAxisRight,
-    xMax,
-    yMin,
-    yMax,
-    chart
-  );
+  const renderedYAxisLeft = generateYAxisLeft(yNumTicks, yAxisLeft, xMin, xMax, yMin, yMax, chart);
+  const renderedYAxisRight = generateYAxisRight(yNumTicks, yAxisRight, xMax, yMin, yMax, chart);
 
   const renderedPoints = generatePoints(xMin, xMax, yMin, yMax, chart);
   const renderedLines = generateLines(xMin, xMax, yMin, yMax, chart);
@@ -273,16 +222,11 @@ export function renderChart(chart: Chart): AbstractImage.AbstractImage {
     renderedYAxisRight,
     renderedStack,
     renderedLines,
-    renderedPoints
+    renderedPoints,
   ];
   const topLeft = AbstractImage.createPoint(0, 0);
   const size = AbstractImage.createSize(width, height);
-  return AbstractImage.createAbstractImage(
-    topLeft,
-    size,
-    AbstractImage.white,
-    components
-  );
+  return AbstractImage.createAbstractImage(topLeft, size, AbstractImage.white, components);
 }
 
 export function generateBackground(
@@ -316,58 +260,21 @@ export function generateXAxisBottom(
     return AbstractImage.createGroup("XAxisBottom", []);
   }
   const xTicks = Axis.getTicks(xNumTicks, xAxisBottom);
-  const xLines = generateXAxisGridLines(
-    xMin,
-    xMax,
-    yMin + 10,
-    yMax,
-    xTicks,
-    xAxisBottom,
-    chart
-  );
-  const xLabels = generateXAxisLabels(
-    xMin,
-    xMax,
-    yMin + 10,
-    "down",
-    xTicks,
-    xAxisBottom,
-    chart
-  );
+  const xLines = generateXAxisGridLines(xMin, xMax, yMin + 10, yMax, xTicks, xAxisBottom, chart);
+  const xLabels = generateXAxisLabels(xMin, xMax, yMin + 10, "down", xTicks, xAxisBottom, chart);
 
   let xLabel: AbstractImage.Component;
   switch (chart.labelLayout) {
     case "original":
-      xLabel = generateXAxisLabel(
-        xMax + 0.5 * padding,
-        yMin + 10,
-        "uniform",
-        "down",
-        xAxisBottom.label,
-        chart
-      );
+      xLabel = generateXAxisLabel(xMax + 0.5 * padding, yMin + 10, "uniform", "down", xAxisBottom.label, chart);
       break;
 
     case "end":
-      xLabel = generateXAxisLabel(
-        xMax,
-        yMin + 25,
-        "left",
-        "down",
-        xAxisBottom.label,
-        chart
-      );
+      xLabel = generateXAxisLabel(xMax, yMin + 25, "left", "down", xAxisBottom.label, chart);
       break;
 
     case "center":
-      xLabel = generateXAxisLabel(
-        (xMin + xMax) / 2,
-        yMin + 25,
-        "uniform",
-        "down",
-        xAxisBottom.label,
-        chart
-      );
+      xLabel = generateXAxisLabel((xMin + xMax) / 2, yMin + 25, "uniform", "down", xAxisBottom.label, chart);
       break;
 
     default:
@@ -389,58 +296,21 @@ export function generateXAxisTop(
     return AbstractImage.createGroup("XAxisTop", []);
   }
   const xTicks2 = Axis.getTicks(xNumTicks, xAxisTop);
-  const xLines2 = generateXAxisGridLines(
-    xMin,
-    xMax,
-    yMax - 10,
-    yMax,
-    xTicks2,
-    xAxisTop,
-    chart
-  );
-  const xLabels2 = generateXAxisLabels(
-    xMin,
-    xMax,
-    yMax - 13,
-    "up",
-    xTicks2,
-    xAxisTop,
-    chart
-  );
+  const xLines2 = generateXAxisGridLines(xMin, xMax, yMax - 10, yMax, xTicks2, xAxisTop, chart);
+  const xLabels2 = generateXAxisLabels(xMin, xMax, yMax - 13, "up", xTicks2, xAxisTop, chart);
 
   let xLabel2: AbstractImage.Component;
   switch (chart.labelLayout) {
     case "original":
-      xLabel2 = generateXAxisLabel(
-        xMax + 0.5 * padding,
-        yMax - 13,
-        "uniform",
-        "up",
-        xAxisTop.label,
-        chart
-      );
+      xLabel2 = generateXAxisLabel(xMax + 0.5 * padding, yMax - 13, "uniform", "up", xAxisTop.label, chart);
       break;
 
     case "end":
-      xLabel2 = generateXAxisLabel(
-        xMax,
-        yMax - 30,
-        "left",
-        "up",
-        xAxisTop.label,
-        chart
-      );
+      xLabel2 = generateXAxisLabel(xMax, yMax - 30, "left", "up", xAxisTop.label, chart);
       break;
 
     case "center":
-      xLabel2 = generateXAxisLabel(
-        (xMin + xMax) / 2,
-        yMax - 30,
-        "uniform",
-        "up",
-        xAxisTop.label,
-        chart
-      );
+      xLabel2 = generateXAxisLabel((xMin + xMax) / 2, yMax - 30, "uniform", "up", xAxisTop.label, chart);
       break;
 
     default:
@@ -463,27 +333,10 @@ export function generateYAxisLeft(
     return AbstractImage.createGroup("YAxisLeft", []);
   }
   const yTicks = Axis.getTicks(yNumTicks, yAxisLeft);
-  const yLines = generateYAxisLines(
-    xMin - 5,
-    xMax,
-    yMin,
-    yMax,
-    yTicks,
-    yAxisLeft,
-    chart
-  );
-  const yLabels = generateYAxisLabels(
-    xMin - 7,
-    yMin,
-    yMax,
-    "left",
-    yTicks,
-    yAxisLeft,
-    chart
-  );
+  const yLines = generateYAxisLines(xMin - 5, xMax, yMin, yMax, yTicks, yAxisLeft, chart);
+  const yLabels = generateYAxisLabels(xMin - 7, yMin, yMax, "left", yTicks, yAxisLeft, chart);
 
-  const labelPaddingLeft =
-    5 + labelPadding(formatNumber(yAxisLeft.max).length, chart.fontSize, 0.5);
+  const labelPaddingLeft = 5 + labelPadding(formatNumber(yAxisLeft.max).length, chart.fontSize, 0.5);
 
   let yLabel: AbstractImage.Component;
   switch (chart.labelLayout) {
@@ -499,25 +352,11 @@ export function generateYAxisLeft(
       break;
 
     case "end":
-      yLabel = generateYAxisLabel(
-        xMin - labelPaddingLeft,
-        yMax,
-        "left",
-        "up",
-        yAxisLeft.label,
-        chart
-      );
+      yLabel = generateYAxisLabel(xMin - labelPaddingLeft, yMax, "left", "up", yAxisLeft.label, chart);
       break;
 
     case "center":
-      yLabel = generateYAxisLabel(
-        xMin - labelPaddingLeft,
-        (yMin + yMax) / 2,
-        "uniform",
-        "up",
-        yAxisLeft.label,
-        chart
-      );
+      yLabel = generateYAxisLabel(xMin - labelPaddingLeft, (yMin + yMax) / 2, "uniform", "up", yAxisLeft.label, chart);
       break;
 
     default:
@@ -539,27 +378,10 @@ export function generateYAxisRight(
     return AbstractImage.createGroup("YAxisRight", []);
   }
   const yTicks2 = Axis.getTicks(yNumTicks, yAxisRight);
-  const yLines2 = generateYAxisLines(
-    xMax - 5,
-    xMax + 5,
-    yMin,
-    yMax,
-    yTicks2,
-    yAxisRight,
-    chart
-  );
-  const yLabels2 = generateYAxisLabels(
-    xMax + 7,
-    yMin,
-    yMax,
-    "right",
-    yTicks2,
-    yAxisRight,
-    chart
-  );
+  const yLines2 = generateYAxisLines(xMax - 5, xMax + 5, yMin, yMax, yTicks2, yAxisRight, chart);
+  const yLabels2 = generateYAxisLabels(xMax + 7, yMin, yMax, "right", yTicks2, yAxisRight, chart);
 
-  const labelPaddingRight =
-    7 + labelPadding(formatNumber(yAxisRight.max).length, chart.fontSize, 1.5);
+  const labelPaddingRight = 7 + labelPadding(formatNumber(yAxisRight.max).length, chart.fontSize, 1.5);
 
   let yLabel2: AbstractImage.Component;
   switch (chart.labelLayout) {
@@ -575,14 +397,7 @@ export function generateYAxisRight(
       break;
 
     case "end":
-      yLabel2 = generateYAxisLabel(
-        xMax + labelPaddingRight,
-        yMax,
-        "left",
-        "up",
-        yAxisRight.label,
-        chart
-      );
+      yLabel2 = generateYAxisLabel(xMax + labelPaddingRight, yMax, "left", "up", yAxisRight.label, chart);
       break;
 
     case "center":
@@ -610,24 +425,24 @@ export function generateStack(
   yMax: number,
   chart: Chart
 ): AbstractImage.Component {
-  const pointsPos = chart.chartStack.points.map(stackPoint => ({
+  const pointsPos = chart.chartStack.points.map((stackPoint) => ({
     x: stackPoint.x,
-    ys: [...stackPoint.ys.map(y => Math.min(0, y))]
+    ys: [...stackPoint.ys.map((y) => Math.min(0, y))],
   }));
 
   const stackPos = generateUnsignedStack(xMin, xMax, yMin, yMax, {
     ...chart,
-    chartStack: { ...chart.chartStack, points: pointsPos }
+    chartStack: { ...chart.chartStack, points: pointsPos },
   });
 
-  const pointsNeg = chart.chartStack.points.map(stackPoint => ({
+  const pointsNeg = chart.chartStack.points.map((stackPoint) => ({
     x: stackPoint.x,
-    ys: [...stackPoint.ys.map(y => Math.max(0, y))]
+    ys: [...stackPoint.ys.map((y) => Math.max(0, y))],
   }));
 
   const stackNeg = generateUnsignedStack(xMin, xMax, yMin, yMax, {
     ...chart,
-    chartStack: { ...chart.chartStack, points: pointsNeg }
+    chartStack: { ...chart.chartStack, points: pointsNeg },
   });
 
   return AbstractImage.createGroup("Stacks", [stackPos, stackNeg]);
@@ -644,24 +459,14 @@ function generateUnsignedStack(
     return AbstractImage.createGroup("stack", []);
   }
 
-  const xAxis =
-    chart.chartStack.xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom;
-  const yAxis =
-    chart.chartStack.yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft;
+  const xAxis = chart.chartStack.xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom;
+  const yAxis = chart.chartStack.yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft;
 
-  const xPoints = chart.chartStack.points.map(stackPoints => {
+  const xPoints = chart.chartStack.points.map((stackPoints) => {
     let sumY = 0;
-    const points = stackPoints.ys.map(y => {
+    const points = stackPoints.ys.map((y) => {
       sumY += y;
-      return Axis.transformPoint(
-        AbstractImage.createPoint(stackPoints.x, sumY),
-        xMin,
-        xMax,
-        yMin,
-        yMax,
-        xAxis,
-        yAxis
-      );
+      return Axis.transformPoint(AbstractImage.createPoint(stackPoints.x, sumY), xMin, xMax, yMin, yMax, xAxis, yAxis);
     });
     return points;
   });
@@ -676,16 +481,8 @@ function generateUnsignedStack(
   }
 
   const polygons: Array<AbstractImage.Polygon> = [];
-  let lastLine = chart.chartStack.points.map(stackPoint =>
-    Axis.transformPoint(
-      AbstractImage.createPoint(stackPoint.x, 0),
-      xMin,
-      xMax,
-      yMin,
-      yMax,
-      xAxis,
-      yAxis
-    )
+  let lastLine = chart.chartStack.points.map((stackPoint) =>
+    Axis.transformPoint(AbstractImage.createPoint(stackPoint.x, 0), xMin, xMax, yMin, yMax, xAxis, yAxis)
   );
   lines.forEach((line, index) => {
     const config = chart.chartStack.config[index];
@@ -714,9 +511,7 @@ export function generateLines(
     }
     const xAxis = l.xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom;
     const yAxis = l.yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft;
-    const points = l.points.map(p =>
-      Axis.transformPoint(p, xMin, xMax, yMin, yMax, xAxis, yAxis)
-    );
+    const points = l.points.map((p) => Axis.transformPoint(p, xMin, xMax, yMin, yMax, xAxis, yAxis));
     const last = points[points.length - 1];
     return AbstractImage.createGroup(l.label, [
       AbstractImage.createPolyLine(points, l.color, l.thickness),
@@ -732,8 +527,9 @@ export function generateLines(
         "right",
         "down",
         0,
-        AbstractImage.black
-      )
+        AbstractImage.black,
+        false
+      ),
     ]);
   });
   return AbstractImage.createGroup("Lines", lines);
@@ -746,18 +542,10 @@ export function generatePoints(
   yMax: number,
   chart: Chart
 ): AbstractImage.Component {
-  const points = chart.chartPoints.map(p => {
+  const points = chart.chartPoints.map((p) => {
     const xAxis = p.xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom;
     const yAxis = p.yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft;
-    const position = Axis.transformPoint(
-      p.position,
-      xMin,
-      xMax,
-      yMin,
-      yMax,
-      xAxis,
-      yAxis
-    );
+    const position = Axis.transformPoint(p.position, xMin, xMax, yMin, yMax, xAxis, yAxis);
     const shape = generatePointShape(p, position);
     return AbstractImage.createGroup(p.label, [
       shape,
@@ -773,66 +561,32 @@ export function generatePoints(
         "right",
         "down",
         0,
-        AbstractImage.black
-      )
+        AbstractImage.black,
+        false
+      ),
     ]);
   });
   return AbstractImage.createGroup("Points", points);
 }
 
-function generatePointShape(
-  p: ChartPoint,
-  position: AbstractImage.Point
-): AbstractImage.Component {
+function generatePointShape(p: ChartPoint, position: AbstractImage.Point): AbstractImage.Component {
   const halfWidth = p.size.width * 0.5;
   const halfHeight = p.size.height * 0.5;
   if (p.shape === "triangle") {
     const trianglePoints = [
       AbstractImage.createPoint(position.x, position.y + halfHeight),
-      AbstractImage.createPoint(
-        position.x - halfWidth,
-        position.y - halfHeight
-      ),
-      AbstractImage.createPoint(position.x + halfWidth, position.y - halfHeight)
+      AbstractImage.createPoint(position.x - halfWidth, position.y - halfHeight),
+      AbstractImage.createPoint(position.x + halfWidth, position.y - halfHeight),
     ];
-    return AbstractImage.createPolygon(
-      trianglePoints,
-      AbstractImage.black,
-      1,
-      p.color
-    );
+    return AbstractImage.createPolygon(trianglePoints, AbstractImage.black, 1, p.color);
   } else if (p.shape === "square") {
-    const topLeft = AbstractImage.createPoint(
-      position.x - halfWidth,
-      position.y - halfHeight
-    );
-    const bottomRight = AbstractImage.createPoint(
-      position.x + halfWidth,
-      position.y + halfHeight
-    );
-    return AbstractImage.createRectangle(
-      topLeft,
-      bottomRight,
-      AbstractImage.black,
-      1,
-      p.color
-    );
+    const topLeft = AbstractImage.createPoint(position.x - halfWidth, position.y - halfHeight);
+    const bottomRight = AbstractImage.createPoint(position.x + halfWidth, position.y + halfHeight);
+    return AbstractImage.createRectangle(topLeft, bottomRight, AbstractImage.black, 1, p.color);
   } else {
-    const topLeft = AbstractImage.createPoint(
-      position.x - halfWidth,
-      position.y - halfHeight
-    );
-    const bottomRight = AbstractImage.createPoint(
-      position.x + halfWidth,
-      position.y + halfHeight
-    );
-    return AbstractImage.createEllipse(
-      topLeft,
-      bottomRight,
-      AbstractImage.black,
-      1,
-      p.color
-    );
+    const topLeft = AbstractImage.createPoint(position.x - halfWidth, position.y - halfHeight);
+    const bottomRight = AbstractImage.createPoint(position.x + halfWidth, position.y + halfHeight);
+    return AbstractImage.createEllipse(topLeft, bottomRight, AbstractImage.black, 1, p.color);
   }
 }
 
@@ -845,16 +599,11 @@ export function generateXAxisGridLines(
   xAxis: Axis.Axis,
   chart: Chart
 ): AbstractImage.Component {
-  const xLines = xTicks.map(l => {
+  const xLines = xTicks.map((l) => {
     const x = Axis.transformValue(l, xMin, xMax, xAxis);
     const start = AbstractImage.createPoint(x, yMin);
     const end = AbstractImage.createPoint(x, yMax);
-    return AbstractImage.createLine(
-      start,
-      end,
-      chart.gridColor,
-      chart.gridThickness
-    );
+    return AbstractImage.createLine(start, end, chart.gridColor, chart.gridThickness);
   });
 
   return AbstractImage.createGroup("Lines", xLines);
@@ -869,11 +618,8 @@ export function generateXAxisLabels(
   xAxis: Axis.Axis,
   chart: Chart
 ): AbstractImage.Component {
-  const xLabels = xTicks.map(l => {
-    const position = AbstractImage.createPoint(
-      Axis.transformValue(l, xMin, xMax, xAxis),
-      y
-    );
+  const xLabels = xTicks.map((l) => {
+    const position = AbstractImage.createPoint(Axis.transformValue(l, xMin, xMax, xAxis), y);
     return AbstractImage.createText(
       position,
       formatNumber(l),
@@ -886,7 +632,8 @@ export function generateXAxisLabels(
       "uniform",
       growVertical,
       0,
-      AbstractImage.black
+      AbstractImage.black,
+      false
     );
   });
   return AbstractImage.createGroup("Labels", xLabels);
@@ -913,7 +660,8 @@ export function generateXAxisLabel(
     horizontalGrowthDirection,
     verticalGrowthDirection,
     0,
-    AbstractImage.black
+    AbstractImage.black,
+    false
   );
 }
 
@@ -926,16 +674,11 @@ export function generateYAxisLines(
   yAxis: Axis.Axis,
   chart: Chart
 ): AbstractImage.Component {
-  const yLines = yTicks.map(l => {
+  const yLines = yTicks.map((l) => {
     const y = Axis.transformValue(l, yMin, yMax, yAxis);
     const start = AbstractImage.createPoint(xMin, y);
     const end = AbstractImage.createPoint(xMax, y);
-    return AbstractImage.createLine(
-      start,
-      end,
-      chart.gridColor,
-      chart.gridThickness
-    );
+    return AbstractImage.createLine(start, end, chart.gridColor, chart.gridThickness);
   });
   return AbstractImage.createGroup("Lines", yLines);
 }
@@ -949,11 +692,8 @@ export function generateYAxisLabels(
   yAxis: Axis.Axis,
   chart: Chart
 ): AbstractImage.Component {
-  const yLabels = yTicks.map(l => {
-    const position = AbstractImage.createPoint(
-      x,
-      Axis.transformValue(l, yMin, yMax, yAxis)
-    );
+  const yLabels = yTicks.map((l) => {
+    const position = AbstractImage.createPoint(x, Axis.transformValue(l, yMin, yMax, yAxis));
     return AbstractImage.createText(
       position,
       formatNumber(l),
@@ -966,7 +706,8 @@ export function generateYAxisLabels(
       growHorizontal,
       "uniform",
       0,
-      AbstractImage.black
+      AbstractImage.black,
+      false
     );
   });
   return AbstractImage.createGroup("Labels", yLabels);
@@ -993,7 +734,8 @@ export function generateYAxisLabel(
     horizontalGrowthDirection,
     verticalGrowthDirection,
     0,
-    AbstractImage.black
+    AbstractImage.black,
+    false
   );
 }
 
@@ -1011,10 +753,6 @@ function numberToString(n: number): string {
   return parseFloat(n.toPrecision(5)).toString();
 }
 
-function labelPadding(
-  numberOfCharacters: number,
-  fontSize: number,
-  characterOffset: number
-): number {
-  return (numberOfCharacters + 1 + characterOffset) * fontSize * 3 / 4;
+function labelPadding(numberOfCharacters: number, fontSize: number, characterOffset: number): number {
+  return ((numberOfCharacters + 1 + characterOffset) * fontSize * 3) / 4;
 }

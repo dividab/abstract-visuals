@@ -2,7 +2,7 @@ import * as AbstractImage from "abstract-image";
 import * as base64 from "base64-js";
 import svgToPdfKit from "svg-to-pdfkit";
 import * as AD from "../../abstract-document";
-import { getFontName, isFontAvailable } from "./font";
+import { getFontNameStyle, getFontName, isFontAvailable } from "./font";
 
 export function renderImage(
   resources: AD.Resources.Resources,
@@ -84,7 +84,7 @@ function abstractComponentToPdf(
             if (isFontAvailable(family, resources)) {
               return family;
             } else {
-              return getFontName(textStyle);
+              return getFontNameStyle(textStyle);
             }
           },
         });

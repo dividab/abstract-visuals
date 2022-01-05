@@ -16,7 +16,8 @@ describe("react svg text unknown direction", () => {
           "down",
           "down",
           2,
-          AbstractImage.red
+          AbstractImage.red,
+          false
         ),
       ];
       const image = AbstractImage.createAbstractImage(
@@ -47,7 +48,8 @@ describe("react svg text unknown direction", () => {
           "right",
           "right",
           2,
-          AbstractImage.red
+          AbstractImage.red,
+          false
         ),
       ];
       const image = AbstractImage.createAbstractImage(

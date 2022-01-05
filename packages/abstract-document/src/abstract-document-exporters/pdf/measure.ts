@@ -2,7 +2,7 @@ import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import { Page } from "./paginate";
-import { registerFonts, getFontName } from "./font";
+import { registerFonts, getFontNameStyle } from "./font";
 
 //tslint:disable:no-any variable-name
 
@@ -373,7 +373,7 @@ function measureText(
   textStyle: AD.TextStyle.TextStyle,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  const font = getFontName(textStyle);
+  const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   pdf
     .font(font)

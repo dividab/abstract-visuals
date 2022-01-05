@@ -5,7 +5,7 @@ import { paginate, Page } from "./paginate";
 import { updatePageRefs } from "./update-refs";
 import BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
-import { registerFonts, getFontName } from "./font";
+import { registerFonts, getFontNameStyle } from "./font";
 
 type RowSpans = Map<number, { rowSpanLeft: number; colSpan: number }>;
 
@@ -467,7 +467,7 @@ function drawHyperLink(
   isLastAtom: boolean,
   availableWidth: number
 ): void {
-  const font = getFontName(textStyle);
+  const font = getFontNameStyle(textStyle);
   const isInternalLink = hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=");
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const isSingleAtom = isFirstAtom && isLastAtom;
@@ -536,7 +536,7 @@ function drawText(
   isLastAtom: boolean,
   availableWidth: number
 ): void {
-  const font = getFontName(textStyle);
+  const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
   const isSingleAtom = isFirstAtom && isLastAtom;
   pdf
@@ -573,7 +573,7 @@ function drawText(
 }
 
 function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
-  const font = getFontName(textStyle);
+  const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
 
   const oneDotW = pdf.widthOfString(".", {
