@@ -8,7 +8,7 @@ const components = [
     "Arial",
     12,
     AbstractImage.black,
-    "bold",
+    "normal",
     0,
     "center",
     "right",
@@ -31,5 +31,5 @@ export const test: ExportTestDef = {
   name: "react svg text",
   abstractImage: svg,
   expectedSerializedJsx:
-    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"type":"text","key":"0shadow","ref":null,"props":{"style":{"textAnchor":"start","fontSize":"12px","fontWeight":"bold","fontFamily":"Arial","stroke":"rgb(255,0,0)","strokeWidth":2},"transform":"rotate(0 10 10)","children":[{"type":"tspan","key":"Hello World","ref":null,"props":{"x":10,"y":22,"height":"12px","children":[{"type":"tspan","key":"0","ref":null,"props":{"children":"Hello World"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}},{"type":"text","key":"0","ref":null,"props":{"style":{"textAnchor":"start","fontSize":"12px","fontWeight":"bold","fontFamily":"Arial","fill":"rgb(0,0,0)"},"transform":"rotate(0 10 10)","children":[{"type":"tspan","key":"Hello World","ref":null,"props":{"x":10,"y":22,"height":"12px","children":[{"type":"tspan","key":"0","ref":null,"props":{"children":"Hello World"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
+    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"type":"text","key":"0shadow","ref":null,"props":{"style":{"textAnchor":"start","fontSize":"12px","fontWeight":"normal","fontFamily":"Arial","stroke":"rgb(255,0,0)","strokeWidth":2},"transform":"rotate(0 10 10)","children":[{"type":"tspan","key":"Hello World","ref":null,"props":{"x":10,"y":22,"height":"12px","children":[{"type":"tspan","key":"0","ref":null,"props":{"children":"Hello World"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}},{"type":"text","key":"0","ref":null,"props":{"style":{"textAnchor":"start","fontSize":"12px","fontWeight":"normal","fontFamily":"Arial","fill":"rgb(0,0,0)"},"transform":"rotate(0 10 10)","children":[{"type":"tspan","key":"Hello World","ref":null,"props":{"x":10,"y":22,"height":"12px","children":[{"type":"tspan","key":"0","ref":null,"props":{"children":"Hello World"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
 };
