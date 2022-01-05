@@ -9,7 +9,7 @@ export function AbstractImageExampleReact(): JSX.Element {
       AbstractImage.red,
       2,
       "subLine"
-    )
+    ),
   ];
   const subImage = AbstractImage.createAbstractImage(
     AbstractImage.createPoint(0, 0),
@@ -61,8 +61,9 @@ export function AbstractImageExampleReact(): JSX.Element {
       "uniform",
       "uniform",
       0,
-      AbstractImage.black
-    )
+      AbstractImage.black,
+      false
+    ),
   ];
   const image = AbstractImage.createAbstractImage(
     AbstractImage.createPoint(0, 0),
@@ -71,7 +72,7 @@ export function AbstractImageExampleReact(): JSX.Element {
     components
   );
   const svg = AbstractImage.createReactSvg(image, {
-    onClick: (id, position) => window.alert(JSON.stringify({ id, position }))
+    onClick: (id, position) => window.alert(JSON.stringify({ id, position })),
   });
   return (
     <div>

@@ -22,18 +22,27 @@ export function registerFonts(
   }
 }
 
-export function getFontName(textStyle: AD.TextStyle.TextStyle): string {
-  const name = textStyle.fontFamily || "Helvetica";
-  if (textStyle.bold && textStyle.italic) {
+export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
+  return getFontName(textStyle.fontFamily, textStyle.bold, textStyle.italic, textStyle.mediumBold);
+}
+
+export function getFontName(
+  fontFamily: string | undefined,
+  bold: boolean | undefined,
+  italic: boolean | undefined,
+  mediumBold: boolean | undefined
+): string {
+  const name = fontFamily || "Helvetica";
+  if (bold && italic) {
     return name + "-BoldOblique";
-  } else if (textStyle.bold) {
-    return name + "-Bold";
-  } else if (textStyle.italic) {
-    return name + "-Oblique";
-  } else if (textStyle.mediumBold && textStyle.italic) {
+  } else if (mediumBold && italic) {
     return name + "-MediumOblique";
-  } else if (textStyle.mediumBold) {
+  } else if (bold) {
+    return name + "-Bold";
+  } else if (mediumBold) {
     return name + "-Medium";
+  } else if (italic) {
+    return name + "-Oblique";
   } else {
     return name;
   }

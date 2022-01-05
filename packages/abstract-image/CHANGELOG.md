@@ -10,6 +10,12 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Removed
 
+## [v3.1.4](https://github.com/dividab/abstract-visuals/compare/abstract-image@3.1.3...abstract-image@3.1.4) - 2022-01-05
+
+### Added
+
+- Added italic and mediumBold as options for texts
+
 ## [v3.0.1](https://github.com/dividab/abstract-visuals/compare/abstract-image@3.0.0...abstract-image@3.0.1) - 2021-01-01
 
 ### Added

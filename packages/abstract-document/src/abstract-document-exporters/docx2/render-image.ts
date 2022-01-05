@@ -50,11 +50,11 @@ function abstractComponentToDocX(
     //     preserveAspectRatio: "xMinYMin",
     //     //fontCallback: component.overrideSvgFont
     //     //  ? (_family: string, _bold: boolean, _italic: boolean) => {
-    //     //      return getFontName(textStyle);
+    //     //      return getFontNameStyle(textStyle);
     //     //    }
     //     //  : undefined,
     //     // fontCallback: (_family: string, _bold: boolean, _italic: boolean) => {
-    //     //   return getFontName(textStyle);
+    //     //   return getFontNameStyle(textStyle);
     //     // }
     //   });
     // }

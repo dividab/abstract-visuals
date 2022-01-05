@@ -2,16 +2,7 @@ import * as Point from "./point";
 import * as Color from "./color";
 import * as AbstractImage from "./abstract-image";
 
-export type Component =
-  | BinaryImage
-  | Ellipse
-  | Line
-  | PolyLine
-  | Polygon
-  | Rectangle
-  | Text
-  | SubImage
-  | Group;
+export type Component = BinaryImage | Ellipse | Line | PolyLine | Polygon | Rectangle | Text | SubImage | Group;
 
 export interface Group {
   readonly type: "group";
@@ -23,7 +14,7 @@ export function createGroup(name: string, children: Array<Component>): Group {
   return {
     type: "group",
     name: name,
-    children: children
+    children: children,
   };
 }
 
@@ -54,7 +45,7 @@ export function createBinaryImage(
     bottomRight: bottomRight,
     format: format,
     data: data,
-    id: id
+    id: id,
   };
 }
 
@@ -83,7 +74,7 @@ export function createEllipse(
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
     fillColor: fillColor,
-    id: id
+    id: id,
   };
 }
 
@@ -109,7 +100,7 @@ export function createLine(
     end: end,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
-    id: id
+    id: id,
   };
 }
 
@@ -132,7 +123,7 @@ export function createPolyLine(
     points: points,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
-    id: id
+    id: id,
   };
 }
 
@@ -158,7 +149,7 @@ export function createPolygon(
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
     fillColor: fillColor,
-    id: id
+    id: id,
   };
 }
 
@@ -187,7 +178,7 @@ export function createRectangle(
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
     fillColor: fillColor,
-    id: id
+    id: id,
   };
 }
 
@@ -196,11 +187,11 @@ export function corners(rectangle: Rectangle): Array<Point.Point> {
     rectangle.topLeft,
     Point.createPoint(rectangle.bottomRight.x, rectangle.topLeft.y),
     rectangle.bottomRight,
-    Point.createPoint(rectangle.topLeft.x, rectangle.bottomRight.y)
+    Point.createPoint(rectangle.topLeft.x, rectangle.bottomRight.y),
   ];
 }
 
-export type AbstractFontWeight = "normal" | "bold";
+export type AbstractFontWeight = "normal" | "mediumBold" | "bold";
 
 export type TextAlignment = "left" | "center" | "right";
 
@@ -220,6 +211,7 @@ export interface Text {
   readonly verticalGrowthDirection: GrowthDirection;
   readonly strokeThickness: number;
   readonly strokeColor: Color.Color;
+  readonly italic: boolean;
 }
 
 export function createText(
@@ -234,7 +226,8 @@ export function createText(
   horizontalGrowthDirection: GrowthDirection,
   verticalGrowthDirection: GrowthDirection,
   strokeThickness: number,
-  strokeColor: Color.Color
+  strokeColor: Color.Color,
+  italic: boolean
 ): Text {
   return {
     type: "text",
@@ -249,7 +242,8 @@ export function createText(
     horizontalGrowthDirection: horizontalGrowthDirection,
     verticalGrowthDirection: verticalGrowthDirection,
     strokeThickness: strokeThickness,
-    strokeColor: strokeColor
+    strokeColor: strokeColor,
+    italic: italic,
   };
 }
 
@@ -259,21 +253,14 @@ export interface SubImage {
   readonly image: Component;
 }
 
-export function createSubImage(
-  topLeft: Point.Point,
-  image: Component
-): SubImage {
+export function createSubImage(topLeft: Point.Point, image: Component): SubImage {
   return {
     type: "subimage",
     topLeft: topLeft,
-    image: image
+    image: image,
   };
 }
 
-export function embedAbstractImage(
-  topLeft: Point.Point,
-  name: string,
-  image: AbstractImage.AbstractImage
-): Component {
+export function embedAbstractImage(topLeft: Point.Point, name: string, image: AbstractImage.AbstractImage): Component {
   return createSubImage(topLeft, createGroup(name, image.components));
 }

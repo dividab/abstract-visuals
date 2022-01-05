@@ -19,7 +19,8 @@ const components = [
     "right",
     "down",
     2,
-    AbstractImage.red
+    AbstractImage.red,
+    false
   ),
 ];
 const image = AbstractImage.createAbstractImage(
