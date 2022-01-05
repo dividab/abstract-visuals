@@ -115,13 +115,19 @@ function abstractComponentToPdf(
         .stroke(colorToRgb(component.strokeColor));
       break;
     case "text":
+      const font = getFontName(
+        component.fontFamily,
+        component.fontWeight === "bold",
+        component.italic,
+        component.fontWeight === "mediumBold"
+      );
       if (component.clockwiseRotationDegrees !== 0) {
         pdf.save();
         pdf.rotate(component.clockwiseRotationDegrees, {
           origin: [component.position.x, component.position.y],
         });
       }
-      pdf.font(component.fontFamily).fontSize(component.fontSize);
+      pdf.font(font).fontSize(component.fontSize);
       const stringWidth = pdf.widthOfString(component.text);
       const stringHeight = pdf.currentLineHeight();
       const dx =
@@ -137,7 +143,7 @@ function abstractComponentToPdf(
           ? -stringHeight * 0.5
           : 0;
       pdf
-        .font(component.fontFamily)
+        .font(font)
         .fontSize(component.fontSize)
         .fillColor(colorToRgb(component.textColor))
         .text(component.text, component.position.x + dx, component.position.y + dy, { lineBreak: false });
