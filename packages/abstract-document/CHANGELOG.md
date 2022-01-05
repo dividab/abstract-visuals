@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/property/compare/abstract-document@6.0.1...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.5.0...master)
 
 ### Added
 
@@ -10,7 +10,17 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Removed
 
-## [v6.4.0](https://github.com/dividab/property/compare/abstract-document@6.0.1...abstract-document@6.4.0) - 2021-11-24
+## [v6.5.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.4.0...abstract-document@6.5.0) - 2022-01-05
+
+### Added
+
+- Added italic and mediumBold as options for texts in abstract image
+
+### Changed
+
+- Fixed bold text rendering for abstract image texts
+
+## [v6.4.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.0.1...abstract-document@6.4.0) - 2021-11-24
 
 ### Added
 
@@ -28,7 +38,7 @@ All notable changes to this project will be documented in this file. The format 
 - Fix table layout when using Infinity on column widths
 - Fix cell border widths not setting properly
 
-## [v6.0.1](https://github.com/dividab/property/compare/abstract-document@6.0.0...abstract-document@6.0.1) - 2021-09-02
+## [v6.0.1](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.0.0...abstract-document@6.0.1) - 2021-09-02
 
 ### Added
 
