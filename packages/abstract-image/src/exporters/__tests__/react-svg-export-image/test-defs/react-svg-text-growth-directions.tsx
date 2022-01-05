@@ -14,8 +14,7 @@ const components = [
     "left",
     "up",
     2,
-    AbstractImage.red,
-    false
+    AbstractImage.red
   ),
   AbstractImage.createText(
     AbstractImage.createPoint(10, 30),
@@ -29,8 +28,7 @@ const components = [
     "uniform",
     "uniform",
     2,
-    AbstractImage.red,
-    false
+    AbstractImage.red
   ),
   AbstractImage.createText(
     AbstractImage.createPoint(10, 50),
@@ -44,8 +42,7 @@ const components = [
     "right",
     "down",
     2,
-    AbstractImage.red,
-    false
+    AbstractImage.red
   ),
   AbstractImage.createText(
     AbstractImage.createPoint(10, 70),
@@ -59,8 +56,7 @@ const components = [
     "right",
     "down",
     2,
-    AbstractImage.red,
-    false
+    AbstractImage.red
   ),
 ];
 const image = AbstractImage.createAbstractImage(

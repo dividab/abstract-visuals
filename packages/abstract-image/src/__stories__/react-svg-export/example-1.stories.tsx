@@ -28,8 +28,7 @@ export function ReactSvgExportExample1(): React.ReactElement<{}> {
       "uniform",
       "down",
       0,
-      AbstractImage.black,
-      false
+      AbstractImage.black
     ),
   ];
   const image = AbstractImage.createAbstractImage(

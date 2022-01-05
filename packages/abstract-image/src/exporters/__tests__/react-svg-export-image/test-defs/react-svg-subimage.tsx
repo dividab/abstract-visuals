@@ -13,8 +13,7 @@ const subImage = AbstractImage.createText(
   "right",
   "down",
   2,
-  AbstractImage.red,
-  false
+  AbstractImage.red
 );
 
 const components = [AbstractImage.createSubImage(AbstractImage.createPoint(10, 10), subImage)];

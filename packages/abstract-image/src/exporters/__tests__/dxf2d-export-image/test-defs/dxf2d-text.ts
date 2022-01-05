@@ -14,8 +14,7 @@ const components = [
     "uniform",
     "uniform",
     0,
-    AbstractImage.black,
-    false
+    AbstractImage.black
   ),
 ];
 const image = AbstractImage.createAbstractImage(

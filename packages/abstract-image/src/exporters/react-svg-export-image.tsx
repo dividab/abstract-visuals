@@ -124,7 +124,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
       const shadowStyle = {
         textAnchor: getTextAnchor(component.horizontalGrowthDirection),
         fontSize: component.fontSize.toString() + "px",
-        fontWeight: component.fontWeight === "mediumBold" ? "bold" : component.fontWeight,
+        fontWeight: component.fontWeight,
         fontFamily: component.fontFamily,
         stroke: colorToRgb(component.strokeColor),
         strokeWidth: component.strokeThickness,
@@ -132,7 +132,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
       const style = {
         textAnchor: getTextAnchor(component.horizontalGrowthDirection),
         fontSize: component.fontSize.toString() + "px",
-        fontWeight: component.fontWeight === "mediumBold" ? "bold" : component.fontWeight,
+        fontWeight: component.fontWeight,
         fontFamily: component.fontFamily,
         fill: colorToRgb(component.textColor),
       };
