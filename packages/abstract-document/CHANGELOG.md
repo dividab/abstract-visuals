@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Removed
 
-## [v6.5.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.4.0...abstract-document@6.5.0) - 2022-01-05
+## [v6.5.1](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.4.0...abstract-document@6.5.1) - 2022-01-05
 
 ### Added
 
