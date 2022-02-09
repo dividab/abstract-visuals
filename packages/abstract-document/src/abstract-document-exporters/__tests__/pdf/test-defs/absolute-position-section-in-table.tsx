@@ -52,5 +52,94 @@ export const test: ExportTestDef = {
       </Section>
     </AbstractDoc>
   ),
-  expectedPdfJson: {},
+  expectedPdfJson: {
+    formImage: {
+      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
+      Agency: "",
+      Id: {
+        AgencyId: "",
+        Name: "",
+        MC: false,
+        Max: 1,
+        Parent: "",
+      },
+      Pages: [
+        {
+          Height: 52.625,
+          HLines: [
+            {
+              x: 6.25,
+              y: 14.429,
+              w: 3,
+              l: 30.625,
+            },
+            {
+              x: 6.231,
+              y: 12.544,
+              w: 3,
+              l: 30.662,
+            },
+          ],
+          VLines: [
+            {
+              x: 36.831,
+              y: 12.5,
+              w: 3,
+              l: 1.991,
+            },
+            {
+              x: 6.294,
+              y: 12.5,
+              w: 3,
+              l: 1.991,
+            },
+          ],
+          Fills: [
+            {
+              x: 0,
+              y: 0,
+              w: 0,
+              h: 0,
+              clr: 1,
+            },
+          ],
+          Texts: [
+            {
+              x: 6.625,
+              y: 12.824,
+              w: 206.77,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "Hello!%20I%20am%20inside%20an%20absolute%20positioned%20table.",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+            {
+              x: 12.875,
+              y: 14.699,
+              w: 220.66,
+              sw: 0.32553125,
+              clr: 0,
+              A: "left",
+              R: [
+                {
+                  T: "So%20am%20I-%20wait%20no%2C%20im%20absolutely%20outside%20the%20table...",
+                  S: -1,
+                  TS: [0, 13, 0, 0],
+                },
+              ],
+            },
+          ],
+          Fields: [],
+          Boxsets: [],
+        },
+      ],
+      Width: 37.188,
+    },
+  },
 };
