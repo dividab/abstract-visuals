@@ -98,7 +98,7 @@ function measureParagraph(
     paragraph.styleName,
     resources
   ) as AD.ParagraphStyle.ParagraphStyle;
-  const contentAvailableWidth = availableSize.width - (style.margins.left + style.margins.left);
+  const contentAvailableWidth = availableSize.width - (style.margins.left + style.margins.right);
   const contentAvailableHeight = availableSize.height - (style.margins.top + style.margins.bottom);
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, contentAvailableHeight);
 
