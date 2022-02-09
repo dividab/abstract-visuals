@@ -2,13 +2,23 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.5.0...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.6.0...master)
 
 ### Added
 
 ### Changed
 
 ### Removed
+
+## [v6.6.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.5.1...abstract-document@6.6.0) - 2022-02-09
+
+### Added
+
+- Added absolute positioning for section elements when rendering PDFs in abstract document
+
+### Changed
+
+- Fixed margin left and right not affecting paragraphs
 
 ## [v6.5.1](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.4.0...abstract-document@6.5.1) - 2022-01-05
 
