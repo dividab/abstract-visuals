@@ -727,7 +727,9 @@ function renderCell(
 
   let x = finalRect.x + style.padding.left;
   const availableHeight = finalRect.height;
-  let contentHeight = cell.children.map((c) => getDesiredSize(c, desiredSizes).height).reduce((a, b) => a + b, 0);
+  let contentHeight = cell.children
+    .map((c) => (AD.Position.isPositionAbsolute(c) ? 0 : getDesiredSize(c, desiredSizes).height))
+    .reduce((a, b) => a + b, 0);
   const startY = finalRect.y + style.padding.top;
   let y = startY;
   if (style.verticalAlignment === "Middle")
