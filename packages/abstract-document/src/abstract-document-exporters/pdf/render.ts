@@ -94,17 +94,21 @@ function renderPage(
   });
 
   const headerX = style.headerMargins.left;
-  let headerY = style.headerMargins.top;
+  const headerStart = style.headerMargins.top;
+  let headerY = headerStart;
   for (let element of page.header) {
     const elementSize = getDesiredSize(element, desiredSizes);
+    const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
       pdf,
       desiredSizes,
-      AD.Rect.create(headerX, headerY, elementSize.width, elementSize.height),
+      AD.Rect.create(headerX, isAbsolute ? headerStart : headerY, elementSize.width, elementSize.height),
       element
     );
-    headerY += elementSize.height;
+    if (!isAbsolute) {
+      headerY += elementSize.height;
+    }
   }
   headerY += style.headerMargins.bottom;
 
@@ -113,30 +117,38 @@ function renderPage(
     style.footerMargins.top + style.footerMargins.bottom
   );
   const footerX = style.footerMargins.left;
-  let footerY = pageHeight - (footerHeight - style.footerMargins.top);
+  const footerStart = pageHeight - (footerHeight - style.footerMargins.top);
+  let footerY = footerStart;
   for (let element of page.footer) {
     const elementSize = getDesiredSize(element, desiredSizes);
+    const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
       pdf,
       desiredSizes,
-      AD.Rect.create(footerX, footerY, elementSize.width, elementSize.height),
+      AD.Rect.create(footerX, isAbsolute ? footerStart : footerY, elementSize.width, elementSize.height),
       element
     );
-    footerY += elementSize.height;
+    if (!isAbsolute) {
+      footerY += elementSize.height;
+    }
   }
 
-  let y = contentRect.y;
+  const elementStart = contentRect.y;
+  let y = elementStart;
   for (const element of page.elements) {
     const elementSize = getDesiredSize(element, desiredSizes);
+    const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
       pdf,
       desiredSizes,
-      AD.Rect.create(contentRect.x, y, elementSize.width, elementSize.height),
+      AD.Rect.create(contentRect.x, isAbsolute ? elementStart : y, elementSize.width, elementSize.height),
       element
     );
-    y += elementSize.height;
+    if (!isAbsolute) {
+      y += elementSize.height;
+    }
   }
 }
 
@@ -189,17 +201,22 @@ function renderGroup(
   finalRect: AD.Rect.Rect,
   group: AD.Group.Group
 ): void {
-  let y = finalRect.y;
+  const finalX = finalRect.x + group.style.margins.left;
+  const startY = finalRect.y + group.style.margins.top;
+  let y = startY;
   for (const element of group.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
+    const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
       pdf,
       desiredSizes,
-      AD.Rect.create(finalRect.x, y, elementSize.width, elementSize.height),
+      AD.Rect.create(finalX, isAbsolute ? startY : y, elementSize.width, elementSize.height),
       element
     );
-    y += elementSize.height;
+    if (!isAbsolute) {
+      y += elementSize.height;
+    }
   }
 }
 
@@ -711,7 +728,8 @@ function renderCell(
   let x = finalRect.x + style.padding.left;
   const availableHeight = finalRect.height;
   let contentHeight = cell.children.map((c) => getDesiredSize(c, desiredSizes).height).reduce((a, b) => a + b, 0);
-  let y = finalRect.y + style.padding.top;
+  const startY = finalRect.y + style.padding.top;
+  let y = startY;
   if (style.verticalAlignment === "Middle")
     y += 0.5 * (availableHeight - contentHeight - style.padding.top - style.padding.bottom);
   else if (style.verticalAlignment === "Bottom")
@@ -719,9 +737,12 @@ function renderCell(
 
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
-    const elementRect = AD.Rect.create(x, y, elementSize.width, elementSize.height);
+    const isAbsolute = AD.Position.isPositionAbsolute(element);
+    const elementRect = AD.Rect.create(x, isAbsolute ? startY : y, elementSize.width, elementSize.height);
     renderSectionElement(resources, pdf, desiredSizes, elementRect, element);
-    y += elementSize.height;
+    if (!isAbsolute) {
+      y += elementSize.height;
+    }
   }
 
   //Needed to counter aliasing caused by the cells background fill

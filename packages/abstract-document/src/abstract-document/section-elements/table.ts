@@ -2,8 +2,10 @@ import { Resources } from "../resources";
 import * as TableRow from "../table/table-row";
 import * as TableStyle from "../styles/table-style";
 
+export const sectionType = "Table";
+
 export type Table = Resources & {
-  readonly type: "Table";
+  readonly type: typeof sectionType;
   readonly columnWidths: ReadonlyArray<number>;
   readonly styleName: string;
   readonly style: TableStyle.TableStyle;
@@ -21,7 +23,7 @@ export type TableProps = Resources & {
 export function create(props: TableProps, children?: ReadonlyArray<TableRow.TableRow>): Table {
   const { columnWidths, styleName = "", headerRows, style = TableStyle.create(), ...rest } = props;
   return {
-    type: "Table",
+    type: sectionType,
     columnWidths,
     styleName,
     style,

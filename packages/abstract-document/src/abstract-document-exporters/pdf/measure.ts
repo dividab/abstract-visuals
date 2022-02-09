@@ -216,7 +216,9 @@ export function measureTable(
         const elementSizes = measureSectionElement(pdf, resources, elementAvailableSize, element);
         elementSizes.forEach((v, k) => desiredSizes.set(k, v));
         const elementSize = getDesiredSize(element, desiredSizes);
-        cellDesiredHeight += elementSize.height;
+        if (!AD.Position.isPositionAbsolute(element)) {
+          cellDesiredHeight += elementSize.height;
+        }
       }
 
       desiredSizes.set(cell, AD.Size.create(cellWidth, cellDesiredHeight));
@@ -253,7 +255,13 @@ function measureGroup(
   let desiredSizes = mergeMaps(
     keepTogether.children.map((e) => measureSectionElement(pdf, resources, availableSize, e))
   );
-  let desiredHeight = R.reduce((sum, e) => sum + getDesiredSize(e, desiredSizes).height, 0.0, keepTogether.children);
+  let desiredHeight = R.reduce(
+    (sum, e) => {
+      return sum + (AD.Position.isPositionAbsolute(e) ? 0 : getDesiredSize(e, desiredSizes).height);
+    },
+    0.0,
+    keepTogether.children
+  );
   desiredSizes.set(keepTogether, AD.Size.create(availableSize.width, desiredHeight));
   return desiredSizes;
 }

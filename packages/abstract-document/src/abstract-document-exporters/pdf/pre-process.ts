@@ -373,11 +373,12 @@ function preProcessGroup(
   const children = R.unnest<AD.SectionElement.SectionElement>(
     group.children.map((e) => preProcessSectionElement(e, parentResources))
   );
-  if (group.keepTogether || AD.Resources.hasResources(group)) {
+  if (group.keepTogether || AD.Resources.hasResources(group) || group.style.position === "absolute") {
     return [
       AD.Group.create(
         {
           keepTogether: group.keepTogether,
+          style: group.style,
           ...AD.Resources.extractResources(group),
         },
         children
