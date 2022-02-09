@@ -283,6 +283,12 @@ function renderParagraph(
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
     let x = finalRect.x;
 
+    if (style.alignment === "Start" || style.alignment === "Justify") {
+      x += style.margins.left;
+    } else if (style.alignment === "End") {
+      x -= style.margins.right;
+    }
+
     if (row.length > 1 || row[0].type === "Image") {
       // Using continued with alignment "center" or "right" is broken:
       // https://github.com/foliojs/pdfkit/issues/240
