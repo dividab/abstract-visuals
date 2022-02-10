@@ -25,6 +25,7 @@ export const test: ExportTestDef = {
           right: 0,
           top: 0,
         },
+        position: "relative",
         textStyle: {
           type: "TextStyle",
         },

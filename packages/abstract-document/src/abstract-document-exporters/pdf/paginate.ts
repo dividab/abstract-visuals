@@ -75,9 +75,10 @@ function splitSection(
       i--;
       continue;
     }
+    const isPositionAbsolute = AD.Position.isPositionAbsolute(element);
 
     elements.push(element);
-    elementsHeight += elementSize.height;
+    elementsHeight += isPositionAbsolute ? 0 : elementSize.height;
 
     const [leadingSpace, trailingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
     const availableHeight = contentRect.height + leadingSpace + trailingSpace;
@@ -85,7 +86,7 @@ function splitSection(
       if (element.type === "Table" && element.children.length > 1) {
         //Remove last element
         elements.pop();
-        elementsHeight -= elementSize.height;
+        elementsHeight -= elementSize.height; //TODO: handle absolute positioned elements
 
         //Try to split table
         const [tableHead, tableTail] = splitTable(

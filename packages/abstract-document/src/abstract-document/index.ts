@@ -31,6 +31,7 @@ import * as Style from "./styles/style";
 import * as StyleKey from "./styles/style-key";
 import * as TableCellStyle from "./styles/table-cell-style";
 import * as TableStyle from "./styles/table-style";
+import * as GroupStyle from "./styles/group-style";
 import * as TextStyle from "./styles/text-style";
 import * as TableCell from "./table/table-cell";
 import * as TableRow from "./table/table-row";
@@ -39,6 +40,7 @@ import * as Markdown from "./markdown/markdown";
 import * as Resources from "./resources";
 import * as Types from "./types";
 import * as PageBreak from "./section-elements/page-break";
+import * as Position from "./styles/position";
 
 export {
   AbstractDoc,
@@ -82,4 +84,6 @@ export {
   Resources,
   Types,
   PageBreak,
+  Position,
+  GroupStyle,
 };
