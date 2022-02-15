@@ -521,6 +521,7 @@ function drawHyperLink(
         goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
         indent: textStyle.indent || 0,
         continued: alignment !== "left" ? false : !isLastAtom,
+        baseline: textStyle.baseline || "top",
         ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
       })
       .underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
@@ -580,6 +581,7 @@ function drawText(
       align: isSingleAtom ? alignment : "left",
       indent: textStyle.indent || 0,
       continued: alignment !== "left" ? false : !isLastAtom,
+      baseline: textStyle.baseline || "top",
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
   } else {

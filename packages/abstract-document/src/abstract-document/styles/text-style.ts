@@ -1,4 +1,5 @@
 export type TextAlignment = "left" | "center" | "right" | "justify";
+export type TextBaseline = "top" | "bottom" | "middle" | "alphabetic" | "hanging";
 
 export interface TextStyle {
   readonly type: "TextStyle";
@@ -17,6 +18,7 @@ export interface TextStyle {
   readonly lineGap?: number;
   readonly lineBreak?: boolean;
   readonly alignment?: TextAlignment;
+  readonly baseline?: TextBaseline;
 }
 
 export interface TextStyleProps {
@@ -35,6 +37,7 @@ export interface TextStyleProps {
   readonly lineGap?: number;
   readonly lineBreak?: boolean;
   readonly alignment?: TextAlignment;
+  readonly baseline?: TextBaseline;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
@@ -63,6 +66,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
     lineGap: a.lineGap || b.lineGap,
     lineBreak: a.lineBreak ?? b.lineBreak,
     alignment: a.alignment ?? b.alignment,
+    baseline: a.baseline ?? b.baseline,
   });
 }
 
