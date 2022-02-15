@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Changed
 
-- Fixed text style property 'underline' not affecting hyperlinks underline
+- Fixed text style property 'underline' now affecting if hyperlinks get underlined or not. By default hyperlinks are underlined.
 
 ## [v6.7.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.6.0...abstract-document@6.7.0) - 2022-02-15
 
