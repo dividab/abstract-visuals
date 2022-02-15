@@ -4,14 +4,14 @@ import { Paragraph, AbstractDoc, Section, HyperLink, TextRun } from "../../../..
 import { TextStyle } from "../../../../abstract-document";
 
 export const test: ExportTestDef = {
-  name: "Mixed hyperlink and textrun no underline",
+  name: "Mixed hyperlink and textrun with underline",
   abstractDocJsx: (
     <AbstractDoc>
       <Section>
         <Paragraph>
           <HyperLink text={"Hello"} target="https://divid.se" />
           <TextRun text={"Hello there"} />
-          <HyperLink style={TextStyle.create({ underline: false })} text={"Hello again"} target="https://divid.se" />
+          <HyperLink style={TextStyle.create({ underline: true })} text={"Hello again"} target="https://divid.se" />
           <TextRun text={"Hello there again"} />
         </Paragraph>
       </Section>
