@@ -2,13 +2,19 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.7.0...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.7.1...master)
 
 ### Added
 
 ### Changed
 
 ### Removed
+
+## [v6.7.1](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.7.0...abstract-document@6.7.1) - 2022-02-15
+
+### Changed
+
+- Fixed text style property 'underline' not affecting hyperlinks underline
 
 ## [v6.7.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.6.0...abstract-document@6.7.0) - 2022-02-15
 
