@@ -113,7 +113,7 @@ function renderPage(
   headerY += style.headerMargins.bottom;
 
   const footerHeight = page.footer.reduce(
-    (a, b) => a + getDesiredSize(b, desiredSizes).height,
+    (a, b) => a + (AD.Position.isPositionAbsolute(b) ? 0 : getDesiredSize(b, desiredSizes).height),
     style.footerMargins.top + style.footerMargins.bottom
   );
   const footerX = style.footerMargins.left;
