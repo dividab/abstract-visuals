@@ -3,12 +3,16 @@
 
 export interface TocSeparator {
   readonly type: "TocSeparator";
+  readonly width?: number;
 }
 
-export interface TocSeparatorProps {}
+export interface TocSeparatorProps {
+  readonly width?: number;
+}
 
 export function create(_props: TocSeparatorProps): TocSeparator {
   return {
-    type: "TocSeparator"
+    type: "TocSeparator",
+    width: _props.width,
   };
 }
