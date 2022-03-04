@@ -383,7 +383,7 @@ function renderAtom(
       renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
       return;
     case "TocSeparator":
-      renderTocSeparator(pdf, finalRect, textStyle);
+      renderTocSeparator(pdf, finalRect, textStyle, atom);
       return;
     case "LinkTarget":
       return;
@@ -476,8 +476,13 @@ function renderHyperLink(
   drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, isFirstAtom, isLastAtom, availableWidth);
 }
 
-function renderTocSeparator(pdf: {}, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
-  drawDottedLine(pdf, finalRect, textStyle);
+function renderTocSeparator(
+  pdf: {},
+  finalRect: AD.Rect.Rect,
+  textStyle: AD.TextStyle.TextStyle,
+  tocSeparator: AD.TocSeparator.TocSeparator
+): void {
+  drawDottedLine(pdf, finalRect, textStyle, tocSeparator);
 }
 
 function drawHyperLink(
@@ -597,19 +602,26 @@ function drawText(
   resetTextOffset(pdf, textStyle);
 }
 
-function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextStyle.TextStyle): void {
+function drawDottedLine(
+  pdf: any,
+  finalRect: AD.Rect.Rect,
+  textStyle: AD.TextStyle.TextStyle,
+  tocSeparator: AD.TocSeparator.TocSeparator
+): void {
   const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
+
+  const charSpacing = tocSeparator.width ? tocSeparator.width : 5;
 
   const oneDotW = pdf.widthOfString(".", {
     width: finalRect.width,
     height: finalRect.height,
-    characterSpacing: 5,
+    characterSpacing: charSpacing,
   });
   const twoDotsW = pdf.widthOfString("..", {
     width: finalRect.width,
     height: finalRect.height,
-    characterSpacing: 5,
+    characterSpacing: charSpacing,
   });
   const numberOfDots = Math.floor((finalRect.width - oneDotW) / (twoDotsW - oneDotW)) + 1;
   if (twoDotsW - oneDotW === 0 || numberOfDots < 1) {
@@ -633,7 +645,7 @@ function drawDottedLine(pdf: any, finalRect: AD.Rect.Rect, textStyle: AD.TextSty
     width: finalRect.width,
     height: finalRect.height,
     align: "right",
-    characterSpacing: 5,
+    characterSpacing: charSpacing,
   });
   resetTextOffset(pdf, textStyle);
 }
