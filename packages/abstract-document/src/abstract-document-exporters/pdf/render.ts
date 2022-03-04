@@ -113,7 +113,7 @@ function renderPage(
   headerY += style.headerMargins.bottom;
 
   const footerHeight = page.footer.reduce(
-    (a, b) => a + getDesiredSize(b, desiredSizes).height,
+    (a, b) => a + (AD.Position.isPositionAbsolute(b) ? 0 : getDesiredSize(b, desiredSizes).height),
     style.footerMargins.top + style.footerMargins.bottom
   );
   const footerX = style.footerMargins.left;
@@ -518,33 +518,34 @@ function drawHyperLink(
   // so always set alignment to left and handle it through an x offset
   // if its just a single atom then we can use its alignment to partially support multi-line texts for other alignments
   if (isFirstAtom || alignment !== "left") {
-    pdf
-      .text(hyperLink.text, finalRect.x, finalRect.y, {
-        width: availableWidth,
-        underline: textStyle.underline || false,
-        align: isSingleAtom ? alignment : "left",
-        goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
-        indent: textStyle.indent || 0,
-        continued: alignment !== "left" ? false : !isLastAtom,
-        ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
-      })
-      .underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
+    pdf.text(hyperLink.text, finalRect.x, finalRect.y, {
+      width: availableWidth,
+      align: isSingleAtom ? alignment : "left",
+      goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
+      indent: textStyle.indent || 0,
+      continued: alignment !== "left" ? false : !isLastAtom,
+      baseline: textStyle.baseline || "top",
+      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+    });
+    if (textStyle.underline === undefined ? true : textStyle.underline) {
+      pdf.underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
         align: isSingleAtom ? alignment : "left",
         color: "blue",
       });
+    }
   } else {
-    pdf
-      .text(hyperLink.text, {
-        underline: textStyle.underline || false,
-        align: "left",
-        goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
-        indent: textStyle.indent || 0,
-        continued: !isLastAtom,
-        ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
-      })
-      .underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
+    pdf.text(hyperLink.text, {
+      align: "left",
+      goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
+      indent: textStyle.indent || 0,
+      continued: !isLastAtom,
+      ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+    });
+    if (textStyle.underline === undefined ? true : textStyle.underline) {
+      pdf.underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
         color: "blue",
       });
+    }
   }
 
   resetTextOffset(pdf, textStyle);
@@ -585,6 +586,7 @@ function drawText(
       align: isSingleAtom ? alignment : "left",
       indent: textStyle.indent || 0,
       continued: alignment !== "left" ? false : !isLastAtom,
+      baseline: textStyle.baseline || "top",
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
   } else {

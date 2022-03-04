@@ -2,13 +2,26 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.6.0...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.7.2...master)
 
 ### Added
 
 ### Changed
 
 ### Removed
+
+## [v6.7.2](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.7.0...abstract-document@6.7.2) - 2022-02-16
+
+### Changed
+
+- Fixed footers height being too large when using absolute positioned elements
+- Fixed text style property 'underline' now affecting if hyperlinks get underlined or not. By default hyperlinks are underlined.
+
+## [v6.7.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.6.0...abstract-document@6.7.0) - 2022-02-15
+
+### Added
+
+- Added baseline text style field
 
 ## [v6.6.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.5.1...abstract-document@6.6.0) - 2022-02-09
 

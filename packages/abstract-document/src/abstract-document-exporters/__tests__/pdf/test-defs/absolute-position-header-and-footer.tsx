@@ -3,6 +3,14 @@ import { ExportTestDef } from "../export-test-def";
 import * as AD from "../../../../index";
 import { Paragraph, AbstractDoc, Section, TextRun, TextField, Group, render } from "../../../../abstract-document-jsx";
 
+const footerMargin = AD.AbstractDoc.LayoutFoundation.create({
+  bottom: 30,
+});
+
+const pageStyle = AD.AbstractDoc.PageStyle.create({
+  footerMargins: footerMargin,
+});
+
 const header = [
   render(
     <Group>
@@ -42,7 +50,7 @@ const footer = [
   ),
 ];
 
-const page = AD.AbstractDoc.MasterPage.create({ header: header, footer: footer });
+const page = AD.AbstractDoc.MasterPage.create({ style: pageStyle, header: header, footer: footer });
 
 export const test: ExportTestDef = {
   name: "Absolute position header and footer",
@@ -143,7 +151,7 @@ export const test: ExportTestDef = {
             },
             {
               x: -0.25,
-              y: 49.629,
+              y: 49.726,
               w: 56.14,
               sw: 0.32553125,
               clr: 0,
@@ -158,7 +166,7 @@ export const test: ExportTestDef = {
             },
             {
               x: 1,
-              y: 50.879,
+              y: 50.976,
               w: 56.14,
               sw: 0.32553125,
               clr: 0,
