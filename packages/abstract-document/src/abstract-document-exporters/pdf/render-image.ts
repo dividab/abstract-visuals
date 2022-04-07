@@ -74,6 +74,32 @@ function abstractComponentToPdf(
           }
         });
 
+        ["stroke-dasharray="].forEach((t) => {
+          let index = 0;
+          while (true) {
+            index = svgUpdated.indexOf(t, index);
+            if (index === -1) break;
+            let indexStart = svgUpdated.indexOf('"', index) + 1;
+            let indexEnd = svgUpdated.indexOf('"', indexStart);
+            index = indexEnd;
+
+            let dasharray = svgUpdated.substring(indexStart, indexEnd);
+
+            console.log(dasharray);
+
+            dasharray = dasharray
+              .split(" ")
+              .map((x) => parseFloat(x))
+              .filter((x) => x !== 0)
+              .join(" ");
+
+            svgUpdated =
+              svgUpdated.substring(0, indexStart) + dasharray + svgUpdated.substring(indexEnd, svgUpdated.length);
+
+            console.log(svgUpdated);
+          }
+        });
+
         const imageWidth = component.bottomRight.x - component.topLeft.x;
         const imageHeight = component.bottomRight.y - component.topLeft.y;
         svgToPdfKit(pdf, svgUpdated, component.topLeft.x, component.topLeft.y, {
