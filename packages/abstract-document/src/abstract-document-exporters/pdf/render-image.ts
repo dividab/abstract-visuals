@@ -85,8 +85,6 @@ function abstractComponentToPdf(
 
             let dasharray = svgUpdated.substring(indexStart, indexEnd);
 
-            console.log(dasharray);
-
             dasharray = dasharray
               .split(" ")
               .map((x) => parseFloat(x))
@@ -95,8 +93,6 @@ function abstractComponentToPdf(
 
             svgUpdated =
               svgUpdated.substring(0, indexStart) + dasharray + svgUpdated.substring(indexEnd, svgUpdated.length);
-
-            console.log(svgUpdated);
           }
         });
 
