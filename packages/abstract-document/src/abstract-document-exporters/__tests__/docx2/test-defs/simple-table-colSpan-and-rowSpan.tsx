@@ -573,7 +573,7 @@ export const test: ExportTestDef = {
         </w:r>
       </w:p>
       <w:sectPr>
-        <w:pgSz w:w="11906" w:h="16838" w:orient="portrait" />
+        <w:pgSz w:w="11900" w:h="16840" w:orient="portrait" />
         <w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0" w:mirrorMargins="false" />
         <w:cols w:space="708" w:num="1" w:sep="false" />
         <w:docGrid w:linePitch="360" />

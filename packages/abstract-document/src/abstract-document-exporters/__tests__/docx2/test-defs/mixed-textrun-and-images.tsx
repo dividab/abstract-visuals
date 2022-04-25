@@ -188,7 +188,7 @@ export const test: ExportTestDef = {
       </w:r>
     </w:p>
     <w:sectPr>
-      <w:pgSz w:w="11906" w:h="16838" w:orient="portrait" />
+      <w:pgSz w:w="11900" w:h="16840" w:orient="portrait" />
       <w:pgMar
         w:top="0"
         w:right="0"
