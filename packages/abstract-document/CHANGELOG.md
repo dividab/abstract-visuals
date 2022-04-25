@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.1...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2...master)
 
 ### Added
 
 ### Changed
+
+### Removed
+
+## [v.6.8.2](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2......abstract-document@6.8.1)
+
+### Added
+
+### Changed
+
+- Fix for docx, now parsing page dimensions.
 
 ### Removed
 
