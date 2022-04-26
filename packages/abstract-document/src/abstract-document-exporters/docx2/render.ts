@@ -42,6 +42,7 @@ function createDocument(doc: AD.AbstractDoc.AbstractDoc): DOCXJS.Document {
 
 function renderSection(section: AD.Section.Section, parentResources: AD.Resources.Resources): DOCXJS.ISectionOptions {
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
+  const pageHeight = AD.PageStyle.getHeight(section.page.style);
 
   const contentAvailableWidth =
     pageWidth - (section.page.style.contentMargins.left + section.page.style.contentMargins.right);
@@ -80,6 +81,8 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
     properties: {
       page: {
         size: {
+          width: pageWidth * abstractDocPixelToDocxDXARatio,
+          height: pageHeight * abstractDocPixelToDocxDXARatio,
           orientation:
             section.page.style.orientation === "Landscape"
               ? DOCXJS.PageOrientation.LANDSCAPE
