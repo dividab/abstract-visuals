@@ -43,7 +43,7 @@ export function AbstractImageExample() {
       AbstractImage.blue,
       2,
       AbstractImage.transparent
-    )
+    ),
   ];
   const image = AbstractImage.createAbstractImage(
     AbstractImage.createPoint(0, 0),
@@ -69,3 +69,5 @@ export function AbstractImageExample() {
 [license-url]: https://opensource.org/licenses/MIT
 [prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat
 [prettier-url]: https://github.com/prettier/prettier
+
+dummy
