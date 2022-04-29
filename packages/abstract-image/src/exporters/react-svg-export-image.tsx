@@ -89,9 +89,11 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
     case "binaryimage":
       switch (component.format) {
         case "svg":
-          const svg = component.data
-            .reduce((a, b) => a + String.fromCharCode(b), "")
-            .replace('<?xml version="1.0" encoding="utf-8"?>', "");
+          const svg = Buffer.from(
+            component.data
+              .reduce((a, b) => a + String.fromCharCode(b), "")
+              .replace('<?xml version="1.0" encoding="utf-8"?>', "")
+          ).toString("base64");
           return [
             <image
               key={key}
@@ -100,7 +102,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
               width={component.bottomRight.x - component.topLeft.x}
               height={component.bottomRight.y - component.topLeft.y}
               id={makeIdAttr(component.id)}
-              href={`data:image/svg+xml;utf8,${svg}`}
+              href={`data:image/svg+xml;base64,${svg}`}
             />,
           ];
         default:
