@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "abstract-visuals-example",
-  "version": "4.4.26",
+  "version": "4.4.27",
   "description": "abstract-visuals-example",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib/index.js",
@@ -17,9 +17,9 @@
   ],
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
-    "abstract-chart": "^3.1.9",
-    "abstract-document": "^6.8.6",
-    "abstract-image": "^3.2.5",
+    "abstract-chart": "^3.1.10",
+    "abstract-document": "^6.8.7",
+    "abstract-image": "^3.2.6",
     "base64-js": "^1.2.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
