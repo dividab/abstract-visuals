@@ -40,7 +40,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
               y: component.topLeft.y.toString(),
               width: (component.bottomRight.x - component.topLeft.x).toString(),
               height: (component.bottomRight.y - component.topLeft.y).toString(),
-              href: `data:image/svg+xml;utf8,${svg}`,
+              href: `data:image/svg+xml;base64,${svg}`,
             },
             []
           );
