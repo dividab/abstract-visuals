@@ -28,7 +28,9 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
     case "binaryimage":
       switch (component.format) {
         case "svg":
-          const svg = component.data.reduce((a, b) => a + String.fromCharCode(b), "");
+          const svg = component.data
+            .reduce((a, b) => a + String.fromCharCode(b), "")
+            .replace('<?xml version="1.0" encoding="utf-8"?>', "");
           return createElement(
             "image",
             {
