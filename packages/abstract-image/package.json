@@ -15,10 +15,12 @@
     "README.md"
   ],
   "dependencies": {
+    "base64-js": "^1.2.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },
   "devDependencies": {
+    "@types/base64-js": "^1.2.5",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0"
   }

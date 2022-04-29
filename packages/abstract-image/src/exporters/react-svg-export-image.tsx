@@ -1,6 +1,8 @@
 import * as R from "ramda";
+import * as B64 from "base64-js";
 import * as React from "react";
 import * as AbstractImage from "../model/index";
+import { TextEncoder } from "util";
 
 export interface ReactSvgCallbacks {
   readonly onClick?: MouseCallback;
@@ -89,11 +91,12 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
     case "binaryimage":
       switch (component.format) {
         case "svg":
-          const svg = Buffer.from(
-            component.data
-              .reduce((a, b) => a + String.fromCharCode(b), "")
-              .replace('<?xml version="1.0" encoding="utf-8"?>', "")
-          ).toString("base64");
+          const svg = String.fromCharCode(...component.data).replace('<?xml version="1.0" encoding="utf-8"?>', "");
+          const bytes = [];
+          for (let i = 0; i < svg.length; ++i) {
+            bytes.push(svg.charCodeAt(i));
+          }
+          const base64 = B64.fromByteArray(new Uint8Array(bytes));
           return [
             <image
               key={key}
@@ -102,7 +105,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
               width={component.bottomRight.x - component.topLeft.x}
               height={component.bottomRight.y - component.topLeft.y}
               id={makeIdAttr(component.id)}
-              href={`data:image/svg+xml;base64,${svg}`}
+              href={`data:image/svg+xml;base64,${base64}`}
             />,
           ];
         default:

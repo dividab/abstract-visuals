@@ -1,3 +1,4 @@
+import * as B64 from "base64-js";
 import * as AbstractImage from "../model/index";
 
 export function createSVG(image: AbstractImage.AbstractImage, pixelWidth?: number, pixelHeight?: number): string {
@@ -28,11 +29,12 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
     case "binaryimage":
       switch (component.format) {
         case "svg":
-          const svg = Buffer.from(
-            component.data
-              .reduce((a, b) => a + String.fromCharCode(b), "")
-              .replace('<?xml version="1.0" encoding="utf-8"?>', "")
-          ).toString("base64");
+          const svg = String.fromCharCode(...component.data).replace('<?xml version="1.0" encoding="utf-8"?>', "");
+          const bytes = [];
+          for (let i = 0; i < svg.length; ++i) {
+            bytes.push(svg.charCodeAt(i));
+          }
+          const base64 = B64.fromByteArray(new Uint8Array(bytes));
           return createElement(
             "image",
             {
@@ -40,7 +42,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
               y: component.topLeft.y.toString(),
               width: (component.bottomRight.x - component.topLeft.x).toString(),
               height: (component.bottomRight.y - component.topLeft.y).toString(),
-              href: `data:image/svg+xml;base64,${svg}`,
+              href: `data:image/svg+xml;base64,${base64}`,
             },
             []
           );
