@@ -89,13 +89,16 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
     case "binaryimage":
       switch (component.format) {
         case "svg":
+          const svg = component.data.reduce((a, b) => a + String.fromCharCode(b), "");
           return [
-            <g
+            <image
               key={key}
+              x={component.topLeft.x}
+              y={component.topLeft.y}
+              width={component.bottomRight.x - component.topLeft.x}
+              height={component.bottomRight.y - component.topLeft.y}
               id={makeIdAttr(component.id)}
-              dangerouslySetInnerHTML={{
-                __html: component.data.reduce((a, b) => a + String.fromCharCode(b), ""),
-              }}
+              href={`data:image/svg+xml;utf8,${svg}`}
             />,
           ];
         default:

@@ -1,13 +1,7 @@
 import * as AbstractImage from "../model/index";
 
-export function createSVG(
-  image: AbstractImage.AbstractImage,
-  pixelWidth?: number,
-  pixelHeight?: number
-): string {
-  const imageElements = image.components.map((c: AbstractImage.Component) =>
-    abstractComponentToSVG(c)
-  );
+export function createSVG(image: AbstractImage.AbstractImage, pixelWidth?: number, pixelHeight?: number): string {
+  const imageElements = image.components.map((c: AbstractImage.Component) => abstractComponentToSVG(c));
 
   return createElement(
     "svg",
@@ -15,7 +9,7 @@ export function createSVG(
       xmlns: "http://www.w3.org/2000/svg",
       width: `${pixelWidth || image.size.width}px`,
       height: `${pixelHeight || image.size.height}px`,
-      viewBox: [0, 0, image.size.width, image.size.height].join(" ")
+      viewBox: [0, 0, image.size.width, image.size.height].join(" "),
     },
     imageElements
   );
@@ -27,16 +21,25 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
       return createElement(
         "g",
         {
-          name: component.name
+          name: component.name,
         },
-        component.children.map(c => abstractComponentToSVG(c))
+        component.children.map((c) => abstractComponentToSVG(c))
       );
     case "binaryimage":
       switch (component.format) {
         case "svg":
-          return createElement("g", {}, [
-            component.data.reduce((a, b) => a + String.fromCharCode(b), "")
-          ]);
+          const svg = component.data.reduce((a, b) => a + String.fromCharCode(b), "");
+          return createElement(
+            "image",
+            {
+              x: component.topLeft.x.toString(),
+              y: component.topLeft.y.toString(),
+              width: (component.bottomRight.x - component.topLeft.x).toString(),
+              height: (component.bottomRight.y - component.topLeft.y).toString(),
+              href: `data:image/svg+xml;utf8,${svg}`,
+            },
+            []
+          );
         default:
           return "";
       }
@@ -52,7 +55,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           y2: component.end.y.toString(),
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
-          strokeWidth: component.strokeThickness.toString()
+          strokeWidth: component.strokeThickness.toString(),
         },
         []
       );
@@ -61,12 +64,10 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
         "polyline",
         {
           fill: "none",
-          points: component.points
-            .map(p => p.x.toString() + "," + p.y.toString())
-            .join(" "),
+          points: component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" "),
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
-          strokeWidth: component.strokeThickness.toString()
+          strokeWidth: component.strokeThickness.toString(),
         },
         []
       );
@@ -83,7 +84,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
         fontFamily: component.fontFamily,
         stroke: colorToRgb(component.strokeColor),
         strokeOpacity: colorToOpacity(component.strokeColor),
-        strokeWidth: component.strokeThickness.toString() + "px"
+        strokeWidth: component.strokeThickness.toString() + "px",
       };
 
       const style = {
@@ -92,7 +93,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
         fontWeight: component.fontWeight,
         fontFamily: component.fontFamily,
         fill: colorToRgb(component.textColor),
-        fillOpacity: colorToOpacity(component.textColor)
+        fillOpacity: colorToOpacity(component.textColor),
       };
 
       const dy = getBaselineAdjustment(component.verticalGrowthDirection);
@@ -106,28 +107,20 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
         component.position.y.toString() +
         ")";
 
-      const lines: Array<string> =
-        component.text !== null ? component.text.split("\n") : [];
+      const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
 
-      const tSpans = lines.map(t =>
+      const tSpans = lines.map((t) =>
         createElement(
           "tspan",
           {
             x: component.position.x.toString(),
-            y: (
-              component.position.y +
-              (lines.indexOf(t) + dy) * lineHeight
-            ).toString(),
-            height: lineHeight.toString() + "px"
+            y: (component.position.y + (lines.indexOf(t) + dy) * lineHeight).toString(),
+            height: lineHeight.toString() + "px",
           },
           [
             t
-              .replace(
-                "<sub>",
-                `<tspan style="font-size: ${component.fontSize *
-                  0.8}px" baseline-shift="sub">`
-              )
-              .replace("</sub>", "</tspan>")
+              .replace("<sub>", `<tspan style="font-size: ${component.fontSize * 0.8}px" baseline-shift="sub">`)
+              .replace("</sub>", "</tspan>"),
           ]
         )
       );
@@ -140,7 +133,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
             "text",
             {
               style: objectToAttributeValue(shadowStyle),
-              transform: transform
+              transform: transform,
             },
             tSpans
           )
@@ -151,7 +144,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           "text",
           {
             style: objectToAttributeValue(style),
-            transform: transform
+            transform: transform,
           },
           tSpans
         )
@@ -173,7 +166,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           strokeOpacity: colorToOpacity(component.strokeColor),
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
-          fillOpacity: colorToOpacity(component.fillColor)
+          fillOpacity: colorToOpacity(component.fillColor),
         },
         []
       );
@@ -181,14 +174,12 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
       return createElement(
         "polygon",
         {
-          points: component.points
-            .map(p => p.x.toString() + "," + p.y.toString())
-            .join(" "),
+          points: component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" "),
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
-          fillOpacity: colorToOpacity(component.fillColor)
+          fillOpacity: colorToOpacity(component.fillColor),
         },
         []
       );
@@ -198,17 +189,13 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
         {
           x: component.topLeft.x.toString(),
           y: component.topLeft.y.toString(),
-          width: Math.abs(
-            component.bottomRight.x - component.topLeft.x
-          ).toString(),
-          height: Math.abs(
-            component.bottomRight.y - component.topLeft.y
-          ).toString(),
+          width: Math.abs(component.bottomRight.x - component.topLeft.x).toString(),
+          height: Math.abs(component.bottomRight.y - component.topLeft.y).toString(),
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
-          fillOpacity: colorToOpacity(component.fillColor)
+          fillOpacity: colorToOpacity(component.fillColor),
         },
         []
       );
@@ -221,45 +208,30 @@ interface Attributes {
   readonly [key: string]: string;
 }
 
-function createElement(
-  elementName: string,
-  attributes: Attributes,
-  innerElements: string[]
-): string {
+function createElement(elementName: string, attributes: Attributes, innerElements: string[]): string {
   const formattedName = convertUpperToHyphenLower(elementName);
   let element = `<${formattedName}`;
 
   if (Object.keys(attributes).length > 0) {
-    element = Object.keys(attributes).reduce(
-      (previousValue: string, currentValue: string) => {
-        if (attributes[currentValue]) {
-          return (
-            previousValue +
-            ` ${convertUpperToHyphenLower(currentValue)}="${
-              attributes[currentValue]
-            }"`
-          );
-        } else {
-          return previousValue;
-        }
-      },
-      element
-    );
+    element = Object.keys(attributes).reduce((previousValue: string, currentValue: string) => {
+      if (attributes[currentValue]) {
+        return previousValue + ` ${convertUpperToHyphenLower(currentValue)}="${attributes[currentValue]}"`;
+      } else {
+        return previousValue;
+      }
+    }, element);
   }
 
   element += ">";
 
   if (innerElements.length > 0) {
-    element = innerElements.reduce(
-      (previousValue: string, currentValue: string) => {
-        if (!currentValue || currentValue.length < 1) {
-          return previousValue;
-        } else {
-          return previousValue + `${currentValue}`;
-        }
-      },
-      element
-    );
+    element = innerElements.reduce((previousValue: string, currentValue: string) => {
+      if (!currentValue || currentValue.length < 1) {
+        return previousValue;
+      } else {
+        return previousValue + `${currentValue}`;
+      }
+    }, element);
   }
 
   element += `</${formattedName}>`;
@@ -269,21 +241,13 @@ function createElement(
 
 function objectToAttributeValue(attributes: Attributes): string {
   if (attributes && Object.keys(attributes).length > 0) {
-    return Object.keys(attributes).reduce(
-      (previousValue: string, currentValue: string) => {
-        if (attributes[currentValue]) {
-          return (
-            previousValue +
-            `${convertUpperToHyphenLower(currentValue)}:${
-              attributes[currentValue]
-            };`
-          );
-        } else {
-          return previousValue;
-        }
-      },
-      ""
-    );
+    return Object.keys(attributes).reduce((previousValue: string, currentValue: string) => {
+      if (attributes[currentValue]) {
+        return previousValue + `${convertUpperToHyphenLower(currentValue)}:${attributes[currentValue]};`;
+      } else {
+        return previousValue;
+      }
+    }, "");
   }
 
   return "";
@@ -294,9 +258,7 @@ function convertUpperToHyphenLower(elementName: string): string {
     return "-" + match.toLowerCase();
   }
 
-  return elementName !== "viewBox"
-    ? elementName.replace(/[A-Z]/g, upperToHyphenLower)
-    : elementName;
+  return elementName !== "viewBox" ? elementName.replace(/[A-Z]/g, upperToHyphenLower) : elementName;
 }
 
 function getBaselineAdjustment(d: AbstractImage.GrowthDirection): number {

@@ -4,7 +4,7 @@ import * as AbstractImage from "../../../abstract-image";
 export function AbstractImageExampleReact(): JSX.Element {
   const subComponents = [
     AbstractImage.createLine(
-      AbstractImage.createPoint(50, 50),
+      AbstractImage.createPoint(0, 0),
       AbstractImage.createPoint(80, 60),
       AbstractImage.red,
       2,
@@ -36,7 +36,7 @@ export function AbstractImageExampleReact(): JSX.Element {
       "rect"
     ),
     AbstractImage.createBinaryImage(
-      AbstractImage.createPoint(0, 0),
+      AbstractImage.createPoint(100, 100),
       AbstractImage.createPoint(300, 300),
       "svg",
       subData,
