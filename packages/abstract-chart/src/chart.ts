@@ -21,6 +21,7 @@ export interface Chart {
   readonly backgroundColor: AbstractImage.Color;
   readonly gridColor: AbstractImage.Color;
   readonly gridThickness: number;
+  readonly font: string;
   readonly fontSize: number;
   readonly labelLayout: LabelLayout;
 }
@@ -41,6 +42,7 @@ export function createChart(props: ChartProps): Chart {
     backgroundColor = AbstractImage.white,
     gridColor = AbstractImage.gray,
     gridThickness = 1,
+    font = "Arial",
     fontSize = 12,
     labelLayout = "original",
   } = props || {};
@@ -57,6 +59,7 @@ export function createChart(props: ChartProps): Chart {
     backgroundColor,
     gridColor,
     gridThickness,
+    font,
     fontSize,
     labelLayout,
   };
@@ -518,7 +521,7 @@ export function generateLines(
       AbstractImage.createText(
         last,
         l.label,
-        "Arial",
+        chart.font,
         chart.fontSize,
         AbstractImage.black,
         "normal",
@@ -552,7 +555,7 @@ export function generatePoints(
       AbstractImage.createText(
         position,
         p.label,
-        "Arial",
+        chart.font,
         chart.fontSize,
         AbstractImage.black,
         "normal",
@@ -623,7 +626,7 @@ export function generateXAxisLabels(
     return AbstractImage.createText(
       position,
       formatNumber(l),
-      "Arial",
+      chart.font,
       chart.fontSize,
       AbstractImage.black,
       "normal",
@@ -651,7 +654,7 @@ export function generateXAxisLabel(
   return AbstractImage.createText(
     position,
     label,
-    "Arial",
+    chart.font,
     chart.fontSize,
     AbstractImage.black,
     "normal",
@@ -697,7 +700,7 @@ export function generateYAxisLabels(
     return AbstractImage.createText(
       position,
       formatNumber(l),
-      "Arial",
+      chart.font,
       chart.fontSize,
       AbstractImage.black,
       "normal",
@@ -725,7 +728,7 @@ export function generateYAxisLabel(
   return AbstractImage.createText(
     position,
     label,
-    "Arial",
+    chart.font,
     chart.fontSize,
     AbstractImage.black,
     "normal",
