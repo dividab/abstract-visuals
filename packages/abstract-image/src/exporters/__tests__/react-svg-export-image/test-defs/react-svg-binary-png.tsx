@@ -8,7 +8,7 @@ const binaryImage = AbstractImage.createBinaryImage(
   AbstractImage.createPoint(0, 0),
   AbstractImage.createPoint(400, 400),
   "png",
-  Buffer.from(pngEncoded, "base64")
+  { type: "bytes", bytes: Buffer.from(pngEncoded, "base64") }
 );
 const abstractImage = AbstractImage.createAbstractImage(
   AbstractImage.createPoint(0, 0),
@@ -22,6 +22,5 @@ const svg = AbstractImage.createReactSvg(abstractImage);
 export const test: ExportTestDef = {
   name: "react svg binary png",
   abstractImage: svg,
-  expectedSerializedJsx:
-    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[]},"_owner":null,"_store":{}}',
+  expectedSerializedJsx: `{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"type":"image","key":"0","ref":null,"props":{"x":0,"y":0,"width":400,"height":400,"href":"data:image/png;base64,${pngEncoded}"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}`,
 };

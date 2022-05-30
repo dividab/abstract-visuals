@@ -25,7 +25,12 @@ const imageResource = {
       height: 150,
     },
     AI.white,
-    [AI.createBinaryImage({ x: 0, y: 0 }, { x: 640, y: 480 }, "svg", new TextEncoder().encode(svgEncoded))]
+    [
+      AI.createBinaryImage({ x: 0, y: 0 }, { x: 640, y: 480 }, "svg", {
+        type: "bytes",
+        bytes: new TextEncoder().encode(svgEncoded),
+      }),
+    ]
   ),
 };
 

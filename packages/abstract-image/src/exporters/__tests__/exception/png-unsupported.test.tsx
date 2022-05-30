@@ -7,7 +7,7 @@ const binaryImage = AbstractImage.createBinaryImage(
   AbstractImage.createPoint(0, 0),
   AbstractImage.createPoint(400, 400),
   "png",
-  Buffer.from(pngEncoded, "base64")
+  { type: "bytes", bytes: Buffer.from(pngEncoded, "base64") }
 );
 const abstractImage = AbstractImage.createAbstractImage(
   AbstractImage.createPoint(0, 0),

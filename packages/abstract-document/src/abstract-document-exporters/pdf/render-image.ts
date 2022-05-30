@@ -39,18 +39,22 @@ function abstractComponentToPdf(
       const format = component.format.toLowerCase();
       const imageWidth = component.bottomRight.x - component.topLeft.x;
       const imageHeight = component.bottomRight.y - component.topLeft.y;
-      if (format === "png") {
-        const data = "data:image/png;base64," + base64.fromByteArray(component.data);
+      if (component.data.type === "url") {
+        pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, {
+          fit: [imageWidth, imageHeight],
+        });
+      } else if (format === "png") {
+        const data = "data:image/png;base64," + base64.fromByteArray(component.data.bytes);
         pdf.image(data, component.topLeft.x, component.topLeft.y, {
           fit: [imageWidth, imageHeight],
         });
       } else if (format === "jpg") {
-        const data = "data:image/jpeg;base64," + base64.fromByteArray(component.data);
+        const data = "data:image/jpeg;base64," + base64.fromByteArray(component.data.bytes);
         pdf.image(data, component.topLeft.x, component.topLeft.y, {
           fit: [imageWidth, imageHeight],
         });
       } else if (format === "svg") {
-        const svg = new TextDecoder().decode(component.data);
+        const svg = new TextDecoder().decode(component.data.bytes);
 
         // Special to compensate for pdfKit demanding lower case
         // Remove when Svg-To-PdfKit has fixed "toLowerCase"

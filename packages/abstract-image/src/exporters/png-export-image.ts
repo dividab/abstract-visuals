@@ -5,8 +5,8 @@ export function createPNG(image: AbstractImage.AbstractImage): Uint8Array {
     throw new Error("Not supported!");
   }
   const component = image.components[0];
-  if (component.type === "binaryimage" && component.format === "png") {
-    return component.data;
+  if (component.type === "binaryimage" && component.format === "png" && component.data.type === "bytes") {
+    return component.data.bytes;
   }
   throw new Error("Not supported!");
 }

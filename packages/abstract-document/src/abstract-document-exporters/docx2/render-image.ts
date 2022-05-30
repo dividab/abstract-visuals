@@ -22,9 +22,9 @@ function abstractComponentToDocX(
     //   break;
     case "binaryimage":
       const format = component.format.toLowerCase();
-      if (format === "png" || format === "jpg") {
+      if (component.data.type === "bytes" && (format === "png" || format === "jpg")) {
         return new DOCXJS.ImageRun({
-          data: Buffer.from(component.data),
+          data: Buffer.from(component.data.bytes),
           transformation: {
             width: width,
             height: height,

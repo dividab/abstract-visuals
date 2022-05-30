@@ -27,28 +27,18 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
         component.children.map((c) => abstractComponentToSVG(c))
       );
     case "binaryimage":
-      switch (component.format) {
-        case "svg":
-          const svg = String.fromCharCode(...component.data).replace('<?xml version="1.0" encoding="utf-8"?>', "");
-          const bytes = [];
-          for (let i = 0; i < svg.length; ++i) {
-            bytes.push(svg.charCodeAt(i));
-          }
-          const base64 = B64.fromByteArray(new Uint8Array(bytes));
-          return createElement(
-            "image",
-            {
-              x: component.topLeft.x.toString(),
-              y: component.topLeft.y.toString(),
-              width: (component.bottomRight.x - component.topLeft.x).toString(),
-              height: (component.bottomRight.y - component.topLeft.y).toString(),
-              href: `data:image/svg+xml;base64,${base64}`,
-            },
-            []
-          );
-        default:
-          return "";
-      }
+      const url = getImageUrl(component.format, component.data);
+      return createElement(
+        "image",
+        {
+          x: component.topLeft.x.toString(),
+          y: component.topLeft.y.toString(),
+          width: (component.bottomRight.x - component.topLeft.x).toString(),
+          height: (component.bottomRight.y - component.topLeft.y).toString(),
+          href: url,
+        },
+        []
+      );
     case "subimage":
       return "";
     case "line":
@@ -299,4 +289,21 @@ function colorToRgb(color: AbstractImage.Color): string {
 
 function colorToOpacity(color: AbstractImage.Color): string {
   return (color.a / 255).toString();
+}
+
+function getImageUrl(format: AbstractImage.BinaryFormat, data: AbstractImage.ImageData): string {
+  if (data.type === "url") {
+    return data.url;
+  } else if (format === "png") {
+    const base64 = B64.fromByteArray(data.bytes);
+    return `data:image/png;base64,${base64}`;
+  } else {
+    const svg = String.fromCharCode(...data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
+    const bytes = [];
+    for (let i = 0; i < svg.length; ++i) {
+      bytes.push(svg.charCodeAt(i));
+    }
+    const base64 = B64.fromByteArray(new Uint8Array(bytes));
+    return `data:image/svg+xml;base64,${base64}`;
+  }
 }

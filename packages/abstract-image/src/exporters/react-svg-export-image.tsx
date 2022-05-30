@@ -89,28 +89,18 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
         </g>,
       ];
     case "binaryimage":
-      switch (component.format) {
-        case "svg":
-          const svg = String.fromCharCode(...component.data).replace('<?xml version="1.0" encoding="utf-8"?>', "");
-          const bytes = [];
-          for (let i = 0; i < svg.length; ++i) {
-            bytes.push(svg.charCodeAt(i));
-          }
-          const base64 = B64.fromByteArray(new Uint8Array(bytes));
-          return [
-            <image
-              key={key}
-              x={component.topLeft.x}
-              y={component.topLeft.y}
-              width={component.bottomRight.x - component.topLeft.x}
-              height={component.bottomRight.y - component.topLeft.y}
-              id={makeIdAttr(component.id)}
-              href={`data:image/svg+xml;base64,${base64}`}
-            />,
-          ];
-        default:
-          return [];
-      }
+      const url = getImageUrl(component.format, component.data);
+      return [
+        <image
+          key={key}
+          x={component.topLeft.x}
+          y={component.topLeft.y}
+          width={component.bottomRight.x - component.topLeft.x}
+          height={component.bottomRight.y - component.topLeft.y}
+          id={makeIdAttr(component.id)}
+          href={url}
+        />,
+      ];
     case "line":
       return [
         <line
@@ -246,6 +236,23 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
       ];
     default:
       return [];
+  }
+}
+
+function getImageUrl(format: AbstractImage.BinaryFormat, data: AbstractImage.ImageData): string {
+  if (data.type === "url") {
+    return data.url;
+  } else if (format === "png") {
+    const base64 = B64.fromByteArray(data.bytes);
+    return `data:image/png;base64,${base64}`;
+  } else {
+    const svg = String.fromCharCode(...data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
+    const bytes = [];
+    for (let i = 0; i < svg.length; ++i) {
+      bytes.push(svg.charCodeAt(i));
+    }
+    const base64 = B64.fromByteArray(new Uint8Array(bytes));
+    return `data:image/svg+xml;base64,${base64}`;
   }
 }
 

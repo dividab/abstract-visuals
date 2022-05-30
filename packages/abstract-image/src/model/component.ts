@@ -21,6 +21,7 @@ export function createGroup(name: string, children: Array<Component>): Group {
 /**
  * Embed a foreign binary image in any suported format.
  */
+
 export type BinaryFormat = "svg" | "png";
 
 export interface BinaryImage {
@@ -28,15 +29,27 @@ export interface BinaryImage {
   readonly topLeft: Point.Point;
   readonly bottomRight: Point.Point;
   readonly format: BinaryFormat;
-  readonly data: Uint8Array;
+  readonly data: ImageData;
   readonly id: string | undefined;
+}
+
+export type ImageData = ImageBytes | ImageUrl;
+
+export interface ImageBytes {
+  readonly type: "bytes";
+  readonly bytes: Uint8Array;
+}
+
+export interface ImageUrl {
+  readonly type: "url";
+  readonly url: string;
 }
 
 export function createBinaryImage(
   topLeft: Point.Point,
   bottomRight: Point.Point,
   format: BinaryFormat,
-  data: Uint8Array,
+  data: ImageData,
   id?: string
 ): BinaryImage {
   return {

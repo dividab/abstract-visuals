@@ -19,7 +19,12 @@ const imageResource = {
       height: 150,
     },
     AI.white,
-    [AI.createBinaryImage({ x: 0, y: 0 }, { x: 200, y: 150 }, "png", Buffer.from(pngEncoded, "base64"))]
+    [
+      AI.createBinaryImage({ x: 0, y: 0 }, { x: 200, y: 150 }, "png", {
+        type: "bytes",
+        bytes: Buffer.from(pngEncoded, "base64"),
+      }),
+    ]
   ),
 };
 
