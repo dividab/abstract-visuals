@@ -31,6 +31,7 @@ export interface BinaryImage {
   readonly format: BinaryFormat;
   readonly data: ImageData;
   readonly id: string | undefined;
+  readonly rotation: (Point.Point & { readonly z: number }) | undefined;
 }
 
 export type ImageData = ImageBytes | ImageUrl;
@@ -50,7 +51,8 @@ export function createBinaryImage(
   bottomRight: Point.Point,
   format: BinaryFormat,
   data: ImageData,
-  id?: string
+  id?: string,
+  rotation?: Point.Point & { readonly z: number }
 ): BinaryImage {
   return {
     type: "binaryimage",
@@ -59,6 +61,7 @@ export function createBinaryImage(
     format: format,
     data: data,
     id: id,
+    rotation,
   };
 }
 

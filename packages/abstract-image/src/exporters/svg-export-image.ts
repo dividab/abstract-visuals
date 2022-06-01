@@ -36,6 +36,9 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           width: (component.bottomRight.x - component.topLeft.x).toString(),
           height: (component.bottomRight.y - component.topLeft.y).toString(),
           href: url,
+          style: component.rotation
+            ? `transform: rotateX(${component.rotation.x}deg) rotateY(${component.rotation.y}deg) rotateZ(${component.rotation.z}deg)`
+            : "",
         },
         []
       );

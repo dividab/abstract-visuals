@@ -100,6 +100,12 @@ function abstractComponentToPdf(
           }
         });
 
+        // svgToPdfKit doesn't seem to have great support currently, need to find workaround.
+
+        // if (component.rotation) {
+        //   svgUpdated = `<svg transform="rotate(${component.rotation.x} ${component.rotation.y} ${component.rotation.z})">${svgUpdated}</svg>`;
+        // }
+
         const imageWidth = component.bottomRight.x - component.topLeft.x;
         const imageHeight = component.bottomRight.y - component.topLeft.y;
         svgToPdfKit(pdf, svgUpdated, component.topLeft.x, component.topLeft.y, {

@@ -98,6 +98,11 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           width={component.bottomRight.x - component.topLeft.x}
           height={component.bottomRight.y - component.topLeft.y}
           id={makeIdAttr(component.id)}
+          {...(component.rotation && {
+            style: {
+              transform: `rotateX(${component.rotation.x}deg) rotateY(${component.rotation.y}deg) rotateZ(${component.rotation.z}deg)`,
+            },
+          })}
           href={url}
         />,
       ];
