@@ -4,11 +4,11 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased](https://github.com/promaster-sdk/property/compare/abstract-chart@3.0.0...master)
 
-## [v0.0.0](https://github.com/promaster-sdk/property/compare/abstract-chart@3.0.0...abstract-chart@2.0.5) - 2021-01-01
+## v3.2.1 - 2022-06-02
 
 ### Added
 
-- To be determined
+- Support for other font than Arial.
 
 ## v3.0.0 - 2021-03-24
 

@@ -2,9 +2,19 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.0...master)
 
 ### Added
+
+### Changed
+
+### Removed
+
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2...abstract-document@6.9.0)
+
+### Added
+
+- Support for PNG and URL images with upgrade of abstract-image to 3.3.0
 
 ### Changed
 
