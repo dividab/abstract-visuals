@@ -81,8 +81,9 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
     properties: {
       page: {
         size: {
-          width: pageWidth * abstractDocPixelToDocxDXARatio,
-          height: pageHeight * abstractDocPixelToDocxDXARatio,
+          //DOC JS does the orientation after the width and height are set
+          width: AD.PageStyle.getPaperWidth(section.page.style.paperSize) * abstractDocPixelToDocxDXARatio,
+          height: AD.PageStyle.getPaperHeight(section.page.style.paperSize) * abstractDocPixelToDocxDXARatio,
           orientation:
             section.page.style.orientation === "Landscape"
               ? DOCXJS.PageOrientation.LANDSCAPE
