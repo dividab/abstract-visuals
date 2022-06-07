@@ -8,9 +8,11 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Changed
 
+- Fix for page orientation in word
+
 ### Removed
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2...abstract-document@6.9.0)
+## [v.6.9.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2...abstract-document@6.9.0) - 2022-06-03
 
 ### Added
 
@@ -20,7 +22,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Removed
 
-## [v.6.8.2](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2......abstract-document@6.8.1)
+## [v.6.8.2](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.1......abstract-document@6.8.2)
 
 ### Added
 
