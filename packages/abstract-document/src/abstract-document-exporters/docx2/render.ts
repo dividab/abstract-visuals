@@ -149,20 +149,20 @@ function renderSectionElement(
   element: AD.SectionElement.SectionElement,
   parentResources: AD.Resources.Resources,
   contentAvailableWidth: number,
-  grouping: boolean = false
+  keepNext: boolean = false
 ): ReadonlyArray<DOCXJS.Paragraph | DOCXJS.Table> /*| DOCXJS.TableOfContents | DOCXJS.HyperlinkRef */ {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
-      return [renderParagraph(element, resources, grouping)];
+      return [renderParagraph(element, resources, keepNext)];
     case "Group":
       return [...renderGroup(element, parentResources, contentAvailableWidth)];
     case "Table":
-      const table = renderTable(element, resources, contentAvailableWidth, grouping);
+      const table = renderTable(element, resources, contentAvailableWidth, keepNext);
       return table
         ? [
             table,
-            new DOCXJS.Paragraph({ keepNext: grouping, children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] }),
+            new DOCXJS.Paragraph({ keepNext: keepNext, children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] }),
           ]
         : [];
     case "PageBreak":
@@ -180,7 +180,7 @@ function renderTable(
   table: AD.Table.Table,
   resources: AD.Resources.Resources,
   contentAvailableWidth: number,
-  grouping: boolean
+  keepNext: boolean
 ): DOCXJS.Table | undefined {
   const style = AD.Resources.getStyle(
     undefined,
@@ -253,7 +253,7 @@ function renderTable(
         style: DOCXJS.BorderStyle.NONE,
       },
     },
-    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths, grouping)),
+    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
   });
 }
 
@@ -262,11 +262,11 @@ function renderRow(
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   columnWidths: ReadonlyArray<number>,
-  grouping: boolean
+  keepNext: boolean
 ): DOCXJS.TableRow {
   return new DOCXJS.TableRow({
     cantSplit: true,
-    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix], grouping)),
+    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix], keepNext)),
   });
 }
 
@@ -275,7 +275,7 @@ function renderCell(
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   width: number,
-  grouping: boolean
+  keepNext: boolean
 ): DOCXJS.TableCell {
   const style = AD.Resources.getStyle(
     tableCellStyle,
@@ -331,7 +331,7 @@ function renderCell(
     },
 
     children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, width, grouping));
+      sofar.push(...renderSectionElement(c, resources, width, keepNext));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   });
@@ -469,12 +469,12 @@ function renderGroup(
   availabelWidth: number
 ): Array<DOCXJS.Paragraph | DOCXJS.Table> {
   let sofar = Array<DOCXJS.Paragraph | DOCXJS.Table>();
-  let grouping = true;
+  let keepNext = true;
   for (let index = 0; index < group.children.length; index++) {
     if (index == group.children.length - 1) {
-      grouping = false;
+      keepNext = false;
     }
-    sofar.push(...renderSectionElement(group.children[index], resources, availabelWidth, grouping));
+    sofar.push(...renderSectionElement(group.children[index], resources, availabelWidth, keepNext));
   }
   return sofar;
 }
@@ -482,7 +482,7 @@ function renderGroup(
 function renderParagraph(
   paragraph: AD.Paragraph.Paragraph,
   resources: AD.Resources.Resources,
-  grouping: boolean
+  keepNext: boolean
 ): DOCXJS.Paragraph {
   const style = AD.Resources.getStyle(
     undefined,
@@ -493,7 +493,7 @@ function renderParagraph(
   ) as AD.ParagraphStyle.ParagraphStyle;
 
   return new DOCXJS.Paragraph({
-    keepNext: grouping,
+    keepNext: keepNext,
     alignment:
       (style.alignment &&
         (style.alignment === "Center"
