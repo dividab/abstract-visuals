@@ -148,18 +148,22 @@ function renderHyperLink(
 function renderSectionElement(
   element: AD.SectionElement.SectionElement,
   parentResources: AD.Resources.Resources,
-  contentAvailableWidth: number
+  contentAvailableWidth: number,
+  grouping: boolean = false
 ): ReadonlyArray<DOCXJS.Paragraph | DOCXJS.Table> /*| DOCXJS.TableOfContents | DOCXJS.HyperlinkRef */ {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
-      return [renderParagraph(element, resources)];
+      return [renderParagraph(element, resources, grouping)];
     case "Group":
       return [...renderGroup(element, parentResources, contentAvailableWidth)];
     case "Table":
-      const table = renderTable(element, resources, contentAvailableWidth);
+      const table = renderTable(element, resources, contentAvailableWidth, grouping);
       return table
-        ? [table, new DOCXJS.Paragraph({ children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] })]
+        ? [
+            table,
+            new DOCXJS.Paragraph({ keepNext: grouping, children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] }),
+          ]
         : [];
     case "PageBreak":
       return [
@@ -175,7 +179,8 @@ function renderSectionElement(
 function renderTable(
   table: AD.Table.Table,
   resources: AD.Resources.Resources,
-  contentAvailableWidth: number
+  contentAvailableWidth: number,
+  grouping: boolean
 ): DOCXJS.Table | undefined {
   const style = AD.Resources.getStyle(
     undefined,
@@ -248,7 +253,7 @@ function renderTable(
         style: DOCXJS.BorderStyle.NONE,
       },
     },
-    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths)),
+    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths, grouping)),
   });
 }
 
@@ -256,11 +261,12 @@ function renderRow(
   row: AD.TableRow.TableRow,
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
-  columnWidths: ReadonlyArray<number>
+  columnWidths: ReadonlyArray<number>,
+  grouping: boolean
 ): DOCXJS.TableRow {
   return new DOCXJS.TableRow({
     cantSplit: true,
-    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix])),
+    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix], grouping)),
   });
 }
 
@@ -268,7 +274,8 @@ function renderCell(
   cell: AD.TableCell.TableCell,
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
-  width: number
+  width: number,
+  grouping: boolean
 ): DOCXJS.TableCell {
   const style = AD.Resources.getStyle(
     tableCellStyle,
@@ -324,7 +331,7 @@ function renderCell(
     },
 
     children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, width));
+      sofar.push(...renderSectionElement(c, resources, width, grouping));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   });
@@ -356,6 +363,8 @@ function renderAtom(
       return renderImage(atom, textStyle);
     case "HyperLink":
       return renderHyperLink(atom, textStyle);
+    case "TocSeparator":
+      return new DOCXJS.TextRun({ text: "..." });
     default:
       return new DOCXJS.TextRun({ text: "missed" }); // TODO
   }
@@ -459,13 +468,22 @@ function renderGroup(
   resources: AD.Resources.Resources,
   availabelWidth: number
 ): Array<DOCXJS.Paragraph | DOCXJS.Table> {
-  return group.children.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, availabelWidth));
-    return sofar;
-  }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>);
+  let sofar = Array<DOCXJS.Paragraph | DOCXJS.Table>();
+  let grouping = true;
+  for (let index = 0; index < group.children.length; index++) {
+    if (index == group.children.length - 1) {
+      grouping = false;
+    }
+    sofar.push(...renderSectionElement(group.children[index], resources, availabelWidth, grouping));
+  }
+  return sofar;
 }
 
-function renderParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Resources.Resources): DOCXJS.Paragraph {
+function renderParagraph(
+  paragraph: AD.Paragraph.Paragraph,
+  resources: AD.Resources.Resources,
+  grouping: boolean
+): DOCXJS.Paragraph {
   const style = AD.Resources.getStyle(
     undefined,
     paragraph.style,
@@ -475,6 +493,7 @@ function renderParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Resour
   ) as AD.ParagraphStyle.ParagraphStyle;
 
   return new DOCXJS.Paragraph({
+    keepNext: grouping,
     alignment:
       (style.alignment &&
         (style.alignment === "Center"

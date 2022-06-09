@@ -1,6 +1,15 @@
 import React from "react";
 import { ExportTestDef } from "../export-test-def";
-import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../../abstract-document-jsx";
+import {
+  Paragraph,
+  AbstractDoc,
+  Section,
+  TextRun,
+  Group,
+  Table,
+  TableCell,
+  TableRow,
+} from "../../../../abstract-document-jsx";
 
 export const test: ExportTestDef = {
   name: "Group",
@@ -11,9 +20,25 @@ export const test: ExportTestDef = {
           <Paragraph>
             <TextRun text={"Hello"} />
           </Paragraph>
-          <Paragraph>
-            <TextRun text={"Hello2"} />
-          </Paragraph>
+          <Table columnWidths={[150, 100, 50]}>
+            <TableRow>
+              <TableCell>
+                <Paragraph>
+                  <TextRun text="Hello 1" />
+                </Paragraph>
+              </TableCell>
+              <TableCell>
+                <Paragraph>
+                  <TextRun text="Hello 2" />
+                </Paragraph>
+              </TableCell>
+              <TableCell>
+                <Paragraph>
+                  <TextRun text="Hello 3" />
+                </Paragraph>
+              </TableCell>
+            </TableRow>
+          </Table>
         </Group>
       </Section>
     </AbstractDoc>
@@ -52,6 +77,7 @@ export const test: ExportTestDef = {
         <w:spacing w:before="0" w:after="0" />
         <w:jc w:val="start" />
         <w:ind w:left="0" w:end="0" />
+        <w:keepNext/>
       </w:pPr>
       <w:r>
         <w:rPr>
@@ -68,27 +94,154 @@ export const test: ExportTestDef = {
         <w:t xml:space="preserve">Hello</w:t>
       </w:r>
     </w:p>
-    <w:p>
-      <w:pPr>
-        <w:spacing w:before="0" w:after="0" />
-        <w:jc w:val="start" />
-        <w:ind w:left="0" w:end="0" />
-      </w:pPr>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblCellMar>
+          <w:bottom w:type="dxa" w:w="0"/>
+          <w:top w:type="dxa" w:w="0"/>
+          <w:left w:type="dxa" w:w="0"/>
+          <w:right w:type="dxa" w:w="0"/>
+        </w:tblCellMar>
+        <w:tblBorders>
+          <w:top w:val="none" w:sz="0" w:space="0" w:color=""/>
+          <w:left w:val="none" w:sz="0" w:space="0" w:color=""/>
+          <w:bottom w:val="none" w:sz="0" w:space="0" w:color=""/>
+          <w:right w:val="none" w:sz="0" w:space="0" w:color=""/>
+          <w:insideH w:val="none" w:sz="0" w:space="0" w:color=""/>
+          <w:insideV w:val="none" w:sz="0" w:space="0" w:color=""/>
+        </w:tblBorders>
+          <w:tblW w:type="dxa" w:w="6000"/>
+          <w:jc w:val="left"/>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="100"/>
+        <w:gridCol w:w="100"/>
+        <w:gridCol w:w="100"/>
+      </w:tblGrid>
+      <w:tr>
+        <w:trPr>
+          <w:cantSplit w:val="true"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcBorders>
+              <w:top w:val="none" w:sz="0" w:color=""/>
+              <w:bottom w:val="none" w:sz="0" w:color=""/>
+              <w:left w:val="none" w:sz="0" w:color=""/>
+              <w:right w:val="none" w:sz="0" w:color=""/>
+            </w:tcBorders>
+            <w:vAlign w:val="center"/>
+            <w:tcMar>
+              <w:top w:w="0" w:type="dxa"/>
+              <w:bottom w:w="0" w:type="dxa"/>
+              <w:end w:w="0" w:type="dxa"/>
+              <w:start w:w="0" w:type="dxa"/>
+            </w:tcMar>
+            <w:shd/>
+            <w:gridSpan w:val="1"/>
+            <w:tcW w:w="3000" w:type="dxa"/>
+          </w:tcPr>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:before="0" w:after="0"/>
+              <w:jc w:val="start"/>
+              <w:ind w:left="0" w:end="0"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:color w:val="black"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+                <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Hello 1</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcBorders>
+              <w:top w:val="none" w:sz="0" w:color=""/>
+              <w:bottom w:val="none" w:sz="0" w:color=""/>
+              <w:left w:val="none" w:sz="0" w:color=""/>
+              <w:right w:val="none" w:sz="0" w:color=""/>
+            </w:tcBorders>
+            <w:vAlign w:val="center"/>
+            <w:tcMar>
+              <w:top w:w="0" w:type="dxa"/>
+              <w:bottom w:w="0" w:type="dxa"/>
+              <w:end w:w="0" w:type="dxa"/>
+              <w:start w:w="0" w:type="dxa"/>
+            </w:tcMar>
+            <w:shd/>
+            <w:gridSpan w:val="1"/>
+            <w:tcW w:w="2000" w:type="dxa"/>
+          </w:tcPr>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:before="0" w:after="0"/>
+              <w:jc w:val="start"/>
+              <w:ind w:left="0" w:end="0"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:color w:val="black"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+                <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Hello 2</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcBorders>
+              <w:top w:val="none" w:sz="0" w:color=""/>
+              <w:bottom w:val="none" w:sz="0" w:color=""/>
+              <w:left w:val="none" w:sz="0" w:color=""/>
+              <w:right w:val="none" w:sz="0" w:color=""/>
+            </w:tcBorders>
+            <w:vAlign w:val="center"/>
+            <w:tcMar>
+              <w:top w:w="0" w:type="dxa"/>
+              <w:bottom w:w="0" w:type="dxa"/>
+              <w:end w:w="0" w:type="dxa"/>
+              <w:start w:w="0" w:type="dxa"/>
+            </w:tcMar>
+            <w:shd/>
+            <w:gridSpan w:val="1"/>
+            <w:tcW w:w="1000" w:type="dxa"/>
+          </w:tcPr>
+          <w:p>
+            <w:pPr>
+              <w:spacing w:before="0" w:after="0"/>
+              <w:jc w:val="start"/>
+              <w:ind w:left="0" w:end="0"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:color w:val="black"/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+                <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Hello 3</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p>       
       <w:r>
         <w:rPr>
-          <w:color w:val="black" />
-          <w:sz w:val="20" />
-          <w:szCs w:val="20" />
-          <w:rFonts
-            w:ascii="Arial"
-            w:cs="Arial"
-            w:eastAsia="Arial"
-            w:hAnsi="Arial"
-          />
+          <w:sz w:val="0.000001"/>
+          <w:szCs w:val="0.000001"/>
         </w:rPr>
-        <w:t xml:space="preserve">Hello2</w:t>
+        <w:t xml:space="preserve">.</w:t>
       </w:r>
     </w:p>
+    
     <w:sectPr>
       <w:pgSz w:w="11900" w:h="16840" w:orient="portrait" />
       <w:pgMar

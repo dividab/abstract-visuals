@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. The format 
 ### Changed
 
 - Fix for page orientation in word
+- Grouping implemented with keepNext for word
 
 ### Removed
 
