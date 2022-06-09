@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
+- Grouping implemented with keepNext for word
+- Test for TocSeparator in word
+
 ### Changed
 
 - Fix for page orientation in word
