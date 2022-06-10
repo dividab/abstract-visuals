@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.1...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.3...master)
 
 ### Added
 
@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Removed
 
-## [v.6.9.1](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.0...abstract-document@6.9.1) - 2022-06-09
+## [v.6.9.3](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.0...abstract-document@6.9.3) - 2022-06-09
 
 ### Added
 
