@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
-- Test for TocSeparator in word
+- Placeholder for TocSeparator in word
 
 ### Changed
 
