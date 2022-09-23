@@ -55,10 +55,10 @@ export const test: ExportTestDef = {
             <w:sz w:val="20" />
             <w:szCs w:val="20" />
             <w:rFonts
-              w:ascii="Arial"
-              w:cs="Arial"
-              w:eastAsia="Arial"
-              w:hAnsi="Arial"
+              w:ascii="Helvetica"
+              w:cs="Helvetica"
+              w:eastAsia="Helvetica"
+              w:hAnsi="Helvetica"
             />
           </w:rPr>
           <w:t xml:space="preserve">Hello</w:t>
