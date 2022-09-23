@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Changed
 
+- Word text uses the font from style.fontFamily
+
 ### Removed
 
 ## [v.6.9.3](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.0...abstract-document@6.9.3) - 2022-06-09

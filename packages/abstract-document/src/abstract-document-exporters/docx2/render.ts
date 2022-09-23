@@ -120,7 +120,7 @@ function renderHyperLink(
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * 2;
   const textRun = new DOCXJS.TextRun({
     text: hyperLink.text,
-    font: "Arial",
+    font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "blue",
     bold: style.bold,
@@ -414,7 +414,7 @@ function renderTextRun(
 function renderPageNumber(style: AD.TextStyle.TextStyle): DOCXJS.TextRun {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * abstractDocToDocxFontRatio;
   return new DOCXJS.TextRun({
-    font: "Arial",
+    font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold,
@@ -431,7 +431,7 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): DOCXJS.TextRun {
 function renderTotalPages(style: AD.TextStyle.TextStyle): DOCXJS.TextRun {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * abstractDocToDocxFontRatio;
   return new DOCXJS.TextRun({
-    font: "Arial",
+    font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold,
@@ -450,7 +450,7 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): DOCXJS.TextRun
 
   return new DOCXJS.TextRun({
     text: text,
-    font: "Arial",
+    font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold,
