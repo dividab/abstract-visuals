@@ -20,32 +20,37 @@ export const test: ExportTestDef = {
     </AbstractDoc>
   ),
   expectedPdfJson: {
-    formImage: {
-      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
-      Agency: "",
-      Id: { AgencyId: "", Name: "", MC: false, Max: 1, Parent: "" },
-      Pages: [
-        {
-          Height: 52.625,
-          HLines: [],
-          VLines: [],
-          Fills: [{ x: 0, y: 0, w: 0, h: 0, clr: 1 }],
-          Texts: [
-            {
-              x: 12.25,
-              y: 5.949,
-              w: 187.31,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [{ T: "Hello!%20I%20am%20absolutely%20absolute%20positioned.", S: -1, TS: [0, 13, 0, 0] }],
-            },
-          ],
-          Fields: [],
-          Boxsets: [],
-        },
-      ],
-      Width: 37.188,
+    Transcoder: "pdf2json@2.0.1 [https://github.com/modesty/pdf2json]",
+    Meta: {
+      CreationDate: "*",
+      Creator: "PDFKit",
+      IsAcroFormPresent: false,
+      IsXFAPresent: false,
+      Metadata: {},
+      PDFFormatVersion: "1.3",
+      Producer: "PDFKit",
     },
+    Pages: [
+      {
+        Height: 52.625,
+        Width: 37.188,
+        HLines: [],
+        VLines: [],
+        Fills: [],
+        Texts: [
+          {
+            x: 12.25,
+            y: 5.949,
+            w: 187.31,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [{ T: "Hello!%20I%20am%20absolutely%20absolute%20positioned.", S: -1, TS: [0, 13, 0, 0] }],
+          },
+        ],
+        Fields: [],
+        Boxsets: [],
+      },
+    ],
   },
 };

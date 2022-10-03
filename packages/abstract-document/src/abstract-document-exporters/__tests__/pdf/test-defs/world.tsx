@@ -14,32 +14,43 @@ export const test: ExportTestDef = {
     </AbstractDoc>
   ),
   expectedPdfJson: {
-    formImage: {
-      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
-      Agency: "",
-      Id: { AgencyId: "", Name: "", MC: false, Max: 1, Parent: "" },
-      Pages: [
-        {
-          Height: 52.625,
-          HLines: [],
-          VLines: [],
-          Fills: [{ x: 0, y: 0, w: 0, h: 0, clr: 1 }],
-          Texts: [
-            {
-              x: -0.25,
-              y: -0.301,
-              w: 26.11,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [{ T: "World", S: -1, TS: [0, 13, 0, 0] }],
-            },
-          ],
-          Fields: [],
-          Boxsets: [],
-        },
-      ],
-      Width: 37.188,
+    Transcoder: "pdf2json@2.0.1 [https://github.com/modesty/pdf2json]",
+    Meta: {
+      PDFFormatVersion: "1.3",
+      IsAcroFormPresent: false,
+      IsXFAPresent: false,
+      Creator: "PDFKit",
+      Producer: "PDFKit",
+      CreationDate: "*",
+      Metadata: {},
     },
+    Pages: [
+      {
+        Width: 37.188,
+        Height: 52.625,
+        HLines: [],
+        VLines: [],
+        Fills: [],
+        Texts: [
+          {
+            x: -0.25,
+            y: -0.301,
+            w: 26.11,
+            oc: undefined,
+            sw: 0.32553125,
+            A: "left",
+            R: [
+              {
+                T: "World",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+        ],
+        Fields: [],
+        Boxsets: [],
+      },
+    ],
   },
 };
