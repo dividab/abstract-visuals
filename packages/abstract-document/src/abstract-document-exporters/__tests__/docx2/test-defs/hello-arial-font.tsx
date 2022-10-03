@@ -1,20 +1,15 @@
 import React from "react";
 import { ExportTestDef } from "../export-test-def";
-import * as AD from "../../../../index";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-document-jsx";
-import { PageStyle } from "../../../../abstract-document";
-
-const page = AD.AbstractDoc.MasterPage.create({
-  style: PageStyle.create({ paperSize: "A4", orientation: "Portrait" }),
-});
+import * as AD from "../../../../index";
 
 export const test: ExportTestDef = {
-  name: "page-orientation-portrait",
+  name: "hello with Arial font",
   abstractDocJsx: (
     <AbstractDoc>
-      <Section page={page}>
+      <Section>
         <Paragraph>
-          <TextRun text={"This is a Portrait oriented document."} />
+          <TextRun text="Hello This is Arial font" style={AD.AbstractDoc.TextStyle.create({ fontFamily: "Arial" })} />
         </Paragraph>
       </Section>
     </AbstractDoc>
@@ -56,9 +51,9 @@ export const test: ExportTestDef = {
                     <w:color w:val="black"/>
                     <w:sz w:val="20"/>
                     <w:szCs w:val="20"/>
-                    <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
+                    <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
                 </w:rPr>
-                <w:t xml:space="preserve">This is a Portrait oriented document.</w:t>
+                <w:t xml:space="preserve">Hello This is Arial font</w:t>
             </w:r>
         </w:p>
         <w:sectPr>

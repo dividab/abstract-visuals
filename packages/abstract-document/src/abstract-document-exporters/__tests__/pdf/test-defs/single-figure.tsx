@@ -149,175 +149,170 @@ export const test: ExportTestDef = {
     </AbstractDoc>
   ),
   expectedPdfJson: {
-    formImage: {
-      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
-      Agency: "",
-      Id: {
-        AgencyId: "",
-        Name: "",
-        MC: false,
-        Max: 1,
-        Parent: "",
-      },
-      Pages: [
-        {
-          Height: 52.625,
-          HLines: [
-            {
-              oc: "#ffff00",
-              x: 0.625,
-              y: 0.938,
-              w: 4.5,
-              l: 1.25,
-            },
-            {
-              x: 1.875,
-              y: 1.875,
-              w: 3,
-              l: 4.375,
-            },
-            {
-              x: 1.875,
-              y: 6.25,
-              w: 3,
-              l: 4.375,
-            },
-          ],
-          VLines: [
-            {
-              x: 6.25,
-              y: 1.875,
-              w: 3,
-              l: 4.375,
-            },
-            {
-              x: 1.875,
-              y: 1.875,
-              w: 3,
-              l: 4.375,
-            },
-          ],
-          Fills: [
-            {
-              x: 0,
-              y: 0,
-              w: 0,
-              h: 0,
-              clr: 1,
-            },
-          ],
-          Texts: [
-            {
-              x: 0.375,
-              y: 0.41300000000000003,
-              w: 24.012,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Bold",
-                  S: -1,
-                  TS: [0, 15, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 0.375,
-              y: 1.038,
-              w: 68.688,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "Medium%20bold",
-                  S: -1,
-                  TS: [0, 15, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 0.375,
-              y: 1.6629999999999998,
-              w: 36.672,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "normal",
-                  S: -1,
-                  TS: [0, 15, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 0.375,
-              y: 2.288,
-              w: 36.672,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "normal",
-                  S: -1,
-                  TS: [0, 15, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 0.375,
-              y: 2.913,
-              w: 24,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "italic",
-                  S: -1,
-                  TS: [0, 15, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 0.375,
-              y: 3.5380000000000003,
-              w: 50.016,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "bold%20italic",
-                  S: -1,
-                  TS: [0, 15, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 0.375,
-              y: 4.163,
-              w: 96.024,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "medium%20bold%20italic",
-                  S: -1,
-                  TS: [0, 15, 0, 0],
-                },
-              ],
-            },
-          ],
-          Fields: [],
-          Boxsets: [],
-        },
-      ],
-      Width: 37.188,
+    Transcoder: "pdf2json@2.0.1 [https://github.com/modesty/pdf2json]",
+    Meta: {
+      CreationDate: "*",
+      Creator: "PDFKit",
+      IsAcroFormPresent: false,
+      IsXFAPresent: false,
+      Metadata: {},
+      PDFFormatVersion: "1.3",
+      Producer: "PDFKit",
     },
+    Pages: [
+      {
+        Height: 52.625,
+        Width: 37.188,
+        HLines: [
+          {
+            oc: "#ffff00",
+            x: 0.625,
+            y: 0.938,
+            w: 4.5,
+            l: 1.25,
+          },
+          {
+            oc: "#000000",
+            x: 1.875,
+            y: 1.875,
+            w: 3,
+            l: 4.375,
+          },
+          {
+            oc: "#000000",
+            x: 1.875,
+            y: 6.25,
+            w: 3,
+            l: 4.375,
+          },
+        ],
+        VLines: [
+          {
+            oc: "#000000",
+            x: 6.25,
+            y: 1.875,
+            w: 3,
+            l: 4.375,
+          },
+          {
+            oc: "#000000",
+            x: 1.875,
+            y: 1.875,
+            w: 3,
+            l: 4.375,
+          },
+        ],
+        Fills: [],
+        Texts: [
+          {
+            x: 0.375,
+            y: 0.41300000000000003,
+            w: 24.012,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "Bold",
+                S: -1,
+                TS: [0, 15, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 0.375,
+            y: 1.038,
+            w: 68.688,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "Medium%20bold",
+                S: -1,
+                TS: [0, 15, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 0.375,
+            y: 1.6629999999999998,
+            w: 36.672,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "normal",
+                S: -1,
+                TS: [0, 15, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 0.375,
+            y: 2.288,
+            w: 36.672,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "normal",
+                S: -1,
+                TS: [0, 15, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 0.375,
+            y: 2.913,
+            w: 24,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "italic",
+                S: -1,
+                TS: [0, 15, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 0.375,
+            y: 3.5380000000000003,
+            w: 50.016,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "bold%20italic",
+                S: -1,
+                TS: [0, 15, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 0.375,
+            y: 4.163,
+            w: 96.024,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "medium%20bold%20italic",
+                S: -1,
+                TS: [0, 15, 0, 0],
+              },
+            ],
+          },
+        ],
+        Fields: [],
+        Boxsets: [],
+      },
+    ],
   },
 };

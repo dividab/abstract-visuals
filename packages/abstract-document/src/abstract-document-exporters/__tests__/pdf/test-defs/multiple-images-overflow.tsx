@@ -45,36 +45,27 @@ export const test: ExportTestDef = {
     </AbstractDoc>
   ),
   expectedPdfJson: {
-    formImage: {
-      Agency: "",
-      Id: {
-        AgencyId: "",
-        MC: false,
-        Max: 1,
-        Name: "",
-        Parent: "",
-      },
-      Pages: [
-        {
-          Boxsets: [],
-          Fields: [],
-          Fills: [
-            {
-              clr: 1,
-              h: 0,
-              w: 0,
-              x: 0,
-              y: 0,
-            },
-          ],
-          HLines: [],
-          Height: 52.625,
-          Texts: [],
-          VLines: [],
-        },
-      ],
-      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
-      Width: 37.188,
+    Transcoder: "pdf2json@2.0.1 [https://github.com/modesty/pdf2json]",
+    Meta: {
+      CreationDate: "*",
+      Creator: "PDFKit",
+      IsAcroFormPresent: false,
+      IsXFAPresent: false,
+      Metadata: {},
+      PDFFormatVersion: "1.3",
+      Producer: "PDFKit",
     },
+    Pages: [
+      {
+        Boxsets: [],
+        Fields: [],
+        Fills: [],
+        HLines: [],
+        Height: 52.625,
+        Width: 37.188,
+        Texts: [],
+        VLines: [],
+      },
+    ],
   },
 };

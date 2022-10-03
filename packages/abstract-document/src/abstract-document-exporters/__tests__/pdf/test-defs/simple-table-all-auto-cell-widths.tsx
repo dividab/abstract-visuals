@@ -38,82 +38,73 @@ export const test: ExportTestDef = {
     </AbstractDoc>
   ),
   expectedPdfJson: {
-    formImage: {
-      Agency: "",
-      Id: {
-        AgencyId: "",
-        MC: false,
-        Max: 1,
-        Name: "",
-        Parent: "",
-      },
-      Pages: [
-        {
-          Boxsets: [],
-          Fields: [],
-          Fills: [
-            {
-              clr: 1,
-              h: 0,
-              w: 0,
-              x: 0,
-              y: 0,
-            },
-          ],
-          HLines: [],
-          Height: 52.625,
-          Texts: [
-            {
-              A: "left",
-              R: [
-                {
-                  S: -1,
-                  T: "Auto%201",
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-              clr: 0,
-              sw: 0.32553125,
-              w: 28.91,
-              x: -0.25,
-              y: -0.301,
-            },
-            {
-              A: "left",
-              R: [
-                {
-                  S: -1,
-                  T: "Auto%202",
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-              clr: 0,
-              sw: 0.32553125,
-              w: 28.91,
-              x: 12.146,
-              y: -0.301,
-            },
-            {
-              A: "left",
-              R: [
-                {
-                  S: -1,
-                  T: "Auto%203",
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-              clr: 0,
-              sw: 0.32553125,
-              w: 28.91,
-              x: 24.542,
-              y: -0.301,
-            },
-          ],
-          VLines: [],
-        },
-      ],
-      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
-      Width: 37.188,
+    Transcoder: "pdf2json@2.0.1 [https://github.com/modesty/pdf2json]",
+    Meta: {
+      CreationDate: "*",
+      Creator: "PDFKit",
+      IsAcroFormPresent: false,
+      IsXFAPresent: false,
+      Metadata: {},
+      PDFFormatVersion: "1.3",
+      Producer: "PDFKit",
     },
+    Pages: [
+      {
+        Boxsets: [],
+        Fields: [],
+        Fills: [],
+        HLines: [],
+        Height: 52.625,
+        Width: 37.188,
+        Texts: [
+          {
+            A: "left",
+            R: [
+              {
+                S: -1,
+                T: "Auto%201",
+                TS: [0, 13, 0, 0],
+              },
+            ],
+            oc: undefined,
+            sw: 0.32553125,
+            w: 28.91,
+            x: -0.25,
+            y: -0.301,
+          },
+          {
+            A: "left",
+            R: [
+              {
+                S: -1,
+                T: "Auto%202",
+                TS: [0, 13, 0, 0],
+              },
+            ],
+            oc: undefined,
+            sw: 0.32553125,
+            w: 28.91,
+            x: 12.146,
+            y: -0.301,
+          },
+          {
+            A: "left",
+            R: [
+              {
+                S: -1,
+                T: "Auto%203",
+                TS: [0, 13, 0, 0],
+              },
+            ],
+            oc: undefined,
+            sw: 0.32553125,
+            w: 28.91,
+            x: 24.542,
+            y: -0.301,
+          },
+        ],
+        VLines: [],
+      },
+    ],
   },
 };

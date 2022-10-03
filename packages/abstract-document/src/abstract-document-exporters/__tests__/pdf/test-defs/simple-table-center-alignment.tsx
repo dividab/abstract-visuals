@@ -37,78 +37,73 @@ export const test: ExportTestDef = {
     </AbstractDoc>
   ),
   expectedPdfJson: {
-    formImage: {
-      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
-      Agency: "",
-      Id: {
-        AgencyId: "",
-        Name: "",
-        MC: false,
-        Max: 1,
-        Parent: "",
-      },
-      Pages: [
-        {
-          Height: 52.625,
-          HLines: [
-            {
-              x: 6.094,
-              y: 0.679,
-              w: 3,
-              l: 25,
-            },
-            {
-              x: 6.075,
-              y: 0.044,
-              w: 3,
-              l: 25.038,
-            },
-          ],
-          VLines: [
-            {
-              x: 31.05,
-              y: 0,
-              w: 3,
-              l: 0.741,
-            },
-            {
-              x: 6.138,
-              y: 0,
-              w: 3,
-              l: 0.741,
-            },
-          ],
-          Fills: [
-            {
-              x: 0,
-              y: 0,
-              w: 0,
-              h: 0,
-              clr: 1,
-            },
-          ],
-          Texts: [
-            {
-              x: 5.844,
-              y: -0.301,
-              w: 88.37,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "CenterAlignedTable",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-          ],
-          Fields: [],
-          Boxsets: [],
-        },
-      ],
-      Width: 37.188,
+    Transcoder: "pdf2json@2.0.1 [https://github.com/modesty/pdf2json]",
+    Meta: {
+      CreationDate: "*",
+      Creator: "PDFKit",
+      IsAcroFormPresent: false,
+      IsXFAPresent: false,
+      Metadata: {},
+      PDFFormatVersion: "1.3",
+      Producer: "PDFKit",
     },
+    Pages: [
+      {
+        Height: 52.625,
+        Width: 37.188,
+        HLines: [
+          {
+            oc: "#000000",
+            x: 6.094,
+            y: 0.679,
+            w: 3,
+            l: 25,
+          },
+          {
+            oc: "#000000",
+            x: 6.075,
+            y: 0.044,
+            w: 3,
+            l: 25.038,
+          },
+        ],
+        VLines: [
+          {
+            oc: "#000000",
+            x: 31.05,
+            y: 0,
+            w: 3,
+            l: 0.741,
+          },
+          {
+            oc: "#000000",
+            x: 6.138,
+            y: 0,
+            w: 3,
+            l: 0.741,
+          },
+        ],
+        Fills: [],
+        Texts: [
+          {
+            x: 5.844,
+            y: -0.301,
+            w: 88.37,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "CenterAlignedTable",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+        ],
+        Fields: [],
+        Boxsets: [],
+      },
+    ],
   },
 };
