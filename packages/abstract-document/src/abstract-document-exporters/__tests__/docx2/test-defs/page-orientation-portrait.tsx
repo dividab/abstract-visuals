@@ -1,14 +1,20 @@
 import React from "react";
 import { ExportTestDef } from "../export-test-def";
+import * as AD from "../../../../index";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-document-jsx";
+import { PageStyle } from "../../../../abstract-document";
+
+const page = AD.AbstractDoc.MasterPage.create({
+  style: PageStyle.create({ paperSize: "A4", orientation: "Portrait" }),
+});
 
 export const test: ExportTestDef = {
-  name: "hello",
+  name: "page-orientation-portrait",
   abstractDocJsx: (
     <AbstractDoc>
-      <Section>
+      <Section page={page}>
         <Paragraph>
-          <TextRun text={"Hello"} />
+          <TextRun text={"This is a Portrait oriented document."} />
         </Paragraph>
       </Section>
     </AbstractDoc>
@@ -52,7 +58,7 @@ export const test: ExportTestDef = {
                     <w:szCs w:val="20"/>
                     <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
                 </w:rPr>
-                <w:t xml:space="preserve">Hello</w:t>
+                <w:t xml:space="preserve">This is a Portrait oriented document.</w:t>
             </w:r>
         </w:p>
         <w:sectPr>

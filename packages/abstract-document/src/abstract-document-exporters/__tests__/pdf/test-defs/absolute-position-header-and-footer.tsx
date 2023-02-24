@@ -64,142 +64,133 @@ export const test: ExportTestDef = {
     </AbstractDoc>
   ),
   expectedPdfJson: {
-    formImage: {
-      Transcoder: "pdf2json@1.2.3 [https://github.com/modesty/pdf2json]",
-      Agency: "",
-      Id: {
-        AgencyId: "",
-        Name: "",
-        MC: false,
-        Max: 1,
-        Parent: "",
-      },
-      Pages: [
-        {
-          Height: 52.625,
-          HLines: [],
-          VLines: [],
-          Fills: [
-            {
-              x: 0,
-              y: 0,
-              w: 0,
-              h: 0,
-              clr: 1,
-            },
-          ],
-          Texts: [
-            {
-              x: -0.25,
-              y: -0.301,
-              w: 61.7,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "I%20am%20a%20header",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 33.569,
-              y: -0.301,
-              w: 5.56,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "1",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 33.916,
-              y: -0.301,
-              w: 2.78,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "%2F",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 34.09,
-              y: -0.301,
-              w: 5.56,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "1",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: -0.25,
-              y: 49.726,
-              w: 56.14,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "I%20am%20a%20footer",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: 1,
-              y: 50.976,
-              w: 56.14,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "I%20am%20a%20footer",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-            {
-              x: -0.25,
-              y: 1.144,
-              w: 43.91,
-              sw: 0.32553125,
-              clr: 0,
-              A: "left",
-              R: [
-                {
-                  T: "I%20am%20body",
-                  S: -1,
-                  TS: [0, 13, 0, 0],
-                },
-              ],
-            },
-          ],
-          Fields: [],
-          Boxsets: [],
-        },
-      ],
-      Width: 37.188,
+    Transcoder: "pdf2json@2.0.1 [https://github.com/modesty/pdf2json]",
+    Meta: {
+      CreationDate: "*",
+      Creator: "PDFKit",
+      IsAcroFormPresent: false,
+      IsXFAPresent: false,
+      Metadata: {},
+      PDFFormatVersion: "1.3",
+      Producer: "PDFKit",
     },
+    Pages: [
+      {
+        Height: 52.625,
+        Width: 37.188,
+        HLines: [],
+        VLines: [],
+        Fills: [],
+        Texts: [
+          {
+            x: -0.25,
+            y: -0.301,
+            w: 61.7,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "I%20am%20a%20header",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 33.569,
+            y: -0.301,
+            w: 5.56,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "1",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 33.916,
+            y: -0.301,
+            w: 2.78,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "%2F",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 34.09,
+            y: -0.301,
+            w: 5.56,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "1",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+          {
+            x: -0.25,
+            y: 49.726,
+            w: 56.14,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "I%20am%20a%20footer",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+          {
+            x: 1,
+            y: 50.976,
+            w: 56.14,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "I%20am%20a%20footer",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+          {
+            x: -0.25,
+            y: 1.144,
+            w: 43.91,
+            sw: 0.32553125,
+            oc: undefined,
+            A: "left",
+            R: [
+              {
+                T: "I%20am%20body",
+                S: -1,
+                TS: [0, 13, 0, 0],
+              },
+            ],
+          },
+        ],
+        Fields: [],
+        Boxsets: [],
+      },
+    ],
   },
 };

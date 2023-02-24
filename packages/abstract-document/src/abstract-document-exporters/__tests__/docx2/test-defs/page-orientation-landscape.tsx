@@ -1,14 +1,20 @@
 import React from "react";
 import { ExportTestDef } from "../export-test-def";
+import * as AD from "../../../../index";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../../abstract-document-jsx";
+import { PageStyle } from "../../../../abstract-document";
+
+const page = AD.AbstractDoc.MasterPage.create({
+  style: PageStyle.create({ paperSize: "A4", orientation: "Landscape" }),
+});
 
 export const test: ExportTestDef = {
-  name: "hello",
+  name: "page-orientation-landscape",
   abstractDocJsx: (
     <AbstractDoc>
-      <Section>
+      <Section page={page}>
         <Paragraph>
-          <TextRun text={"Hello"} />
+          <TextRun text={"This is a Landscape oriented document."} />
         </Paragraph>
       </Section>
     </AbstractDoc>
@@ -52,11 +58,11 @@ export const test: ExportTestDef = {
                     <w:szCs w:val="20"/>
                     <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
                 </w:rPr>
-                <w:t xml:space="preserve">Hello</w:t>
+                <w:t xml:space="preserve">This is a Landscape oriented document.</w:t>
             </w:r>
         </w:p>
         <w:sectPr>
-            <w:pgSz w:w="11900" w:h="16840" w:orient="portrait"/>
+            <w:pgSz w:w="16840" w:h="11900" w:orient="landscape"/>
             <w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0" w:mirrorMargins="false"/>
             <w:cols w:space="708" w:num="1" w:sep="false"/>
             <w:docGrid w:linePitch="360"/>

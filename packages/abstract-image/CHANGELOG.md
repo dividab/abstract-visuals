@@ -2,9 +2,20 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-image@3.0.1...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-image@3.3.2...master)
 
 ### Added
+
+### Changed
+
+### Removed
+
+## [v3.3.2](https://github.com/dividab/abstract-visuals/compare/abstract-image@3.0.0...abstract-image@3.3.2) - 2022-06-02
+
+### Added
+
+- Support for URL as source for embedded binary images
+- Support for positioning and scaling embedded svg images
 
 ### Changed
 

@@ -81,8 +81,9 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
     properties: {
       page: {
         size: {
-          width: pageWidth * abstractDocPixelToDocxDXARatio,
-          height: pageHeight * abstractDocPixelToDocxDXARatio,
+          //DOC JS does the orientation after the width and height are set
+          width: AD.PageStyle.getPaperWidth(section.page.style.paperSize) * abstractDocPixelToDocxDXARatio,
+          height: AD.PageStyle.getPaperHeight(section.page.style.paperSize) * abstractDocPixelToDocxDXARatio,
           orientation:
             section.page.style.orientation === "Landscape"
               ? DOCXJS.PageOrientation.LANDSCAPE
@@ -119,7 +120,7 @@ function renderHyperLink(
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * 2;
   const textRun = new DOCXJS.TextRun({
     text: hyperLink.text,
-    font: "Arial",
+    font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "blue",
     bold: style.bold,
@@ -147,18 +148,22 @@ function renderHyperLink(
 function renderSectionElement(
   element: AD.SectionElement.SectionElement,
   parentResources: AD.Resources.Resources,
-  contentAvailableWidth: number
+  contentAvailableWidth: number,
+  keepNext: boolean = false
 ): ReadonlyArray<DOCXJS.Paragraph | DOCXJS.Table> /*| DOCXJS.TableOfContents | DOCXJS.HyperlinkRef */ {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
-      return [renderParagraph(element, resources)];
+      return [renderParagraph(element, resources, keepNext)];
     case "Group":
       return [...renderGroup(element, parentResources, contentAvailableWidth)];
     case "Table":
-      const table = renderTable(element, resources, contentAvailableWidth);
+      const table = renderTable(element, resources, contentAvailableWidth, keepNext);
       return table
-        ? [table, new DOCXJS.Paragraph({ children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] })]
+        ? [
+            table,
+            new DOCXJS.Paragraph({ keepNext: keepNext, children: [new DOCXJS.TextRun({ text: ".", size: 0.000001 })] }),
+          ]
         : [];
     case "PageBreak":
       return [
@@ -174,7 +179,8 @@ function renderSectionElement(
 function renderTable(
   table: AD.Table.Table,
   resources: AD.Resources.Resources,
-  contentAvailableWidth: number
+  contentAvailableWidth: number,
+  keepNext: boolean
 ): DOCXJS.Table | undefined {
   const style = AD.Resources.getStyle(
     undefined,
@@ -247,7 +253,7 @@ function renderTable(
         style: DOCXJS.BorderStyle.NONE,
       },
     },
-    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths)),
+    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
   });
 }
 
@@ -255,11 +261,12 @@ function renderRow(
   row: AD.TableRow.TableRow,
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
-  columnWidths: ReadonlyArray<number>
+  columnWidths: ReadonlyArray<number>,
+  keepNext: boolean
 ): DOCXJS.TableRow {
   return new DOCXJS.TableRow({
     cantSplit: true,
-    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix])),
+    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix], keepNext)),
   });
 }
 
@@ -267,7 +274,8 @@ function renderCell(
   cell: AD.TableCell.TableCell,
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
-  width: number
+  width: number,
+  keepNext: boolean
 ): DOCXJS.TableCell {
   const style = AD.Resources.getStyle(
     tableCellStyle,
@@ -323,7 +331,7 @@ function renderCell(
     },
 
     children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, width));
+      sofar.push(...renderSectionElement(c, resources, width, keepNext));
       return sofar;
     }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>),
   });
@@ -355,6 +363,8 @@ function renderAtom(
       return renderImage(atom, textStyle);
     case "HyperLink":
       return renderHyperLink(atom, textStyle);
+    case "TocSeparator":
+      return new DOCXJS.TextRun({ text: "..." });
     default:
       return new DOCXJS.TextRun({ text: "missed" }); // TODO
   }
@@ -404,7 +414,7 @@ function renderTextRun(
 function renderPageNumber(style: AD.TextStyle.TextStyle): DOCXJS.TextRun {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * abstractDocToDocxFontRatio;
   return new DOCXJS.TextRun({
-    font: "Arial",
+    font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold,
@@ -421,7 +431,7 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): DOCXJS.TextRun {
 function renderTotalPages(style: AD.TextStyle.TextStyle): DOCXJS.TextRun {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * abstractDocToDocxFontRatio;
   return new DOCXJS.TextRun({
-    font: "Arial",
+    font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold,
@@ -440,7 +450,7 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): DOCXJS.TextRun
 
   return new DOCXJS.TextRun({
     text: text,
-    font: "Arial",
+    font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold,
@@ -458,13 +468,22 @@ function renderGroup(
   resources: AD.Resources.Resources,
   availabelWidth: number
 ): Array<DOCXJS.Paragraph | DOCXJS.Table> {
-  return group.children.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, availabelWidth));
-    return sofar;
-  }, [] as Array<DOCXJS.Paragraph | DOCXJS.Table>);
+  let sofar = Array<DOCXJS.Paragraph | DOCXJS.Table>();
+  let keepNext = true;
+  for (let index = 0; index < group.children.length; index++) {
+    if (index == group.children.length - 1) {
+      keepNext = false;
+    }
+    sofar.push(...renderSectionElement(group.children[index], resources, availabelWidth, keepNext));
+  }
+  return sofar;
 }
 
-function renderParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Resources.Resources): DOCXJS.Paragraph {
+function renderParagraph(
+  paragraph: AD.Paragraph.Paragraph,
+  resources: AD.Resources.Resources,
+  keepNext: boolean
+): DOCXJS.Paragraph {
   const style = AD.Resources.getStyle(
     undefined,
     paragraph.style,
@@ -474,6 +493,7 @@ function renderParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Resour
   ) as AD.ParagraphStyle.ParagraphStyle;
 
   return new DOCXJS.Paragraph({
+    keepNext: keepNext,
     alignment:
       (style.alignment &&
         (style.alignment === "Center"

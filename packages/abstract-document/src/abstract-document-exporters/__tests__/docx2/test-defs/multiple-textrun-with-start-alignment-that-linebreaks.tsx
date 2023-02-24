@@ -60,10 +60,10 @@ export const test: ExportTestDef = {
           <w:sz w:val="20" />
           <w:szCs w:val="20" />
           <w:rFonts
-            w:ascii="Arial"
-            w:cs="Arial"
-            w:eastAsia="Arial"
-            w:hAnsi="Arial"
+            w:ascii="Helvetica"
+            w:cs="Helvetica"
+            w:eastAsia="Helvetica"
+            w:hAnsi="Helvetica"
           />
         </w:rPr>
         <w:t xml:space="preserve">This is a text This is a text This is a text This is a text This is a text</w:t>
@@ -74,10 +74,10 @@ export const test: ExportTestDef = {
           <w:sz w:val="20" />
           <w:szCs w:val="20" />
           <w:rFonts
-            w:ascii="Arial"
-            w:cs="Arial"
-            w:eastAsia="Arial"
-            w:hAnsi="Arial"
+            w:ascii="Helvetica"
+            w:cs="Helvetica"
+            w:eastAsia="Helvetica"
+            w:hAnsi="Helvetica"
           />
         </w:rPr>
         <w:t xml:space="preserve">This is another text This is another text This is another text This is another text</w:t>
@@ -88,10 +88,10 @@ export const test: ExportTestDef = {
           <w:sz w:val="20" />
           <w:szCs w:val="20" />
           <w:rFonts
-            w:ascii="Arial"
-            w:cs="Arial"
-            w:eastAsia="Arial"
-            w:hAnsi="Arial"
+            w:ascii="Helvetica"
+            w:cs="Helvetica"
+            w:eastAsia="Helvetica"
+            w:hAnsi="Helvetica"
           />
         </w:rPr>
         <w:t xml:space="preserve">This is a third text This is a third text This is a third text This is a third text</w:t>

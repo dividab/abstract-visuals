@@ -2,15 +2,40 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.3...master)
 
 ### Added
 
 ### Changed
 
+- Word text uses the font from style.fontFamily
+
 ### Removed
 
-## [v.6.8.2](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2......abstract-document@6.8.1)
+## [v.6.9.3](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.0...abstract-document@6.9.3) - 2022-06-09
+
+### Added
+
+- Placeholder for TocSeparator in word
+
+### Changed
+
+- Grouping implemented with keepNext for word
+- Fix for page orientation in word
+
+### Removed
+
+## [v.6.9.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.2...abstract-document@6.9.0) - 2022-06-03
+
+### Added
+
+- Support for PNG and URL images with upgrade of abstract-image to 3.3.0
+
+### Changed
+
+### Removed
+
+## [v.6.8.2](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.8.1......abstract-document@6.8.2)
 
 ### Added
 
