@@ -226,13 +226,41 @@ export function measureTable(
     }
   }
 
+  // Try to find the minimal height required for each row
+  const cells = [];
+  for (let i = 0; i < rows.length; i++) {
+    cells.push(...rows[i].children.map((child) => ({ child, rowIndex: i })));
+  }
+  cells.sort((a, b) => {
+    if (a.child.rowSpan === b.child.rowSpan) {
+      return a.rowIndex - b.rowIndex;
+    } else {
+      return a.child.rowSpan - b.child.rowSpan;
+    }
+  });
+  const minRowHeights = new Array(rows.length).fill(0);
+  for (const { child, rowIndex } of cells) {
+    const rowSpan = child.rowSpan || 1;
+    let currentHeight = 0;
+    for (let i = rowIndex; i < rowIndex + rowSpan; i++) {
+      currentHeight += minRowHeights[i];
+    }
+    const adjustment = getDesiredSize(child, desiredSizes).height - currentHeight;
+    if (adjustment > 0) {
+      const adjustmentPerRow = adjustment / rowSpan;
+      for (let i = rowIndex; i < rowIndex + rowSpan; i++) {
+        minRowHeights[i] += adjustmentPerRow;
+      }
+    }
+  }
+
   const desiredWidth = table.columnWidths.some((w) => !isFinite(w))
     ? availableSize.width
     : table.columnWidths.reduce((a, b) => a + b, style.margins.left + style.margins.right);
-
   let desiredHeight = style.margins.top + style.margins.bottom;
-  for (let row of rows) {
-    let rowHeight = row.children.map((c) => getDesiredSize(c, desiredSizes).height).reduce((a, b) => Math.max(a, b), 0);
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowHeight = minRowHeights[i];
     desiredHeight += rowHeight;
     desiredSizes.set(row, AD.Size.create(desiredWidth, rowHeight));
     for (let cell of row.children) {
