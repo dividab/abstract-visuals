@@ -2,7 +2,26 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.3...master)
+
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.5...master)
+
+### Added
+
+### Changed
+
+### Removed
+
+## [v.6.9.5](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.4...abstract-document@6.9.5) - 2022-06-09
+
+### Added
+
+### Changed
+
+- Improve table layout measurement for long cells combined with row spans
+
+### Removed
+
+## [v.6.9.4](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.3...abstract-document@6.9.4) - 2022-06-09
 
 ### Added
 
