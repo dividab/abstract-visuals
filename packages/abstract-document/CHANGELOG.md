@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Removed
 
-## [v.6.9.5](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.4...abstract-document@6.9.5) - 2022-06-09
+## [v.6.9.5](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.4...abstract-document@6.9.5) - 2023-04-13
 
 ### Added
 
@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Removed
 
-## [v.6.9.4](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.3...abstract-document@6.9.4) - 2022-06-09
+## [v.6.9.4](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.3...abstract-document@6.9.4) - 2022-10-03
 
 ### Added
 
