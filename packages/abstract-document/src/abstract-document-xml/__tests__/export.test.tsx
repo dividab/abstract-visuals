@@ -37,7 +37,7 @@ describe("abstract-doc-xml", () => {
         xml[0]!
       ) as unknown as AbstractDoc.AbstractDoc;
 
-      expect(JSON.stringify(doc, undefined, 2)).toEqual(item.expectedPdfJson);
+      expect(doc).toEqual(item.expectedPdfJson);
     });
   });
 });
