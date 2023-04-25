@@ -1,2 +1,2 @@
-export * from "./validation.js";
-export * from "./parse-xml.js";
+export * from "./validation";
+export * from "./parse-xml";

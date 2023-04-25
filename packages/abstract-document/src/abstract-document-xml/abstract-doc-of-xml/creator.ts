@@ -19,7 +19,7 @@ import {
   Types,
   ImageResource as ADImageResource,
   TextStyle,
-} from "../../abstract-document/index.js";
+} from "../../abstract-document/index";
 import {
   TextRowProps,
   TextRow,
@@ -29,7 +29,7 @@ import {
   TextParagraph,
   ImageCellProps,
   ImageCell,
-} from "./custom-elements.js";
+} from "./custom-elements";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
 

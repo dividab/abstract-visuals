@@ -1,5 +1,5 @@
 import { XmlElement } from "../parse-xml";
-import { ADCreatorFn, propsCreators } from "./creator.js";
+import { ADCreatorFn, propsCreators } from "./creator";
 
 export function abstractDocOfXml(
   creators: Record<string, ADCreatorFn>,

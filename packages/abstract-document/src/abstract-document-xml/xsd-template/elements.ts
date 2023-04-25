@@ -1,4 +1,4 @@
-import { textCellElement, textParagraphElement, textRowElement } from "./custom-elements.js";
+import { textCellElement, textParagraphElement, textRowElement } from "./custom-elements";
 
 export const abstractDoc = `<xs:element name="AbstractDoc">
     <xs:complexType>

@@ -1,6 +1,6 @@
-import * as Elements from "./elements.js";
-import * as Styles from "./styles.js";
-import * as CustomElements from "./custom-elements.js";
+import * as Elements from "./elements";
+import * as Styles from "./styles";
+import * as CustomElements from "./custom-elements";
 
 const commonParts = `${Styles.layoutFoundation}
 ${Elements.section}
