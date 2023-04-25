@@ -9,7 +9,6 @@ import {
   TableRow,
   Image,
 } from "../abstract-document/index.js";
-import { ADObject, StyleName } from "./abstract-doc-of-xml.js";
 
 type StyleProps = {
   readonly ParagraphStyle: string;
@@ -19,10 +18,18 @@ type StyleProps = {
   readonly GroupStyle: string;
 };
 
-const StylePropKeys = ["ParagraphStyle", "TextStyle", "TableCellStyle", "TableStyle", "GroupStyle"];
-const isOneofKey = (val: string): val is keyof StyleProps => StylePropKeys.includes(val);
+const stylePropsKeys: Record<string, boolean> = {
+  ParagraphStyle: true,
+  TextStyle: true,
+  TableCellStyle: true,
+  TableStyle: true,
+  GroupStyle: true,
+};
 
-export function extractStyleNames(styleNames: string | undefined, styleNameTypes: StyleName): Partial<StyleProps> {
+export function extractStyleNames(
+  styleNames: string | undefined,
+  styleNameTypes: Record<string, string>
+): Partial<StyleProps> {
   const names = (styleNames || "").split(",");
 
   let styleNameProps = {};
@@ -30,11 +37,10 @@ export function extractStyleNames(styleNames: string | undefined, styleNameTypes
   for (const name of names) {
     const trimmed = name.trim();
     const type = styleNameTypes[trimmed];
-    if (type && isOneofKey(type)) {
+    if (type && stylePropsKeys[type]) {
       styleNameProps = { ...styleNameProps, [type]: trimmed };
     }
   }
-
   return styleNameProps;
 }
 
@@ -45,13 +51,11 @@ export type TextParagraphProps = {
   readonly styleNames?: string;
 };
 
-export function TextParagraph(props: TextParagraphProps, styleNameTypes: StyleName): ADObject {
+export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<string, string>): Paragraph.Paragraph {
   const { text, textStyle, paragraphStyle } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-
   const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
-  const paragraph = Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
-  return paragraph;
+  return Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
 }
 
 export type TextCellProps = TextParagraphProps & {
@@ -61,31 +65,25 @@ export type TextCellProps = TextParagraphProps & {
   readonly styleNames?: string;
 };
 
-export function TextCell(props: TextCellProps, styleNameTypes: StyleName): ADObject {
+export function TextCell(props: TextCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
   const { text, textStyle, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-
   const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
   const paragraph = Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
-  const tableCell = TableCell.create({ columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle }, [
-    paragraph,
-  ]);
-  return tableCell;
+  return TableCell.create({ columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle }, [paragraph]);
 }
 
 export type TextRowProps = TextCellProps & {};
 
-export function TextRow(props: TextRowProps, styleNameTypes: StyleName): ADObject {
+export function TextRow(props: TextRowProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
   const { text, textStyle, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-
   const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
   const paragraph = Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
   const tableCell = TableCell.create({ columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle }, [
     paragraph,
   ]);
-  const tableRow = TableRow.create({}, [tableCell]);
-  return tableRow;
+  return TableRow.create({}, [tableCell]);
 }
 
 export type ImageCellProps = {
@@ -99,16 +97,14 @@ export type ImageCellProps = {
   readonly styleNames?: string;
 };
 
-export function ImageCell(props: ImageCellProps, styleNameTypes: StyleName): ADObject {
+export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
   const { image, width, height, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-
   const imageElement = image && Image.create({ imageResource: image, width, height });
   const paragraph =
     imageElement && Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [imageElement]);
-  const tableCell = TableCell.create(
+  return TableCell.create(
     { columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle },
     paragraph && [paragraph]
   );
-  return tableCell;
 }

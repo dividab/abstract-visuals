@@ -196,14 +196,7 @@ function getDecorationsFromError(error: XmlError): ErrorObject {
     range: error.range,
     options: {
       className: getErrorClassNames(error),
-      hoverMessage: [
-        {
-          value: getErrorType(error),
-        },
-        {
-          value: getErrorMessage(error),
-        },
-      ],
+      hoverMessage: [{ value: getErrorType(error) }, { value: getErrorMessage(error) }],
     },
   };
 }
