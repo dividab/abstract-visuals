@@ -2,8 +2,8 @@ import path from "path";
 import { loadTests, onlySkip } from "@abstract-visuals/test-utils";
 import { ExportTestDef } from "./export-test-def";
 import { parseXml } from "../parse-xml";
-import { abstractDocOfXml, extractImageFontsStyleNames } from "../abstract-doc-of-xml";
-import { creators } from "../creator";
+import { abstractDocOfXml, extractImageFontsStyleNames } from "../abstract-doc-of-xml/abstract-doc-of-xml";
+import { creators } from "../abstract-doc-of-xml/creator";
 import { AbstractDoc } from "../../abstract-document";
 
 export const tests = loadTests<ExportTestDef>(path.join(__dirname, "test-defs/"));

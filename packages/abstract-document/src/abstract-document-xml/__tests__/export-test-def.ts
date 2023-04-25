@@ -1,5 +1,5 @@
 /**
- * Defines a data-type that represents a single test for the Docx render function
+ * Defines a data-type that represents a single test.
  */
 export type ExportTestDef = {
   readonly name: string;

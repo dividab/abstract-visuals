@@ -1,4 +1,4 @@
-import { XmlElement } from "./parse-xml/parse-xml.js";
+import { XmlElement } from "../parse-xml";
 import { ADCreatorFn, propsCreators } from "./creator.js";
 
 export function abstractDocOfXml(

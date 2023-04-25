@@ -8,7 +8,7 @@ import {
   TableCell,
   TableRow,
   Image,
-} from "../abstract-document/index.js";
+} from "../../abstract-document/index.js";
 
 type StyleProps = {
   readonly ParagraphStyle: string;

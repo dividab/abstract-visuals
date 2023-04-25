@@ -1,2 +1,1 @@
-export * from "./xsd-template.js";
-export * from "./custom-elements.js";
+export * from "./xsd-template";

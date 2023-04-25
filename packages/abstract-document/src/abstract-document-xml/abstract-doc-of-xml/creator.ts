@@ -19,7 +19,7 @@ import {
   Types,
   ImageResource as ADImageResource,
   TextStyle,
-} from "../abstract-document/index.js";
+} from "../../abstract-document/index.js";
 import {
   TextRowProps,
   TextRow,
