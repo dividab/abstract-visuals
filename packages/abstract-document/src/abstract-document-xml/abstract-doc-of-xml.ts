@@ -11,15 +11,6 @@ export function abstractDocOfXml(
   for (const childElement of xmlElement.children ?? []) {
     const childName = childElement.tagName;
     if (childName !== undefined) {
-      // Handle StyleNames & StyleName by converting
-      // <StyleNames>
-      //     <StyleName name="kalle" .../>
-      // <StyleNames>
-      // to:
-      // styles: {
-      //   kalle: {...}
-      // }
-
       if (childName === "StyleNames") {
         props.styles = abstractDocOfXml(creators, childElement);
       } else if (childName === "StyleName" && childElement.attributes && childElement.attributes.name) {
@@ -43,8 +34,7 @@ export function abstractDocOfXml(
 
   // Create the abstract doc object to return
   const allProps = { ...xmlElement.attributes, ...props };
-  const defaultCreator: ADCreatorFn = () => ({ ...allProps });
-  const creator = xmlElement.tagName && creators[xmlElement.tagName] ? creators[xmlElement.tagName] : defaultCreator;
+  const creator = xmlElement.tagName && creators[xmlElement.tagName] ? creators[xmlElement.tagName] : () => allProps;
   if (creator === undefined) {
     throw new Error(`Could not find creator for element with name ${xmlElement.tagName}`);
   }
