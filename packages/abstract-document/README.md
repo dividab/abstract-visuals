@@ -4,7 +4,7 @@
 [![code style: prettier][prettier-image]][prettier-url]
 [![MIT license][license-image]][license-url]
 
-Create documents using functions, JSX, or XML and render to any format.
+Create documents using functions, JSX, or XML and render to any format
 
 ## Introduction
 

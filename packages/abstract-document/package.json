@@ -39,5 +39,6 @@
     "diff-js-xml": "^1.0.6",
     "jszip": "^3.10.1",
     "pdf2json": "2.0.1"
-  }
+  },
+  "gitHead": "dd411af92d1c50711153fde167835b8005ef5cca"
 }
