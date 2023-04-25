@@ -174,8 +174,9 @@ function validateElements(
     const foundChild = findElement(schemaChildren, childName);
     if (!foundChild) {
       const childRange = getRangeOfElement(childName, false);
-      childRange &&
+      if (childRange) {
         errors.push(createError(`"${childName}" is not a valid child of "${tagName}"`, ErrorType.error, childRange));
+      }
     }
 
     const elementErrors = validateElements(child, foundChild, completeSchema, getRangeOfElement);

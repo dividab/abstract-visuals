@@ -148,20 +148,11 @@ export function AbstractDocOfXml(
     const propsCreator =
       allProps[propName] && PropCreator.propsCreators[propName] ? PropCreator.propsCreators[propName] : undefined;
     if (propsCreator) {
-      // if (propsCreator.name === "margins") {
-      //   theObj["margins"] = propsCreator(allProps, children);
-      // }
-      // if (propsCreator.name === "borders") {
-      //   theObj["borders"] = propsCreator(allProps, children);
-      // }
-      // if (propsCreator.name === "columnWidths") {
-      //   theObj["columnWidths"] = propsCreator(allProps, children);
-      // }
       theObj[propsCreator.name] = propsCreator(allProps, children);
     }
   }
-  // Elements styling needs to have style: {type= "StyleName" }. Occures when having a <style></style> element.
 
+  // Elements styling needs to have style: {type= "StyleName" }. Occures when having a <style></style> element.
   if (theObj.type && (theObj.type as string) === "Table") {
     theObj.style = { ...(theObj.style as Object), type: "TableStyle" };
   }
