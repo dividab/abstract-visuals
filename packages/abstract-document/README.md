@@ -4,7 +4,7 @@
 [![code style: prettier][prettier-image]][prettier-url]
 [![MIT license][license-image]][license-url]
 
-Create documents using functions or JSX and render to any format
+Create documents using functions, JSX, or XML and render to any format
 
 ## Introduction
 
@@ -25,7 +25,7 @@ const doc = render(
       <Paragraph>
         <TextRun text="Test" />
       </Paragraph>
-      {["a", "b", "c"].map(c => (
+      {["a", "b", "c"].map((c) => (
         <Paragraph key={c}>
           <TextRun text={c} />
         </Paragraph>
