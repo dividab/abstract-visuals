@@ -2,7 +2,7 @@ import path from "path";
 import { loadTests, onlySkip } from "@abstract-visuals/test-utils";
 import { ExportTestDef } from "./export-test-def";
 import { parseXml } from "../parse-xml";
-import { AbstractDocOfXml, extractImageFontsStyleNames } from "../abstract-doc-of-xml";
+import { abstractDocOfXml, extractImageFontsStyleNames } from "../abstract-doc-of-xml";
 import { creators } from "../creator";
 import { AbstractDoc } from "../../abstract-document";
 
@@ -32,7 +32,7 @@ describe("abstract-doc-xml", () => {
         },
       });
 
-      const doc = AbstractDocOfXml(
+      const doc = abstractDocOfXml(
         creators(item.images, item.fonts, extractImageFontsStyleNames(xml)[2]),
         xml[0]!
       ) as unknown as AbstractDoc.AbstractDoc;

@@ -5,6 +5,7 @@ import { AbstractImageExampleSvg } from "./abstract-image-example-svg";
 import { AbstractImageExampleDxf } from "./abstract-image-example-dxf";
 import { AbstractChartExample } from "./abstract-chart-example";
 import { AbstractDocumentExample } from "./abstract-document-example";
+import { AbstractDocumentXMLExample } from "./abstract-document-xml-example";
 
 // tslint:disable
 
@@ -43,6 +44,10 @@ export class Container extends React.Component<{}, State> {
         {
           name: "AbstractDocument",
           component: AbstractDocumentExample,
+        },
+        {
+          name: "AbstractDocumentXML",
+          component: AbstractDocumentXMLExample,
         },
       ],
     };

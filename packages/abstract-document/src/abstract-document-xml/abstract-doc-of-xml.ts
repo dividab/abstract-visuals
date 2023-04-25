@@ -1,7 +1,7 @@
 import { XmlElement } from "./parse-xml/parse-xml.js";
 import { ADCreatorFn, propsCreators } from "./creator.js";
 
-export function AbstractDocOfXml(
+export function abstractDocOfXml(
   creators: Record<string, ADCreatorFn>,
   xmlElement: XmlElement,
   onlyChildren: boolean = false
@@ -21,19 +21,19 @@ export function AbstractDocOfXml(
       // }
 
       if (childName === "StyleNames") {
-        props.styles = AbstractDocOfXml(creators, childElement);
+        props.styles = abstractDocOfXml(creators, childElement);
       } else if (childName === "StyleName" && childElement.attributes && childElement.attributes.name) {
         const styleName = childElement.attributes.name;
-        const style = AbstractDocOfXml(creators, childElement);
+        const style = abstractDocOfXml(creators, childElement);
         props[styleName] = style;
       } else if (childName.startsWith(childName.charAt(0).toUpperCase())) {
         // For uppercase elements we add them to the children key
-        children.push(AbstractDocOfXml(creators, childElement));
+        children.push(abstractDocOfXml(creators, childElement));
       } else {
         // For lowercase elements we add them as keys using their name
         // Some special keys should directly have an array of children as value instead of an object with children key
         const childrenOnly = childName === "header" || childName === "footer" || childName === "headerRows";
-        props[childName] = AbstractDocOfXml(creators, childElement, childrenOnly);
+        props[childName] = abstractDocOfXml(creators, childElement, childrenOnly);
       }
     }
   }

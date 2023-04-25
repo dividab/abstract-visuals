@@ -1,5 +1,4 @@
 import { X2jOptionsOptional, XMLParser } from "fast-xml-parser";
-import { FastXmlElement } from "./validation.js";
 
 export type XmlElement = {
   readonly tagName: string;
@@ -7,6 +6,8 @@ export type XmlElement = {
   readonly children: ReadonlyArray<XmlElement>;
   readonly textContent?: string;
 };
+
+export type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
 export function parseXml(text: string, options?: X2jOptionsOptional): ReadonlyArray<XmlElement> {
   const parser = new XMLParser(options);
@@ -43,4 +44,52 @@ function transformFXP(parsedXml: ReadonlyArray<FastXmlElement>): ReadonlyArray<X
     const textContent = textContents.join("\n");
     return { tagName: key, attributes: attributes, children: transformFXP(children), textContent: textContent };
   });
+}
+
+export function findElement(
+  elements: ReadonlyArray<XmlElement>,
+  elementName: string | undefined
+): XmlElement | undefined {
+  if (!elementName) {
+    return undefined;
+  }
+  for (const elem of elements) {
+    if (elem.tagName === "annotation" || elem.tagName === "attribute") {
+      continue;
+    }
+    if (shouldSkipLevel(elem)) {
+      const childElement = findElement(Array.from(elem.children), elementName);
+      if (childElement) {
+        return shouldSkipLevel(childElement)
+          ? findElement(Array.from(childElement.children), elementName)
+          : childElement;
+      }
+    }
+    if (elem.attributes.name === elementName) {
+      return elem;
+    }
+  }
+  return undefined;
+}
+
+export function getChildren(elements: ReadonlyArray<XmlElement>): ReadonlyArray<XmlElement> {
+  for (const elem of elements) {
+    if (elem.tagName === "annotation" || elem.tagName === "attribute") {
+      continue;
+    }
+    if (shouldSkipLevel(elem)) {
+      const child = getChildren(Array.from(elem.children));
+      if (child.length > 0) {
+        return child.flatMap((c) => (shouldSkipLevel(c) ? getChildren(Array.from(c.children)) : c));
+      }
+    }
+    return elements;
+  }
+  return [];
+}
+
+function shouldSkipLevel(tag: XmlElement): boolean {
+  return (
+    tag.tagName === "all" || tag.tagName === "sequence" || tag.tagName === "choice" || tag.attributes.name === undefined
+  );
 }

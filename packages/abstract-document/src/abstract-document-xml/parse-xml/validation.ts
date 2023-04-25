@@ -1,6 +1,5 @@
 import { ValidationError, XMLValidator } from "fast-xml-parser";
-import { findElement } from "./utils.js";
-import { XmlElement, parseXml } from "./parse-xml.js";
+import { XmlElement, parseXml, findElement } from "./parse-xml.js";
 
 enum ErrorType {
   warning = 0,
@@ -36,8 +35,6 @@ type XmlError = {
   readonly type: ErrorType;
   readonly range: Range;
 };
-
-export type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
 // eslint-disable-next-line functional/prefer-readonly-type
 export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement>): Array<ErrorObject> {
