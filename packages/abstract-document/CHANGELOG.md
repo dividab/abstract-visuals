@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
+- Abstract doc xml
+
 ### Changed
 
 ### Removed
