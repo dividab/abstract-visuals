@@ -14,8 +14,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
-- Support for URL as source for embedded binary images
-- Support for positioning and scaling embedded svg images
+- Add missing ramda dependency #106
 
 ## [v3.3.2](https://github.com/dividab/abstract-visuals/compare/abstract-image@3.0.0...abstract-image@3.3.2) - 2022-06-02
 
