@@ -17,11 +17,13 @@
   "dependencies": {
     "base64-js": "^1.2.0",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "ramda": "^0.22.1"
   },
   "devDependencies": {
     "@types/base64-js": "^1.2.5",
     "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0"
+    "@types/react-dom": "^16.9.0",
+    "@types/ramda": "^0.25.29"
   }
 }
