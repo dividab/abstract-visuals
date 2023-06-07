@@ -9,7 +9,8 @@ export type AstChildElements =
   | AstSubscript
   | AstSuperscript
   | AstList
-  | AstListItem;
+  | AstListItem
+  | AstBreak;
 export type AstElements = AstRoot | AstChildElements;
 
 export interface AstMetaLoc {
@@ -70,6 +71,10 @@ export interface AstListItem {
   readonly type: "listItem";
   readonly spread?: boolean;
   readonly children: Array<AstChildElements>;
+}
+
+export interface AstBreak {
+  readonly type: "break";
 }
 
 export interface MarkDownProcessData {

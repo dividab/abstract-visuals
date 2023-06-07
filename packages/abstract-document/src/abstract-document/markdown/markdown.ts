@@ -28,12 +28,12 @@ function preProcessMarkdownAst(
   d: number,
   listItemParams: ListItemParams | undefined = undefined
 ): MarkDownProcessData {
-  if (ast.type === "text") {
+  if (ast.type === "text" || ast.type === "break") {
     return { atoms, paragraphs };
   } // Need to convice TS that we never go below this line with a Str element.
 
   if (ast.children) {
-    ast.children.forEach((child) => {
+    ast.children.forEach((child, i) => {
       let style = styles.slice(); // create a new copy of styles
       switch (ast.type) {
         case "heading":
@@ -91,6 +91,8 @@ function preProcessMarkdownAst(
           )
         );
         atoms = []; // Flush the Atoms-array for the next paragraph.
+      } else if (child.type === "break") {
+        atoms.push({ type: "LineBreak" });
       } else if (child.type === "text") {
         atoms = atoms.concat(
           child.value.split("\n").map(

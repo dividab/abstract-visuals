@@ -16,6 +16,7 @@ import {
   TextField as TextField1,
   TextRun as TextRun1,
   PageBreak as PageBreak1,
+  LineBreak as LineBreak1,
   //Resources,
   //MasterPage,
   //ParagraphStyle,
@@ -54,6 +55,7 @@ export const Markdown = (props: Markdown1.MarkdownProps): JSX.Element => Markdow
 export const TextField = (props: TextField1.TextFieldProps): JSX.Element => TextField1.create(props) as any;
 export const TextRun = (props: TextRun1.TextRunProps): JSX.Element => TextRun1.create(props) as any;
 export const PageBreak = (props: PageBreak1.PageBreakProps): JSX.Element => PageBreak1.create(props) as any;
+export const LineBreak = (props: LineBreak1.LineBreakProps): JSX.Element => LineBreak1.create(props) as any;
 
 export function render(element: any): any {
   if (typeof element.type !== "function") {
