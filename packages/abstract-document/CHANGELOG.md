@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.6...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.10.4...master)
+
+### Added
+
+- Added support for explicit line breaks inside paragraphs
+
+### Changed
+
+### Removed
+
+## [6.10.4](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.9.6...abstract-document@6.10.4) - 2023-04-25
 
 ### Added
 
