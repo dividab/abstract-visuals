@@ -241,6 +241,13 @@ function renderParagraph(
   let currentWidth = 0;
   let previousAtomType: string | undefined;
   for (const atom of paragraph.children) {
+    if (atom.type === "LineBreak") {
+      currentRow.push(atom);
+      rows.push(currentRow);
+      currentRow = [];
+      continue;
+    }
+
     if (!previousAtomType) {
       // First atom
       previousAtomType = atom.type;
@@ -320,7 +327,7 @@ function renderParagraph(
 
     let rowHeight = 0;
 
-    const lastIndex = row.length - 1;
+    const lastIndex = row[row.length - 1]?.type === "LineBreak" ? row.length - 2 : row.length - 1;
     for (const [i, atom] of row.entries()) {
       const atomSize = getDesiredSize(atom, desiredSizes);
       renderAtom(
@@ -386,6 +393,8 @@ function renderAtom(
       renderTocSeparator(pdf, finalRect, textStyle, atom);
       return;
     case "LinkTarget":
+      return;
+    case "LineBreak":
       return;
   }
 }

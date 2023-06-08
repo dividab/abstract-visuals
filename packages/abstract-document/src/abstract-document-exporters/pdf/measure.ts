@@ -102,51 +102,67 @@ function measureParagraph(
   const contentAvailableHeight = availableSize.height - (style.margins.top + style.margins.bottom);
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, contentAvailableHeight);
 
-  const initialHeight = style.margins.top + style.margins.bottom;
-  let desiredHeight = initialHeight;
-  let currentRowWidth = 0;
-  let currentRowHeight = 0;
+  let paragraphHeight = style.margins.top + style.margins.bottom;
   let desiredSizes = new Map<any, AD.Size.Size>();
-  let concatenatedText = "";
-  let hasAtomImage = false;
-  let textOptions;
-  for (let atom of paragraph.children) {
-    if (atom.type === "Image") {
-      hasAtomImage = true;
-    }
-    const atomSize = measureAtom(
-      pdf,
-      resources,
-      style.textStyle,
-      contentAvailableSize,
-      contentAvailableSize.width - currentRowWidth,
-      atom
-    );
-    if (atom.type === "TextRun" || atom.type === "TextField" || atom.type === "HyperLink") {
-      concatenatedText += atom.text;
-      textOptions = getBiggestStyle(atom, style, resources, textOptions);
-    }
-    desiredSizes.set(atom, atomSize);
-    currentRowWidth += atomSize.width;
-    currentRowHeight = Math.max(atomSize.height, currentRowHeight);
-    if (currentRowWidth > contentAvailableSize.width) {
-      desiredHeight += currentRowHeight;
-      currentRowWidth = 0;
-      currentRowHeight = 0;
+
+  const rows: Array<Array<AD.Atom.Atom>> = [];
+  let currentRow: Array<AD.Atom.Atom> = [];
+  for (const atom of paragraph.children) {
+    currentRow.push(atom);
+    if (atom.type === "LineBreak") {
+      rows.push(currentRow);
+      currentRow = [];
     }
   }
-  if (hasAtomImage) {
-    desiredHeight += currentRowHeight;
-  } else {
-    desiredHeight =
-      initialHeight +
-      pdf.heightOfString(concatenatedText, {
+  if (currentRow.length > 0) {
+    rows.push(currentRow);
+  }
+
+  for (const row of rows) {
+    let desiredHeight = 0;
+    let currentRowWidth = 0;
+    let currentRowHeight = 0;
+    let concatenatedText = "";
+    let hasAtomImage = false;
+    let textOptions;
+    for (const atom of row) {
+      if (atom.type === "Image") {
+        hasAtomImage = true;
+      }
+      const atomSize = measureAtom(
+        pdf,
+        resources,
+        style.textStyle,
+        contentAvailableSize,
+        contentAvailableSize.width - currentRowWidth,
+        atom
+      );
+      if (atom.type === "TextRun" || atom.type === "TextField" || atom.type === "HyperLink") {
+        concatenatedText += atom.text;
+        textOptions = getBiggestStyle(atom, style, resources, textOptions);
+      }
+      desiredSizes.set(atom, atomSize);
+      currentRowWidth += atomSize.width;
+      currentRowHeight = Math.max(atomSize.height, currentRowHeight);
+      if (currentRowWidth > contentAvailableSize.width) {
+        desiredHeight += currentRowHeight;
+        currentRowWidth = 0;
+        currentRowHeight = 0;
+      }
+    }
+    if (row.length === 1 && row[0].type === "LineBreak") {
+      paragraphHeight += currentRowHeight;
+    } else if (hasAtomImage) {
+      paragraphHeight += desiredHeight + currentRowHeight;
+    } else {
+      paragraphHeight += pdf.heightOfString(concatenatedText, {
         width: textOptions && textOptions.lineBreak === false ? Infinity : availableSize.width,
         ...textOptions,
       });
+    }
   }
 
-  desiredSizes.set(paragraph, AD.Size.create(availableSize.width, desiredHeight));
+  desiredSizes.set(paragraph, AD.Size.create(availableSize.width, paragraphHeight));
 
   return desiredSizes;
 }
@@ -313,6 +329,8 @@ function measureAtom(
       return measureHyperLink(pdf, resources, textStyle, atom, availableSize);
     case "TocSeparator":
       return measureTocSeparator(pdf, textStyle, availableSize, availableRowSpace);
+    case "LineBreak":
+      return measureLineBreak(pdf, resources, textStyle, availableSize);
     case "LinkTarget":
       return {
         width: availableSize.width,
@@ -321,6 +339,19 @@ function measureAtom(
     default:
       return exhaustiveCheck(atom);
   }
+}
+
+function measureLineBreak(
+  pdf: any,
+  resources: AD.Resources.Resources,
+  textStyle: AD.TextStyle.TextStyle,
+  availableSize: AD.Size.Size
+): AD.Size.Size {
+  const textSize = measureText(pdf, "A", textStyle, availableSize);
+  return {
+    height: textSize.height,
+    width: 0,
+  };
 }
 
 function measureTextRun(
