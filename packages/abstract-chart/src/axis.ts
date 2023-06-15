@@ -44,7 +44,7 @@ export function createLogarithmicAxis(
 }
 
 const linearMultiples = [1, 2, 5];
-const linearPowers = [-2, -1, 0, 1, 2, 3, 4, 5, 6];
+const linearPowers = [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export function getTicks(desiredTicks: number, axis: Axis): Array<number> {
   switch (axis.type) {
