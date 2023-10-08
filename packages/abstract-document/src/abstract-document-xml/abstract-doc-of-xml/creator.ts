@@ -65,11 +65,19 @@ export const creators: (
     TextCell: (props: TextCellProps) => TextCell(props, styleNames),
     TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
     TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
-    ImageRow: (props: ImageRowProps) => ImageRow(imageProps(images, props) as unknown as ImageRowProps, styleNames),
-    ImageCell: (props: ImageCellProps) => ImageCell(imageProps(images, props) as unknown as ImageCellProps, styleNames),
-    ImageParagraph: (props: ImageParagraphProps) =>
-      ImageParagraph(imageProps(images, props) as unknown as ImageParagraphProps, styleNames),
-    Image: (props: Record<string, unknown>) => Image.create(imageProps(images, props)),
+    ImageRow: (props: ImageRowProps) => {
+      mutateImageProps(images, props);
+      return ImageRow(props, styleNames);
+    },
+    ImageCell: (props: ImageCellProps) => {
+      return ImageCell(props, styleNames);
+    },
+    ImageParagraph: (props: ImageParagraphProps) => {
+      return ImageParagraph(props, styleNames);
+    },
+    Image: (props: Record<string, unknown>) => {
+      return Image.create(props as unknown as Image.ImageProps);
+    },
     Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
       Table.create(props as unknown as Table.TableProps, children),
     TableRow: (props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children),
@@ -256,23 +264,22 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
 };
 
-function imageProps(images: Record<string, ImageResource>, props: Record<string, unknown>): Image.ImageProps {
-  const newProps = { ...props, width: props.width, height: props.height, imageResource: props.src };
+function mutateImageProps(images: Record<string, ImageResource>, props: Record<string, unknown>): void {
   const image = images[(props.src as string) ?? ""];
   if (image) {
     if (image.width && image.height) {
-      newProps.width = image.width;
-      newProps.height = image.height;
+      props.width = image.width;
+      props.height = image.height;
     } else {
       const scaleX = (props.width as number) / image.abstractImage.size.width;
       const scaleY = (props.height as number) / image.abstractImage.size.height;
       if (scaleX < scaleY) {
-        newProps.height = (props.height as number) * (scaleX / scaleY);
+        props.height = (props.height as number) * (scaleX / scaleY);
       } else {
-        newProps.width = (props.width as number) * (scaleY / scaleX);
+        props.width = (props.width as number) * (scaleY / scaleX);
       }
     }
-    newProps.imageResource = props.src as string;
+
+    props.imageResource = images[props.src as string];
   }
-  return newProps as unknown as Image.ImageProps;
 }
