@@ -19,7 +19,6 @@ import {
   TextRun,
   TocSeparator,
   Types,
-  TextStyle,
 } from "../../abstract-document/index";
 import {
   TextRowProps,
@@ -38,12 +37,6 @@ import {
 } from "./custom-elements";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
-
-export type TextRunProps = {
-  readonly text: string;
-  readonly styleName?: string;
-  readonly style?: TextStyle.TextStyle;
-};
 
 export const creators: (
   images: Record<string, ImageResource>,
@@ -87,8 +80,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     const fixedStyles: Record<string, Record<string, string | number>> = {};
     if (props.styles) {
       Object.keys(props.styles).forEach((key: string) => {
-        const styleObj = props.styles[key];
-        fixedStyles[((styleObj ? styleObj.type : "") + "_" + key) as string] = { ...props.styles[key] };
+        fixedStyles[(props.styles[key]?.type ?? "") + "_" + key] = { ...props.styles[key] };
       });
     }
 
