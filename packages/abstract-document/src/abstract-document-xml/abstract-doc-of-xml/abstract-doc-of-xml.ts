@@ -66,7 +66,7 @@ export function abstractDocOfXml(
         obj.style = { ...(obj.style as Object), type: "TableCellStyle" };
         break;
       case "Paragraph":
-        obj.style = { ...obj.style, type: "ParagraphStyle" };
+        obj.style = { ...obj.style, type: "ParagraphStyle", textStyle: { type: "TextStyle" } };
         break;
       case "TextField":
       case "HyperLink":
@@ -78,7 +78,7 @@ export function abstractDocOfXml(
     }
   }
   if (typeof obj.paragraphStyle === "object") {
-    obj.paragraphStyle = { ...obj.paragraphStyle, type: "ParagraphStyle" };
+    obj.paragraphStyle = { ...obj.paragraphStyle, type: "ParagraphStyle", textStyle: { type: "TextStyle" } };
   }
   if (typeof obj.cellStyle === "object") {
     obj.cellStyle = { ...obj.cellStyle, type: "TableCellStyle" };
