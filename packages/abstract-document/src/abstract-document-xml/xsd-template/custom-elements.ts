@@ -59,10 +59,11 @@ export const imageRow = `<xs:complexType name="ImageRow">
 		<xs:documentation>Shortcut to create a \\<TableRow> \\<TableCell> \\<Paragraph> \\<Image src text="..." /> \\</Paragraph> \\</TableCell> \\</TableRow></xs:documentation>
 	</xs:annotation>
 	<xs:attribute name="styleNames" type="xs:string" />
-	<xs:attribute name="target" type="xs:string" />
 	<xs:attribute name="columnSpan" type="xs:string" />
 	<xs:attribute name="rowSpan" type="xs:string" />
-	<xs:attribute name="text" type="xs:string" use="required" />
+	<xs:attribute name="src" type="xs:string" use="required" />
+	<xs:attribute name="width" type="xs:decimal" use="required" />
+	<xs:attribute name="height" type="xs:decimal" use="required" />
 </xs:complexType>`;
 export const imageRowElement = `<xs:element name="ImageRow" type="ImageRow" maxOccurs="unbounded" />`;
 
@@ -71,10 +72,11 @@ export const imageCell = `<xs:complexType name="ImageCell">
 		<xs:documentation>Shortcut to create a \\<ImageCell> \\<Paragraph> \\<Image src="..." /> \\</Paragraph> \\</TableCell></xs:documentation>
 	</xs:annotation>
 	<xs:attribute name="styleNames" type="xs:string" />
-	<xs:attribute name="target" type="xs:string" />
 	<xs:attribute name="columnSpan" type="xs:string" />
 	<xs:attribute name="rowSpan" type="xs:string" />
-	<xs:attribute name="text" type="xs:string" use="required" />
+	<xs:attribute name="src" type="xs:string" use="required" />
+	<xs:attribute name="width" type="xs:decimal" use="required" />
+	<xs:attribute name="height" type="xs:decimal" use="required" />
 </xs:complexType>`;
 export const imageCellElement = `<xs:element name="ImageCell" type="ImageCell" minOccurs="0" maxOccurs="unbounded" />`;
 
