@@ -19,7 +19,6 @@ import {
   TextRun,
   TocSeparator,
   Types,
-  ImageResource as ADImageResource,
   TextStyle,
 } from "../../abstract-document/index";
 import {
@@ -35,11 +34,10 @@ import {
   ImageRowProps,
   ImageParagraph,
   ImageRow,
+  ImageResource,
 } from "./custom-elements";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
-
-export type ImageResource = ADImageResource.ImageResource & { readonly width?: number; readonly height?: number };
 
 export type TextRunProps = {
   readonly text: string;
@@ -65,22 +63,11 @@ export const creators: (
     TextCell: (props: TextCellProps) => TextCell(props, styleNames),
     TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
     TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
-    ImageRow: (props: ImageRowProps) => {
-      mutateImageProps(images, props);
-      return ImageRow(props, styleNames);
-    },
-    ImageCell: (props: ImageCellProps) => {
-      mutateImageProps(images, props);
-      return ImageCell(props, styleNames);
-    },
-    ImageParagraph: (props: ImageParagraphProps) => {
-      mutateImageProps(images, props);
-      return ImageParagraph(props, styleNames);
-    },
-    Image: (props: Record<string, unknown>) => {
-      mutateImageProps(images, props);
-      return Image.create(props as unknown as Image.ImageProps);
-    },
+    ImageRow: (props: ImageRowProps) => ImageRow(imageProps(images, props) as unknown as ImageRowProps, styleNames),
+    ImageCell: (props: ImageCellProps) => ImageCell(imageProps(images, props) as unknown as ImageCellProps, styleNames),
+    ImageParagraph: (props: ImageParagraphProps) =>
+      ImageParagraph(imageProps(images, props) as unknown as ImageParagraphProps, styleNames),
+    Image: (props: Record<string, unknown>) => Image.create(imageProps(images, props) as unknown as Image.ImageProps),
     Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
       Table.create(props as unknown as Table.TableProps, children),
     TableRow: (props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children),
@@ -267,22 +254,24 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
 };
 
-function mutateImageProps(images: Record<string, ImageResource>, props: Record<string, unknown>): void {
-  const image = images[(props.src as string) ?? ""];
+function imageProps(images: Record<string, ImageResource>, props: Record<string, unknown>): Record<string, unknown> {
+  const newProps = { ...props };
+  const image = images[(newProps.src as string) ?? ""];
   if (image) {
     if (image.width && image.height) {
-      props.width = image.width;
-      props.height = image.height;
+      newProps.width = image.width;
+      newProps.height = image.height;
     } else {
-      const scaleX = (props.width as number) / image.abstractImage.size.width;
-      const scaleY = (props.height as number) / image.abstractImage.size.height;
+      const scaleX = (newProps.width as number) / image.abstractImage.size.width;
+      const scaleY = (newProps.height as number) / image.abstractImage.size.height;
       if (scaleX < scaleY) {
-        props.height = (props.height as number) * (scaleX / scaleY);
+        newProps.height = (newProps.height as number) * (scaleX / scaleY);
       } else {
-        props.width = (props.width as number) * (scaleY / scaleX);
+        newProps.width = (newProps.width as number) * (scaleY / scaleX);
       }
     }
 
-    props.imageResource = images[props.src as string];
+    newProps.imageResource = images[newProps.src as string];
   }
+  return newProps;
 }
