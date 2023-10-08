@@ -9,6 +9,7 @@ import {
   Image,
   ImageResource as ADImageResource,
 } from "../../abstract-document/index";
+import { ParagraphProps } from "../../abstract-document/section-elements/paragraph";
 
 type StyleProps = {
   readonly ParagraphStyle: string;
@@ -61,8 +62,18 @@ export type TextCellProps = Omit<TextParagraphProps, "style"> & {
 export function TextCell(props: TextCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
   const { text, textStyle, paragraphStyle, style, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
-  const paragraph = Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
+  const textRun = TextRun.create({
+    text,
+    style: textStyle ? { ...textStyle, type: "TextStyle" } : undefined,
+    styleName: styleNames.TextStyle,
+  });
+  const paragraph = Paragraph.create(
+    {
+      style: paragraphStyle ? { ...paragraphStyle, type: "ParagraphStyle" } : undefined,
+      styleName: styleNames.ParagraphStyle,
+    },
+    [textRun]
+  );
   return TableCell.create({ columnSpan, rowSpan, style, styleName: styleNames.TableCellStyle }, [paragraph]);
 }
 
@@ -76,7 +87,11 @@ export type TextParagraphProps = {
 export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<string, string>): Paragraph.Paragraph {
   const { text, textStyle, style } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
+  const textRun = TextRun.create({
+    text,
+    style: textStyle ? { ...textStyle, type: "TextStyle" } : undefined,
+    styleName: styleNames.TextStyle,
+  });
   return Paragraph.create({ style, styleName: styleNames.ParagraphStyle }, [textRun]);
 }
 
@@ -99,7 +114,10 @@ export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, 
   const { imageResource, width, height, paragraphStyle, style, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
   const imageElement = imageResource && Image.create({ imageResource, width, height });
-  const pararaphProps = { style: paragraphStyle, styleName: styleNames.ParagraphStyle };
+  const pararaphProps = {
+    style: paragraphStyle ? { ...paragraphStyle, type: "ParagraphStyle" } : undefined,
+    styleName: styleNames.ParagraphStyle,
+  } as ParagraphProps;
   const paragraph = imageElement
     ? Paragraph.create(pararaphProps, [imageElement])
     : Paragraph.create(pararaphProps, [ImageMissing]);

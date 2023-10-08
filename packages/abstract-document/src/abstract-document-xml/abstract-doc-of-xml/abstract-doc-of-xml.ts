@@ -85,16 +85,6 @@ export function abstractDocOfXml(
     }
   }
 
-  if (typeof obj.paragraphStyle === "object") {
-    obj.paragraphStyle = { ...obj.paragraphStyle, type: "ParagraphStyle" };
-  }
-  if (typeof obj.cellStyle === "object") {
-    obj.cellStyle = { ...obj.cellStyle, type: "TableCellStyle" };
-  }
-  if (typeof obj.textStyle === "object") {
-    obj.textStyle = { ...obj.textStyle, type: "TextStyle" };
-  }
-
   if (children.length > 0) {
     obj.children = children;
   }
