@@ -63,10 +63,12 @@ export function abstractDocOfXml(
       case "TableCell":
       case "ImageCell":
       case "TextCell":
-        obj.style = { ...(obj.style as Object), type: "TableCellStyle" };
+        obj.style = { ...obj.style, type: "TableCellStyle" };
         break;
+      case "TextParagraph":
+      case "ImageParagraph":
       case "Paragraph":
-        obj.style = { ...obj.style, type: "ParagraphStyle", textStyle: { type: "TextStyle" } };
+        obj.style = { ...obj.style, type: "ParagraphStyle" };
         break;
       case "TextField":
       case "HyperLink":
@@ -78,7 +80,7 @@ export function abstractDocOfXml(
     }
   }
   if (typeof obj.paragraphStyle === "object") {
-    obj.paragraphStyle = { ...obj.paragraphStyle, type: "ParagraphStyle", textStyle: { type: "TextStyle" } };
+    obj.paragraphStyle = { ...obj.paragraphStyle, type: "ParagraphStyle" };
   }
   if (typeof obj.cellStyle === "object") {
     obj.cellStyle = { ...obj.cellStyle, type: "TableCellStyle" };
@@ -87,7 +89,6 @@ export function abstractDocOfXml(
     obj.textStyle = { ...obj.textStyle, type: "TextStyle" };
   }
 
-  // let theObj["columnWidths"] = propsCreator(allProps, children);
   if (children.length > 0) {
     (obj as { children: Array<unknown> }).children = children;
   }
