@@ -63,9 +63,9 @@ export const creators: (
     TextRow: (props: TextRowProps) => TextRow(props, styleNames),
     TextCell: (props: TextCellProps) => TextCell(props, styleNames),
     TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
-    ImageCRow: (props: ImageRowProps) => ImageRow(props, styleNames),
+    ImageRow: (props: ImageRowProps) => ImageRow(props, styleNames),
     ImageCell: (props: ImageCellProps) => ImageCell(props, styleNames),
-    ImageCParagraph: (props: ImageParagraphProps) => ImageParagraph(props, styleNames),
+    ImageParagraph: (props: ImageParagraphProps) => ImageParagraph(props, styleNames),
     Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
       Table.create(props as unknown as Table.TableProps, children),
     TableRow: (props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children),
