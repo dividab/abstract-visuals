@@ -98,7 +98,7 @@ export function extractImageFontsStyleNames(
   const fonts = Array<string>();
   let styleNames: Record<string, string> = {};
   xmlElement.forEach((item) => {
-    if (item.tagName === "Image" && item.attributes?.src) {
+    if (item.tagName.startsWith("Image") && item.attributes?.src) {
       images.push(item.attributes.src as string);
     } else if (item.attributes?.fontFamily) {
       fonts.push(item.attributes.fontFamily as string);
