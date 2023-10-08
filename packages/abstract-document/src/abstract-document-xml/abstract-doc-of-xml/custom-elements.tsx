@@ -44,71 +44,73 @@ export function extractStyleNames(
   return styleNameProps;
 }
 
-export type TextRowProps = TextCellProps & {};
+export type TextRowProps = Omit<TextCellProps, "style"> & { readonly cellStyle?: TableCellStyle.TableCellStyle };
 
 export function TextRow(props: TextRowProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
-  return TableRow.create({}, [TextCell(props, styleNameTypes)]);
+  return TableRow.create({}, [TextCell({ ...props, style: props.cellStyle }, styleNameTypes)]);
 }
 
-export type TextCellProps = TextParagraphProps & {
+export type TextCellProps = Omit<TextParagraphProps, "style"> & {
   readonly columnSpan?: number;
   readonly rowSpan?: number;
-  readonly cellStyle?: TableCellStyle.TableCellStyle;
-  readonly styleNames?: string;
-};
-
-export function TextCell(props: TextCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
-  const { text, textStyle, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
-  const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
-  const paragraph = Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
-  return TableCell.create({ columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle }, [paragraph]);
-}
-
-export type TextParagraphProps = {
-  readonly text: string;
-  readonly textStyle?: TextStyle.TextStyle;
+  readonly style?: TableCellStyle.TableCellStyle;
   readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
   readonly styleNames?: string;
 };
 
-export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<string, string>): Paragraph.Paragraph {
-  const { text, textStyle, paragraphStyle } = props;
+export function TextCell(props: TextCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
+  const { text, textStyle, paragraphStyle, style, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
   const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
-  return Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
+  const paragraph = Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
+  return TableCell.create({ columnSpan, rowSpan, style, styleName: styleNames.TableCellStyle }, [paragraph]);
+}
+
+export type TextParagraphProps = {
+  readonly text: string;
+  readonly style?: ParagraphStyle.ParagraphStyle;
+  readonly textStyle?: TextStyle.TextStyle;
+  readonly styleNames?: string;
+};
+
+export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<string, string>): Paragraph.Paragraph {
+  const { text, textStyle, style } = props;
+  const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
+  const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
+  return Paragraph.create({ style, styleName: styleNames.ParagraphStyle }, [textRun]);
 }
 
 export type ImageResource = ADImageResource.ImageResource & { readonly width?: number; readonly height?: number };
 
-export type ImageRowProps = ImageCellProps & {};
+export type ImageRowProps = Omit<ImageCellProps, "style"> & { readonly cellStyle?: TableCellStyle.TableCellStyle };
 
-export function ImageRow(props: ImageCellProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
-  return TableRow.create({}, [ImageCell(props, styleNameTypes)]);
+export function ImageRow(props: ImageRowProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
+  return TableRow.create({}, [ImageCell({ ...props, style: props.cellStyle }, styleNameTypes)]);
 }
 
-export type ImageCellProps = {
-  readonly cellStyle?: TableCellStyle.TableCellStyle;
+export type ImageCellProps = Omit<ImageParagraphProps, "style"> & {
+  readonly style?: TableCellStyle.TableCellStyle;
+  readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
   readonly columnSpan?: number;
   readonly rowSpan?: number;
-} & ImageParagraphProps;
+};
 
 export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
-  const { imageResource, width, height, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
+  const { imageResource, width, height, paragraphStyle, style, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
   const imageElement = imageResource && Image.create({ imageResource, width, height });
   const pararaphProps = { style: paragraphStyle, styleName: styleNames.ParagraphStyle };
   const paragraph = imageElement
     ? Paragraph.create(pararaphProps, [imageElement])
     : Paragraph.create(pararaphProps, [ImageMissing]);
-  return TableCell.create({ columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle }, [paragraph]);
+  return TableCell.create({ columnSpan, rowSpan, style, styleName: styleNames.TableCellStyle }, [paragraph]);
 }
 
 export type ImageParagraphProps = {
   readonly imageResource: ImageResource;
   readonly width: number;
   readonly height: number;
-  readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
+  readonly style?: ParagraphStyle.ParagraphStyle;
   readonly styleNames?: string;
 };
 
@@ -116,10 +118,10 @@ export function ImageParagraph(
   props: ImageParagraphProps,
   styleNameTypes: Record<string, string>
 ): Paragraph.Paragraph | undefined {
-  const { imageResource, width, height, paragraphStyle } = props;
+  const { imageResource, width, height, style } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
   const imageElement = imageResource && Image.create({ imageResource, width, height });
-  const pararaphProps = { style: paragraphStyle, styleName: styleNames.ParagraphStyle };
+  const pararaphProps = { style, styleName: styleNames.ParagraphStyle };
   return imageElement
     ? Paragraph.create(pararaphProps, [imageElement])
     : Paragraph.create(pararaphProps, [ImageMissing]);
