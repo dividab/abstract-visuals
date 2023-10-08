@@ -70,12 +70,15 @@ export const creators: (
       return ImageRow(props, styleNames);
     },
     ImageCell: (props: ImageCellProps) => {
+      mutateImageProps(images, props);
       return ImageCell(props, styleNames);
     },
     ImageParagraph: (props: ImageParagraphProps) => {
+      mutateImageProps(images, props);
       return ImageParagraph(props, styleNames);
     },
     Image: (props: Record<string, unknown>) => {
+      mutateImageProps(images, props);
       return Image.create(props as unknown as Image.ImageProps);
     },
     Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
