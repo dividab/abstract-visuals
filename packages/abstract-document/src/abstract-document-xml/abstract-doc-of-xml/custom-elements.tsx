@@ -2,12 +2,12 @@ import {
   TextStyle,
   ParagraphStyle,
   TableCellStyle,
-  ImageResource,
   TextRun,
   Paragraph,
   TableCell,
   TableRow,
   Image,
+  ImageResource as ADImageResource,
 } from "../../abstract-document/index";
 
 type StyleProps = {
@@ -79,6 +79,8 @@ export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<
   return Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
 }
 
+export type ImageResource = ADImageResource.ImageResource & { readonly width?: number; readonly height?: number };
+
 export type ImageRowProps = ImageCellProps & {};
 
 export function ImageRow(props: ImageCellProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
@@ -92,9 +94,9 @@ export type ImageCellProps = {
 } & ImageParagraphProps;
 
 export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
-  const { image, width, height, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
+  const { imageResource, width, height, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const imageElement = image && Image.create({ imageResource: image, width, height });
+  const imageElement = imageResource && Image.create({ imageResource, width, height });
   const pararaphProps = { style: paragraphStyle, styleName: styleNames.ParagraphStyle };
   const paragraph = imageElement
     ? Paragraph.create(pararaphProps, [imageElement])
@@ -103,7 +105,7 @@ export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, 
 }
 
 export type ImageParagraphProps = {
-  readonly image: ImageResource.ImageResource | undefined;
+  readonly imageResource: ImageResource;
   readonly width: number;
   readonly height: number;
   readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
@@ -114,9 +116,9 @@ export function ImageParagraph(
   props: ImageParagraphProps,
   styleNameTypes: Record<string, string>
 ): Paragraph.Paragraph | undefined {
-  const { image, width, height, paragraphStyle } = props;
+  const { imageResource, width, height, paragraphStyle } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const imageElement = image && Image.create({ imageResource: image, width, height });
+  const imageElement = imageResource && Image.create({ imageResource, width, height });
   const pararaphProps = { style: paragraphStyle, styleName: styleNames.ParagraphStyle };
   return imageElement
     ? Paragraph.create(pararaphProps, [imageElement])

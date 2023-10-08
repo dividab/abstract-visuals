@@ -10,7 +10,7 @@ export const textRow = `<xs:complexType name="TextRow">
 		<xs:element name="paragraphStyle" type="ParagraphStyle" />
 	</xs:choice>
 	<xs:choice minOccurs="0" maxOccurs="1">
-		<xs:element name="style" type="TextStyle" />
+		<xs:element name="textStyle" type="TextStyle" />
 	</xs:choice>
 	<xs:attribute name="styleNames" type="xs:string" >
 		<xs:annotation>
@@ -29,13 +29,13 @@ export const textCell = `<xs:complexType name="TextCell">
 		<xs:documentation>Shortcut to create a \\<TableCell> \\<Paragraph> \\<TextRun text="..." /> \\</Paragraph> \\</TableCell></xs:documentation>
 	</xs:annotation>
 	<xs:choice minOccurs="0" maxOccurs="1">
-		<xs:element name="cellStyle" type="TableCellStyle" />
+		<xs:element name="style" type="TableCellStyle" />
 	</xs:choice>
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="paragraphStyle" type="ParagraphStyle" />
 	</xs:choice>
 	<xs:choice minOccurs="0" maxOccurs="1">
-		<xs:element name="style" type="TextStyle" />
+		<xs:element name="textStyle" type="TextStyle" />
 	</xs:choice>
 	<xs:attribute name="styleNames" type="xs:string" >
 		<xs:annotation>
@@ -54,10 +54,10 @@ export const textParagraph = `<xs:complexType name="TextParagraph">
 		<xs:documentation>Shortcut to create \\<Paragraph> \\<TextRun text="..." /> \\</Paragraph></xs:documentation>
 	</xs:annotation>
 	<xs:choice minOccurs="0" maxOccurs="1">
-		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+		<xs:element name="style" type="ParagraphStyle" />
 	</xs:choice>
 	<xs:choice minOccurs="0" maxOccurs="1">
-		<xs:element name="style" type="TextStyle" />
+		<xs:element name="textStyle" type="TextStyle" />
 	</xs:choice>
 	<xs:attribute name="styleNames" type="xs:string" >
 		<xs:annotation>
@@ -99,7 +99,7 @@ export const imageCell = `<xs:complexType name="ImageCell">
 	<xs:attribute name="width" type="xs:decimal" />
 	<xs:attribute name="height" type="xs:decimal" />
 	<xs:choice minOccurs="0" maxOccurs="1">
-		<xs:element name="cellStyle" type="TableCellStyle" />
+		<xs:element name="style" type="TableCellStyle" />
 	</xs:choice>
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="paragraphStyle" type="ParagraphStyle" />
@@ -116,7 +116,7 @@ export const imageParagraph = `<xs:complexType name="ImageParagraph">
 	<xs:attribute name="width" type="xs:decimal" />
 	<xs:attribute name="height" type="xs:decimal" />
 	<xs:choice minOccurs="0" maxOccurs="1">
-		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+		<xs:element name="style" type="ParagraphStyle" />
 	</xs:choice>
 </xs:complexType>`;
 export const imageParagraphElement = `<xs:element name="ImageParagraph" type="ImageParagraph" maxOccurs="unbounded" />`;
