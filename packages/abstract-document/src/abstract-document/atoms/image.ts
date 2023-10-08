@@ -14,8 +14,5 @@ export interface ImageProps {
 }
 
 export function create(props: ImageProps): Image {
-  return {
-    type: "Image",
-    ...props
-  };
+  return { type: "Image", ...props };
 }
