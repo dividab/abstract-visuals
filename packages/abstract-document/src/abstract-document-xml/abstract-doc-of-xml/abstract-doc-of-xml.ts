@@ -39,37 +39,59 @@ export function abstractDocOfXml(
     throw new Error(`Could not find creator for element with name ${xmlElement.tagName}`);
   }
   //
-  const theObj = creator(allProps, children) as { [k: string]: unknown };
+  const obj = creator(allProps, children) as { [k: string]: unknown };
 
   for (const propName of Object.keys(allProps)) {
     const propsCreator = allProps[propName] && propsCreators[propName] ? propsCreators[propName] : undefined;
     if (propsCreator) {
-      theObj[propsCreator.name] = propsCreator(allProps, children);
+      obj[propsCreator.name] = propsCreator(allProps, children);
     }
   }
 
   // Elements styling needs to have style: {type= "StyleName" }. Occures when having a <style></style> element.
-  if (theObj.type && (theObj.type as string) === "Table") {
-    theObj.style = { ...(theObj.style as Object), type: "TableStyle" };
+  if (typeof obj.style === "object") {
+    switch (obj.type) {
+      case "page":
+        obj.style = { ...obj.style, type: "MasterPageStyle" };
+        break;
+      case "Group":
+        obj.style = { ...obj.style, type: "GroupStyle" };
+        break;
+      case "Table":
+        obj.style = { ...obj.style, type: "TableStyle" };
+        break;
+      case "TableCell":
+      case "ImageCell":
+      case "TextCell":
+        obj.style = { ...(obj.style as Object), type: "TableCellStyle" };
+        break;
+      case "Paragraph":
+        obj.style = { ...obj.style, type: "ParagraphStyle" };
+        break;
+      case "TextField":
+      case "HyperLink":
+      case "TextRun":
+        obj.style = { ...obj.style, type: "TextStyle" };
+        break;
+      default:
+        break;
+    }
   }
-  if (theObj.type && (theObj.type as string).startsWith("Text")) {
-    theObj.style = { ...(theObj.style as Object), type: "TextStyle" };
+  if (typeof obj.paragraphStyle === "object") {
+    obj.paragraphStyle = { ...obj.paragraphStyle, type: "ParagraphStyle" };
   }
-  if (theObj.type && (theObj.type as string) === "Paragraph") {
-    theObj.style = {
-      ...(theObj.style as Object),
-      type: "ParagraphStyle",
-      textStyle: { type: "TextStyle" },
-    };
+  if (typeof obj.cellStyle === "object") {
+    obj.cellStyle = { ...obj.cellStyle, type: "TableCellStyle" };
   }
-  if (theObj.columnSpan) {
-    theObj.style = { ...(theObj.style as Object), type: "TableCellStyle" };
+  if (typeof obj.textStyle === "object") {
+    obj.textStyle = { ...obj.textStyle, type: "TextStyle" };
   }
+
   // let theObj["columnWidths"] = propsCreator(allProps, children);
   if (children.length > 0) {
-    (theObj as { children: Array<unknown> }).children = children;
+    (obj as { children: Array<unknown> }).children = children;
   }
-  return theObj;
+  return obj;
 }
 
 export function extractImageFontsStyleNames(
