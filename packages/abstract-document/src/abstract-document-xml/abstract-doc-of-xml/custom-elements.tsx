@@ -44,18 +44,10 @@ export function extractStyleNames(
   return styleNameProps;
 }
 
-export type TextParagraphProps = {
-  readonly text: string;
-  readonly textStyle?: TextStyle.TextStyle;
-  readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
-  readonly styleNames?: string;
-};
+export type TextRowProps = TextCellProps & {};
 
-export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<string, string>): Paragraph.Paragraph {
-  const { text, textStyle, paragraphStyle } = props;
-  const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
-  return Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
+export function TextRow(props: TextRowProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
+  return TableRow.create({}, [TextCell(props, styleNameTypes)]);
 }
 
 export type TextCellProps = TextParagraphProps & {
@@ -73,29 +65,31 @@ export function TextCell(props: TextCellProps, styleNameTypes: Record<string, st
   return TableCell.create({ columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle }, [paragraph]);
 }
 
-export type TextRowProps = TextCellProps & {};
+export type TextParagraphProps = {
+  readonly text: string;
+  readonly textStyle?: TextStyle.TextStyle;
+  readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
+  readonly styleNames?: string;
+};
 
-export function TextRow(props: TextRowProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
-  const { text, textStyle, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
+export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<string, string>): Paragraph.Paragraph {
+  const { text, textStyle, paragraphStyle } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
   const textRun = TextRun.create({ text, style: textStyle, styleName: styleNames.TextStyle });
-  const paragraph = Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
-  const tableCell = TableCell.create({ columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle }, [
-    paragraph,
-  ]);
-  return TableRow.create({}, [tableCell]);
+  return Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [textRun]);
+}
+
+export type ImageRowProps = ImageCellProps & {};
+
+export function ImageRow(props: ImageCellProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
+  return TableRow.create({}, [ImageCell(props, styleNameTypes)]);
 }
 
 export type ImageCellProps = {
-  readonly image: ImageResource.ImageResource | undefined;
-  readonly width: number;
-  readonly height: number;
-  readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
   readonly cellStyle?: TableCellStyle.TableCellStyle;
   readonly columnSpan?: number;
   readonly rowSpan?: number;
-  readonly styleNames?: string;
-};
+} & ImageParagraphProps;
 
 export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
   const { image, width, height, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
@@ -107,4 +101,24 @@ export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, 
     { columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle },
     paragraph && [paragraph]
   );
+}
+
+export type ImageParagraphProps = {
+  readonly image: ImageResource.ImageResource | undefined;
+  readonly width: number;
+  readonly height: number;
+  readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
+  readonly styleNames?: string;
+};
+
+export function ImageParagraph(
+  props: ImageParagraphProps,
+  styleNameTypes: Record<string, string>
+): Paragraph.Paragraph | undefined {
+  const { image, width, height, paragraphStyle } = props;
+  const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
+  const imageElement = image && Image.create({ imageResource: image, width, height });
+  const paragraph =
+    imageElement && Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [imageElement]);
+  return paragraph;
 }

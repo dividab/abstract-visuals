@@ -29,6 +29,10 @@ import {
   TextParagraph,
   ImageCellProps,
   ImageCell,
+  ImageParagraphProps,
+  ImageRowProps,
+  ImageParagraph,
+  ImageRow,
 } from "./custom-elements";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
@@ -59,7 +63,9 @@ export const creators: (
     TextRow: (props: TextRowProps) => TextRow(props, styleNames),
     TextCell: (props: TextCellProps) => TextCell(props, styleNames),
     TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
+    ImageCRow: (props: ImageRowProps) => ImageRow(props, styleNames),
     ImageCell: (props: ImageCellProps) => ImageCell(props, styleNames),
+    ImageCParagraph: (props: ImageParagraphProps) => ImageParagraph(props, styleNames),
     Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
       Table.create(props as unknown as Table.TableProps, children),
     TableRow: (props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children),
