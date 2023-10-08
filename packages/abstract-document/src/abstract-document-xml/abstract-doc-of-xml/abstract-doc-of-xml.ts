@@ -50,35 +50,41 @@ export function abstractDocOfXml(
 
   // Elements styling needs to have style: {type= "StyleName" }. Occures when having a <style></style> element.
   if (typeof obj.style === "object") {
-    switch (obj.type) {
-      case "page":
-        obj.style = { ...obj.style, type: "MasterPageStyle" };
-        break;
-      case "Group":
-        obj.style = { ...obj.style, type: "GroupStyle" };
-        break;
-      case "Table":
-        obj.style = { ...obj.style, type: "TableStyle" };
-        break;
-      case "TableCell":
-      case "ImageCell":
-      case "TextCell":
-        obj.style = { ...obj.style, type: "TableCellStyle" };
-        break;
-      case "TextParagraph":
-      case "ImageParagraph":
-      case "Paragraph":
-        obj.style = { ...obj.style, type: "ParagraphStyle" };
-        break;
-      case "TextField":
-      case "HyperLink":
-      case "TextRun":
-        obj.style = { ...obj.style, type: "TextStyle" };
-        break;
-      default:
-        break;
+    if (obj.columnSpan) {
+      obj.style = { ...obj.style, type: "TableCellStyle" };
+    } else {
+      switch (obj.type) {
+        case "page":
+          obj.style = { ...obj.style, type: "MasterPageStyle" };
+          break;
+        case "Group":
+          obj.style = { ...obj.style, type: "GroupStyle" };
+          break;
+        case "Table":
+          obj.style = { ...obj.style, type: "TableStyle" };
+          break;
+        // Cell is missing type in abstract doc?!?!?!
+        // case "TableCell":
+        // case "ImageCell":
+        // case "TextCell":
+        //   obj.style = { ...obj.style, type: "TableCellStyle" };
+        //   break;
+        case "TextParagraph":
+        case "ImageParagraph":
+        case "Paragraph":
+          obj.style = { ...obj.style, type: "ParagraphStyle" };
+          break;
+        case "TextField":
+        case "HyperLink":
+        case "TextRun":
+          obj.style = { ...obj.style, type: "TextStyle" };
+          break;
+        default:
+          break;
+      }
     }
   }
+
   if (typeof obj.paragraphStyle === "object") {
     obj.paragraphStyle = { ...obj.paragraphStyle, type: "ParagraphStyle" };
   }
@@ -90,7 +96,7 @@ export function abstractDocOfXml(
   }
 
   if (children.length > 0) {
-    (obj as { children: Array<unknown> }).children = children;
+    obj.children = children;
   }
   return obj;
 }
