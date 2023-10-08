@@ -14,14 +14,6 @@ export interface ImageResourceProps {
   readonly renderScale?: number;
 }
 
-export function create({
-  id,
-  abstractImage,
-  renderScale = 1.0
-}: ImageResourceProps): ImageResource {
-  return {
-    id,
-    abstractImage,
-    renderScale
-  };
+export function create({ id, abstractImage, renderScale = 1.0 }: ImageResourceProps): ImageResource {
+  return { id, abstractImage, renderScale };
 }

@@ -95,12 +95,11 @@ export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, 
   const { image, width, height, paragraphStyle, cellStyle, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
   const imageElement = image && Image.create({ imageResource: image, width, height });
-  const paragraph =
-    imageElement && Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [imageElement]);
-  return TableCell.create(
-    { columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle },
-    paragraph && [paragraph]
-  );
+  const pararaphProps = { style: paragraphStyle, styleName: styleNames.ParagraphStyle };
+  const paragraph = imageElement
+    ? Paragraph.create(pararaphProps, [imageElement])
+    : Paragraph.create(pararaphProps, [ImageMissing]);
+  return TableCell.create({ columnSpan, rowSpan, style: cellStyle, styleName: styleNames.TableCellStyle }, [paragraph]);
 }
 
 export type ImageParagraphProps = {
@@ -118,7 +117,10 @@ export function ImageParagraph(
   const { image, width, height, paragraphStyle } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
   const imageElement = image && Image.create({ imageResource: image, width, height });
-  const paragraph =
-    imageElement && Paragraph.create({ style: paragraphStyle, styleName: styleNames.ParagraphStyle }, [imageElement]);
-  return paragraph;
+  const pararaphProps = { style: paragraphStyle, styleName: styleNames.ParagraphStyle };
+  return imageElement
+    ? Paragraph.create(pararaphProps, [imageElement])
+    : Paragraph.create(pararaphProps, [ImageMissing]);
 }
+
+const ImageMissing = TextRun.create({ text: "Image missing" });

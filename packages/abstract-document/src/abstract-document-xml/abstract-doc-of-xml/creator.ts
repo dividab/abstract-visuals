@@ -1,3 +1,5 @@
+import { propIs } from "ramda";
+import { ImageProps } from "../../abstract-document/atoms/image";
 import {
   AbstractDoc,
   Atom,
@@ -57,40 +59,22 @@ export const creators: (
       }
       return AbstractDoc.create(props, children);
     },
-    Paragraph: (props, children: ReadonlyArray<Atom.Atom>) => Paragraph.create(props, children),
     Section: (props, children: ReadonlyArray<SectionElement.SectionElement>) => Section.create(props, children),
-    TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
+    Paragraph: (props, children: ReadonlyArray<Atom.Atom>) => Paragraph.create(props, children),
     TextRow: (props: TextRowProps) => TextRow(props, styleNames),
     TextCell: (props: TextCellProps) => TextCell(props, styleNames),
     TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
-    ImageRow: (props: ImageRowProps) => ImageRow(props, styleNames),
-    ImageCell: (props: ImageCellProps) => ImageCell(props, styleNames),
-    ImageParagraph: (props: ImageParagraphProps) => ImageParagraph(props, styleNames),
+    TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
+    ImageRow: (props: ImageRowProps) => ImageRow(imageProps(images, props) as unknown as ImageRowProps, styleNames),
+    ImageCell: (props: ImageCellProps) => ImageCell(imageProps(images, props) as unknown as ImageCellProps, styleNames),
+    ImageParagraph: (props: ImageParagraphProps) =>
+      ImageParagraph(imageProps(images, props) as unknown as ImageParagraphProps, styleNames),
+    Image: (props: Record<string, unknown>) => Image.create(imageProps(images, props)),
     Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
       Table.create(props as unknown as Table.TableProps, children),
     TableRow: (props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children),
     TableCell: (props, children: ReadonlyArray<SectionElement.SectionElement>) => TableCell.create(props, children),
     TextField: (props) => TextField.create(props as unknown as TextField.TextFieldProps),
-    Image: (props: Record<string, unknown>) => {
-      const image = images[(props.src as string) ?? ""];
-      if (image) {
-        if (image.width && image.height) {
-          props.width = image.width;
-          props.height = image.height;
-        } else {
-          const scaleX = (props.width as number) / image.abstractImage.size.width;
-          const scaleY = (props.height as number) / image.abstractImage.size.height;
-          if (scaleX < scaleY) {
-            props.height = (props.height as number) * (scaleX / scaleY);
-          } else {
-            props.width = (props.width as number) * (scaleY / scaleX);
-          }
-        }
-
-        props.imageResource = images[props.src as string];
-      }
-      return Image.create(props as unknown as Image.ImageProps);
-    },
     Group: (props, children) => Group.create(props, children as ReadonlyArray<Group.Group>),
     PageBreak: () => PageBreak.create(),
     Markdown: (props) => Markdown.create(props as unknown as Markdown.MarkdownProps),
@@ -271,3 +255,24 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     return borderColors;
   },
 };
+
+function imageProps(images: Record<string, ImageResource>, props: Record<string, unknown>): Image.ImageProps {
+  const newProps = { ...props, width: props.width, height: props.height, imageResource: props.src };
+  const image = images[(props.src as string) ?? ""];
+  if (image) {
+    if (image.width && image.height) {
+      newProps.width = image.width;
+      newProps.height = image.height;
+    } else {
+      const scaleX = (props.width as number) / image.abstractImage.size.width;
+      const scaleY = (props.height as number) / image.abstractImage.size.height;
+      if (scaleX < scaleY) {
+        newProps.height = (props.height as number) * (scaleX / scaleY);
+      } else {
+        newProps.width = (props.width as number) * (scaleY / scaleX);
+      }
+    }
+    newProps.imageResource = props.src as string;
+  }
+  return newProps as unknown as Image.ImageProps;
+}

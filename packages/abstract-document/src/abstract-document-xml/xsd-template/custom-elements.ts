@@ -4,6 +4,12 @@ export const textRow = `<xs:complexType name="TextRow">
 		<xs:documentation>Shortcut to create a \\<TableRow> \\<TableCell> \\<Paragraph> \\<TextRun text="..." /> \\</Paragraph> \\</TableCell> \\</TableRow></xs:documentation>
 	</xs:annotation>
 	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="cellStyle" type="TableCellStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="style" type="TextStyle" />
 	</xs:choice>
 	<xs:attribute name="styleNames" type="xs:string" >
@@ -23,6 +29,12 @@ export const textCell = `<xs:complexType name="TextCell">
 		<xs:documentation>Shortcut to create a \\<TableCell> \\<Paragraph> \\<TextRun text="..." /> \\</Paragraph> \\</TableCell></xs:documentation>
 	</xs:annotation>
 	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="cellStyle" type="TableCellStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="style" type="TextStyle" />
 	</xs:choice>
 	<xs:attribute name="styleNames" type="xs:string" >
@@ -41,6 +53,9 @@ export const textParagraph = `<xs:complexType name="TextParagraph">
 	<xs:annotation>
 		<xs:documentation>Shortcut to create \\<Paragraph> \\<TextRun text="..." /> \\</Paragraph></xs:documentation>
 	</xs:annotation>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+	</xs:choice>
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="style" type="TextStyle" />
 	</xs:choice>
@@ -62,8 +77,14 @@ export const imageRow = `<xs:complexType name="ImageRow">
 	<xs:attribute name="columnSpan" type="xs:string" />
 	<xs:attribute name="rowSpan" type="xs:string" />
 	<xs:attribute name="src" type="xs:string" use="required" />
-	<xs:attribute name="width" type="xs:decimal" use="required" />
-	<xs:attribute name="height" type="xs:decimal" use="required" />
+	<xs:attribute name="width" type="xs:decimal" />
+	<xs:attribute name="height" type="xs:decimal" />
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="cellStyle" type="TableCellStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+	</xs:choice>
 </xs:complexType>`;
 export const imageRowElement = `<xs:element name="ImageRow" type="ImageRow" maxOccurs="unbounded" />`;
 
@@ -75,8 +96,14 @@ export const imageCell = `<xs:complexType name="ImageCell">
 	<xs:attribute name="columnSpan" type="xs:string" />
 	<xs:attribute name="rowSpan" type="xs:string" />
 	<xs:attribute name="src" type="xs:string" use="required" />
-	<xs:attribute name="width" type="xs:decimal" use="required" />
-	<xs:attribute name="height" type="xs:decimal" use="required" />
+	<xs:attribute name="width" type="xs:decimal" />
+	<xs:attribute name="height" type="xs:decimal" />
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="cellStyle" type="TableCellStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+	</xs:choice>
 </xs:complexType>`;
 export const imageCellElement = `<xs:element name="ImageCell" type="ImageCell" minOccurs="0" maxOccurs="unbounded" />`;
 
@@ -86,7 +113,10 @@ export const imageParagraph = `<xs:complexType name="ImageParagraph">
 	</xs:annotation>
 	<xs:attribute name="styleNames" type="xs:string" />
 	<xs:attribute name="src" type="xs:string" use="required" />
-	<xs:attribute name="width" type="xs:decimal" use="required" />
-	<xs:attribute name="height" type="xs:decimal" use="required" />
+	<xs:attribute name="width" type="xs:decimal" />
+	<xs:attribute name="height" type="xs:decimal" />
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+	</xs:choice>
 </xs:complexType>`;
 export const imageParagraphElement = `<xs:element name="ImageParagraph" type="ImageParagraph" maxOccurs="unbounded" />`;

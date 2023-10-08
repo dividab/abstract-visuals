@@ -19,18 +19,6 @@ export interface TextFieldProps {
 }
 
 export function create(props: TextFieldProps): TextField {
-  const {
-    styleName = "",
-    fieldType,
-    style = TextStyle.create(),
-    target = ""
-  } = props;
-  return {
-    type: "TextField",
-    styleName,
-    fieldType,
-    style,
-    target,
-    text: ""
-  };
+  const { styleName = "", fieldType, style = TextStyle.create(), target = "" } = props;
+  return { type: "TextField", styleName, fieldType, style, target, text: "" };
 }
