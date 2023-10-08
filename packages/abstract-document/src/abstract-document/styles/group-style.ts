@@ -14,11 +14,7 @@ export interface GroupStyleProps {
 
 export function create(props?: GroupStyleProps): GroupStyle {
   const { margins = LayoutFoundation.create(), position = "relative" } = props || {};
-  return {
-    type: "GroupStyle",
-    margins,
-    position,
-  };
+  return { type: "GroupStyle", margins, position };
 }
 
 export function overrideWith(overrider: GroupStyle | undefined, toOverride: GroupStyle | undefined): GroupStyle {
