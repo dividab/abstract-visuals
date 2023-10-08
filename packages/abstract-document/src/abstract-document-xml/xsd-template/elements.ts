@@ -1,4 +1,4 @@
-import { textCellElement, textParagraphElement, textRowElement } from "./custom-elements";
+import * as Custom from "./custom-elements";
 
 export const abstractDoc = `<xs:element name="AbstractDoc">
     <xs:complexType>
@@ -15,7 +15,8 @@ export const section = `<xs:complexType name="Section">
 		<xs:element name="Group" type="Group" minOccurs="0" />
 		<xs:element name="PageBreak" type="PageBreak" minOccurs="0" />
 		<xs:element name="Paragraph" type="Paragraph" minOccurs="0" />
-		${textParagraphElement}
+		${Custom.textParagraphElement}
+		${Custom.imageParagraphElement}
 		<xs:element name="Markdown" type="Markdown" minOccurs="0" />
 		<xs:element name="page" type="page" minOccurs="0" maxOccurs="1"></xs:element>
 	</xs:choice>
@@ -38,7 +39,8 @@ export const sectionElement = `<xs:complexType name="SectionElement">
 		<xs:element name="Group" type="Group" minOccurs="0" />
 		<xs:element name="PageBreak" type="PageBreak" minOccurs="0" />
 		<xs:element name="Paragraph" type="Paragraph" minOccurs="0" />
-		${textParagraphElement}
+		${Custom.textParagraphElement}
+		${Custom.imageParagraphElement}
 		<xs:element name="Markdown" type="Markdown" minOccurs="0" />
 	</xs:choice>
 </xs:complexType>`;
@@ -49,7 +51,8 @@ export const group = `<xs:complexType name="Group">
 		<xs:element name="Group" type="Group" minOccurs="0" />
 		<xs:element name="PageBreak" type="PageBreak" minOccurs="0" />
 		<xs:element name="Paragraph" type="Paragraph" minOccurs="0" />
-		${textParagraphElement}
+		${Custom.textParagraphElement}
+		${Custom.imageParagraphElement}
 		<xs:element name="style" type="GroupStyle" minOccurs="0" />
 	</xs:choice>
 	<xs:attribute name="keepTogether" type="xs:boolean" />
@@ -62,7 +65,8 @@ export const table = `<xs:complexType name="Table">
 		<xs:sequence>
 			<xs:choice minOccurs="1">
 				<xs:element name="TableRow" type="TableRow"  maxOccurs="unbounded" />
-				${textRowElement}
+				${Custom.textRowElement}
+				${Custom.imageRowElement}
 			</xs:choice>
 		</xs:sequence>
 	</xs:choice>
@@ -82,7 +86,8 @@ export const headerRows = `<xs:complexType name="headerRows">
 	<xs:sequence>
 		<xs:choice minOccurs="1" maxOccurs="unbounded">
 			<xs:element name="TableRow" type="TableRow"/>
-			${textRowElement}
+			${Custom.textRowElement}
+			${Custom.imageRowElement}
 		</xs:choice>
 	</xs:sequence>
 </xs:complexType>`;
@@ -90,7 +95,8 @@ export const headerRows = `<xs:complexType name="headerRows">
 export const tableRow = `<xs:complexType name="TableRow">
 	<xs:choice maxOccurs="unbounded">
 		<xs:element name="TableCell" type="TableCell" minOccurs="0" maxOccurs="unbounded" />
-		${textCellElement}
+		${Custom.textCellElement}
+		${Custom.imageCellElement}
 	</xs:choice>
 </xs:complexType>`;
 
@@ -101,7 +107,8 @@ export const tableCell = `<xs:complexType name="TableCell">
 		<xs:element name="Group" type="Group" minOccurs="0" maxOccurs="unbounded" />
 		<xs:element name="PageBreak" type="PageBreak" minOccurs="0" maxOccurs="unbounded" />
 		<xs:element name="Paragraph" type="Paragraph" minOccurs="0" maxOccurs="unbounded" />
-		${textParagraphElement}
+		${Custom.textParagraphElement}
+		${Custom.imageParagraphElement}
 		<xs:element name="Markdown" type="Markdown" minOccurs="0" maxOccurs="unbounded" />
 	</xs:choice>
 	<xs:attribute name="rowSpan" type="xs:integer" />

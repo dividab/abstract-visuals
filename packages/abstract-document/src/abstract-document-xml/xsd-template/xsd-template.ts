@@ -27,9 +27,12 @@ ${Elements.tableRow}
 ${Elements.headerRows}
 ${Elements.table}
 ${Elements.tableCell}
-${CustomElements.textParagraph}
+${CustomElements.textRow}
 ${CustomElements.textCell}
-${CustomElements.textRow}`;
+${CustomElements.textParagraph}
+${CustomElements.imageRow}
+${CustomElements.imageCell}
+${CustomElements.imageParagraph}`;
 
 export const xsd = `<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
