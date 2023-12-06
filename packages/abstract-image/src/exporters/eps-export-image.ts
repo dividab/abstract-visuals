@@ -3,20 +3,23 @@ import * as R from "ramda";
 
 type CharacterEncoding = "standard-encoding" | "iso-latin-1-encoding";
 
-export function epsExportImage(root: AI.AbstractImage): string {
-  return [
-    ...createEpsHeaderLines(root),
-    ...R.unnest<string>(root.components.map((c) => epsExportComponent(c, root.size.height, "standard-encoding"))),
-  ].join("\n");
-}
-
-export function epsExportImageIsoLatin1(root: AI.AbstractImage): Uint8Array {
-  const eps = [
-    ...createEpsHeaderLines(root),
-    ...createIsoLatin1FontLines(root),
-    ...R.unnest<string>(root.components.map((c) => epsExportComponent(c, root.size.height, "iso-latin-1-encoding"))),
-  ].join("\n");
-  return encodeLatin1Encoding(eps);
+export function epsExportImage(root: AI.AbstractImage): string;
+export function epsExportImage(root: AI.AbstractImage, characterEncoding: "standard-encoding"): string;
+export function epsExportImage(root: AI.AbstractImage, characterEncoding: "iso-latin-1-encoding"): Uint8Array;
+export function epsExportImage(root: AI.AbstractImage, characterEncoding?: CharacterEncoding): string | Uint8Array {
+  if (characterEncoding === "iso-latin-1-encoding") {
+    const eps = [
+      ...createEpsHeaderLines(root),
+      ...createIsoLatin1FontLines(root),
+      ...R.unnest<string>(root.components.map((c) => epsExportComponent(c, root.size.height, "iso-latin-1-encoding"))),
+    ].join("\n");
+    return encodeLatin1Encoding(eps);
+  } else {
+    return [
+      ...createEpsHeaderLines(root),
+      ...R.unnest<string>(root.components.map((c) => epsExportComponent(c, root.size.height, "standard-encoding"))),
+    ].join("\n");
+  }
 }
 
 function createEpsHeaderLines(root: AI.AbstractImage): ReadonlyArray<string> {
