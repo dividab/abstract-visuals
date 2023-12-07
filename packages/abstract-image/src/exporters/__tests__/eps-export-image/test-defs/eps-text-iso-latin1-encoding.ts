@@ -4,7 +4,7 @@ import * as AbstractImage from "../../../../../src/index";
 const components = [
   AbstractImage.createText(
     AbstractImage.createPoint(10, 10),
-    "Q [m³/h]",
+    "Hello World",
     "Arial",
     12,
     AbstractImage.black,
@@ -25,7 +25,7 @@ const image = AbstractImage.createAbstractImage(
   components
 );
 
-const eps = new TextDecoder("iso-8859-1").decode(AbstractImage.epsExportImage(image, "iso-latin-1-encoding"));
+const eps = AbstractImage.epsExportImage(image);
 
 export const test: ExportTestDef = {
   name: "eps text",
@@ -46,26 +46,15 @@ xradius yradius scale
 savematrix setmatrix
 end
 } def
-/Arial findfont
-dup length dict begin
-  { 1 index /FID ne
-      {def}
-      {pop pop}
-    ifelse
-  } forall
-  /Encoding ISOLatin1Encoding def
-  currentdict
-end
-/Arial-ISOLatin1 exch definefont pop
 0 0 0 setrgbcolor
 gsave
-/Arial-ISOLatin1 findfont
+/Arial findfont
 12 scalefont setfont
 10 390 moveto
 0
-gsave (Q [m³/h]) true charpath pathbbox exch pop 3 -1 roll pop sub grestore
+gsave (Hello World) true charpath pathbbox exch pop 3 -1 roll pop sub grestore
 rmoveto
 0 rotate
-(Q [m³/h]) show
+(Hello World) show
 grestore`,
 };
