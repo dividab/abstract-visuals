@@ -1,5 +1,6 @@
 import * as B64 from "base64-js";
 import * as AbstractImage from "../model/index";
+import { Point3D } from "../model/index";
 
 export function createSVG(image: AbstractImage.AbstractImage, pixelWidth?: number, pixelHeight?: number): string {
   const imageElements = image.components.map((c: AbstractImage.Component) => abstractComponentToSVG(c));
@@ -36,6 +37,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           width: (component.bottomRight.x - component.topLeft.x).toString(),
           height: (component.bottomRight.y - component.topLeft.y).toString(),
           href: url,
+          style: rotationStyle(component.rotation),
         },
         []
       );
@@ -52,6 +54,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
           strokeWidth: component.strokeThickness.toString(),
+          style: rotationStyle(component.rotation),
         },
         []
       );
@@ -64,6 +67,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
           strokeWidth: component.strokeThickness.toString(),
+          style: rotationStyle(component.rotation),
         },
         []
       );
@@ -71,37 +75,37 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
       if (!component.text) {
         return "";
       }
-      const lineHeight = component.fontSize;
 
-      const shadowStyle = {
+      const baseStyle = {
         textAnchor: getTextAnchor(component.horizontalGrowthDirection),
         fontSize: component.fontSize.toString() + "px",
         fontWeight: component.fontWeight,
         fontFamily: component.fontFamily,
+      };
+
+      const shadowStyle = {
+        ...baseStyle,
         stroke: colorToRgb(component.strokeColor),
         strokeOpacity: colorToOpacity(component.strokeColor),
         strokeWidth: component.strokeThickness.toString() + "px",
       };
-
       const style = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: component.fontWeight,
-        fontFamily: component.fontFamily,
+        ...baseStyle,
         fill: colorToRgb(component.textColor),
         fillOpacity: colorToOpacity(component.textColor),
       };
 
       const dy = getBaselineAdjustment(component.verticalGrowthDirection);
-
-      const transform =
-        "rotate(" +
-        component.clockwiseRotationDegrees.toString() +
-        " " +
-        component.position.x.toString() +
-        " " +
-        component.position.y.toString() +
-        ")";
+      // component.clockwiseRotationDegrees is legacy
+      const transform = component.rotation
+        ? rotationTransform(component.rotation)
+        : "rotate(" +
+          component.clockwiseRotationDegrees.toString() +
+          " " +
+          component.position.x.toString() +
+          " " +
+          component.position.y.toString() +
+          ")";
 
       const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
 
@@ -110,8 +114,8 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           "tspan",
           {
             x: component.position.x.toString(),
-            y: (component.position.y + (lines.indexOf(t) + dy) * lineHeight).toString(),
-            height: lineHeight.toString() + "px",
+            y: (component.position.y + (lines.indexOf(t) + dy) * component.fontSize).toString(),
+            height: component.fontSize.toString() + "px",
           },
           [
             t
@@ -163,6 +167,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
           fillOpacity: colorToOpacity(component.fillColor),
+          style: rotationStyle(component.rotation),
         },
         []
       );
@@ -176,6 +181,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
           fillOpacity: colorToOpacity(component.fillColor),
+          style: rotationStyle(component.rotation),
         },
         []
       );
@@ -192,6 +198,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
           fillOpacity: colorToOpacity(component.fillColor),
+          style: rotationStyle(component.rotation),
         },
         []
       );
@@ -290,6 +297,12 @@ function colorToRgb(color: AbstractImage.Color): string {
 function colorToOpacity(color: AbstractImage.Color): string {
   return (color.a / 255).toString();
 }
+
+const rotationStyle = (rotation: Point3D | undefined): string =>
+  rotation ? `transform: ${rotationTransform(rotation)}` : "";
+
+const rotationTransform = (rotation: Point3D): string =>
+  `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`;
 
 function getImageUrl(format: AbstractImage.BinaryFormat, data: AbstractImage.ImageData): string {
   if (data.type === "url") {

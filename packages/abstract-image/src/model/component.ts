@@ -31,6 +31,7 @@ export interface BinaryImage {
   readonly format: BinaryFormat;
   readonly data: ImageData;
   readonly id: string | undefined;
+  readonly rotation?: Point.Point3D | undefined;
 }
 
 export type ImageData = ImageBytes | ImageUrl;
@@ -50,7 +51,8 @@ export function createBinaryImage(
   bottomRight: Point.Point,
   format: BinaryFormat,
   data: ImageData,
-  id?: string
+  id?: string,
+  rotation?: Point.Point & { readonly z: number }
 ): BinaryImage {
   return {
     type: "binaryimage",
@@ -59,6 +61,7 @@ export function createBinaryImage(
     format: format,
     data: data,
     id: id,
+    rotation,
   };
 }
 
@@ -70,6 +73,7 @@ export interface Ellipse {
   readonly strokeThickness: number;
   readonly fillColor: Color.Color;
   readonly id: string | undefined;
+  readonly rotation?: Point.Point3D | undefined;
 }
 
 export function createEllipse(
@@ -78,7 +82,8 @@ export function createEllipse(
   strokeColor: Color.Color,
   strokeThickness: number,
   fillColor: Color.Color,
-  id?: string
+  id?: string,
+  rotation?: Point.Point3D
 ): Ellipse {
   return {
     type: "ellipse",
@@ -88,6 +93,7 @@ export function createEllipse(
     strokeThickness: strokeThickness,
     fillColor: fillColor,
     id: id,
+    rotation,
   };
 }
 
@@ -98,6 +104,7 @@ export interface Line {
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
   readonly id: string | undefined;
+  readonly rotation?: Point.Point3D | undefined;
 }
 
 export function createLine(
@@ -105,7 +112,8 @@ export function createLine(
   end: Point.Point,
   strokeColor: Color.Color,
   strokeThickness: number,
-  id?: string
+  id?: string,
+  rotation?: Point.Point3D
 ): Line {
   return {
     type: "line",
@@ -114,6 +122,7 @@ export function createLine(
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
     id: id,
+    rotation,
   };
 }
 
@@ -123,13 +132,15 @@ export interface PolyLine {
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
   readonly id: string | undefined;
+  readonly rotation?: Point.Point3D | undefined;
 }
 
 export function createPolyLine(
   points: Array<Point.Point>,
   strokeColor: Color.Color,
   strokeThickness: number,
-  id?: string
+  id?: string,
+  rotation?: Point.Point3D
 ): PolyLine {
   return {
     type: "polyline",
@@ -137,6 +148,7 @@ export function createPolyLine(
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
     id: id,
+    rotation,
   };
 }
 
@@ -147,6 +159,7 @@ export interface Polygon {
   readonly strokeThickness: number;
   readonly fillColor: Color.Color;
   readonly id: string | undefined;
+  readonly rotation?: Point.Point3D | undefined;
 }
 
 export function createPolygon(
@@ -154,7 +167,8 @@ export function createPolygon(
   strokeColor: Color.Color,
   strokeThickness: number,
   fillColor: Color.Color,
-  id?: string
+  id?: string,
+  rotation?: Point.Point3D
 ): Polygon {
   return {
     type: "polygon",
@@ -163,6 +177,7 @@ export function createPolygon(
     strokeThickness: strokeThickness,
     fillColor: fillColor,
     id: id,
+    rotation,
   };
 }
 
@@ -174,6 +189,7 @@ export interface Rectangle {
   readonly strokeThickness: number;
   readonly fillColor: Color.Color;
   readonly id: string | undefined;
+  readonly rotation?: Point.Point3D | undefined;
 }
 
 export function createRectangle(
@@ -182,7 +198,8 @@ export function createRectangle(
   strokeColor: Color.Color,
   strokeThickness: number,
   fillColor: Color.Color,
-  id?: string
+  id?: string,
+  rotation?: Point.Point3D
 ): Rectangle {
   return {
     type: "rectangle",
@@ -192,6 +209,7 @@ export function createRectangle(
     strokeThickness: strokeThickness,
     fillColor: fillColor,
     id: id,
+    rotation,
   };
 }
 
@@ -225,6 +243,7 @@ export interface Text {
   readonly strokeThickness: number;
   readonly strokeColor: Color.Color;
   readonly italic: boolean;
+  readonly rotation?: Point.Point3D | undefined;
 }
 
 export function createText(
@@ -240,7 +259,8 @@ export function createText(
   verticalGrowthDirection: GrowthDirection,
   strokeThickness: number,
   strokeColor: Color.Color,
-  italic: boolean
+  italic: boolean,
+  rotation?: Point.Point3D
 ): Text {
   return {
     type: "text",
@@ -257,6 +277,7 @@ export function createText(
     strokeThickness: strokeThickness,
     strokeColor: strokeColor,
     italic: italic,
+    rotation,
   };
 }
 

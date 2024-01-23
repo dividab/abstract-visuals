@@ -3,6 +3,7 @@ import * as B64 from "base64-js";
 import * as React from "react";
 import * as AbstractImage from "../model/index";
 import { TextEncoder } from "util";
+import { Point3D } from "../model/index";
 
 export interface ReactSvgCallbacks {
   readonly onClick?: MouseCallback;
@@ -98,6 +99,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           width={component.bottomRight.x - component.topLeft.x}
           height={component.bottomRight.y - component.topLeft.y}
           id={makeIdAttr(component.id)}
+          {...(component.rotation && rotationStyle(component.rotation))}
           href={url}
         />,
       ];
@@ -113,48 +115,48 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
+          {...(component.rotation && rotationStyle(component.rotation))}
         />,
       ];
     case "text":
       if (!component.text) {
         return [];
       }
-      const lineHeight = component.fontSize;
 
-      const shadowStyle = {
+      const baseStyle = {
         textAnchor: getTextAnchor(component.horizontalGrowthDirection),
         fontSize: component.fontSize.toString() + "px",
         fontWeight: component.fontWeight === "mediumBold" ? "bold" : component.fontWeight,
         fontFamily: component.fontFamily,
+      };
+
+      const shadowStyle = {
+        ...baseStyle,
         stroke: colorToRgb(component.strokeColor),
         strokeWidth: component.strokeThickness,
       };
-      const style = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: component.fontWeight === "mediumBold" ? "bold" : component.fontWeight,
-        fontFamily: component.fontFamily,
-        fill: colorToRgb(component.textColor),
-      };
+      const style = { ...baseStyle, fill: colorToRgb(component.textColor) };
+
+      // component.clockwiseRotationDegrees is legacy
+      const transform = component.rotation
+        ? rotationTransform(component.rotation)
+        : "rotate(" +
+          component.clockwiseRotationDegrees.toString() +
+          " " +
+          component.position.x.toString() +
+          " " +
+          component.position.y.toString() +
+          ")";
+
       const dy = getBaselineAdjustment(component.verticalGrowthDirection);
-
-      const transform =
-        "rotate(" +
-        component.clockwiseRotationDegrees.toString() +
-        " " +
-        component.position.x.toString() +
-        " " +
-        component.position.y.toString() +
-        ")";
-
       const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
       const tSpans = lines.map((t) =>
         renderLine(
           t,
           component.position.x,
-          component.position.y + (lines.indexOf(t) + dy) * lineHeight,
+          component.position.y + (lines.indexOf(t) + dy) * component.fontSize,
           component.fontSize,
-          lineHeight
+          component.fontSize
         )
       );
       let cs: Array<React.ReactElement<{}>> = [];
@@ -189,6 +191,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
+          {...(component.rotation && rotationStyle(component.rotation))}
         />,
       ];
     case "polyline":
@@ -202,6 +205,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fill="none"
+          {...(component.rotation && rotationStyle(component.rotation))}
         />,
       ];
     case "polygon":
@@ -216,6 +220,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
+          {...(component.rotation && rotationStyle(component.rotation))}
         />,
       ];
     case "rectangle":
@@ -232,6 +237,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
+          {...(component.rotation && rotationStyle(component.rotation))}
         />,
       ];
     default:
@@ -279,6 +285,13 @@ function renderLine(text: string, x: number, y: number, fontSize: number, lineHe
     </tspan>
   );
 }
+
+const rotationStyle = (rotation: Point3D): { readonly style: React.CSSProperties } => ({
+  style: { transform: rotationTransform(rotation) },
+});
+
+const rotationTransform = (rotation: Point3D): string =>
+  `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) rotateZ(${rotation.z}deg)`;
 
 function getBaselineAdjustment(d: AbstractImage.GrowthDirection): number {
   if (d === "up") {
