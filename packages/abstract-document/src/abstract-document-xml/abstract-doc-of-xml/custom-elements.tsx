@@ -10,6 +10,7 @@ import {
   ImageResource as ADImageResource,
 } from "../../abstract-document/index";
 import { ParagraphProps } from "../../abstract-document/section-elements/paragraph";
+//dummy
 
 type StyleProps = {
   readonly ParagraphStyle: string;
