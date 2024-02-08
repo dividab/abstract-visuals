@@ -10,6 +10,8 @@ export type XmlElement = {
   readonly textContent?: string;
 };
 
+//dummy
+
 export type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
 export function parseMustacheXml(
