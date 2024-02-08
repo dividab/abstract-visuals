@@ -26,6 +26,7 @@
     "remark-sub-super": "^1.0.19",
     "svg-to-pdfkit": "^0.1.8",
     "ts-exhaustive-check": "^1.0.0",
+    "mustache": "^4.2.0",
     "unified": "^6.1.6"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "@types/ramda": "^0.25.29",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/mustache": "^4.2.1",
     "diff-js-xml": "^1.0.6",
     "jszip": "^3.10.1",
     "pdf2json": "2.0.1"
