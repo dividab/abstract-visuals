@@ -87,7 +87,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     return { ...fixedStyles, ...DefaultStyles.createStandardStyles() };
   },
   columnWidths: (props: { readonly columnWidths: string; readonly columnMultiplier: string }): unknown => {
-    const columnWidths = props.columnWidths
+    const columnWidths = (props.columnWidths ?? "")
       .toString()
       .split(",")
       .map((item: string) => {
