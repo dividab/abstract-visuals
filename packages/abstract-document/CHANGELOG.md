@@ -2,11 +2,23 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.10.4...master)
+## [Unreleased](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.15.0...master)
+
+### Added
+
+### Changed
+
+### Removed
+
+## [6.15.0](https://github.com/dividab/abstract-visuals/compare/abstract-document@6.10.4...abstract-document@6.15.0) - 2024-02-09
 
 ### Added
 
 - Added support for explicit line breaks inside paragraphs
+- Custom XML elements
+- Exported ImageResources type
+- Added an XML validator using Mustache
+- Added export options for creating PDFs, allows setting a compression flag for smaller file size
 
 ### Changed
 

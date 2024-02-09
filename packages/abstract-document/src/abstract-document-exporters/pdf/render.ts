@@ -9,14 +9,19 @@ import { registerFonts, getFontNameStyle } from "./font";
 
 type RowSpans = Map<number, { rowSpanLeft: number; colSpan: number }>;
 
+export type PdfExportOptions = {
+  compress: boolean;
+};
+
 export function exportToHTML5Blob(
   // tslint:disable-next-line:no-any
   pdfKit: any,
-  doc: AD.AbstractDoc.AbstractDoc
+  doc: AD.AbstractDoc.AbstractDoc,
+  options: PdfExportOptions = { compress: false }
 ): Promise<Blob> {
   return new Promise((resolve) => {
     const stream = BlobStream();
-    exportToStream(pdfKit, stream, doc);
+    exportToStream(pdfKit, stream, doc, options);
     stream.on("finish", () => {
       const blob = stream.toBlob("application/pdf");
       resolve(blob);
@@ -30,13 +35,19 @@ export function exportToHTML5Blob(
  * @param pdfKit
  * @param blobStream
  * @param doc
+ * @param options
  */
-export function exportToStream(pdfKit: any, blobStream: {}, doc: AD.AbstractDoc.AbstractDoc): void {
+export function exportToStream(
+  pdfKit: any,
+  blobStream: {},
+  doc: AD.AbstractDoc.AbstractDoc,
+  options: PdfExportOptions = { compress: false }
+): void {
   const PDFDocument = pdfKit;
   const document = preProcess(doc);
 
   let pdf = new PDFDocument({
-    compress: false,
+    ...options,
     autoFirstPage: false,
     bufferPages: true,
   }) as any;
