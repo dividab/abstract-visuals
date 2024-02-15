@@ -7,12 +7,11 @@ import BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
 import { registerFonts, getFontNameStyle } from "./font";
 
-type RowSpans = Map<number, { rowSpanLeft: number; colSpan: number }>;
-
 export type PdfExportOptions = {
   compress: boolean;
 };
 
+// Remove??
 export function exportToHTML5Blob(
   // tslint:disable-next-line:no-any
   pdfKit: any,
@@ -28,35 +27,18 @@ export function exportToHTML5Blob(
     });
   });
 }
-//dummy
-export function exportToHTML5Blob2(
+
+export function exportToHTML5BlobWithoutStream(
   // tslint:disable-next-line:no-any
   pdfKit: any,
-  doc: AD.AbstractDoc.AbstractDoc
+  doc: AD.AbstractDoc.AbstractDoc,
+  options: PdfExportOptions = { compress: false }
 ): Promise<Blob> {
   return new Promise((resolve) => {
-    const document = preProcess(doc);
-    let pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true }) as any;
-
+    let pdf = createDocument(pdfKit, options, doc);
     const buffers = Array<BlobPart>();
     pdf.on("data", buffers.push.bind(buffers));
     pdf.on("end", () => resolve(new Blob(buffers, { type: "application/pdf" })));
-
-    registerFonts(
-      (fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource),
-      document
-    );
-
-    const desiredSizes = measure(pdfKit, document);
-    const pages = paginate(pdfKit, document, desiredSizes);
-    const updatedPages = updatePageRefs(pages);
-    const pageDesiredSizes = measurePages(pdfKit, document, updatedPages);
-
-    for (let page of updatedPages) {
-      renderPage(document, pdf, pageDesiredSizes, page);
-    }
-
-    pdf.end();
   });
 }
 
@@ -74,15 +56,14 @@ export function exportToStream(
   doc: AD.AbstractDoc.AbstractDoc,
   options: PdfExportOptions = { compress: false }
 ): void {
-  const PDFDocument = pdfKit;
+  let pdf = createDocument(pdfKit, options, doc);
+  pdf.pipe(blobStream);
+}
+
+function createDocument(pdfKit: any, options: PdfExportOptions, doc: AD.AbstractDoc.AbstractDoc): any {
+  let pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true }) as any;
+
   const document = preProcess(doc);
-
-  let pdf = new PDFDocument({
-    ...options,
-    autoFirstPage: false,
-    bufferPages: true,
-  }) as any;
-
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
 
   const desiredSizes = measure(pdfKit, document);
@@ -93,29 +74,9 @@ export function exportToStream(
   for (let page of updatedPages) {
     renderPage(document, pdf, pageDesiredSizes, page);
   }
-
-  pdf.pipe(blobStream);
   pdf.end();
+  return pdf;
 }
-
-// // Can only be used on the server-side
-// export function exportToNodeStream(pdfKit: any, doc: AD.AbstractDoc.AbstractDoc, stream: any): void {
-//   const PDFDocument = pdfKit;
-//   const document = preProcess(doc);
-//   const desiredSizes = measure(pdfKit, document);
-//   let pdf = new PDFDocument({compress: false, autoFirstPage: false}) as any;
-//   registerFonts(
-//     (fontName: string, fontSource: AD.Font.FontSource) =>
-//       pdf.registerFont(fontName, fontSource),
-//     document
-//   );
-//   let pageNo = 0;
-//   for (let section of document.children){
-//     pageNo = renderSection(document, pdf, desiredSizes, section, pageNo);
-//   }
-//   pdf.pipe(stream);
-//   pdf.end();
-// }
 
 function renderPage(
   parentResources: AD.Resources.Resources,
