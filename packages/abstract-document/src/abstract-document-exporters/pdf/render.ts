@@ -3,7 +3,6 @@ import { preProcess } from "./pre-process";
 import { measure, measurePages } from "./measure";
 import { paginate, Page } from "./paginate";
 import { updatePageRefs } from "./update-refs";
-import BlobStream from "blob-stream";
 import { renderImage } from "./render-image";
 import { registerFonts, getFontNameStyle } from "./font";
 
@@ -11,24 +10,7 @@ export type PdfExportOptions = {
   compress: boolean;
 };
 
-// Remove??
 export function exportToHTML5Blob(
-  // tslint:disable-next-line:no-any
-  pdfKit: any,
-  doc: AD.AbstractDoc.AbstractDoc,
-  options: PdfExportOptions = { compress: false }
-): Promise<Blob> {
-  return new Promise((resolve) => {
-    const stream = BlobStream();
-    exportToStream(pdfKit, stream, doc, options);
-    stream.on("finish", () => {
-      const blob = stream.toBlob("application/pdf");
-      resolve(blob);
-    });
-  });
-}
-
-export function exportToHTML5BlobWithoutStream(
   // tslint:disable-next-line:no-any
   pdfKit: any,
   doc: AD.AbstractDoc.AbstractDoc,
