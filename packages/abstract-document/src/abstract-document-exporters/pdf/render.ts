@@ -29,6 +29,37 @@ export function exportToHTML5Blob(
   });
 }
 
+export function exportToHTML5Blob2(
+  // tslint:disable-next-line:no-any
+  pdfKit: any,
+  doc: AD.AbstractDoc.AbstractDoc
+): Promise<Blob> {
+  return new Promise((resolve) => {
+    const document = preProcess(doc);
+    let pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true }) as any;
+
+    const buffers = Array<BlobPart>();
+    pdf.on("data", buffers.push.bind(buffers));
+    pdf.on("end", () => resolve(new Blob(buffers, { type: "application/pdf" })));
+
+    registerFonts(
+      (fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource),
+      document
+    );
+
+    const desiredSizes = measure(pdfKit, document);
+    const pages = paginate(pdfKit, document, desiredSizes);
+    const updatedPages = updatePageRefs(pages);
+    const pageDesiredSizes = measurePages(pdfKit, document, updatedPages);
+
+    for (let page of updatedPages) {
+      renderPage(document, pdf, pageDesiredSizes, page);
+    }
+
+    pdf.end();
+  });
+}
+
 /**
  * On the client side the stream can be a BlobStream from the blob-stream package.
  * On the server-side the stream can be a file stream from the fs package.
