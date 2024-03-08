@@ -204,7 +204,7 @@ export function corners(rectangle: Rectangle): Array<Point.Point> {
   ];
 }
 
-export type AbstractFontWeight = "normal" | "mediumBold" | "bold";
+export type AbstractFontWeight = "light" | "normal" | "mediumBold" | "bold" | "extraBold";
 
 export type TextAlignment = "left" | "center" | "right";
 

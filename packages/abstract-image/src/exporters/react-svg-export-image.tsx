@@ -124,7 +124,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
       const shadowStyle = {
         textAnchor: getTextAnchor(component.horizontalGrowthDirection),
         fontSize: component.fontSize.toString() + "px",
-        fontWeight: component.fontWeight === "mediumBold" ? "bold" : component.fontWeight,
+        fontWeight: getTextFontWeight(component.fontWeight),
         fontFamily: component.fontFamily,
         stroke: colorToRgb(component.strokeColor),
         strokeWidth: component.strokeThickness,
@@ -132,7 +132,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
       const style = {
         textAnchor: getTextAnchor(component.horizontalGrowthDirection),
         fontSize: component.fontSize.toString() + "px",
-        fontWeight: component.fontWeight === "mediumBold" ? "bold" : component.fontWeight,
+        fontWeight: getTextFontWeight(component.fontWeight),
         fontFamily: component.fontFamily,
         fill: colorToRgb(component.textColor),
       };
@@ -236,6 +236,16 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
       ];
     default:
       return [];
+  }
+}
+
+function getTextFontWeight(fontWeight: AbstractImage.AbstractFontWeight): React.CSSProperties["fontWeight"] {
+  if (fontWeight === "mediumBold" || fontWeight === "extraBold") {
+    return "bold";
+  } else if (fontWeight === "light") {
+    return "normal";
+  } else {
+    return fontWeight;
   }
 }
 

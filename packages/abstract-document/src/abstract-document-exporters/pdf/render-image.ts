@@ -141,12 +141,7 @@ function abstractComponentToPdf(
         .stroke(colorToRgb(component.strokeColor));
       break;
     case "text":
-      const font = getFontName(
-        component.fontFamily,
-        component.fontWeight === "bold",
-        component.italic,
-        component.fontWeight === "mediumBold"
-      );
+      const font = getFontName(component.fontFamily, component.fontWeight, component.italic);
       if (component.clockwiseRotationDegrees !== 0) {
         pdf.save();
         pdf.rotate(component.clockwiseRotationDegrees, {

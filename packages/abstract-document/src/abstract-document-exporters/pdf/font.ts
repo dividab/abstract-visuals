@@ -1,4 +1,5 @@
 import * as AD from "../../abstract-document/index";
+import { TextFontWeight } from "../../abstract-document/styles/text-style";
 import { getResources } from "../shared/get_resources";
 
 export function registerFonts(
@@ -9,38 +10,64 @@ export function registerFonts(
   if (resources.fonts) {
     for (const fontName of Object.keys(resources.fonts)) {
       const font = resources.fonts[fontName];
+      registerFont(fontName + "-Light", font.light || font.normal);
       registerFont(fontName, font.normal);
       registerFont(fontName + "-Medium", font.medium || font.normal);
       registerFont(fontName + "-Bold", font.bold);
+      registerFont(fontName + "-ExtraBold", font.extraBold || font.bold);
+      registerFont(fontName + "-LightOblique", font.lightItalic || font.normal);
+      registerFont(fontName + "-LightItalic", font.lightItalic || font.normal);
       registerFont(fontName + "-Oblique", font.italic);
       registerFont(fontName + "-Italic", font.italic);
       registerFont(fontName + "-BoldOblique", font.boldItalic);
       registerFont(fontName + "-BoldItalic", font.boldItalic);
       registerFont(fontName + "-MediumOblique", font.mediumItalic || font.italic);
       registerFont(fontName + "-MediumItalic", font.mediumItalic || font.italic);
+      registerFont(fontName + "-ExtraBoldItalic", font.extraBoldItalic || font.boldItalic);
+      registerFont(fontName + "-ExtraBoldOblique", font.extraBoldItalic || font.boldItalic);
     }
   }
 }
 
 export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
-  return getFontName(textStyle.fontFamily, textStyle.bold, textStyle.italic, textStyle.mediumBold);
+  const fontWeight = textStyle.fontWeight
+    ? textStyle.fontWeight
+    : textStyle.light
+    ? "light"
+    : textStyle.normal
+    ? "normal"
+    : textStyle.bold
+    ? "bold"
+    : textStyle.mediumBold
+    ? "mediumBold"
+    : textStyle.extraBold
+    ? "extraBold"
+    : "normal";
+  return getFontName(textStyle.fontFamily, fontWeight, textStyle.italic);
 }
 
 export function getFontName(
   fontFamily: string | undefined,
-  bold: boolean | undefined,
-  italic: boolean | undefined,
-  mediumBold: boolean | undefined
+  fontWeight: TextFontWeight,
+  italic: boolean | undefined
 ): string {
   const name = fontFamily || "Helvetica";
-  if (bold && italic) {
+  if (fontWeight === "light" && italic) {
+    return name + "-LightOblique";
+  } else if (fontWeight === "bold" && italic) {
     return name + "-BoldOblique";
-  } else if (mediumBold && italic) {
+  } else if (fontWeight === "mediumBold" && italic) {
     return name + "-MediumOblique";
-  } else if (bold) {
+  } else if (fontWeight === "extraBold" && italic) {
+    return name + "-ExtraBoldOblique";
+  } else if (fontWeight === "light") {
+    return name + "-Light";
+  } else if (fontWeight === "bold") {
     return name + "-Bold";
-  } else if (mediumBold) {
+  } else if (fontWeight === "mediumBold") {
     return name + "-Medium";
+  } else if (fontWeight === "extraBold") {
+    return name + "-ExtraBold";
   } else if (italic) {
     return name + "-Oblique";
   } else {
@@ -52,6 +79,9 @@ export function isFontAvailable(fontName: string, resources: AD.Resources.Resour
   if (resources.fonts) {
     for (const name of Object.keys(resources.fonts)) {
       const font = resources.fonts[name];
+      if (font.light && fontName === `${name}-Light`) {
+        return true;
+      }
       if (font.normal && fontName === name) {
         return true;
       }
@@ -61,6 +91,12 @@ export function isFontAvailable(fontName: string, resources: AD.Resources.Resour
       if (font.bold && fontName === `${name}-Bold`) {
         return true;
       }
+      if (font.extraBold && fontName === `${name}-ExtraBold`) {
+        return true;
+      }
+      if (font.lightItalic && (fontName === `${name}-LightOblique` || fontName === `${name}-LightItalic`)) {
+        return true;
+      }
       if (font.italic && (fontName === `${name}-Oblique` || fontName === `${name}-Italic`)) {
         return true;
       }
@@ -68,6 +104,9 @@ export function isFontAvailable(fontName: string, resources: AD.Resources.Resour
         return true;
       }
       if (font.mediumItalic && (fontName === `${name}-MediumOblique` || fontName === `${name}-MediumItalic`)) {
+        return true;
+      }
+      if (font.extraBoldItalic && (fontName === `${name}-ExtraBoldOblique` || fontName === `${name}-ExtraBoldItalic`)) {
         return true;
       }
     }

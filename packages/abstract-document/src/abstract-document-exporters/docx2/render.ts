@@ -123,7 +123,7 @@ function renderHyperLink(
     font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "blue",
-    bold: style.bold,
+    bold: style.bold || style.fontWeight === "bold",
     underline: style.underline
       ? {
           color: style.color || "blue",
@@ -417,7 +417,7 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): DOCXJS.TextRun {
     font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
-    bold: style.bold,
+    bold: style.bold || style.fontWeight === "bold",
     underline: style.underline
       ? {
           color: style.color,
@@ -434,7 +434,7 @@ function renderTotalPages(style: AD.TextStyle.TextStyle): DOCXJS.TextRun {
     font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
-    bold: style.bold,
+    bold: style.bold || style.fontWeight === "bold",
     underline: style.underline
       ? {
           color: style.color,
@@ -453,7 +453,7 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): DOCXJS.TextRun
     font: style.fontFamily || "Arial",
     size: fontSize,
     color: style.color || "black",
-    bold: style.bold,
+    bold: style.bold || style.fontWeight === "bold",
     underline: style.underline
       ? {
           color: style.color,

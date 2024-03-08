@@ -1,11 +1,16 @@
 export type TextAlignment = "left" | "center" | "right" | "justify";
 export type TextBaseline = "top" | "bottom" | "middle" | "alphabetic" | "hanging";
+export type TextFontWeight = "light" | "normal" | "mediumBold" | "bold" | "extraBold";
 
 export interface TextStyle {
   readonly type: "TextStyle";
   readonly fontFamily?: string;
+  readonly light?: boolean;
+  readonly normal?: boolean;
   readonly bold?: boolean;
   readonly mediumBold?: boolean;
+  readonly extraBold?: boolean;
+  readonly fontWeight?: TextFontWeight;
   readonly color?: string;
   readonly fontSize?: number;
   readonly fontScale?: number;
@@ -23,8 +28,12 @@ export interface TextStyle {
 
 export interface TextStyleProps {
   readonly fontFamily?: string;
+  readonly light?: boolean;
+  readonly normal?: boolean;
   readonly bold?: boolean;
   readonly mediumBold?: boolean;
+  readonly extraBold?: boolean;
+  readonly fontWeight?: TextFontWeight;
   readonly color?: string;
   readonly fontSize?: number;
   readonly fontScale?: number;
@@ -48,12 +57,33 @@ export function create(props?: TextStyleProps): TextStyle {
 }
 
 export function overrideWith(overrider: TextStyle | undefined, toOverride: TextStyle | undefined): TextStyle {
+  let overriddenFontWeight: Partial<TextStyle> =
+    overrider?.light ||
+    overrider?.normal ||
+    overrider?.mediumBold ||
+    overrider?.bold ||
+    overrider?.extraBold ||
+    overrider?.fontWeight
+      ? {
+          light: overrider?.light,
+          normal: overrider?.normal,
+          mediumBold: overrider?.mediumBold,
+          bold: overrider?.bold,
+          extraBold: overrider?.extraBold,
+          fontWeight: overrider?.fontWeight,
+        }
+      : {
+          light: toOverride?.light,
+          normal: toOverride?.normal,
+          mediumBold: toOverride?.mediumBold,
+          bold: toOverride?.bold,
+          extraBold: toOverride?.extraBold,
+          fontWeight: toOverride?.fontWeight,
+        };
   const a: TextStyleProps = overrider || {};
   const b: TextStyleProps = toOverride || {};
   return create({
     fontFamily: a.fontFamily || b.fontFamily,
-    bold: a.bold || b.bold,
-    mediumBold: a.mediumBold || b.mediumBold,
     color: a.color || b.color,
     fontSize: a.fontSize || b.fontSize,
     fontScale: a.fontScale || b.fontScale,
@@ -67,6 +97,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
     lineBreak: a.lineBreak ?? b.lineBreak,
     alignment: a.alignment ?? b.alignment,
     baseline: a.baseline ?? b.baseline,
+    ...overriddenFontWeight,
   });
 }
 

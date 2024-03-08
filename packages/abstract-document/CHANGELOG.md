@@ -6,7 +6,12 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
+- Added added `fontWeight` to TextStyle as an alternative to specify font weight. This will override the flags `light`, `normal`, `bold`, `mediumBold` and `extraBold`.
+- Added the additional font weights `light` and `extraBold` to TextSyle
+
 ### Changed
+
+- Fixed bug where descendant text styles didn't override font weight correctly
 
 ### Removed
 
