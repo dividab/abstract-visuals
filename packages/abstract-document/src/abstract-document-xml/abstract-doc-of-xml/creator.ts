@@ -99,6 +99,13 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     }
     return columnWidths;
   },
+  paperSize: (props: { readonly paperSize: string }): unknown => {
+    if (props.paperSize === "A4" || props.paperSize === "Letter") {
+      return props.paperSize;
+    }
+    const parts = props.paperSize.split("x");
+    return { width: parts[0] ?? 595, height: parts[1] ?? 842 };
+  },
   borders: (props: { readonly borders: string }): unknown => {
     const borders: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
     const propBorders = props.borders.toString().split(" ");
