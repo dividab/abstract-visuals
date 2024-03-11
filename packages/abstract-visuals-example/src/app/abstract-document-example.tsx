@@ -135,7 +135,18 @@ const headerRows = [
 ];
 
 export function AbstractDocumentExample(): JSX.Element {
-  const page = AD.AbstractDoc.MasterPage.create({ header: header, footer: footer });
+  const page = AD.AbstractDoc.MasterPage.create({
+    header: header,
+    footer: footer,
+    style: {
+      paperSize: "A4",
+      headerMargins: LayoutFoundation.create(),
+      footerMargins: LayoutFoundation.create(),
+      contentMargins: LayoutFoundation.create(),
+      orientation: "Portrait",
+      noTopBottomMargin: false,
+    },
+  });
   const doc = render(
     <AbstractDoc>
       <Section page={page}>

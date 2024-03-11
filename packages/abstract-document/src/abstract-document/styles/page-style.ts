@@ -1,7 +1,7 @@
 import * as LayoutFoundation from "../primitives/layout-foundation";
 
 export type PageOrientation = "Portrait" | "Landscape";
-export type PaperSize = "A4" | "Letter";
+export type PaperSize = "A4" | "Letter" | { readonly width: number; readonly height: number };
 
 export interface PageStyle {
   readonly headerMargins: LayoutFoundation.LayoutFoundation;
@@ -28,16 +28,15 @@ export function create(props?: PageStyleProps): PageStyle {
     contentMargins = LayoutFoundation.create(),
     orientation = "Portrait",
     paperSize = "A4",
-    noTopBottomMargin = false
-  } =
-    props || {};
+    noTopBottomMargin = false,
+  } = props || {};
   return {
     headerMargins,
     footerMargins,
     contentMargins,
     orientation,
     paperSize,
-    noTopBottomMargin
+    noTopBottomMargin,
   };
 }
 
@@ -60,7 +59,7 @@ export function getPaperWidth(ps: PaperSize): number {
     case "Letter":
       return 612;
     default:
-      throw new Error("Unknown paper size");
+      return ps.width;
   }
 }
 
@@ -71,6 +70,6 @@ export function getPaperHeight(ps: PaperSize): number {
     case "Letter":
       return 792;
     default:
-      throw new Error("Unknown paper size");
+      return ps.height;
   }
 }
