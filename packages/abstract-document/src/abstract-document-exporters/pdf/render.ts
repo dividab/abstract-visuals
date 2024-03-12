@@ -590,7 +590,7 @@ function drawText(
       align: "left",
       indent: textStyle.indent || 0,
       continued: !isLastAtom,
-      strike: textStyle.strike,
+      strike: textStyle.strike || false,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
   }
