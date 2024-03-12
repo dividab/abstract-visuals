@@ -18,7 +18,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "abstract-chart": "^3.2.7",
-    "abstract-document": "^6.18.2",
+    "abstract-document": "^6.19.0",
     "abstract-image": "^3.4.1",
     "base64-js": "^1.2.0",
     "react": "^16.12.0",
