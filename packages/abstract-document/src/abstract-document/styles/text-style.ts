@@ -24,6 +24,7 @@ export interface TextStyle {
   readonly lineBreak?: boolean;
   readonly alignment?: TextAlignment;
   readonly baseline?: TextBaseline;
+  readonly strike?: boolean;
 }
 
 export interface TextStyleProps {
@@ -47,6 +48,7 @@ export interface TextStyleProps {
   readonly lineBreak?: boolean;
   readonly alignment?: TextAlignment;
   readonly baseline?: TextBaseline;
+  readonly strike?: boolean;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
@@ -97,6 +99,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
     lineBreak: a.lineBreak ?? b.lineBreak,
     alignment: a.alignment ?? b.alignment,
     baseline: a.baseline ?? b.baseline,
+    strike: a.strike ?? b.strike,
     ...overriddenFontWeight,
   });
 }
