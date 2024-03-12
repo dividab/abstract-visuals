@@ -581,6 +581,7 @@ function drawText(
       indent: textStyle.indent || 0,
       continued: alignment !== "left" ? false : !isLastAtom,
       baseline: textStyle.baseline || "top",
+      strike: textStyle.strike,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
   } else {
@@ -589,6 +590,7 @@ function drawText(
       align: "left",
       indent: textStyle.indent || 0,
       continued: !isLastAtom,
+      strike: textStyle.strike,
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
   }
