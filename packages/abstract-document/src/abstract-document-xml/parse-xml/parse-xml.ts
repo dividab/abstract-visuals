@@ -1,4 +1,4 @@
-import { X2jOptionsOptional, XMLParser } from "fast-xml-parser";
+import { X2jOptions, X2jOptionsOptional, XMLParser } from "fast-xml-parser";
 import Mustache from "mustache";
 import { xsd } from "../xsd-template";
 import { errorToReadableText, validateXml } from "./validation";
@@ -14,51 +14,50 @@ export type XmlElement = {
 
 export type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
-export function parseMustacheXml(
-  template: {
-    readonly name: string;
-    readonly template: string;
+const parsedXsd = parseXml(xsd.replace(/xs:/g, ""), {
+  preserveOrder: true,
+  ignoreAttributes: false,
+  attributeNamePrefix: "",
+  allowBooleanAttributes: true,
+  trimValues: false,
+  ignoreDeclaration: true,
+});
+
+const options: Partial<X2jOptions> = {
+  preserveOrder: true,
+  ignoreAttributes: false,
+  attributeNamePrefix: "",
+  allowBooleanAttributes: true,
+  trimValues: false,
+  ignoreDeclaration: true,
+  processEntities: true,
+  htmlEntities: true,
+  attributeValueProcessor: (_name, value) => {
+    if (!value?.trim()) {
+      return value;
+    }
+    const nValue = Number(value);
+    if (!Number.isNaN(nValue)) {
+      return nValue;
+    }
+    return value;
   },
+};
+
+export function parseMustacheXml(
+  template: { readonly name: string; readonly template: string },
   data: any,
   partials: Record<string, string>
 ): { readonly type: "Ok"; readonly xml: ReadonlyArray<XmlElement> } | { readonly type: "Err"; readonly error: string } {
+  // const preParse = parseXml(template.template, options);
+  // const stringified = JSON.stringify(preParse);
   const mustacheResolvedXml = Mustache.render(template.template, data, partials);
-  const xsdTemplate = parseXml(xsd.replace(/xs:/g, ""), {
-    preserveOrder: true,
-    ignoreAttributes: false,
-    attributeNamePrefix: "",
-    allowBooleanAttributes: true,
-    trimValues: false,
-    ignoreDeclaration: true,
-  });
-  const validationErrors = validateXml(mustacheResolvedXml, xsdTemplate);
+  const validationErrors = validateXml(mustacheResolvedXml, parsedXsd);
   if (validationErrors.length > 0) {
     return { type: "Err", error: errorToReadableText(validationErrors, template.name) };
   }
 
-  return {
-    type: "Ok",
-    xml: parseXml(mustacheResolvedXml, {
-      preserveOrder: true,
-      ignoreAttributes: false,
-      attributeNamePrefix: "",
-      allowBooleanAttributes: true,
-      trimValues: false,
-      ignoreDeclaration: true,
-      processEntities: true,
-      htmlEntities: true,
-      attributeValueProcessor: (_name, value) => {
-        if (!value?.trim()) {
-          return value;
-        }
-        const nValue = Number(value);
-        if (!Number.isNaN(nValue)) {
-          return nValue;
-        }
-        return value;
-      },
-    }),
-  };
+  return { type: "Ok", xml: parseXml(mustacheResolvedXml, options) };
 }
 
 export function parseXml(text: string, options?: X2jOptionsOptional): ReadonlyArray<XmlElement> {

@@ -2,10 +2,14 @@ import * as React from "react";
 import * as AD from "abstract-document";
 import { AbstractDocExporters } from "abstract-document";
 import { abstractDocOfXml, creators, extractImageFontsStyleNames } from "abstract-document/src/abstract-document-xml";
-import { parseXml } from "abstract-document/src/abstract-document-xml/parse-xml/parse-xml";
+import { parseMustacheXml } from "abstract-document/src/abstract-document-xml/parse-xml/parse-xml";
 
 export function AbstractDocumentXMLExample(): JSX.Element {
-  const [value, setValue] = React.useState(`<AbstractDoc>
+  const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
+    undefined
+  );
+  const [data, setData] = React.useState('{ "test": "Hello world" }');
+  const [template, setTemplate] = React.useState(`<AbstractDoc>
     <StyleNames>
         <StyleName name="footerResultText" type="TextStyle" fontSize="8" color="#353535" bold="true"/>
         <StyleName name="footerResultCell" type="TableCellStyle" padding="4 4 3 0" borders="1 0 0 0" borderColor="#123151" verticalAlignment="Bottom"/>
@@ -15,52 +19,77 @@ export function AbstractDocumentXMLExample(): JSX.Element {
             <style margins="150 0 0 0"/>
             <TableRow>
                 <TableCell styleName="footerResultCell"/>
-                <TextCell text="Cost €" styleNames="footerResultText, footerResultCell"/>
+                <TextCell text="{{test}}" styleNames="footerResultText, footerResultCell"/>
                 <TextCell text="Price €" styleNames="footerResultText, footerResultCell"/>
             </TableRow>
         </Table>
     </Section>
   </AbstractDoc>`);
+
   return (
-    <div>
-      <textarea value={value} onChange={(e) => setValue(e.currentTarget.value)}>
-        Pdf
-      </textarea>
-      <button onClick={() => generatePDF(value)}>Generate PDF</button>
+    <div style={{ display: "flex", margin: "10px 0 0 10px", gap: "10px", width: "100%", height: "calc(100% - 40px)" }}>
+      <div style={{ display: "flex", flexDirection: "column", width: "25%", height: "100%", gap: "10px" }}>
+        <span>Data</span>
+        <textarea
+          style={{ width: "100%", height: "calc(100% - 30px)" }}
+          value={data}
+          onChange={(e) => setData(e.currentTarget.value)}
+        />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", width: "43%", height: "100%", gap: "10px" }}>
+        <span>Template</span>
+        <textarea
+          style={{ width: "100%", height: "calc(100% - 30px)" }}
+          value={template}
+          onChange={(e) => setTemplate(e.currentTarget.value)}
+        />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          width: "32%",
+          height: "100%",
+        }}
+      >
+        <button onClick={async () => setPdf(await generatePDF(data, template))}>Generate PDF</button>
+        {pdf?.type === "Err" ? (
+          <h3>{pdf.error}</h3>
+        ) : (
+          <embed
+            src={pdf?.type === "Ok" ? pdf.url : undefined}
+            type="application/pdf"
+            style={{ width: "100%", height: "calc(100% - 30px)" }}
+          />
+        )}
+      </div>
     </div>
   );
 }
 
-async function generatePDF(s: string): Promise<void> {
-  // tslint:disable-next-line:no-require-imports
+async function generatePDF(
+  data: string,
+  template: string
+): Promise<{ type: "Ok"; url: string } | { type: "Err"; error: string }> {
+  let dataObject = {};
+  try {
+    dataObject = JSON.parse(data);
+  } catch (e) {
+    return { type: "Err", error: "Failed to parse JSON." };
+  }
   const pdfKit = require("../pdfkit");
-  const xml = parseXml(s, {
-    preserveOrder: true,
-    ignoreAttributes: false,
-    attributeNamePrefix: "",
-    allowBooleanAttributes: true,
-    trimValues: false,
-    ignoreDeclaration: true,
-    processEntities: true,
-    htmlEntities: true,
-    attributeValueProcessor: (_name, value) => {
-      if (!value?.trim()) {
-        return value;
-      }
-      const nValue = Number(value);
-      if (!Number.isNaN(nValue)) {
-        return nValue;
-      }
-      return value;
-    },
-  });
+  const parsed = parseMustacheXml({ name: "template", template }, dataObject, {});
+  if (parsed.type === "Err") {
+    return parsed;
+  }
 
   const doc = abstractDocOfXml(
-    creators({}, {}, extractImageFontsStyleNames(xml)[2]),
-    xml[0]!
+    creators({}, {}, extractImageFontsStyleNames(parsed.xml)[2]),
+    parsed.xml[0]!
   ) as unknown as AD.AbstractDoc.AbstractDoc.AbstractDoc;
 
   const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob(pdfKit, doc);
   const objectURL = URL.createObjectURL(blob);
-  window.open(objectURL);
+  return { type: "Ok", url: objectURL };
 }
