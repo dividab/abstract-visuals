@@ -1,5 +1,4 @@
 import * as AI from "../model/index";
-import * as R from "ramda";
 
 type CharacterEncoding = "standard-encoding" | "iso-latin-1-encoding";
 
@@ -11,13 +10,13 @@ export function epsExportImage(root: AI.AbstractImage, characterEncoding?: Chara
     const eps = [
       ...createEpsHeaderLines(root),
       ...createIsoLatin1FontLines(root),
-      ...R.unnest<string>(root.components.map((c) => epsExportComponent(c, root.size.height, "iso-latin-1-encoding"))),
+      ...root.components.flatMap((c) => epsExportComponent(c, root.size.height, "iso-latin-1-encoding")),
     ].join("\n");
     return encodeLatin1Encoding(eps);
   } else {
     return [
       ...createEpsHeaderLines(root),
-      ...R.unnest<string>(root.components.map((c) => epsExportComponent(c, root.size.height, "standard-encoding"))),
+      ...root.components.flatMap((c) => epsExportComponent(c, root.size.height, "standard-encoding")),
     ].join("\n");
   }
 }
@@ -61,7 +60,7 @@ function epsExportComponent(c: AI.Component, height: number, characterEncoding: 
       ];
     }
     case "group": {
-      return R.unnest<string>(c.children.map((cc) => epsExportComponent(cc, height, characterEncoding)));
+      return c.children.flatMap((cc) => epsExportComponent(cc, height, characterEncoding));
     }
     case "line": {
       return getColored(c.strokeColor, [
@@ -229,5 +228,5 @@ function getUsedFontFamilies(components: ReadonlyArray<AI.Component>): ReadonlyA
         break;
     }
   }
-  return R.uniq(families);
+  return [...new Set(families)];
 }

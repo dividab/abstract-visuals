@@ -1,4 +1,3 @@
-import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import { Page } from "./paginate";
@@ -55,7 +54,7 @@ function measureSection(
   const footerAvailableSize = AD.Size.create(footerAvailableWidth, pageHeight);
   const footerSizes = footer.map((e) => measureSectionElement(pdf, resources, footerAvailableSize, e));
 
-  return mergeMaps(R.unnest([sectionSizes, headerSizes, footerSizes]));
+  return mergeMaps([...sectionSizes, ...headerSizes, ...footerSizes]);
 }
 
 function measureSectionElement(
@@ -299,12 +298,9 @@ function measureGroup(
   let desiredSizes = mergeMaps(
     keepTogether.children.map((e) => measureSectionElement(pdf, resources, availableSize, e))
   );
-  let desiredHeight = R.reduce(
-    (sum, e) => {
-      return sum + (AD.Position.isPositionAbsolute(e) ? 0 : getDesiredSize(e, desiredSizes).height);
-    },
-    0.0,
-    keepTogether.children
+  let desiredHeight = keepTogether.children.reduce(
+    (sum, e) => sum + (AD.Position.isPositionAbsolute(e) ? 0 : getDesiredSize(e, desiredSizes).height),
+    0.0
   );
   desiredSizes.set(keepTogether, AD.Size.create(availableSize.width, desiredHeight));
   return desiredSizes;
