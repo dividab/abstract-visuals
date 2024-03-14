@@ -16,10 +16,7 @@
   ],
   "dependencies": {
     "abstract-image": "^3.4.3",
-    "ramda": "^0.22.1",
     "ts-exhaustive-check": "^1.0.0"
   },
-  "devDependencies": {
-    "@types/ramda": "^0.25.29"
-  }
+  "devDependencies": {}
 }

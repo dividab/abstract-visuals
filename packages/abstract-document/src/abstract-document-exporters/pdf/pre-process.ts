@@ -1,4 +1,3 @@
-import * as R from "ramda";
 import * as AD from "../../abstract-document/index";
 import { exhaustiveCheck } from "ts-exhaustive-check/lib-cjs";
 import * as TextStyle from "../../abstract-document/styles/text-style";
@@ -50,20 +49,10 @@ export function preProcess(doc: AD.AbstractDoc.AbstractDoc): AD.AbstractDoc.Abst
 
 function preProcessSection(s: AD.Section.Section, parentResources: AD.Resources.Resources): AD.Section.Section {
   const resources = AD.Resources.mergeResources([parentResources, s]);
-  const header = R.unnest<AD.SectionElement.SectionElement>(
-    s.page.header.map((e) => preProcessSectionElement(e, resources))
-  );
-  const footer = R.unnest<AD.SectionElement.SectionElement>(
-    s.page.footer.map((e) => preProcessSectionElement(e, resources))
-  );
-  const page = AD.MasterPage.create({
-    style: s.page.style,
-    header: header,
-    footer: footer,
-  });
-  const children = R.unnest<AD.SectionElement.SectionElement>(
-    s.children.map((e) => preProcessSectionElement(e, resources))
-  );
+  const header = s.page.header.flatMap((e) => preProcessSectionElement(e, resources));
+  const footer = s.page.footer.flatMap((e) => preProcessSectionElement(e, resources));
+  const page = AD.MasterPage.create({ style: s.page.style, header: header, footer: footer });
+  const children = s.children.flatMap((e) => preProcessSectionElement(e, resources));
   return AD.Section.create({ page: page, id: s.id }, children);
 }
 
@@ -264,24 +253,6 @@ function toChar(num: number): string {
   return builder;
 }
 
-// function preProcessTextRun(r: AD.TextRun.TextRun, paragraph: AD.Paragraph.Paragraph): AD.Paragraph.Paragraph {
-//   console.log("text", r.text);
-//   const text = (!r.text ? [""] : r.text.split(' ')).filter((f) => f!=="");
-//   const children: Array<AD.Atom.Atom> = R.addIndex(R.map)((s, i) => AD.TextRun.create({
-//     text: s + (i == text.length - 1 ? "" : " "),
-//     styleName: r.styleName,
-//     textProperties: r.textProperties
-//   }), text);
-//   console.log("children", children);
-//   return AD.Paragraph.create({
-//     styleName: paragraph.styleName,
-//     paragraphProperties: paragraph.paragraphProperties,
-//     textProperties: paragraph.textProperties,
-//     children,
-//     numbering: paragraph.numbering
-//   });
-// }
-
 function preProcessTable(table: AD.Table.Table, resources: AD.Resources.Resources): AD.SectionElement.SectionElement {
   const processedHeaders = [];
   const processedChildren = [];
@@ -352,16 +323,9 @@ function preProcessTableRow(
 }
 
 function preProcessTableCell(c: AD.TableCell.TableCell, resources: AD.Resources.Resources): AD.TableCell.TableCell {
-  const children = R.unnest<AD.SectionElement.SectionElement>(
-    c.children.map((e) => preProcessSectionElement(e, resources))
-  );
+  const children = c.children.flatMap((e) => preProcessSectionElement(e, resources));
   return AD.TableCell.create(
-    {
-      styleName: c.styleName,
-      columnSpan: c.columnSpan,
-      rowSpan: c.rowSpan,
-      style: c.style,
-    },
+    { styleName: c.styleName, columnSpan: c.columnSpan, rowSpan: c.rowSpan, style: c.style },
     children
   );
 }
@@ -370,9 +334,7 @@ function preProcessGroup(
   group: AD.Group.Group,
   parentResources: AD.Resources.Resources
 ): Array<AD.SectionElement.SectionElement> {
-  const children = R.unnest<AD.SectionElement.SectionElement>(
-    group.children.map((e) => preProcessSectionElement(e, parentResources))
-  );
+  const children = group.children.flatMap((e) => preProcessSectionElement(e, parentResources));
   if (group.keepTogether || AD.Resources.hasResources(group) || group.style.position === "absolute") {
     return [
       AD.Group.create(

@@ -1,5 +1,3 @@
-import { propIs } from "ramda";
-import { ImageProps } from "../../abstract-document/atoms/image";
 import {
   AbstractDoc,
   Atom,
