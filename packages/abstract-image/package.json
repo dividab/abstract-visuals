@@ -25,5 +25,6 @@
     "@types/ramda": "^0.25.29",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0"
-  }
+  },
+  "gitHead": "7e0da1a8b4bec02d732e9037371df58fc2d68761"
 }
