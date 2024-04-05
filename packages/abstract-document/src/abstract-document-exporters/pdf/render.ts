@@ -565,7 +565,7 @@ function drawText(
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black");
+    .fillColor(textStyle.color || "black", textStyle.opacity ?? 1.0);
 
   applyTextOffset(pdf, textStyle);
 

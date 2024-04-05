@@ -1,6 +1,6 @@
 {
   "name": "abstract-image",
-  "version": "3.4.3",
+  "version": "6.0.1",
   "description": "Dynamically create images using code or JSX and render to any format",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-image",
   "main": "lib/index.js",
@@ -23,5 +23,6 @@
     "@types/base64-js": "^1.2.5",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0"
-  }
+  },
+  "gitHead": "7e0da1a8b4bec02d732e9037371df58fc2d68761"
 }

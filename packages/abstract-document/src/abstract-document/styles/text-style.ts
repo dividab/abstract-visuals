@@ -25,6 +25,7 @@ export interface TextStyle {
   readonly alignment?: TextAlignment;
   readonly baseline?: TextBaseline;
   readonly strike?: boolean;
+  readonly opacity?: number;
 }
 
 export interface TextStyleProps {
@@ -49,6 +50,7 @@ export interface TextStyleProps {
   readonly alignment?: TextAlignment;
   readonly baseline?: TextBaseline;
   readonly strike?: boolean;
+  readonly opacity?: number;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
@@ -100,6 +102,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
     alignment: a.alignment ?? b.alignment,
     baseline: a.baseline ?? b.baseline,
     strike: a.strike ?? b.strike,
+    opacity: a.opacity ?? b.opacity,
     ...overriddenFontWeight,
   });
 }

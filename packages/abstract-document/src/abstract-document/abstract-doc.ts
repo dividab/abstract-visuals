@@ -13,6 +13,8 @@ export type AbstractDoc = Resources & {
 
 export type AbstractDocProps = Resources & {};
 
+//dummy
+
 export function create(props?: AbstractDocProps, children?: ReadonlyArray<Section>): AbstractDoc {
   const { ...rest } = props || {};
   return {

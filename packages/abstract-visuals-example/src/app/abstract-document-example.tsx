@@ -390,7 +390,7 @@ export function AbstractDocumentExample(): JSX.Element {
             <TextRun text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Egestas congue quisque egestas diam in arcu cursus. A cras semper auctor neque vitae tempus quam pellentesque. In fermentum et sollicitudin ac orci. Scelerisque viverra mauris in aliquam. Nunc lobortis mattis aliquam faucibus. " />
             <TextRun
               text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
-              style={AD.AbstractDoc.TextStyle.create({ color: "red" })}
+              style={AD.AbstractDoc.TextStyle.create({ color: "red", opacity: 0.2 })}
             />
             <TextRun text=" Nulla aliquet enim tortor at." />
             <TextRun
