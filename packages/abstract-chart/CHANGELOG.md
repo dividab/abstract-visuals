@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.0.0] - 2024-04-05
+
+### Added
+
+### Changed
+
+- React 16 -> 18
+
+### Removed
+
+- Rambda
+
 ## [4.0.1](https://github.com/promaster-sdk/property/compare/abstract-chart@3.2.3...master)
 
 ### Added
@@ -11,8 +23,6 @@ All notable changes to this project will be documented in this file. The format 
 ### Changed
 
 ### Removed
-
-- Ramda
 
 ## [v3.2.1](https://github.com/promaster-sdk/property/compare/abstract-chart@3.0.0...abstract-chart@3.2.1) - 2022-06-02
 

@@ -2,15 +2,17 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.0.1](https://github.com/dividab/abstract-visuals/compare/abstract-image@3.4.0...master)
+## [7.0.0] - 2024-04-05
 
 ### Added
 
 ### Changed
 
+- React 16 -> 18
+
 ### Removed
 
-- Ramda
+- Rambda
 
 ## [v3.4.0](https://github.com/dividab/abstract-visuals/compare/abstract-image@3.3.3...abstract-image@3.4.0)
 
