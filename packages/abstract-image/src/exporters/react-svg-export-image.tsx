@@ -1,8 +1,6 @@
-import * as R from "ramda";
 import * as B64 from "base64-js";
 import * as React from "react";
 import * as AbstractImage from "../model/index";
-import { TextEncoder } from "util";
 
 export interface ReactSvgCallbacks {
   readonly onClick?: MouseCallback;
@@ -30,13 +28,7 @@ export function createReactSvg(
       onMouseMove={_callback(cb.onMouseMove, id)}
       onContextMenu={_callback(cb.onContextMenu, id)}
     >
-      {R.unnest(
-        R.addIndex(R.map)(
-          // tslint:disable-next-line:no-any
-          (c, i) => _visit(i.toString(), c as any),
-          image.components
-        )
-      )}
+      {image.components.flatMap((c, i) => _visit(i.toString(), c as any))}
     </svg>
   );
 }
@@ -79,13 +71,7 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
     case "group":
       return [
         <g key={key} name={component.name}>
-          {R.unnest(
-            R.addIndex(R.map)(
-              // tslint:disable-next-line:no-any
-              (c, i) => _visit(i.toString(), c as any),
-              component.children
-            )
-          )}
+          {component.children.flatMap((c, i) => _visit(i.toString(), c as any))}
         </g>,
       ];
     case "binaryimage":
@@ -267,7 +253,7 @@ function getImageUrl(format: AbstractImage.BinaryFormat, data: AbstractImage.Ima
 }
 
 function renderLine(text: string, x: number, y: number, fontSize: number, lineHeight: number): JSX.Element {
-  const split = R.unnest<string>(text.split("<sub>").map((t) => t.split("</sub>")));
+  const split = text.split("<sub>").flatMap((t) => t.split("</sub>"));
   let inside = false;
   const tags: Array<JSX.Element> = [];
   for (let i = 0; i < split.length; ++i) {

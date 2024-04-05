@@ -1,4 +1,3 @@
-import * as R from "ramda";
 import * as AbstractImage from "abstract-image";
 
 export type Axis = LinearAxis | LogarithmicAxis;
@@ -81,7 +80,7 @@ export function getLinearTicks(desiredTicks: number, min: number, max: number): 
     return [];
   }
   const b = best;
-  return R.range(0, b.ticks).map((l) => b.min + b.step * l);
+  return range(0, b.ticks).map((l) => b.min + b.step * l);
 }
 
 const logarithmicAlternatives = [
@@ -96,7 +95,7 @@ const logarithmicAlternatives = [
 export function getLogarithmicTicks(desiredTicks: number, min: number, max: number): Array<number> {
   const minPow = Math.floor(Math.log10(min)) - 1;
   const maxPow = Math.ceil(Math.log10(max)) + 1;
-  const powers = R.range(0, maxPow - minPow + 1).map((p) => minPow + p);
+  const powers = range(0, maxPow - minPow + 1).map((p) => minPow + p);
   const alternatives = logarithmicAlternatives.map((stepAlt) => {
     const altLines = powers.reduce((lines: Array<number>, power: number) => {
       const base = Math.pow(10, power);
@@ -175,4 +174,12 @@ export function inverseLinearTransform(value: number, min: number, max: number):
 
 export function inverseLogarithmicTransform(value: number, min: number, max: number): number {
   return Math.pow(10, value * (Math.log10(max) - Math.log10(min)) + Math.log10(min));
+}
+
+function range(from: number, to: number): ReadonlyArray<number> {
+  const result: Array<number> = [];
+  for (let i = from; i < to; ++i) {
+    result.push(i);
+  }
+  return result;
 }

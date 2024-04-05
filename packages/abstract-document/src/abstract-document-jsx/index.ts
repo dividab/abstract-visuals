@@ -1,4 +1,3 @@
-import * as R from "ramda";
 import * as React from "react";
 import {
   AbstractDoc as AbstractDoc1,
@@ -17,15 +16,7 @@ import {
   TextRun as TextRun1,
   PageBreak as PageBreak1,
   LineBreak as LineBreak1,
-  //Resources,
-  //MasterPage,
-  //ParagraphStyle,
-  //ParagraphNumbering,
-  //TableStyle,
 } from "../abstract-document/index";
-
-// tslint:disable:variable-name no-any no-console
-// console.log(Resources, MasterPage, ParagraphStyle, ParagraphNumbering, TableStyle);
 
 export interface ChildrenProp {
   readonly children?: Child;
@@ -70,17 +61,15 @@ function renderChildren(element: React.ReactElement<any>): any {
   if (!element.props || !element.props.children) {
     return [];
   } else if (Array.isArray(element.props.children)) {
-    return R.unnest(
-      element.props.children.map((c: any) => {
-        if (!c) {
-          return [];
-        }
-        if (Array.isArray(c)) {
-          return c.map(render);
-        }
-        return render(c);
-      })
-    );
+    return element.props.children.flatMap((c: any) => {
+      if (!c) {
+        return [];
+      }
+      if (Array.isArray(c)) {
+        return c.map(render);
+      }
+      return render(c);
+    });
   } else {
     const elements = render(element.props.children); // Markdown returns an array of elements already
     return Array.isArray(elements) ? elements : [elements]; // so we need to test for that before we return.

@@ -4,7 +4,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["dom", "es2019", "es2015.promise", "es2015.iterable", "es2015.symbol"]
+    "lib": ["dom", "es2019"]
   },
   "references": [{ "path": "../abstract-image" }, { "path": "../test-utils" }]
 }

@@ -1,7 +1,4 @@
-import * as R from "ramda";
-import { split } from "ramda";
 import * as AD from "../../abstract-document/index";
-import { Table } from "../../abstract-document/section-elements/table";
 import { getResources } from "../shared/get_resources";
 import { registerFonts } from "./font";
 import { measureTable } from "./measure";
@@ -222,9 +219,9 @@ function createPage(
 
   const sectionName = isFirst && section.id !== "" ? [section.id] : [];
   // For now, only support link targets at base level. Tree search would be needed to find all targets.
-  const targetNames = R.unnest(
-    elements.map((e) => (e.type === "Paragraph" ? e.children.map((c) => (c.type === "LinkTarget" ? c.name : "")) : []))
-  ).filter((t) => t !== "");
+  const targetNames = elements
+    .flatMap((e) => (e.type === "Paragraph" ? e.children.map((c) => (c.type === "LinkTarget" ? c.name : "")) : []))
+    .filter((t) => t !== "");
   const namedDestionations = [...sectionName, ...targetNames];
 
   // Ignore leading space by expanding the content rect upwards

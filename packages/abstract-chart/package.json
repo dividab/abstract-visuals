@@ -16,11 +16,7 @@
   ],
   "dependencies": {
     "abstract-image": "^6.0.1",
-    "ramda": "^0.22.1",
     "ts-exhaustive-check": "^1.0.0"
   },
-  "devDependencies": {
-    "@types/ramda": "^0.25.29"
-  },
-  "gitHead": "7e0da1a8b4bec02d732e9037371df58fc2d68761"
+  "devDependencies": {}
 }
