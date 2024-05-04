@@ -238,11 +238,12 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
         { value: 8, label: "2023-10" },
       ],
       "Time",
-      -25
+      -25,
+      25
     ),
     yAxisLeft: AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness"),
     labelLayout: "center",
-    padding: { top: 40, left: 40, right: 40, bottom: 40 },
+    padding: { top: 5, left: 40, right: 110, bottom: 60 },
   });
 
   return chart;

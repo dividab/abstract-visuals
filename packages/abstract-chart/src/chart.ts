@@ -46,7 +46,12 @@ export function createChart(props: ChartProps): Chart {
     font = "Arial",
     fontSize = 12,
     labelLayout = "original",
-    padding = { top: 40, right: 80, bottom: 40, left: 80 },
+    padding = {
+      top: props.xAxisTop !== undefined ? 45 : 10,
+      right: props.yAxisRight !== undefined ? 45 : 10,
+      bottom: props.xAxisBottom === undefined ? 10 : 45,
+      left: !props.yAxisLeft === undefined ? 10 : 45,
+    },
   } = props || {};
   return {
     width,
@@ -244,17 +249,24 @@ export function generateXAxisBottom(
     return AbstractImage.createGroup("XAxisBottom", []);
   }
   const axisLabelPosY = yMin + chart.padding.bottom - chart.fontSize;
-  const tickLabelPosY = yMin + (chart.padding.bottom - chart.fontSize) / 2;
   const xTicks = Axis.getTicks(xNumTicks, xAxisBottom);
   const xLines = generateXAxisGridLines(xMin, xMax, yMin + 10, yMax, xTicks, xAxisBottom, chart);
-  const xLabels = generateXAxisLabels(xMin, xMax, tickLabelPosY, "down", xTicks, xAxisBottom, chart);
+  const xLabels = generateXAxisLabels(
+    xMin,
+    xMax,
+    yMin + (xAxisBottom.tickLabelDisp ?? 10),
+    "down",
+    xTicks,
+    xAxisBottom,
+    chart
+  );
 
   let xLabel: AbstractImage.Component;
   switch (chart.labelLayout) {
     case "original":
       xLabel = generateXAxisLabel(
         xMax + chart.padding.right,
-        tickLabelPosY,
+        yMin + (xAxisBottom.tickLabelDisp ?? 10),
         "uniform",
         "down",
         xAxisBottom.label,
@@ -286,17 +298,24 @@ export function generateXAxisTop(
     return AbstractImage.createGroup("XAxisTop", []);
   }
   const axisLabelPosY = yMax - chart.padding.top + chart.fontSize;
-  const tickLabelPosY = yMax - (chart.padding.top - chart.fontSize) / 2;
   const xTicks2 = Axis.getTicks(xNumTicks, xAxisTop);
   const xLines2 = generateXAxisGridLines(xMin, xMax, yMax - 10, yMax, xTicks2, xAxisTop, chart);
-  const xLabels2 = generateXAxisLabels(xMin, xMax, tickLabelPosY, "up", xTicks2, xAxisTop, chart);
+  const xLabels2 = generateXAxisLabels(
+    xMin,
+    xMax,
+    yMax - (xAxisTop.tickLabelDisp ?? 13),
+    "up",
+    xTicks2,
+    xAxisTop,
+    chart
+  );
 
   let xLabel2: AbstractImage.Component;
   switch (chart.labelLayout) {
     case "original":
       xLabel2 = generateXAxisLabel(
         xMax + 0.5 * chart.padding.right,
-        tickLabelPosY,
+        yMax - (xAxisTop.tickLabelDisp ?? 13),
         "uniform",
         "up",
         xAxisTop.label,
@@ -328,19 +347,26 @@ export function generateYAxisLeft(
   if (!yAxisLeft) {
     return AbstractImage.createGroup("YAxisLeft", []);
   }
-  const tickLabelPosX = xMin - chart.padding.left / 2 + chart.fontSize;
-  const axisLabelPosX =
-    xMin - chart.padding.left + labelPadding(formatNumber(Axis.axisMax(yAxisLeft)).length, chart.fontSize, 0.5);
+  const axisLabelPosX = xMin - 5 - labelPadding(formatNumber(Axis.axisMax(yAxisLeft)).length, chart.fontSize, 0.5);
+  const axisLabelPosX2 = xMin - chart.padding.left + chart.fontSize;
 
   const yTicks = Axis.getTicks(yNumTicks, yAxisLeft);
   const yLines = generateYAxisLines(xMin - 5, xMax, yMin, yMax, yTicks, yAxisLeft, chart);
-  const yLabels = generateYAxisLabels(tickLabelPosX, yMin, yMax, "left", yTicks, yAxisLeft, chart);
+  const yLabels = generateYAxisLabels(
+    xMin - (yAxisLeft.tickLabelDisp ?? 7),
+    yMin,
+    yMax,
+    "left",
+    yTicks,
+    yAxisLeft,
+    chart
+  );
 
   let yLabel: AbstractImage.Component;
   switch (chart.labelLayout) {
     case "original":
       yLabel = generateYAxisLabel(
-        axisLabelPosX,
+        axisLabelPosX2,
         yMax + 0.5 * chart.padding.bottom,
         "uniform",
         "up",
@@ -349,10 +375,10 @@ export function generateYAxisLeft(
       );
       break;
     case "end":
-      yLabel = generateYAxisLabel(axisLabelPosX, yMax, "left", "up", yAxisLeft.label, chart);
+      yLabel = generateYAxisLabel(axisLabelPosX2, yMax, "left", "up", yAxisLeft.label, chart);
       break;
     case "center":
-      yLabel = generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, "uniform", "up", yAxisLeft.label, chart);
+      yLabel = generateYAxisLabel(axisLabelPosX2, (yMin + yMax) / 2, "uniform", "up", yAxisLeft.label, chart);
       break;
     default:
       return exhaustiveCheck(chart.labelLayout);
@@ -372,22 +398,26 @@ export function generateYAxisRight(
   if (!yAxisRight) {
     return AbstractImage.createGroup("YAxisRight", []);
   }
-
-  const tickLabelPosX = xMax + (chart.padding.right - chart.fontSize) / 2;
-  const axisLabelPosX =
-    xMax + chart.padding.right - labelPadding(formatNumber(Axis.axisMax(yAxisRight)).length, chart.fontSize, 0.5);
+  const axisLabelPosX = xMax + 7 + labelPadding(formatNumber(Axis.axisMax(yAxisRight)).length, chart.fontSize, 1.5);
+  const axisLabelPosX2 = xMax + chart.padding.right - chart.fontSize;
 
   const yTicks2 = Axis.getTicks(yNumTicks, yAxisRight);
   const yLines2 = generateYAxisLines(xMax - 5, xMax + 5, yMin, yMax, yTicks2, yAxisRight, chart);
-  const yLabels2 = generateYAxisLabels(tickLabelPosX, yMin, yMax, "right", yTicks2, yAxisRight, chart);
-
-  const labelPaddingRight = 7 + labelPadding(formatNumber(Axis.axisMax(yAxisRight)).length, chart.fontSize, 1.5);
+  const yLabels2 = generateYAxisLabels(
+    xMax + (yAxisRight.tickLabelDisp ?? 7),
+    yMin,
+    yMax,
+    "right",
+    yTicks2,
+    yAxisRight,
+    chart
+  );
 
   let yLabel2: AbstractImage.Component;
   switch (chart.labelLayout) {
     case "original":
       yLabel2 = generateYAxisLabel(
-        axisLabelPosX,
+        axisLabelPosX2,
         yMax + 0.5 * chart.padding.bottom,
         "uniform",
         "up",
@@ -396,10 +426,10 @@ export function generateYAxisRight(
       );
       break;
     case "end":
-      yLabel2 = generateYAxisLabel(axisLabelPosX, yMax, "left", "up", yAxisRight.label, chart);
+      yLabel2 = generateYAxisLabel(axisLabelPosX2, yMax, "left", "up", yAxisRight.label, chart);
       break;
     case "center":
-      yLabel2 = generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, "uniform", "up", yAxisRight.label, chart);
+      yLabel2 = generateYAxisLabel(axisLabelPosX2, (yMin + yMax) / 2, "uniform", "up", yAxisRight.label, chart);
       break;
     default:
       return exhaustiveCheck(chart.labelLayout);

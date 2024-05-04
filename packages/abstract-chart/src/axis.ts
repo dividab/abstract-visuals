@@ -3,41 +3,37 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 
 export type Axis = LinearAxis | LogarithmicAxis | DiscreteAxis;
 
-export interface LinearAxis {
-  readonly type: "linear";
-  readonly min: number;
-  readonly max: number;
+export type AxisBase = {
   readonly label: string;
   readonly labelRotation?: number;
+  readonly tickLabelDisp?: number;
+};
+
+export type LinearAxis = AxisBase & { readonly type: "linear"; readonly min: number; readonly max: number };
+
+export function createLinearAxis(
+  min: number,
+  max: number,
+  label: string,
+  labelRotation?: number,
+  tickLabelDisp?: number
+): LinearAxis {
+  return { type: "linear", min, max, label, labelRotation, tickLabelDisp };
 }
 
-export function createLinearAxis(min: number, max: number, label: string, labelRotation?: number): LinearAxis {
-  return { type: "linear", min, max, label, labelRotation };
-}
-
-export interface LogarithmicAxis {
-  readonly type: "logarithmic";
-  readonly min: number;
-  readonly max: number;
-  readonly label: string;
-  readonly labelRotation?: number;
-}
+export type LogarithmicAxis = AxisBase & { readonly type: "logarithmic"; readonly min: number; readonly max: number };
 
 export function createLogarithmicAxis(
   min: number,
   max: number,
   label: string,
-  labelRotation?: number
+  labelRotation?: number,
+  tickLabelDisp?: number
 ): LogarithmicAxis {
-  return { type: "logarithmic", min, max, label, labelRotation };
+  return { type: "logarithmic", min, max, label, labelRotation, tickLabelDisp };
 }
 
-export interface DiscreteAxis {
-  readonly type: "discrete";
-  readonly points: ReadonlyArray<DiscreteAxisPoint>;
-  readonly label: string;
-  readonly labelRotation?: number;
-}
+export type DiscreteAxis = AxisBase & { readonly type: "discrete"; readonly points: ReadonlyArray<DiscreteAxisPoint> };
 
 export interface DiscreteAxisPoint {
   readonly value: number;
@@ -47,9 +43,10 @@ export interface DiscreteAxisPoint {
 export function createDiscreteAxis(
   points: ReadonlyArray<DiscreteAxisPoint>,
   label: string,
-  labelRotation?: number
+  labelRotation?: number,
+  tickLabelDisp?: number
 ): DiscreteAxis {
-  return { type: "discrete", points, label, labelRotation };
+  return { type: "discrete", points, label, labelRotation, tickLabelDisp };
 }
 
 const linearMultiples = [1, 2, 5];
