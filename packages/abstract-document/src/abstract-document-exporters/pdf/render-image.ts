@@ -62,6 +62,7 @@ function abstractComponentToPdf(
         let svgUpdated = svg;
         ["fill=", "stroke=", "color="].forEach((t) => {
           let index = 0;
+          // eslint-disable-next-line no-constant-condition
           while (true) {
             index = svgUpdated.indexOf(t, index);
             if (index === -1) break;
@@ -80,6 +81,7 @@ function abstractComponentToPdf(
 
         ["stroke-dasharray="].forEach((t) => {
           let index = 0;
+          // eslint-disable-next-line no-constant-condition
           while (true) {
             index = svgUpdated.indexOf(t, index);
             if (index === -1) break;
