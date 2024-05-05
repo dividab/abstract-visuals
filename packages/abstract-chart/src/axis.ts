@@ -1,4 +1,4 @@
-import * as AbstractImage from "abstract-image";
+import * as AI from "abstract-image";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 
 export type Axis = LinearAxis | LogarithmicAxis | DiscreteAxis;
@@ -7,6 +7,7 @@ export type AxisBase = {
   readonly label: string;
   readonly labelRotation?: number;
   readonly tickLabelDisp?: number;
+  readonly labelColor?: AI.Color;
 };
 
 export type LinearAxis = AxisBase & { readonly type: "linear"; readonly min: number; readonly max: number };
@@ -15,10 +16,11 @@ export function createLinearAxis(
   min: number,
   max: number,
   label: string,
+  labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number
 ): LinearAxis {
-  return { type: "linear", min, max, label, labelRotation, tickLabelDisp };
+  return { type: "linear", min, max, label, labelColor, labelRotation, tickLabelDisp };
 }
 
 export type LogarithmicAxis = AxisBase & { readonly type: "logarithmic"; readonly min: number; readonly max: number };
@@ -27,10 +29,11 @@ export function createLogarithmicAxis(
   min: number,
   max: number,
   label: string,
+  labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number
 ): LogarithmicAxis {
-  return { type: "logarithmic", min, max, label, labelRotation, tickLabelDisp };
+  return { type: "logarithmic", min, max, labelColor, label, labelRotation, tickLabelDisp };
 }
 
 export type DiscreteAxis = AxisBase & { readonly type: "discrete"; readonly points: ReadonlyArray<DiscreteAxisPoint> };
@@ -43,10 +46,11 @@ export interface DiscreteAxisPoint {
 export function createDiscreteAxis(
   points: ReadonlyArray<DiscreteAxisPoint>,
   label: string,
+  labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number
 ): DiscreteAxis {
-  return { type: "discrete", points, label, labelRotation, tickLabelDisp };
+  return { type: "discrete", points, labelColor, label, labelRotation, tickLabelDisp };
 }
 
 const linearMultiples = [1, 2, 5];
@@ -118,17 +122,17 @@ export function getLogarithmicTicks(desiredTicks: number, min: number, max: numb
 }
 
 export function transformPoint(
-  point: AbstractImage.Point,
+  point: AI.Point,
   xMin: number,
   xMax: number,
   yMin: number,
   yMax: number,
   xAxis: Axis | undefined,
   yAxis: Axis | undefined
-): AbstractImage.Point {
+): AI.Point {
   const x = transformValue(point.x, xMin, xMax, xAxis);
   const y = transformValue(point.y, yMin, yMax, yAxis);
-  return AbstractImage.createPoint(x, y);
+  return AI.createPoint(x, y);
 }
 
 export function transformValue(value: number, min: number, max: number, axis: Axis | undefined): number {
