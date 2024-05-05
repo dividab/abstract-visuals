@@ -8,6 +8,9 @@ export type AxisBase = {
   readonly labelRotation?: number;
   readonly tickLabelDisp?: number;
   readonly labelColor?: AI.Color;
+  readonly tickLabelColor?: AI.Color;
+  readonly thickness?: number;
+  readonly axisColor?: AI.Color;
 };
 
 export type LinearAxis = AxisBase & { readonly type: "linear"; readonly min: number; readonly max: number };
@@ -18,9 +21,11 @@ export function createLinearAxis(
   label: string,
   labelColor?: AI.Color,
   labelRotation?: number,
-  tickLabelDisp?: number
+  tickLabelDisp?: number,
+  thickness?: number,
+  axisColor?: AI.Color
 ): LinearAxis {
-  return { type: "linear", min, max, label, labelColor, labelRotation, tickLabelDisp };
+  return { type: "linear", min, max, label, labelColor, labelRotation, tickLabelDisp, thickness, axisColor };
 }
 
 export type LogarithmicAxis = AxisBase & { readonly type: "logarithmic"; readonly min: number; readonly max: number };
@@ -31,9 +36,11 @@ export function createLogarithmicAxis(
   label: string,
   labelColor?: AI.Color,
   labelRotation?: number,
-  tickLabelDisp?: number
+  tickLabelDisp?: number,
+  thickness?: number,
+  axisColor?: AI.Color
 ): LogarithmicAxis {
-  return { type: "logarithmic", min, max, labelColor, label, labelRotation, tickLabelDisp };
+  return { type: "logarithmic", min, max, labelColor, label, labelRotation, tickLabelDisp, thickness, axisColor };
 }
 
 export type DiscreteAxis = AxisBase & { readonly type: "discrete"; readonly points: ReadonlyArray<DiscreteAxisPoint> };
@@ -48,9 +55,11 @@ export function createDiscreteAxis(
   label: string,
   labelColor?: AI.Color,
   labelRotation?: number,
-  tickLabelDisp?: number
+  tickLabelDisp?: number,
+  thickness?: number,
+  axisColor?: AI.Color
 ): DiscreteAxis {
-  return { type: "discrete", points, labelColor, label, labelRotation, tickLabelDisp };
+  return { type: "discrete", points, labelColor, label, labelRotation, tickLabelDisp, thickness, axisColor };
 }
 
 const linearMultiples = [1, 2, 5];

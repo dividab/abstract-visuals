@@ -224,8 +224,9 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
 
   const chart = AbstractChart.createChart({
     chartLines: series,
-    xAxisBottom: AbstractChart.createDiscreteAxis(
-      [
+    xAxisBottom: {
+      type: "discrete",
+      points: [
         { value: 0, label: "2023-02" },
         { value: 1, label: "2023-03" },
         { value: 2, label: "2023-04" },
@@ -237,10 +238,10 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
         { value: 7, label: "2023-09" },
         { value: 8, label: "2023-10" },
       ],
-      "Time",
-      -25,
-      25
-    ),
+      label: "Time",
+      labelRotation: -25,
+      tickLabelDisp: 25,
+    },
     yAxisLeft: AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness"),
     labelLayout: "center",
     padding: { top: 5, left: 40, right: 110, bottom: 60 },
