@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.0.0] - 2024-05-06
+
+### Added
+
+- Chart padding
+- Overridable font sizes for all texts.
+- Discrete axises
+- Rotate tick labels
+- Disp tick labels
+
+### Changed
+
+- Separate x-grid & y-grid
+- Separate styling of all axises
+- Previous chart padding was {top: 40, right: 80, bottom: 40, left: 80}. New default padding is depending on axises.
+
+### Example migrate 6 -> 7
+
+- { ... gridColor: AI.black; gridThickness: 1; ... } ->
+  { ... xGrid: { color: AI.black; thickness: 1 }, yGrid: { color: AI.black; thickness: 1 }, yGrid: { color: AI.black; thickness: 1 }, xAxisBottom: {... axisColor: AI.black, thickness: 1 ...}, yAxisLeft: {... axisColor: AI.black, thickness: 1 ...} ... };
+- { ... ... } - > { ... padding: {top: 40, right: 80, bottom: 40, left: 80} ... }
+
 ## [6.0.0] - 2024-04-05
 
 ### Added

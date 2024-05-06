@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["dom", "es2019"]
+    "noUncheckedIndexedAccess": true,
+    "lib": ["dom", "es2022"]
   },
   "references": [{ "path": "../abstract-image" }]
 }

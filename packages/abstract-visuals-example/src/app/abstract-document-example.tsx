@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
 import * as AD from "../../../../packages/abstract-document/src";
 import {

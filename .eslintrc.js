@@ -26,6 +26,7 @@ module.exports = {
     "@typescript-eslint/prefer-optional-chain": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-parameter-properties": "off",
     curly: "off",
     "default-case": "off",
     "@typescript-eslint/array-type": "off",
