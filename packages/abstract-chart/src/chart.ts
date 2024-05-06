@@ -220,7 +220,7 @@ export function generateXAxisBottom(
   if (!axis) {
     return AI.createGroup("XAxisBottom", components);
   }
-  const axisLabelPosY = yMin + chart.padding.bottom - chart.fontSize;
+  const axisLabelPosY = yMin + chart.padding.bottom - (axis.axisFontSize ?? chart.fontSize);
   const xTicks = Axis.getTicks(xNumTicks, axis);
   if (chart.xGrid) {
     components.push(generateXAxisGridLines(xMin, xMax, yMin + 10, yMax, xTicks, axis, chart.xGrid));
@@ -268,7 +268,7 @@ export function generateXAxisTop(
   if (!axis) {
     return AI.createGroup("XAxisTop", components);
   }
-  const axisLabelPosY = yMax - chart.padding.top + chart.fontSize;
+  const axisLabelPosY = yMax - chart.padding.top + (axis.axisFontSize ?? chart.fontSize);
   const xTicks = Axis.getTicks(xNumTicks, axis);
   if (chart.xGrid) {
     components.push(generateXAxisGridLines(xMin, xMax, yMax - 10, yMax, xTicks, axis, chart.xGrid));
@@ -317,7 +317,7 @@ export function generateYAxisLeft(
   if (!axis) {
     return AI.createGroup("YAxisLeft", components);
   }
-  const axisLabelPosX = xMin - chart.padding.left + chart.fontSize;
+  const axisLabelPosX = xMin - chart.padding.left + (axis.axisFontSize ?? chart.fontSize);
 
   const yTicks = Axis.getTicks(yNumTicks, axis);
   if (chart.yGrid) {
@@ -359,7 +359,7 @@ export function generateYAxisRight(
   if (!axis) {
     return AI.createGroup("YAxisRight", components);
   }
-  const axisLabelPosX = xMax + chart.padding.right - chart.fontSize;
+  const axisLabelPosX = xMax + chart.padding.right - (axis.axisFontSize ?? chart.fontSize);
 
   const yTicks = Axis.getTicks(yNumTicks, axis);
   if (chart.yGrid) {

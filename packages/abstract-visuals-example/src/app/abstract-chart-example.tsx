@@ -241,12 +241,12 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
       label: "Time",
       labelRotation: -25,
       tickLabelDisp: 25,
-      axisFontSize: 15,
+      axisFontSize: 18,
     },
     fontSize: 12,
     yAxisLeft: { type: "linear", min: yMin, max: yMax + 1, label: "Badness", axisFontSize: 15, tickFontSize: 14 },
     labelLayout: "center",
-    padding: { top: 5, left: 40, right: 110, bottom: 60 },
+    padding: { top: 5, left: 50, right: 110, bottom: 65 },
   });
 
   return chart;
