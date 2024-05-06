@@ -1,6 +1,6 @@
 {
   "name": "abstract-chart",
-  "version": "6.0.0",
+  "version": "7.0.0",
   "description": "Drawing charts using multiple unit of measure axes as coordinate system",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-chart",
   "main": "lib/index.js",
@@ -15,7 +15,7 @@
     "README.md"
   ],
   "dependencies": {
-    "abstract-image": "^7.0.0",
+    "abstract-image": "^7.0.1",
     "ts-exhaustive-check": "^1.0.0"
   }
 }
