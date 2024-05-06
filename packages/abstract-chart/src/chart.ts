@@ -19,13 +19,15 @@ export interface Chart {
   readonly yAxisLeft: Axis.Axis | undefined;
   readonly yAxisRight: Axis.Axis | undefined;
   readonly backgroundColor: AI.Color;
-  readonly xGrid: { readonly color: AI.Color; readonly thickness: number };
-  readonly yGrid: { readonly color: AI.Color; readonly thickness: number };
+  readonly xGrid: ChartGrid;
+  readonly yGrid: ChartGrid;
   readonly font: string;
   readonly fontSize: number;
   readonly labelLayout: LabelLayout;
   readonly padding: Padding;
 }
+
+export type ChartGrid = { readonly color: AI.Color; readonly thickness: number };
 
 export type ChartProps = Partial<Chart>;
 
@@ -70,6 +72,7 @@ export interface ChartPoint {
   readonly label: string;
   readonly xAxis: XAxis;
   readonly yAxis: YAxis;
+  readonly fontSize?: number;
 }
 
 export type ChartPointProps = Partial<ChartPoint>;
@@ -94,6 +97,7 @@ export interface ChartLine {
   readonly label: string;
   readonly xAxis: XAxis;
   readonly yAxis: YAxis;
+  readonly fontSize?: number;
 }
 
 export type ChartLineProps = Partial<ChartLine>;
@@ -234,29 +238,16 @@ export function generateXAxisBottom(
           yMin + (axis.tickLabelDisp ?? 10),
           "uniform",
           "down",
-          axis.label,
-          axis.labelColor ?? AI.black,
+          axis,
           chart
         )
       );
       break;
     case "end":
-      components.push(
-        generateXAxisLabel(xMax, axisLabelPosY, "left", "down", axis.label, axis.labelColor ?? AI.black, chart)
-      );
+      components.push(generateXAxisLabel(xMax, axisLabelPosY, "left", "down", axis, chart));
       break;
     case "center":
-      components.push(
-        generateXAxisLabel(
-          (xMin + xMax) / 2,
-          axisLabelPosY,
-          "uniform",
-          "down",
-          axis.label,
-          axis.labelColor ?? AI.black,
-          chart
-        )
-      );
+      components.push(generateXAxisLabel((xMin + xMax) / 2, axisLabelPosY, "uniform", "down", axis, chart));
       break;
     default:
       return exhaustiveCheck(chart.labelLayout);
@@ -295,29 +286,16 @@ export function generateXAxisTop(
           yMax - (axis.tickLabelDisp ?? 13),
           "uniform",
           "up",
-          axis.label,
-          axis.labelColor ?? AI.black,
+          axis,
           chart
         )
       );
       break;
     case "end":
-      components.push(
-        generateXAxisLabel(xMax, axisLabelPosY, "left", "up", axis.label, axis.labelColor ?? AI.black, chart)
-      );
+      components.push(generateXAxisLabel(xMax, axisLabelPosY, "left", "up", axis, chart));
       break;
     case "center":
-      components.push(
-        generateXAxisLabel(
-          (xMin + xMax) / 2,
-          axisLabelPosY,
-          "uniform",
-          "up",
-          axis.label,
-          axis.labelColor ?? AI.black,
-          chart
-        )
-      );
+      components.push(generateXAxisLabel((xMin + xMax) / 2, axisLabelPosY, "uniform", "up", axis, chart));
       break;
     default:
       return exhaustiveCheck(chart.labelLayout);
@@ -353,34 +331,14 @@ export function generateYAxisLeft(
   switch (chart.labelLayout) {
     case "original":
       components.push(
-        generateYAxisLabel(
-          axisLabelPosX,
-          yMax + 0.5 * chart.padding.bottom,
-          "uniform",
-          "up",
-          axis.label,
-          axis.labelColor ?? AI.black,
-          chart
-        )
+        generateYAxisLabel(axisLabelPosX, yMax + 0.5 * chart.padding.bottom, "uniform", "up", axis, chart)
       );
       break;
     case "end":
-      components.push(
-        generateYAxisLabel(axisLabelPosX, yMax, "left", "up", axis.label, axis.labelColor ?? AI.black, chart)
-      );
+      components.push(generateYAxisLabel(axisLabelPosX, yMax, "left", "up", axis, chart));
       break;
     case "center":
-      components.push(
-        generateYAxisLabel(
-          axisLabelPosX,
-          (yMin + yMax) / 2,
-          "uniform",
-          "up",
-          axis.label,
-          axis.labelColor ?? AI.black,
-          chart
-        )
-      );
+      components.push(generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, "uniform", "up", axis, chart));
       break;
     default:
       return exhaustiveCheck(chart.labelLayout);
@@ -415,34 +373,14 @@ export function generateYAxisRight(
   switch (chart.labelLayout) {
     case "original":
       components.push(
-        generateYAxisLabel(
-          axisLabelPosX,
-          yMax + 0.5 * chart.padding.bottom,
-          "uniform",
-          "up",
-          axis.label,
-          axis.labelColor ?? AI.black,
-          chart
-        )
+        generateYAxisLabel(axisLabelPosX, yMax + 0.5 * chart.padding.bottom, "uniform", "up", axis, chart)
       );
       break;
     case "end":
-      components.push(
-        generateYAxisLabel(axisLabelPosX, yMax, "left", "up", axis.label, axis.labelColor ?? AI.black, chart)
-      );
+      components.push(generateYAxisLabel(axisLabelPosX, yMax, "left", "up", axis, chart));
       break;
     case "center":
-      components.push(
-        generateYAxisLabel(
-          axisLabelPosX,
-          (yMin + yMax) / 2,
-          "uniform",
-          "up",
-          axis.label,
-          axis.labelColor ?? AI.black,
-          chart
-        )
-      );
+      components.push(generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, "uniform", "up", axis, chart));
       break;
     default:
       return exhaustiveCheck(chart.labelLayout);
@@ -533,7 +471,7 @@ export function generateLines(xMin: number, xMax: number, yMin: number, yMax: nu
         points.at(-1)!,
         l.label,
         chart.font,
-        chart.fontSize,
+        l.fontSize ?? chart.fontSize,
         AI.black,
         "normal",
         0,
@@ -561,7 +499,7 @@ export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: n
         position,
         p.label,
         chart.font,
-        chart.fontSize,
+        p.fontSize ?? chart.fontSize,
         AI.black,
         "normal",
         0,
@@ -622,25 +560,25 @@ export function generateXAxisLabels(
   xMax: number,
   y: number,
   growVertical: AI.GrowthDirection,
-  xTicks: ReadonlyArray<Axis.DiscreteAxisPoint>,
-  xAxis: Axis.Axis,
+  ticks: ReadonlyArray<Axis.DiscreteAxisPoint>,
+  axis: Axis.Axis,
   chart: Chart
 ): AI.Component {
-  const xLabels = xTicks.map((l) => {
-    const position = AI.createPoint(Axis.transformValue(l.value, xMin, xMax, xAxis), y);
+  const xLabels = ticks.map((l) => {
+    const position = AI.createPoint(Axis.transformValue(l.value, xMin, xMax, axis), y);
     return AI.createText(
       position,
       l.label ?? formatNumber(l.value),
       chart.font,
-      chart.fontSize,
-      xAxis.labelColor ?? AI.black,
+      axis.tickFontSize ?? chart.fontSize,
+      axis.labelColor ?? AI.black,
       "normal",
-      xAxis.labelRotation ?? 0,
+      axis.labelRotation ?? 0,
       "center",
       "uniform",
       growVertical,
       0,
-      xAxis.labelColor ?? AI.black,
+      axis.labelColor ?? AI.black,
       false
     );
   });
@@ -652,24 +590,23 @@ export function generateXAxisLabel(
   y: number,
   horizontalGrowthDirection: AI.GrowthDirection,
   verticalGrowthDirection: AI.GrowthDirection,
-  label: string,
-  color: AI.Color,
+  axis: Axis.Axis,
   chart: Chart
 ): AI.Component {
   const position = AI.createPoint(x, y);
   return AI.createText(
     position,
-    label,
+    axis.label,
     chart.font,
-    chart.fontSize,
-    color,
+    axis.axisFontSize ?? chart.fontSize,
+    axis.labelColor ?? AI.black,
     "normal",
     0,
     "center",
     horizontalGrowthDirection,
     verticalGrowthDirection,
     0,
-    color,
+    axis.labelColor ?? AI.black,
     false
   );
 }
@@ -707,7 +644,7 @@ export function generateYAxisLabels(
       position,
       l.label ?? formatNumber(l.value),
       chart.font,
-      chart.fontSize,
+      yAxis.tickFontSize ?? chart.fontSize,
       yAxis.labelColor ?? AI.black,
       "normal",
       yAxis.labelRotation ?? 0,
@@ -727,24 +664,23 @@ export function generateYAxisLabel(
   y: number,
   horizontalGrowthDirection: AI.GrowthDirection,
   verticalGrowthDirection: AI.GrowthDirection,
-  label: string,
-  color: AI.Color,
+  axis: Axis.Axis,
   chart: Chart
 ): AI.Component {
   const position = AI.createPoint(x, y);
   return AI.createText(
     position,
-    label,
+    axis.label,
     chart.font,
-    chart.fontSize,
-    color,
+    axis.axisFontSize ?? chart.fontSize,
+    axis.labelColor ?? AI.black,
     "normal",
     -90,
     "center",
     horizontalGrowthDirection,
     verticalGrowthDirection,
     0,
-    color,
+    axis.labelColor ?? AI.black,
     false
   );
 }

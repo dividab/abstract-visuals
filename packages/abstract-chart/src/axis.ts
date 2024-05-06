@@ -11,6 +11,8 @@ export type AxisBase = {
   readonly tickLabelColor?: AI.Color;
   readonly thickness?: number;
   readonly axisColor?: AI.Color;
+  readonly tickFontSize?: number;
+  readonly axisFontSize?: number;
 };
 
 export type LinearAxis = AxisBase & { readonly type: "linear"; readonly min: number; readonly max: number };
