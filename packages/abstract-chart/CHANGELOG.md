@@ -18,6 +18,12 @@ All notable changes to this project will be documented in this file. The format 
 - Separate styling of all axises
 - Previous chart padding was {top: 40, right: 80, bottom: 40, left: 80}. New default padding is depending on axises.
 
+### Example migrate 6 -> 7
+
+- { ... gridColor: AI.black; gridThickness: 1; ... } ->
+  { ... xGrid: { color: AI.black; thickness: 1 }, yGrid: { color: AI.black; thickness: 1 }, yGrid: { color: AI.black; thickness: 1 }, xAxisBottom: {... axisColor: AI.black, thickness: 1 ...}, yAxisLeft: {... axisColor: AI.black, thickness: 1 ...} ... };
+- { ... ... } - > { ... padding: {top: 40, right: 80, bottom: 40, left: 80} ... }
+
 ## [6.0.0] - 2024-04-05
 
 ### Added
