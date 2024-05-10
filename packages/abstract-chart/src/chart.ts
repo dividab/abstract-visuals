@@ -23,6 +23,8 @@ export interface Chart {
   readonly yGrid: ChartGrid;
   readonly font: string;
   readonly fontSize: number;
+  readonly textColor: AI.Color;
+  readonly textOutlineColor: AI.Color;
   readonly labelLayout: LabelLayout;
   readonly padding: Padding;
 }
@@ -45,6 +47,8 @@ export function createChart(props: ChartProps): Chart {
     backgroundColor: props.backgroundColor ?? AI.white,
     font: props.font ?? "Arial",
     fontSize: props.fontSize ?? 12,
+    textColor: props.textColor ?? AI.black,
+    textOutlineColor: props.textOutlineColor ?? AI.transparent,
     labelLayout: props.labelLayout ?? "original",
     padding: {
       top: props.padding?.top ?? (props.xAxisTop !== undefined ? 45 : 10),
@@ -68,11 +72,16 @@ export interface ChartPoint {
   readonly shape: ChartPointShape;
   readonly position: AI.Point;
   readonly color: AI.Color;
+  readonly strokeColor: AI.Color;
+  readonly strokeThickness: number;
   readonly size: AI.Size;
   readonly label: string;
   readonly xAxis: XAxis;
   readonly yAxis: YAxis;
   readonly fontSize?: number;
+  readonly textColor?: AI.Color;
+  readonly textOutlineColor?: AI.Color;
+  readonly id?: string;
 }
 
 export type ChartPointProps = Partial<ChartPoint>;
@@ -82,12 +91,32 @@ export function createChartPoint(props?: ChartPointProps): ChartPoint {
     shape = "circle",
     position = AI.createPoint(0, 0),
     color = AI.black,
+    strokeColor = AI.black,
+    strokeThickness = 1,
     size = AI.createSize(6, 6),
     label = "",
     xAxis = "bottom",
     yAxis = "left",
+    fontSize,
+    textColor,
+    textOutlineColor,
+    id,
   } = props || {};
-  return { shape, position, color, size, label, xAxis, yAxis };
+  return {
+    shape,
+    position,
+    color,
+    strokeColor,
+    strokeThickness,
+    size,
+    label,
+    xAxis,
+    yAxis,
+    fontSize,
+    textColor,
+    textOutlineColor,
+    id,
+  };
 }
 
 export interface ChartLine {
@@ -98,18 +127,33 @@ export interface ChartLine {
   readonly xAxis: XAxis;
   readonly yAxis: YAxis;
   readonly fontSize?: number;
+  readonly textColor?: AI.Color;
+  readonly textOutlineColor?: AI.Color;
+  readonly id?: string;
 }
 
 export type ChartLineProps = Partial<ChartLine>;
 
 export function createChartLine(props: ChartLineProps): ChartLine {
-  const { points = [], color = AI.black, thickness = 1, label = "", xAxis = "bottom", yAxis = "left" } = props || {};
-  return { points, color, thickness, label, xAxis, yAxis };
+  const {
+    points = [],
+    color = AI.black,
+    thickness = 1,
+    label = "",
+    xAxis = "bottom",
+    yAxis = "left",
+    fontSize,
+    textColor,
+    textOutlineColor,
+    id,
+  } = props || {};
+  return { points, color, thickness, label, xAxis, yAxis, fontSize, textColor, textOutlineColor, id };
 }
 
 export interface ChartStackConfig {
   readonly color: AI.Color;
   readonly label: string;
+  readonly id?: string;
 }
 
 export type ChartStackConfigProps = Partial<ChartStackConfig>;
@@ -451,7 +495,7 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
     const color = config.color;
     const points = [...line, ...lastLine.slice().reverse()];
     lastLine = line;
-    polygons.push(AI.createPolygon(points, color, 0, color));
+    polygons.push(AI.createPolygon(points, color, 0, color, config.id));
   });
 
   return AI.createGroup("Stack", polygons);
@@ -465,24 +509,31 @@ export function generateLines(xMin: number, xMax: number, yMin: number, yMax: nu
     const xAxis = l.xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom;
     const yAxis = l.yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft;
     const points = l.points.map((p) => Axis.transformPoint(p, xMin, xMax, yMin, yMax, xAxis, yAxis));
-    return AI.createGroup(l.label, [
+    const components = [];
+    const outlineColor = l.textOutlineColor ?? chart.textOutlineColor;
+    const last = points.at(-1)!;
+    components.push(
       AI.createPolyLine(points, l.color, l.thickness),
       AI.createText(
-        points.at(-1)!,
+        last,
         l.label,
         chart.font,
         l.fontSize ?? chart.fontSize,
-        AI.black,
+        l.textColor ?? chart.textColor,
         "normal",
         0,
         "center",
-        "right",
-        "down",
-        0,
-        AI.black,
+        textHorizontalGrowth(last.x, xMin, xMax),
+        textVerticalGrowth(last.y, yMin, yMax),
+        outlineColor !== AI.transparent ? 3 : 0,
+        outlineColor,
         false
-      ),
-    ]);
+      )
+    );
+    if (l.id !== undefined) {
+      components.push(AI.createPolyLine(points, AI.transparent, l.thickness + 8, l.id));
+    }
+    return AI.createGroup(l.label, components);
   });
   return AI.createGroup("Lines", lines);
 }
@@ -492,30 +543,54 @@ export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: n
     const xAxis = p.xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom;
     const yAxis = p.yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft;
     const position = Axis.transformPoint(p.position, xMin, xMax, yMin, yMax, xAxis, yAxis);
-    const shape = generatePointShape(p, position);
-    return AI.createGroup(p.label, [
-      shape,
+    const outlineColor = p.textOutlineColor ?? chart.textOutlineColor;
+    const components = [
+      generatePointShape(p, position, undefined),
       AI.createText(
         position,
         p.label,
         chart.font,
         p.fontSize ?? chart.fontSize,
-        AI.black,
+        p.textColor ?? chart.textColor,
         "normal",
         0,
         "center",
-        "right",
-        "down",
-        0,
-        AI.black,
+        textHorizontalGrowth(position.x, xMin, xMax),
+        textVerticalGrowth(position.y, yMin, yMax),
+        outlineColor !== AI.transparent ? 3 : 0,
+        outlineColor,
         false
       ),
-    ]);
+    ];
+    if (p.id !== undefined) {
+      components.push(
+        generatePointShape(
+          {
+            ...p,
+            color: AI.transparent,
+            strokeColor: AI.transparent,
+            strokeThickness: 0,
+            size: { width: p.size.width + 10, height: p.size.height + 10 },
+          },
+          position,
+          p.id
+        )
+      );
+    }
+    return AI.createGroup(p.label, components);
   });
   return AI.createGroup("Points", points);
 }
 
-function generatePointShape(p: ChartPoint, position: AI.Point): AI.Component {
+function textHorizontalGrowth(position: number, xMin: number, xMax: number): AI.GrowthDirection {
+  return position > (xMin + xMax) * 0.5 ? "left" : "right";
+}
+
+function textVerticalGrowth(position: number, yMin: number, yMax: number): AI.GrowthDirection {
+  return position < (yMin + yMax) * 0.5 ? "down" : "up";
+}
+
+function generatePointShape(p: ChartPoint, position: AI.Point, id: string | undefined): AI.Component {
   const halfWidth = p.size.width * 0.5;
   const halfHeight = p.size.height * 0.5;
   if (p.shape === "triangle") {
@@ -524,15 +599,15 @@ function generatePointShape(p: ChartPoint, position: AI.Point): AI.Component {
       AI.createPoint(position.x - halfWidth, position.y - halfHeight),
       AI.createPoint(position.x + halfWidth, position.y - halfHeight),
     ];
-    return AI.createPolygon(trianglePoints, AI.black, 1, p.color);
+    return AI.createPolygon(trianglePoints, p.strokeColor, p.strokeThickness, p.color, id);
   } else if (p.shape === "square") {
     const topLeft = AI.createPoint(position.x - halfWidth, position.y - halfHeight);
     const bottomRight = AI.createPoint(position.x + halfWidth, position.y + halfHeight);
-    return AI.createRectangle(topLeft, bottomRight, AI.black, 1, p.color);
+    return AI.createRectangle(topLeft, bottomRight, p.strokeColor, p.strokeThickness, p.color, id);
   } else {
     const topLeft = AI.createPoint(position.x - halfWidth, position.y - halfHeight);
     const bottomRight = AI.createPoint(position.x + halfWidth, position.y + halfHeight);
-    return AI.createEllipse(topLeft, bottomRight, AI.black, 1, p.color);
+    return AI.createEllipse(topLeft, bottomRight, p.strokeColor, p.strokeThickness, p.color, id);
   }
 }
 
