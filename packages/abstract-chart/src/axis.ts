@@ -7,7 +7,7 @@ export type AxisBase = {
   readonly label: string;
   readonly labelRotation?: number;
   readonly tickLabelDisp?: number;
-  readonly textColor?: AI.Color;
+  readonly labelColor?: AI.Color;
   readonly tickLabelColor?: AI.Color;
   readonly thickness?: number;
   readonly axisColor?: AI.Color;
@@ -21,13 +21,13 @@ export function createLinearAxis(
   min: number,
   max: number,
   label: string,
-  textColor?: AI.Color,
+  labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number,
   thickness?: number,
   axisColor?: AI.Color
 ): LinearAxis {
-  return { type: "linear", min, max, label, textColor, labelRotation, tickLabelDisp, thickness, axisColor };
+  return { type: "linear", min, max, label, labelColor, labelRotation, tickLabelDisp, thickness, axisColor };
 }
 
 export type LogarithmicAxis = AxisBase & { readonly type: "logarithmic"; readonly min: number; readonly max: number };
@@ -36,13 +36,13 @@ export function createLogarithmicAxis(
   min: number,
   max: number,
   label: string,
-  textColor?: AI.Color,
+  labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number,
   thickness?: number,
   axisColor?: AI.Color
 ): LogarithmicAxis {
-  return { type: "logarithmic", min, max, textColor, label, labelRotation, tickLabelDisp, thickness, axisColor };
+  return { type: "logarithmic", min, max, labelColor, label, labelRotation, tickLabelDisp, thickness, axisColor };
 }
 
 export type DiscreteAxis = AxisBase & { readonly type: "discrete"; readonly points: ReadonlyArray<DiscreteAxisPoint> };
@@ -55,13 +55,13 @@ export interface DiscreteAxisPoint {
 export function createDiscreteAxis(
   points: ReadonlyArray<DiscreteAxisPoint>,
   label: string,
-  textColor?: AI.Color,
+  labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number,
   thickness?: number,
   axisColor?: AI.Color
 ): DiscreteAxis {
-  return { type: "discrete", points, textColor, label, labelRotation, tickLabelDisp, thickness, axisColor };
+  return { type: "discrete", points, labelColor, label, labelRotation, tickLabelDisp, thickness, axisColor };
 }
 
 const linearMultiples = [1, 2, 5];

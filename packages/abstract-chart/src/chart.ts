@@ -646,14 +646,14 @@ export function generateXAxisLabels(
       l.label ?? formatNumber(l.value),
       chart.font,
       axis.tickFontSize ?? chart.fontSize,
-      axis.textColor ?? AI.black,
+      axis.labelColor ?? AI.black,
       "normal",
       axis.labelRotation ?? 0,
       "center",
       "uniform",
       growVertical,
       0,
-      axis.textColor ?? AI.black,
+      axis.labelColor ?? AI.black,
       false
     );
   });
@@ -674,14 +674,14 @@ export function generateXAxisLabel(
     axis.label,
     chart.font,
     axis.axisFontSize ?? chart.fontSize,
-    axis.textColor ?? AI.black,
+    axis.labelColor ?? AI.black,
     "normal",
     0,
     "center",
     horizontalGrowthDirection,
     verticalGrowthDirection,
     0,
-    axis.textColor ?? AI.black,
+    axis.labelColor ?? AI.black,
     false
   );
 }
@@ -720,14 +720,14 @@ export function generateYAxisLabels(
       l.label ?? formatNumber(l.value),
       chart.font,
       yAxis.tickFontSize ?? chart.fontSize,
-      yAxis.textColor ?? AI.black,
+      yAxis.labelColor ?? AI.black,
       "normal",
       yAxis.labelRotation ?? 0,
       "center",
       growHorizontal,
       "uniform",
       0,
-      yAxis.textColor ?? AI.black,
+      yAxis.labelColor ?? AI.black,
       false
     );
   });
@@ -748,14 +748,14 @@ export function generateYAxisLabel(
     axis.label,
     chart.font,
     axis.axisFontSize ?? chart.fontSize,
-    axis.textColor ?? AI.black,
+    axis.labelColor ?? AI.black,
     "normal",
     -90,
     "center",
     horizontalGrowthDirection,
     verticalGrowthDirection,
     0,
-    axis.textColor ?? AI.black,
+    axis.labelColor ?? AI.black,
     false
   );
 }
