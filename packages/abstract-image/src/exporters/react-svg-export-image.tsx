@@ -17,6 +17,7 @@ export function createReactSvg(
 ): React.ReactElement<{}> {
   const cb = callbacks || {};
   const id = "ai_root";
+
   return (
     <svg
       id={id}
@@ -28,7 +29,9 @@ export function createReactSvg(
       onMouseMove={_callback(cb.onMouseMove, id)}
       onContextMenu={_callback(cb.onContextMenu, id)}
     >
-      {image.components.flatMap((c, i) => _visit(i.toString(), c as any))}
+      {image.components.flatMap((c, i) => (
+        <Component key={i} component={c} />
+      ))}
     </svg>
   );
 }
@@ -66,32 +69,33 @@ function getIdAttr(target: Element | undefined, rootId: string): string | undefi
   return parts[1];
 }
 
-function _visit(key: string, component: AbstractImage.Component): Array<React.ReactElement<{}>> {
+function Component({ component }: { readonly component: AbstractImage.Component }): JSX.Element {
   switch (component.type) {
     case "group":
-      return [
-        <g key={key} name={component.name}>
-          {component.children.flatMap((c, i) => _visit(i.toString(), c as any))}
-        </g>,
-      ];
+      return (
+        <g name={component.name}>
+          {component.children.flatMap((c, i) => (
+            <Component key={i} component={c} />
+          ))}
+        </g>
+      );
     case "binaryimage":
       const url = getImageUrl(component.format, component.data);
-      return [
+      return (
         <image
-          key={key}
           x={component.topLeft.x}
           y={component.topLeft.y}
           width={component.bottomRight.x - component.topLeft.x}
           height={component.bottomRight.y - component.topLeft.y}
           id={makeIdAttr(component.id)}
           href={url}
-        />,
-      ];
+        />
+      );
+
     case "line":
-      return [
+      return (
         <line
           id={makeIdAttr(component.id)}
-          key={key}
           x1={component.start.x}
           y1={component.start.y}
           x2={component.end.x}
@@ -99,11 +103,12 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
-        />,
-      ];
-    case "text":
+        />
+      );
+
+    case "text": {
       if (!component.text) {
-        return [];
+        return <></>;
       }
       const lineHeight = component.fontSize;
 
@@ -143,29 +148,28 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           lineHeight
         )
       );
-      let cs: Array<React.ReactElement<{}>> = [];
-      if (component.strokeThickness > 0 && component.strokeColor) {
-        cs.push(
-          <text key={key + "shadow"} style={shadowStyle} transform={transform}>
+
+      return (
+        <>
+          {component.strokeThickness > 0 && component.strokeColor && (
+            <text style={shadowStyle} transform={transform}>
+              {tSpans}
+            </text>
+          )}
+          <text style={style} transform={transform}>
             {tSpans}
           </text>
-        );
-      }
-      cs.push(
-        <text key={key} style={style} transform={transform}>
-          {tSpans}
-        </text>
+        </>
       );
-      return cs;
+    }
     case "ellipse":
       const rx = Math.abs(component.bottomRight.x - component.topLeft.x) * 0.5;
       const ry = Math.abs(component.bottomRight.y - component.topLeft.y) * 0.5;
       const cx = (component.bottomRight.x + component.topLeft.x) * 0.5;
       const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
-      return [
+      return (
         <ellipse
           id={makeIdAttr(component.id)}
-          key={key}
           cx={cx}
           cy={cy}
           rx={rx}
@@ -175,40 +179,37 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />,
-      ];
+        />
+      );
     case "polyline":
       let linePoints = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
-      return [
+      return (
         <polyline
           id={makeIdAttr(component.id)}
-          key={key}
           points={linePoints}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fill="none"
-        />,
-      ];
+        />
+      );
     case "polygon":
       let points = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
-      return [
+      return (
         <polygon
           id={makeIdAttr(component.id)}
-          key={key}
           points={points}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />,
-      ];
+        />
+      );
     case "rectangle":
-      return [
+      return (
         <rect
           id={makeIdAttr(component.id)}
-          key={key}
           x={component.topLeft.x}
           y={component.topLeft.y}
           width={Math.abs(component.bottomRight.x - component.topLeft.x)}
@@ -218,10 +219,10 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />,
-      ];
+        />
+      );
     default:
-      return [];
+      return <></>;
   }
 }
 
