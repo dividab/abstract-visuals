@@ -68,6 +68,8 @@ export interface ChartPoint {
   readonly shape: ChartPointShape;
   readonly position: AI.Point;
   readonly color: AI.Color;
+  readonly outline: AI.Color;
+  readonly labelColor: AI.Color;
   readonly size: AI.Size;
   readonly label: string;
   readonly xAxis: XAxis;
@@ -86,13 +88,16 @@ export function createChartPoint(props?: ChartPointProps): ChartPoint {
     label = "",
     xAxis = "bottom",
     yAxis = "left",
+    labelColor = AI.black,
+    outline = AI.transparent,
   } = props || {};
-  return { shape, position, color, size, label, xAxis, yAxis };
+  return { shape, position, color, size, label, xAxis, yAxis, labelColor, outline };
 }
 
 export interface ChartLine {
   readonly points: Array<AI.Point>;
   readonly color: AI.Color;
+  readonly labelColor: AI.Color;
   readonly thickness: number;
   readonly label: string;
   readonly xAxis: XAxis;
@@ -103,8 +108,16 @@ export interface ChartLine {
 export type ChartLineProps = Partial<ChartLine>;
 
 export function createChartLine(props: ChartLineProps): ChartLine {
-  const { points = [], color = AI.black, thickness = 1, label = "", xAxis = "bottom", yAxis = "left" } = props || {};
-  return { points, color, thickness, label, xAxis, yAxis };
+  const {
+    points = [],
+    color = AI.black,
+    thickness = 1,
+    label = "",
+    xAxis = "bottom",
+    yAxis = "left",
+    labelColor = AI.black,
+  } = props || {};
+  return { points, color, thickness, label, xAxis, yAxis, labelColor };
 }
 
 export interface ChartStackConfig {
@@ -472,14 +485,14 @@ export function generateLines(xMin: number, xMax: number, yMin: number, yMax: nu
         l.label,
         chart.font,
         l.fontSize ?? chart.fontSize,
-        AI.black,
+        l.labelColor ?? AI.black,
         "normal",
         0,
         "center",
         "right",
         "down",
         0,
-        AI.black,
+        l.labelColor ?? AI.black,
         false
       ),
     ]);
@@ -500,14 +513,14 @@ export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: n
         p.label,
         chart.font,
         p.fontSize ?? chart.fontSize,
-        AI.black,
+        p.labelColor ?? AI.black,
         "normal",
         0,
         "center",
         "right",
         "down",
         0,
-        AI.black,
+        p.labelColor ?? AI.black,
         false
       ),
     ]);
@@ -524,15 +537,15 @@ function generatePointShape(p: ChartPoint, position: AI.Point): AI.Component {
       AI.createPoint(position.x - halfWidth, position.y - halfHeight),
       AI.createPoint(position.x + halfWidth, position.y - halfHeight),
     ];
-    return AI.createPolygon(trianglePoints, AI.black, 1, p.color);
+    return AI.createPolygon(trianglePoints, p.outline, 1, p.color);
   } else if (p.shape === "square") {
     const topLeft = AI.createPoint(position.x - halfWidth, position.y - halfHeight);
     const bottomRight = AI.createPoint(position.x + halfWidth, position.y + halfHeight);
-    return AI.createRectangle(topLeft, bottomRight, AI.black, 1, p.color);
+    return AI.createRectangle(topLeft, bottomRight, p.outline, 1, p.color);
   } else {
     const topLeft = AI.createPoint(position.x - halfWidth, position.y - halfHeight);
     const bottomRight = AI.createPoint(position.x + halfWidth, position.y + halfHeight);
-    return AI.createEllipse(topLeft, bottomRight, AI.black, 1, p.color);
+    return AI.createEllipse(topLeft, bottomRight, p.outline, 1, p.color);
   }
 }
 

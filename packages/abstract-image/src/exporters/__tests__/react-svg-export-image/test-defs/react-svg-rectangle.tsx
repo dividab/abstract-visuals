@@ -23,5 +23,5 @@ export const test: ExportTestDef = {
   name: "react svg rectangle",
   abstractImage: svg,
   expectedSerializedJsx:
-    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"type":"rect","key":"0","ref":null,"props":{"x":10,"y":50,"width":40,"height":10,"stroke":"rgb(0,0,255)","strokeWidth":2,"strokeOpacity":"1","fillOpacity":"1","fill":"rgb(255,0,0)"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
+    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"key":"0","ref":null,"props":{"component":{"type":"rectangle","topLeft":{"x":10,"y":50},"bottomRight":{"x":50,"y":60},"strokeColor":{"a":255,"r":0,"g":0,"b":255},"strokeThickness":2,"fillColor":{"a":255,"r":255,"g":0,"b":0}}},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
 };
