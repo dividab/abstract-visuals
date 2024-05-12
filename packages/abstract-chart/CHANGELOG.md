@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.1.0] - 2024-05-10
+
+### Added
+
+- Support for id parameter on chart objects to support abstract-image click functionality
+- Text color and text outline color in charts
+
+### Changed
+
+- Changed text growth direction from down/right to automatic for point and line labels to keep them inside the grid
+
 ## [7.0.0] - 2024-05-06
 
 ### Added

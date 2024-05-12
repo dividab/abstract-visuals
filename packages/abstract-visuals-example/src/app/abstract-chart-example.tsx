@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as AbstractChart from "../../../../packages/abstract-chart/src";
 import * as AbstractImage from "../../../../packages/abstract-image/src";
 
@@ -14,7 +14,7 @@ function getLineRange(
   return [Math.min(...axisValues), Math.max(...axisValues)];
 }
 
-function generateLineChart(): AbstractChart.Chart {
+function generateLineChart(hovered: string): AbstractChart.Chart {
   const series = [
     AbstractChart.createChartLine({
       points: [
@@ -32,6 +32,8 @@ function generateLineChart(): AbstractChart.Chart {
       label: "How bad you feel",
       xAxis: "bottom",
       yAxis: "left",
+      thickness: hovered === "line one" ? 4 : 1,
+      id: "line one",
     }),
     AbstractChart.createChartLine({
       points: [
@@ -49,6 +51,8 @@ function generateLineChart(): AbstractChart.Chart {
       label: "How bad you sound",
       xAxis: "bottom",
       yAxis: "left",
+      thickness: hovered === "line two" ? 4 : 1,
+      id: "line two",
     }),
   ];
 
@@ -57,9 +61,24 @@ function generateLineChart(): AbstractChart.Chart {
 
   const chart = AbstractChart.createChart({
     chartLines: series,
+    chartPoints: [
+      AbstractChart.createChartPoint({
+        position: { x: 7, y: 4 },
+        id: "point1",
+        size: hovered === "point1" ? { width: 8, height: 8 } : { width: 5, height: 5 },
+        label: "Point",
+      }),
+      AbstractChart.createChartPoint({
+        position: { x: 1, y: 1 },
+        id: "point2",
+        size: hovered === "point2" ? { width: 8, height: 8 } : { width: 5, height: 5 },
+        label: "Point",
+      }),
+    ],
     xAxisBottom: AbstractChart.createLinearAxis(xMin, xMax, "Days with cold"),
     yAxisLeft: AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness"),
     labelLayout: "center",
+    textOutlineColor: AbstractImage.white,
   });
 
   return chart;
@@ -253,6 +272,7 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
 }
 
 export function AbstractChartExample(): JSX.Element {
+  const [hovered, setHovered] = useState("");
   return (
     <div>
       <h1>Line Chart</h1>
@@ -260,7 +280,10 @@ export function AbstractChartExample(): JSX.Element {
         Chart of <a href="https://www.xkcd.com/1612/">XKCD 1612</a>
       </p>
       <p>The worst part of colds</p>
-      {AbstractImage.createReactSvg(AbstractChart.renderChart(generateLineChart()))}
+      {AbstractImage.createReactSvg(AbstractChart.renderChart(generateLineChart(hovered)), {
+        onMouseMove: (id) => setHovered(id ?? ""),
+      })}
+      <p>Hovered: {hovered}</p>
       <h1>Stacked Chart</h1>
       <p>Stacked version of above XKCD line graph.</p>
       {AbstractImage.createReactSvg(AbstractChart.renderChart(generateStackedChart()))}
