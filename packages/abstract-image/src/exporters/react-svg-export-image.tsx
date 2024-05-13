@@ -28,7 +28,9 @@ export function createReactSvg(
       onMouseMove={_callback(cb.onMouseMove, id)}
       onContextMenu={_callback(cb.onContextMenu, id)}
     >
-      {image.components.flatMap((c, i) => _visit(i.toString(), c as any))}
+      {image.components.map((c, i) => (
+        <Component key={i} component={c} />
+      ))}
     </svg>
   );
 }
@@ -66,32 +68,33 @@ function getIdAttr(target: Element | undefined, rootId: string): string | undefi
   return parts[1];
 }
 
-function _visit(key: string, component: AbstractImage.Component): Array<React.ReactElement<{}>> {
+function Component({ component }: { readonly component: AbstractImage.Component }): JSX.Element {
   switch (component.type) {
     case "group":
-      return [
-        <g key={key} name={component.name}>
-          {component.children.flatMap((c, i) => _visit(i.toString(), c as any))}
-        </g>,
-      ];
+      return (
+        <g name={component.name}>
+          {component.children.flatMap((c, i) => (
+            <Component key={i} component={c} />
+          ))}
+        </g>
+      );
     case "binaryimage":
       const url = getImageUrl(component.format, component.data);
-      return [
+      return (
         <image
-          key={key}
           x={component.topLeft.x}
           y={component.topLeft.y}
           width={component.bottomRight.x - component.topLeft.x}
           height={component.bottomRight.y - component.topLeft.y}
           id={makeIdAttr(component.id)}
           href={url}
-        />,
-      ];
+        />
+      );
+
     case "line":
-      return [
+      return (
         <line
           id={makeIdAttr(component.id)}
-          key={key}
           x1={component.start.x}
           y1={component.start.y}
           x2={component.end.x}
@@ -99,73 +102,61 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
-        />,
-      ];
-    case "text":
-      if (!component.text) {
-        return [];
-      }
-      const lineHeight = component.fontSize;
-
-      const shadowStyle = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: getTextFontWeight(component.fontWeight),
-        fontFamily: component.fontFamily,
-        stroke: colorToRgb(component.strokeColor),
-        strokeWidth: component.strokeThickness,
-      };
-      const style = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: getTextFontWeight(component.fontWeight),
-        fontFamily: component.fontFamily,
-        fill: colorToRgb(component.textColor),
-      };
-      const dy = getBaselineAdjustment(component.verticalGrowthDirection);
-
-      const transform =
-        "rotate(" +
-        component.clockwiseRotationDegrees.toString() +
-        " " +
-        component.position.x.toString() +
-        " " +
-        component.position.y.toString() +
-        ")";
-
-      const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
-      const tSpans = lines.map((t) =>
-        renderLine(
-          t,
-          component.position.x,
-          component.position.y + (lines.indexOf(t) + dy) * lineHeight,
-          component.fontSize,
-          lineHeight
-        )
+        />
       );
-      let cs: Array<React.ReactElement<{}>> = [];
-      if (component.strokeThickness > 0 && component.strokeColor) {
-        cs.push(
-          <text key={key + "shadow"} style={shadowStyle} transform={transform}>
+
+    case "text": {
+      if (!component.text) {
+        return <></>;
+      }
+      const dy = getBaselineAdjustment(component.verticalGrowthDirection);
+      const transform = `rotate(${component.clockwiseRotationDegrees} ${component.position.x} ${component.position.y})`;
+      const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
+      const tSpans = lines.map((t) => (
+        <TSpan
+          key={t}
+          text={t}
+          x={component.position.x}
+          y={component.position.y + (lines.indexOf(t) + dy) * component.fontSize}
+          fontSize={component.fontSize}
+          lineHeight={component.fontSize}
+        />
+      ));
+
+      const baseStyle = {
+        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
+        fontSize: component.fontSize.toString() + "px",
+        fontWeight: getTextFontWeight(component.fontWeight),
+        fontFamily: component.fontFamily,
+      };
+      return (
+        <>
+          {component.strokeThickness > 0 && component.strokeColor && (
+            <text
+              style={{
+                ...baseStyle,
+                stroke: colorToRgb(component.strokeColor),
+                strokeWidth: component.strokeThickness,
+              }}
+              transform={transform}
+            >
+              {tSpans}
+            </text>
+          )}
+          <text style={{ ...baseStyle, fill: colorToRgb(component.textColor) }} transform={transform}>
             {tSpans}
           </text>
-        );
-      }
-      cs.push(
-        <text key={key} style={style} transform={transform}>
-          {tSpans}
-        </text>
+        </>
       );
-      return cs;
+    }
     case "ellipse":
       const rx = Math.abs(component.bottomRight.x - component.topLeft.x) * 0.5;
       const ry = Math.abs(component.bottomRight.y - component.topLeft.y) * 0.5;
       const cx = (component.bottomRight.x + component.topLeft.x) * 0.5;
       const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
-      return [
+      return (
         <ellipse
           id={makeIdAttr(component.id)}
-          key={key}
           cx={cx}
           cy={cy}
           rx={rx}
@@ -175,40 +166,37 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />,
-      ];
+        />
+      );
     case "polyline":
       let linePoints = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
-      return [
+      return (
         <polyline
           id={makeIdAttr(component.id)}
-          key={key}
           points={linePoints}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fill="none"
-        />,
-      ];
+        />
+      );
     case "polygon":
       let points = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
-      return [
+      return (
         <polygon
           id={makeIdAttr(component.id)}
-          key={key}
           points={points}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />,
-      ];
+        />
+      );
     case "rectangle":
-      return [
+      return (
         <rect
           id={makeIdAttr(component.id)}
-          key={key}
           x={component.topLeft.x}
           y={component.topLeft.y}
           width={Math.abs(component.bottomRight.x - component.topLeft.x)}
@@ -218,10 +206,10 @@ function _visit(key: string, component: AbstractImage.Component): Array<React.Re
           strokeOpacity={colorToOpacity(component.strokeColor)}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
-        />,
-      ];
+        />
+      );
     default:
-      return [];
+      return <></>;
   }
 }
 
@@ -252,7 +240,19 @@ function getImageUrl(format: AbstractImage.BinaryFormat, data: AbstractImage.Ima
   }
 }
 
-function renderLine(text: string, x: number, y: number, fontSize: number, lineHeight: number): JSX.Element {
+function TSpan({
+  text,
+  x,
+  y,
+  fontSize,
+  lineHeight,
+}: {
+  readonly text: string;
+  readonly x: number;
+  readonly y: number;
+  readonly fontSize: number;
+  readonly lineHeight: number;
+}): JSX.Element {
   const split = text.split("<sub>").flatMap((t) => t.split("</sub>"));
   let inside = false;
   const tags: Array<JSX.Element> = [];
@@ -270,7 +270,7 @@ function renderLine(text: string, x: number, y: number, fontSize: number, lineHe
     inside = !inside;
   }
   return (
-    <tspan key={text} x={x} y={y} height={lineHeight.toString() + "px"}>
+    <tspan x={x} y={y} height={lineHeight.toString() + "px"}>
       {tags}
     </tspan>
   );
@@ -299,7 +299,7 @@ function getTextAnchor(d: AbstractImage.GrowthDirection): "end" | "middle" | "st
   if (d === "right") {
     return "start";
   }
-  throw "Unknown text alignment " + d;
+  throw "Unknown text anchor " + d;
 }
 
 function colorToRgb(color: AbstractImage.Color): string {

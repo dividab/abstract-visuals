@@ -124,27 +124,9 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
       const cs: Array<string> = [];
 
       if (component.strokeThickness > 0 && component.strokeColor !== null) {
-        cs.push(
-          createElement(
-            "text",
-            {
-              style: objectToAttributeValue(shadowStyle),
-              transform: transform,
-            },
-            tSpans
-          )
-        );
+        cs.push(createElement("text", { style: objectToAttributeValue(shadowStyle), transform: transform }, tSpans));
       }
-      cs.push(
-        createElement(
-          "text",
-          {
-            style: objectToAttributeValue(style),
-            transform: transform,
-          },
-          tSpans
-        )
-      );
+      cs.push(createElement("text", { style: objectToAttributeValue(style), transform: transform }, tSpans));
       return cs.join();
     case "ellipse":
       const rx = Math.abs(component.bottomRight.x - component.topLeft.x) * 0.5;
@@ -280,7 +262,7 @@ function getTextAnchor(d: AbstractImage.GrowthDirection): string {
   if (d === "right") {
     return "start";
   }
-  throw "Unknown text alignment " + d;
+  throw "Unknown text anchor " + d;
 }
 
 function colorToRgb(color: AbstractImage.Color): string {

@@ -22,5 +22,5 @@ export const test: ExportTestDef = {
   name: "react svg line",
   abstractImage: svg,
   expectedSerializedJsx:
-    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"type":"line","key":"0","ref":null,"props":{"x1":10,"y1":100,"x2":40,"y2":70,"stroke":"rgb(0,0,0)","strokeWidth":2,"strokeOpacity":"1"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
+    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"key":"0","ref":null,"props":{"component":{"type":"line","start":{"x":10,"y":100},"end":{"x":40,"y":70},"strokeColor":{"a":255,"r":0,"g":0,"b":0},"strokeThickness":2}},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
 };
