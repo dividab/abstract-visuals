@@ -17,7 +17,6 @@ export function createReactSvg(
 ): React.ReactElement<{}> {
   const cb = callbacks || {};
   const id = "ai_root";
-
   return (
     <svg
       id={id}
@@ -29,7 +28,7 @@ export function createReactSvg(
       onMouseMove={_callback(cb.onMouseMove, id)}
       onContextMenu={_callback(cb.onContextMenu, id)}
     >
-      {image.components.flatMap((c, i) => (
+      {image.components.map((c, i) => (
         <Component key={i} component={c} />
       ))}
     </svg>
@@ -110,53 +109,41 @@ function Component({ component }: { readonly component: AbstractImage.Component 
       if (!component.text) {
         return <></>;
       }
-      const lineHeight = component.fontSize;
-
-      const shadowStyle = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: getTextFontWeight(component.fontWeight),
-        fontFamily: component.fontFamily,
-        stroke: colorToRgb(component.strokeColor),
-        strokeWidth: component.strokeThickness,
-      };
-      const style = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: getTextFontWeight(component.fontWeight),
-        fontFamily: component.fontFamily,
-        fill: colorToRgb(component.textColor),
-      };
       const dy = getBaselineAdjustment(component.verticalGrowthDirection);
-
-      const transform =
-        "rotate(" +
-        component.clockwiseRotationDegrees.toString() +
-        " " +
-        component.position.x.toString() +
-        " " +
-        component.position.y.toString() +
-        ")";
-
+      const transform = `rotate(${component.clockwiseRotationDegrees} ${component.position.x} ${component.position.y})`;
       const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
-      const tSpans = lines.map((t) =>
-        renderLine(
-          t,
-          component.position.x,
-          component.position.y + (lines.indexOf(t) + dy) * lineHeight,
-          component.fontSize,
-          lineHeight
-        )
-      );
+      const tSpans = lines.map((t) => (
+        <TSpan
+          key={t}
+          text={t}
+          x={component.position.x}
+          y={component.position.y + (lines.indexOf(t) + dy) * component.fontSize}
+          fontSize={component.fontSize}
+          lineHeight={component.fontSize}
+        />
+      ));
 
+      const baseStyle = {
+        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
+        fontSize: component.fontSize.toString() + "px",
+        fontWeight: getTextFontWeight(component.fontWeight),
+        fontFamily: component.fontFamily,
+      };
       return (
         <>
           {component.strokeThickness > 0 && component.strokeColor && (
-            <text style={shadowStyle} transform={transform}>
+            <text
+              style={{
+                ...baseStyle,
+                stroke: colorToRgb(component.strokeColor),
+                strokeWidth: component.strokeThickness,
+              }}
+              transform={transform}
+            >
               {tSpans}
             </text>
           )}
-          <text style={style} transform={transform}>
+          <text style={{ ...baseStyle, fill: colorToRgb(component.textColor) }} transform={transform}>
             {tSpans}
           </text>
         </>
@@ -253,7 +240,19 @@ function getImageUrl(format: AbstractImage.BinaryFormat, data: AbstractImage.Ima
   }
 }
 
-function renderLine(text: string, x: number, y: number, fontSize: number, lineHeight: number): JSX.Element {
+function TSpan({
+  text,
+  x,
+  y,
+  fontSize,
+  lineHeight,
+}: {
+  readonly text: string;
+  readonly x: number;
+  readonly y: number;
+  readonly fontSize: number;
+  readonly lineHeight: number;
+}): JSX.Element {
   const split = text.split("<sub>").flatMap((t) => t.split("</sub>"));
   let inside = false;
   const tags: Array<JSX.Element> = [];
@@ -271,7 +270,7 @@ function renderLine(text: string, x: number, y: number, fontSize: number, lineHe
     inside = !inside;
   }
   return (
-    <tspan key={text} x={x} y={y} height={lineHeight.toString() + "px"}>
+    <tspan x={x} y={y} height={lineHeight.toString() + "px"}>
       {tags}
     </tspan>
   );
@@ -300,7 +299,7 @@ function getTextAnchor(d: AbstractImage.GrowthDirection): "end" | "middle" | "st
   if (d === "right") {
     return "start";
   }
-  throw "Unknown text alignment " + d;
+  throw "Unknown text anchor " + d;
 }
 
 function colorToRgb(color: AbstractImage.Color): string {

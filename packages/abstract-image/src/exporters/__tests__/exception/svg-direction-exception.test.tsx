@@ -26,9 +26,8 @@ describe("svg text unknown direction", () => {
         AbstractImage.white,
         components
       );
-
       const svg = AbstractImage.createSVG(image);
-    }).toThrow("Unknown text alignment down");
+    }).toThrow("Unknown text anchor down");
   });
 });
 
@@ -58,7 +57,6 @@ describe("svg text unknown direction", () => {
         AbstractImage.white,
         components
       );
-
       const svg = AbstractImage.createSVG(image);
     }).toThrow("Unknown text alignment right");
   });

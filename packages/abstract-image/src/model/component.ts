@@ -244,19 +244,19 @@ export function createText(
 ): Text {
   return {
     type: "text",
-    position: position,
-    text: text,
-    fontFamily: fontFamily,
-    fontSize: fontSize,
-    textColor: textColor,
-    fontWeight: fontWeight,
-    clockwiseRotationDegrees: clockwiseRotationDegrees,
-    textAlignment: textAlignment,
-    horizontalGrowthDirection: horizontalGrowthDirection,
-    verticalGrowthDirection: verticalGrowthDirection,
-    strokeThickness: strokeThickness,
-    strokeColor: strokeColor,
-    italic: italic,
+    position,
+    text,
+    fontFamily,
+    fontSize,
+    textColor,
+    fontWeight,
+    clockwiseRotationDegrees,
+    textAlignment,
+    horizontalGrowthDirection,
+    verticalGrowthDirection,
+    strokeThickness,
+    strokeColor,
+    italic,
   };
 }
 
@@ -267,11 +267,7 @@ export interface SubImage {
 }
 
 export function createSubImage(topLeft: Point.Point, image: Component): SubImage {
-  return {
-    type: "subimage",
-    topLeft: topLeft,
-    image: image,
-  };
+  return { type: "subimage", topLeft, image };
 }
 
 export function embedAbstractImage(topLeft: Point.Point, name: string, image: AbstractImage.AbstractImage): Component {

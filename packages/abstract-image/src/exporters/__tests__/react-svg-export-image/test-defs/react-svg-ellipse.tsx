@@ -24,5 +24,5 @@ export const test: ExportTestDef = {
   name: "react svg ellipse",
   abstractImage: svg,
   expectedSerializedJsx:
-    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"type":"ellipse","key":"0","ref":null,"props":{"cx":75,"cy":75,"rx":25,"ry":25,"stroke":"rgb(0,128,0)","strokeWidth":2,"strokeOpacity":"1","fillOpacity":"1","fill":"rgb(255,255,0)"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
+    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"key":"0","ref":null,"props":{"component":{"type":"ellipse","topLeft":{"x":50,"y":50},"bottomRight":{"x":100,"y":100},"strokeColor":{"a":255,"r":0,"g":128,"b":0},"strokeThickness":2,"fillColor":{"a":255,"r":255,"g":255,"b":0}}},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
 };

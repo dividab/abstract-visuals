@@ -29,5 +29,5 @@ export const test: ExportTestDef = {
   name: "react svg polyline",
   abstractImage: svg,
   expectedSerializedJsx:
-    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"type":"polyline","key":"0","ref":null,"props":{"points":"10,40 20,30 30,40 40,30 50,40 60,30 70,40","stroke":"rgb(0,0,0)","strokeWidth":2,"strokeOpacity":"1","fill":"none"},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
+    '{"type":"svg","key":null,"ref":null,"props":{"id":"ai_root","width":"400px","height":"400px","viewBox":"0 0 400 400","children":[{"key":"0","ref":null,"props":{"component":{"type":"polyline","points":[{"x":10,"y":40},{"x":20,"y":30},{"x":30,"y":40},{"x":40,"y":30},{"x":50,"y":40},{"x":60,"y":30},{"x":70,"y":40}],"strokeColor":{"a":255,"r":0,"g":0,"b":0},"strokeThickness":2}},"_owner":null,"_store":{}}]},"_owner":null,"_store":{}}',
 };
