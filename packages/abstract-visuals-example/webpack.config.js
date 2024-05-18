@@ -1,37 +1,41 @@
 const path = require("path");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   stats: "errors-warnings",
-  context: path.resolve(__dirname, "./src"),
-  // entry: ["@babel/polyfill", "./text-encoder-polyfill", "./app/start"],
-  entry: "./app/start",
+  entry: "./src/index.tsx",
   output: {
     filename: "bundle.js",
-  },
-  output: {
-    path: path.join(__dirname, "./dist"),
-    filename: "example-bundle.js",
-    // the url to the output directory resolved relative to the HTML page
-    publicPath: "/assets/",
+    path: path.resolve(__dirname, "dist"),
+    publicPath: "/",
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
   },
-  plugins: [new NodePolyfillPlugin()],
+  plugins: [
+    new HtmlWebpackPlugin({ title: "Abstract visuals", template: "src/index.html.ejs" }),
+    new NodePolyfillPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, "./src/assets/pdfkit.standalone.js") },
+        { from: path.resolve(__dirname, "./src/assets/text-encoder-polyfill.js") },
+      ],
+    }),
+  ],
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: {
-          loader: "ts-loader",
-          options: {
-            projectReferences: true,
-          },
-        },
+        use: { loader: "ts-loader", options: { projectReferences: true } },
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        loader: "file-loader",
       },
     ],
   },

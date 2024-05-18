@@ -79,18 +79,15 @@ async function generatePDF(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const pdfKit = require("../pdfkit");
   const parsed = parseMustacheXml({ name: "template", template }, dataObject, {});
   if (parsed.type === "Err") {
     return parsed;
   }
-
   const doc = abstractDocOfXml(
     creators({}, {}, extractImageFontsStyleNames(parsed.xml)[2]),
     parsed.xml[0]!
   ) as unknown as AD.AbstractDoc.AbstractDoc.AbstractDoc;
-
-  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob(pdfKit, doc);
+  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);
   return { type: "Ok", url: objectURL };
 }

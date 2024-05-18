@@ -17,7 +17,11 @@ import {
   TocSeparator,
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
+import PFSquareSansProBold from "../assets/PFSquareSansPro-Bold-subset.otf";
+import PFSquareSansProItalic from "../assets/PFSquareSansPro-Italic-subset.otf";
+import PFSquareSansProRegular from "../assets/PFSquareSansPro-Regular-subset.otf";
 import {
+  Font,
   LayoutFoundation,
   LayoutFoundationColor,
   TableCellStyle,
@@ -148,8 +152,17 @@ export function AbstractDocumentExample(): JSX.Element {
       noTopBottomMargin: false,
     },
   });
+  console.log("PFSquareSansProBold", PFSquareSansProBold);
+
+  // const font = Font.create({
+  //   bold: new Uint8Array(PFSquareSansProBold),
+  //   boldItalic: new Uint8Array(PFSquareSansProBold),
+  //   italic: new Uint8Array(PFSquareSansProItalic),
+  //   normal: new Uint8Array(PFSquareSansProRegular),
+  // });
+
   const doc = render(
-    <AbstractDoc>
+    <AbstractDoc fonts={{}}>
       <Section page={page}>
         <Paragraph>
           <HyperLink text="Go to chapter1" target="#chapter1" />
@@ -504,7 +517,6 @@ export function AbstractDocumentExample(): JSX.Element {
       </Section>
     </AbstractDoc>
   );
-
   return (
     <div>
       <h1>Pdf</h1>
@@ -515,9 +527,7 @@ export function AbstractDocumentExample(): JSX.Element {
 }
 
 async function generatePDF(doc: AD.AbstractDoc.AbstractDoc.AbstractDoc): Promise<void> {
-  // tslint:disable-next-line:no-require-imports
-  const pdfKit = require("../pdfkit");
-  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob(pdfKit, doc);
+  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);
   window.open(objectURL);
 }
