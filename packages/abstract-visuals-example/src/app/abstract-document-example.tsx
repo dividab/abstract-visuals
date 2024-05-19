@@ -17,6 +17,9 @@ import {
   TocSeparator,
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
+// import PFSquareSansProBold from "../assets/PFSquareSansPro-Bold-subset.otf";
+// import PFSquareSansProItalic from "../assets/PFSquareSansPro-Italic-subset.otf";
+// import PFSquareSansProRegular from "../assets/PFSquareSansPro-Regular-subset.otf";
 import {
   LayoutFoundation,
   LayoutFoundationColor,
@@ -99,17 +102,17 @@ const headerRows = [
     <TableRow>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 1" />
+          <TextRun text="Header 1" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 2" />
+          <TextRun text="Header 2" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 3" />
+          <TextRun text="Header 3" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
     </TableRow>
@@ -118,17 +121,17 @@ const headerRows = [
     <TableRow>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 4" />
+          <TextRun text="Header 4" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 5" />
+          <TextRun text="Header 5" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 6" />
+          <TextRun text="Header 6" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
     </TableRow>
@@ -148,6 +151,7 @@ export function AbstractDocumentExample(): JSX.Element {
       noTopBottomMargin: false,
     },
   });
+
   const doc = render(
     <AbstractDoc>
       <Section page={page}>
@@ -504,7 +508,6 @@ export function AbstractDocumentExample(): JSX.Element {
       </Section>
     </AbstractDoc>
   );
-
   return (
     <div>
       <h1>Pdf</h1>
@@ -515,9 +518,7 @@ export function AbstractDocumentExample(): JSX.Element {
 }
 
 async function generatePDF(doc: AD.AbstractDoc.AbstractDoc.AbstractDoc): Promise<void> {
-  // tslint:disable-next-line:no-require-imports
-  const pdfKit = require("../pdfkit");
-  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob(pdfKit, doc);
+  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);
   window.open(objectURL);
 }

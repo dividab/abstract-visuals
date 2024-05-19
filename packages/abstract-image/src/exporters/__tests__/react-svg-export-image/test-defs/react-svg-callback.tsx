@@ -2,7 +2,7 @@ import { ExportTestDef } from "../export-test-def";
 import * as AbstractImage from "../../../../../src/index";
 import Enzyme from "enzyme";
 import React from "react";
-import Adapter from "enzyme-adapter-react-16";
+import Adapter from "@cfaester/enzyme-adapter-react-18";
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -34,10 +34,10 @@ const image = AbstractImage.createAbstractImage(
 let testVariable = "not clicked";
 
 const svg = AbstractImage.createReactSvg(image, {
-  onClick: (id: string | undefined, point: AbstractImage.Point) => {
+  onClick: (_id: string | undefined, _point: AbstractImage.Point) => {
     testVariable = "clicked";
   },
-});
+}) as JSX.Element;
 
 const wrapper = Enzyme.shallow(svg);
 wrapper.find("svg").simulate("click", {

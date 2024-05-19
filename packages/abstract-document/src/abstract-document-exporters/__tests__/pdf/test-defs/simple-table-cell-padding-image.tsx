@@ -1,9 +1,9 @@
 import React from "react";
+import * as AI from "abstract-image";
 import { ExportTestDef } from "../export-test-def";
 import { Paragraph, AbstractDoc, Section, Table, TableRow, TableCell, Image } from "../../../../abstract-document-jsx";
 import * as TableStyle from "../../../../abstract-document/styles/table-style";
 import * as TableCellStyle from "../../../../abstract-document/styles/table-cell-style";
-import * as AI from "../../../../../../abstract-image";
 
 const borders = { left: 2, bottom: 2, right: 2, top: 2 };
 
