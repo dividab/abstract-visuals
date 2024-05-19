@@ -3,28 +3,29 @@ import { TextFontWeight } from "../../abstract-document/styles/text-style";
 import { getResources } from "../shared/get_resources";
 
 export function registerFonts(
-  registerFont: (fontName: string, fontSource: AD.Font.FontSource) => void,
+  registerFont: (fontStyleName: string, fontSource: AD.Font.FontSource, fontName: string) => void,
   document: AD.AbstractDoc.AbstractDoc
 ): void {
   const resources = getResources(document);
   if (resources.fonts) {
-    for (const fontName of Object.keys(resources.fonts)) {
-      const font = resources.fonts[fontName];
-      registerFont(fontName + "-Light", font.light || font.normal);
-      registerFont(fontName, font.normal);
-      registerFont(fontName + "-Medium", font.medium || font.normal);
-      registerFont(fontName + "-Bold", font.bold);
-      registerFont(fontName + "-ExtraBold", font.extraBold || font.bold);
-      registerFont(fontName + "-LightOblique", font.lightItalic || font.normal);
-      registerFont(fontName + "-LightItalic", font.lightItalic || font.normal);
-      registerFont(fontName + "-Oblique", font.italic);
-      registerFont(fontName + "-Italic", font.italic);
-      registerFont(fontName + "-BoldOblique", font.boldItalic);
-      registerFont(fontName + "-BoldItalic", font.boldItalic);
-      registerFont(fontName + "-MediumOblique", font.mediumItalic || font.italic);
-      registerFont(fontName + "-MediumItalic", font.mediumItalic || font.italic);
-      registerFont(fontName + "-ExtraBoldItalic", font.extraBoldItalic || font.boldItalic);
-      registerFont(fontName + "-ExtraBoldOblique", font.extraBoldItalic || font.boldItalic);
+    for (const [name, font] of Object.entries(resources.fonts)) {
+      // Required
+      registerFont(name, font.normal, name);
+      registerFont(name + "-Oblique", font.italic, name);
+      registerFont(name + "-Italic", font.italic, name);
+      registerFont(name + "-Bold", font.bold, name);
+      registerFont(name + "-BoldOblique", font.boldItalic, name);
+      registerFont(name + "-BoldItalic", font.boldItalic, name);
+      // Optional
+      registerFont(name + "-Light", font.light || font.normal, name);
+      registerFont(name + "-Medium", font.medium || font.normal, name);
+      registerFont(name + "-ExtraBold", font.extraBold || font.bold, name);
+      registerFont(name + "-LightOblique", font.lightItalic || font.normal, name);
+      registerFont(name + "-LightItalic", font.lightItalic || font.normal, name);
+      registerFont(name + "-MediumOblique", font.mediumItalic || font.italic, name);
+      registerFont(name + "-MediumItalic", font.mediumItalic || font.italic, name);
+      registerFont(name + "-ExtraBoldItalic", font.extraBoldItalic || font.boldItalic, name);
+      registerFont(name + "-ExtraBoldOblique", font.extraBoldItalic || font.boldItalic, name);
     }
   }
 }
