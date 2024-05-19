@@ -3,8 +3,6 @@ import { getResources } from "../shared/get_resources";
 import { registerFonts } from "./font";
 import { measureTable } from "./measure";
 
-/* tslint:disable:no-any */
-
 export interface Page {
   readonly pageNo: number;
   readonly namedDestionations: ReadonlyArray<string>;
@@ -17,16 +15,12 @@ export interface Page {
 }
 
 export function paginate(
-  pdfKit: any,
+  pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
   desiredSizes: Map<any, AD.Size.Size>
 ): ReadonlyArray<Page> {
   const resources = getResources(document);
-  let pdf = new pdfKit({
-    compress: false,
-    autoFirstPage: false,
-    bufferPages: true,
-  }) as any;
+  let pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true });
 
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
 
@@ -40,7 +34,7 @@ export function paginate(
 }
 
 function splitSection(
-  pdfKit: any,
+  pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
   parentResources: AD.Resources.Resources,
   desiredSizes: Map<{}, AD.Size.Size>,
@@ -138,7 +132,7 @@ function splitSection(
 }
 
 function splitTable(
-  pdfKit: any,
+  pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
   resources: AD.Resources.Resources,
   desiredSizes: Map<{}, AD.Size.Size>,
@@ -370,7 +364,7 @@ function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Si
 }
 
 function splitTableAt(
-  pdfKit: any,
+  pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
   resources: AD.Resources.Resources,
   desiredSizes: Map<{}, AD.Size.Size>,

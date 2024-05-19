@@ -6,13 +6,11 @@ import { getFontNameStyle, getFontName, isFontAvailable } from "./font";
 
 export function renderImage(
   resources: AD.Resources.Resources,
-  // tslint:disable-next-line:no-any
-  pdf: any,
+  pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   image: AD.Image.Image
-  // tslint:disable-next-line:no-any
-): any {
+): void {
   const aImage = image.imageResource.abstractImage;
   const position = AD.Point.create(finalRect.x, finalRect.y);
   const scaleX = finalRect.width / aImage.size.width;
@@ -26,8 +24,7 @@ export function renderImage(
 
 function abstractComponentToPdf(
   resources: AD.Resources.Resources,
-  // tslint:disable-next-line:no-any
-  pdf: any,
+  pdf: PDFKit.PDFDocument,
   component: AbstractImage.Component,
   textStyle: AD.TextStyle.TextStyle
 ): void {
@@ -213,6 +210,6 @@ function colorToOpacity(color: AbstractImage.Color): number {
   return color.a / 255;
 }
 
-function colorToRgb(color: AbstractImage.Color): Array<number> {
+function colorToRgb(color: AbstractImage.Color): [number, number, number] {
   return [color.r, color.g, color.b];
 }

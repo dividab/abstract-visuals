@@ -11,8 +11,7 @@ export type PdfExportOptions = {
 };
 
 export function exportToHTML5Blob(
-  // tslint:disable-next-line:no-any
-  pdfKit: any,
+  pdfKit: PDFKit.PDFDocument,
   doc: AD.AbstractDoc.AbstractDoc,
   options: PdfExportOptions = { compress: false }
 ): Promise<Blob> {
@@ -33,8 +32,8 @@ export function exportToHTML5Blob(
  * @param options
  */
 export function exportToStream(
-  pdfKit: any,
-  blobStream: {},
+  pdfKit: PDFKit.PDFDocument,
+  blobStream: any,
   doc: AD.AbstractDoc.AbstractDoc,
   options: PdfExportOptions = { compress: false }
 ): void {
@@ -42,10 +41,14 @@ export function exportToStream(
   pdf.pipe(blobStream);
 }
 
-function createDocument(pdfKit: any, options: PdfExportOptions, doc: AD.AbstractDoc.AbstractDoc): any {
-  let pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true }) as any;
+function createDocument(
+  pdfKit: PDFKit.PDFDocument,
+  options: PdfExportOptions,
+  ad: AD.AbstractDoc.AbstractDoc
+): PDFKit.PDFDocument {
+  let pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true });
 
-  const document = preProcess(doc);
+  const document = preProcess(ad);
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
 
   const desiredSizes = measure(pdfKit, document);
@@ -62,7 +65,7 @@ function createDocument(pdfKit: any, options: PdfExportOptions, doc: AD.Abstract
 
 function renderPage(
   parentResources: AD.Resources.Resources,
-  pdf: any,
+  pdfKit: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   page: Page
 ): void {
@@ -70,11 +73,11 @@ function renderPage(
   const style = section.page.style;
   const resources = AD.Resources.mergeResources([parentResources, section]);
   const pageHeight = AD.PageStyle.getHeight(style);
-  const contentRect = addPage(pdf, page);
+  const contentRect = addPage(pdfKit, page);
 
   page.namedDestionations.forEach((dest) => {
-    if (pdf.addNamedDestination) {
-      pdf.addNamedDestination(dest);
+    if ((pdfKit as any).addNamedDestination) {
+      (pdfKit as any).addNamedDestination(dest);
     }
   });
 
@@ -86,7 +89,7 @@ function renderPage(
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
-      pdf,
+      pdfKit,
       desiredSizes,
       AD.Rect.create(headerX, isAbsolute ? headerStart : headerY, elementSize.width, elementSize.height),
       element
@@ -109,7 +112,7 @@ function renderPage(
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
-      pdf,
+      pdfKit,
       desiredSizes,
       AD.Rect.create(footerX, isAbsolute ? footerStart : footerY, elementSize.width, elementSize.height),
       element
@@ -126,7 +129,7 @@ function renderPage(
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
-      pdf,
+      pdfKit,
       desiredSizes,
       AD.Rect.create(contentRect.x, isAbsolute ? elementStart : y, elementSize.width, elementSize.height),
       element
@@ -137,22 +140,17 @@ function renderPage(
   }
 }
 
-function addPage(pdf: any, page: Page): AD.Rect.Rect {
+function addPage(pdf: PDFKit.PDFDocument, page: Page): AD.Rect.Rect {
   const section = page.section;
   const style = section.page.style;
   // This is rotated later depending on the orientation.
   const pageWidth = AD.PageStyle.getPaperWidth(style.paperSize);
   const pageHeight = AD.PageStyle.getPaperHeight(style.paperSize);
   const layout = style.orientation === "Landscape" ? "landscape" : "portrait";
-  const pageOptions = {
+  const pageOptions: PDFKit.PDFDocumentOptions = {
     size: [pageWidth, pageHeight],
     layout: layout,
-    margins: {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    },
+    margins: { top: 0, left: 0, right: 0, bottom: 0 },
   };
   pdf.addPage(pageOptions);
   return page.contentRect;
@@ -160,7 +158,7 @@ function addPage(pdf: any, page: Page): AD.Rect.Rect {
 
 function renderSectionElement(
   parentResources: AD.Resources.Resources,
-  pdf: {},
+  pdf: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   element: AD.SectionElement.SectionElement
@@ -181,7 +179,7 @@ function renderSectionElement(
 
 function renderGroup(
   resources: AD.Resources.Resources,
-  pdf: {},
+  pdfKit: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   group: AD.Group.Group
@@ -194,7 +192,7 @@ function renderGroup(
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
-      pdf,
+      pdfKit,
       desiredSizes,
       AD.Rect.create(finalX, isAbsolute ? startY : y, elementSize.width, elementSize.height),
       element
@@ -207,7 +205,7 @@ function renderGroup(
 
 function renderParagraph(
   resources: AD.Resources.Resources,
-  pdf: {},
+  pdfKit: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   paragraph: AD.Paragraph.Paragraph
@@ -317,7 +315,7 @@ function renderParagraph(
       const atomSize = getDesiredSize(atom, desiredSizes);
       renderAtom(
         resources,
-        pdf,
+        pdfKit,
         AD.Rect.create(x, y, atomSize.width, atomSize.height),
         style.textStyle,
         atom,
@@ -352,7 +350,7 @@ function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | un
 
 function renderAtom(
   resources: AD.Resources.Resources,
-  pdf: {},
+  pdfKit: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
@@ -363,19 +361,39 @@ function renderAtom(
 ): void {
   switch (atom.type) {
     case "TextField":
-      renderTextField(resources, pdf, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
+      renderTextField(
+        resources,
+        pdfKit,
+        finalRect,
+        textStyle,
+        atom,
+        alignment,
+        isFirstAtom,
+        isLastAtom,
+        availableWidth
+      );
       return;
     case "TextRun":
-      renderTextRun(resources, pdf, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
+      renderTextRun(resources, pdfKit, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
       return;
     case "Image":
-      renderImage(resources, pdf, finalRect, textStyle, atom);
+      renderImage(resources, pdfKit, finalRect, textStyle, atom);
       return;
     case "HyperLink":
-      renderHyperLink(resources, pdf, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
+      renderHyperLink(
+        resources,
+        pdfKit,
+        finalRect,
+        textStyle,
+        atom,
+        alignment,
+        isFirstAtom,
+        isLastAtom,
+        availableWidth
+      );
       return;
     case "TocSeparator":
-      renderTocSeparator(pdf, finalRect, textStyle, atom);
+      renderTocSeparator(pdfKit, finalRect, textStyle, atom);
       return;
     case "LinkTarget":
       return;
@@ -386,7 +404,7 @@ function renderAtom(
 
 function renderTextField(
   resources: AD.Resources.Resources,
-  pdf: {},
+  pdfKit: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textField: AD.TextField.TextField,
@@ -405,7 +423,7 @@ function renderTextField(
   switch (textField.fieldType) {
     case "Date":
       drawText(
-        pdf,
+        pdfKit,
         finalRect,
         style,
         new Date(Date.now()).toDateString(),
@@ -419,7 +437,7 @@ function renderTextField(
     case "TotalPages":
     case "PageNumberOf":
       if (textField.text) {
-        drawText(pdf, finalRect, style, textField.text, alignment, isFirstAtom, isLastAtom, availableWidth);
+        drawText(pdfKit, finalRect, style, textField.text, alignment, isFirstAtom, isLastAtom, availableWidth);
       }
       return;
   }
@@ -427,7 +445,7 @@ function renderTextField(
 
 function renderTextRun(
   resources: AD.Resources.Resources,
-  pdf: {},
+  pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textRun: AD.TextRun.TextRun,
@@ -450,7 +468,7 @@ function renderTextRun(
 
 function renderHyperLink(
   resources: AD.Resources.Resources,
-  pdf: {},
+  pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
@@ -471,7 +489,7 @@ function renderHyperLink(
 }
 
 function renderTocSeparator(
-  pdf: {},
+  pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   tocSeparator: AD.TocSeparator.TocSeparator
@@ -480,7 +498,7 @@ function renderTocSeparator(
 }
 
 function drawHyperLink(
-  pdf: any,
+  pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
@@ -522,10 +540,7 @@ function drawHyperLink(
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
     if (textStyle.underline === undefined ? true : textStyle.underline) {
-      pdf.underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
-        align: isSingleAtom ? alignment : "left",
-        color: "blue",
-      });
+      pdf.underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, { color: "blue" });
     }
   } else {
     pdf.text(hyperLink.text, {
@@ -550,7 +565,7 @@ function drawHyperLink(
 }
 
 function drawText(
-  pdf: any,
+  pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   text: string,
@@ -599,7 +614,7 @@ function drawText(
 }
 
 function drawDottedLine(
-  pdf: any,
+  pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   tocSeparator: AD.TocSeparator.TocSeparator
@@ -648,7 +663,7 @@ function drawDottedLine(
 
 function renderTable(
   resources: AD.Resources.Resources,
-  pdf: any,
+  pdf: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   table: AD.Table.Table
@@ -678,7 +693,7 @@ function renderTable(
 
 function renderRow(
   resources: AD.Resources.Resources,
-  pdf: {},
+  pdf: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
@@ -714,7 +729,7 @@ function renderRow(
 
 function renderCell(
   resources: AD.Resources.Resources,
-  pdf: any,
+  pdf: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
@@ -818,7 +833,7 @@ function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Si
   throw new Error("Could not find size for element!");
 }
 
-function applyTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle): void {
+function applyTextOffset(pdf: PDFKit.PDFDocument, textStyle: AD.TextStyle.TextStyle): void {
   const offset = calculateTextOffset(textStyle);
   if (offset < 0) {
     pdf.moveDown(Math.abs(offset));
@@ -827,7 +842,7 @@ function applyTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle): void {
   }
 }
 
-function resetTextOffset(pdf: any, textStyle: AD.TextStyle.TextStyle): void {
+function resetTextOffset(pdf: PDFKit.PDFDocument, textStyle: AD.TextStyle.TextStyle): void {
   const offset = calculateTextOffset(textStyle);
   if (offset < 0) {
     pdf.moveUp(Math.abs(offset));
