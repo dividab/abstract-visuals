@@ -8,7 +8,8 @@ export function registerFonts(
 ): void {
   const resources = getResources(document);
   if (resources.fonts) {
-    for (const [name, font] of Object.entries(resources.fonts)) {
+    for (const name of Object.keys(resources.fonts)) {
+      const font = resources.fonts[name];
       // Required
       registerFont(name, font.normal, name);
       registerFont(name + "-Oblique", font.italic, name);
