@@ -22,8 +22,11 @@ export function paginate(
   const resources = getResources(document);
   let pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true });
 
-  registerFonts(pdf.registerFont, document);
-
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource, fontFamily: string) =>
+      pdf.registerFont(fontName, fontSource, fontFamily),
+    document
+  );
   let pages = new Array<Page>();
   for (let section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
@@ -414,7 +417,11 @@ function splitTableAt(
 
   const availableSize = getDesiredSize(table, desiredSizes);
   let pdf = new pdfKit();
-  registerFonts(pdf.registerFont, document);
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource, fontFamily: string) =>
+      pdf.registerFont(fontName, fontSource, fontFamily),
+    document
+  );
   const headSizes = measureTable(pdf, resources, availableSize, tableHead);
   const tailSizes = measureTable(pdf, resources, availableSize, tableTail);
 

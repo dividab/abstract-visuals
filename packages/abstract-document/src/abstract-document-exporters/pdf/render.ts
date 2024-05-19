@@ -49,8 +49,11 @@ function createDocument(
   let pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true });
 
   const document = preProcess(ad);
-  registerFonts(pdf.registerFont, document);
-
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource, fontFamily: string) =>
+      pdf.registerFont(fontName, fontSource, fontFamily),
+    document
+  );
   const desiredSizes = measure(pdfKit, document);
   const pages = paginate(pdfKit, document, desiredSizes);
   const updatedPages = updatePageRefs(pages);

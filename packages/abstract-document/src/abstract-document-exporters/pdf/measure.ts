@@ -7,7 +7,7 @@ import { registerFonts, getFontNameStyle } from "./font";
 
 export function measure(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc): Map<any, AD.Size.Size> {
   let pdf = new pdfKit();
-  registerFonts(pdf.registerFont, document);
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   return mergeMaps(document.children.map((s) => measureSection(pdf, document, s)));
 }
 
@@ -17,7 +17,11 @@ export function measurePages(
   pages: ReadonlyArray<Page>
 ): Map<any, AD.Size.Size> {
   let pdf = new pdfKit();
-  registerFonts(pdf.registerFont, document);
+  registerFonts(
+    (fontName: string, fontSource: AD.Font.FontSource, fontFamily: string) =>
+      pdf.registerFont(fontName, fontSource, fontFamily),
+    document
+  );
   return mergeMaps(
     pages.map((page) => measureSection(pdf, document, page.section, page.header, page.footer, page.elements))
   );
