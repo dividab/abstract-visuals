@@ -3725,8 +3725,8 @@
                 Xe(ce),
                 (ue.LineWrapper = Ur),
                 (e.exports = ue);
-            }.call(this));
-          }.call(this, r("buffer").Buffer, "/js"));
+            }).call(this);
+          }).call(this, r("buffer").Buffer, "/js");
         },
         {
           buffer: 114,
@@ -6272,8 +6272,8 @@
                   for (var n in r) o.call(r, n) && e.push(n);
                   return e;
                 };
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             "undefined" != typeof global
               ? global
@@ -6282,7 +6282,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         { "object.assign/polyfill": 219, "util/": 275 },
       ],
@@ -6297,8 +6297,8 @@
                 for (var r = [], e = 0; e < t.length; e++) "function" == typeof a[t[e]] && (r[r.length] = t[e]);
                 return r;
               };
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             "undefined" != typeof global
               ? global
@@ -6307,7 +6307,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         { "possible-typed-array-names": 222 },
       ],
@@ -7662,8 +7662,8 @@
                   this.err !== n.Z_OK && this._error("Failed to reset stream");
                 }),
                 (n.Zlib = X);
-            }.call(this));
-          }.call(this, r("_process"), r("buffer").Buffer));
+            }).call(this);
+          }).call(this, r("_process"), r("buffer").Buffer);
         },
         {
           _process: 224,
@@ -8039,8 +8039,8 @@
                 c.inherits(b, N),
                 c.inherits(C, N),
                 c.inherits(W, N);
-            }.call(this));
-          }.call(this, r("_process")));
+            }).call(this);
+          }).call(this, r("_process"));
         },
         { "./binding": 100, _process: 224, assert: 85, buffer: 114, stream: 265, util: 275 },
       ],
@@ -11258,8 +11258,8 @@
               function F(r) {
                 return r != r;
               }
-            }.call(this));
-          }.call(this, r("buffer").Buffer));
+            }).call(this);
+          }).call(this, r("buffer").Buffer);
         },
         { "base64-js": 87, buffer: 114, ieee754: 186 },
       ],
@@ -11441,8 +11441,8 @@
                 );
               })();
               "object" == typeof e && e.exports && (e.exports = n);
-            }.call(this));
-          }.call(this, r("buffer").Buffer));
+            }).call(this);
+          }).call(this, r("buffer").Buffer);
         },
         { buffer: 114 },
       ],
@@ -12332,8 +12332,8 @@
                   return e;
                 }),
                 "object" == typeof n ? (e.exports = n = i()) : (a.CryptoJS = i());
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             "undefined" != typeof global
               ? global
@@ -12342,7 +12342,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         { crypto: 113 },
       ],
@@ -15591,8 +15591,8 @@
                     if (null != r) return f(r, !0);
                   };
               }
-            }.call(this));
-          }.call(this, r("_process")));
+            }).call(this);
+          }).call(this, r("_process"));
         },
         {
           _process: 224,
@@ -25578,8 +25578,8 @@
                       },
                     });
                 });
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             "undefined" != typeof global
               ? global
@@ -25588,7 +25588,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         {
           "../iconv-lite.cjs": 172,
@@ -27714,8 +27714,8 @@
                   for (var u = 0; u < c.length; u++) T.call(r, c[u]) && t.push("[" + e(c[u]) + "]: " + e(r[c[u]], r));
                 return t;
               }
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             "undefined" != typeof global
               ? global
@@ -27724,7 +27724,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         { "./util.inspect": 99 },
       ],
@@ -28284,8 +28284,8 @@
                   return this.decodePixels((n) => (this.copyToImageData(e, n), r(e)));
                 }
               };
-            }.call(this));
-          }.call(this, r("buffer").Buffer));
+            }).call(this);
+          }).call(this, r("buffer").Buffer);
         },
         { buffer: 114, fs: 113, zlib: 101 },
       ],
@@ -28348,8 +28348,8 @@
                     },
                   })
                 : (e.exports = r);
-            }.call(this));
-          }.call(this, r("_process")));
+            }).call(this);
+          }).call(this, r("_process"));
         },
         { _process: 224 },
       ],
@@ -29093,8 +29093,8 @@
                   },
                 }),
                 (p._fromList = k);
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             r("_process"),
             "undefined" != typeof global
@@ -29104,7 +29104,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         {
           "./_stream_duplex": 226,
@@ -29537,8 +29537,8 @@
                 (g.prototype._destroy = function (r, e) {
                   this.end(), e(r);
                 });
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             r("_process"),
             "undefined" != typeof global
@@ -29549,7 +29549,7 @@
               ? window
               : {},
             r("timers").setImmediate
-          ));
+          );
         },
         {
           "./_stream_duplex": 226,
@@ -30267,8 +30267,8 @@
                   };
                 }
               e.exports = a;
-            }.call(this));
-          }.call(this, r("buffer").Buffer));
+            }).call(this);
+          }).call(this, r("buffer").Buffer);
         },
         { buffer: 114, "iconv-lite": 113 },
       ],
@@ -30367,8 +30367,8 @@
                   };
                 }
               e.exports = c;
-            }.call(this));
-          }.call(this, r("buffer").Buffer));
+            }).call(this);
+          }).call(this, r("buffer").Buffer);
         },
         { "./DecodeStream": 249, buffer: 114, "iconv-lite": 113, stream: 265 },
       ],
@@ -30699,8 +30699,8 @@
                     return r.writeUInt8(0);
                 }
               };
-            }.call(this));
-          }.call(this, r("buffer").Buffer));
+            }).call(this);
+          }).call(this, r("buffer").Buffer);
         },
         { "./Number": 253, "./utils": 260, buffer: 114 },
       ],
@@ -31117,8 +31117,8 @@
                     : function (r) {
                         delete o[r];
                       });
-            }.call(this));
-          }.call(this, r("timers").setImmediate, r("timers").clearImmediate));
+            }).call(this);
+          }).call(this, r("timers").setImmediate, r("timers").clearImmediate);
         },
         { "process/browser.js": 224, timers: 266 },
       ],
@@ -31795,8 +31795,8 @@
                   r("__addDisposableResource", k),
                   r("__disposeResources", T);
               });
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             "undefined" != typeof global
               ? global
@@ -31805,7 +31805,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         {},
       ],
@@ -32049,8 +32049,8 @@
                   return r.apply(this, arguments);
                 };
               };
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             "undefined" != typeof global
               ? global
@@ -32059,7 +32059,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         {},
       ],
@@ -32425,8 +32425,8 @@
                   for (var n = Object.keys(e), t = n.length; t--; ) r[n[t]] = e[n[t]];
                   return r;
                 });
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             r("_process"),
             "undefined" != typeof global
@@ -32436,7 +32436,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         { "./support/isBuffer": 274, _process: 224, inherits: 273 },
       ],
@@ -32564,8 +32564,8 @@
                     })(r)
                   : null;
               };
-            }.call(this));
-          }.call(
+            }).call(this);
+          }).call(
             this,
             "undefined" != typeof global
               ? global
@@ -32574,7 +32574,7 @@
               : "undefined" != typeof window
               ? window
               : {}
-          ));
+          );
         },
         {
           "available-typed-arrays": 86,

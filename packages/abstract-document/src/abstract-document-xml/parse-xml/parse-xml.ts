@@ -1,4 +1,4 @@
-import { X2jOptions, X2jOptionsOptional, XMLParser } from "fast-xml-parser";
+import { X2jOptions, XMLParser } from "fast-xml-parser";
 import Mustache from "mustache";
 import { xsd } from "../xsd-template";
 import { errorToReadableText, validateXml } from "./validation";
@@ -60,7 +60,7 @@ export function parseMustacheXml(
   return { type: "Ok", xml: parseXml(mustacheResolvedXml, options) };
 }
 
-export function parseXml(text: string, options?: X2jOptionsOptional): ReadonlyArray<XmlElement> {
+export function parseXml(text: string, options?: Partial<X2jOptions>): ReadonlyArray<XmlElement> {
   const parser = new XMLParser(options);
   // Unescape HTML entity
   parser.addEntity("#x2F", "/");

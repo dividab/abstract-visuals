@@ -17,11 +17,10 @@ import {
   TocSeparator,
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
-import PFSquareSansProBold from "../assets/PFSquareSansPro-Bold-subset.otf";
-import PFSquareSansProItalic from "../assets/PFSquareSansPro-Italic-subset.otf";
-import PFSquareSansProRegular from "../assets/PFSquareSansPro-Regular-subset.otf";
+// import PFSquareSansProBold from "../assets/PFSquareSansPro-Bold-subset.otf";
+// import PFSquareSansProItalic from "../assets/PFSquareSansPro-Italic-subset.otf";
+// import PFSquareSansProRegular from "../assets/PFSquareSansPro-Regular-subset.otf";
 import {
-  Font,
   LayoutFoundation,
   LayoutFoundationColor,
   TableCellStyle,
@@ -103,17 +102,17 @@ const headerRows = [
     <TableRow>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 1" />
+          <TextRun text="Header 1" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 2" />
+          <TextRun text="Header 2" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 3" />
+          <TextRun text="Header 3" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
     </TableRow>
@@ -122,17 +121,17 @@ const headerRows = [
     <TableRow>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 4" />
+          <TextRun text="Header 4" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 5" />
+          <TextRun text="Header 5" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
       <TableCell style={headerstyle}>
         <Paragraph>
-          <TextRun text="Header 6" />
+          <TextRun text="Header 6" style={{ type: "TextStyle" }} />
         </Paragraph>
       </TableCell>
     </TableRow>
@@ -152,17 +151,9 @@ export function AbstractDocumentExample(): JSX.Element {
       noTopBottomMargin: false,
     },
   });
-  console.log("PFSquareSansProBold", PFSquareSansProBold);
-
-  // const font = Font.create({
-  //   bold: new Uint8Array(PFSquareSansProBold),
-  //   boldItalic: new Uint8Array(PFSquareSansProBold),
-  //   italic: new Uint8Array(PFSquareSansProItalic),
-  //   normal: new Uint8Array(PFSquareSansProRegular),
-  // });
 
   const doc = render(
-    <AbstractDoc fonts={{}}>
+    <AbstractDoc>
       <Section page={page}>
         <Paragraph>
           <HyperLink text="Go to chapter1" target="#chapter1" />
