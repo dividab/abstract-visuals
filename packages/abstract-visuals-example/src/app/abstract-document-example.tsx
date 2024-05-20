@@ -17,9 +17,6 @@ import {
   TocSeparator,
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
-// import PFSquareSansProBold from "../assets/PFSquareSansPro-Bold-subset.otf";
-// import PFSquareSansProItalic from "../assets/PFSquareSansPro-Italic-subset.otf";
-// import PFSquareSansProRegular from "../assets/PFSquareSansPro-Regular-subset.otf";
 import {
   LayoutFoundation,
   LayoutFoundationColor,

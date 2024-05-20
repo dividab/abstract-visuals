@@ -102,6 +102,9 @@ export function extractImageFontsStyleNames(
       images.push(item.attributes.src as string);
     } else if (item.attributes?.fontFamily) {
       fonts.push(item.attributes.fontFamily as string);
+      if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
+        styleNames[item.attributes.name as string] = item.attributes.type;
+      }
     } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
       styleNames[item.attributes.name as string] = item.attributes.type;
     } else {
