@@ -153,7 +153,7 @@ export function AbstractDocumentExample(): JSX.Element {
   });
 
   const doc = render(
-    <AbstractDoc>
+    <AbstractDoc styles={{}}>
       <Section page={page}>
         <Paragraph>
           <HyperLink text="Go to chapter1" target="#chapter1" />

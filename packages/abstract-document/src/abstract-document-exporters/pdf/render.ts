@@ -46,7 +46,7 @@ function createDocument(
   options: PdfExportOptions,
   ad: AD.AbstractDoc.AbstractDoc
 ): PDFKit.PDFDocument {
-  let pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true });
+  const pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true });
 
   const document = preProcess(ad);
   registerFonts(
@@ -54,10 +54,10 @@ function createDocument(
       pdf.registerFont(fontName, fontSource, fontFamily),
     document
   );
-  const desiredSizes = measure(pdfKit, document);
-  const pages = paginate(pdfKit, document, desiredSizes);
+  const desiredSizes = measure(pdf, document);
+  const pages = paginate(pdf, document, desiredSizes);
   const updatedPages = updatePageRefs(pages);
-  const pageDesiredSizes = measurePages(pdfKit, document, updatedPages);
+  const pageDesiredSizes = measurePages(pdf, document, updatedPages);
 
   for (let page of updatedPages) {
     renderPage(document, pdf, pageDesiredSizes, page);
@@ -68,7 +68,7 @@ function createDocument(
 
 function renderPage(
   parentResources: AD.Resources.Resources,
-  pdfKit: PDFKit.PDFDocument,
+  pdf: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   page: Page
 ): void {
@@ -76,11 +76,11 @@ function renderPage(
   const style = section.page.style;
   const resources = AD.Resources.mergeResources([parentResources, section]);
   const pageHeight = AD.PageStyle.getHeight(style);
-  const contentRect = addPage(pdfKit, page);
+  const contentRect = addPage(pdf, page);
 
   page.namedDestionations.forEach((dest) => {
-    if ((pdfKit as any).addNamedDestination) {
-      (pdfKit as any).addNamedDestination(dest);
+    if ((pdf as any).addNamedDestination) {
+      (pdf as any).addNamedDestination(dest);
     }
   });
 
@@ -92,7 +92,7 @@ function renderPage(
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
-      pdfKit,
+      pdf,
       desiredSizes,
       AD.Rect.create(headerX, isAbsolute ? headerStart : headerY, elementSize.width, elementSize.height),
       element
@@ -115,7 +115,7 @@ function renderPage(
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
-      pdfKit,
+      pdf,
       desiredSizes,
       AD.Rect.create(footerX, isAbsolute ? footerStart : footerY, elementSize.width, elementSize.height),
       element
@@ -132,7 +132,7 @@ function renderPage(
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
       resources,
-      pdfKit,
+      pdf,
       desiredSizes,
       AD.Rect.create(contentRect.x, isAbsolute ? elementStart : y, elementSize.width, elementSize.height),
       element
