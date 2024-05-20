@@ -3,7 +3,7 @@ import { TextFontWeight } from "../../abstract-document/styles/text-style";
 import { getResources } from "../shared/get_resources";
 
 export function registerFonts(
-  registerFont: (fontName: string, fontSource: AD.Font.FontSource, fontFamily?: string) => void,
+  registerFont: (fontName: string, fontSource: AD.Font.FontSource) => void,
   document: AD.AbstractDoc.AbstractDoc
 ): void {
   const resources = getResources(document);

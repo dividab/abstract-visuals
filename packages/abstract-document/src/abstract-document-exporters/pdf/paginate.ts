@@ -20,14 +20,10 @@ export function paginate(
   desiredSizes: Map<any, AD.Size.Size>
 ): ReadonlyArray<Page> {
   const resources = getResources(document);
-  let pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true });
+  const pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true });
 
-  registerFonts(
-    (fontName: string, fontSource: AD.Font.FontSource, fontFamily: string) =>
-      pdf.registerFont(fontName, fontSource, fontFamily),
-    document
-  );
-  let pages = new Array<Page>();
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  const pages = new Array<Page>();
   for (let section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
     pages.push(...splitSection(pdfKit, document, resources, desiredSizes, previousPage, section));
@@ -417,11 +413,7 @@ function splitTableAt(
 
   const availableSize = getDesiredSize(table, desiredSizes);
   let pdf = new pdfKit();
-  registerFonts(
-    (fontName: string, fontSource: AD.Font.FontSource, fontFamily: string) =>
-      pdf.registerFont(fontName, fontSource, fontFamily),
-    document
-  );
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   const headSizes = measureTable(pdf, resources, availableSize, tableHead);
   const tailSizes = measureTable(pdf, resources, availableSize, tableTail);
 

@@ -16,12 +16,8 @@ export function measurePages(
   document: AD.AbstractDoc.AbstractDoc,
   pages: ReadonlyArray<Page>
 ): Map<any, AD.Size.Size> {
-  let pdf = new pdfKit();
-  registerFonts(
-    (fontName: string, fontSource: AD.Font.FontSource, fontFamily: string) =>
-      pdf.registerFont(fontName, fontSource, fontFamily),
-    document
-  );
+  const pdf = new pdfKit();
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   return mergeMaps(
     pages.map((page) => measureSection(pdf, document, page.section, page.header, page.footer, page.elements))
   );
