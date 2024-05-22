@@ -225,6 +225,7 @@ export interface Text {
   readonly strokeThickness: number;
   readonly strokeColor: Color.Color;
   readonly italic: boolean;
+  readonly id: string | undefined;
 }
 
 export function createText(
@@ -240,7 +241,8 @@ export function createText(
   verticalGrowthDirection: GrowthDirection,
   strokeThickness: number,
   strokeColor: Color.Color,
-  italic: boolean
+  italic: boolean,
+  id?: string
 ): Text {
   return {
     type: "text",
@@ -257,6 +259,7 @@ export function createText(
     strokeThickness,
     strokeColor,
     italic,
+    id,
   };
 }
 

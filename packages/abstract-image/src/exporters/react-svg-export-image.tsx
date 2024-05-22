@@ -143,7 +143,11 @@ function Component({ component }: { readonly component: AbstractImage.Component 
               {tSpans}
             </text>
           )}
-          <text style={{ ...baseStyle, fill: colorToRgb(component.textColor) }} transform={transform}>
+          <text
+            style={{ ...baseStyle, fill: colorToRgb(component.textColor) }}
+            transform={transform}
+            id={makeIdAttr(component.id)}
+          >
             {tSpans}
           </text>
         </>

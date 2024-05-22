@@ -682,7 +682,8 @@ export function generateXAxisLabel(
     verticalGrowthDirection,
     0,
     axis.labelColor ?? AI.black,
-    false
+    false,
+    axis.id
   );
 }
 
@@ -756,7 +757,8 @@ export function generateYAxisLabel(
     verticalGrowthDirection,
     0,
     axis.labelColor ?? AI.black,
-    false
+    false,
+    axis.id
   );
 }
 

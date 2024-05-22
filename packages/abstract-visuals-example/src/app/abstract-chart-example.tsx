@@ -75,8 +75,28 @@ function generateLineChart(hovered: string): AbstractChart.Chart {
         label: "Point",
       }),
     ],
-    xAxisBottom: AbstractChart.createLinearAxis(xMin, xMax, "Days with cold"),
-    yAxisLeft: AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness"),
+    xAxisBottom: AbstractChart.createLinearAxis(
+      xMin,
+      xMax,
+      "Days with cold",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "x-bottom"
+    ),
+    yAxisLeft: AbstractChart.createLinearAxis(
+      yMin,
+      yMax + 1,
+      "Badness",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "y-left"
+    ),
     labelLayout: "center",
     textOutlineColor: AbstractImage.white,
   });
