@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.4.1] - 2024-05-29
+
+### Changed
+
+- Updated rendering of chart lines to be clipped within chart bounds
+
 ## [7.2.0] - 2024-05-22
 
 ### Added
