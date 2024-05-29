@@ -509,33 +509,116 @@ export function generateLines(xMin: number, xMax: number, yMin: number, yMax: nu
     const xAxis = l.xAxis === "top" ? chart.xAxisTop : chart.xAxisBottom;
     const yAxis = l.yAxis === "right" ? chart.yAxisRight : chart.yAxisLeft;
     const points = l.points.map((p) => Axis.transformPoint(p, xMin, xMax, yMin, yMax, xAxis, yAxis));
+    const segments = getLineSegmentsInsideChart(xMin, xMax, yMin, yMax, points);
     const components = [];
     const outlineColor = l.textOutlineColor ?? chart.textOutlineColor;
-    const last = points.at(-1)!;
-    components.push(
-      AI.createPolyLine(points, l.color, l.thickness),
-      AI.createText(
-        last,
-        l.label,
-        chart.font,
-        l.fontSize ?? chart.fontSize,
-        l.textColor ?? chart.textColor,
-        "normal",
-        0,
-        "center",
-        textHorizontalGrowth(last.x, xMin, xMax),
-        textVerticalGrowth(last.y, yMin, yMax),
-        outlineColor !== AI.transparent ? 3 : 0,
-        outlineColor,
-        false
-      )
-    );
-    if (l.id !== undefined) {
-      components.push(AI.createPolyLine(points, AI.transparent, l.thickness + 8, l.id));
+    for (const segment of segments) {
+      components.push(AI.createPolyLine(segment.slice(), l.color, l.thickness));
+      if (l.id !== undefined) {
+        components.push(AI.createPolyLine(segment.slice(), AI.transparent, l.thickness + 8, l.id));
+      }
+    }
+    const lastSeg = segments.at(-1);
+    const last = lastSeg?.at(-1);
+    if (last) {
+      components.push(
+        AI.createText(
+          last,
+          l.label,
+          chart.font,
+          l.fontSize ?? chart.fontSize,
+          l.textColor ?? chart.textColor,
+          "normal",
+          0,
+          "center",
+          textHorizontalGrowth(last.x, xMin, xMax),
+          textVerticalGrowth(last.y, yMin, yMax),
+          outlineColor !== AI.transparent ? 3 : 0,
+          outlineColor,
+          false
+        )
+      );
     }
     return AI.createGroup(l.label, components);
   });
   return AI.createGroup("Lines", lines);
+}
+
+function getLineSegmentsInsideChart(
+  xMin: number,
+  xMax: number,
+  yMin: number,
+  yMax: number,
+  points: ReadonlyArray<AI.Point>
+): ReadonlyArray<ReadonlyArray<AI.Point>> {
+  const segments: Array<ReadonlyArray<AI.Point>> = [];
+  let segment: Array<AI.Point> = [];
+  let prev: AI.Point | undefined;
+  for (const point of points) {
+    const prevInside = prev && isInside(xMin, xMax, yMin, yMax, prev);
+    const inside = isInside(xMin, xMax, yMin, yMax, point);
+    if (prevInside && inside) {
+      segment.push(point);
+    } else if (prevInside && prev && !inside) {
+      const moved = moveInside(xMin, xMax, yMin, yMax, prev, point);
+      segment.push(moved);
+      segments.push(segment);
+      segment = [];
+    } else if (!prevInside && prev && inside) {
+      const moved = moveInside(xMin, xMax, yMin, yMax, point, prev);
+      segment.push(moved);
+      segment.push(point);
+    } else if (!prev && inside) {
+      segment.push(point);
+    } else if (!prev && !inside && segment.length > 1) {
+      segments.push(segment);
+      segment = [];
+    }
+    prev = point;
+  }
+  if (segment.length > 1) {
+    segments.push(segment);
+  }
+  return segments;
+}
+
+function isInside(xMin: number, xMax: number, yMin: number, yMax: number, p: AI.Point): boolean {
+  return p.x >= xMin && p.x <= xMax && p.y <= yMin && p.y >= yMax;
+}
+
+function moveInside(
+  xMin: number,
+  xMax: number,
+  yMin: number,
+  yMax: number,
+  inside: AI.Point,
+  outside: AI.Point
+): AI.Point {
+  const xMinYMin = AI.createPoint(xMin, yMin);
+  const xMinYMax = AI.createPoint(xMin, yMax);
+  const xMaxYMin = AI.createPoint(xMax, yMin);
+  const xMaxYMax = AI.createPoint(xMax, yMax);
+  return (
+    lineLine(inside, outside, xMinYMin, xMaxYMin) ??
+    lineLine(inside, outside, xMinYMax, xMaxYMax) ??
+    lineLine(inside, outside, xMinYMin, xMinYMax) ??
+    lineLine(inside, outside, xMaxYMin, xMaxYMax) ??
+    inside
+  );
+}
+
+function lineLine(a0: AI.Point, a1: AI.Point, b0: AI.Point, b1: AI.Point): AI.Point | undefined {
+  const da = AI.createPoint(a1.x - a0.x, a1.y - a0.y);
+  const db = AI.createPoint(b1.x - b0.x, b1.y - b0.y);
+  const dab = AI.createPoint(a0.x - b0.x, a0.y - b0.y);
+  const uA = (db.x * dab.y - db.y * dab.x) / (db.y * da.x - db.x * da.y);
+  const uB = (da.x * dab.y - da.y * dab.x) / (db.y * da.x - db.x * da.y);
+
+  // if uA and uB are between 0-1, lines are colliding
+  if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+    return AI.createPoint(a0.x + uA * da.x, a0.y + uA * da.y);
+  }
+  return undefined;
 }
 
 export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): AI.Component {
