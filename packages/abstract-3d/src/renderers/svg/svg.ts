@@ -47,9 +47,9 @@ export function toSvg(
         ? scene.size.z
         : scene.size.y)
     : 1;
-  const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation);
-  const unitPos = vec3Rot(scene.center, vec3Zero, scene.rotation);
-  const [size, center] = sizeCenterForCameraPos(scene.size, unitPos, scene.dimensions.bounds, unitRot, view, factor);
+  const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation ?? vec3Zero);
+  const unitPos = vec3Rot(scene.center, vec3Zero, scene.rotation ?? vec3Zero);
+  const [size, center] = sizeCenterForCameraPos(scene.size, unitPos, scene.dimensions?.bounds, unitRot, view, factor);
   const unitHalfSize = vec3Scale(size, 0.5);
   const centerAdj = vec3(center.x - stroke * 0.75, center.y + stroke * 0.75, center.z);
   const width = size.x + 1.5 * stroke;
@@ -79,7 +79,7 @@ export function toSvg(
             point,
             view,
             factor,
-            scene.dimensions.material.normal,
+            scene.dimensions?.material.normal ?? "",
             false,
             false,
             onlyStrokeFill,

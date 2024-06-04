@@ -24,7 +24,7 @@ export const ReactHotSpots = React.memo(
     onClickHotSpot,
     setHoveredId,
   }: {
-    readonly hotSpots: ReadonlyArray<A3d.HotSpot>;
+    readonly hotSpots?: ReadonlyArray<A3d.HotSpot>;
     readonly showHotSpotTexts: boolean;
     readonly hotSpotZAdjPos: number;
     readonly hotSpotTexts?: Record<string, string>;
@@ -35,7 +35,7 @@ export const ReactHotSpots = React.memo(
   }): JSX.Element => {
     return (
       <>
-        {hotSpots.map((h) => (
+        {hotSpots?.map((h) => (
           <ReactHotSpot
             key={h.id}
             h={h}

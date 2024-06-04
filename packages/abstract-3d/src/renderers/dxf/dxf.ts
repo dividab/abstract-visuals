@@ -8,8 +8,8 @@ import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { dimBoundZero, rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
 
 export const toDxf = (scene: A3D.Scene, view: A3D.View): string => {
-  const unitRot = A3D.vec3RotCombine(rotationForCameraPos(view), scene.rotation);
-  const rotatedCenter = A3D.vec3Rot(scene.center, A3D.vec3Zero, scene.rotation);
+  const unitRot = A3D.vec3RotCombine(rotationForCameraPos(view), scene.rotation ?? A3D.vec3Zero);
+  const rotatedCenter = A3D.vec3Rot(scene.center, A3D.vec3Zero, scene.rotation ?? A3D.vec3Zero);
   const [size, center] = sizeCenterForCameraPos(scene.size, rotatedCenter, dimBoundZero, A3D.vec3Zero, view, 1);
   return dxfHeader(size, center) + scene.groups.reduce((a, c) => a + dxfGroup(c, center, unitRot), "") + dxfFooter;
 };

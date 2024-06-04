@@ -10,13 +10,16 @@ export const ReactDimensions = React.memo(
     dimensions,
     showDimensions,
   }: {
-    readonly dimensions: A3d.Dimensions;
+    readonly dimensions: A3d.Dimensions | undefined;
     readonly showDimensions: boolean;
   }): JSX.Element => {
-    const dimensionMaterial = React.useMemo(() => <ReactMaterial material={dimensions.material} />, []);
+    const dimensionMaterial = React.useMemo(
+      () => (dimensions?.material ? <ReactMaterial material={dimensions?.material} /> : <></>),
+      []
+    );
     return (
       <>
-        {dimensions.dimensions.map((dimension, i) => (
+        {dimensions?.dimensions.map((dimension, i) => (
           <ReactDimension key={i} d={dimension} visible={showDimensions}>
             {dimensionMaterial}
           </ReactDimension>

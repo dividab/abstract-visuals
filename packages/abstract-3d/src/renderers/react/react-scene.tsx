@@ -85,7 +85,7 @@ export function ReactScene({
   const [hoveredId, setHoveredId] = React.useState<string | undefined>(undefined);
   return (
     <group
-      rotation={[scene.rotation.x, scene.rotation.y, scene.rotation.z]}
+      rotation={[scene.rotation?.x ?? 0, scene.rotation?.y ?? 0, scene.rotation?.z ?? 0]}
       position={[-scene.center.x, -scene.center.y, -scene.center.z]}
     >
       {scene.groups.map((g, i) => {
@@ -110,7 +110,7 @@ export function ReactScene({
         );
       })}
       <group
-        rotation={[-scene.rotation.x, -scene.rotation.y, -scene.rotation.z]}
+        rotation={[-scene.rotation?.x ?? 0, -scene.rotation?.y ?? 0, -scene.rotation?.z ?? 0]}
         position={[-scene.center.x, -scene.center.y, -scene.center.z]}
       >
         <group position={[scene.center.x, scene.center.y, scene.center.z]}>

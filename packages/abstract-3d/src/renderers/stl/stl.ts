@@ -7,7 +7,7 @@ import { stlPolygon } from "./stl-geometries/stl-polygon.js";
 
 export const toStl = (scene: A3D.Scene): string =>
   `solid
-` + scene.groups.reduce((a, c) => a + stlGroup(c, scene.center, scene.rotation), "");
+` + scene.groups.reduce((a, c) => a + stlGroup(c, scene.center, scene.rotation ?? A3D.vec3Zero), "");
 
 function stlGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);

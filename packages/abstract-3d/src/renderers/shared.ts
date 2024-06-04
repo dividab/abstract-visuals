@@ -16,7 +16,7 @@ import {
 export function sizeCenterForCameraPos(
   size: Vec3,
   center: Vec3,
-  _dimBound: DimensionBounds,
+  _dimBound: DimensionBounds | undefined,
   rotation: Vec3,
   _view: View,
   factor: number
