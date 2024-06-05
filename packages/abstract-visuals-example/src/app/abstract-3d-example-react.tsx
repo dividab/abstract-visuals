@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as A3D from "../../../abstract-3d/lib";
+import * as A3D from "../../../abstract-3d";
 
 export function Abstract3DExampleReact(): React.ReactNode {
   return A3D.toReact({
