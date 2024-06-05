@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as AI from "abstract-image";
+import * as AI from "../../../abstract-image";
 
 export function AbstractImageExampleDxf(): JSX.Element {
   const components = [

@@ -2,8 +2,12 @@
   "extends": "../tsconfig.settings.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
-    "lib": ["dom", "es2022"]
+    "rootDir": "src"
   },
-  "references": [{ "path": "../abstract-image" }, { "path": "../abstract-chart" }, { "path": "../abstract-document" }]
+  "references": [
+    { "path": "../abstract-image" },
+    { "path": "../abstract-chart" },
+    { "path": "../abstract-document" },
+    { "path": "../abstract-3d" }
+  ]
 }
