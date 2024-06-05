@@ -29,13 +29,13 @@ import { EmbededImage, svg } from "./svg-encoding";
 export function toSvg(
   scene: Scene,
   view: View,
-  onlyStroke: boolean,
-  grayScale: boolean,
   stroke: number,
+  scale?: { readonly size: number; readonly scaleByWidth: boolean },
+  onlyStroke?: boolean,
+  grayScale?: boolean,
   onlyStrokeFill: string = "rgba(255,255,255,0)",
   font: string = "",
-  buffers?: Record<string, string>,
-  scale?: { readonly size: number; readonly scaleByWidth: boolean }
+  buffers?: Record<string, string>
 ): { readonly image: string; readonly width: number; readonly height: number } {
   const factor = scale
     ? scale.size /
@@ -106,8 +106,8 @@ function svgGroup(
   point: (x: number, y: number) => Vec2,
   view: View,
   factor: number,
-  onlyStroke: boolean,
-  grayScale: boolean,
+  onlyStroke: boolean | undefined,
+  grayScale: boolean | undefined,
   onlyStrokeFill: string,
   font: string,
   stroke: number,
@@ -156,8 +156,8 @@ function svgMesh(
   view: View,
   factor: number,
   color: string,
-  onlyStroke: boolean,
-  grayScale: boolean,
+  onlyStroke: boolean | undefined,
+  grayScale: boolean | undefined,
   background: string,
   font: string,
   stroke: number,

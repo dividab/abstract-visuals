@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AbstractImageExampleReact } from "./abstract-image-example-react";
-import { Abstract3DExampleReact } from "./abstract-3d-example-react";
+import { Abstract3DExample } from "./abstract-3d-example";
 import { AbstractImageExampleDxf } from "./abstract-image-example-dxf";
 import { AbstractChartExample } from "./abstract-chart-example";
 import { AbstractDocumentExample } from "./abstract-document-example";
@@ -55,7 +55,7 @@ export function Container(): JSX.Element {
           case "AbstractDocumentXML":
             return <AbstractDocumentXMLExample />;
           case "Abstract3D":
-            return <Abstract3DExampleReact />;
+            return <Abstract3DExample />;
           default:
             return <></>;
         }

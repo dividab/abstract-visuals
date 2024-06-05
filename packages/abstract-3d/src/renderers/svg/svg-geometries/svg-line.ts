@@ -7,7 +7,7 @@ export function line(
   l: A3D.Line,
   point: (x: number, y: number) => A3D.Vec2,
   fill: string,
-  grayScale: boolean,
+  grayScale: boolean | undefined,
   _stroke: number,
   parentPos: A3D.Vec3,
   parentRot: A3D.Vec3
