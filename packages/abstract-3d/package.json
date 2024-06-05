@@ -10,6 +10,8 @@
   "files": [
     "/lib",
     "/src",
+    "CHANGELOG.md",
+    "README.md",
     "package.json"
   ],
   "dependencies": {
