@@ -15,6 +15,7 @@ For more information see the readme for each package:
 | [abstract-image](packages/abstract-image)       | [![npm version][i-ai]][u-ai] | [README](packages/abstract-image/README.md)    | [CHANGELOG](packages/abstract-image/CHANGELOG.md)    |
 | [abstract-chart](packages/abstract-chart)       | [![npm version][i-ac]][u-ac] | [README](packages/abstract-chart/README.md)    | [CHANGELOG](packages/abstract-chart/CHANGELOG.md)    |
 | [abstract-document](packages/abstract-document) | [![npm version][i-ad]][u-ad] | [README](packages/abstract-document/README.md) | [CHANGELOG](packages/abstract-document/CHANGELOG.md) |
+| [abstract-3d](packages/abstract-3d)             | [![npm version][i-ad]][u-ad] | [README](packages/abstract-3d/README.md)       | [CHANGELOG](packages/abstract-3d/CHANGELOG.md)       |
 
 There is also a package with examples:
 
