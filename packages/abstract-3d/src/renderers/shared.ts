@@ -11,7 +11,7 @@ import {
   bounds3ToSize,
   vec3Zero,
   bounds3Zero,
-} from "../abstract-3d.js";
+} from "../abstract-3d";
 
 export function sizeCenterForCameraPos(
   size: Vec3,

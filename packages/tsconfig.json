@@ -1,5 +1,11 @@
 {
   // all packages
+  "compilerOptions": {
+    "outDir": "lib",
+    "rootDir": "src",
+    "noUncheckedIndexedAccess": true,
+    "lib": ["dom", "es2022"]
+  },
   "files": [],
   "references": [
     { "path": "abstract-chart" },

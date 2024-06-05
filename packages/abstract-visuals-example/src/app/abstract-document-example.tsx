@@ -22,7 +22,7 @@ import {
   LayoutFoundationColor,
   TableCellStyle,
   TableStyle,
-} from "abstract-document/src/abstract-document";
+} from "../../../../packages/abstract-document/src/abstract-document";
 
 const header = [
   render(

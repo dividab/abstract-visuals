@@ -1,11 +1,11 @@
 import React, { memo } from "react";
 import { Canvas, Props } from "@react-three/fiber";
 import { OrbitControlsProps } from "@react-three/drei";
-import { ReactScene } from "./react-scene.js";
-import * as A3d from "../../abstract-3d.js";
-import { ReactCamera, ControlsHelper, Camera } from "./react-camera.js";
-import { HotSpotInfo } from "./react-hotspot.js";
-import { MaterialState } from "./react-material.js";
+import { ReactScene } from "./react-scene";
+import * as A3d from "../../abstract-3d";
+import { ReactCamera, ControlsHelper, Camera } from "./react-camera";
+import { HotSpotInfo } from "./react-hotspot";
+import { MaterialState } from "./react-material";
 
 export const toReact = memo(
   ({

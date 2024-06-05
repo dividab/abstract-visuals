@@ -1,5 +1,5 @@
-import * as A3D from "../../../abstract-3d.js";
-import { dxf3DFACE } from "../dxf-encoding.js";
+import * as A3D from "../../../abstract-3d";
+import { dxf3DFACE } from "../dxf-encoding";
 
 export function dxfCone(c: A3D.Cone, m: A3D.Material, sides: number, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   let dxfString = "";

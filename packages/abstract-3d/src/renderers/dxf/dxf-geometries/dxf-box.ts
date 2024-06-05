@@ -1,5 +1,5 @@
-import * as A3D from "../../../abstract-3d.js";
-import { dxf3DFACE } from "../dxf-encoding.js";
+import * as A3D from "../../../abstract-3d";
+import { dxf3DFACE } from "../dxf-encoding";
 
 export function dxfBox(b: A3D.Box, m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   const pos = A3D.vec3TransRot(b.pos, parentPos, parentRot);

@@ -1,5 +1,5 @@
-import * as A3D from "../../../abstract-3d.js";
-import { stlTriangle } from "../stl-encoding.js";
+import * as A3D from "../../../abstract-3d";
+import { stlTriangle } from "../stl-encoding";
 
 const chunkSize = 3;
 

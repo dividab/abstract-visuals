@@ -2,8 +2,8 @@
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/prefer-readonly-type */
 import React from "react";
-// import { Text } from "@react-three/drei/core/Text.js";
-// import { Line } from "@react-three/drei/core/Line.js";
+// import { Text } from "@react-three/drei/core/Text";
+// import { Line } from "@react-three/drei/core/Line";
 import { Text, Line } from "@react-three/drei";
 import {
   BoxGeometry,
@@ -23,8 +23,8 @@ import {
   SphereGeometry,
 } from "three";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import * as A3d from "../../abstract-3d.js";
-import { Hole } from "../../abstract-3d.js";
+import * as A3d from "../../abstract-3d";
+import { Hole } from "../../abstract-3d";
 
 const boxGeometry = new BoxGeometry();
 const cylinderGeometry = new CylinderGeometry(1, 1, 1, 40, 1);

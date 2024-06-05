@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import * as AbstractChart from "../../../../packages/abstract-chart/src";
-import * as AbstractImage from "../../../../packages/abstract-image/src";
+import * as AC from "../../../../packages/abstract-chart/src";
+import * as AI from "../../../../packages/abstract-image/src";
 
-function getLineRange(
-  series: AbstractChart.ChartLine[],
-  axisSelector: (point: AbstractImage.Point) => number
-): [number, number] {
+function getLineRange(series: AC.ChartLine[], axisSelector: (point: AI.Point) => number): [number, number] {
   const axisValues = series
     .map((serie) => serie.points.map(axisSelector))
     .reduce((soFar, current) => {
@@ -14,9 +11,9 @@ function getLineRange(
   return [Math.min(...axisValues), Math.max(...axisValues)];
 }
 
-function generateLineChart(hovered: string): AbstractChart.Chart {
+function generateLineChart(hovered: string): AC.Chart {
   const series = [
-    AbstractChart.createChartLine({
+    AC.createChartLine({
       points: [
         { x: 0, y: 0 },
         { x: 1, y: 2 },
@@ -28,14 +25,14 @@ function generateLineChart(hovered: string): AbstractChart.Chart {
         { x: 7, y: 0 },
         { x: 8, y: 0 },
       ],
-      color: AbstractImage.red,
+      color: AI.red,
       label: "How bad you feel",
       xAxis: "bottom",
       yAxis: "left",
       thickness: hovered === "line one" ? 4 : 1,
       id: "line one",
     }),
-    AbstractChart.createChartLine({
+    AC.createChartLine({
       points: [
         { x: 0, y: 0 },
         { x: 1, y: 0 },
@@ -47,7 +44,7 @@ function generateLineChart(hovered: string): AbstractChart.Chart {
         { x: 7, y: 2 },
         { x: 8, y: 1.5 },
       ],
-      color: AbstractImage.blue,
+      color: AI.blue,
       label: "How bad you sound",
       xAxis: "bottom",
       yAxis: "left",
@@ -59,23 +56,23 @@ function generateLineChart(hovered: string): AbstractChart.Chart {
   const [xMin, xMax] = getLineRange(series, (point) => point.x);
   const [yMin, yMax] = getLineRange(series, (point) => point.y);
 
-  const chart = AbstractChart.createChart({
+  const chart = AC.createChart({
     chartLines: series,
     chartPoints: [
-      AbstractChart.createChartPoint({
+      AC.createChartPoint({
         position: { x: 7, y: 4 },
         id: "point1",
         size: hovered === "point1" ? { width: 8, height: 8 } : { width: 5, height: 5 },
         label: "Point",
       }),
-      AbstractChart.createChartPoint({
+      AC.createChartPoint({
         position: { x: 1, y: 1 },
         id: "point2",
         size: hovered === "point2" ? { width: 8, height: 8 } : { width: 5, height: 5 },
         label: "Point",
       }),
     ],
-    xAxisBottom: AbstractChart.createLinearAxis(
+    xAxisBottom: AC.createLinearAxis(
       xMin,
       xMax,
       "Days with cold",
@@ -86,7 +83,7 @@ function generateLineChart(hovered: string): AbstractChart.Chart {
       undefined,
       "x-bottom"
     ),
-    yAxisLeft: AbstractChart.createLinearAxis(
+    yAxisLeft: AC.createLinearAxis(
       yMin,
       yMax + 1,
       "Badness",
@@ -98,15 +95,15 @@ function generateLineChart(hovered: string): AbstractChart.Chart {
       "y-left"
     ),
     labelLayout: "center",
-    textOutlineColor: AbstractImage.white,
+    textOutlineColor: AI.white,
   });
 
   return chart;
 }
 
 function getStackRange(
-  points: ReadonlyArray<AbstractChart.StackPoints>,
-  axisSelector: (point: AbstractChart.StackPoints) => ReadonlyArray<number>
+  points: ReadonlyArray<AC.StackPoints>,
+  axisSelector: (point: AC.StackPoints) => ReadonlyArray<number>
 ): [number, number] {
   const axisValues = points
     .map(axisSelector)
@@ -128,8 +125,8 @@ function getStackRange(
   return [Math.min(...axisValues), Math.max(...axisValues)];
 }
 
-function generateStackedChart(): AbstractChart.Chart {
-  const stack = AbstractChart.createChartStack({
+function generateStackedChart(): AC.Chart {
+  const stack = AC.createChartStack({
     points: [
       { x: 0, ys: [0, 0] },
       { x: 1, ys: [2, 0] },
@@ -144,12 +141,12 @@ function generateStackedChart(): AbstractChart.Chart {
     xAxis: "bottom",
     yAxis: "left",
     config: [
-      AbstractChart.createChartStackConfig({
-        color: AbstractImage.red,
+      AC.createChartStackConfig({
+        color: AI.red,
         label: "How bad you feel",
       }),
-      AbstractChart.createChartStackConfig({
-        color: AbstractImage.blue,
+      AC.createChartStackConfig({
+        color: AI.blue,
         label: "How bad you sound",
       }),
     ],
@@ -158,20 +155,20 @@ function generateStackedChart(): AbstractChart.Chart {
   const [xMin, xMax] = getStackRange(stack.points, (point) => [point.x]);
   const [yMin, yMax] = getStackRange(stack.points, (point) => point.ys);
 
-  const chart = AbstractChart.createChart({
+  const chart = AC.createChart({
     chartStack: stack,
-    xAxisBottom: AbstractChart.createLinearAxis(xMin, xMax, "Days with cold"),
-    yAxisLeft: AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness"),
+    xAxisBottom: AC.createLinearAxis(xMin, xMax, "Days with cold"),
+    yAxisLeft: AC.createLinearAxis(yMin, yMax + 1, "Badness"),
     labelLayout: "center",
   });
 
   return chart;
 }
 
-function generateSignedStackedChart(): AbstractChart.Chart {
+function generateSignedStackedChart(): AC.Chart {
   const numPoints = 100;
   const numYs = 5;
-  const points: Array<AbstractChart.StackPoints> = [];
+  const points: Array<AC.StackPoints> = [];
   let lastYs: Array<number> = [];
   for (let yi = 0; yi < numYs; ++yi) {
     lastYs[yi] = 0;
@@ -185,25 +182,25 @@ function generateSignedStackedChart(): AbstractChart.Chart {
     lastYs = ys;
   }
 
-  const stack = AbstractChart.createChartStack({
+  const stack = AC.createChartStack({
     points,
     xAxis: "bottom",
     yAxis: "left",
     config: [
-      AbstractChart.createChartStackConfig({
-        color: AbstractImage.fromArgb(255, 94, 91, 59),
+      AC.createChartStackConfig({
+        color: AI.fromArgb(255, 94, 91, 59),
       }),
-      AbstractChart.createChartStackConfig({
-        color: AbstractImage.fromArgb(255, 125, 188, 169),
+      AC.createChartStackConfig({
+        color: AI.fromArgb(255, 125, 188, 169),
       }),
-      AbstractChart.createChartStackConfig({
-        color: AbstractImage.fromArgb(255, 234, 253, 137),
+      AC.createChartStackConfig({
+        color: AI.fromArgb(255, 234, 253, 137),
       }),
-      AbstractChart.createChartStackConfig({
-        color: AbstractImage.fromArgb(255, 255, 211, 124),
+      AC.createChartStackConfig({
+        color: AI.fromArgb(255, 255, 211, 124),
       }),
-      AbstractChart.createChartStackConfig({
-        color: AbstractImage.fromArgb(255, 255, 155, 109),
+      AC.createChartStackConfig({
+        color: AI.fromArgb(255, 255, 155, 109),
       }),
     ],
   });
@@ -211,19 +208,19 @@ function generateSignedStackedChart(): AbstractChart.Chart {
   const [xMin, xMax] = getStackRange(stack.points, (point) => [point.x]);
   const [yMin, yMax] = getStackRange(stack.points, (point) => point.ys);
 
-  const chart = AbstractChart.createChart({
+  const chart = AC.createChart({
     chartStack: stack,
-    xAxisBottom: AbstractChart.createLinearAxis(xMin, xMax, "Time"),
-    yAxisLeft: AbstractChart.createLinearAxis(yMin * 1.1, yMax * 1.1, "Sineness"),
+    xAxisBottom: AC.createLinearAxis(xMin, xMax, "Time"),
+    yAxisLeft: AC.createLinearAxis(yMin * 1.1, yMax * 1.1, "Sineness"),
     labelLayout: "center",
   });
 
   return chart;
 }
 
-function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
+function generateLineChartDiscreteXAxis(): AC.Chart {
   const series = [
-    AbstractChart.createChartLine({
+    AC.createChartLine({
       points: [
         { x: 0, y: 0 },
         { x: 1, y: 2 },
@@ -235,12 +232,12 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
         { x: 7, y: 0 },
         { x: 8, y: 0 },
       ],
-      color: AbstractImage.red,
+      color: AI.red,
       label: "How bad you feel",
       xAxis: "bottom",
       yAxis: "left",
     }),
-    AbstractChart.createChartLine({
+    AC.createChartLine({
       points: [
         { x: 0, y: 0 },
         { x: 1, y: 0 },
@@ -252,7 +249,7 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
         { x: 7, y: 2 },
         { x: 8, y: 1.5 },
       ],
-      color: AbstractImage.blue,
+      color: AI.blue,
       label: "How bad you sound",
       xAxis: "bottom",
       yAxis: "left",
@@ -261,7 +258,7 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
 
   const [yMin, yMax] = getLineRange(series, (point) => point.y);
 
-  const chart = AbstractChart.createChart({
+  const chart = AC.createChart({
     chartLines: series,
     xAxisBottom: {
       type: "discrete",
@@ -300,19 +297,19 @@ export function AbstractChartExample(): JSX.Element {
         Chart of <a href="https://www.xkcd.com/1612/">XKCD 1612</a>
       </p>
       <p>The worst part of colds</p>
-      {AbstractImage.createReactSvg(AbstractChart.renderChart(generateLineChart(hovered)), {
+      {AI.createReactSvg(AC.renderChart(generateLineChart(hovered)), {
         onMouseMove: (id) => setHovered(id ?? ""),
       })}
       <p>Hovered: {hovered}</p>
       <h1>Stacked Chart</h1>
       <p>Stacked version of above XKCD line graph.</p>
-      {AbstractImage.createReactSvg(AbstractChart.renderChart(generateStackedChart()))}
+      {AI.createReactSvg(AC.renderChart(generateStackedChart()))}
       <h1>Stacked Signed Chart</h1>
       <p>Sin(x)</p>
-      {AbstractImage.createReactSvg(AbstractChart.renderChart(generateSignedStackedChart()))}
+      {AI.createReactSvg(AC.renderChart(generateSignedStackedChart()))}
       <h1>Line Chart discrete x-axis</h1>
       <p>Sin(x)</p>
-      {AbstractImage.createReactSvg(AbstractChart.renderChart(generateLineChartDiscreteXAxis()))}
+      {AI.createReactSvg(AC.renderChart(generateLineChartDiscreteXAxis()))}
     </div>
   );
 }

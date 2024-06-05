@@ -17,11 +17,11 @@ import {
   Path,
   ExtrudeGeometry,
 } from "three";
-import * as A3d from "../../abstract-3d.js";
-import { HotSpotInfo, ReactHotSpots } from "./react-hotspot.js";
-import { ReactDimensions } from "./react-dimension.js";
-import { ReactGroup } from "./react-group.js";
-import { MaterialState } from "./react-material.js";
+import * as A3d from "../../abstract-3d";
+import { HotSpotInfo, ReactHotSpots } from "./react-hotspot";
+import { ReactDimensions } from "./react-dimension";
+import { ReactGroup } from "./react-group";
+import { MaterialState } from "./react-material";
 
 extend({
   Mesh,
@@ -110,7 +110,7 @@ export function ReactScene({
         );
       })}
       <group
-        rotation={[-scene.rotation?.x ?? 0, -scene.rotation?.y ?? 0, -scene.rotation?.z ?? 0]}
+        rotation={[-(scene.rotation?.x ?? 0), -(scene.rotation?.y ?? 0), -(scene.rotation?.z ?? 0)]}
         position={[-scene.center.x, -scene.center.y, -scene.center.z]}
       >
         <group position={[scene.center.x, scene.center.y, scene.center.z]}>

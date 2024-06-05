@@ -1,7 +1,7 @@
 import * as React from "react";
-import * as A3D from "../../../abstract-3d/lib/index.js";
+import * as A3D from "../../../abstract-3d/lib";
 
-export function Abstract3DReactExample(): JSX.Element {
+export function Abstract3DExampleReact(): React.ReactNode {
   return A3D.toReact({
     scene: {
       center: A3D.vec3Zero,

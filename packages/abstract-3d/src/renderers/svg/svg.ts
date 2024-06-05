@@ -13,18 +13,18 @@ import {
   Vec2,
   Group,
   vec3TransRot,
-} from "../../abstract-3d.js";
-import { zOrderElement } from "./svg-geometries/shared.js";
-import { box } from "./svg-geometries/svg-box.js";
-import { cylinder } from "./svg-geometries/svg-cylinder.js";
-import { line } from "./svg-geometries/svg-line.js";
-import { plane } from "./svg-geometries/svg-plane.js";
-import { shape } from "./svg-geometries/svg-shape.js";
-import { polygon } from "./svg-geometries/svg-polygon.js";
-import { text } from "./svg-geometries/svg-text.js";
-import { cone } from "./svg-geometries/svg-cone.js";
-import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
-import { EmbededImage, svg } from "./svg-encoding.js";
+} from "../../abstract-3d";
+import { zOrderElement } from "./svg-geometries/shared";
+import { box } from "./svg-geometries/svg-box";
+import { cylinder } from "./svg-geometries/svg-cylinder";
+import { line } from "./svg-geometries/svg-line";
+import { plane } from "./svg-geometries/svg-plane";
+import { shape } from "./svg-geometries/svg-shape";
+import { polygon } from "./svg-geometries/svg-polygon";
+import { text } from "./svg-geometries/svg-text";
+import { cone } from "./svg-geometries/svg-cone";
+import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared";
+import { EmbededImage, svg } from "./svg-encoding";
 
 export function toSvg(
   scene: Scene,

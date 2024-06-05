@@ -1,11 +1,11 @@
-import * as A3D from "../../abstract-3d.js";
-import { dxfFooter, dxfHeader } from "./dxf-encoding.js";
-import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
-import { dxfBox } from "./dxf-geometries/dxf-box.js";
-import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
-import { dxfCone } from "./dxf-geometries/dxf-cone.js";
-import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
-import { dimBoundZero, rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
+import * as A3D from "../../abstract-3d";
+import { dxfFooter, dxfHeader } from "./dxf-encoding";
+import { dxfPlane } from "./dxf-geometries/dxf-plane";
+import { dxfBox } from "./dxf-geometries/dxf-box";
+import { dxfCylinder } from "./dxf-geometries/dxf-cylinder";
+import { dxfCone } from "./dxf-geometries/dxf-cone";
+import { dxfPolygon } from "./dxf-geometries/dxf-polygon";
+import { dimBoundZero, rotationForCameraPos, sizeCenterForCameraPos } from "../shared";
 
 export const toDxf = (scene: A3D.Scene, view: A3D.View): string => {
   const unitRot = A3D.vec3RotCombine(rotationForCameraPos(view), scene.rotation ?? A3D.vec3Zero);

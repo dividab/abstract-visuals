@@ -1,4 +1,4 @@
-import { Vec3 } from "../../abstract-3d.js";
+import { Vec3 } from "../../abstract-3d";
 
 export const dxf3DFACE = (vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: string): string =>
   `  0

@@ -1,6 +1,6 @@
-import * as A3D from "../../../abstract-3d.js";
-import { zElem, zOrderElement } from "./shared.js";
-import { svgText } from "../svg-encoding.js";
+import * as A3D from "../../../abstract-3d";
+import { zElem, zOrderElement } from "./shared";
+import { svgText } from "../svg-encoding";
 
 export function text(
   t: A3D.Text,

@@ -1,5 +1,5 @@
-import * as A3D from "../../../abstract-3d.js";
-import { dxf3DFACE } from "../dxf-encoding.js";
+import * as A3D from "../../../abstract-3d";
+import { dxf3DFACE } from "../dxf-encoding";
 
 const chunkSize = 4;
 

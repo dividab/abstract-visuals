@@ -1,9 +1,9 @@
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import { Group } from "three";
-import * as A3d from "../../abstract-3d.js";
-import { ReactMaterial } from "./react-material.js";
-import { ReactMesh } from "./react-mesh.js";
+import * as A3d from "../../abstract-3d";
+import { ReactMaterial } from "./react-material";
+import { ReactMesh } from "./react-mesh";
 
 export const ReactDimensions = React.memo(
   ({

@@ -1,1 +1,1 @@
-export * from "./dxf.js";
+export * from "./dxf";

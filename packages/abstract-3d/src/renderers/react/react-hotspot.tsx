@@ -1,9 +1,9 @@
 import React from "react";
-// import { Html } from "@react-three/drei/web/Html.js";
+// import { Html } from "@react-three/drei/web/Html";
 import { Html } from "@react-three/drei";
-import * as A3d from "../../abstract-3d.js";
-import { ReactMesh } from "./react-mesh.js";
-import { ReactMaterial } from "./react-material.js";
+import * as A3d from "../../abstract-3d";
+import { ReactMesh } from "./react-mesh";
+import { ReactMaterial } from "./react-material";
 
 export interface HotSpotInfo {
   readonly replaceId: string;
