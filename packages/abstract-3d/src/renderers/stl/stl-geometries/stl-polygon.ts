@@ -6,7 +6,7 @@ const chunkSize = 3;
 export function stlPolygon(p: A3D.Polygon, _m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   let polygonString = "";
   const pos = A3D.vec3TransRot(p.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, p.rot);
+  const rot = A3D.vec3RotCombine(parentRot, p.rot ?? A3D.vec3Zero);
   const points = p.points.map((p) => A3D.vec3TransRot(p, pos, rot));
   let i = 0;
   const nbrIterations = Math.floor(points.length / chunkSize);

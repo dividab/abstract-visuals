@@ -28,21 +28,26 @@ export function ReactGroup({
   readonly hotSpotsActive: boolean;
   readonly activeComponents: Record<string, MaterialState> | undefined;
   readonly id: string | undefined;
-  readonly rootData: Record<string, string>;
+  readonly rootData: Record<string, string> | undefined;
   readonly onClickGroup?: (
     id: string | undefined,
-    rootData: Record<string, string>,
-    data: Record<string, string>
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined
   ) => void;
   readonly onContextMenuGroup?: (
     id: string,
-    rootData: Record<string, string>,
-    data: Record<string, string>,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined,
     left: number,
     top: number
   ) => void;
   readonly setHoveredId: (id: string | undefined) => void;
-  readonly createGroupKey?: (g: A3d.Group, idx: number, rootData: Record<string, string>, id: string) => string;
+  readonly createGroupKey?: (
+    g: A3d.Group,
+    idx: number,
+    rootData: Record<string, string> | undefined,
+    id: string
+  ) => string;
 }): JSX.Element {
   const ref = React.useRef<Group>(undefined!);
   useFrame(({ invalidate }, delta) => {
@@ -92,7 +97,7 @@ export function ReactGroup({
           },
         })}
     >
-      {g.groups.map((g, i) => (
+      {g.groups?.map((g, i) => (
         <ReactGroup
           key={createGroupKey ? createGroupKey(g, i, rootData, id ?? "") : i}
           g={g}
@@ -110,7 +115,7 @@ export function ReactGroup({
           createGroupKey={createGroupKey}
         />
       ))}
-      {g.meshes.map((m, i) => (
+      {g.meshes?.map((m, i) => (
         <ReactMesh key={`mesh_${i}`} mesh={m}>
           <ReactMaterial
             material={m.material}

@@ -3,7 +3,7 @@ import { dxf3DFACE } from "../dxf-encoding";
 
 export function dxfBox(b: A3D.Box, m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   const pos = A3D.vec3TransRot(b.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, b.rot);
+  const rot = A3D.vec3RotCombine(parentRot, b.rot ?? A3D.vec3Zero);
   const half = A3D.vec3Scale(b.size, 0.5);
   const vec3tr3 = (x: number, y: number, z: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, z), pos, rot);
 

@@ -4,7 +4,7 @@ import { dxf3DFACE } from "../dxf-encoding";
 export function dxfCone(c: A3D.Cone, m: A3D.Material, sides: number, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   let dxfString = "";
   const pos = A3D.vec3TransRot(c.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, c.rot);
+  const rot = A3D.vec3RotCombine(parentRot, c.rot ?? A3D.vec3Zero);
   const vec3tr2 = (x: number, y: number, z: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, z), pos, rot);
 
   const angleStep = (2 * Math.PI) / sides;

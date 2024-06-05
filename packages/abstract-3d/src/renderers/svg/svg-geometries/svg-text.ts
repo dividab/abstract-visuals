@@ -12,7 +12,7 @@ export function text(
   font: string
 ): ReadonlyArray<zOrderElement> {
   const pos = A3D.vec3TransRot(t.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, t.rot);
+  const rot = A3D.vec3RotCombine(parentRot, t.rot ?? A3D.vec3Zero);
   const texts = Array<zOrderElement>();
   const degrees = A3D.isZero(rot.z, 0.1) ? 0 : rot.z * (-180 / Math.PI);
 

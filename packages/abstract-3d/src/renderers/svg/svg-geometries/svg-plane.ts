@@ -19,7 +19,7 @@ export function plane(
 ): ReadonlyArray<zOrderElement> {
   const half = A3D.vec2Scale(p.size, 0.5);
   const pos = A3D.vec3TransRot(p.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, p.rot);
+  const rot = A3D.vec3RotCombine(parentRot, p.rot ?? A3D.vec3Zero);
   const vec3tr = (point: A3D.Vec3): A3D.Vec3 => A3D.vec3TransRot(point, pos, rot);
 
   const v2 = vec3tr(A3D.vec3(half.x, -half.y, 0));

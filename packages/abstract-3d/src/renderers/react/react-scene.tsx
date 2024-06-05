@@ -68,18 +68,23 @@ export function ReactScene({
   readonly materialStateImages?: Record<string, string>;
   readonly onClickGroup?: (
     id: string | undefined,
-    rootData: Record<string, string>,
-    data: Record<string, string>
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined
   ) => void;
   readonly onContextMenuGroup?: (
     id: string,
-    rootData: Record<string, string>,
-    data: Record<string, string>,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined,
     left: number,
     top: number
   ) => void;
   readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
-  readonly createGroupKey?: (g: A3d.Group, idx: number, rootData: Record<string, string>, id: string) => string;
+  readonly createGroupKey?: (
+    g: A3d.Group,
+    idx: number,
+    rootData: Record<string, string> | undefined,
+    id: string
+  ) => string;
   readonly createGroupId?: (g: A3d.Group) => string;
 }): JSX.Element {
   const [hoveredId, setHoveredId] = React.useState<string | undefined>(undefined);

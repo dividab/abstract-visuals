@@ -16,7 +16,7 @@ export function cylinder(
 ): ReadonlyArray<zOrderElement> {
   const half = A3D.vec3(c.radius, c.length / 2, c.radius);
   const pos = A3D.vec3TransRot(c.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, c.rot);
+  const rot = A3D.vec3RotCombine(parentRot, c.rot ?? A3D.vec3Zero);
   const vec3tr = (p: A3D.Vec3): A3D.Vec3 => A3D.vec3TransRot(p, pos, rot);
 
   const [stroke, fill] = onlyStroke

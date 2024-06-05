@@ -4,7 +4,7 @@ import { stlTriangle } from "../stl-encoding";
 export function stlBox(b: A3D.Box, _m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   const half = A3D.vec3Scale(b.size, 0.5);
   const pos = A3D.vec3TransRot(b.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, b.rot);
+  const rot = A3D.vec3RotCombine(parentRot, b.rot ?? A3D.vec3Zero);
   const vec3tr = (x: number, y: number, z: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, z), pos, rot);
 
   const v1 = vec3tr(-half.x, -half.y, half.z);

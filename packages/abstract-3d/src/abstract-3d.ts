@@ -43,9 +43,9 @@ export type HotSpot = {
 export type Group = {
   readonly pos: Vec3;
   readonly rot: Vec3;
-  readonly groups: ReadonlyArray<Group>;
-  readonly meshes: ReadonlyArray<Mesh>;
-  readonly data: Record<string, string>;
+  readonly groups?: ReadonlyArray<Group>;
+  readonly meshes?: ReadonlyArray<Mesh>;
+  readonly data?: Record<string, string>;
   readonly animation?: Animation;
 };
 
@@ -74,10 +74,10 @@ export type MaterialType = "Phong" | "Lambert" | "Basic";
 export type Cylinder = {
   readonly type: "Cylinder";
   readonly pos: Vec3;
-  readonly rot: Vec3;
+  readonly rot?: Vec3;
   readonly length: number;
   readonly radius: number;
-  readonly holes: ReadonlyArray<Hole>;
+  readonly holes?: ReadonlyArray<Hole>;
 };
 
 export type Sphere = {
@@ -89,7 +89,7 @@ export type Sphere = {
 export type Cone = {
   readonly type: "Cone";
   readonly pos: Vec3;
-  readonly rot: Vec3;
+  readonly rot?: Vec3;
   readonly length: number;
   readonly radius: number;
 };
@@ -104,7 +104,7 @@ export type Line = {
 export type Tube = {
   readonly type: "Tube";
   readonly pos: Vec3;
-  readonly rot: Vec3;
+  readonly rot?: Vec3;
   readonly radius: number;
   readonly curve: Curve;
 };
@@ -124,30 +124,30 @@ export type Polygon = {
   readonly type: "Polygon";
   readonly points: ReadonlyArray<Vec3>;
   readonly pos: Vec3;
-  readonly rot: Vec3;
+  readonly rot?: Vec3;
 };
 
 export type Shape = {
   readonly type: "Shape";
   readonly points: ReadonlyArray<Vec2>;
   readonly pos: Vec3;
-  readonly rot: Vec3;
-  readonly holes: ReadonlyArray<Hole>;
+  readonly rot?: Vec3;
+  readonly holes?: ReadonlyArray<Hole>;
   readonly thickness: number;
 };
 
 export type Plane = {
   readonly type: "Plane";
   readonly pos: Vec3;
-  readonly rot: Vec3;
+  readonly rot?: Vec3;
   readonly size: Vec2;
-  readonly holes: ReadonlyArray<Hole>;
+  readonly holes?: ReadonlyArray<Hole>;
 };
 
 export type Text = {
   readonly type: "Text";
   readonly pos: Vec3;
-  readonly rot: Vec3;
+  readonly rot?: Vec3;
   readonly text: string;
   readonly fontSize: number;
 };
@@ -155,9 +155,9 @@ export type Text = {
 export type Box = {
   readonly type: "Box";
   readonly pos: Vec3;
-  readonly rot: Vec3;
+  readonly rot?: Vec3;
   readonly size: Vec3;
-  readonly holes: ReadonlyArray<Hole>;
+  readonly holes?: ReadonlyArray<Hole>;
 };
 
 export type Hole = RoundHole | SquareHole;
@@ -421,7 +421,7 @@ export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
 export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => vec3Rot(vec3Add(p, pos), pos, rot);
 
 export function geoRot<T extends Box | Plane | Cone | Cylinder | Text | Group>(g: T, origin: Vec3, rot: Vec3): T {
-  return { ...g, pos: vec3Rot(g.pos, origin, rot), rot: vec3RotCombine(rot, g.rot) };
+  return { ...g, pos: vec3Rot(g.pos, origin, rot), rot: vec3RotCombine(rot, g.rot ?? vec3Zero) };
 }
 export function geoTrans<T extends Box | Plane | Cone | Cylinder | Text | Group>(g: T, translate: Vec3): T {
   return { ...g, pos: vec3Add(g.pos, translate) };
@@ -431,7 +431,7 @@ export function geoTransRot<T extends Box | Plane | Cone | Cylinder | Text | Gro
   origin: Vec3,
   rot: Vec3
 ): T {
-  return { ...g, pos: vec3Rot(vec3Add(g.pos, origin), origin, rot), rot: vec3RotCombine(rot, g.rot) };
+  return { ...g, pos: vec3Rot(vec3Add(g.pos, origin), origin, rot), rot: vec3RotCombine(rot, g.rot ?? vec3Zero) };
 }
 
 export function sphereRotTrans(s: Sphere, origin: Vec3, rot: Vec3): Sphere {

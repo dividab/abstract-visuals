@@ -13,7 +13,7 @@ function stlGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): strin
   const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);
   const rot = A3D.vec3RotCombine(parentRot, g.rot);
   return (
-    g.meshes.reduce((a, m) => {
+    (g.meshes?.reduce((a, m) => {
       switch (m.geometry.type) {
         case "Plane":
           return a + stlPlane(m.geometry, m.material, pos, rot);
@@ -28,6 +28,6 @@ function stlGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): strin
         default:
           return a;
       }
-    }, "") + g.groups.reduce((a, c) => a + stlGroup(c, pos, rot), "")
+    }, "") ?? "") + (g.groups?.reduce((a, c) => a + stlGroup(c, pos, rot), "") ?? "")
   );
 }

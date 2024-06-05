@@ -115,7 +115,7 @@ function svgGroup(
 ): ReadonlyArray<zOrderElement> {
   const elements = Array<zOrderElement>();
 
-  for (const m of g.meshes) {
+  for (const m of g.meshes ?? []) {
     elements.push(
       ...svgMesh(
         m,
@@ -139,7 +139,7 @@ function svgGroup(
       )
     );
   }
-  for (const sg of g.groups) {
+  for (const sg of g.groups ?? []) {
     const sPos = vec3TransRot(sg.pos, pos, rot);
     const sRot = vec3RotCombine(rot, sg.rot);
     elements.push(

@@ -18,7 +18,7 @@ function dxfGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): strin
   const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);
   const rot = A3D.vec3RotCombine(parentRot, g.rot);
   return (
-    g.meshes.reduce((a, c) => {
+    (g.meshes?.reduce((a, c) => {
       switch (c.geometry.type) {
         case "Plane":
           return a + dxfPlane(c.geometry, c.material, pos, rot);
@@ -33,6 +33,6 @@ function dxfGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): strin
         default:
           return a;
       }
-    }, "") + g.groups.reduce((a, c) => a + dxfGroup(c, pos, rot), "")
+    }, "") ?? "") + g.groups?.reduce((a, c) => a + dxfGroup(c, pos, rot), "") ?? ""
   );
 }

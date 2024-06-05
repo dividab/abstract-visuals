@@ -10,7 +10,7 @@ export function dxfCylinder(
 ): string {
   let dxfString = "";
   const pos = A3D.vec3TransRot(c.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, c.rot);
+  const rot = A3D.vec3RotCombine(parentRot, c.rot ?? A3D.vec3Zero);
   const vec3tr = (x: number, y: number, z: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, z), pos, rot);
 
   const angleStep = (2 * Math.PI) / sides;

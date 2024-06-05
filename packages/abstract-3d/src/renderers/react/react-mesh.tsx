@@ -45,12 +45,12 @@ export function ReactMesh({
   switch (mesh.geometry.type) {
     case "Box": {
       const { pos, size, rot, holes } = mesh.geometry;
-      return holes.length === 0 ? (
+      return !holes || holes.length === 0 ? (
         <mesh
           geometry={boxGeometry}
           scale={[size.x, size.y, size.z]}
           position={[pos.x, pos.y, pos.z]}
-          rotation={[rot.x, rot.y, rot.z]}
+          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
         >
           {children}
         </mesh>
@@ -67,7 +67,7 @@ export function ReactMesh({
           geometry={coneGeometry}
           scale={[radius, length, radius]}
           position={[pos.x, pos.y, pos.z]}
-          rotation={[rot.x, rot.y, rot.z]}
+          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
         >
           {children}
         </mesh>
@@ -75,12 +75,12 @@ export function ReactMesh({
     }
     case "Cylinder": {
       const { pos, radius, rot, length, holes } = mesh.geometry;
-      return holes.length === 0 ? (
+      return !holes || holes.length === 0 ? (
         <mesh
           geometry={cylinderGeometry}
           scale={[radius, length, radius]}
           position={[pos.x, pos.y, pos.z]}
-          rotation={[rot.x, rot.y, rot.z]}
+          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
         >
           {children}
         </mesh>
@@ -90,12 +90,12 @@ export function ReactMesh({
     }
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;
-      return holes.length === 0 ? (
+      return !holes || holes.length === 0 ? (
         <mesh
           geometry={planeGeometry}
           scale={[size.x, size.y, 1]}
           position={[pos.x, pos.y, pos.z]}
-          rotation={[rot.x, rot.y, rot.z]}
+          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
         >
           {children}
         </mesh>
@@ -120,7 +120,7 @@ export function ReactMesh({
       return (
         <Text
           position={[pos.x, pos.y, pos.z]}
-          rotation={[rot.x, rot.y, rot.z]}
+          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
           fontSize={fontSize}
           textAlign="center"
           letterSpacing={0.001}
@@ -179,7 +179,7 @@ function ExcrudeBoxPlane({
 
   return (
     // Doesn't seem to adjust for excrude z size directly???
-    <mesh rotation={[geo.rot.x, geo.rot.y, geo.rot.z]} position={[geo.pos.x, geo.pos.y, geo.pos.z]}>
+    <mesh rotation={[geo.rot?.x ?? 0, geo.rot?.y ?? 0, geo.rot?.z ?? 0]} position={[geo.pos.x, geo.pos.y, geo.pos.z]}>
       <mesh geometry={excrudeGeometry} position-z={-sizeZ / 2}>
         {children}
       </mesh>
@@ -205,7 +205,7 @@ function ExcrudeShape({ s, children }: { readonly s: A3d.Shape; readonly childre
 
   return (
     // Doesn't seem to adjust for excrude z size directly???
-    <mesh rotation={[s.rot.x, s.rot.y, s.rot.z]} position={[s.pos.x, s.pos.y, s.pos.z]}>
+    <mesh rotation={[s.rot?.x ?? 0, s.rot?.y ?? 0, s.rot?.z ?? 0]} position={[s.pos.x, s.pos.y, s.pos.z]}>
       <mesh geometry={excrudeGeometry} position-z={-s.thickness / 2}>
         {children}
       </mesh>
@@ -229,7 +229,7 @@ function ExcrudeCylinder({
 
   return (
     // Doesn't seem to adjust for excrude z size directly???
-    <mesh rotation={[cyl.rot.x, cyl.rot.y, cyl.rot.z]} position={[cyl.pos.x, cyl.pos.y, cyl.pos.z]}>
+    <mesh rotation={[cyl.rot?.x ?? 0, cyl.rot?.y ?? 0, cyl.rot?.z ?? 0]} position={[cyl.pos.x, cyl.pos.y, cyl.pos.z]}>
       <mesh geometry={excrudeGeometry} rotation-x={Math.PI / 2} position-y={+cyl.length / 2}>
         {children}
       </mesh>
@@ -237,8 +237,8 @@ function ExcrudeCylinder({
   );
 }
 
-function holes(holes: ReadonlyArray<Hole>, shape: Shape): void {
-  holes.forEach((h) => {
+function holes(holes: ReadonlyArray<Hole> | undefined, shape: Shape): void {
+  holes?.forEach((h) => {
     switch (h.type) {
       case "RoundHole":
         shape.holes.push(new Path().absarc(h.pos.x, h.pos.y, h.radius, 0, Math.PI * 2, true));
@@ -316,7 +316,7 @@ function Polygon({
 
   return (
     <mesh
-      rotation={[polygon.rot.x, polygon.rot.y, polygon.rot.z]}
+      rotation={[polygon.rot?.x ?? 0, polygon.rot?.y ?? 0, polygon.rot?.z ?? 0]}
       position={[polygon.pos.x, polygon.pos.y, polygon.pos.z]}
     >
       <bufferGeometry attach="geometry" onUpdate={(self) => self.computeVertexNormals()}>
@@ -349,7 +349,7 @@ function Tube({ tube, children }: { readonly tube: A3d.Tube; readonly children?:
 
   return (
     <mesh
-      rotation={[tube.rot.x, tube.rot.y, tube.rot.z]}
+      rotation={[tube.rot?.x ?? 0, tube.rot?.y ?? 0, tube.rot?.z ?? 0]}
       position={[tube.pos.x, tube.pos.y, tube.pos.z]}
       geometry={tubeGeometry}
     >

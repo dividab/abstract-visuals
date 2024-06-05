@@ -16,7 +16,7 @@ export function box(
 ): ReadonlyArray<zOrderElement> {
   const half = A3D.vec3Scale(b.size, 0.5);
   const pos = A3D.vec3TransRot(b.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, b.rot);
+  const rot = A3D.vec3RotCombine(parentRot, b.rot ?? A3D.vec3Zero);
   const vec3tr = (p: A3D.Vec3): A3D.Vec3 => A3D.vec3TransRot(p, pos, rot);
 
   const v1 = vec3tr(A3D.vec3(-half.x, -half.y, half.z));
