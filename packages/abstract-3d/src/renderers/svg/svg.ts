@@ -41,15 +41,22 @@ export function toSvg(
     ? scale.size /
       (scale.scaleByWidth
         ? view === "right" || view === "left"
-          ? scene.size.z
-          : scene.size.x
+          ? scene.size_deprecated.z
+          : scene.size_deprecated.x
         : view === "top" || view === "bottom"
-        ? scene.size.z
-        : scene.size.y)
+        ? scene.size_deprecated.z
+        : scene.size_deprecated.y)
     : 1;
-  const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation ?? vec3Zero);
-  const unitPos = vec3Rot(scene.center, vec3Zero, scene.rotation ?? vec3Zero);
-  const [size, center] = sizeCenterForCameraPos(scene.size, unitPos, scene.dimensions?.bounds, unitRot, view, factor);
+  const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? vec3Zero);
+  const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
+  const [size, center] = sizeCenterForCameraPos(
+    scene.size_deprecated,
+    unitPos,
+    scene.dimensions_deprecated?.bounds,
+    unitRot,
+    view,
+    factor
+  );
   const unitHalfSize = vec3Scale(size, 0.5);
   const centerAdj = vec3(center.x - stroke * 0.75, center.y + stroke * 0.75, center.z);
   const width = size.x + 1.5 * stroke;
@@ -66,7 +73,7 @@ export function toSvg(
   }
   elements.sort((a, b) => a.zOrder - b.zOrder);
 
-  for (const d of scene.dimensions?.dimensions ?? []) {
+  for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
     if (d.views[0] === view) {
       const pos = vec3Rot(d.pos, unitPos, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
@@ -79,7 +86,7 @@ export function toSvg(
             point,
             view,
             factor,
-            scene.dimensions?.material.normal ?? "",
+            scene.dimensions_deprecated?.material.normal ?? "",
             false,
             false,
             onlyStrokeFill,

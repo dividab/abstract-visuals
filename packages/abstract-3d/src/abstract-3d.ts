@@ -1,13 +1,15 @@
 import * as THREE from "three";
 
 export type Scene = {
-  readonly center: Vec3;
-  readonly size: Vec3;
+  readonly size_deprecated: Vec3; // Move size calculation to every renderer??
   readonly groups: ReadonlyArray<Group>;
-  readonly rotation?: Vec3;
-  readonly dimensions?: Dimensions;
-  readonly hotSpots?: ReadonlyArray<HotSpot>;
   readonly data?: Record<string, string>;
+  // should be removed
+  readonly center_deprecated?: Vec3;
+  readonly rotation_deprecated?: Vec3;
+  // might be removed
+  readonly dimensions_deprecated?: Dimensions;
+  readonly hotSpots_deprecated?: ReadonlyArray<HotSpot>;
 };
 
 export type Renderer = "react" | "ai_schematic" | "ai_detailed" | "dxf";
@@ -54,6 +56,7 @@ export type Mesh = {
   readonly geometry: Cylinder | Cone | Box | Line | Text | Polygon | Plane | Tube | Sphere | Shape;
 };
 
+// Refactor to THREE.MeshStandardMaterial | DXF
 export type Material = {
   readonly type: MaterialType;
   readonly normal: string;

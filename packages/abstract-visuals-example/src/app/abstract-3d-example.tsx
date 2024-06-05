@@ -33,8 +33,8 @@ export function Abstract3DExample(): React.ReactNode {
 }
 
 const scene: A3D.Scene = {
-  center: A3D.vec3Zero,
-  size: A3D.vec3(40, 40, 40),
+  center_deprecated: A3D.vec3Zero,
+  size_deprecated: A3D.vec3(40, 40, 40),
   groups: [
     {
       pos: A3D.vec3Zero,

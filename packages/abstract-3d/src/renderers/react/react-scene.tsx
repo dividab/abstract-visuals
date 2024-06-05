@@ -90,8 +90,16 @@ export function ReactScene({
   const [hoveredId, setHoveredId] = React.useState<string | undefined>(undefined);
   return (
     <group
-      rotation={[scene.rotation?.x ?? 0, scene.rotation?.y ?? 0, scene.rotation?.z ?? 0]}
-      position={[-scene.center.x, -scene.center.y, -scene.center.z]}
+      rotation={[
+        scene.rotation_deprecated?.x ?? 0,
+        scene.rotation_deprecated?.y ?? 0,
+        scene.rotation_deprecated?.z ?? 0,
+      ]}
+      position={[
+        -(scene.center_deprecated?.x ?? 0),
+        -(scene.center_deprecated?.y ?? 0),
+        -(scene.center_deprecated?.z ?? 0),
+      ]}
     >
       {scene.groups.map((g, i) => {
         const id = createGroupId ? createGroupId(g) : "";
@@ -115,16 +123,26 @@ export function ReactScene({
         );
       })}
       <group
-        rotation={[-(scene.rotation?.x ?? 0), -(scene.rotation?.y ?? 0), -(scene.rotation?.z ?? 0)]}
-        position={[-scene.center.x, -scene.center.y, -scene.center.z]}
+        rotation={[
+          -(scene.rotation_deprecated?.x ?? 0),
+          -(scene.rotation_deprecated?.y ?? 0),
+          -(scene.rotation_deprecated?.z ?? 0),
+        ]}
+        position={[
+          -(scene.center_deprecated?.x ?? 0),
+          -(scene.center_deprecated?.y ?? 0),
+          -(scene.center_deprecated?.z ?? 0),
+        ]}
       >
-        <group position={[scene.center.x, scene.center.y, scene.center.z]}>
-          <ReactDimensions dimensions={scene.dimensions} showDimensions={showDimensions} />
+        <group
+          position={[scene.center_deprecated?.x ?? 0, scene.center_deprecated?.y ?? 0, scene.center_deprecated?.z ?? 0]}
+        >
+          <ReactDimensions dimensions={scene.dimensions_deprecated} showDimensions={showDimensions} />
         </group>
       </group>
       <ReactHotSpots
-        hotSpots={scene.hotSpots}
-        hotSpotZAdjPos={scene.size.z / 2}
+        hotSpots={scene.hotSpots_deprecated}
+        hotSpotZAdjPos={scene.size_deprecated.z / 2}
         activeHotSpots={activeHotSpots}
         hotSpotTexts={hotSpotTexts}
         hoveredId={hoveredId}

@@ -75,17 +75,41 @@ export function ReactCamera({
     const [posX, posY, posZ, size, sceneAspect] = (() => {
       switch (view) {
         case "front":
-          return [0, 0, 1, scene.size, scene.size.x / scene.size.y];
+          return [0, 0, 1, scene.size_deprecated, scene.size_deprecated.x / scene.size_deprecated.y];
         case "back":
-          return [0, 0, -1, scene.size, scene.size.x / scene.size.y];
+          return [0, 0, -1, scene.size_deprecated, scene.size_deprecated.x / scene.size_deprecated.y];
         case "top":
-          return [0, 1, 0, vec3(scene.size.x, scene.size.z, scene.size.y), scene.size.x / scene.size.z];
+          return [
+            0,
+            1,
+            0,
+            vec3(scene.size_deprecated.x, scene.size_deprecated.z, scene.size_deprecated.y),
+            scene.size_deprecated.x / scene.size_deprecated.z,
+          ];
         case "bottom":
-          return [0, -1, 0, vec3(scene.size.x, scene.size.z, scene.size.y), scene.size.x / scene.size.z];
+          return [
+            0,
+            -1,
+            0,
+            vec3(scene.size_deprecated.x, scene.size_deprecated.z, scene.size_deprecated.y),
+            scene.size_deprecated.x / scene.size_deprecated.z,
+          ];
         case "right":
-          return [1, 0, 0, vec3(scene.size.z, scene.size.y, scene.size.x), scene.size.z / scene.size.y];
+          return [
+            1,
+            0,
+            0,
+            vec3(scene.size_deprecated.z, scene.size_deprecated.y, scene.size_deprecated.x),
+            scene.size_deprecated.z / scene.size_deprecated.y,
+          ];
         case "left":
-          return [-1, 0, 0, vec3(scene.size.z, scene.size.y, scene.size.x), scene.size.z / scene.size.y];
+          return [
+            -1,
+            0,
+            0,
+            vec3(scene.size_deprecated.z, scene.size_deprecated.y, scene.size_deprecated.x),
+            scene.size_deprecated.z / scene.size_deprecated.y,
+          ];
         default:
           return exhaustiveCheck(view);
       }

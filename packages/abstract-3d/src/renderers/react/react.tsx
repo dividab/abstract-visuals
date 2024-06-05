@@ -80,17 +80,17 @@ export const toReact = memo(
         <ambientLight intensity={0.7} />
         <directionalLight
           position={[
-            -scene.center.x + 0.7 * scene.size.x,
-            -scene.center.y + 1.4 * scene.size.y,
-            -scene.center.z + 3 * scene.size.z,
+            -(scene.center_deprecated?.x ?? 0) + 0.7 * scene.size_deprecated.x,
+            -(scene.center_deprecated?.y ?? 0) + 1.4 * scene.size_deprecated.y,
+            -(scene.center_deprecated?.z ?? 0) + 3 * scene.size_deprecated.z,
           ]}
           intensity={3.3}
         />
         <directionalLight
           position={[
-            -scene.center.x - 0.7 * scene.size.x,
-            -scene.center.y - 1.1 * scene.size.y,
-            -scene.center.z - 3 * scene.size.z,
+            -(scene.center_deprecated?.x ?? 0) - 0.7 * scene.size_deprecated.x,
+            -(scene.center_deprecated?.y ?? 0) - 1.1 * scene.size_deprecated.y,
+            -(scene.center_deprecated?.z ?? 0) - 3 * scene.size_deprecated.z,
           ]}
           intensity={3.3}
         />
