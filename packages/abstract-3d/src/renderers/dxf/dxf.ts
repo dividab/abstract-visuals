@@ -16,7 +16,7 @@ export const toDxf = (scene: A3D.Scene, view: A3D.View): string => {
 
 function dxfGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, g.rot);
+  const rot = A3D.vec3RotCombine(parentRot, g.rot ?? A3D.vec3Zero);
   return (
     (g.meshes?.reduce((a, c) => {
       switch (c.geometry.type) {

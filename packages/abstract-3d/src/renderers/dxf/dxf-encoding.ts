@@ -1,6 +1,6 @@
 import { Vec3 } from "../../abstract-3d";
 
-export const dxf3DFACE = (vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: string): string =>
+export const dxf3DFACE = (vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: string | undefined): string =>
   `  0
 3DFACE
   8
@@ -8,7 +8,7 @@ A3D
   6
 CONTINUOUS
   62
-${color}
+${color ?? "1"}
   10
 ${vec1.x}
   20

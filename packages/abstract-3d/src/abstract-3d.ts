@@ -42,7 +42,7 @@ export type HotSpot = {
 
 export type Group = {
   readonly pos: Vec3;
-  readonly rot: Vec3;
+  readonly rot?: Vec3;
   readonly groups?: ReadonlyArray<Group>;
   readonly meshes?: ReadonlyArray<Mesh>;
   readonly data?: Record<string, string>;
@@ -57,16 +57,14 @@ export type Mesh = {
 export type Material = {
   readonly type: MaterialType;
   readonly normal: string;
-  readonly hover: string;
-  readonly selected: string;
-  readonly dxf: string;
-  readonly imageType: string;
-  readonly opacity: number;
-  readonly shininess: number;
-  readonly image:
-    | { readonly type: "HashImage"; readonly hash: string }
-    | { readonly type: "UrlImage"; readonly url: string }
-    | { readonly type: "NoImage" };
+  readonly hover?: string;
+  readonly selected?: string;
+  readonly dxf?: string;
+  readonly opacity?: number;
+  readonly shininess?: number;
+  readonly image?:
+    | { readonly type: "HashImage"; readonly hash: string; readonly imageType?: string }
+    | { readonly type: "UrlImage"; readonly url: string; readonly imageType?: string };
 };
 
 export type MaterialType = "Phong" | "Lambert" | "Basic";

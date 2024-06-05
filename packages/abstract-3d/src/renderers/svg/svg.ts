@@ -59,7 +59,7 @@ export function toSvg(
     vec2(-centerAdj.x + unitHalfSize.x + x * factor, centerAdj.y + unitHalfSize.y - y * factor);
   for (const g of scene.groups) {
     const pos = vec3Rot(g.pos, unitPos, unitRot);
-    const rot = vec3RotCombine(unitRot, g.rot);
+    const rot = vec3RotCombine(unitRot, g.rot ?? vec3Zero);
     elements.push(
       ...svgGroup(g, pos, rot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
     );
@@ -130,18 +130,17 @@ function svgGroup(
         onlyStrokeFill,
         font,
         stroke,
-        m.material.image.type === "HashImage" && buffers?.[m.material.image.hash]
+        m.material.image?.type === "HashImage" && buffers?.[m.material.image.hash]
           ? { type: "svg", svg: buffers[m.material.image.hash]! }
-          : m.material.image.type === "UrlImage"
+          : m.material.image?.type === "UrlImage"
           ? { type: "url", url: m.material.image.url }
-          : undefined,
-        m.material.imageType as "svg" | "png"
+          : undefined
       )
     );
   }
   for (const sg of g.groups ?? []) {
     const sPos = vec3TransRot(sg.pos, pos, rot);
-    const sRot = vec3RotCombine(rot, sg.rot);
+    const sRot = vec3RotCombine(rot, sg.rot ?? vec3Zero);
     elements.push(
       ...svgGroup(sg, sPos, sRot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
     );
@@ -162,8 +161,7 @@ function svgMesh(
   background: string,
   font: string,
   stroke: number,
-  image?: EmbededImage | undefined,
-  imageType?: "svg" | "png" | undefined
+  image?: EmbededImage | undefined
 ): ReadonlyArray<zOrderElement> {
   switch (mesh.geometry.type) {
     case "Box":
@@ -180,8 +178,7 @@ function svgMesh(
         parentPos,
         parentRot,
         view,
-        image,
-        imageType
+        image
       );
     case "Cylinder":
       return cylinder(mesh.geometry, point, color, onlyStroke, grayScale, stroke, background, parentPos, parentRot);

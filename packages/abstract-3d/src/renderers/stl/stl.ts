@@ -11,7 +11,7 @@ export const toStl = (scene: A3D.Scene): string =>
 
 function stlGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, g.rot);
+  const rot = A3D.vec3RotCombine(parentRot, g.rot ?? A3D.vec3Zero);
   return (
     (g.meshes?.reduce((a, m) => {
       switch (m.geometry.type) {

@@ -14,8 +14,7 @@ export function plane(
   parentPos: A3D.Vec3,
   parentRot: A3D.Vec3,
   view: A3D.View,
-  image?: EmbededImage | undefined,
-  _imageType?: "svg" | "png" | undefined
+  image?: EmbededImage | undefined
 ): ReadonlyArray<zOrderElement> {
   const half = A3D.vec2Scale(p.size, 0.5);
   const pos = A3D.vec3TransRot(p.pos, parentPos, parentRot);

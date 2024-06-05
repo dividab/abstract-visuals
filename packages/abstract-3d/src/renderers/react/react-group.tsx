@@ -57,9 +57,9 @@ export function ReactGroup({
       ref.current.rotation.y += (g.animation.transform.rot.y / g.animation.duration) * 1000 * delta;
       ref.current.rotation.z += (g.animation.transform.rot.z / g.animation.duration) * 1000 * delta;
     } else {
-      ref.current.rotation.x = g.rot.x;
-      ref.current.rotation.y = g.rot.y;
-      ref.current.rotation.z = g.rot.z;
+      ref.current.rotation.x = g.rot?.x ?? 0;
+      ref.current.rotation.y = g.rot?.y ?? 0;
+      ref.current.rotation.z = g.rot?.z ?? 0;
       ref.current.position.x = g.pos.x;
       ref.current.position.y = g.pos.y;
       ref.current.position.z = g.pos.z;
@@ -69,7 +69,7 @@ export function ReactGroup({
   const disabled = hotSpotsActive && materialState !== "Accept";
   return (
     <group
-      rotation={[g.rot.x, g.rot.y, g.rot.z]}
+      rotation={[g.rot?.x ?? 0, g.rot?.y ?? 0, g.rot?.z ?? 0]}
       position={[g.pos.x, g.pos.y, g.pos.z]}
       ref={ref}
       {...(id &&

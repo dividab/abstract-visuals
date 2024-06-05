@@ -26,7 +26,7 @@ export function ReactMaterial({
   readonly state?: MaterialState | undefined;
 }): JSX.Element {
   const mat =
-    !state || material.image.type === "UrlImage"
+    !state || material.image?.type === "UrlImage"
       ? material
       : state === "Accept"
       ? acceptMaterial
@@ -34,8 +34,8 @@ export function ReactMaterial({
       ? errorMaterial
       : warningMaterial;
   const color = selectedId === id ? mat.selected : hoveredId === id ? mat.hover : mat.normal;
-
-  if (material.image.type === "UrlImage") {
+  const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
+  if (material.image?.type === "UrlImage") {
     return (
       <TextureMaterial
         url={state === "Error" ? materialStateImages?.[ERROR_IMG_KEY] ?? material.image.url : material.image.url}
@@ -52,17 +52,17 @@ export function ReactMaterial({
           color={color}
           side={DoubleSide}
           transparent
-          {...(mat.opacity < 1 ? { opacity: mat.opacity } : materialDefaults)}
+          {...(opacity < 1 ? { opacity } : materialDefaults)}
         />
       );
     case "Phong":
       return (
         <meshPhongMaterial
           color={color}
-          shininess={mat.shininess * 2}
+          shininess={(mat.shininess ?? 70) * 2}
           side={DoubleSide}
-          {...(mat.opacity < 1 || disabled
-            ? { transparent: true, opacity: disabled ? mat.opacity * decreasedOpacity : mat.opacity }
+          {...(opacity < 1 || disabled
+            ? { transparent: true, opacity: disabled ? opacity * decreasedOpacity : opacity }
             : materialDefaults)}
         />
       );
@@ -83,8 +83,8 @@ export function ReactMaterial({
         <meshLambertMaterial
           color={color}
           side={DoubleSide}
-          {...(mat.opacity < 1 || disabled
-            ? { transparent: true, opacity: disabled ? mat.opacity * decreasedOpacity : mat.opacity }
+          {...(opacity < 1 || disabled
+            ? { transparent: true, opacity: disabled ? opacity * decreasedOpacity : opacity }
             : materialDefaults)}
         />
       );
@@ -97,7 +97,7 @@ function TextureMaterial({
   material,
 }: {
   readonly url: string;
-  readonly color: string | Color;
+  readonly color: string | Color | undefined;
   readonly material: A3d.Material;
 }): JSX.Element {
   const texture = suspend(
@@ -121,7 +121,7 @@ function TextureMaterial({
       side={DoubleSide}
       alphaTest={0.8}
       map={texture}
-      {...(material.opacity < 1 ? { opacity: material.opacity } : materialDefaults)}
+      {...(material.opacity !== undefined && material.opacity < 1 ? { opacity: material.opacity } : materialDefaults)}
       transparent
     />
   );
@@ -136,9 +136,6 @@ const acceptMaterial: A3d.Material = {
   normal: "rgb(0,148,91)",
   hover: "rgb(1,88,55)",
   selected: "rgb(1,88,55)",
-  dxf: "0",
-  imageType: "",
-  image: { type: "NoImage" },
   opacity: 1.0,
   shininess: 50,
 };
@@ -148,9 +145,6 @@ const errorMaterial: A3d.Material = {
   normal: "#b82f3a",
   hover: "#991c31",
   selected: "#991c31",
-  dxf: "0",
-  imageType: "",
-  image: { type: "NoImage" },
   opacity: 1.0,
   shininess: 50,
 };
@@ -160,9 +154,6 @@ const warningMaterial: A3d.Material = {
   normal: "rgb(240, 197, 48)",
   hover: "rgb(221, 181, 38)",
   selected: "rgb(182, 147, 20)",
-  dxf: "0",
-  imageType: "",
-  image: { type: "NoImage" },
   opacity: 1.0,
   shininess: 50,
 };
