@@ -59,7 +59,22 @@ function generateLineChart(hovered: string): AbstractChart.Chart {
   const [xMin, xMax] = getLineRange(series, (point) => point.x);
   const [yMin, yMax] = getLineRange(series, (point) => point.y);
 
+  const dataAxisPointsSquaredX = [];
+  const dataAxisPointsCubedX = [];
+  for (let i = xMin; i <= xMax; ++i) {
+    dataAxisPointsSquaredX.push({ x: i, y: i * i });
+    dataAxisPointsCubedX.push({ x: i, y: i * i * i });
+  }
+  const dataAxisPointsSquaredY = [];
+  const dataAxisPointsCubedY = [];
+  for (let i = yMin; i <= yMax; ++i) {
+    dataAxisPointsSquaredY.push({ x: i, y: i * i });
+    dataAxisPointsCubedY.push({ x: i, y: i * i * i });
+  }
+
   const chart = AbstractChart.createChart({
+    width: 1000,
+    height: 800,
     chartLines: series,
     chartPoints: [
       AbstractChart.createChartPoint({
@@ -75,28 +90,106 @@ function generateLineChart(hovered: string): AbstractChart.Chart {
         label: "Point",
       }),
     ],
-    xAxisBottom: AbstractChart.createLinearAxis(
-      xMin,
-      xMax,
-      "Days with cold",
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      "x-bottom"
-    ),
-    yAxisLeft: AbstractChart.createLinearAxis(
-      yMin,
-      yMax + 1,
-      "Badness",
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      "y-left"
-    ),
+    chartDataAxisesBottom: [AbstractChart.createChartDataAxis(dataAxisPointsSquaredX, "X^2")],
+    chartDataAxisesTop: [AbstractChart.createChartDataAxis(dataAxisPointsCubedX, "X^3")],
+    chartDataAxisesLeft: [AbstractChart.createChartDataAxis(dataAxisPointsSquaredY, "Y^2")],
+    chartDataAxisesRight: [AbstractChart.createChartDataAxis(dataAxisPointsCubedY, "Y^3")],
+    xAxisesBottom: [
+      AbstractChart.createLinearAxis(
+        xMin,
+        xMax,
+        "Days with cold bottom 1",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "x-bottom-1"
+      ),
+      AbstractChart.createLinearAxis(
+        xMin,
+        xMax,
+        "Days with cold bottom 2",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "x-bottom-2"
+      ),
+    ],
+    xAxisesTop: [
+      AbstractChart.createLinearAxis(
+        xMin,
+        xMax,
+        "Days with cold top 1",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "x-top-1"
+      ),
+      AbstractChart.createLinearAxis(
+        xMin,
+        xMax,
+        "Days with cold top 2",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "x-top-2"
+      ),
+    ],
+    yAxisesLeft: [
+      AbstractChart.createLinearAxis(
+        yMin,
+        yMax + 1,
+        "Badness left 1",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "y-left-1"
+      ),
+      AbstractChart.createLinearAxis(
+        yMin,
+        yMax + 1,
+        "Badness left 2",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "y-left-2"
+      ),
+    ],
+    yAxisesRight: [
+      AbstractChart.createLinearAxis(
+        yMin,
+        yMax + 1,
+        "Badness right 1",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "y-right-1"
+      ),
+      AbstractChart.createLinearAxis(
+        yMin,
+        yMax + 1,
+        "Badness right 2",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "y-right-2"
+      ),
+    ],
     labelLayout: "center",
     textOutlineColor: AbstractImage.white,
   });
@@ -160,8 +253,8 @@ function generateStackedChart(): AbstractChart.Chart {
 
   const chart = AbstractChart.createChart({
     chartStack: stack,
-    xAxisBottom: AbstractChart.createLinearAxis(xMin, xMax, "Days with cold"),
-    yAxisLeft: AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness"),
+    xAxisesBottom: [AbstractChart.createLinearAxis(xMin, xMax, "Days with cold")],
+    yAxisesLeft: [AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness")],
     labelLayout: "center",
   });
 
@@ -213,8 +306,8 @@ function generateSignedStackedChart(): AbstractChart.Chart {
 
   const chart = AbstractChart.createChart({
     chartStack: stack,
-    xAxisBottom: AbstractChart.createLinearAxis(xMin, xMax, "Time"),
-    yAxisLeft: AbstractChart.createLinearAxis(yMin * 1.1, yMax * 1.1, "Sineness"),
+    xAxisesBottom: [AbstractChart.createLinearAxis(xMin, xMax, "Time")],
+    yAxisesLeft: [AbstractChart.createLinearAxis(yMin * 1.1, yMax * 1.1, "Sineness")],
     labelLayout: "center",
   });
 
@@ -261,29 +354,38 @@ function generateLineChartDiscreteXAxis(): AbstractChart.Chart {
 
   const [yMin, yMax] = getLineRange(series, (point) => point.y);
 
+  const xAxis: AbstractChart.Axis = {
+    type: "discrete",
+    points: [
+      { value: 0, label: "2023-02" },
+      { value: 1, label: "2023-03" },
+      { value: 2, label: "2023-04" },
+      { value: 3, label: "2023-05" },
+      { value: 3.5, label: "2023-05-15" },
+      { value: 4, label: "2023-06" },
+      { value: 5, label: "2023-07" },
+      { value: 6, label: "2023-08" },
+      { value: 7, label: "2023-09" },
+      { value: 8, label: "2023-10" },
+    ],
+    label: "Time",
+    labelRotation: -25,
+    tickLabelDisp: 25,
+    axisFontSize: 18,
+  };
+  const yAxis: AbstractChart.Axis = {
+    type: "linear",
+    min: yMin,
+    max: yMax + 1,
+    label: "Badness",
+    axisFontSize: 15,
+    tickFontSize: 14,
+  };
   const chart = AbstractChart.createChart({
     chartLines: series,
-    xAxisBottom: {
-      type: "discrete",
-      points: [
-        { value: 0, label: "2023-02" },
-        { value: 1, label: "2023-03" },
-        { value: 2, label: "2023-04" },
-        { value: 3, label: "2023-05" },
-        { value: 3.5, label: "2023-05-15" },
-        { value: 4, label: "2023-06" },
-        { value: 5, label: "2023-07" },
-        { value: 6, label: "2023-08" },
-        { value: 7, label: "2023-09" },
-        { value: 8, label: "2023-10" },
-      ],
-      label: "Time",
-      labelRotation: -25,
-      tickLabelDisp: 25,
-      axisFontSize: 18,
-    },
+    xAxisesBottom: [xAxis],
     fontSize: 12,
-    yAxisLeft: { type: "linear", min: yMin, max: yMax + 1, label: "Badness", axisFontSize: 15, tickFontSize: 14 },
+    yAxisesLeft: [yAxis],
     labelLayout: "center",
     padding: { top: 5, left: 50, right: 110, bottom: 65 },
   });

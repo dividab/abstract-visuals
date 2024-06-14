@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.0.0] - 2024-06-14
+
+### Added
+
+- Added support for multiple axises per side of the chart grid. The data points will always refer to the first axis of the indicated side. Migrating from old to new is simple, just change it to an array.
+
+  Old:
+
+  ```
+  createChart({
+    ...
+    xAxisBottom: myXAxis,
+    ...
+  })
+  ```
+
+  New:
+
+  ```
+  createChart({
+    ...
+    xAxisesBottom: [myXAxis],
+    ...
+  })
+  ```
+
+- Added `axisWidth` for customizing the width of the axises.
+- Added support for data axises, a separately rendered axis type whose tick labels are a function values. Just supply some points defining the function These are rendered outside of the normal axises.
+
+### Changed
+
+- Padding is now additional space outside of the rendered elements, so the layout from left to right is now like this, the x-axises and paddings and heights are calculated in the same manner:
+
+  1. Empty space defined by `padding.left`.
+  2. One data axis per `chartDataAxisesLeft` in reverse order, each `axisWidth` wide.
+  3. One data axis per `yAxisesLeft` in reverse order, each `axisWidth` wide.
+  4. Grid area filling up remaining space.
+  5. One data axis per `yAxisesRight` in normal order, each `axisWidth` wide.
+  6. One data axis per `chartDataAxisesRight` in normal order, each `axisWidth` wide.
+  7. Empty space defined by `padding.right`.
+
 ## [7.4.1] - 2024-05-29
 
 ### Changed
