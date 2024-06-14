@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as AbstractImage from "abstract-image";
+import * as AbstractImage from "../../../abstract-image";
 
 export function AbstractImageExampleSvg(): JSX.Element {
   const components = [

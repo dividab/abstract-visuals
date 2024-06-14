@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import * as AD from "abstract-document";
-import { AbstractDocExporters } from "abstract-document";
-import { abstractDocOfXml, creators, extractImageFontsStyleNames } from "abstract-document/src/abstract-document-xml";
-import { parseMustacheXml } from "abstract-document/src/abstract-document-xml/parse-xml/parse-xml";
+import * as AD from "../../../abstract-document";
+import {
+  abstractDocOfXml,
+  creators,
+  extractImageFontsStyleNames,
+  parseMustacheXml,
+} from "../../../abstract-document/src/abstract-document-xml";
 
 export function AbstractDocumentXMLExample(): JSX.Element {
   const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
@@ -87,7 +90,7 @@ async function generatePDF(
     creators({}, {}, extractImageFontsStyleNames(parsed.xml)[2]),
     parsed.xml[0]!
   ) as unknown as AD.AbstractDoc.AbstractDoc.AbstractDoc;
-  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
+  const blob: Blob = await AD.AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);
   return { type: "Ok", url: objectURL };
 }
