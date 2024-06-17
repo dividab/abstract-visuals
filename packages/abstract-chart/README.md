@@ -27,9 +27,7 @@ import * as React from "react";
 import * as AbstractChart from "abstract-chart";
 import * as AbstractImage from "abstract-image";
 
-const svg = AbstractImage.createSvg(
-  AbstractChart.renderChart(generateLineChart())
-);
+const svg = AbstractImage.createSvg(AbstractChart.renderChart(generateLineChart()));
 
 function generateLineChart(): AbstractChart.Chart {
   const series = [
@@ -43,12 +41,12 @@ function generateLineChart(): AbstractChart.Chart {
         { x: 5, y: 0 },
         { x: 6, y: 0 },
         { x: 7, y: 0 },
-        { x: 8, y: 0 }
+        { x: 8, y: 0 },
       ],
       color: AbstractImage.red,
       label: "How bad you feel",
       xAxis: "bottom",
-      yAxis: "left"
+      yAxis: "left",
     }),
     AbstractChart.createChartLine({
       points: [
@@ -60,23 +58,23 @@ function generateLineChart(): AbstractChart.Chart {
         { x: 5, y: 3 },
         { x: 6, y: 2.8 },
         { x: 7, y: 2 },
-        { x: 8, y: 1.5 }
+        { x: 8, y: 1.5 },
       ],
       color: AbstractImage.blue,
       label: "How bad you sound",
       xAxis: "bottom",
-      yAxis: "left"
-    })
+      yAxis: "left",
+    }),
   ];
 
-  const [xMin, xMax] = getLineRange(series, point => point.x);
-  const [yMin, yMax] = getLineRange(series, point => point.y);
+  const [xMin, xMax] = getLineRange(series, (point) => point.x);
+  const [yMin, yMax] = getLineRange(series, (point) => point.y);
 
   const chart = AbstractChart.createChart({
     chartLines: series,
-    xAxisBottom: AbstractChart.createLinearAxis(xMin, xMax, "Days with cold"),
-    yAxisLeft: AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness"),
-    labelLayout: "center"
+    xAxisesBottom: [AbstractChart.createLinearAxis(xMin, xMax, "Days with cold")],
+    yAxisesLeft: [AbstractChart.createLinearAxis(yMin, yMax + 1, "Badness")],
+    labelLayout: "center",
   });
 
   return chart;
@@ -86,12 +84,11 @@ function getLineRange(
   series: AbstractChart.ChartLine[],
   axisSelector: (point: AbstractImage.Point) => number
 ): [number, number] {
-  const axisValues = series.map(serie => serie.points.map(axisSelector)).reduce(
-    (soFar, current) => {
+  const axisValues = series
+    .map((serie) => serie.points.map(axisSelector))
+    .reduce((soFar, current) => {
       return [...soFar, ...current];
-    },
-    [] as ReadonlyArray<number>
-  );
+    }, [] as ReadonlyArray<number>);
   return [Math.min(...axisValues), Math.max(...axisValues)];
 }
 ```
