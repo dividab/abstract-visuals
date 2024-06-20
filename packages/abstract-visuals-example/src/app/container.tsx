@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AbstractImageExampleReact } from "./abstract-image-example-react";
-import { Abstract3DExample } from "./abstract-3d-example";
+import { Abstract3DExample } from "./abstract-3d-example/abstract-3d-example";
 import { AbstractImageExampleDxf } from "./abstract-image-example-dxf";
 import { AbstractChartExample } from "./abstract-chart-example";
 import { AbstractDocumentExample } from "./abstract-document-example";

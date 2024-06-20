@@ -66,8 +66,8 @@ export type Material = {
   readonly opacity?: number;
   readonly shininess?: number;
   readonly image?:
-    | { readonly type: "HashImage"; readonly hash: string; readonly imageType?: string }
-    | { readonly type: "UrlImage"; readonly url: string; readonly imageType?: string };
+    | { readonly type: "HashImage"; readonly hash: string }
+    | { readonly type: "UrlImage"; readonly url: string };
 };
 
 export type MaterialType = "Phong" | "Lambert" | "Basic";
@@ -185,6 +185,17 @@ export type Transform = {
   readonly trans: Vec3;
 };
 
+export type Vec2 = {
+  readonly x: number;
+  readonly y: number;
+};
+
+export type Vec3 = {
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+};
+
 export type Bounds = {
   readonly min: number;
   readonly max: number;
@@ -198,17 +209,6 @@ export type Bounds2 = {
 export type Bounds3 = {
   readonly min: Vec3;
   readonly max: Vec3;
-};
-
-export type Vec2 = {
-  readonly x: number;
-  readonly y: number;
-};
-
-export type Vec3 = {
-  readonly x: number;
-  readonly y: number;
-  readonly z: number;
 };
 
 export const views = ["front", "back", "top", "bottom", "left", "right"] as const;

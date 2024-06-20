@@ -1,0 +1,700 @@
+{
+    "$ref": "#/definitions/Group",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Animation": {
+            "$ref": "#/definitions/Animation_1"
+        },
+        "Animation_1": {
+            "$ref": "#/definitions/__type_18"
+        },
+        "Box": {
+            "$ref": "#/definitions/__type_7"
+        },
+        "CircleCurve": {
+            "$ref": "#/definitions/__type_13"
+        },
+        "Cone": {
+            "$ref": "#/definitions/__type_6"
+        },
+        "Curve": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/CircleCurve"
+                },
+                {
+                    "$ref": "#/definitions/SplineCurve"
+                }
+            ]
+        },
+        "Cylinder": {
+            "$ref": "#/definitions/__type_2"
+        },
+        "Group": {
+            "additionalProperties": false,
+            "properties": {
+                "animation": {
+                    "$ref": "#/definitions/Animation"
+                },
+                "data": {
+                    "$ref": "#/definitions/Record"
+                },
+                "groups": {
+                    "$ref": "#/definitions/ReadonlyArray"
+                },
+                "meshes": {
+                    "$ref": "#/definitions/ReadonlyArray_1"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                }
+            },
+            "required": [
+                "pos"
+            ],
+            "type": "object"
+        },
+        "Hole": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/RoundHole"
+                },
+                {
+                    "$ref": "#/definitions/SquareHole"
+                }
+            ]
+        },
+        "Line": {
+            "$ref": "#/definitions/__type_8"
+        },
+        "Material": {
+            "$ref": "#/definitions/__type_1"
+        },
+        "MaterialType": {
+            "enum": [
+                "Basic",
+                "Lambert",
+                "Phong"
+            ],
+            "type": "string"
+        },
+        "Plane": {
+            "$ref": "#/definitions/__type_11"
+        },
+        "Polygon": {
+            "$ref": "#/definitions/__type_10"
+        },
+        "ReadonlyArray": {
+            "items": {
+                "$ref": "#/definitions/Group"
+            },
+            "type": "array"
+        },
+        "ReadonlyArray_1": {
+            "items": {
+                "additionalProperties": false,
+                "properties": {
+                    "geometry": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/Cylinder"
+                            },
+                            {
+                                "$ref": "#/definitions/Cone"
+                            },
+                            {
+                                "$ref": "#/definitions/Box"
+                            },
+                            {
+                                "$ref": "#/definitions/Line"
+                            },
+                            {
+                                "$ref": "#/definitions/Text"
+                            },
+                            {
+                                "$ref": "#/definitions/Polygon"
+                            },
+                            {
+                                "$ref": "#/definitions/Plane"
+                            },
+                            {
+                                "$ref": "#/definitions/Tube"
+                            },
+                            {
+                                "$ref": "#/definitions/Sphere"
+                            },
+                            {
+                                "$ref": "#/definitions/Shape"
+                            }
+                        ]
+                    },
+                    "material": {
+                        "$ref": "#/definitions/Material"
+                    }
+                },
+                "required": [
+                    "geometry",
+                    "material"
+                ],
+                "type": "object"
+            },
+            "type": "array"
+        },
+        "ReadonlyArray_2": {
+            "items": {
+                "$ref": "#/definitions/Hole"
+            },
+            "type": "array"
+        },
+        "ReadonlyArray_3": {
+            "items": {
+                "$ref": "#/definitions/Vec3"
+            },
+            "type": "array"
+        },
+        "ReadonlyArray_4": {
+            "items": {
+                "$ref": "#/definitions/Vec2"
+            },
+            "type": "array"
+        },
+        "Record": {
+            "$ref": "#/definitions/Record_1"
+        },
+        "Record_1": {
+            "$ref": "#/definitions/__type_17"
+        },
+        "RoundHole": {
+            "$ref": "#/definitions/__type_3"
+        },
+        "Shape": {
+            "$ref": "#/definitions/__type_16"
+        },
+        "Sphere": {
+            "$ref": "#/definitions/__type_15"
+        },
+        "SplineCurve": {
+            "$ref": "#/definitions/__type_14"
+        },
+        "SquareHole": {
+            "$ref": "#/definitions/__type_5"
+        },
+        "Text": {
+            "$ref": "#/definitions/__type_9"
+        },
+        "Transform": {
+            "$ref": "#/definitions/__type_19"
+        },
+        "Tube": {
+            "$ref": "#/definitions/__type_12"
+        },
+        "Vec2": {
+            "$ref": "#/definitions/__type_4"
+        },
+        "Vec3": {
+            "$ref": "#/definitions/__type"
+        },
+        "Vec3_1": {
+            "$ref": "#/definitions/Vec3"
+        },
+        "__type": {
+            "additionalProperties": false,
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "x",
+                "y",
+                "z"
+            ],
+            "type": "object"
+        },
+        "__type_1": {
+            "additionalProperties": false,
+            "properties": {
+                "dxf": {
+                    "type": "string"
+                },
+                "hover": {
+                    "type": "string"
+                },
+                "image": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": false,
+                            "properties": {
+                                "hash": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "const": "HashImage",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "hash",
+                                "type"
+                            ],
+                            "type": "object"
+                        },
+                        {
+                            "additionalProperties": false,
+                            "properties": {
+                                "type": {
+                                    "const": "UrlImage",
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "type",
+                                "url"
+                            ],
+                            "type": "object"
+                        }
+                    ]
+                },
+                "normal": {
+                    "type": "string"
+                },
+                "opacity": {
+                    "type": "number"
+                },
+                "selected": {
+                    "type": "string"
+                },
+                "shininess": {
+                    "type": "number"
+                },
+                "type": {
+                    "$ref": "#/definitions/MaterialType"
+                }
+            },
+            "required": [
+                "normal",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_10": {
+            "additionalProperties": false,
+            "properties": {
+                "points": {
+                    "$ref": "#/definitions/ReadonlyArray_3"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                },
+                "type": {
+                    "const": "Polygon",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "points",
+                "pos",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_11": {
+            "additionalProperties": false,
+            "properties": {
+                "holes": {
+                    "$ref": "#/definitions/ReadonlyArray_2"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                },
+                "size": {
+                    "$ref": "#/definitions/Vec2"
+                },
+                "type": {
+                    "const": "Plane",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pos",
+                "size",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_12": {
+            "additionalProperties": false,
+            "properties": {
+                "curve": {
+                    "$ref": "#/definitions/Curve"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                },
+                "type": {
+                    "const": "Tube",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "curve",
+                "pos",
+                "radius",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_13": {
+            "additionalProperties": false,
+            "properties": {
+                "angleLength": {
+                    "type": "number"
+                },
+                "angleStart": {
+                    "type": "number"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "type": {
+                    "const": "CircleCurve",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "angleLength",
+                "angleStart",
+                "radius",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_14": {
+            "additionalProperties": false,
+            "properties": {
+                "points": {
+                    "$ref": "#/definitions/ReadonlyArray_3"
+                },
+                "type": {
+                    "const": "SplineCurve",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "points",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_15": {
+            "additionalProperties": false,
+            "properties": {
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "type": {
+                    "const": "Sphere",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pos",
+                "radius",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_16": {
+            "additionalProperties": false,
+            "properties": {
+                "holes": {
+                    "$ref": "#/definitions/ReadonlyArray_2"
+                },
+                "points": {
+                    "$ref": "#/definitions/ReadonlyArray_4"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                },
+                "thickness": {
+                    "type": "number"
+                },
+                "type": {
+                    "const": "Shape",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "points",
+                "pos",
+                "thickness",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_17": {
+            "additionalProperties": false,
+            "type": "object"
+        },
+        "__type_18": {
+            "additionalProperties": false,
+            "properties": {
+                "duration": {
+                    "type": "number"
+                },
+                "transform": {
+                    "$ref": "#/definitions/Transform"
+                }
+            },
+            "required": [
+                "duration",
+                "transform"
+            ],
+            "type": "object"
+        },
+        "__type_19": {
+            "additionalProperties": false,
+            "properties": {
+                "rot": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "trans": {
+                    "$ref": "#/definitions/Vec3"
+                }
+            },
+            "required": [
+                "rot",
+                "trans"
+            ],
+            "type": "object"
+        },
+        "__type_2": {
+            "additionalProperties": false,
+            "properties": {
+                "holes": {
+                    "$ref": "#/definitions/ReadonlyArray_2"
+                },
+                "length": {
+                    "type": "number"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                },
+                "type": {
+                    "const": "Cylinder",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "length",
+                "pos",
+                "radius",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_3": {
+            "additionalProperties": false,
+            "properties": {
+                "pos": {
+                    "$ref": "#/definitions/Vec2"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "type": {
+                    "const": "RoundHole",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pos",
+                "radius",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_4": {
+            "additionalProperties": false,
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "x",
+                "y"
+            ],
+            "type": "object"
+        },
+        "__type_5": {
+            "additionalProperties": false,
+            "properties": {
+                "pos": {
+                    "$ref": "#/definitions/Vec2"
+                },
+                "size": {
+                    "$ref": "#/definitions/Vec2"
+                },
+                "type": {
+                    "const": "SquareHole",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pos",
+                "size",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_6": {
+            "additionalProperties": false,
+            "properties": {
+                "length": {
+                    "type": "number"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "radius": {
+                    "type": "number"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                },
+                "type": {
+                    "const": "Cone",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "length",
+                "pos",
+                "radius",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_7": {
+            "additionalProperties": false,
+            "properties": {
+                "holes": {
+                    "$ref": "#/definitions/ReadonlyArray_2"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                },
+                "size": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "type": {
+                    "const": "Box",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pos",
+                "size",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_8": {
+            "additionalProperties": false,
+            "properties": {
+                "end": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "start": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "thickness": {
+                    "type": "number"
+                },
+                "type": {
+                    "const": "Line",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "end",
+                "start",
+                "thickness",
+                "type"
+            ],
+            "type": "object"
+        },
+        "__type_9": {
+            "additionalProperties": false,
+            "properties": {
+                "fontSize": {
+                    "type": "number"
+                },
+                "pos": {
+                    "$ref": "#/definitions/Vec3"
+                },
+                "rot": {
+                    "$ref": "#/definitions/Vec3_1"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "type": {
+                    "const": "Text",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "fontSize",
+                "pos",
+                "text",
+                "type"
+            ],
+            "type": "object"
+        }
+    }
+}
+
