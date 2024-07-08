@@ -1,5 +1,6 @@
 import * as Point from "./point";
 import * as Color from "./color";
+import * as DashStyle from "./dash-style";
 import * as AbstractImage from "./abstract-image";
 
 export type Component = BinaryImage | Ellipse | Line | PolyLine | Polygon | Rectangle | Text | SubImage | Group;
@@ -68,6 +69,7 @@ export interface Ellipse {
   readonly bottomRight: Point.Point;
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
+  readonly strokeDashStyle: DashStyle.DashStyle;
   readonly fillColor: Color.Color;
   readonly id: string | undefined;
 }
@@ -78,7 +80,8 @@ export function createEllipse(
   strokeColor: Color.Color,
   strokeThickness: number,
   fillColor: Color.Color,
-  id?: string
+  id?: string,
+  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
 ): Ellipse {
   return {
     type: "ellipse",
@@ -86,6 +89,7 @@ export function createEllipse(
     bottomRight: bottomRight,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
+    strokeDashStyle: strokeDashStyle,
     fillColor: fillColor,
     id: id,
   };
@@ -97,6 +101,7 @@ export interface Line {
   readonly end: Point.Point;
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
+  readonly strokeDashStyle: DashStyle.DashStyle;
   readonly id: string | undefined;
 }
 
@@ -105,7 +110,8 @@ export function createLine(
   end: Point.Point,
   strokeColor: Color.Color,
   strokeThickness: number,
-  id?: string
+  id?: string,
+  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
 ): Line {
   return {
     type: "line",
@@ -113,6 +119,7 @@ export function createLine(
     end: end,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
+    strokeDashStyle: strokeDashStyle,
     id: id,
   };
 }
@@ -122,6 +129,7 @@ export interface PolyLine {
   readonly points: Array<Point.Point>;
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
+  readonly strokeDashStyle: DashStyle.DashStyle;
   readonly id: string | undefined;
 }
 
@@ -129,13 +137,15 @@ export function createPolyLine(
   points: Array<Point.Point>,
   strokeColor: Color.Color,
   strokeThickness: number,
-  id?: string
+  id?: string,
+  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
 ): PolyLine {
   return {
     type: "polyline",
     points: points,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
+    strokeDashStyle: strokeDashStyle,
     id: id,
   };
 }
@@ -145,6 +155,7 @@ export interface Polygon {
   readonly points: Array<Point.Point>;
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
+  readonly strokeDashStyle: DashStyle.DashStyle;
   readonly fillColor: Color.Color;
   readonly id: string | undefined;
 }
@@ -154,13 +165,15 @@ export function createPolygon(
   strokeColor: Color.Color,
   strokeThickness: number,
   fillColor: Color.Color,
-  id?: string
+  id?: string,
+  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
 ): Polygon {
   return {
     type: "polygon",
     points: points,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
+    strokeDashStyle: strokeDashStyle,
     fillColor: fillColor,
     id: id,
   };
@@ -172,6 +185,7 @@ export interface Rectangle {
   readonly bottomRight: Point.Point;
   readonly strokeColor: Color.Color;
   readonly strokeThickness: number;
+  readonly strokeDashStyle: DashStyle.DashStyle;
   readonly fillColor: Color.Color;
   readonly id: string | undefined;
 }
@@ -182,7 +196,8 @@ export function createRectangle(
   strokeColor: Color.Color,
   strokeThickness: number,
   fillColor: Color.Color,
-  id?: string
+  id?: string,
+  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
 ): Rectangle {
   return {
     type: "rectangle",
@@ -190,6 +205,7 @@ export function createRectangle(
     bottomRight: bottomRight,
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
+    strokeDashStyle: strokeDashStyle,
     fillColor: fillColor,
     id: id,
   };

@@ -41,7 +41,14 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
       );
     case "subimage":
       return "";
-    case "line":
+    case "line": {
+      const dashStyle: Attributes =
+        component.strokeDashStyle.dashes.length > 0
+          ? {
+              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
+              strokeDashoffset: component.strokeDashStyle.offset.toString(),
+            }
+          : {};
       return createElement(
         "line",
         {
@@ -52,10 +59,19 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
           strokeWidth: component.strokeThickness.toString(),
+          ...dashStyle,
         },
         []
       );
-    case "polyline":
+    }
+    case "polyline": {
+      const dashStyle: Attributes =
+        component.strokeDashStyle.dashes.length > 0
+          ? {
+              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
+              strokeDashoffset: component.strokeDashStyle.offset.toString(),
+            }
+          : {};
       return createElement(
         "polyline",
         {
@@ -64,9 +80,11 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
           strokeWidth: component.strokeThickness.toString(),
+          ...dashStyle,
         },
         []
       );
+    }
     case "text":
       if (!component.text) {
         return "";
@@ -128,7 +146,14 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
       }
       cs.push(createElement("text", { style: objectToAttributeValue(style), transform: transform }, tSpans));
       return cs.join();
-    case "ellipse":
+    case "ellipse": {
+      const dashStyle: Attributes =
+        component.strokeDashStyle.dashes.length > 0
+          ? {
+              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
+              strokeDashoffset: component.strokeDashStyle.offset.toString(),
+            }
+          : {};
       const rx = Math.abs(component.bottomRight.x - component.topLeft.x) * 0.5;
       const ry = Math.abs(component.bottomRight.y - component.topLeft.y) * 0.5;
       const cx = (component.bottomRight.x + component.topLeft.x) * 0.5;
@@ -145,10 +170,19 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
           fillOpacity: colorToOpacity(component.fillColor),
+          ...dashStyle,
         },
         []
       );
-    case "polygon":
+    }
+    case "polygon": {
+      const dashStyle: Attributes =
+        component.strokeDashStyle.dashes.length > 0
+          ? {
+              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
+              strokeDashoffset: component.strokeDashStyle.offset.toString(),
+            }
+          : {};
       return createElement(
         "polygon",
         {
@@ -158,10 +192,19 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
           fillOpacity: colorToOpacity(component.fillColor),
+          ...dashStyle,
         },
         []
       );
-    case "rectangle":
+    }
+    case "rectangle": {
+      const dashStyle: Attributes =
+        component.strokeDashStyle.dashes.length > 0
+          ? {
+              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
+              strokeDashoffset: component.strokeDashStyle.offset.toString(),
+            }
+          : {};
       return createElement(
         "rect",
         {
@@ -174,9 +217,11 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
           fillOpacity: colorToOpacity(component.fillColor),
+          ...dashStyle,
         },
         []
       );
+    }
     default:
       return "";
   }

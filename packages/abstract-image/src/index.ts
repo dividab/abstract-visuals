@@ -3,6 +3,7 @@ export * from "./model/color";
 export * from "./model/component";
 export * from "./model/point";
 export * from "./model/size";
+export * from "./model/dash-style";
 
 export * from "./exporters/svg-export-image";
 export * from "./exporters/png-export-image";

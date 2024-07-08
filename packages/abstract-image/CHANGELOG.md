@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.2.0] - 2024-07-08
+
+### Added
+
+- Support for dashed lines
+
 ## [8.1.0] - 2024-05-22
 
 ### Added

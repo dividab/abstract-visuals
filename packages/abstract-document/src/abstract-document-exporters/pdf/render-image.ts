@@ -122,8 +122,9 @@ function abstractComponentToPdf(
         .lineWidth(component.strokeThickness)
         .moveTo(component.start.x, component.start.y)
         .lineTo(component.end.x, component.end.y)
-        .strokeOpacity(colorToOpacity(component.strokeColor))
-        .stroke(colorToRgb(component.strokeColor));
+        .strokeOpacity(colorToOpacity(component.strokeColor));
+      applyStrokeDashStyle(pdf, component.strokeDashStyle);
+      pdf.stroke(colorToRgb(component.strokeColor));
       break;
     case "polyline":
       for (let i = 0; i < component.points.length; ++i) {
@@ -134,10 +135,9 @@ function abstractComponentToPdf(
           pdf.lineTo(p.x, p.y);
         }
       }
-      pdf
-        .lineWidth(component.strokeThickness)
-        .strokeOpacity(colorToOpacity(component.strokeColor))
-        .stroke(colorToRgb(component.strokeColor));
+      pdf.lineWidth(component.strokeThickness).strokeOpacity(colorToOpacity(component.strokeColor));
+      applyStrokeDashStyle(pdf, component.strokeDashStyle);
+      pdf.stroke(colorToRgb(component.strokeColor));
       break;
     case "text":
       const font = getFontName(component.fontFamily, component.fontWeight, component.italic);
@@ -180,16 +180,18 @@ function abstractComponentToPdf(
         .lineWidth(component.strokeThickness)
         .ellipse(centerX, centerY, width * 0.5, height * 0.5)
         .strokeOpacity(colorToOpacity(component.strokeColor))
-        .fillOpacity(colorToOpacity(component.fillColor))
-        .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
+        .fillOpacity(colorToOpacity(component.fillColor));
+      applyStrokeDashStyle(pdf, component.strokeDashStyle);
+      pdf.fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
     case "polygon":
       pdf
         .lineWidth(component.strokeThickness)
         .strokeOpacity(colorToOpacity(component.strokeColor))
         .fillOpacity(colorToOpacity(component.fillColor))
-        .polygon(...component.points.map((p) => [p.x, p.y]))
-        .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
+        .polygon(...component.points.map((p) => [p.x, p.y]));
+      applyStrokeDashStyle(pdf, component.strokeDashStyle);
+      pdf.fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
     case "rectangle":
       const rWidth = component.bottomRight.x - component.topLeft.x;
@@ -198,8 +200,9 @@ function abstractComponentToPdf(
         .lineWidth(component.strokeThickness)
         .strokeOpacity(colorToOpacity(component.strokeColor))
         .fillOpacity(colorToOpacity(component.fillColor))
-        .rect(component.topLeft.x, component.topLeft.y, rWidth, rHeight)
-        .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
+        .rect(component.topLeft.x, component.topLeft.y, rWidth, rHeight);
+      applyStrokeDashStyle(pdf, component.strokeDashStyle);
+      pdf.fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
     default:
       break;
@@ -212,4 +215,131 @@ function colorToOpacity(color: AbstractImage.Color): number {
 
 function colorToRgb(color: AbstractImage.Color): [number, number, number] {
   return [color.r, color.g, color.b];
+}
+
+function applyStrokeDashStyle(pdf: PDFKit.PDFDocument, dashStyle: AbstractImage.DashStyle): void {
+  if (dashStyle.dashes.length === 0) {
+    pdf.undash();
+    return;
+  }
+
+  let dashes = [...dashStyle.dashes];
+  let phase = dashStyle.offset;
+
+  // Anytime there's a 0 that isn't the first or last element of the array,
+  // we can remove it by combining the previous or next value. If it's a
+  // dash, then it's a zero-length dash between two spaces, so the dash can
+  // be eliminated and spaces combined by summing them, replacing all three
+  // values with the sum of the two spaces. If the 0 value is a space, then
+  // it's a zero-length space between two dashes, and the dashes can be
+  // similarly combined. So first we run that logic iteratively to remove
+  // all the 0s from the dash array that aren't the first or last element.
+  // Note that because we replace 3 values with one value, this doesn't
+  // change the even-ness of the length of dashArray.
+  for (;;) {
+    const index = dashes.slice(1, -1).indexOf(0);
+    if (index === -1) {
+      break;
+    }
+    const actualIndex = index + 1;
+    const replacementValue = dashes[actualIndex - 1] + dashes[actualIndex + 1];
+    dashes = dashes
+      .slice(0, actualIndex - 1)
+      .concat([replacementValue])
+      .concat(dashes.slice(actualIndex + 2));
+  }
+
+  // The stroke array only having two elements (a dash value and space
+  // value) is a special case.
+  if (dashes.length === 1) {
+    dashes = [dashes[0], dashes[0]];
+    if (dashes[0] === 0) {
+      pdf.strokeOpacity(0);
+    }
+  } else if (dashes.length === 2) {
+    if (dashes[0] === 0) {
+      // Regardless of the space value, the dash length is zero, so we're
+      // not actually drawing a stroke. We can't describe that in a
+      // doc.dash() call in a way that PDFKit will accept, so we set the
+      // stroke opacity to zero as our best approximation.
+      pdf.strokeOpacity(0);
+      return;
+    } else if (dashes[1] === 0) {
+      // Regardless of the dash value, the space value is zero, meaning
+      // we're actually drawing a solid stroke, not a dashed one. We can
+      // make this happen by just emptying out the dash array.
+      dashes = [];
+    }
+  } else {
+    if (dashes[0] === 0) {
+      // The first dash is zero-length. We fix this by combining the first
+      // space (just after the first dash) with the last space and updating
+      // the dash offset accordingly. For example, if we had
+      //
+      // [ 0 4 3 2 5 1 ] (dash offset 0)
+      //
+      // ␣␣␣␣---␣␣-----␣
+      // ⎸
+      //
+      // we'd end up with
+      //
+      // [ 3 2 5 5 ] (dash offset -4)
+      //
+      // ---␣␣-----␣␣␣␣␣
+      //            ⎸
+      //
+      // Another example where the dash array also ends with a 0:
+      //
+      // [ 0 4 3 2 5 0 ] (dash offset 0)
+      //
+      // ␣␣␣␣---␣␣-----
+      // ⎸
+      //
+      // we'd end up with
+      //
+      // [ 3 2 5 4 ] (dash offset -4)
+      //
+      // ---␣␣-----␣␣␣␣
+      //           ⎸
+      phase -= dashes[1];
+      dashes[dashes.length - 1] += dashes[1];
+      dashes = dashes.slice(2);
+    }
+    if (dashes[dashes.length - 1] === 0) {
+      // The last space is zero-length. We fix this by combining the last dash
+      // (just before the last space) with the first dash and updating the
+      // dash offset accordingly. For example, if we had
+      //
+      // [ 1 4 3 2 5 0 ] (dash offset 0)
+      //
+      // -␣␣␣␣---␣␣-----
+      // ⎸
+      //
+      // we'd end up with
+      //
+      // [ 6 4 3 2 ] (dash offset 5)
+      //
+      // ------␣␣␣␣---␣␣
+      //      ⎸
+      //
+      phase += dashes[dashes.length - 2];
+      dashes[0] += dashes[dashes.length - 2];
+      dashes = dashes.slice(0, -2);
+    }
+  }
+
+  // Ensure the dash offset is non-negative (because of crbug.com/660850).
+  // First compute the total length of the dash array so we can add it to
+  // dash offset until dash offset is non-negative.
+  let length = 0;
+  for (const dash of dashes) {
+    length += dash;
+  }
+  if (length > 0) {
+    while (phase < 0) {
+      phase += length;
+    }
+  }
+
+  (pdf as { dash: (length: number | ReadonlyArray<number>, option: any) => any }).dash(dashes, { phase: phase });
 }

@@ -15,6 +15,7 @@ import {
   Group,
   render,
   TocSeparator,
+  Image,
 } from "../../../../packages/abstract-document/src/abstract-document-jsx";
 import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
 import {
@@ -23,6 +24,7 @@ import {
   TableCellStyle,
   TableStyle,
 } from "../../../../packages/abstract-document/src/abstract-document";
+import * as AI from "../../../abstract-image";
 
 const header = [
   render(
@@ -148,6 +150,8 @@ export function AbstractDocumentExample(): JSX.Element {
       noTopBottomMargin: false,
     },
   });
+
+  const image = createAbstractImage();
 
   const doc = render(
     <AbstractDoc styles={{}}>
@@ -490,7 +494,14 @@ export function AbstractDocumentExample(): JSX.Element {
         </Paragraph>
         <PageBreak />
         <Paragraph>
-          <TextRun text="Page2" />
+          <TextRun text="A nice image" />
+        </Paragraph>
+        <Paragraph>
+          <Image
+            width={image.abstractImage.size.width}
+            height={image.abstractImage.size.height}
+            imageResource={image}
+          />
         </Paragraph>
       </Section>
       <Section page={page} id="chapter3">
@@ -518,4 +529,25 @@ async function generatePDF(doc: AD.AbstractDoc.AbstractDoc.AbstractDoc): Promise
   const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);
   window.open(objectURL);
+}
+
+function createAbstractImage(): AD.AbstractDoc.ImageResource.ImageResource {
+  const components = [
+    AI.createLine(AI.createPoint(25, 125), AI.createPoint(280, 125), AI.red, 2, undefined, AI.createDashStyle([10, 5])),
+    AI.createLine(
+      AI.createPoint(25, 100),
+      AI.createPoint(280, 100),
+      AI.red,
+      2,
+      undefined,
+      AI.createDashStyle([10, 5], 5)
+    ),
+    AI.createRectangle(AI.createPoint(10, 10), AI.createPoint(300, 135), AI.blue, 2, AI.fromArgb(100, 0, 0, 0)),
+  ];
+  const image = AI.createAbstractImage(AI.createPoint(0, 0), AI.createSize(300, 135), AI.white, components);
+  const imageResource = AD.AbstractDoc.ImageResource.create({
+    id: "test",
+    abstractImage: image,
+  });
+  return imageResource;
 }

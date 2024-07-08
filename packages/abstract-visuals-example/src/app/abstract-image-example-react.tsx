@@ -33,6 +33,22 @@ export function AbstractImageExampleReact(): JSX.Element {
 
   const components = [
     AbstractImage.createLine(
+      AbstractImage.createPoint(25, 125),
+      AbstractImage.createPoint(280, 125),
+      AbstractImage.red,
+      2,
+      undefined,
+      AbstractImage.createDashStyle([10, 5])
+    ),
+    AbstractImage.createLine(
+      AbstractImage.createPoint(25, 100),
+      AbstractImage.createPoint(280, 100),
+      AbstractImage.red,
+      2,
+      undefined,
+      AbstractImage.createDashStyle([10, 5], 5)
+    ),
+    AbstractImage.createLine(
       AbstractImage.createPoint(25, 25),
       AbstractImage.createPoint(80, 60),
       AbstractImage.black,

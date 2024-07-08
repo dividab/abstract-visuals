@@ -91,7 +91,11 @@ function Component({ component }: { readonly component: AbstractImage.Component 
         />
       );
 
-    case "line":
+    case "line": {
+      const strokeDasharray =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <line
           id={makeIdAttr(component.id)}
@@ -102,9 +106,11 @@ function Component({ component }: { readonly component: AbstractImage.Component 
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashoffset}
         />
       );
-
+    }
     case "text": {
       if (!component.text) {
         return <></>;
@@ -153,11 +159,15 @@ function Component({ component }: { readonly component: AbstractImage.Component 
         </>
       );
     }
-    case "ellipse":
+    case "ellipse": {
       const rx = Math.abs(component.bottomRight.x - component.topLeft.x) * 0.5;
       const ry = Math.abs(component.bottomRight.y - component.topLeft.y) * 0.5;
       const cx = (component.bottomRight.x + component.topLeft.x) * 0.5;
       const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
+      const strokeDasharray =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <ellipse
           id={makeIdAttr(component.id)}
@@ -168,12 +178,19 @@ function Component({ component }: { readonly component: AbstractImage.Component 
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashoffset}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       );
-    case "polyline":
+    }
+    case "polyline": {
       let linePoints = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
+      const strokeDasharray =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <polyline
           id={makeIdAttr(component.id)}
@@ -181,11 +198,18 @@ function Component({ component }: { readonly component: AbstractImage.Component 
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashoffset}
           fill="none"
         />
       );
-    case "polygon":
+    }
+    case "polygon": {
       let points = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
+      const strokeDasharray =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <polygon
           id={makeIdAttr(component.id)}
@@ -193,11 +217,18 @@ function Component({ component }: { readonly component: AbstractImage.Component 
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashoffset}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       );
-    case "rectangle":
+    }
+    case "rectangle": {
+      const strokeDasharray =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset =
+        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <rect
           id={makeIdAttr(component.id)}
@@ -208,10 +239,13 @@ function Component({ component }: { readonly component: AbstractImage.Component 
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashoffset}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       );
+    }
     default:
       return <></>;
   }
