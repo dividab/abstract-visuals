@@ -217,6 +217,8 @@ function colorToRgb(color: AbstractImage.Color): [number, number, number] {
   return [color.r, color.g, color.b];
 }
 
+// Implements the SVG behavior of stroke-dasharray and stroke-dashoffset
+// Code originally from: https://github.com/alafr/SVG-to-PDFKit/blob/ecd4b52120de34fc11169023546f171ea453ca21/source.js#L235
 function applyStrokeDashStyle(pdf: PDFKit.PDFDocument, dashStyle: AbstractImage.DashStyle): void {
   if (dashStyle.dashes.length === 0) {
     pdf.undash();
