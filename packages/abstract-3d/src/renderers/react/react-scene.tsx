@@ -122,24 +122,12 @@ export function ReactScene({
           />
         );
       })}
-      <group
-        rotation={[
-          -(scene.rotation_deprecated?.x ?? 0),
-          -(scene.rotation_deprecated?.y ?? 0),
-          -(scene.rotation_deprecated?.z ?? 0),
-        ]}
-        position={[
-          -(scene.center_deprecated?.x ?? 0),
-          -(scene.center_deprecated?.y ?? 0),
-          -(scene.center_deprecated?.z ?? 0),
-        ]}
-      >
-        <group
-          position={[scene.center_deprecated?.x ?? 0, scene.center_deprecated?.y ?? 0, scene.center_deprecated?.z ?? 0]}
-        >
-          <ReactDimensions dimensions={scene.dimensions_deprecated} showDimensions={showDimensions} />
-        </group>
-      </group>
+      <ReactDimensions
+        dimensions={scene.dimensions_deprecated}
+        showDimensions={showDimensions}
+        sceneRotation={scene.rotation_deprecated}
+        sceneCenter={scene.center_deprecated}
+      />
       <ReactHotSpots
         hotSpots={scene.hotSpots_deprecated}
         hotSpotZAdjPos={scene.size_deprecated.z / 2}

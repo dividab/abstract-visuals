@@ -72,9 +72,9 @@ export function toSvg(
     );
   }
   elements.sort((a, b) => a.zOrder - b.zOrder);
-
+  const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, scene.rotation_deprecated ?? vec3Zero);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
-    if (d.views[0] === view) {
+    if (flipViews(d.views[0], cameraPos) === view) {
       const pos = vec3Rot(d.pos, unitPos, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
@@ -206,3 +206,22 @@ function svgMesh(
       return exhaustiveCheck(mesh.geometry);
   }
 }
+
+const flipViews = (v: View | undefined, pos: Vec3): View | undefined => {
+  switch (v) {
+    case "front":
+      return pos.z < 0 ? "back" : "front";
+    case "back":
+      return pos.z < 0 ? "back" : "front";
+    case "right":
+      return pos.x < 0 ? "left" : "right";
+    case "left":
+      return pos.x < 0 ? "right" : "left";
+    case "top":
+      return pos.y < 0 ? "bottom" : "top";
+    case "bottom":
+      return pos.y < 0 ? "top" : "bottom";
+    default:
+      return v;
+  }
+};

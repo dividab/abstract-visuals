@@ -9,9 +9,13 @@ export const ReactDimensions = React.memo(
   ({
     dimensions,
     showDimensions,
+    sceneRotation,
+    sceneCenter,
   }: {
     readonly dimensions: A3d.Dimensions | undefined;
     readonly showDimensions: boolean;
+    readonly sceneRotation: A3d.Vec3 | undefined;
+    readonly sceneCenter: A3d.Vec3 | undefined;
   }): JSX.Element => {
     const dimensionMaterial = React.useMemo(
       () => (dimensions?.material ? <ReactMaterial material={dimensions?.material} /> : <></>),
@@ -20,7 +24,13 @@ export const ReactDimensions = React.memo(
     return (
       <>
         {dimensions?.dimensions.map((dimension, i) => (
-          <ReactDimension key={i} d={dimension} visible={showDimensions}>
+          <ReactDimension
+            key={i}
+            d={dimension}
+            visible={showDimensions}
+            sceneRotation={sceneRotation}
+            sceneCenter={sceneCenter}
+          >
             {dimensionMaterial}
           </ReactDimension>
         ))}
@@ -33,31 +43,31 @@ export function ReactDimension({
   d,
   visible,
   children,
+  sceneRotation,
+  sceneCenter,
 }: {
   readonly d: A3d.Dimension;
   readonly visible: boolean;
   readonly children: JSX.Element;
+  readonly sceneRotation: A3d.Vec3 | undefined;
+  readonly sceneCenter: A3d.Vec3 | undefined;
 }): JSX.Element {
   const ref = React.useRef<Group>(undefined!);
   useFrame(({ camera }) => {
     ref.current.visible =
       visible &&
       ((): boolean => {
+        const cam = A3d.vec3TransRot(camera.position, A3d.vec3Flip(sceneCenter!), sceneRotation!);
         const cameraPositions = {
-          [camera.position.x >= 0 ? "right" : "left"]: true,
-          [camera.position.y >= 0 ? "top" : "bottom"]: true,
-          [camera.position.z >= 0 ? "front" : "back"]: true,
+          [cam.x >= 0 ? "right" : "left"]: true,
+          [cam.y >= 0 ? "top" : "bottom"]: true,
+          [cam.z >= 0 ? "front" : "back"]: true,
         };
-        if (d.views.every((cp) => cameraPositions[cp])) {
-          ref.current.position.set(d.pos.x, d.pos.y, d.pos.z);
-          ref.current.rotation.set(d.rot.x, d.rot.y, d.rot.z);
-          return true;
-        }
-        return false;
+        return d.views.every((cp) => cameraPositions[cp]);
       })();
   });
   return (
-    <group ref={ref}>
+    <group ref={ref} position={[d.pos.x, d.pos.y, d.pos.z]} rotation={[d.rot.x, d.rot.y, d.rot.z]}>
       <DimensionMeshes meshes={d.meshes}>{children}</DimensionMeshes>
     </group>
   );
