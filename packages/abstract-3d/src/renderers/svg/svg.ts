@@ -212,7 +212,7 @@ const flipViews = (v: View | undefined, pos: Vec3): View | undefined => {
     case "front":
       return pos.z < 0 ? "back" : "front";
     case "back":
-      return pos.z < 0 ? "front" : "front";
+      return pos.z < 0 ? "front" : "back";
     case "right":
       return pos.x < 0 ? "left" : "right";
     case "left":
