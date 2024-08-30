@@ -93,9 +93,9 @@ export function abstractDocOfXml(
 
 export function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
-  styleNames: Record<string, string>,
-  images: Array<{ readonly src: string; readonly width: number | undefined; readonly height: number | undefined }>,
-  fonts: Array<string>
+  styleNames: Record<string, string> = {},
+  images: Array<{ readonly src: string; readonly width: number | undefined; readonly height: number | undefined }> = [],
+  fonts: Array<string> = []
 ): readonly [
   images: ReadonlyArray<{
     readonly src: string;
