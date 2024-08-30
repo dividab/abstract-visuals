@@ -92,14 +92,26 @@ export function abstractDocOfXml(
 }
 
 export function extractImageFontsStyleNames(
-  xmlElement: ReadonlyArray<XmlElement>
-): readonly [images: ReadonlyArray<string>, fonts: ReadonlyArray<string>, styleNames: Record<string, string>] {
-  const images = Array<string>();
-  const fonts = Array<string>();
-  let styleNames: Record<string, string> = {};
+  xmlElement: ReadonlyArray<XmlElement>,
+  styleNames: Record<string, string>,
+  images: Array<{ readonly src: string; readonly width: number | undefined; readonly height: number | undefined }>,
+  fonts: Array<string>
+): readonly [
+  images: ReadonlyArray<{
+    readonly src: string;
+    readonly width: number | undefined;
+    readonly height: number | undefined;
+  }>,
+  fonts: ReadonlyArray<string>,
+  styleNames: Record<string, string>
+] {
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
-      images.push(item.attributes.src as string);
+      images.push({
+        src: item.attributes.src as string,
+        height: item.attributes.height ? Number(item.attributes.height) : undefined,
+        width: item.attributes.width ? Number(item.attributes.width) : undefined,
+      });
     } else if (item.attributes?.fontFamily) {
       fonts.push(item.attributes.fontFamily as string);
       if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
@@ -108,10 +120,7 @@ export function extractImageFontsStyleNames(
     } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
       styleNames[item.attributes.name as string] = item.attributes.type;
     } else {
-      const [newImages, newFonts, newStyleNames] = extractImageFontsStyleNames(item.children);
-      images.push(...newImages);
-      fonts.push(...newFonts);
-      styleNames = { ...styleNames, ...newStyleNames };
+      extractImageFontsStyleNames(item.children, styleNames, images, fonts);
     }
   });
   return [images, fonts, styleNames];
