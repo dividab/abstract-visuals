@@ -49,14 +49,7 @@ export function toSvg(
     : 1;
   const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? vec3Zero);
   const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
-  const [size, center] = sizeCenterForCameraPos(
-    scene.size_deprecated,
-    unitPos,
-    scene.dimensions_deprecated?.bounds,
-    unitRot,
-    view,
-    factor
-  );
+  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot, factor);
   const unitHalfSize = vec3Scale(size, 0.5);
   const centerAdj = vec3(center.x - stroke * 0.75, center.y + stroke * 0.75, center.z);
   const width = size.x + 1.5 * stroke;

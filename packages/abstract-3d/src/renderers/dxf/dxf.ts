@@ -5,7 +5,7 @@ import { dxfBox } from "./dxf-geometries/dxf-box";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder";
 import { dxfCone } from "./dxf-geometries/dxf-cone";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon";
-import { dimBoundZero, rotationForCameraPos, sizeCenterForCameraPos } from "../shared";
+import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared";
 
 export const toDxf = (scene: A3D.Scene, view: A3D.View): string => {
   const unitRot = A3D.vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? A3D.vec3Zero);
@@ -14,14 +14,7 @@ export const toDxf = (scene: A3D.Scene, view: A3D.View): string => {
     A3D.vec3Zero,
     scene.rotation_deprecated ?? A3D.vec3Zero
   );
-  const [size, center] = sizeCenterForCameraPos(
-    scene.size_deprecated,
-    rotatedCenter,
-    dimBoundZero,
-    A3D.vec3Zero,
-    view,
-    1
-  );
+  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, rotatedCenter, A3D.vec3Zero, 1);
   return dxfHeader(size, center) + scene.groups.reduce((a, c) => a + dxfGroup(c, center, unitRot), "") + dxfFooter;
 };
 

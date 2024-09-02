@@ -10,7 +10,7 @@ export function polygon(
   onlyStroke: boolean | undefined,
   grayScale: boolean | undefined,
   onlyStrokeFill: string,
-  _stroke: number,
+  stroke: number,
   parentPos: Vec3,
   parentRot: Vec3
 ): ReadonlyArray<zOrderElement> {
@@ -18,8 +18,8 @@ export function polygon(
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
   const rotatedPoints = p.points.map((p) => vec3TransRot(p, pos, rot));
   const points = rotatedPoints.map(({ x, y }) => point(x, y));
-  const [strokeColor, fill] = onlyStroke
-    ? [grayScale ? gray : color, onlyStrokeFill]
-    : [transparent, grayScale ? rgbGray(color) : color];
-  return [zElem(svgPolygon(points, fill, strokeColor, 0), vec3ZMean(...rotatedPoints))];
+  const [strokeColor, fill, strokeThickness] = onlyStroke
+    ? [grayScale ? gray : color, onlyStrokeFill, stroke]
+    : [transparent, grayScale ? rgbGray(color) : color, 0];
+  return [zElem(svgPolygon(points, fill, strokeColor, strokeThickness), vec3ZMean(...rotatedPoints))];
 }
