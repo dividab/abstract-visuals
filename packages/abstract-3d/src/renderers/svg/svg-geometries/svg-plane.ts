@@ -19,12 +19,12 @@ export function plane(
   const half = A3D.vec2Scale(p.size, 0.5);
   const pos = A3D.vec3TransRot(p.pos, parentPos, parentRot);
   const rot = A3D.vec3RotCombine(parentRot, p.rot ?? A3D.vec3Zero);
-  const vec3tr = (point: A3D.Vec3): A3D.Vec3 => A3D.vec3TransRot(point, pos, rot);
+  const vec3tr = (x: number, y: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, 0), pos, rot);
 
-  const v1 = vec3tr(A3D.vec3(-half.x, -half.y, 0));
-  const v2 = vec3tr(A3D.vec3(half.x, -half.y, 0));
-  const v3 = vec3tr(A3D.vec3(half.x, half.y, 0));
-  const v4 = vec3tr(A3D.vec3(-half.x, half.y, 0));
+  const v1 = vec3tr(-half.x, -half.y);
+  const v2 = vec3tr(half.x, -half.y);
+  const v3 = vec3tr(half.x, half.y);
+  const v4 = vec3tr(-half.x, half.y);
 
   if (view === "front" && image) {
     const [leftX, rightX] = v4.x > v2.x ? [v2.x, v4.x] : [v4.x, v2.x];
@@ -37,6 +37,7 @@ export function plane(
   }
 
   const points = [point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)];
+
   const [strokeColor, fill, strokeThickness] = onlyStroke
     ? [grayScale ? gray : color, onlyStrokeFill, stroke]
     : [black, grayScale ? rgbGray(color) : color, 0];

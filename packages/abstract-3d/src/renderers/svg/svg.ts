@@ -58,10 +58,21 @@ export function toSvg(
   const point = (x: number, y: number): Vec2 =>
     vec2(-centerAdj.x + unitHalfSize.x + x * factor, centerAdj.y + unitHalfSize.y - y * factor);
   for (const g of scene.groups) {
-    const pos = vec3Rot(g.pos, unitPos, unitRot);
-    const rot = vec3RotCombine(unitRot, g.rot ?? vec3Zero);
     elements.push(
-      ...svgGroup(g, pos, rot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
+      ...svgGroup(
+        g,
+        unitPos,
+        unitRot,
+        point,
+        view,
+        factor,
+        onlyStroke,
+        grayScale,
+        onlyStrokeFill,
+        font,
+        stroke,
+        buffers
+      )
     );
   }
   elements.sort((a, b) => a.zOrder - b.zOrder);
@@ -101,8 +112,8 @@ export function toSvg(
 
 function svgGroup(
   g: Group,
-  pos: Vec3,
-  rot: Vec3,
+  parentPos: Vec3,
+  parentRot: Vec3,
   point: (x: number, y: number) => Vec2,
   view: View,
   factor: number,
@@ -114,6 +125,8 @@ function svgGroup(
   buffers?: Record<string, string>
 ): ReadonlyArray<zOrderElement> {
   const elements = Array<zOrderElement>();
+  const pos = vec3TransRot(g.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
 
   for (const m of g.meshes ?? []) {
     elements.push(
@@ -139,10 +152,8 @@ function svgGroup(
     );
   }
   for (const sg of g.groups ?? []) {
-    const sPos = vec3TransRot(sg.pos, pos, rot);
-    const sRot = vec3RotCombine(rot, sg.rot ?? vec3Zero);
     elements.push(
-      ...svgGroup(sg, sPos, sRot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
+      ...svgGroup(sg, pos, rot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
     );
   }
   return elements;
