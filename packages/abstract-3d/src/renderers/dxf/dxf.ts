@@ -14,7 +14,7 @@ export const toDxf = (scene: A3D.Scene, view: A3D.View): string => {
     A3D.vec3Zero,
     scene.rotation_deprecated ?? A3D.vec3Zero
   );
-  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, rotatedCenter, A3D.vec3Zero, 1);
+  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, rotatedCenter, A3D.vec3Zero);
   return dxfHeader(size, center) + scene.groups.reduce((a, c) => a + dxfGroup(c, center, unitRot), "") + dxfFooter;
 };
 

@@ -11,12 +11,7 @@ import {
   vec3Zero,
 } from "../abstract-3d";
 
-export function sizeCenterForCameraPos(
-  size: Vec3,
-  center: Vec3,
-  rotation: Vec3,
-  factor: number
-): readonly [Vec3, Vec3] {
+export function sizeCenterForCameraPos(size: Vec3, center: Vec3, rotation: Vec3): readonly [Vec3, Vec3] {
   const half = vec3Scale(size, 0.5);
   const min = vec3Sub(center, half);
   const max = vec3Add(center, half);
@@ -29,7 +24,7 @@ export function sizeCenterForCameraPos(
   const v7 = vec3Rot(vec3(max.x, max.y, min.z), center, rotation);
   const v8 = vec3Rot(vec3(min.x, max.y, min.z), center, rotation);
   const bounds = bounds3FromVec3Array([v1, v2, v3, v4, v5, v6, v7, v8]);
-  return [vec3Scale(bounds3ToSize(bounds), factor), vec3Scale(center, factor)];
+  return [bounds3ToSize(bounds), center];
 }
 
 export function rotationForCameraPos(view: View): Vec3 {

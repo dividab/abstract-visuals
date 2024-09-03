@@ -1,19 +1,5 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import {
-  vec2,
-  vec3Scale,
-  Scene,
-  View,
-  Vec3,
-  Mesh,
-  vec3Rot,
-  vec3Zero,
-  vec3RotCombine,
-  vec3,
-  Vec2,
-  Group,
-  vec3TransRot,
-} from "../../abstract-3d";
+import * as A3D from "../../abstract-3d";
 import { zOrderElement } from "./svg-geometries/shared";
 import { box } from "./svg-geometries/svg-box";
 import { cylinder } from "./svg-geometries/svg-cylinder";
@@ -27,8 +13,8 @@ import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared";
 import { EmbededImage, svg } from "./svg-encoding";
 
 export function toSvg(
-  scene: Scene,
-  view: View,
+  scene: A3D.Scene,
+  view: A3D.View,
   stroke: number,
   scale?: { readonly size: number; readonly scaleByWidth: boolean },
   onlyStroke?: boolean,
@@ -47,21 +33,24 @@ export function toSvg(
         ? scene.size_deprecated.z
         : scene.size_deprecated.y)
     : 1;
-  const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? vec3Zero);
-  const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
-  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot, factor);
-  const unitHalfSize = vec3Scale(size, 0.5);
-  const centerAdj = vec3(center.x - stroke * 0.75, center.y + stroke * 0.75, center.z);
-  const width = size.x + 1.5 * stroke;
-  const height = size.y + 1.5 * stroke;
+  const unitRot = A3D.vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? A3D.vec3Zero);
+  const unitPos = A3D.vec3Rot(
+    scene.center_deprecated ?? A3D.vec3Zero,
+    A3D.vec3Zero,
+    scene.rotation_deprecated ?? A3D.vec3Zero
+  );
+  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot);
+  const sizeScaled = A3D.vec3Scale(size, factor);
+  const centerAdj = A3D.vec3(-center.x + size.x * 0.5, center.y + size.y * 0.5, center.z);
+  const width = sizeScaled.x + 1.5 * stroke;
+  const height = sizeScaled.y + 1.5 * stroke;
   const elements = Array<zOrderElement>();
-  const point = (x: number, y: number): Vec2 =>
-    vec2(-centerAdj.x + unitHalfSize.x + x * factor, centerAdj.y + unitHalfSize.y - y * factor);
+  const point = (x: number, y: number): A3D.Vec2 => A3D.vec2(x * factor - stroke * 0.75, -y * factor + stroke * 0.75);
   for (const g of scene.groups) {
     elements.push(
       ...svgGroup(
         g,
-        unitPos,
+        centerAdj,
         unitRot,
         point,
         view,
@@ -76,11 +65,11 @@ export function toSvg(
     );
   }
   elements.sort((a, b) => a.zOrder - b.zOrder);
-  const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, scene.rotation_deprecated ?? vec3Zero);
+  const cameraPos = A3D.vec3Rot(A3D.vec3(1, 1, 1), A3D.vec3Zero, scene.rotation_deprecated ?? A3D.vec3Zero);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
     if (flipViews(d.views[0], cameraPos) === view) {
-      const pos = vec3Rot(d.pos, unitPos, unitRot);
-      const rot = vec3RotCombine(unitRot, d.rot);
+      const pos = A3D.vec3Rot(d.pos, unitPos, unitRot);
+      const rot = A3D.vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
         elements.push(
           ...svgMesh(
@@ -111,11 +100,11 @@ export function toSvg(
 }
 
 function svgGroup(
-  g: Group,
-  parentPos: Vec3,
-  parentRot: Vec3,
-  point: (x: number, y: number) => Vec2,
-  view: View,
+  g: A3D.Group,
+  parentPos: A3D.Vec3,
+  parentRot: A3D.Vec3,
+  point: (x: number, y: number) => A3D.Vec2,
+  view: A3D.View,
   factor: number,
   onlyStroke: boolean | undefined,
   grayScale: boolean | undefined,
@@ -125,8 +114,8 @@ function svgGroup(
   buffers?: Record<string, string>
 ): ReadonlyArray<zOrderElement> {
   const elements = Array<zOrderElement>();
-  const pos = vec3TransRot(g.pos, parentPos, parentRot);
-  const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
+  const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);
+  const rot = A3D.vec3RotCombine(parentRot, g.rot ?? A3D.vec3Zero);
 
   for (const m of g.meshes ?? []) {
     elements.push(
@@ -160,11 +149,11 @@ function svgGroup(
 }
 
 function svgMesh(
-  mesh: Mesh,
-  parentPos: Vec3,
-  parentRot: Vec3,
-  point: (x: number, y: number) => Vec2,
-  view: View,
+  mesh: A3D.Mesh,
+  parentPos: A3D.Vec3,
+  parentRot: A3D.Vec3,
+  point: (x: number, y: number) => A3D.Vec2,
+  view: A3D.View,
   factor: number,
   color: string,
   onlyStroke: boolean | undefined,
@@ -211,7 +200,7 @@ function svgMesh(
   }
 }
 
-const flipViews = (v: View | undefined, pos: Vec3): View | undefined => {
+const flipViews = (v: A3D.View | undefined, pos: A3D.Vec3): A3D.View | undefined => {
   switch (v) {
     case "front":
       return pos.z < 0 ? "back" : "front";
