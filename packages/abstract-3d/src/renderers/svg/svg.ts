@@ -45,7 +45,10 @@ export function toSvg(
   const height = sizeScaled.y + 1.5 * stroke;
   const elements = Array<zOrderElement>();
   const point = (x: number, y: number): A3D.Vec2 =>
-    A3D.vec2((size.x * 0.5 + x) * factor - stroke * 0.75, (size.y * 0.5 - y) * factor + stroke * 0.75);
+    A3D.vec2(
+      (-center.x + size.x * 0.5 + x) * factor - stroke * 0.75,
+      (center.y + size.y * 0.5 - y) * factor + stroke * 0.75
+    );
   for (const g of scene.groups) {
     elements.push(
       ...svgGroup(g, center, unitRot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
@@ -55,7 +58,7 @@ export function toSvg(
   const cameraPos = A3D.vec3Rot(A3D.vec3(1, 1, 1), A3D.vec3Zero, scene.rotation_deprecated ?? A3D.vec3Zero);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
     if (flipViews(d.views[0], cameraPos) === view) {
-      const pos = A3D.vec3Rot(d.pos, unitPos, unitRot);
+      const pos = A3D.vec3TransRot(d.pos, center, unitRot);
       const rot = A3D.vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
         elements.push(
