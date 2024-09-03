@@ -9,7 +9,7 @@ import { shape } from "./svg-geometries/svg-shape";
 import { polygon } from "./svg-geometries/svg-polygon";
 import { text } from "./svg-geometries/svg-text";
 import { cone } from "./svg-geometries/svg-cone";
-import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared";
+import { rotationForCameraPos, sizeForCameraPos } from "../shared";
 import { EmbededImage, svg } from "./svg-encoding";
 
 export function toSvg(
@@ -39,26 +39,37 @@ export function toSvg(
     A3D.vec3Zero,
     scene.rotation_deprecated ?? A3D.vec3Zero
   );
-  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot);
-  const sizeScaled = A3D.vec3Scale(size, factor);
-  const width = sizeScaled.x + 1.5 * stroke;
-  const height = sizeScaled.y + 1.5 * stroke;
+  const size = sizeForCameraPos(scene.size_deprecated, unitPos, unitRot);
+
   const elements = Array<zOrderElement>();
   const point = (x: number, y: number): A3D.Vec2 =>
     A3D.vec2(
-      (-center.x + size.x * 0.5 + x) * factor - stroke * 0.75,
-      (center.y + size.y * 0.5 - y) * factor + stroke * 0.75
+      (-unitPos.x + size.x * 0.5 + x) * factor - stroke * 0.75,
+      (unitPos.y - size.y * 0.5 - y) * factor + stroke * 0.75
     );
   for (const g of scene.groups) {
     elements.push(
-      ...svgGroup(g, center, unitRot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
+      ...svgGroup(
+        g,
+        unitPos,
+        unitRot,
+        point,
+        view,
+        factor,
+        onlyStroke,
+        grayScale,
+        onlyStrokeFill,
+        font,
+        stroke,
+        buffers
+      )
     );
   }
   elements.sort((a, b) => a.zOrder - b.zOrder);
   const cameraPos = A3D.vec3Rot(A3D.vec3(1, 1, 1), A3D.vec3Zero, scene.rotation_deprecated ?? A3D.vec3Zero);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
     if (flipViews(d.views[0], cameraPos) === view) {
-      const pos = A3D.vec3TransRot(d.pos, center, unitRot);
+      const pos = A3D.vec3TransRot(d.pos, unitPos, unitRot);
       const rot = A3D.vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
         elements.push(
@@ -80,6 +91,9 @@ export function toSvg(
       }
     }
   }
+
+  const width = size.x * factor + 1.5 * stroke;
+  const height = size.y * factor + 1.5 * stroke;
 
   const image = svg(
     width,
