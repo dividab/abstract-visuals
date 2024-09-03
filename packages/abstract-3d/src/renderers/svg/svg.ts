@@ -45,7 +45,7 @@ export function toSvg(
   const point = (x: number, y: number): A3D.Vec2 =>
     A3D.vec2(
       (-unitPos.x + size.x * 0.5 + x) * factor - stroke * 0.75,
-      (unitPos.y - size.y * 0.5 - y) * factor + stroke * 0.75
+      (unitPos.y + size.y - y) * factor + stroke * 0.75
     );
   for (const g of scene.groups) {
     elements.push(
