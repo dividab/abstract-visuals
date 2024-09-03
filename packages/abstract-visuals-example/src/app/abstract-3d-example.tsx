@@ -26,7 +26,9 @@ export function Abstract3DExample(): React.ReactNode {
         </button>
       </div>
       <div
-        dangerouslySetInnerHTML={{ __html: A3D.toSvg(scene, "front", 2, { size: 300, scaleByWidth: true }).image }}
+        dangerouslySetInnerHTML={{
+          __html: A3D.toSvg(scene, "front", 3, { size: 300, scaleByWidth: true }, true, false).image,
+        }}
       />
       {/* <div style={{ height: "calc(100% - 20px)" }}>
         <A3D.toReact scene={scene} />
@@ -35,7 +37,7 @@ export function Abstract3DExample(): React.ReactNode {
   );
 }
 
-const scene: A3D.Scene = {
+const scene2: A3D.Scene = {
   center_deprecated: A3D.vec3(100, 100, 100),
   size_deprecated: A3D.vec3(300, 300, 300),
   groups: [
@@ -95,7 +97,7 @@ const scene3: A3D.Scene = {
   ],
 };
 
-const scene2 = {
+const scene = {
   center_deprecated: {
     x: 50,
     y: 425.00000000000006,

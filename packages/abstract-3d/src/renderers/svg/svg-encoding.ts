@@ -1,10 +1,10 @@
 import { Vec2, vec2Add, vec2Scale } from "../../abstract-3d";
 
 export const svg = (width: number, height: number, center: Vec2, children: string): string =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${(-(-center.x + width / 2)).toFixed()} ${(-(
-    center.y +
-    height / 2
-  )).toFixed(0)} ${width.toFixed(0)} ${height.toFixed(0)}" width="${width.toFixed(0)}px" height="${height.toFixed(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${(center.x * 2 - width / 2).toFixed()} ${(
+    -center.y * 2 +
+    -height / 2
+  ).toFixed(0)} ${width.toFixed(0)} ${height.toFixed(0)}" width="${width.toFixed(0)}px" height="${height.toFixed(
     0
   )}px">${children} </svg>`;
 
