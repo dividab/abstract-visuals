@@ -25,19 +25,39 @@ export function Abstract3DExample(): React.ReactNode {
           SVG
         </button>
       </div>
-      <div style={{ height: "calc(100% - 20px)" }}>
+      <div
+        dangerouslySetInnerHTML={{ __html: A3D.toSvg(scene, "front", 2, { size: 300, scaleByWidth: true }).image }}
+      />
+      {/* <div style={{ height: "calc(100% - 20px)" }}>
         <A3D.toReact scene={scene} />
-      </div>
+      </div> */}
     </div>
   );
 }
 
-const scene2: A3D.Scene = {
-  center_deprecated: A3D.vec3Zero,
-  size_deprecated: A3D.vec3(40, 40, 40),
+const scene: A3D.Scene = {
+  center_deprecated: A3D.vec3(100, 100, 100),
+  size_deprecated: A3D.vec3(300, 300, 300),
   groups: [
     {
-      pos: A3D.vec3Zero,
+      pos: A3D.vec3(100, 100, 100),
+      meshes: [
+        A3D.box(
+          A3D.vec3(100, 100, 100),
+          { type: "Phong", hover: "rgb(50,50,50)", normal: "rgb(150,150,150)" },
+          A3D.vec3(0, 0, 0)
+        ),
+      ],
+    },
+  ],
+};
+
+const scene3: A3D.Scene = {
+  center_deprecated: A3D.vec3(10, 10, 10),
+  size_deprecated: A3D.vec3(20, 20, 20),
+  groups: [
+    {
+      pos: A3D.vec3(10, 10, 10),
       meshes: [
         A3D.box(
           A3D.vec3(10, 2, 10),
@@ -75,7 +95,7 @@ const scene2: A3D.Scene = {
   ],
 };
 
-const scene = {
+const scene2 = {
   center_deprecated: {
     x: 50,
     y: 425.00000000000006,

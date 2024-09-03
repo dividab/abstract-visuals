@@ -39,14 +39,9 @@ export function toSvg(
     A3D.vec3Zero,
     scene.rotation_deprecated ?? A3D.vec3Zero
   );
-  const size = sizeForCameraPos(scene.size_deprecated, unitPos, unitRot);
 
   const elements = Array<zOrderElement>();
-  const point = (x: number, y: number): A3D.Vec2 =>
-    A3D.vec2(
-      (-unitPos.x + size.x * 0.5 + x) * factor - stroke * 0.75,
-      (unitPos.y + size.y - y) * factor + stroke * 0.75
-    );
+  const point = (x: number, y: number): A3D.Vec2 => A3D.vec2(x * factor, -y * factor);
   for (const g of scene.groups) {
     elements.push(
       ...svgGroup(
@@ -91,13 +86,14 @@ export function toSvg(
       }
     }
   }
-
+  const size = sizeForCameraPos(scene.size_deprecated, unitPos, unitRot);
   const width = size.x * factor + 1.5 * stroke;
   const height = size.y * factor + 1.5 * stroke;
 
   const image = svg(
     width,
     height,
+    A3D.vec3Scale(unitPos, factor),
     elements.reduce((a, { element }) => `${a} ${element}`, "")
   );
   return { image, width, height };
