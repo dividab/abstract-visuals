@@ -41,27 +41,14 @@ export function toSvg(
   );
   const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot);
   const sizeScaled = A3D.vec3Scale(size, factor);
-  const centerAdj = A3D.vec3(-center.x + size.x * 0.5, center.y + size.y * 0.5, center.z);
   const width = sizeScaled.x + 1.5 * stroke;
   const height = sizeScaled.y + 1.5 * stroke;
   const elements = Array<zOrderElement>();
-  const point = (x: number, y: number): A3D.Vec2 => A3D.vec2(x * factor - stroke * 0.75, -y * factor + stroke * 0.75);
+  const point = (x: number, y: number): A3D.Vec2 =>
+    A3D.vec2((size.x * 0.5 + x) * factor - stroke * 0.75, (size.y * 0.5 - y) * factor + stroke * 0.75);
   for (const g of scene.groups) {
     elements.push(
-      ...svgGroup(
-        g,
-        centerAdj,
-        unitRot,
-        point,
-        view,
-        factor,
-        onlyStroke,
-        grayScale,
-        onlyStrokeFill,
-        font,
-        stroke,
-        buffers
-      )
+      ...svgGroup(g, center, unitRot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
     );
   }
   elements.sort((a, b) => a.zOrder - b.zOrder);
