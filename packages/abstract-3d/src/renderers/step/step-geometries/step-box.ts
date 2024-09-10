@@ -51,64 +51,57 @@ ${CARTESIAN_POINT(v1, i + 1)}
 ${CARTESIAN_POINT(v2, i + 2)}
 ${CARTESIAN_POINT(v3, i + 3)}
 ${CARTESIAN_POINT(v4, i + 4)}
-${CARTESIAN_POINT(v5, i + 44)}
-${CARTESIAN_POINT(v6, i + 45)}
-${CARTESIAN_POINT(v7, i + 46)}
-${CARTESIAN_POINT(v8, i + 47)}
-
+${CARTESIAN_POINT(v5, i + 5)}
+${CARTESIAN_POINT(v6, i + 6)}
+${CARTESIAN_POINT(v7, i + 7)}
+${CARTESIAN_POINT(v8, i + 8)}
 ${VERTEX_POINT(i + 1, i + 5)}
 ${VERTEX_POINT(i + 2, i + 6)}
 ${VERTEX_POINT(i + 3, i + 7)}
 ${VERTEX_POINT(i + 4, i + 8)}
-${VERTEX_POINT(i + 44, i + 48)}
-${VERTEX_POINT(i + 45, i + 49)}
-${VERTEX_POINT(i + 46, i + 50)}
-${VERTEX_POINT(i + 47, i + 51)}
-
-${ORIENTED_EDGE_big(i + 1, i + 5, i + 6, A3D.vec3(1, 0, 0), i + 9)}
-${ORIENTED_EDGE_big(i + 2, i + 6, i + 7, A3D.vec3(0, 1, 0), i + 14)}
-${ORIENTED_EDGE_big(i + 3, i + 7, i + 8, A3D.vec3(1, 0, 0), i + 19)}
-${ORIENTED_EDGE_big(i + 4, i + 8, i + 5, A3D.vec3(0, 1, 0), i + 24)}
-${ORIENTED_EDGE_big(i + 47, i + 51, i + 50, A3D.vec3(-1, 0, 0), i + 52)}
-${ORIENTED_EDGE_big(i + 46, i + 50, i + 49, A3D.vec3(0, -1, 0), i + 57)}
-${ORIENTED_EDGE_big(i + 45, i + 49, i + 48, A3D.vec3(-1, 0, 0), i + 62)}
-${ORIENTED_EDGE_big(i + 44, i + 48, i + 51, A3D.vec3(0, -1, 0), i + 67)}
-${ORIENTED_EDGE_big(i + 1, i + 5, i + 48, A3D.vec3(0, 0, 1), i + 78)}
-${ORIENTED_EDGE_big(i + 44, i + 48, i + 51, A3D.vec3(0, 1, 0), i + 83)}
-${ORIENTED_EDGE_big(i + 47, i + 51, i + 8, A3D.vec3(0, 0, 1), i + 88)}
-${ORIENTED_EDGE_big(i + 4, i + 8, i + 5, A3D.vec3(0, 1, 0), i + 93)}
-${ORIENTED_EDGE_big(i + 2, i + 6, i + 49, A3D.vec3(0, 0, 1), i + 109)}
-${ORIENTED_EDGE_big(i + 45, i + 49, i + 50, A3D.vec3(0, 1, 0), i + 114)}
-${ORIENTED_EDGE_big(i + 46, i + 50, i + 7, A3D.vec3(0, 0, 1), i + 119)}
-${ORIENTED_EDGE_big(i + 3, i + 7, i + 6, A3D.vec3(0, 1, 0), i + 124)}
-${ORIENTED_EDGE_big(i + 4, i + 8, i + 51, A3D.vec3(0, 0, 1), i + 135)}
-${ORIENTED_EDGE_big(i + 47, i + 51, i + 50, A3D.vec3(1, 0, 0), i + 140)}
-${ORIENTED_EDGE_big(i + 46, i + 50, i + 7, A3D.vec3(0, 0, 1), i + 145)}
-${ORIENTED_EDGE_big(i + 3, i + 7, i + 8, A3D.vec3(1, 0, 0), i + 150)}
-${ORIENTED_EDGE_big(i + 1, i + 5, i + 6, A3D.vec3(1, 0, 0), i + 166)}
-${ORIENTED_EDGE_big(i + 2, i + 6, i + 49, A3D.vec3(0, 0, 1), i + 171)}
-${ORIENTED_EDGE_big(i + 45, i + 49, i + 48, A3D.vec3(1, 0, 0), i + 176)}
-${ORIENTED_EDGE_big(i + 44, i + 48, i + 5, A3D.vec3(0, 0, 1), i + 181)}
-
-${ADVANCED_FACEbig(i + 24, i + 9, i + 14, i + 19, i + 38, i + 33)}
-${ADVANCED_FACEbig(i + 52, i + 57, i + 62, i + 67, i + 38, i + 72)}
-${ADVANCED_FACEbig(i + 78, i + 83, i + 88, i + 93, i + 104, i + 98)}
-${ADVANCED_FACEbig(i + 109, i + 114, i + 119, i + 124, i + 104, i + 129)}
-${ADVANCED_FACEbig(i + 135, i + 140, i + 145, i + 150, i + 161, i + 155)}
-${ADVANCED_FACEbig(i + 166, i + 171, i + 176, i + 181, i + 161, i + 186)}
-
-${PLANEbig(A3D.vec3(0, 0, 1), A3D.vec3(1, 0, 0), i + 38)}
-${PLANEbig(A3D.vec3(1, 0, 0), A3D.vec3(0, 1, 0), i + 104)}
-${PLANEbig(A3D.vec3(0, 1, 0), A3D.vec3(0, 0, 1), i + 161)}
-
-${ADVANCED_BREP_SHAPE_REPRESENTATION(i + 39, i + 193, i + 194)}
-${MANIFOLD_SOLID_BREP(i + 192, i + 193)}
-${CLOSED_SHELL(i + 33, i + 72, i + 98, i + 129, i + 155, i + 186, i + 192)}
-
-
+${VERTEX_POINT(i + 5, i + 9)}
+${VERTEX_POINT(i + 6, i + 10)}
+${VERTEX_POINT(i + 7, i + 11)}
+${VERTEX_POINT(i + 8, i + 12)}
+${ORIENTED_EDGE_big(i + 1, i + 5, i + 6, A3D.vec3PosX, i + 13)}
+${ORIENTED_EDGE_big(i + 2, i + 6, i + 7, A3D.vec3PosY, i + 18)}
+${ORIENTED_EDGE_big(i + 3, i + 7, i + 8, A3D.vec3PosX, i + 23)}
+${ORIENTED_EDGE_big(i + 4, i + 8, i + 5, A3D.vec3PosY, i + 28)}
+${ORIENTED_EDGE_big(i + 8, i + 12, i + 11, A3D.vec3PosX, i + 33)}
+${ORIENTED_EDGE_big(i + 7, i + 11, i + 10, A3D.vec3PosY, i + 38)}
+${ORIENTED_EDGE_big(i + 6, i + 10, i + 9, A3D.vec3PosX, i + 43)}
+${ORIENTED_EDGE_big(i + 5, i + 9, i + 12, A3D.vec3PosY, i + 48)}
+${ORIENTED_EDGE_big(i + 1, i + 5, i + 9, A3D.vec3PosZ, i + 53)}
+${ORIENTED_EDGE_big(i + 5, i + 9, i + 12, A3D.vec3PosY, i + 58)}
+${ORIENTED_EDGE_big(i + 8, i + 12, i + 8, A3D.vec3PosZ, i + 63)}
+${ORIENTED_EDGE_big(i + 4, i + 8, i + 5, A3D.vec3PosY, i + 68)}
+${ORIENTED_EDGE_big(i + 2, i + 6, i + 10, A3D.vec3PosZ, i + 73)}
+${ORIENTED_EDGE_big(i + 6, i + 10, i + 11, A3D.vec3PosY, i + 78)}
+${ORIENTED_EDGE_big(i + 7, i + 11, i + 7, A3D.vec3PosZ, i + 83)}
+${ORIENTED_EDGE_big(i + 3, i + 7, i + 6, A3D.vec3PosY, i + 88)}
+${ORIENTED_EDGE_big(i + 4, i + 8, i + 12, A3D.vec3PosZ, i + 93)}
+${ORIENTED_EDGE_big(i + 8, i + 12, i + 11, A3D.vec3PosX, i + 98)}
+${ORIENTED_EDGE_big(i + 7, i + 11, i + 7, A3D.vec3PosZ, i + 103)}
+${ORIENTED_EDGE_big(i + 3, i + 7, i + 8, A3D.vec3PosX, i + 108)}
+${ORIENTED_EDGE_big(i + 1, i + 5, i + 6, A3D.vec3PosX, i + 113)}
+${ORIENTED_EDGE_big(i + 2, i + 6, i + 10, A3D.vec3PosZ, i + 118)}
+${ORIENTED_EDGE_big(i + 6, i + 10, i + 9, A3D.vec3PosX, i + 123)}
+${ORIENTED_EDGE_big(i + 5, i + 9, i + 5, A3D.vec3PosZ, i + 128)}
+${ADVANCED_FACEbig(i + 13, i + 18, i + 23, i + 28, i + 166, i + 133)}
+${ADVANCED_FACEbig(i + 33, i + 38, i + 43, i + 48, i + 166, i + 138)}
+${ADVANCED_FACEbig(i + 53, i + 58, i + 63, i + 68, i + 171, i + 143)}
+${ADVANCED_FACEbig(i + 73, i + 78, i + 83, i + 88, i + 171, i + 148)}
+${ADVANCED_FACEbig(i + 93, i + 98, i + 103, i + 108, i + 176, i + 153)}
+${ADVANCED_FACEbig(i + 113, i + 118, i + 123, i + 128, i + 176, i + 158)}
+${ADVANCED_BREP_SHAPE_REPRESENTATION(i + 167, i + 164, i + 165)}
+${MANIFOLD_SOLID_BREP(i + 163, i + 164)}
+${CLOSED_SHELL(i + 133, i + 138, i + 143, i + 148, i + 153, i + 158, i + 163)}
+${PLANEbig(A3D.vec3PosZ, A3D.vec3PosX, i + 166)}
+${PLANEbig(A3D.vec3PosX, A3D.vec3PosY, i + 171)}
+${PLANEbig(A3D.vec3PosY, A3D.vec3PosZ, i + 176)}
 `;
 
-  return [step, 194];
+  return [step, 181];
 }
 
 // ${MANIFOLD_SURFACE_SHAPE_REPRESENTATION(i + 39, i + 33, i + 43)}

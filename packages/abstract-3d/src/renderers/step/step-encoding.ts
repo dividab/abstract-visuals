@@ -114,5 +114,4 @@ export const PLANEbig = (vec1: Vec3, vec2: Vec3, i: number): string => `${PLANE(
 ${AXIS2_PLACEMENT_3D(i + 2, i + 3, i + 4, i + 1)}
 ${CARTESIAN_POINT(vec3(0, 0, 0), i + 2)}
 ${DIRECTION(vec1, i + 3)}
-${DIRECTION(vec2, i + 4)}
-`;
+${DIRECTION(vec2, i + 4)}`;
