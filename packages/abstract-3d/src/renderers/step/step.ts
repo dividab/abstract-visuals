@@ -3,7 +3,7 @@ import { stepBox } from "./step-geometries/step-box";
 
 export const toStep = (scene: A3D.Scene): string => {
   let step = "";
-  let nbrRefs = 0;
+  let nbrRefs = 19;
 
   for (const g of scene.groups ?? []) {
     const [newStep, newNbrRefs] = stepGroup(
@@ -18,11 +18,31 @@ export const toStep = (scene: A3D.Scene): string => {
 
   return `ISO-10303-21;
 HEADER;
-FILE_DESCRIPTION(('Aircalc'), '1');
-FILE_NAME('aircalc.stp', '2024-09-09T12:00:00', (''), (''), 'Author', '', '');
-FILE_SCHEMA(('AP214'));
+FILE_DESCRIPTION(('FreeCAD Model'),'2;1');
+FILE_NAME('Open CASCADE Shape Model','2024-09-10T08:42:01',('Author'),(
+    ''),'Open CASCADE STEP processor 7.6','FreeCAD','Unknown');
+FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));
 ENDSEC;
 DATA;${step}
+#1 = ( GEOMETRIC_REPRESENTATION_CONTEXT(3) 
+GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#5)) GLOBAL_UNIT_ASSIGNED_CONTEXT(
+(#2,#3,#4)) REPRESENTATION_CONTEXT('Context #1',
+  '3D Context with UNIT and UNCERTAINTY') );
+#2 = ( LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.) );
+#3 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );
+#4 = ( NAMED_UNIT(*) SI_UNIT($,.STERADIAN.) SOLID_ANGLE_UNIT() );
+#5 = UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_MEASURE(1.E-07),#2,
+  'distance_accuracy_value','confusion accuracy');
+#6 = SURFACE_STYLE_USAGE(.BOTH.,#7);
+#7 = SURFACE_SIDE_STYLE('',(#8));
+#8 = SURFACE_STYLE_FILL_AREA(#9);
+#9 = FILL_AREA_STYLE('',(#10));
+#10 = FILL_AREA_STYLE_COLOUR('',#11);
+#11 = COLOUR_RGB('',0.800000010877,0.800000010877,0.800000010877);
+#12 = CURVE_STYLE('',#13,POSITIVE_LENGTH_MEASURE(0.1),#14);
+#13 = DRAUGHTING_PRE_DEFINED_CURVE_FONT('continuous');
+#14 = COLOUR_RGB('',9.803921802644E-02,9.803921802644E-02,
+  9.803921802644E-02);
 ENDSEC;
 END-ISO-10303-21;`;
 };
