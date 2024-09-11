@@ -42,23 +42,16 @@ ${CARTESIAN_POINT(v1, i + 1)}
 ${CARTESIAN_POINT(v2, i + 2)}
 ${CARTESIAN_POINT(v3, i + 3)}
 ${CARTESIAN_POINT(v4, i + 4)}
-
 ${VERTEX_POINT(i + 1, i + 5)}
 ${VERTEX_POINT(i + 2, i + 6)}
 ${VERTEX_POINT(i + 3, i + 7)}
 ${VERTEX_POINT(i + 4, i + 8)}
-
-${ORIENTED_EDGE_big(i + 1, i + 5, i + 6, A3D.vec3(1, 0, 0), i + 9)}
-${ORIENTED_EDGE_big(i + 2, i + 6, i + 7, A3D.vec3(0, 1, 0), i + 14)}
-${ORIENTED_EDGE_big(i + 3, i + 7, i + 8, A3D.vec3(1, 0, 0), i + 19)}
-${ORIENTED_EDGE_big(i + 4, i + 8, i + 5, A3D.vec3(0, 1, 0), i + 24)}
-
-${SHELL_BASED_SURFACE_MODEL_big(i + 9, i + 14, i + 19, i + 24, i + 42, i + 33)}
-
-${PLANEbig(A3D.vec3(0, 0, 1), A3D.vec3(1, 0, 0), i + 38)}
-
-${MANIFOLD_SURFACE_SHAPE_REPRESENTATION(i + 41, i + 33, i + 43)}
-
-`;
+${ORIENTED_EDGE_big(i + 1, i + 5, i + 6, A3D.vec3PosX, i + 9)}
+${ORIENTED_EDGE_big(i + 2, i + 6, i + 7, A3D.vec3PosY, i + 14)}
+${ORIENTED_EDGE_big(i + 3, i + 7, i + 8, A3D.vec3PosX, i + 19)}
+${ORIENTED_EDGE_big(i + 4, i + 8, i + 5, A3D.vec3PosY, i + 24)}
+${SHELL_BASED_SURFACE_MODEL_big(i + 9, i + 14, i + 19, i + 24, i + 38, i + 33)}
+${MANIFOLD_SURFACE_SHAPE_REPRESENTATION(i + 39, i + 33, i + 43)}
+${PLANEbig(A3D.vec3PosZ, A3D.vec3PosX, i + 38)}`;
   return [step, 43];
 }

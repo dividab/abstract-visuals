@@ -1,9 +1,10 @@
 import * as A3D from "../../abstract-3d";
 import { stepBox } from "./step-geometries/step-box";
+import { stepPlane } from "./step-geometries/step-plane";
 
 export const toStep = (scene: A3D.Scene): string => {
   let step = "";
-  let nbrRefs = 19;
+  let nbrRefs = 14;
 
   for (const g of scene.groups ?? []) {
     const [newStep, newNbrRefs] = stepGroup(
@@ -21,7 +22,7 @@ HEADER;
 FILE_DESCRIPTION(('FreeCAD Model'),'2;1');
 FILE_NAME('Open CASCADE Shape Model','2024-09-10T08:42:01',('Author'),(
     ''),'Open CASCADE STEP processor 7.6','FreeCAD','Unknown');
-FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));
+FILE_SCHEMA(('AUTOMOTIVE_DESIGN'));
 ENDSEC;
 DATA;${step}
 #1 = ( GEOMETRIC_REPRESENTATION_CONTEXT(3) 
@@ -56,6 +57,12 @@ function stepGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3, refId
     switch (m.geometry.type) {
       case "Box": {
         const [newStep, newNbrRefs] = stepBox(m.geometry, m.material, pos, rot, refIdx + nbrRefs);
+        step += newStep;
+        nbrRefs += newNbrRefs;
+        break;
+      }
+      case "Plane": {
+        const [newStep, newNbrRefs] = stepPlane(m.geometry, m.material, pos, rot, refIdx + nbrRefs);
         step += newStep;
         nbrRefs += newNbrRefs;
         break;
