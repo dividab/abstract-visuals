@@ -50,6 +50,13 @@ export function rotationForCameraPos(view: View): Vec3 {
   }
 }
 
+export function parseRgb(color: string): {readonly r: number, readonly g: number, readonly b: number} {
+  const parts = color.split("(")[1]?.slice(0, -1).split(",");
+  const rgb = {r: Number(parts?.[0] ?? 0), g: Number(parts?.[1] ?? 0), b: Number(parts?.[2] ?? 0),};
+  console.log("rgb", rgb)
+  return rgb;
+}
+
 export function rgbGray(color: string): string {
   const parts = color.split("(")[1]?.slice(0, -1).split(",");
   const c = Number(parts?.[0] ?? 416) * 0.3 + Number(parts?.[1] ?? 212) * 0.587 + Number(parts?.[2] ?? 1100) * 0.114;

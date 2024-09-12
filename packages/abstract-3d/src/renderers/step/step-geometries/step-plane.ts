@@ -1,28 +1,18 @@
 import * as A3D from "../../../abstract-3d";
+import { parseRgb } from "../../shared";
 import {
-  ADVANCED_FACE,
-  AXIS2_PLACEMENT_3D,
   CARTESIAN_POINT,
-  DIRECTION,
-  EDGE_CURVE,
-  EDGE_LOOP,
-  FACE_BOUND,
-  LINE,
   MANIFOLD_SURFACE_SHAPE_REPRESENTATION,
-  OPEN_SHELL,
-  ORIENTED_EDGE,
+  MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION,
   ORIENTED_EDGE_big,
-  PLANE,
   PLANEbig,
-  SHELL_BASED_SURFACE_MODEL,
   SHELL_BASED_SURFACE_MODEL_big,
-  VECTOR,
   VERTEX_POINT,
 } from "../step-encoding";
 
 export function stepPlane(
   p: A3D.Plane,
-  _m: A3D.Material,
+  m: A3D.Material,
   parentPos: A3D.Vec3,
   parentRot: A3D.Vec3,
   i: number
@@ -36,6 +26,8 @@ export function stepPlane(
   const v2 = vec3tr(half.x, -half.y);
   const v3 = vec3tr(half.x, half.y);
   const v4 = vec3tr(-half.x, half.y);
+  const n1 = A3D.vec3RotCombine(A3D.vec3PosX, rot);
+  const n3 = A3D.vec3RotCombine(A3D.vec3PosZ, rot);
 
   const step = `
 ${CARTESIAN_POINT(v1, i + 1)}
@@ -46,12 +38,13 @@ ${VERTEX_POINT(i + 1, i + 5)}
 ${VERTEX_POINT(i + 2, i + 6)}
 ${VERTEX_POINT(i + 3, i + 7)}
 ${VERTEX_POINT(i + 4, i + 8)}
-${ORIENTED_EDGE_big(i + 1, i + 5, i + 6, A3D.vec3PosX, i + 9)}
-${ORIENTED_EDGE_big(i + 2, i + 6, i + 7, A3D.vec3PosY, i + 14)}
-${ORIENTED_EDGE_big(i + 3, i + 7, i + 8, A3D.vec3PosX, i + 19)}
-${ORIENTED_EDGE_big(i + 4, i + 8, i + 5, A3D.vec3PosY, i + 24)}
+${ORIENTED_EDGE_big(i + 1, i + 5, i + 6, i + 9)}
+${ORIENTED_EDGE_big(i + 2, i + 6, i + 7, i + 14)}
+${ORIENTED_EDGE_big(i + 3, i + 7, i + 8, i + 19)}
+${ORIENTED_EDGE_big(i + 4, i + 8, i + 5, i + 24)}
 ${SHELL_BASED_SURFACE_MODEL_big(i + 9, i + 14, i + 19, i + 24, i + 38, i + 33)}
-${MANIFOLD_SURFACE_SHAPE_REPRESENTATION(i + 39, i + 33, i + 43)}
-${PLANEbig(A3D.vec3PosZ, A3D.vec3PosX, i + 38)}`;
-  return [step, 43];
+${MANIFOLD_SURFACE_SHAPE_REPRESENTATION(i + 33, i + 43)}
+${PLANEbig(n3, n1, i + 38)}
+${MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(parseRgb(m.normal), i + 33, i + 44)}`;
+  return [step, 55];
 }

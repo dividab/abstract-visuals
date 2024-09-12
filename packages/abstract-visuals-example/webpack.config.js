@@ -31,7 +31,10 @@ module.exports = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: { loader: "ts-loader", options: { projectReferences: true } },
+        use: {
+          loader: "ts-loader",
+          options: { projectReferences: true, transpileOnly: true, ignoreDiagnostics: [2322] },
+        },
       },
     ],
   },

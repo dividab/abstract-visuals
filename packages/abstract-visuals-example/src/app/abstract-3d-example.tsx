@@ -1,26 +1,27 @@
 import * as React from "react";
 import FileSaver from "file-saver";
 import * as A3D from "abstract-3d";
+import { sceneUnit } from "./unit-scene";
 
 export function Abstract3DExample(): React.ReactNode {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
         <button
-          onClick={() => FileSaver.saveAs(new Blob([A3D.toDxf(scene, "front")], { type: "text/plain" }), `a3d.dxf`)}
+          onClick={() => FileSaver.saveAs(new Blob([A3D.toDxf(sceneUnit, "front")], { type: "text/plain" }), `a3d.dxf`)}
         >
           DXF
         </button>
-        <button onClick={() => FileSaver.saveAs(new Blob([A3D.toStl(scene)], { type: "text/plain" }), `a3d.stl`)}>
+        <button onClick={() => FileSaver.saveAs(new Blob([A3D.toStl(sceneUnit)], { type: "text/plain" }), `a3d.stl`)}>
           STL
         </button>
-        <button onClick={() => FileSaver.saveAs(new Blob([A3D.toStep(scene)], { type: "text/plain" }), `a3d.stp`)}>
+        <button onClick={() => FileSaver.saveAs(new Blob([A3D.toStep(sceneUnit)], { type: "text/plain" }), `a3d.stp`)}>
           STEP
         </button>
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([A3D.toSvg(scene, "front", 2, { size: 180, scaleByWidth: true }).image], { type: "text/plain" }),
+              new Blob([A3D.toSvg(sceneUnit, "front", 2, { size: 180, scaleByWidth: true }).image], { type: "text/plain" }),
               `a3d.svg`
             )
           }
@@ -30,12 +31,12 @@ export function Abstract3DExample(): React.ReactNode {
       </div>
       <div
         dangerouslySetInnerHTML={{
-          __html: A3D.toSvg(scene, "front", 3, { size: 300, scaleByWidth: true }, true, false).image,
+          __html: A3D.toSvg(sceneUnit, "front", 1, { size: 300, scaleByWidth: true }, true, true, "rgb(255,255,255,1)").image,
         }}
       />
-      {/* <div style={{ height: "calc(100% - 20px)" }}>
-        <A3D.toReact scene={scene} />
-      </div> */}
+      <div style={{ height: "calc(100% - 20px)" }}>
+        <A3D.toReact scene={sceneUnit} orbitContolsProps={{ enableDamping: false, minDistance: 100, maxDistance: 10000, zoomSpeed: 1.5 }} camera={{ type: "Perspective", near: 100, far: 19000,  }}/>
+      </div>
     </div>
   );
 }

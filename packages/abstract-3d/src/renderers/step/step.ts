@@ -1,10 +1,11 @@
 import * as A3D from "../../abstract-3d";
+import { PLANEbig } from "./step-encoding";
 import { stepBox } from "./step-geometries/step-box";
 import { stepPlane } from "./step-geometries/step-plane";
 
 export const toStep = (scene: A3D.Scene): string => {
   let step = "";
-  let nbrRefs = 14;
+  let nbrRefs = 12;
 
   for (const g of scene.groups ?? []) {
     const [newStep, newNbrRefs] = stepGroup(
@@ -25,25 +26,19 @@ FILE_NAME('Open CASCADE Shape Model','2024-09-10T08:42:01',('Author'),(
 FILE_SCHEMA(('AUTOMOTIVE_DESIGN'));
 ENDSEC;
 DATA;${step}
+${PLANEbig(A3D.vec3PosZ, A3D.vec3PosX, 7)}
 #1 = ( GEOMETRIC_REPRESENTATION_CONTEXT(3) 
-GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#5)) GLOBAL_UNIT_ASSIGNED_CONTEXT(
-(#2,#3,#4)) REPRESENTATION_CONTEXT('Context #1',
+GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#6)) GLOBAL_UNIT_ASSIGNED_CONTEXT(
+(#3,#4,#5)) REPRESENTATION_CONTEXT('Context #1',
   '3D Context with UNIT and UNCERTAINTY') );
-#2 = ( LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.) );
-#3 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );
-#4 = ( NAMED_UNIT(*) SI_UNIT($,.STERADIAN.) SOLID_ANGLE_UNIT() );
-#5 = UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_MEASURE(1.E-07),#2,
+#2 = ( GEOMETRIC_REPRESENTATION_CONTEXT(2) 
+PARAMETRIC_REPRESENTATION_CONTEXT() REPRESENTATION_CONTEXT('2D SPACE',''
+  ) );
+#3 = ( LENGTH_UNIT() NAMED_UNIT(*) SI_UNIT(.MILLI.,.METRE.) );
+#4 = ( NAMED_UNIT(*) PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.) );
+#5 = ( NAMED_UNIT(*) SI_UNIT($,.STERADIAN.) SOLID_ANGLE_UNIT() );
+#6 = UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_MEASURE(1.E-07),#3,
   'distance_accuracy_value','confusion accuracy');
-#6 = SURFACE_STYLE_USAGE(.BOTH.,#7);
-#7 = SURFACE_SIDE_STYLE('',(#8));
-#8 = SURFACE_STYLE_FILL_AREA(#9);
-#9 = FILL_AREA_STYLE('',(#10));
-#10 = FILL_AREA_STYLE_COLOUR('',#11);
-#11 = COLOUR_RGB('',0.800000010877,0.800000010877,0.800000010877);
-#12 = CURVE_STYLE('',#13,POSITIVE_LENGTH_MEASURE(0.1),#14);
-#13 = DRAUGHTING_PRE_DEFINED_CURVE_FONT('continuous');
-#14 = COLOUR_RGB('',9.803921802644E-02,9.803921802644E-02,
-  9.803921802644E-02);
 ENDSEC;
 END-ISO-10303-21;`;
 };
