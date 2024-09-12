@@ -1,102 +1,191 @@
-import * as A3D from "../../../abstract-3d";
+import {
+  Box,
+  Material,
+  Vec3,
+  vec3Scale,
+  vec3TransRot,
+  vec3RotCombine,
+  vec3Zero,
+  vec3,
+  vec3PosX,
+  vec3PosY,
+  vec3PosZ,
+  vec3NegX,
+  vec3NegY,
+  vec3NegZ,
+} from "../../../abstract-3d";
 import { parseRgb } from "../../shared";
 import {
-  ADVANCED_FACEbig,
-  MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION,
-  ORIENTED_EDGE_big,
-  PLANEbig,
-  CLOSED_SHELL,
-  MANIFOLD_SOLID_BREP,
   ADVANCED_BREP_SHAPE_REPRESENTATION,
+  ADVANCED_FACE,
+  AXIS2_PLACEMENT_3D,
   CARTESIAN_POINT,
+  CLOSED_SHELL,
+  COLOUR_RGB,
+  CURVE_STYLE,
+  DIRECTION,
+  DRAUGHTING_PRE_DEFINED_CURVE_FONT,
+  EDGE_CURVE,
+  EDGE_LOOP,
+  FACE_BOUND,
+  FILL_AREA_STYLE_COLOUR,
+  LINE,
+  MANIFOLD_SOLID_BREP,
+  MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION,
+  MutableStep,
+  ORIENTED_EDGE,
+  PLANE,
+  PRESENTATION_STYLE_ASSIGNMENT,
+  STYLED_ITEM,
+  SURFACE_SIDE_STYLE,
+  SURFACE_STYLE_FILL_AREA,
+  SURFACE_STYLE_USAGE,
+  VECTOR,
   VERTEX_POINT,
 } from "../step-encoding";
 
-export function stepBox(
-  b: A3D.Box,
-  m: A3D.Material,
-  parentPos: A3D.Vec3,
-  parentRot: A3D.Vec3,
-  i: number
-): readonly [string, number] {
-  const half = A3D.vec3Scale(b.size, 0.5);
-  const pos = A3D.vec3TransRot(b.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, b.rot ?? A3D.vec3Zero);
-  const vec3tr = (x: number, y: number, z: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, z), pos, rot);
+export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
+  const half = vec3Scale(b.size, 0.5);
+  const pos = vec3TransRot(b.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
+  const cart3tr = (x: number, y: number, z: number): number =>
+    CARTESIAN_POINT(vec3TransRot(vec3(x, y, z), pos, rot), m);
+  const v0 = VECTOR(DIRECTION(vec3Zero, m), m);
+  const c0 = CARTESIAN_POINT(vec3Zero, m);
+  const [c1, c2] = [cart3tr(-half.x, -half.y, -half.z), cart3tr(half.x, -half.y, -half.z)];
+  const [c3, c4] = [cart3tr(half.x, half.y, -half.z), cart3tr(-half.x, half.y, -half.z)];
+  const [c5, c6] = [cart3tr(-half.x, -half.y, half.z), cart3tr(half.x, -half.y, half.z)];
+  const [c7, c8] = [cart3tr(half.x, half.y, half.z), cart3tr(-half.x, half.y, half.z)];
+  const [v1, v2, v3, v4] = [VERTEX_POINT(c1, m), VERTEX_POINT(c2, m), VERTEX_POINT(c3, m), VERTEX_POINT(c4, m)];
+  const [v5, v6, v7, v8] = [VERTEX_POINT(c5, m), VERTEX_POINT(c6, m), VERTEX_POINT(c7, m), VERTEX_POINT(c8, m)];
+  const [l1, l2, l3, l4] = [LINE(c1, v0, m), LINE(c2, v0, m), LINE(c3, v0, m), LINE(c4, v0, m)];
+  const [l5, l6, l7, l8] = [LINE(c5, v0, m), LINE(c6, v0, m), LINE(c7, v0, m), LINE(c8, v0, m)];
+  const [d1, d2] = [DIRECTION(vec3RotCombine(vec3PosX, rot), m), DIRECTION(vec3RotCombine(vec3PosY, rot), m)];
+  const [d3, d4] = [DIRECTION(vec3RotCombine(vec3PosZ, rot), m), DIRECTION(vec3RotCombine(vec3NegX, rot), m)];
+  const [d5, d6] = [DIRECTION(vec3RotCombine(vec3NegY, rot), m), DIRECTION(vec3RotCombine(vec3NegZ, rot), m)];
+  const color = COLOUR_RGB(parseRgb(mat.normal), m);
 
-  const v1 = vec3tr(-half.x, -half.y, -half.z);
-  const v2 = vec3tr(half.x, -half.y, -half.z);
-  const v3 = vec3tr(half.x, half.y, -half.z);
-  const v4 = vec3tr(-half.x, half.y, -half.z);
-  const v5 = vec3tr(-half.x, -half.y, half.z);
-  const v6 = vec3tr(half.x, -half.y, half.z);
-  const v7 = vec3tr(half.x, half.y, half.z);
-  const v8 = vec3tr(-half.x, half.y, half.z);
-
-  const n1 = A3D.vec3RotCombine(A3D.vec3PosX, rot);
-  const n2 = A3D.vec3RotCombine(A3D.vec3PosY, rot);
-  const n3 = A3D.vec3RotCombine(A3D.vec3PosZ, rot);
-  const n4 = A3D.vec3RotCombine(A3D.vec3NegX, rot);
-  const n5 = A3D.vec3RotCombine(A3D.vec3NegY, rot);
-  const n6 = A3D.vec3RotCombine(A3D.vec3NegZ, rot);
-
-  const step = `
-${CARTESIAN_POINT(v1, i + 1)}
-${CARTESIAN_POINT(v2, i + 2)}
-${CARTESIAN_POINT(v3, i + 3)}
-${CARTESIAN_POINT(v4, i + 4)}
-${CARTESIAN_POINT(v5, i + 5)}
-${CARTESIAN_POINT(v6, i + 6)}
-${CARTESIAN_POINT(v7, i + 7)}
-${CARTESIAN_POINT(v8, i + 8)}
-${VERTEX_POINT(i + 1, i + 9)}
-${VERTEX_POINT(i + 2, i + 10)}
-${VERTEX_POINT(i + 3, i + 11)}
-${VERTEX_POINT(i + 4, i + 12)}
-${VERTEX_POINT(i + 5, i + 13)}
-${VERTEX_POINT(i + 6, i + 14)}
-${VERTEX_POINT(i + 7, i + 15)}
-${VERTEX_POINT(i + 8, i + 16)}
-${ORIENTED_EDGE_big(i + 1, i + 9, i + 10, i + 17)}
-${ORIENTED_EDGE_big(i + 2, i + 10, i + 11, i + 22)}
-${ORIENTED_EDGE_big(i + 3, i + 11, i + 12, i + 27)}
-${ORIENTED_EDGE_big(i + 4, i + 12, i + 9, i + 32)}
-${ORIENTED_EDGE_big(i + 8, i + 16, i + 15, i + 37)}
-${ORIENTED_EDGE_big(i + 7, i + 15, i + 14, i + 42)}
-${ORIENTED_EDGE_big(i + 6, i + 14, i + 13, i + 47)}
-${ORIENTED_EDGE_big(i + 5, i + 13, i + 16, i + 52)}
-${ORIENTED_EDGE_big(i + 1, i + 9, i + 13, i + 57)}
-${ORIENTED_EDGE_big(i + 5, i + 13, i + 16, i + 62)}
-${ORIENTED_EDGE_big(i + 8, i + 16, i + 12, i + 67)}
-${ORIENTED_EDGE_big(i + 4, i + 12, i + 9, i + 72)}
-${ORIENTED_EDGE_big(i + 2, i + 10, i + 14, i + 77)}
-${ORIENTED_EDGE_big(i + 6, i + 14, i + 15, i + 82)}
-${ORIENTED_EDGE_big(i + 7, i + 15, i + 11, i + 87)}
-${ORIENTED_EDGE_big(i + 3, i + 11, i + 10, i + 92)}
-${ORIENTED_EDGE_big(i + 4, i + 12, i + 16, i + 97)}
-${ORIENTED_EDGE_big(i + 8, i + 16, i + 15, i + 102)}
-${ORIENTED_EDGE_big(i + 7, i + 15, i + 11, i + 107)}
-${ORIENTED_EDGE_big(i + 3, i + 11, i + 12, i + 112)}
-${ORIENTED_EDGE_big(i + 1, i + 9, i + 10, i + 117)}
-${ORIENTED_EDGE_big(i + 2, i + 10, i + 14, i + 122)}
-${ORIENTED_EDGE_big(i + 6, i + 14, i + 13, i + 127)}
-${ORIENTED_EDGE_big(i + 5, i + 13, i + 9, i + 132)}
-${ADVANCED_FACEbig(i + 17, i + 22, i + 27, i + 32, i + 170, i + 137)}
-${ADVANCED_FACEbig(i + 37, i + 42, i + 47, i + 52, i + 185, i + 142)}
-${ADVANCED_FACEbig(i + 57, i + 62, i + 67, i + 72, i + 190, i + 147)}
-${ADVANCED_FACEbig(i + 77, i + 82, i + 87, i + 92, i + 175, i + 152)}
-${ADVANCED_FACEbig(i + 97, i + 102, i + 107, i + 112, i + 180, i + 157)}
-${ADVANCED_FACEbig(i + 117, i + 122, i + 127, i + 132, i + 195, i + 162)}
-${ADVANCED_BREP_SHAPE_REPRESENTATION(i + 168, i + 169)}
-${MANIFOLD_SOLID_BREP(i + 167, i + 168)}
-${CLOSED_SHELL(i + 137, i + 142, i + 147, i + 152, i + 157, i + 162, i + 167)}
-${PLANEbig(n3, n1, i + 170)}
-${PLANEbig(n1, n6, i + 175)}
-${PLANEbig(n2, n1, i + 180)}
-${PLANEbig(n6, n4, i + 185)}
-${PLANEbig(n4, n3, i + 190)}
-${PLANEbig(n5, n4, i + 195)}
-${MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(parseRgb(m.normal), i + 168, i + 200)}`;
-
-  return [step, 211];
+  const msb = MANIFOLD_SOLID_BREP(
+    CLOSED_SHELL(
+      [
+        // Front
+        ADVANCED_FACE(
+          FACE_BOUND(
+            EDGE_LOOP(
+              [
+                ORIENTED_EDGE(EDGE_CURVE(v1, v2, l1, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v2, v3, l2, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v3, v4, l3, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v4, v1, l4, m), m),
+              ],
+              m
+            ),
+            m
+          ),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d3, d1, m), m),
+          m
+        ),
+        // Back
+        ADVANCED_FACE(
+          FACE_BOUND(
+            EDGE_LOOP(
+              [
+                ORIENTED_EDGE(EDGE_CURVE(v8, v7, l8, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v7, v6, l7, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v6, v5, l6, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v5, v8, l5, m), m),
+              ],
+              m
+            ),
+            m
+          ),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d6, d4, m), m),
+          m
+        ),
+        // Left
+        ADVANCED_FACE(
+          FACE_BOUND(
+            EDGE_LOOP(
+              [
+                ORIENTED_EDGE(EDGE_CURVE(v1, v5, l1, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v5, v8, l5, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v8, v4, l8, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v4, v1, l4, m), m),
+              ],
+              m
+            ),
+            m
+          ),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d4, d3, m), m),
+          m
+        ),
+        // Right
+        ADVANCED_FACE(
+          FACE_BOUND(
+            EDGE_LOOP(
+              [
+                ORIENTED_EDGE(EDGE_CURVE(v2, v6, l2, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v6, v7, l6, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v7, v3, l7, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v3, v2, l3, m), m),
+              ],
+              m
+            ),
+            m
+          ),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d1, d6, m), m),
+          m
+        ),
+        // Top
+        ADVANCED_FACE(
+          FACE_BOUND(
+            EDGE_LOOP(
+              [
+                ORIENTED_EDGE(EDGE_CURVE(v4, v8, l4, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v8, v7, l8, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v7, v3, l7, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v3, v4, l3, m), m),
+              ],
+              m
+            ),
+            m
+          ),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d2, d1, m), m),
+          m
+        ),
+        // Bottom
+        ADVANCED_FACE(
+          FACE_BOUND(
+            EDGE_LOOP(
+              [
+                ORIENTED_EDGE(EDGE_CURVE(v1, v2, l1, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v2, v6, l2, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v6, v5, l6, m), m),
+                ORIENTED_EDGE(EDGE_CURVE(v5, v1, l5, m), m),
+              ],
+              m
+            ),
+            m
+          ),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d5, d4, m), m),
+          m
+        ),
+      ],
+      m
+    ),
+    m
+  );
+  ADVANCED_BREP_SHAPE_REPRESENTATION(AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m), msb, m);
+  MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(
+    STYLED_ITEM(
+      PRESENTATION_STYLE_ASSIGNMENT(
+        SURFACE_STYLE_USAGE(SURFACE_SIDE_STYLE(SURFACE_STYLE_FILL_AREA(FILL_AREA_STYLE_COLOUR(color, m), m), m), m),
+        CURVE_STYLE(DRAUGHTING_PRE_DEFINED_CURVE_FONT("continuous", m), color, m),
+        m
+      ),
+      msb,
+      m
+    ),
+    m
+  );
 }
