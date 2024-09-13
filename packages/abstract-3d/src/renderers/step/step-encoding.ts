@@ -5,12 +5,13 @@ export type MutableStep = { refs: Map<string, number>; step: string };
 const mutate = (step: string, m: MutableStep): number => {
   const prevRef = m.refs.get(step);
   if (prevRef !== undefined) {
-    return prevRef + 1;
+    return prevRef;
   } else {
-    m.refs.set(step, m.refs.size);
+    const newRef = m.refs.size + 1;
+    m.refs.set(step, newRef);
     m.step += `
-#${m.refs.size} = ${step};`;
-    return m.refs.size;
+#${newRef} = ${step};`;
+    return newRef;
   }
 };
 

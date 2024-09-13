@@ -12,14 +12,14 @@ import {
 import { stepBox } from "./step-geometries/step-box";
 import { stepPlane } from "./step-geometries/step-plane";
 
-export const toStep2 = (scene: A3D.Scene): string => {
-  const start = performance.now();
-  for (let i = 0; i < 100; i++) {
-    toStep(scene);
-  }
-  console.log((performance.now() - start) / 100);
-  return "";
-};
+// export const toStep2 = (scene: A3D.Scene): string => {
+//   const start = performance.now();
+//   for (let i = 0; i < 100; i++) {
+//     toStep(scene);
+//   }
+//   console.log((performance.now() - start) / 100);
+//   return "";
+// };
 
 export const toStep = (scene: A3D.Scene): string => {
   const m: MutableStep = { refs: new Map<string, number>([]), step: "" };
