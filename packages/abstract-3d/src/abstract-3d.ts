@@ -233,8 +233,8 @@ export const vec3PosX = vec3(1, 0, 0);
 export const vec3NegX = vec3(-1, 0, 0);
 export const vec3PosY = vec3(0, 1, 0);
 export const vec3NegY = vec3(0, -1, 0);
-export const vec3PosZ = vec3(0, 1, 0);
-export const vec3NegZ = vec3(0, -1, 0);
+export const vec3PosZ = vec3(0, 0, 1);
+export const vec3NegZ = vec3(0, 0, -1);
 
 export const vec2Zero = vec2(0, 0);
 

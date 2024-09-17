@@ -14,6 +14,9 @@ export function Abstract3DExample(): React.ReactNode {
         <button onClick={() => FileSaver.saveAs(new Blob([A3D.toStl(scene)], { type: "text/plain" }), `a3d.stl`)}>
           STL
         </button>
+        <button onClick={() => FileSaver.saveAs(new Blob([A3D.toStep(scene)], { type: "text/plain" }), `a3d.stp`)}>
+          STEP
+        </button>
         <button
           onClick={() =>
             FileSaver.saveAs(
