@@ -35,6 +35,8 @@ export interface Chart {
   readonly labelLayout: LabelLayout;
   readonly padding: Padding;
   readonly axisWidth: number;
+  readonly xPixelsPerTick: number;
+  readonly yPixelsPerTick: number;
 }
 
 export type ChartGrid = { readonly color: AI.Color; readonly thickness: number };
@@ -71,6 +73,8 @@ export function createChart(props: ChartProps): Chart {
     axisWidth: props.axisWidth ?? 80,
     xGrid: { color: props.xGrid?.color ?? AI.gray, thickness: props.xGrid?.thickness ?? 1 },
     yGrid: { color: props.yGrid?.color ?? AI.gray, thickness: props.yGrid?.thickness ?? 1 },
+    xPixelsPerTick: props.xPixelsPerTick ?? 40,
+    yPixelsPerTick: props.yPixelsPerTick ?? 40,
   };
 }
 
@@ -275,11 +279,11 @@ export function renderChart(chart: Chart): AI.AbstractImage {
 
   const renderedBackground = generateBackground(xMin, xMax, yMin, yMax, chart);
 
-  const xNumTicks = gridWidth / 40;
+  const xNumTicks = gridWidth / chart.xPixelsPerTick;
   const renderedXAxisBottom = generateXAxises("bottom", xNumTicks, xAxisesBottom, xMin, xMax, yMin, yMax, chart);
   const renderedXAxisTop = generateXAxises("top", xNumTicks, xAxisesTop, xMin, xMax, yMin, yMax, chart);
 
-  const yNumTicks = gridHeight / 40;
+  const yNumTicks = gridHeight / chart.yPixelsPerTick;
   const renderedYAxisLeft = generateYAxises("left", yNumTicks, yAxisesLeft, xMin, xMax, yMin, yMax, chart);
   const renderedYAxisRight = generateYAxises("right", yNumTicks, yAxisesRight, xMin, xMax, yMin, yMax, chart);
 

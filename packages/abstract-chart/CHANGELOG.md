@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.1.0] - 2024-09-17
+
+### Added
+
+- Support for custom pixels per tick to configure how many ticks should be generated. Default is 40 px/tick as before.
+
 ## [8.0.0] - 2024-06-14
 
 ### Added
