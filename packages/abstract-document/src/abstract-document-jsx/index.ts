@@ -57,7 +57,6 @@ export function render(element: any): any {
   return (element.type as any)({ ...props, children });
 }
 
-//dummy
 function renderChildren(element: React.ReactElement<any>): any {
   if (!element.props || !element.props.children) {
     return [];
