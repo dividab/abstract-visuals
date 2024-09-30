@@ -1,4 +1,4 @@
-import { Vec3 } from "../../abstract-3d";
+import { Vec2, Vec3 } from "../../abstract-3d";
 
 export type MutableStep = { refs: Map<string, number>; step: string };
 
@@ -30,11 +30,21 @@ export const ENDSEC = (): string =>
 ENDSEC;
 END-ISO-10303-21;`;
 
-export const CARTESIAN_POINT = (point: Vec3, m: MutableStep): number =>
-  mutate(`CARTESIAN_POINT('', (${point.x.toFixed(1)}, ${point.y.toFixed(1)}, ${point.z.toFixed(1)}))`, m);
+export const CARTESIAN_POINT = (p: Vec3 | Vec2, m: MutableStep): number =>
+  mutate(
+    `CARTESIAN_POINT('', (${p.x.toFixed(1)}, ${p.y.toFixed(1)}${
+      (p as Vec3)?.z !== undefined ? `, ${(p as Vec3).z.toFixed(1)}` : ""
+    }))`,
+    m
+  );
 
-export const DIRECTION = (direction: Vec3, m: MutableStep): number =>
-  mutate(`DIRECTION('',(${direction.x.toFixed(1)}, ${direction.y.toFixed(1)}, ${direction.z.toFixed(1)}))`, m);
+export const DIRECTION = (d: Vec3 | Vec2, m: MutableStep): number =>
+  mutate(
+    `DIRECTION('',(${d.x.toFixed(1)}, ${d.y.toFixed(1)}${
+      (d as Vec3)?.z !== undefined ? `, ${(d as Vec3).z.toFixed(1)}` : ""
+    }))`,
+    m
+  );
 
 export const VERTEX_POINT = (CARTESIAN_POINT: number, m: MutableStep): number =>
   mutate(`VERTEX_POINT('',#${CARTESIAN_POINT})`, m);
@@ -53,8 +63,12 @@ export const EDGE_CURVE = (VERTEX_POINT_FROM: number, VERTEX_POINT_TO: number, L
 export const ORIENTED_EDGE = (EDGE_CURVE: number, m: MutableStep): number =>
   mutate(`ORIENTED_EDGE('',*,*,#${EDGE_CURVE},.F.)`, m);
 
-export const ADVANCED_FACE = (faceRef: number, planeRef: number, m: MutableStep): number =>
-  mutate(`ADVANCED_FACE('',(#${faceRef}),#${planeRef},.T.)`, m);
+export const ADVANCED_FACE = (
+  faceRef: number,
+  planeOrPcurveRef: number,
+  m: MutableStep,
+  type: "T" | "F" = "T"
+): number => mutate(`ADVANCED_FACE('',(#${faceRef}),#${planeOrPcurveRef},.${type}.)`, m);
 
 export const OPEN_SHELL = (ADVANCED_FACE: number, m: MutableStep): number =>
   mutate(`OPEN_SHELL('',(#${ADVANCED_FACE}))`, m);
@@ -67,6 +81,15 @@ export const EDGE_LOOP = (ORIENTED_EDGE: ReadonlyArray<number>, m: MutableStep):
 
 export const PLANE = (AXIS2_PLACEMENT_3D: number, m: MutableStep): number =>
   mutate(`PLANE('',#${AXIS2_PLACEMENT_3D})`, m);
+
+export const PCURVE = (CYLINDRICAL_SURFACE: number, DEFINITIONAL_REPRESENTATION: number, m: MutableStep): number =>
+  mutate(`PCURVE('',#${CYLINDRICAL_SURFACE},#${DEFINITIONAL_REPRESENTATION})`, m);
+
+export const CYLINDRICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, m: MutableStep): number =>
+  mutate(`CYLINDRICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},2.)`, m);
+
+export const DEFINITIONAL_REPRESENTATION = (LINE: number, VECTOR: number, m: MutableStep): number =>
+  mutate(`DEFINITIONAL_REPRESENTATION('',(#${LINE}),#${VECTOR})`, m);
 
 export const SHELL_BASED_SURFACE_MODEL = (OPEN_SHELL: number, m: MutableStep): number =>
   mutate(`SHELL_BASED_SURFACE_MODEL('',(#${OPEN_SHELL}))`, m);

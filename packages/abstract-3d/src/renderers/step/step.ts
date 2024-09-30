@@ -24,13 +24,14 @@ import { stepPlane } from "./step-geometries/step-plane";
 export const toStep = (scene: A3D.Scene): string => {
   const m: MutableStep = { refs: new Map<string, number>([]), step: "" };
   GEOMETRIC_REPRESENTATION_CONTEXT_3D(
+    // 1
     LENGTH_UNIT(m),
     NAMED_UNIT("PLANE_ANGLE_UNIT() SI_UNIT($,.RADIAN.)", m),
     NAMED_UNIT("SI_UNIT($,.STERADIAN.) SOLID_ANGLE_UNIT()", m),
     m
   );
   UNCERTAINTY_MEASURE_WITH_UNIT(LENGTH_UNIT(m), m);
-  GEOMETRIC_REPRESENTATION_CONTEXT_2D(m);
+  GEOMETRIC_REPRESENTATION_CONTEXT_2D(m); //
 
   for (const g of scene.groups) {
     stepGroup(g, scene.center_deprecated ?? A3D.vec3Zero, scene.rotation_deprecated ?? A3D.vec3Zero, m);
