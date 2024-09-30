@@ -329,7 +329,7 @@ function generateLineChartDiscreteXAxis(): AC.Chart {
     labelRotation: -25,
     tickLabelDisp: 25,
     axisFontSize: 18,
-    thickness: 3,
+    thickness: 2,
     axisColor: { r: 0, b: 0, g: 0, a: 255 },
   };
   const yAxis: AC.Axis = {
@@ -345,6 +345,28 @@ function generateLineChartDiscreteXAxis(): AC.Chart {
   const chart = AC.createChart({
     chartLines: [],
     xAxisesBottom: [xAxis],
+    xAxisesTop: [
+      {
+        type: "linear",
+        min: 0,
+        max: 8,
+        label: "",
+        thickness: 2,
+        axisColor: { r: 0, b: 0, g: 0, a: 255 },
+        noTicks: true,
+      },
+    ],
+    yAxisesRight: [
+      {
+        type: "linear",
+        noTicks: true,
+        min: yMin,
+        max: yMax + 1,
+        label: "",
+        thickness: 2,
+        axisColor: { r: 0, b: 0, g: 0, a: 255 },
+      },
+    ],
     fontSize: 12,
     yAxisesLeft: [yAxis],
     labelLayout: "center",

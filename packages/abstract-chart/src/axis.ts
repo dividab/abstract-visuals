@@ -4,7 +4,7 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 export type Axis = LinearAxis | LogarithmicAxis | DiscreteAxis;
 
 export type AxisBase = {
-  readonly label: string;
+  readonly label?: string;
   readonly labelRotation?: number;
   readonly tickLabelDisp?: number;
   readonly labelColor?: AI.Color;
@@ -14,6 +14,7 @@ export type AxisBase = {
   readonly tickFontSize?: number;
   readonly axisFontSize?: number;
   readonly id?: string;
+  readonly noTicks?: boolean;
 };
 
 export type LinearAxis = AxisBase & { readonly type: "linear"; readonly min: number; readonly max: number };
@@ -21,15 +22,28 @@ export type LinearAxis = AxisBase & { readonly type: "linear"; readonly min: num
 export function createLinearAxis(
   min: number,
   max: number,
-  label: string,
+  label?: string,
   labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number,
   thickness?: number,
   axisColor?: AI.Color,
-  id?: string
+  id?: string,
+  noTicks?: boolean
 ): LinearAxis {
-  return { type: "linear", min, max, label, labelColor, labelRotation, tickLabelDisp, thickness, axisColor, id };
+  return {
+    type: "linear",
+    min,
+    max,
+    label,
+    labelColor,
+    labelRotation,
+    tickLabelDisp,
+    thickness,
+    axisColor,
+    id,
+    noTicks,
+  };
 }
 
 export type LogarithmicAxis = AxisBase & { readonly type: "logarithmic"; readonly min: number; readonly max: number };
@@ -37,18 +51,34 @@ export type LogarithmicAxis = AxisBase & { readonly type: "logarithmic"; readonl
 export function createLogarithmicAxis(
   min: number,
   max: number,
-  label: string,
+  label?: string,
   labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number,
   thickness?: number,
   axisColor?: AI.Color,
-  id?: string
+  id?: string,
+  noTicks?: boolean
 ): LogarithmicAxis {
-  return { type: "logarithmic", min, max, labelColor, label, labelRotation, tickLabelDisp, thickness, axisColor, id };
+  return {
+    type: "logarithmic",
+    min,
+    max,
+    labelColor,
+    label,
+    labelRotation,
+    tickLabelDisp,
+    thickness,
+    axisColor,
+    id,
+    noTicks,
+  };
 }
 
-export type DiscreteAxis = AxisBase & { readonly type: "discrete"; readonly points: ReadonlyArray<DiscreteAxisPoint> };
+export type DiscreteAxis = AxisBase & {
+  readonly type: "discrete";
+  readonly points: ReadonlyArray<DiscreteAxisPoint>;
+};
 
 export interface DiscreteAxisPoint {
   readonly value: number;
@@ -57,15 +87,27 @@ export interface DiscreteAxisPoint {
 
 export function createDiscreteAxis(
   points: ReadonlyArray<DiscreteAxisPoint>,
-  label: string,
+  label?: string,
   labelColor?: AI.Color,
   labelRotation?: number,
   tickLabelDisp?: number,
   thickness?: number,
   axisColor?: AI.Color,
-  id?: string
+  id?: string,
+  noTicks?: boolean
 ): DiscreteAxis {
-  return { type: "discrete", points, labelColor, label, labelRotation, tickLabelDisp, thickness, axisColor, id };
+  return {
+    type: "discrete",
+    points,
+    labelColor,
+    label,
+    labelRotation,
+    tickLabelDisp,
+    thickness,
+    axisColor,
+    id,
+    noTicks,
+  };
 }
 
 const linearMultiples = [1, 2, 5];

@@ -257,10 +257,26 @@ export function inverseTransformPoint(point: AI.Point, chart: Chart, xAxis: XAxi
 
 function finalPadding(chart: Chart): Padding {
   return {
-    bottom: chart.padding.bottom + (chart.xAxisesBottom.length + chart.chartDataAxisesBottom.length) * chart.axisWidth,
-    top: chart.padding.top + (chart.xAxisesTop.length + chart.chartDataAxisesTop.length) * chart.axisWidth,
-    left: chart.padding.left + (chart.yAxisesLeft.length + chart.chartDataAxisesLeft.length) * chart.axisWidth,
-    right: chart.padding.right + (chart.yAxisesRight.length + chart.chartDataAxisesRight.length) * chart.axisWidth,
+    bottom:
+      chart.padding.bottom +
+      (chart.xAxisesBottom.filter((a) => !a.noTicks || a.label).length +
+        chart.chartDataAxisesBottom.filter((a) => !a.noTicks || a.label).length) *
+        chart.axisWidth,
+    top:
+      chart.padding.top +
+      (chart.xAxisesTop.filter((a) => !a.noTicks || a.label).length +
+        chart.chartDataAxisesTop.filter((a) => !a.noTicks || a.label).length) *
+        chart.axisWidth,
+    left:
+      chart.padding.left +
+      (chart.yAxisesLeft.filter((a) => !a.noTicks || a.label).length +
+        chart.chartDataAxisesLeft.filter((a) => !a.noTicks || a.label).length) *
+        chart.axisWidth,
+    right:
+      chart.padding.right +
+      (chart.yAxisesRight.filter((a) => !a.noTicks || a.label).length +
+        chart.chartDataAxisesRight.filter((a) => !a.noTicks || a.label).length) *
+        chart.axisWidth,
   };
 }
 
@@ -281,8 +297,8 @@ export function renderChart(chart: Chart): AI.AbstractImage {
 
   const xNumTicks = gridWidth / chart.xPixelsPerTick;
   const [xleft, xRight] = [
-    yAxisesLeft[0]?.thickness ?? chart.xGrid.thickness / 2,
-    yAxisesRight[0]?.thickness ?? chart.xGrid.thickness / 2,
+    yAxisesLeft[0] ? yAxisesLeft[0].thickness ?? 1 : chart.xGrid.thickness / 2,
+    yAxisesRight[0] ? yAxisesRight[0].thickness ?? 1 : chart.xGrid.thickness / 2,
   ];
   const [xAxisBottom, yAxisGridBottom] = xAxises(
     "bottom",
@@ -300,8 +316,8 @@ export function renderChart(chart: Chart): AI.AbstractImage {
 
   const yNumTicks = gridHeight / chart.yPixelsPerTick;
   const [yBottom, yTop] = [
-    xAxisesBottom[0]?.thickness ?? chart.yGrid.thickness / 2,
-    xAxisesTop[0]?.thickness ?? chart.yGrid.thickness / 2,
+    xAxisesBottom[0] ? xAxisesBottom[0].thickness ?? 1 : chart.xGrid.thickness / 2,
+    xAxisesTop[0] ? xAxisesTop[0].thickness ?? 1 : chart.xGrid.thickness / 2,
   ];
 
   const [yAxisLeft, xAxisGridLeft] = yAxises(
@@ -428,7 +444,7 @@ export function xAxises(
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && xAxis === "bottom";
     const xTicks = Axis.getTicks(xNumTicks, axis);
-    if (chart.xGrid) {
+    if (chart.xGrid && !axis.noTicks) {
       gridLineComponents.push(
         generateXAxisGridLines(xMin, xMax, lineY + dirFactor * 10, fullGrid ? yMax : lineY, xTicks, axis, chart.xGrid)
       );
@@ -441,32 +457,39 @@ export function xAxises(
         { x: xMax + (ix == 0 ? xMaxLineThicknessAdjustment : chart.xGrid.thickness / 2), y: lineY + lineDisp },
         axis.axisColor ?? AI.gray,
         thickness
-      ),
-      generateXAxisLabels(xMin, xMax, lineY + dirFactor * 12, xAxis === "bottom" ? "down" : "up", xTicks, axis, chart)
+      )
     );
+    if (!axis.noTicks) {
+      components.push(
+        generateXAxisLabels(xMin, xMax, lineY + dirFactor * 12, xAxis === "bottom" ? "down" : "up", xTicks, axis, chart)
+      );
+    }
 
-    const axisLabelPosY = lineY + dirFactor * chart.axisWidth * axisLabelPosFactor;
-    switch (chart.labelLayout) {
-      case "original":
-        components.push(
-          generateXAxisLabel(
-            xMax + chart.padding.right,
-            lineY + (axis.tickLabelDisp ?? 10),
-            "uniform",
-            "down",
-            axis,
-            chart
-          )
-        );
-        break;
-      case "end":
-        components.push(generateXAxisLabel(xMax, axisLabelPosY, "left", "uniform", axis, chart));
-        break;
-      case "center":
-        components.push(generateXAxisLabel((xMin + xMax) / 2, axisLabelPosY, "uniform", "uniform", axis, chart));
-        break;
-      default:
-        return exhaustiveCheck(chart.labelLayout);
+    if (axis.label) {
+      const axisLabelPosY = lineY + dirFactor * chart.axisWidth * axisLabelPosFactor;
+
+      switch (chart.labelLayout) {
+        case "original":
+          components.push(
+            generateXAxisLabel(
+              xMax + chart.padding.right,
+              lineY + (axis.tickLabelDisp ?? 10),
+              "uniform",
+              "down",
+              axis,
+              chart
+            )
+          );
+          break;
+        case "end":
+          components.push(generateXAxisLabel(xMax, axisLabelPosY, "left", "uniform", axis, chart));
+          break;
+        case "center":
+          components.push(generateXAxisLabel((xMin + xMax) / 2, axisLabelPosY, "uniform", "uniform", axis, chart));
+          break;
+        default:
+          return exhaustiveCheck(chart.labelLayout);
+      }
     }
     lineY += dirFactor * chart.axisWidth;
   }
@@ -493,7 +516,7 @@ export function yAxises(
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && yAxis === "left";
     const yTicks = Axis.getTicks(yNumTicks, axis);
-    if (chart.yGrid) {
+    if (chart.yGrid && !axis.noTicks) {
       gridLineComponents.push(
         generateYAxisLines(
           lineX + dirFactor * 10,
@@ -515,28 +538,32 @@ export function yAxises(
         { x: lineX + lineDisp, y: yMax - (ix == 0 ? yMaxLineThicknessAdjustment : chart.yGrid.thickness / 2) },
         axis.axisColor ?? AI.gray,
         axis.thickness ?? 1
-      ),
-      generateYAxisLabels(lineX + dirFactor * 12, yMin, yMax, yAxis, yTicks, axis, chart)
+      )
     );
+    if (!axis.noTicks) {
+      components.push(generateYAxisLabels(lineX + dirFactor * 12, yMin, yMax, yAxis, yTicks, axis, chart));
+    }
 
-    const axisLabelPosX = lineX + dirFactor * chart.axisWidth * axisLabelPosFactor;
-    const rotation = yAxis === "left" ? -90 : 90;
-    switch (chart.labelLayout) {
-      case "original":
-        components.push(
-          generateYAxisLabel(axisLabelPosX, yMax + 0.5 * chart.padding.bottom, rotation, "uniform", "up", axis, chart)
-        );
-        break;
-      case "end":
-        components.push(generateYAxisLabel(axisLabelPosX, yMax, rotation, yAxis, "uniform", axis, chart));
-        break;
-      case "center":
-        components.push(
-          generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, rotation, "uniform", "uniform", axis, chart)
-        );
-        break;
-      default:
-        return exhaustiveCheck(chart.labelLayout);
+    if (axis.label) {
+      const axisLabelPosX = lineX + dirFactor * chart.axisWidth * axisLabelPosFactor;
+      const rotation = yAxis === "left" ? -90 : 90;
+      switch (chart.labelLayout) {
+        case "original":
+          components.push(
+            generateYAxisLabel(axisLabelPosX, yMax + 0.5 * chart.padding.bottom, rotation, "uniform", "up", axis, chart)
+          );
+          break;
+        case "end":
+          components.push(generateYAxisLabel(axisLabelPosX, yMax, rotation, yAxis, "uniform", axis, chart));
+          break;
+        case "center":
+          components.push(
+            generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, rotation, "uniform", "uniform", axis, chart)
+          );
+          break;
+        default:
+          return exhaustiveCheck(chart.labelLayout);
+      }
     }
     lineX += dirFactor * chart.axisWidth;
   }
@@ -1100,7 +1127,7 @@ export function generateXAxisLabel(
   const position = AI.createPoint(x, y);
   return AI.createText(
     position,
-    axis.label,
+    axis.label ?? "",
     chart.font,
     axis.axisFontSize ?? chart.fontSize,
     axis.labelColor ?? AI.black,
@@ -1189,7 +1216,7 @@ export function generateYAxisLabel(
   const position = AI.createPoint(x, y);
   return AI.createText(
     position,
-    axis.label,
+    axis.label ?? "",
     chart.font,
     axis.axisFontSize ?? chart.fontSize,
     axis.labelColor ?? AI.black,
