@@ -1,6 +1,6 @@
 {
   "name": "abstract-document",
-  "version": "11.2.2",
+  "version": "11.2.5",
   "description": "Dynamically create documents using code or JSX and render to any format",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
   "main": "lib/index.js",
@@ -18,7 +18,7 @@
     "abstract-image": "^8.2.0",
     "base64-js": "^1.5.1",
     "docx": "^6.0.3",
-    "fast-xml-parser": "^4.4.0",
+    "fast-xml-parser": "^4.5.0",
     "mustache": "^4.2.0",
     "pdfkit": "^0.15.0",
     "remark-parse": "^6.0.3",
