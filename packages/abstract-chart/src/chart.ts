@@ -280,12 +280,54 @@ export function renderChart(chart: Chart): AI.AbstractImage {
   const renderedBackground = generateBackground(xMin, xMax, yMin, yMax, chart);
 
   const xNumTicks = gridWidth / chart.xPixelsPerTick;
-  const renderedXAxisBottom = generateXAxises("bottom", xNumTicks, xAxisesBottom, xMin, xMax, yMin, yMax, chart);
-  const renderedXAxisTop = generateXAxises("top", xNumTicks, xAxisesTop, xMin, xMax, yMin, yMax, chart);
+  const [xleft, xRight] = [
+    yAxisesLeft[0]?.thickness ?? chart.xGrid.thickness / 2,
+    yAxisesRight[0]?.thickness ?? chart.xGrid.thickness / 2,
+  ];
+  const [xAxisBottom, yAxisGridBottom] = xAxises(
+    "bottom",
+    xNumTicks,
+    xAxisesBottom,
+    xMin,
+    xMax,
+    yMin,
+    yMax,
+    xleft,
+    xRight,
+    chart
+  );
+  const [xAxisTop, yAxisGridTop] = xAxises("top", xNumTicks, xAxisesTop, xMin, xMax, yMin, yMax, xleft, xRight, chart);
 
   const yNumTicks = gridHeight / chart.yPixelsPerTick;
-  const renderedYAxisLeft = generateYAxises("left", yNumTicks, yAxisesLeft, xMin, xMax, yMin, yMax, chart);
-  const renderedYAxisRight = generateYAxises("right", yNumTicks, yAxisesRight, xMin, xMax, yMin, yMax, chart);
+  const [yBottom, yTop] = [
+    xAxisesBottom[0]?.thickness ?? chart.yGrid.thickness / 2,
+    xAxisesTop[0]?.thickness ?? chart.yGrid.thickness / 2,
+  ];
+
+  const [yAxisLeft, xAxisGridLeft] = yAxises(
+    "left",
+    yNumTicks,
+    yAxisesLeft,
+    xMin,
+    xMax,
+    yMin,
+    yMax,
+    yBottom,
+    yTop,
+    chart
+  );
+  const [yAxisRight, xAxisGridRight] = yAxises(
+    "right",
+    yNumTicks,
+    yAxisesRight,
+    xMin,
+    xMax,
+    yMin,
+    yMax,
+    yBottom,
+    yTop,
+    chart
+  );
 
   const renderedPoints = generatePoints(xMin, xMax, yMin, yMax, chart);
   const renderedLines = generateLines(xMin, xMax, yMin, yMax, chart);
@@ -336,10 +378,14 @@ export function renderChart(chart: Chart): AI.AbstractImage {
 
   const components = [
     renderedBackground,
-    renderedXAxisBottom,
-    renderedXAxisTop,
-    renderedYAxisLeft,
-    renderedYAxisRight,
+    xAxisGridLeft,
+    xAxisGridRight,
+    yAxisGridBottom,
+    yAxisGridTop,
+    xAxisBottom,
+    xAxisTop,
+    yAxisLeft,
+    yAxisRight,
     renderedStack,
     renderedLines,
     renderedPoints,
@@ -363,7 +409,7 @@ export function generateBackground(xMin: number, xMax: number, yMin: number, yMa
   );
 }
 
-export function generateXAxises(
+export function xAxises(
   xAxis: XAxis,
   xNumTicks: number,
   axises: ReadonlyArray<Axis.Axis>,
@@ -371,21 +417,31 @@ export function generateXAxises(
   xMax: number,
   yMin: number,
   yMax: number,
+  xMinLineThicknessAdjustment: number,
+  xMaxLineThicknessAdjustment: number,
   chart: Chart
-): AI.Component {
+): readonly [AI.Component, AI.Component] {
   const components = Array<AI.Component>();
+  const gridLineComponents = Array<AI.Component>();
   let lineY = xAxis === "bottom" ? yMin : yMax;
   const dirFactor = xAxis == "bottom" ? 1 : -1;
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && xAxis === "bottom";
     const xTicks = Axis.getTicks(xNumTicks, axis);
     if (chart.xGrid) {
-      components.push(
+      gridLineComponents.push(
         generateXAxisGridLines(xMin, xMax, lineY + dirFactor * 10, fullGrid ? yMax : lineY, xTicks, axis, chart.xGrid)
       );
     }
+    const thickness = axis.thickness ?? 1;
+    const lineDisp = ix == 0 ? (xAxis === "bottom" ? thickness / 2 : -thickness / 2) : 0;
     components.push(
-      AI.createLine({ x: xMin, y: lineY }, { x: xMax, y: lineY }, axis.axisColor ?? AI.gray, axis.thickness ?? 1),
+      AI.createLine(
+        { x: xMin - (ix == 0 ? xMinLineThicknessAdjustment : chart.xGrid.thickness / 2), y: lineY + lineDisp },
+        { x: xMax + (ix == 0 ? xMaxLineThicknessAdjustment : chart.xGrid.thickness / 2), y: lineY + lineDisp },
+        axis.axisColor ?? AI.gray,
+        thickness
+      ),
       generateXAxisLabels(xMin, xMax, lineY + dirFactor * 12, xAxis === "bottom" ? "down" : "up", xTicks, axis, chart)
     );
 
@@ -415,10 +471,10 @@ export function generateXAxises(
     lineY += dirFactor * chart.axisWidth;
   }
 
-  return AI.createGroup(xAxis + "XAxis", components);
+  return [AI.createGroup(xAxis + "XAxis", components), AI.createGroup(xAxis + "XAxisGridLines", gridLineComponents)];
 }
 
-export function generateYAxises(
+export function yAxises(
   yAxis: YAxis,
   yNumTicks: number,
   axises: ReadonlyArray<Axis.Axis>,
@@ -426,21 +482,40 @@ export function generateYAxises(
   xMax: number,
   yMin: number,
   yMax: number,
+  yMinLineThicknessAdjustment: number,
+  yMaxLineThicknessAdjustment: number,
   chart: Chart
-): AI.Component {
+): readonly [AI.Component, AI.Component] {
   const components = Array<AI.Component>();
+  const gridLineComponents = Array<AI.Component>();
   let lineX = yAxis === "left" ? xMin : xMax;
   const dirFactor = yAxis == "left" ? -1 : 1;
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && yAxis === "left";
     const yTicks = Axis.getTicks(yNumTicks, axis);
     if (chart.yGrid) {
-      components.push(
-        generateYAxisLines(lineX + dirFactor * 10, fullGrid ? xMax : lineX, yMin, yMax, yTicks, axis, chart.yGrid)
+      gridLineComponents.push(
+        generateYAxisLines(
+          lineX + dirFactor * 10,
+          fullGrid ? xMax : lineX,
+          yMin,
+          yMax,
+          yTicks,
+          axis,
+          chart.yGrid,
+          chart.xGrid
+        )
       );
     }
+    const thickness = axis.thickness ?? 1;
+    const lineDisp = ix == 0 ? (yAxis === "left" ? -thickness / 2 : thickness / 2) : 0;
     components.push(
-      AI.createLine({ x: lineX, y: yMin }, { x: lineX, y: yMax }, axis.axisColor ?? AI.gray, axis.thickness ?? 1),
+      AI.createLine(
+        { x: lineX + lineDisp, y: yMin + (ix == 0 ? yMinLineThicknessAdjustment : chart.yGrid.thickness / 2) },
+        { x: lineX + lineDisp, y: yMax - (ix == 0 ? yMaxLineThicknessAdjustment : chart.yGrid.thickness / 2) },
+        axis.axisColor ?? AI.gray,
+        axis.thickness ?? 1
+      ),
       generateYAxisLabels(lineX + dirFactor * 12, yMin, yMax, yAxis, yTicks, axis, chart)
     );
 
@@ -466,7 +541,7 @@ export function generateYAxises(
     lineX += dirFactor * chart.axisWidth;
   }
 
-  return AI.createGroup("YAxisLeft", components);
+  return [AI.createGroup("YAxisLeft", components), AI.createGroup("YAxisLeftGridLines", gridLineComponents)];
 }
 
 export function generateDataAxisesX(
@@ -960,13 +1035,13 @@ export function generateXAxisGridLines(
   yMax: number,
   xTicks: ReadonlyArray<Axis.DiscreteAxisPoint>,
   xAxis: Axis.Axis,
-  grid: { readonly color: AI.Color; readonly thickness: number }
+  xGrid: { readonly color: AI.Color; readonly thickness: number }
 ): AI.Component {
   const xLines = xTicks.map((l) => {
     const x = Axis.transformValue(l.value, xMin, xMax, xAxis);
     const start = AI.createPoint(x, yMin);
     const end = AI.createPoint(x, yMax);
-    return AI.createLine(start, end, grid.color, grid.thickness);
+    return AI.createLine(start, end, xGrid.color, xGrid.thickness);
   });
 
   return AI.createGroup("Lines", xLines);
@@ -1048,13 +1123,14 @@ export function generateYAxisLines(
   yMax: number,
   yTicks: ReadonlyArray<Axis.DiscreteAxisPoint>,
   yAxis: Axis.Axis,
-  grid: { readonly color: AI.Color; readonly thickness: number }
+  yGrid: { readonly color: AI.Color; readonly thickness: number },
+  xGrid: { readonly color: AI.Color; readonly thickness: number }
 ): AI.Component {
   const yLines = yTicks.map((l) => {
     const y = Axis.transformValue(l.value, yMin, yMax, yAxis);
-    const start = AI.createPoint(xMin, y);
-    const end = AI.createPoint(xMax, y);
-    return AI.createLine(start, end, grid.color, grid.thickness);
+    const start = AI.createPoint(xMin - xGrid.thickness / 2, y);
+    const end = AI.createPoint(xMax + xGrid.thickness / 2, y);
+    return AI.createLine(start, end, yGrid.color, yGrid.thickness);
   });
   return AI.createGroup("Lines", yLines);
 }

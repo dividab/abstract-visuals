@@ -99,7 +99,7 @@ function generateLineChart(hovered: string): AC.Chart {
         undefined,
         undefined,
         undefined,
-        undefined,
+        2,
         undefined,
         "x-bottom-1"
       ),
@@ -110,58 +110,18 @@ function generateLineChart(hovered: string): AC.Chart {
         undefined,
         undefined,
         undefined,
-        undefined,
+        2,
         undefined,
         "x-bottom-2"
       ),
     ],
     xAxisesTop: [
-      AC.createLinearAxis(
-        xMin,
-        xMax,
-        "Days with cold top 1",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        "x-top-1"
-      ),
-      AC.createLinearAxis(
-        xMin,
-        xMax,
-        "Days with cold top 2",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        "x-top-2"
-      ),
+      AC.createLinearAxis(xMin, xMax, "Days with cold top 1", undefined, undefined, undefined, 2, undefined, "x-top-1"),
+      AC.createLinearAxis(xMin, xMax, "Days with cold top 2", undefined, undefined, undefined, 2, undefined, "x-top-2"),
     ],
     yAxisesLeft: [
-      AC.createLinearAxis(
-        yMin,
-        yMax + 1,
-        "Badness left 1",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        "y-left-1"
-      ),
-      AC.createLinearAxis(
-        yMin,
-        yMax + 1,
-        "Badness left 2",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        "y-left-2"
-      ),
+      AC.createLinearAxis(yMin, yMax + 1, "Badness left 1", undefined, undefined, undefined, 2, undefined, "y-left-1"),
+      AC.createLinearAxis(yMin, yMax + 1, "Badness left 2", undefined, undefined, undefined, 2, undefined, "y-left-2"),
     ],
     yAxisesRight: [
       AC.createLinearAxis(
@@ -171,7 +131,7 @@ function generateLineChart(hovered: string): AC.Chart {
         undefined,
         undefined,
         undefined,
-        undefined,
+        2,
         undefined,
         "y-right-1"
       ),
@@ -182,7 +142,7 @@ function generateLineChart(hovered: string): AC.Chart {
         undefined,
         undefined,
         undefined,
-        undefined,
+        2,
         undefined,
         "y-right-2"
       ),
@@ -235,7 +195,7 @@ function generateStackedChart(): AC.Chart {
     yAxis: "left",
     config: [
       AC.createChartStackConfig({
-        color: AI.red,
+        color: { r: 255, b: 0, g: 0, a: 120 },
         label: "How bad you feel",
       }),
       AC.createChartStackConfig({
@@ -369,6 +329,8 @@ function generateLineChartDiscreteXAxis(): AC.Chart {
     labelRotation: -25,
     tickLabelDisp: 25,
     axisFontSize: 18,
+    thickness: 3,
+    axisColor: { r: 0, b: 0, g: 0, a: 255 },
   };
   const yAxis: AC.Axis = {
     type: "linear",
@@ -377,9 +339,11 @@ function generateLineChartDiscreteXAxis(): AC.Chart {
     label: "Badness",
     axisFontSize: 15,
     tickFontSize: 14,
+    thickness: 7,
+    axisColor: { r: 0, b: 0, g: 0, a: 255 },
   };
   const chart = AC.createChart({
-    chartLines: series,
+    chartLines: [],
     xAxisesBottom: [xAxis],
     fontSize: 12,
     yAxisesLeft: [yAxis],
