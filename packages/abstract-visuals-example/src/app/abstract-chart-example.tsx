@@ -375,7 +375,7 @@ function generateLineChartDiscreteXAxis(): AC.Chart {
 
   return chart;
 }
-
+//dummy
 function generateBarChart(): AC.Chart {
   const xAxis: AC.Axis = {
     type: "linear",
