@@ -188,6 +188,7 @@ export interface Rectangle {
   readonly strokeDashStyle: DashStyle.DashStyle;
   readonly fillColor: Color.Color;
   readonly id: string | undefined;
+  readonly radius?: Point.Point;
 }
 
 export function createRectangle(
@@ -197,7 +198,8 @@ export function createRectangle(
   strokeThickness: number,
   fillColor: Color.Color,
   id?: string,
-  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
+  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine,
+  radius?: Point.Point
 ): Rectangle {
   return {
     type: "rectangle",
@@ -208,6 +210,7 @@ export function createRectangle(
     strokeDashStyle: strokeDashStyle,
     fillColor: fillColor,
     id: id,
+    radius,
   };
 }
 

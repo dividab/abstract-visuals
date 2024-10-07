@@ -63,7 +63,11 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
   const color = COLOUR_RGB(parseRgb(mat.normal), m);
   const sbsm = SHELL_BASED_SURFACE_MODEL(
     OPEN_SHELL(
-      ADVANCED_FACE(FACE_BOUND(EDGE_LOOP([oe1, oe2, oe3, oe4], m), m), PLANE(AXIS2_PLACEMENT_3D(c0, d2, d1, m), m), m),
+      ADVANCED_FACE(
+        FACE_BOUND(EDGE_LOOP([oe1, oe2, oe3, oe4], m), "T", m),
+        PLANE(AXIS2_PLACEMENT_3D(c0, d2, d1, m), m),
+        m
+      ),
       m
     ),
     m

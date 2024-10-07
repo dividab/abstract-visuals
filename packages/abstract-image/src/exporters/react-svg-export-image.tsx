@@ -242,6 +242,7 @@ function Component({ component }: { readonly component: AbstractImage.Component 
           strokeDasharray={strokeDasharray}
           strokeDashoffset={strokeDashoffset}
           fillOpacity={colorToOpacity(component.fillColor)}
+          {...(component.radius ? { rx: component.radius.x.toString(), ry: component.radius.y.toString() } : {})}
           fill={colorToRgb(component.fillColor)}
         />
       );

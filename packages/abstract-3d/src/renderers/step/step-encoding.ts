@@ -63,6 +63,12 @@ export const EDGE_CURVE = (VERTEX_POINT_FROM: number, VERTEX_POINT_TO: number, L
 export const ORIENTED_EDGE = (EDGE_CURVE: number, m: MutableStep): number =>
   mutate(`ORIENTED_EDGE('',*,*,#${EDGE_CURVE},.F.)`, m);
 
+export const SURFACE_CURVE = (CIRCLE: number, PCURVE1: number, PCURVE2: number, m: MutableStep): number =>
+  mutate(`SURFACE_CURVE('',#${CIRCLE},(#${PCURVE1},#${PCURVE2}),.PCURVE_S1.)`, m);
+
+export const SEAM_CURVE = (LINE: number, PCURVE1: number, PCURVE2: number, m: MutableStep): number =>
+  mutate(`SEAM_CURVE('',#${LINE},(#${PCURVE1},#${PCURVE2}),.PCURVE_S1.)`, m);
+
 export const ADVANCED_FACE = (
   faceRef: number,
   planeOrPcurveRef: number,
@@ -73,8 +79,8 @@ export const ADVANCED_FACE = (
 export const OPEN_SHELL = (ADVANCED_FACE: number, m: MutableStep): number =>
   mutate(`OPEN_SHELL('',(#${ADVANCED_FACE}))`, m);
 
-export const FACE_BOUND = (EDGE_CURVE: number, m: MutableStep): number =>
-  mutate(`FACE_BOUND('',#${EDGE_CURVE},.T.)`, m);
+export const FACE_BOUND = (EDGE_CURVE: number, type: "T" | "F", m: MutableStep): number =>
+  mutate(`FACE_BOUND('',#${EDGE_CURVE},.${type}.)`, m);
 
 export const EDGE_LOOP = (ORIENTED_EDGE: ReadonlyArray<number>, m: MutableStep): number =>
   mutate(`EDGE_LOOP('',(${ORIENTED_EDGE.map((af) => `#${af}`).join(",")}))`, m);
@@ -82,14 +88,17 @@ export const EDGE_LOOP = (ORIENTED_EDGE: ReadonlyArray<number>, m: MutableStep):
 export const PLANE = (AXIS2_PLACEMENT_3D: number, m: MutableStep): number =>
   mutate(`PLANE('',#${AXIS2_PLACEMENT_3D})`, m);
 
-export const PCURVE = (CYLINDRICAL_SURFACE: number, DEFINITIONAL_REPRESENTATION: number, m: MutableStep): number =>
-  mutate(`PCURVE('',#${CYLINDRICAL_SURFACE},#${DEFINITIONAL_REPRESENTATION})`, m);
+export const PCURVE = (
+  CYLINDRICAL_SURFACE_or_PLANE: number,
+  DEFINITIONAL_REPRESENTATION: number,
+  m: MutableStep
+): number => mutate(`PCURVE('',#${CYLINDRICAL_SURFACE_or_PLANE},#${DEFINITIONAL_REPRESENTATION})`, m);
 
 export const CYLINDRICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, m: MutableStep): number =>
   mutate(`CYLINDRICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},2.)`, m);
 
-export const DEFINITIONAL_REPRESENTATION = (LINE: number, VECTOR: number, m: MutableStep): number =>
-  mutate(`DEFINITIONAL_REPRESENTATION('',(#${LINE}),#${VECTOR})`, m);
+export const DEFINITIONAL_REPRESENTATION = (LINEorCircle: number, m: MutableStep): number =>
+  mutate(`DEFINITIONAL_REPRESENTATION('',(#${LINEorCircle}),#7)`, m);
 
 export const SHELL_BASED_SURFACE_MODEL = (OPEN_SHELL: number, m: MutableStep): number =>
   mutate(`SHELL_BASED_SURFACE_MODEL('',(#${OPEN_SHELL}))`, m);

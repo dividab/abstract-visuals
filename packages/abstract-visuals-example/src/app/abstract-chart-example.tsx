@@ -376,6 +376,70 @@ function generateLineChartDiscreteXAxis(): AC.Chart {
   return chart;
 }
 
+function generateBarChart(): AC.Chart {
+  const xAxis: AC.Axis = {
+    type: "linear",
+    min: 0,
+    max: 10,
+    label: "Time",
+    labelRotation: -25,
+    tickLabelDisp: 25,
+    axisFontSize: 18,
+    thickness: 1,
+    axisColor: { r: 0, b: 0, g: 0, a: 255 },
+  };
+  const yAxis: AC.Axis = {
+    type: "linear",
+    min: 0,
+    max: 30,
+    label: "Badness",
+    axisFontSize: 15,
+    tickFontSize: 14,
+    thickness: 1,
+    axisColor: { r: 0, b: 0, g: 0, a: 255 },
+  };
+  const chartBase: AC.ChartBars = {
+    direction: "y",
+    width: 0.4,
+    radius: { x: 2, y: 2 },
+    xAxis: "bottom",
+    yAxis: "left",
+    position: 0,
+    bars: [],
+  };
+  const chart = AC.createChart({
+    chartLines: [],
+    chartBars: [
+      {
+        ...chartBase,
+        position: 1,
+        bars: [
+          { max: 10, min: 0, color: AI.fromArgb(255, 255, 0, 0) },
+          { max: 5, min: 0, color: AI.fromArgb(255, 0, 0, 255) },
+          { max: 7, min: 0, color: AI.fromArgb(255, 0, 255, 0) },
+        ],
+      },
+      { ...chartBase, position: 3, bars: [{ max: 4, color: AI.fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 4, bars: [{ max: 2, color: AI.fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 6, bars: [{ max: 4, color: AI.fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 7, bars: [{ max: 5, color: AI.fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 9, bars: [{ max: 8, color: AI.fromArgb(255, 255, 0, 0) }] },
+    ],
+    xAxisesBottom: [xAxis],
+    xAxisesTop: [{ type: "linear", min: 0, max: 8, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 }, noTicks: true }],
+    yAxisesRight: [
+      { type: "linear", noTicks: true, min: 0, max: 30, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 } },
+    ],
+    fontSize: 12,
+    xGrid: undefined,
+    yAxisesLeft: [yAxis],
+    labelLayout: "center",
+    padding: { top: 5, left: 50, right: 110, bottom: 65 },
+  });
+
+  return chart;
+}
+
 export function AbstractChartExample(): JSX.Element {
   const [hovered, setHovered] = useState("");
   return (
@@ -396,8 +460,10 @@ export function AbstractChartExample(): JSX.Element {
       <p>Sin(x)</p>
       {AI.createReactSvg(AC.renderChart(generateSignedStackedChart()))}
       <h1>Line Chart discrete x-axis</h1>
-      <p>Sin(x)</p>
       {AI.createReactSvg(AC.renderChart(generateLineChartDiscreteXAxis()))}
+
+      <h1>Bar chart</h1>
+      {AI.createReactSvg(AC.renderChart(generateBarChart()))}
     </div>
   );
 }

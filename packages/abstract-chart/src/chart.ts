@@ -17,6 +17,7 @@ export interface Chart {
   readonly chartPoints: Array<ChartPoint>;
   readonly chartLines: Array<ChartLine>;
   readonly chartStack: ChartStack;
+  readonly chartBars: Array<ChartBars>;
   readonly chartDataAxisesBottom: Array<ChartDataAxis>;
   readonly chartDataAxisesTop: Array<ChartDataAxis>;
   readonly chartDataAxisesLeft: Array<ChartDataAxis>;
@@ -50,6 +51,7 @@ export function createChart(props: ChartProps): Chart {
     chartPoints: props.chartPoints ?? [],
     chartLines: props.chartLines ?? [],
     chartStack: props.chartStack ?? createChartStack({}),
+    chartBars: props.chartBars ?? [],
     chartDataAxisesBottom: props.chartDataAxisesBottom ?? [],
     chartDataAxisesTop: props.chartDataAxisesTop ?? [],
     chartDataAxisesLeft: props.chartDataAxisesLeft ?? [],
@@ -88,13 +90,35 @@ export type ChartPointShape = "circle" | "triangle" | "square";
 export interface ChartPoint {
   readonly shape: ChartPointShape;
   readonly position: AI.Point;
+  readonly size: AI.Size;
   readonly color: AI.Color;
   readonly strokeColor: AI.Color;
   readonly strokeThickness: number;
-  readonly size: AI.Size;
   readonly label: string;
   readonly xAxis: XAxis;
   readonly yAxis: YAxis;
+  readonly fontSize?: number;
+  readonly textColor?: AI.Color;
+  readonly textOutlineColor?: AI.Color;
+  readonly id?: string;
+}
+
+export interface ChartBars {
+  readonly direction: "x" | "y";
+  readonly position: number;
+  readonly xAxis: XAxis;
+  readonly yAxis: YAxis;
+  readonly width: number;
+  readonly radius?: AI.Point;
+  readonly spacing?: number;
+  readonly bars: ReadonlyArray<ChartBar>;
+}
+
+export interface ChartBar {
+  readonly min?: number | undefined;
+  readonly max: number;
+  readonly color: AI.Color;
+  readonly label?: string;
   readonly fontSize?: number;
   readonly textColor?: AI.Color;
   readonly textOutlineColor?: AI.Color;
@@ -348,6 +372,7 @@ export function renderChart(chart: Chart): AI.AbstractImage {
   const renderedPoints = generatePoints(xMin, xMax, yMin, yMax, chart);
   const renderedLines = generateLines(xMin, xMax, yMin, yMax, chart);
   const renderedStack = generateStack(xMin, xMax, yMin, yMax, chart);
+  const renderedBars = generateBars(xMin, xMax, yMin, yMax, chart);
   const dataNumTicksX = gridWidth / 70;
   const renderedDataAxisesBottom = generateDataAxisesX(
     "bottom",
@@ -403,6 +428,7 @@ export function renderChart(chart: Chart): AI.AbstractImage {
     yAxisLeft,
     yAxisRight,
     renderedStack,
+    renderedBars,
     renderedLines,
     renderedPoints,
     renderedDataAxisesBottom,
@@ -1024,6 +1050,69 @@ export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: n
     return AI.createGroup(p.label, components);
   });
   return AI.createGroup("Points", points);
+}
+
+export function generateBars(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): AI.Component {
+  const groups = Array<AI.Group>();
+
+  for (const bars of chart.chartBars) {
+    const xAxis = bars.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
+    const yAxis = bars.yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0];
+    const yMinValue =
+      yAxis?.type === "linear" || yAxis?.type === "logarithmic" ? yAxis.min : yAxis?.points[0]?.value ?? 0;
+    const xMinValue =
+      xAxis?.type === "linear" || xAxis?.type === "logarithmic" ? xAxis.min : xAxis?.points[0]?.value ?? 0;
+    const halfStep = bars.width / 2 + (bars.spacing ?? bars.width / 3) / 2;
+    const textRot = bars.direction === "x" ? 0 : -Math.PI / 2;
+
+    for (let i = 0; i < bars.bars.length; i++) {
+      const b = bars.bars[i]!;
+      const barPos = bars.position + (-bars.bars.length + 1 + 2 * i) * halfStep;
+      const outlineColor = b.textOutlineColor ?? chart.textOutlineColor;
+
+      const [tl, middle, br] =
+        bars.direction === "x"
+          ? [
+              AI.createPoint(b.min ?? xMinValue, barPos - bars.width / 2),
+              AI.createPoint((b.max - (b.min ?? xMinValue)) / 2, barPos),
+              AI.createPoint(b.max, barPos + bars.width / 2),
+            ]
+          : [
+              AI.createPoint(barPos - bars.width / 2, b.max),
+              AI.createPoint(barPos, (b.max - (b.min ?? yMinValue)) / 2),
+              AI.createPoint(barPos + bars.width / 2, b.min ?? yMinValue),
+            ];
+      const pos = Axis.transformPoint(middle, xMin, xMax, yMin, yMax, xAxis, yAxis);
+      const topLeft = Axis.transformPoint(tl, xMin, xMax, yMin, yMax, xAxis, yAxis);
+      const bottomRight = Axis.transformPoint(br, xMin, xMax, yMin, yMax, xAxis, yAxis);
+      const components = Array<AI.Component>(
+        AI.createRectangle(topLeft, bottomRight, AI.transparent, 0, b.color, b.id, AI.solidLine, bars.radius)
+      );
+      if (b.label) {
+        components.push(
+          AI.createText(
+            pos,
+            b.label,
+            chart.font,
+            b.fontSize ?? chart.fontSize,
+            b.textColor ?? chart.textColor,
+            "normal",
+            textRot,
+            "center",
+            textHorizontalGrowth(pos.x, xMin, xMax),
+            textVerticalGrowth(pos.y, yMin, yMax),
+            outlineColor !== AI.transparent ? 3 : 0,
+            outlineColor,
+            false
+          )
+        );
+      }
+
+      groups.push(AI.createGroup(b.label ?? `bars_`, components));
+    }
+  }
+
+  return AI.createGroup("Bars", groups);
 }
 
 function textHorizontalGrowth(position: number, xMin: number, xMax: number): AI.GrowthDirection {

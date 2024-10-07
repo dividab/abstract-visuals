@@ -217,6 +217,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
           fillOpacity: colorToOpacity(component.fillColor),
+          ...(component.radius ? { rx: component.radius.x.toString(), ry: component.radius.y.toString() } : {}),
           ...dashStyle,
         },
         []

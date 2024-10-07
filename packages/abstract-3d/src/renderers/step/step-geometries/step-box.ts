@@ -80,6 +80,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
               ],
               m
             ),
+            "T",
             m
           ),
           PLANE(AXIS2_PLACEMENT_3D(c0, d3, d1, m), m),
@@ -97,6 +98,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
               ],
               m
             ),
+            "T",
             m
           ),
           PLANE(AXIS2_PLACEMENT_3D(c0, d6, d4, m), m),
@@ -114,6 +116,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
               ],
               m
             ),
+            "T",
             m
           ),
           PLANE(AXIS2_PLACEMENT_3D(c0, d4, d3, m), m),
@@ -131,6 +134,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
               ],
               m
             ),
+            "T",
             m
           ),
           PLANE(AXIS2_PLACEMENT_3D(c0, d1, d6, m), m),
@@ -148,6 +152,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
               ],
               m
             ),
+            "T",
             m
           ),
           PLANE(AXIS2_PLACEMENT_3D(c0, d2, d1, m), m),
@@ -165,6 +170,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
               ],
               m
             ),
+            "T",
             m
           ),
           PLANE(AXIS2_PLACEMENT_3D(c0, d5, d4, m), m),
