@@ -1073,9 +1073,9 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
       const [tl, middle, br] =
         bars.direction === "x"
           ? [
-              AI.createPoint(b.min ?? xMinValue, barPos - bars.width / 2),
+              AI.createPoint(b.min ?? xMinValue, barPos + bars.width / 2),
               AI.createPoint((b.max - (b.min ?? xMinValue)) / 2, barPos),
-              AI.createPoint(b.max, barPos + bars.width / 2),
+              AI.createPoint(b.max, barPos - bars.width / 2),
             ]
           : [
               AI.createPoint(barPos - bars.width / 2, b.max),

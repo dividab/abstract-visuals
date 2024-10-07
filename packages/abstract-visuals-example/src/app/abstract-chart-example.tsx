@@ -423,7 +423,7 @@ function generateBarChart(): AC.Chart {
       { ...chartBase, position: 4, bars: [{ max: 2, color: AI.fromArgb(255, 255, 0, 0) }] },
       { ...chartBase, position: 6, bars: [{ max: 4, color: AI.fromArgb(255, 255, 0, 0) }] },
       { ...chartBase, position: 7, bars: [{ max: 5, color: AI.fromArgb(255, 255, 0, 0) }] },
-      { ...chartBase, position: 9, bars: [{ max: 8, color: AI.fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 10, bars: [{ max: 8, color: AI.fromArgb(255, 255, 0, 0) }] },
     ],
     xAxisesBottom: [xAxis],
     xAxisesTop: [{ type: "linear", min: 0, max: 8, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 }, noTicks: true }],
