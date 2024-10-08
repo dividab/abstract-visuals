@@ -1082,12 +1082,12 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
         bars.direction === "x"
           ? [
               AI.createPoint(b.min ?? xMinValue, barPos + bars.width / 2),
-              AI.createPoint((b.max - (b.min ?? xMinValue)) / 2, barPos),
+              AI.createPoint((b.max + (b.min ?? xMinValue)) / 2, barPos),
               AI.createPoint(b.max, barPos - bars.width / 2),
             ]
           : [
               AI.createPoint(barPos - bars.width / 2, b.max),
-              AI.createPoint(barPos, (b.max - (b.min ?? yMinValue)) / 2),
+              AI.createPoint(barPos, (b.max + (b.min ?? yMinValue)) / 2),
               AI.createPoint(barPos + bars.width / 2, b.min ?? yMinValue),
             ];
       const pos = Axis.transformPoint(middle, xMin, xMax, yMin, yMax, xAxis, yAxis);
