@@ -1061,7 +1061,7 @@ export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: n
 }
 
 export function generateBars(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): AI.Component {
-  const groups = Array<AI.Group>();
+  const components = Array<AI.Component>();
 
   for (const bars of chart.chartBars) {
     const xAxis = bars.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
@@ -1093,7 +1093,7 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
       const pos = Axis.transformPoint(middle, xMin, xMax, yMin, yMax, xAxis, yAxis);
       const topLeft = Axis.transformPoint(tl, xMin, xMax, yMin, yMax, xAxis, yAxis);
       const bottomRight = Axis.transformPoint(br, xMin, xMax, yMin, yMax, xAxis, yAxis);
-      const components = Array<AI.Component>(
+      components.push(
         AI.createRectangle(
           topLeft,
           bottomRight,
@@ -1124,12 +1124,10 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
           )
         );
       }
-
-      groups.push(AI.createGroup(b.label ?? `bars_`, components));
     }
   }
 
-  return AI.createGroup("Bars", groups);
+  return AI.createGroup("Bars", components);
 }
 
 function textHorizontalGrowth(position: number, xMin: number, xMax: number): AI.GrowthDirection {
