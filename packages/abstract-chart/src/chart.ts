@@ -1116,8 +1116,8 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
             "normal",
             textRot,
             "center",
-            textHorizontalGrowth(pos.x, xMin, xMax),
-            textVerticalGrowth(pos.y, yMin, yMax),
+            "uniform",
+            "uniform",
             outlineColor !== AI.transparent ? 3 : 0,
             outlineColor,
             false
