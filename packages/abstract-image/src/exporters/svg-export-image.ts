@@ -123,12 +123,12 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
 
       const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
 
-      const tSpans = lines.map((t) =>
+      const tSpans = lines.map((t, i) =>
         createElement(
           "tspan",
           {
             x: component.position.x.toString(),
-            y: (component.position.y + (lines.indexOf(t) + dy) * lineHeight).toString(),
+            y: (component.position.y + (i + dy) * lineHeight).toString(),
             height: lineHeight.toString() + "px",
           },
           [

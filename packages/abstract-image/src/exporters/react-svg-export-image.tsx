@@ -118,12 +118,12 @@ function Component({ component }: { readonly component: AbstractImage.Component 
       const dy = getBaselineAdjustment(component.verticalGrowthDirection);
       const transform = `rotate(${component.clockwiseRotationDegrees} ${component.position.x} ${component.position.y})`;
       const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
-      const tSpans = lines.map((t) => (
+      const tSpans = lines.map((t, i) => (
         <TSpan
           key={t}
           text={t}
           x={component.position.x}
-          y={component.position.y + (lines.indexOf(t) + dy) * component.fontSize}
+          y={component.position.y + (i + dy) * component.fontSize}
           fontSize={component.fontSize}
           lineHeight={component.fontSize}
         />

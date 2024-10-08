@@ -73,10 +73,10 @@ export function createChart(props: ChartProps): Chart {
       left: props.padding?.left ?? 10,
     },
     axisWidth: {
-      top: props.axisWidth?.top ?? 80,
-      right: props.axisWidth?.right ?? 80,
-      bottom: props.axisWidth?.bottom ?? 80,
-      left: props.axisWidth?.left ?? 80,
+      top: props.axisWidth?.top ?? 50,
+      right: props.axisWidth?.right ?? 50,
+      bottom: props.axisWidth?.bottom ?? 50,
+      left: props.axisWidth?.left ?? 50,
     },
     xGrid: { color: props.xGrid?.color ?? AI.gray, thickness: props.xGrid?.thickness ?? 1 },
     yGrid: { color: props.yGrid?.color ?? AI.gray, thickness: props.yGrid?.thickness ?? 1 },
@@ -499,7 +499,7 @@ export function xAxises(
     }
 
     if (axis.label) {
-      const axisLabelPosY = lineY + dirFactor * axisWidth * axisLabelPosFactor;
+      const axisLabelPosY = lineY + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
 
       switch (chart.labelLayout) {
         case "original":
@@ -579,7 +579,7 @@ export function yAxises(
     }
 
     if (axis.label) {
-      const axisLabelPosX = lineX + dirFactor * axisWidth * axisLabelPosFactor;
+      const axisLabelPosX = lineX + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
       const rotation = yAxis === "left" ? -90 : 90;
       switch (chart.labelLayout) {
         case "original":
@@ -687,7 +687,7 @@ export function generateDataAxisesX(
       AI.createLine({ x: xMin, y: lineY }, { x: xMax, y: lineY }, axis.axisColor ?? AI.gray, axis.thickness ?? 1)
     );
 
-    const axisLabelPosY = lineY + dirFactor * axisWidth * axisLabelPosFactor;
+    const axisLabelPosY = lineY + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
     switch (chart.labelLayout) {
       case "original":
         components.push(
@@ -797,7 +797,7 @@ export function generateDataAxisesY(
       AI.createLine({ x: lineX, y: yMin }, { x: lineX, y: yMax }, axis.axisColor ?? AI.gray, axis.thickness ?? 1)
     );
     const rotation = yAxis === "left" ? -90 : 90;
-    const axisLabelPosX = lineX + dirFactor * axisWidth * axisLabelPosFactor;
+    const axisLabelPosX = lineX + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
     switch (chart.labelLayout) {
       case "original":
         components.push(
