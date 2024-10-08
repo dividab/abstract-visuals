@@ -119,6 +119,8 @@ export interface ChartBar {
   readonly max: number;
   readonly color: AI.Color;
   readonly label?: string;
+  readonly strokeColor?: AI.Color;
+  readonly strokeThickness?: number;
   readonly fontSize?: number;
   readonly textColor?: AI.Color;
   readonly textOutlineColor?: AI.Color;
@@ -1086,7 +1088,16 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
       const topLeft = Axis.transformPoint(tl, xMin, xMax, yMin, yMax, xAxis, yAxis);
       const bottomRight = Axis.transformPoint(br, xMin, xMax, yMin, yMax, xAxis, yAxis);
       const components = Array<AI.Component>(
-        AI.createRectangle(topLeft, bottomRight, AI.transparent, 0, b.color, b.id, AI.solidLine, bars.radius)
+        AI.createRectangle(
+          topLeft,
+          bottomRight,
+          b.strokeColor ?? AI.transparent,
+          b.strokeThickness ?? 0,
+          b.color,
+          b.id,
+          AI.solidLine,
+          bars.radius
+        )
       );
       if (b.label) {
         components.push(
