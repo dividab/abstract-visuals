@@ -35,7 +35,7 @@ export interface Chart {
   readonly textOutlineColor: AI.Color;
   readonly labelLayout: LabelLayout;
   readonly padding: Padding;
-  readonly axisWidth: number;
+  readonly axisWidth: Padding;
   readonly xPixelsPerTick: number;
   readonly yPixelsPerTick: number;
 }
@@ -72,7 +72,12 @@ export function createChart(props: ChartProps): Chart {
       bottom: props.padding?.bottom ?? 10,
       left: props.padding?.left ?? 10,
     },
-    axisWidth: props.axisWidth ?? 80,
+    axisWidth: {
+      top: props.axisWidth?.top ?? 80,
+      right: props.axisWidth?.right ?? 80,
+      bottom: props.axisWidth?.bottom ?? 80,
+      left: props.axisWidth?.left ?? 80,
+    },
     xGrid: { color: props.xGrid?.color ?? AI.gray, thickness: props.xGrid?.thickness ?? 1 },
     yGrid: { color: props.yGrid?.color ?? AI.gray, thickness: props.yGrid?.thickness ?? 1 },
     xPixelsPerTick: props.xPixelsPerTick ?? 40,
@@ -287,22 +292,22 @@ function finalPadding(chart: Chart): Padding {
       chart.padding.bottom +
       (chart.xAxisesBottom.filter((a) => !a.noTicks || a.label).length +
         chart.chartDataAxisesBottom.filter((a) => !a.noTicks || a.label).length) *
-        chart.axisWidth,
+        chart.axisWidth.bottom,
     top:
       chart.padding.top +
       (chart.xAxisesTop.filter((a) => !a.noTicks || a.label).length +
         chart.chartDataAxisesTop.filter((a) => !a.noTicks || a.label).length) *
-        chart.axisWidth,
+        chart.axisWidth.top,
     left:
       chart.padding.left +
       (chart.yAxisesLeft.filter((a) => !a.noTicks || a.label).length +
         chart.chartDataAxisesLeft.filter((a) => !a.noTicks || a.label).length) *
-        chart.axisWidth,
+        chart.axisWidth.left,
     right:
       chart.padding.right +
       (chart.yAxisesRight.filter((a) => !a.noTicks || a.label).length +
         chart.chartDataAxisesRight.filter((a) => !a.noTicks || a.label).length) *
-        chart.axisWidth,
+        chart.axisWidth.right,
   };
 }
 
@@ -468,7 +473,7 @@ export function xAxises(
   const components = Array<AI.Component>();
   const gridLineComponents = Array<AI.Component>();
   let lineY = xAxis === "bottom" ? yMin : yMax;
-  const dirFactor = xAxis == "bottom" ? 1 : -1;
+  const [dirFactor, axisWidth] = xAxis === "bottom" ? [1, chart.axisWidth.bottom] : [-1, chart.axisWidth.top];
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && xAxis === "bottom";
     const xTicks = Axis.getTicks(xNumTicks, axis);
@@ -494,7 +499,7 @@ export function xAxises(
     }
 
     if (axis.label) {
-      const axisLabelPosY = lineY + dirFactor * chart.axisWidth * axisLabelPosFactor;
+      const axisLabelPosY = lineY + dirFactor * axisWidth * axisLabelPosFactor;
 
       switch (chart.labelLayout) {
         case "original":
@@ -519,7 +524,7 @@ export function xAxises(
           return exhaustiveCheck(chart.labelLayout);
       }
     }
-    lineY += dirFactor * chart.axisWidth;
+    lineY += dirFactor * axisWidth;
   }
 
   return [AI.createGroup(xAxis + "XAxis", components), AI.createGroup(xAxis + "XAxisGridLines", gridLineComponents)];
@@ -540,7 +545,8 @@ export function yAxises(
   const components = Array<AI.Component>();
   const gridLineComponents = Array<AI.Component>();
   let lineX = yAxis === "left" ? xMin : xMax;
-  const dirFactor = yAxis == "left" ? -1 : 1;
+  const [dirFactor, axisWidth] = yAxis === "left" ? [-1, chart.axisWidth.left] : [1, chart.axisWidth.right];
+
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && yAxis === "left";
     const yTicks = Axis.getTicks(yNumTicks, axis);
@@ -573,7 +579,7 @@ export function yAxises(
     }
 
     if (axis.label) {
-      const axisLabelPosX = lineX + dirFactor * chart.axisWidth * axisLabelPosFactor;
+      const axisLabelPosX = lineX + dirFactor * axisWidth * axisLabelPosFactor;
       const rotation = yAxis === "left" ? -90 : 90;
       switch (chart.labelLayout) {
         case "original":
@@ -593,7 +599,7 @@ export function yAxises(
           return exhaustiveCheck(chart.labelLayout);
       }
     }
-    lineX += dirFactor * chart.axisWidth;
+    lineX += dirFactor * axisWidth;
   }
 
   return [AI.createGroup("YAxisLeft", components), AI.createGroup("YAxisLeftGridLines", gridLineComponents)];
@@ -612,9 +618,9 @@ export function generateDataAxisesX(
   const components = Array<AI.Component>();
   let lineY =
     xAxis === "bottom"
-      ? yMin + chart.xAxisesBottom.length * chart.axisWidth
-      : yMax - chart.xAxisesTop.length * chart.axisWidth;
-  const dirFactor = xAxis === "bottom" ? 1 : -1;
+      ? yMin + chart.xAxisesBottom.length * chart.axisWidth.bottom
+      : yMax - chart.xAxisesTop.length * chart.axisWidth.top;
+  const [dirFactor, axisWidth] = xAxis === "bottom" ? [1, chart.axisWidth.bottom] : [-1, chart.axisWidth.top];
   for (const axis of axises) {
     const min = Math.min(...axis.points.map((p) => p.y));
     const max = Math.max(...axis.points.map((p) => p.y));
@@ -681,7 +687,7 @@ export function generateDataAxisesX(
       AI.createLine({ x: xMin, y: lineY }, { x: xMax, y: lineY }, axis.axisColor ?? AI.gray, axis.thickness ?? 1)
     );
 
-    const axisLabelPosY = lineY + dirFactor * chart.axisWidth * axisLabelPosFactor;
+    const axisLabelPosY = lineY + dirFactor * axisWidth * axisLabelPosFactor;
     switch (chart.labelLayout) {
       case "original":
         components.push(
@@ -704,7 +710,7 @@ export function generateDataAxisesX(
       default:
         return exhaustiveCheck(chart.labelLayout);
     }
-    lineY += dirFactor * chart.axisWidth;
+    lineY += dirFactor * axisWidth;
   }
   return AI.createGroup(xAxis + "XDataAxis", components);
 }
@@ -722,9 +728,9 @@ export function generateDataAxisesY(
   const components = Array<AI.Component>();
   let lineX =
     yAxis === "left"
-      ? xMin - chart.yAxisesLeft.length * chart.axisWidth
-      : xMax + chart.yAxisesRight.length * chart.axisWidth;
-  const dirFactor = yAxis === "left" ? -1 : 1;
+      ? xMin - chart.yAxisesLeft.length * chart.axisWidth.left
+      : xMax + chart.yAxisesRight.length * chart.axisWidth.right;
+  const [dirFactor, axisWidth] = yAxis === "left" ? [-1, chart.axisWidth.left] : [1, chart.axisWidth.right];
   for (const axis of axises) {
     const min = Math.min(...axis.points.map((p) => p.y));
     const max = Math.max(...axis.points.map((p) => p.y));
@@ -791,7 +797,7 @@ export function generateDataAxisesY(
       AI.createLine({ x: lineX, y: yMin }, { x: lineX, y: yMax }, axis.axisColor ?? AI.gray, axis.thickness ?? 1)
     );
     const rotation = yAxis === "left" ? -90 : 90;
-    const axisLabelPosX = lineX + dirFactor * chart.axisWidth * axisLabelPosFactor;
+    const axisLabelPosX = lineX + dirFactor * axisWidth * axisLabelPosFactor;
     switch (chart.labelLayout) {
       case "original":
         components.push(
@@ -817,7 +823,7 @@ export function generateDataAxisesY(
       default:
         return exhaustiveCheck(chart.labelLayout);
     }
-    lineX += dirFactor * chart.axisWidth;
+    lineX += dirFactor * axisWidth;
   }
   return AI.createGroup(yAxis + "YDataAxis", components);
 }
