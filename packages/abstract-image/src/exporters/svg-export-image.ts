@@ -110,7 +110,7 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
         fillOpacity: colorToOpacity(component.textColor),
       };
 
-      const dy = getBaselineAdjustment(component.verticalGrowthDirection);
+      const alignmentBaseline = getBaselineAdjustment(component.verticalGrowthDirection);
 
       const transform =
         "rotate(" +
@@ -128,12 +128,17 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
           "tspan",
           {
             x: component.position.x.toString(),
-            y: (component.position.y + (i + dy) * lineHeight).toString(),
+            y: (component.position.y + i * lineHeight).toString(),
             height: lineHeight.toString() + "px",
           },
           [
             t
-              .replace("<sub>", `<tspan style="font-size: ${component.fontSize * 0.8}px" baseline-shift="sub">`)
+              .replace(
+                "<sub>",
+                `<tspan style="font-size: ${
+                  component.fontSize * 0.8
+                }px" baseline-shift="sub" style=alignment-baseline: ${alignmentBaseline}">`
+              )
               .replace("</sub>", "</tspan>"),
           ]
         )
@@ -285,15 +290,15 @@ function convertUpperToHyphenLower(elementName: string): string {
   return elementName !== "viewBox" ? elementName.replace(/[A-Z]/g, upperToHyphenLower) : elementName;
 }
 
-function getBaselineAdjustment(d: AbstractImage.GrowthDirection): number {
+function getBaselineAdjustment(d: AbstractImage.GrowthDirection): "baseline" | "central" | "hanging" {
   if (d === "up") {
-    return 0.0;
+    return "baseline";
   }
   if (d === "uniform") {
-    return 0.5;
+    return "central";
   }
   if (d === "down") {
-    return 1.0;
+    return "hanging";
   }
   throw "Unknown text alignment " + d;
 }

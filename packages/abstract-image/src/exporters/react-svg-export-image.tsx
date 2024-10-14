@@ -115,7 +115,7 @@ function Component({ component }: { readonly component: AbstractImage.Component 
       if (!component.text) {
         return <></>;
       }
-      const dy = getBaselineAdjustment(component.verticalGrowthDirection);
+      const alignmentBaseline = getBaselineAdjustment(component.verticalGrowthDirection);
       const transform = `rotate(${component.clockwiseRotationDegrees} ${component.position.x} ${component.position.y})`;
       const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
       const tSpans = lines.map((t, i) => (
@@ -123,8 +123,9 @@ function Component({ component }: { readonly component: AbstractImage.Component 
           key={t}
           text={t}
           x={component.position.x}
-          y={component.position.y + (i + dy) * component.fontSize}
+          y={component.position.y + i * component.fontSize}
           fontSize={component.fontSize}
+          alignmentBaseline={alignmentBaseline}
           lineHeight={component.fontSize}
         />
       ));
@@ -284,12 +285,14 @@ function TSpan({
   x,
   y,
   fontSize,
+  alignmentBaseline,
   lineHeight,
 }: {
   readonly text: string;
   readonly x: number;
   readonly y: number;
   readonly fontSize: number;
+  readonly alignmentBaseline: "baseline" | "central" | "hanging";
   readonly lineHeight: number;
 }): JSX.Element {
   const split = text.split("<sub>").flatMap((t) => t.split("</sub>"));
@@ -299,12 +302,21 @@ function TSpan({
     const splitText = split[i];
     if (inside) {
       tags.push(
-        <tspan key={i} baselineShift="sub" style={{ fontSize: (fontSize * 0.8).toString() + "px" }}>
+        <tspan
+          key={i}
+          baselineShift="sub"
+          alignmentBaseline={alignmentBaseline}
+          style={{ fontSize: (fontSize * 0.8).toString() + "px" }}
+        >
           {splitText}
         </tspan>
       );
     } else {
-      tags.push(<tspan key={i}>{splitText}</tspan>);
+      tags.push(
+        <tspan key={i} alignmentBaseline={alignmentBaseline}>
+          {splitText}
+        </tspan>
+      );
     }
     inside = !inside;
   }
@@ -315,15 +327,15 @@ function TSpan({
   );
 }
 
-function getBaselineAdjustment(d: AbstractImage.GrowthDirection): number {
+function getBaselineAdjustment(d: AbstractImage.GrowthDirection): "baseline" | "central" | "hanging" {
   if (d === "up") {
-    return 0.0;
+    return "baseline";
   }
   if (d === "uniform") {
-    return 0.5;
+    return "central";
   }
   if (d === "down") {
-    return 1.0;
+    return "hanging";
   }
   throw "Unknown text alignment " + d;
 }
