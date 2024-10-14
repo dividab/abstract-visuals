@@ -899,7 +899,7 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
 export function generateLines(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): AI.Component {
   const lines = chart.chartLines.map((l: ChartLine) => {
     if (l.points.length < 2) {
-      return AI.createGroup(l.label, []);
+      return AI.createGroup(l.label.split("<")[0] ?? "UNKNOWN", []);
     }
     const xAxis = l.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
     const yAxis = l.yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0];
@@ -934,7 +934,7 @@ export function generateLines(xMin: number, xMax: number, yMin: number, yMax: nu
         )
       );
     }
-    return AI.createGroup(l.label, components);
+    return AI.createGroup(l.label.split("<")[0] ?? "UNKNOWN", components);
   });
   return AI.createGroup("Lines", lines);
 }
@@ -1055,7 +1055,7 @@ export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: n
         )
       );
     }
-    return AI.createGroup(p.label, components);
+    return AI.createGroup(p.label.split("<")[0] ?? "UNKNOWN", components);
   });
   return AI.createGroup("Points", points);
 }

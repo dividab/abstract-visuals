@@ -123,27 +123,38 @@ function abstractComponentToSVG(component: AbstractImage.Component): string {
 
       const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
 
-      const tSpans = lines.map((t, i) =>
-        createElement(
+      const tSpans = lines.map((t, i) => {
+        const split = t.split("<sub>").flatMap((t) => t.split("</sub>"));
+        let inside = false;
+        const tags: Array<string> = [];
+        for (const st of split) {
+          if (inside) {
+            tags.push(
+              createElement(
+                "tspan",
+                {
+                  "baseline-shift": "sub",
+                  "font-size": (component.fontSize * 0.8).toString(),
+                  "alignment-baseline": alignmentBaseline,
+                },
+                [st]
+              )
+            );
+          } else {
+            tags.push(createElement("tspan", { "alignment-baseline": alignmentBaseline }, [st]));
+          }
+          inside = !inside;
+        }
+        return createElement(
           "tspan",
           {
             x: component.position.x.toString(),
             y: (component.position.y + i * lineHeight).toString(),
             height: lineHeight.toString() + "px",
           },
-          [
-            t
-              .replace(
-                "<sub>",
-                `<tspan style="font-size: ${
-                  component.fontSize * 0.8
-                }px" baseline-shift="sub" style=alignment-baseline: ${alignmentBaseline}">`
-              )
-              .replace("</sub>", "</tspan>"),
-          ]
-        )
-      );
-
+          tags
+        );
+      });
       const cs: Array<string> = [];
 
       if (component.strokeThickness > 0 && component.strokeColor !== null) {

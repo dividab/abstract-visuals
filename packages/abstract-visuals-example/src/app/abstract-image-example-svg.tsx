@@ -1,67 +1,38 @@
 import * as React from "react";
-import * as AbstractImage from "../../../abstract-image";
+import * as AI from "../../../abstract-image";
 
 export function AbstractImageExampleSvg(): JSX.Element {
   const components = [
-    AbstractImage.createLine(
-      AbstractImage.createPoint(25, 125),
-      AbstractImage.createPoint(280, 125),
-      AbstractImage.red,
+    AI.createLine(AI.createPoint(25, 125), AI.createPoint(280, 125), AI.red, 2, undefined, AI.createDashStyle([10, 5])),
+    AI.createLine(
+      AI.createPoint(25, 100),
+      AI.createPoint(280, 100),
+      AI.red,
       2,
       undefined,
-      AbstractImage.createDashStyle([10, 5])
+      AI.createDashStyle([10, 5], 5)
     ),
-    AbstractImage.createLine(
-      AbstractImage.createPoint(25, 100),
-      AbstractImage.createPoint(280, 100),
-      AbstractImage.red,
-      2,
-      undefined,
-      AbstractImage.createDashStyle([10, 5], 5)
-    ),
-    AbstractImage.createLine(
-      AbstractImage.createPoint(25, 25),
-      AbstractImage.createPoint(80, 60),
-      AbstractImage.black,
-      2
-    ),
-    AbstractImage.createRectangle(
-      AbstractImage.createPoint(10, 50),
-      AbstractImage.createPoint(40, 80),
-      AbstractImage.blue,
-      2,
-      AbstractImage.fromArgb(100, 0, 0, 0)
-    ),
-    AbstractImage.createRectangle(
-      AbstractImage.createPoint(60, 50),
-      AbstractImage.createPoint(90, 80),
-      AbstractImage.blue,
-      2,
-      AbstractImage.transparent
-    ),
-    AbstractImage.createText(
-      AbstractImage.createPoint(60, 50),
+    AI.createLine(AI.createPoint(25, 25), AI.createPoint(80, 60), AI.black, 2),
+    AI.createRectangle(AI.createPoint(10, 50), AI.createPoint(40, 80), AI.blue, 2, AI.fromArgb(100, 0, 0, 0)),
+    AI.createRectangle(AI.createPoint(60, 50), AI.createPoint(90, 80), AI.blue, 2, AI.transparent),
+    AI.createText(
+      AI.createPoint(60, 50),
       "Hej<sub>12</sub>",
       "Helvetica",
       12,
-      AbstractImage.black,
+      AI.black,
       "normal",
       0,
       "center",
       "uniform",
       "uniform",
       0,
-      AbstractImage.black,
+      AI.black,
       false
     ),
   ];
-  const image = AbstractImage.createAbstractImage(
-    AbstractImage.createPoint(0, 0),
-    AbstractImage.createSize(400, 400),
-    AbstractImage.white,
-    components
-  );
-  const svg = AbstractImage.createSVG(image);
+  const image = AI.createAbstractImage(AI.createPoint(0, 0), AI.createSize(400, 400), AI.white, components);
+  const svg = AI.createSVG(image);
   return (
     <div>
       <h1>Svg</h1>

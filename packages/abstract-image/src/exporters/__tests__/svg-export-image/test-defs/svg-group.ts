@@ -40,5 +40,5 @@ export const test: ExportTestDef = {
   name: "svg group",
   abstractImage: svg,
   expectedImage:
-    '<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"><g name="group"><text style="text-anchor:middle;font-size:12px;font-weight:normal;font-family:Helvetica;fill:rgb(0, 0, 0);fill-opacity:1;" transform="rotate(0 200 200)"><tspan x="200" y="206" height="12px">Test</tspan></text><rect x="10" y="50" width="40" height="10" stroke="rgb(0, 0, 255)" stroke-opacity="1" stroke-width="2" fill="rgb(255, 0, 0)" fill-opacity="1"></rect></g></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"><g name="group"><text style="text-anchor:middle;font-size:12px;font-weight:normal;font-family:Helvetica;fill:rgb(0, 0, 0);fill-opacity:1;" transform="rotate(0 200 200)"><tspan x="200" y="200" height="12px"><tspan alignment-baseline="central">Test</tspan></tspan></text><rect x="10" y="50" width="40" height="10" stroke="rgb(0, 0, 255)" stroke-opacity="1" stroke-width="2" fill="rgb(255, 0, 0)" fill-opacity="1"></rect></g></svg>',
 };
