@@ -1,4 +1,5 @@
 import * as A3D from "../../../abstract-3d";
+import { color } from "../color";
 import { dxf3DFACE } from "../dxf-encoding";
 
 export function dxfBox(b: A3D.Box, m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
@@ -15,13 +16,13 @@ export function dxfBox(b: A3D.Box, m: A3D.Material, parentPos: A3D.Vec3, parentR
   const v6 = vec3tr3(half.x, -half.y, -half.z);
   const v7 = vec3tr3(half.x, half.y, -half.z);
   const v8 = vec3tr3(-half.x, half.y, -half.z);
-
+  const mat = color(m.normal);
   return (
-    dxf3DFACE(v1, v2, v3, v4, m.dxf) + // front
-    dxf3DFACE(v5, v6, v7, v8, m.dxf) + // Back
-    dxf3DFACE(v5, v1, v4, v8, m.dxf) + // Left
-    dxf3DFACE(v6, v2, v3, v7, m.dxf) + // Right
-    dxf3DFACE(v8, v7, v3, v4, m.dxf) + // Top
-    dxf3DFACE(v5, v6, v2, v1, m.dxf) // Bottom
+    dxf3DFACE(v1, v2, v3, v4, mat) + // front
+    dxf3DFACE(v5, v6, v7, v8, mat) + // Back
+    dxf3DFACE(v5, v1, v4, v8, mat) + // Left
+    dxf3DFACE(v6, v2, v3, v7, mat) + // Right
+    dxf3DFACE(v8, v7, v3, v4, mat) + // Top
+    dxf3DFACE(v5, v6, v2, v1, mat) // Bottom
   );
 }

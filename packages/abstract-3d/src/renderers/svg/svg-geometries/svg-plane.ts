@@ -1,7 +1,7 @@
 import * as A3D from "../../../abstract-3d";
 import { gray, black, zElem, zOrderElement } from "./shared";
 import { EmbededImage, svgImage, svgPolygon } from "../svg-encoding";
-import { rgbGray } from "../../shared";
+import { rgbGrayScale } from "../../shared";
 
 export function plane(
   p: A3D.Plane,
@@ -40,6 +40,6 @@ export function plane(
 
   const [strokeColor, fill, strokeThickness] = onlyStroke
     ? [grayScale ? gray : color, onlyStrokeFill, stroke]
-    : [black, grayScale ? rgbGray(color) : color, 0];
+    : [black, grayScale ? rgbGrayScale(color) : color, 0];
   return [zElem(svgPolygon(points, fill, strokeColor, strokeThickness), A3D.vec3ZMean(v1, v2, v3, v4))];
 }

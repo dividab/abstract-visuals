@@ -1,7 +1,7 @@
 import * as A3D from "../../../abstract-3d";
 import { zElem, zOrderElement } from "./shared";
 import { svgLine } from "../svg-encoding";
-import { rgbGray } from "../../shared";
+import { rgbGrayScale } from "../../shared";
 
 export function line(
   l: A3D.Line,
@@ -16,7 +16,7 @@ export function line(
   const v2 = A3D.vec3TransRot(l.end, parentPos, parentRot);
   return [
     zElem(
-      svgLine(point(v1.x, v1.y), point(v2.x, v2.y), grayScale ? rgbGray(fill) : fill, l.thickness),
+      svgLine(point(v1.x, v1.y), point(v2.x, v2.y), grayScale ? rgbGrayScale(fill) : fill, l.thickness),
       A3D.vec3ZMean(v1, v2)
     ),
   ];

@@ -1,7 +1,7 @@
 import { Polygon, vec3ZMean, Vec3, Vec2, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d";
 import { gray, zElem, zOrderElement, transparent } from "./shared";
 import { svgPolygon } from "../svg-encoding";
-import { rgbGray } from "../../shared";
+import { rgbGrayScale } from "../../shared";
 
 export function polygon(
   p: Polygon,
@@ -20,6 +20,6 @@ export function polygon(
   const points = rotatedPoints.map(({ x, y }) => point(x, y));
   const [strokeColor, fill, strokeThickness] = onlyStroke
     ? [grayScale ? gray : color, onlyStrokeFill, stroke]
-    : [transparent, grayScale ? rgbGray(color) : color, 0];
+    : [transparent, grayScale ? rgbGrayScale(color) : color, 0];
   return [zElem(svgPolygon(points, fill, strokeColor, strokeThickness), vec3ZMean(...rotatedPoints))];
 }

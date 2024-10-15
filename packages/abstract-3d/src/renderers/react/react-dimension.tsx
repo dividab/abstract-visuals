@@ -18,7 +18,7 @@ export const ReactDimensions = React.memo(
     readonly sceneCenter: A3d.Vec3 | undefined;
   }): JSX.Element => {
     const dimensionMaterial = React.useMemo(
-      () => (dimensions?.material ? <ReactMaterial material={dimensions?.material} /> : <></>),
+      () => (dimensions?.material ? <ReactMaterial isText={true} material={dimensions?.material} /> : <></>),
       []
     );
     return (

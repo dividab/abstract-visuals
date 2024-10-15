@@ -2,6 +2,7 @@ import React from "react";
 import { Color, DoubleSide, MaterialParameters, SRGBColorSpace, Texture, TextureLoader } from "three";
 import { suspend } from "suspend-react";
 import * as A3d from "../../abstract-3d";
+import { shade } from "../shared";
 
 const decreasedOpacity = 0.2;
 
@@ -16,6 +17,7 @@ export function ReactMaterial({
   disabled,
   materialStateImages,
   state,
+  isText,
 }: {
   readonly material: A3d.Material;
   readonly id?: string;
@@ -24,16 +26,24 @@ export function ReactMaterial({
   readonly disabled?: boolean;
   readonly materialStateImages?: Record<string, string>;
   readonly state?: MaterialState | undefined;
+  readonly isText: boolean;
 }): JSX.Element {
   const mat =
     !state || material.image?.type === "UrlImage"
       ? material
       : state === "Accept"
-      ? acceptMaterial
+      ? acceptMat
       : state === "Error"
-      ? errorMaterial
-      : warningMaterial;
-  const color = selectedId === id ? mat.selected : hoveredId === id ? mat.hover : mat.normal;
+      ? errorMar
+      : warningMat;
+  const color =
+    selectedId === id
+      ? hoveredId === id
+        ? shade(-0.4, selectMat.normal)
+        : selectMat.normal
+      : hoveredId === id
+      ? shade(-0.4, mat.normal)
+      : mat.normal;
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
   if (material.image?.type === "UrlImage") {
     return (
@@ -44,51 +54,27 @@ export function ReactMaterial({
       />
     );
   }
-
-  switch (mat.type) {
-    case "Basic":
-      return (
-        <meshBasicMaterial
-          color={color}
-          side={DoubleSide}
-          transparent
-          {...(opacity < 1 ? { opacity } : materialDefaults)}
-        />
-      );
-    case "Phong":
-      return (
-        <meshPhongMaterial
-          color={color}
-          shininess={(mat.shininess ?? 70) * 2}
-          side={DoubleSide}
-          {...(opacity < 1 || disabled
-            ? { transparent: true, opacity: disabled ? opacity * decreasedOpacity : opacity }
-            : materialDefaults)}
-        />
-      );
-    // return (
-    //   <meshStandardMaterial
-    //     color={color}
-    //     roughness={0.45}
-    //     metalness={0.55}
-    //     side={DoubleSide}
-    //     {...(mat.opacity < 1 || disabled
-    //       ? { transparent: true, opacity: disabled ? mat.opacity * decreasedOpacity : mat.opacity }
-    //       : materialDefaults)}
-    //   />
-    // );
-    case "Lambert":
-    default:
-      return (
-        <meshLambertMaterial
-          color={color}
-          side={DoubleSide}
-          {...(opacity < 1 || disabled
-            ? { transparent: true, opacity: disabled ? opacity * decreasedOpacity : opacity }
-            : materialDefaults)}
-        />
-      );
+  if (isText) {
+    return (
+      <meshBasicMaterial
+        color={color}
+        side={DoubleSide}
+        transparent
+        {...(opacity < 1 ? { opacity } : materialDefaults)}
+      />
+    );
   }
+  return (
+    <meshStandardMaterial
+      color={color}
+      roughness={mat.roughness}
+      metalness={mat.metalness}
+      side={DoubleSide}
+      {...(opacity < 1 || disabled
+        ? { transparent: true, opacity: disabled ? opacity * decreasedOpacity : opacity }
+        : materialDefaults)}
+    />
+  );
 }
 
 function TextureMaterial({
@@ -131,29 +117,7 @@ const textureLoader = new TextureLoader();
 
 const materialDefaults: MaterialParameters = { transparent: false, opacity: 1.0, depthWrite: true, depthTest: true };
 
-const acceptMaterial: A3d.Material = {
-  type: "Phong",
-  normal: "rgb(0,148,91)",
-  hover: "rgb(1,88,55)",
-  selected: "rgb(1,88,55)",
-  opacity: 1.0,
-  shininess: 50,
-};
-
-const errorMaterial: A3d.Material = {
-  type: "Phong",
-  normal: "#b82f3a",
-  hover: "#991c31",
-  selected: "#991c31",
-  opacity: 1.0,
-  shininess: 50,
-};
-
-const warningMaterial: A3d.Material = {
-  type: "Phong",
-  normal: "rgb(240, 197, 48)",
-  hover: "rgb(221, 181, 38)",
-  selected: "rgb(182, 147, 20)",
-  opacity: 1.0,
-  shininess: 50,
-};
+const acceptMat: A3d.Material = { normal: "rgb(0,148,91)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+const selectMat: A3d.Material = { normal: "rgb(14,82,184)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+const errorMar: A3d.Material = { normal: "#b82f3a", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+const warningMat: A3d.Material = { normal: "rgb(240, 197, 48)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };

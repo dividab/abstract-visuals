@@ -1,4 +1,5 @@
 import * as A3D from "../../../abstract-3d";
+import { color } from "../color";
 import { dxf3DFACE } from "../dxf-encoding";
 
 export function dxfPlane(p: A3D.Plane, m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
@@ -11,6 +12,6 @@ export function dxfPlane(p: A3D.Plane, m: A3D.Material, parentPos: A3D.Vec3, par
     vec3tr(half.x, -half.y),
     vec3tr(half.x, half.y),
     vec3tr(-half.x, half.y),
-    m.dxf
+    color(m.normal)
   );
 }

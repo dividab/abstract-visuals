@@ -121,6 +121,7 @@ export function ReactGroup({
             material={m.material}
             id={id}
             selectedId={selectedId}
+            isText={m.geometry.type === "Text"}
             hoveredId={hoveredId || hoveredIdExternal}
             materialStateImages={materialStateImages}
             disabled={disabled}

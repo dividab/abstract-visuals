@@ -1,4 +1,5 @@
 import * as A3D from "../../../abstract-3d";
+import { color } from "../color";
 import { dxf3DFACE } from "../dxf-encoding";
 
 const chunkSize = 4;
@@ -11,7 +12,7 @@ export function dxfPolygon(p: A3D.Polygon, m: A3D.Material, parentPos: A3D.Vec3,
   let i = 0;
   if (points.length >= chunkSize) {
     for (i; i < points.length; i += chunkSize) {
-      polygonString += dxf3DFACE(points[i]!, points[i + 1]!, points[i + 2]!, points[i + 3]!, m.dxf);
+      polygonString += dxf3DFACE(points[i]!, points[i + 1]!, points[i + 2]!, points[i + 3]!, color(m.normal));
     }
   }
 
@@ -19,13 +20,13 @@ export function dxfPolygon(p: A3D.Polygon, m: A3D.Material, parentPos: A3D.Vec3,
     const lastArrayLength = points.length - i;
     switch (lastArrayLength) {
       case 1:
-        polygonString += dxf3DFACE(points[i - 2]!, points[i - 1]!, points[i]!, points[i]!, m.dxf);
+        polygonString += dxf3DFACE(points[i - 2]!, points[i - 1]!, points[i]!, points[i]!, color(m.normal));
         break;
       case 2:
-        polygonString += dxf3DFACE(points[i - 1]!, points[i]!, points[i + 1]!, points[i + 1]!, m.dxf);
+        polygonString += dxf3DFACE(points[i - 1]!, points[i]!, points[i + 1]!, points[i + 1]!, color(m.normal));
         break;
       case 3:
-        polygonString += dxf3DFACE(points[i]!, points[i + 1]!, points[i + 2]!, points[i + 2]!, m.dxf);
+        polygonString += dxf3DFACE(points[i]!, points[i + 1]!, points[i + 2]!, points[i + 2]!, color(m.normal));
         break;
       default:
         break;

@@ -1,4 +1,5 @@
 import * as A3D from "../../../abstract-3d";
+import { color } from "../color";
 import { dxf3DFACE } from "../dxf-encoding";
 
 export function dxfCylinder(
@@ -12,7 +13,7 @@ export function dxfCylinder(
   const pos = A3D.vec3TransRot(c.pos, parentPos, parentRot);
   const rot = A3D.vec3RotCombine(parentRot, c.rot ?? A3D.vec3Zero);
   const vec3tr = (x: number, y: number, z: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, z), pos, rot);
-
+  const mat = color(m.normal);
   const angleStep = (2 * Math.PI) / sides;
   let currentAngle = 0;
 
@@ -34,9 +35,9 @@ export function dxfCylinder(
       const prevBot = botVec3Array[i - 1]!;
       const prevTop = topVec3Array[i - 1]!;
       dxfString +=
-        dxf3DFACE(botPos, prevBot, currBot, currBot, m.dxf) +
-        dxf3DFACE(topPos, prevTop, currTop, currTop, m.dxf) +
-        dxf3DFACE(currBot, prevBot, prevTop, currTop, m.dxf);
+        dxf3DFACE(botPos, prevBot, currBot, currBot, mat) +
+        dxf3DFACE(topPos, prevTop, currTop, currTop, mat) +
+        dxf3DFACE(currBot, prevBot, prevTop, currTop, mat);
     }
     currentAngle += angleStep;
   }

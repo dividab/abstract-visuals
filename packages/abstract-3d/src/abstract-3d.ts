@@ -56,21 +56,15 @@ export type Mesh = {
   readonly geometry: Cylinder | Cone | Box | Line | Text | Polygon | Plane | Tube | Sphere | Shape;
 };
 
-// Refactor to THREE.MeshStandardMaterial | DXF
 export type Material = {
-  readonly type: MaterialType;
   readonly normal: string;
-  readonly hover?: string;
-  readonly selected?: string;
-  readonly dxf?: string;
   readonly opacity?: number;
-  readonly shininess?: number;
+  readonly metalness?: number;
+  readonly roughness?: number;
   readonly image?:
     | { readonly type: "HashImage"; readonly hash: string; readonly imageType?: string }
     | { readonly type: "UrlImage"; readonly url: string; readonly imageType?: string };
 };
-
-export type MaterialType = "Phong" | "Lambert" | "Basic";
 
 export type Cylinder = {
   readonly type: "Cylinder";

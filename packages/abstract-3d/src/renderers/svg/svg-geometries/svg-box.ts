@@ -1,7 +1,7 @@
 import * as A3D from "../../../abstract-3d";
 import { gray, black, zElem, zOrderElement } from "./shared";
 import { svgPolygon } from "../svg-encoding";
-import { rgbGray } from "../../shared";
+import { rgbGrayScale } from "../../shared";
 
 export function box(
   b: A3D.Box,
@@ -51,7 +51,7 @@ export function box(
 
   const [strokeColor, fill, strokeUse] = onlyStroke
     ? [grayScale ? gray : color, onlyStrokeFill, stroke]
-    : [black, grayScale ? rgbGray(color) : color, 0];
+    : [black, grayScale ? rgbGrayScale(color) : color, 0];
 
   return [
     zElem(svgPolygon(frontBackPoints, fill, strokeColor, strokeUse), frontBackMean),

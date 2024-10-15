@@ -1,7 +1,7 @@
 import * as A3D from "../../../abstract-3d";
 import { gray, stBW, zElem, zOrderElement, transparent } from "./shared";
 import { svgPolygon } from "../svg-encoding";
-import { rgbGray } from "../../shared";
+import { rgbGrayScale } from "../../shared";
 
 export function cone(
   c: A3D.Cone,
@@ -21,7 +21,7 @@ export function cone(
 
   const [stroke, fill] = onlyStroke
     ? [grayScale ? gray : color, onlyStrokeFill]
-    : [transparent, grayScale ? rgbGray(color) : color];
+    : [transparent, grayScale ? rgbGrayScale(color) : color];
   const zOrderComponents = Array<zOrderElement>();
 
   const sides = 8;
