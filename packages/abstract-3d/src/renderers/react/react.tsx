@@ -6,6 +6,7 @@ import * as A3d from "../../abstract-3d";
 import { ReactCamera, ControlsHelper, Camera } from "./react-camera";
 import { HotSpotInfo } from "./react-hotspot";
 import { MaterialState } from "./react-material";
+import { NoToneMapping } from "three";
 
 export const toReact = memo(
   ({
@@ -77,22 +78,46 @@ export const toReact = memo(
           controlsHelper={controlsHelper}
           orbitContolsProps={orbitContolsProps}
         />
-        <ambientLight intensity={0.7} />
+        <ambientLight intensity={4} />
         <directionalLight
           position={[
-            -(scene.center_deprecated?.x ?? 0) + 0.7 * scene.size_deprecated.x,
-            -(scene.center_deprecated?.y ?? 0) + 1.4 * scene.size_deprecated.y,
-            -(scene.center_deprecated?.z ?? 0) + 3 * scene.size_deprecated.z,
+            -(scene.center_deprecated?.x ?? 0),
+            -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
+            -(scene.center_deprecated?.z ?? 0),
           ]}
-          intensity={3.3}
+          intensity={0.3}
         />
         <directionalLight
           position={[
-            -(scene.center_deprecated?.x ?? 0) - 0.7 * scene.size_deprecated.x,
-            -(scene.center_deprecated?.y ?? 0) - 1.1 * scene.size_deprecated.y,
-            -(scene.center_deprecated?.z ?? 0) - 3 * scene.size_deprecated.z,
+            -(scene.center_deprecated?.x ?? 0),
+            -(scene.center_deprecated?.y ?? 0),
+            -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
           ]}
-          intensity={3.3}
+          intensity={0.3}
+        />
+        <directionalLight
+          position={[
+            -(scene.center_deprecated?.x ?? 0),
+            -(scene.center_deprecated?.y ?? 0),
+            -(scene.center_deprecated?.z ?? 0) - 1.5 * scene.size_deprecated.z,
+          ]}
+          intensity={0.3}
+        />
+        <directionalLight
+          position={[
+            -(scene.center_deprecated?.x ?? 0) - 1.5 * scene.size_deprecated.x,
+            -(scene.center_deprecated?.y ?? 0),
+            -(scene.center_deprecated?.z ?? 0),
+          ]}
+          intensity={0.3}
+        />
+        <directionalLight
+          position={[
+            -(scene.center_deprecated?.x ?? 0) + 1.5 * scene.size_deprecated.x,
+            -(scene.center_deprecated?.y ?? 0),
+            -(scene.center_deprecated?.z ?? 0),
+          ]}
+          intensity={0.3}
         />
         <React.Suspense fallback={<></>}>
           <ReactScene
