@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
-- Svg and React svg exports the svg attribute 'alignment-baseline' to position text verticly.
+- Svg and React svg exports uses the svg attribute 'alignment-baseline' to position text verticly.
 
 ## [8.2.0] - 2024-07-08
 
