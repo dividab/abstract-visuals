@@ -49,7 +49,6 @@ export function AbstractChartExample(): JSX.Element {
   }): JSX.Element {
     const ac = AC.renderChart(chart);
     const svg = AI.createSVG(ac);
-    console.log("name", svg);
     return (
       <>
         <h1 style={{ display: "flex", gap: "6px", alignItems: "center" }}>{name}</h1>

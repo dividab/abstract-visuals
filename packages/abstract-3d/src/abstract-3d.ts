@@ -272,7 +272,7 @@ export const vec3Greater = (a: Vec3, b: Vec3): Vec3 =>
   vec3(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z);
 
 export const equals = (num1: number, num2: number, equailty = Number.EPSILON): boolean =>
-  Math.abs(num1 - num2) < equailty;
+  Math.abs(num1 - num2) <= equailty;
 export const isZero = (num: number, equailty = Number.EPSILON): boolean => Math.abs(num) <= equailty;
 export const geq = (num1: number, num2: number, equailty = Number.EPSILON): boolean => num1 >= num2 - equailty;
 export const greater = (num1: number, num2: number, equailty = Number.EPSILON): boolean => num1 > num2 + equailty;

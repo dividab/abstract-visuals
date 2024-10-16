@@ -1,6 +1,6 @@
 import * as A3D from "../../../abstract-3d";
 import { gray, stBW, transparent, zElem, zOrderElement } from "./shared";
-import { svgPolygon } from "../svg-encoding";
+import { svgCircle, svgPolygon } from "../svg-encoding";
 import { rgbGrayScale } from "../../shared";
 
 export function cylinder(
@@ -12,7 +12,8 @@ export function cylinder(
   _stroke: number,
   onlyStrokeFill: string,
   parentPos: A3D.Vec3,
-  parentRot: A3D.Vec3
+  parentRot: A3D.Vec3,
+  factor: number
 ): ReadonlyArray<zOrderElement> {
   const half = A3D.vec3(c.radius, c.length / 2, c.radius);
   const pos = A3D.vec3TransRot(c.pos, parentPos, parentRot);
@@ -52,6 +53,16 @@ export function cylinder(
       );
     }
     currentAngle += angleStep;
+  }
+
+  // Add circle if direcly facing camera
+  const circleTop = vec3tr(A3D.vec3(0, +half.y, 0));
+  const circleBottom = vec3tr(A3D.vec3(0, -half.y, 0));
+  if (A3D.equals(circleTop.x, circleBottom.x, 0.1) && A3D.equals(circleTop.y, circleBottom.y, 0.1)) {
+    const circlePos = circleTop.z > circleBottom.z ? circleTop : circleBottom;
+    zOrderComponents.push(
+      zElem(svgCircle(factor * c.radius, point(circlePos.x, circlePos.y), fill, stroke, stBW), circlePos.z)
+    );
   }
 
   return zOrderComponents;

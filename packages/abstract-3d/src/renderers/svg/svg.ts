@@ -181,9 +181,20 @@ function svgMesh(
         image
       );
     case "Cylinder":
-      return cylinder(mesh.geometry, point, color, onlyStroke, grayScale, stroke, background, parentPos, parentRot);
+      return cylinder(
+        mesh.geometry,
+        point,
+        color,
+        onlyStroke,
+        grayScale,
+        stroke,
+        background,
+        parentPos,
+        parentRot,
+        factor
+      );
     case "Cone":
-      return cone(mesh.geometry, point, color, onlyStroke, grayScale, stroke, background, parentPos, parentRot);
+      return cone(mesh.geometry, point, color, onlyStroke, grayScale, stroke, background, parentPos, parentRot, factor);
     case "Line":
       return line(mesh.geometry, point, color, grayScale, stroke, parentPos, parentRot);
     case "Polygon":

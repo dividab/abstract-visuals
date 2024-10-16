@@ -1,6 +1,6 @@
 import * as A3D from "../../../abstract-3d";
 import { gray, stBW, zElem, zOrderElement, transparent } from "./shared";
-import { svgPolygon } from "../svg-encoding";
+import { svgCircle, svgPolygon } from "../svg-encoding";
 import { rgbGrayScale } from "../../shared";
 
 export function cone(
@@ -12,7 +12,8 @@ export function cone(
   _stroke: number,
   onlyStrokeFill: string,
   parentPos: A3D.Vec3,
-  parentRot: A3D.Vec3
+  parentRot: A3D.Vec3,
+  factor: number
 ): ReadonlyArray<zOrderElement> {
   const half = A3D.vec3(c.radius, c.length / 2, c.radius);
   const pos = A3D.vec3TransRot(c.pos, parentPos, parentRot);
@@ -46,6 +47,15 @@ export function cone(
       zOrderComponents.push(zElem(svgPolygon(points, fill, stroke, stBW), A3D.vec3ZMean(currBot, prevBot, topPos)));
     }
     currentAngle += angleStep;
+  }
+
+  // Add circle if direcly facing camera
+  const cylTop = vec3tr(A3D.vec3(0, +half.y, 0));
+  const cylBottom = vec3tr(A3D.vec3(0, -half.y, 0));
+  if (A3D.equals(cylTop.x, cylBottom.x, 0.1) && A3D.equals(cylTop.y, cylBottom.y, 0.1)) {
+    zOrderComponents.push(
+      zElem(svgCircle(factor * c.radius, point(cylBottom.x, cylBottom.y), fill, stroke, stBW), cylBottom.z)
+    );
   }
 
   return zOrderComponents;

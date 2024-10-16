@@ -3,6 +3,7 @@ import FileSaver from "file-saver";
 import * as A3D from "abstract-3d";
 import { systemair } from "./systemair";
 import { vortice } from "./vortice";
+import { cylinderFilter } from "./cylinder-filter";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
@@ -33,12 +34,19 @@ export function Abstract3DExample(): React.ReactNode {
           SVG
         </button>
       </div>
-      {/* <div
+      <div
         dangerouslySetInnerHTML={{
-          __html: A3D.toSvg(systemair, "front", 1, { size: 300, scaleByWidth: true }, true, true, "rgb(255,255,255,1)")
-            .image,
+          __html: A3D.toSvg(
+            cylinderFilter,
+            "right",
+            1,
+            { size: 300, scaleByWidth: true },
+            true,
+            true,
+            "rgb(255,255,255,1)"
+          ).image,
         }}
-      /> */}
+      />
       <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
         <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
           <A3D.toReact

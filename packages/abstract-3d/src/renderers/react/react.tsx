@@ -78,7 +78,7 @@ export const toReact = memo(
           controlsHelper={controlsHelper}
           orbitContolsProps={orbitContolsProps}
         />
-        <ambientLight intensity={3} />
+        <ambientLight intensity={3.5} />
         <directionalLight
           position={[
             -(scene.center_deprecated?.x ?? 0),
