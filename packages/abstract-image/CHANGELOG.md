@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.3.0] - 2024-10-16
+
+### Added
+
+- Svg and React svg exports the svg attribute 'alignment-baseline' to position text verticly.
+
 ## [8.2.0] - 2024-07-08
 
 ### Added
