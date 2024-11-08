@@ -1,5 +1,6 @@
 import { ValidationError, XMLValidator } from "fast-xml-parser";
 import { XmlElement, parseXml, findElement } from "./parse-xml";
+import { xsd } from "../xsd-template";
 
 enum ErrorType {
   warning = 0,
@@ -36,8 +37,17 @@ type XmlError = {
   readonly range: Range;
 };
 
+export const parsedXsd = parseXml(xsd.replace(/xs:/g, ""), {
+  preserveOrder: true,
+  ignoreAttributes: false,
+  attributeNamePrefix: "",
+  allowBooleanAttributes: true,
+  trimValues: false,
+  ignoreDeclaration: true,
+});
+
 // eslint-disable-next-line functional/prefer-readonly-type
-export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement>): Array<ErrorObject> {
+export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement> = parsedXsd): Array<ErrorObject> {
   const errors: Array<XmlError> = [];
 
   // ignore all mustache brackets

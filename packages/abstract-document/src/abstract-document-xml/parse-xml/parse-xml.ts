@@ -1,6 +1,6 @@
 import { X2jOptions, XMLParser } from "fast-xml-parser";
 import Mustache from "mustache";
-import { xsd } from "../xsd-template";
+
 import { errorToReadableText, validateXml } from "./validation";
 
 export type XmlElement = {
@@ -14,16 +14,7 @@ export type XmlElement = {
 
 export type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
-const parsedXsd = parseXml(xsd.replace(/xs:/g, ""), {
-  preserveOrder: true,
-  ignoreAttributes: false,
-  attributeNamePrefix: "",
-  allowBooleanAttributes: true,
-  trimValues: false,
-  ignoreDeclaration: true,
-});
-
-const options: Partial<X2jOptions> = {
+const defaultOptions: Partial<X2jOptions> = {
   preserveOrder: true,
   ignoreAttributes: false,
   attributeNamePrefix: "",
@@ -44,6 +35,8 @@ const options: Partial<X2jOptions> = {
   },
 };
 
+export const mustacheRender = Mustache.render;
+
 export function parseMustacheXml(
   template: { readonly name: string; readonly template: string },
   data: any,
@@ -52,15 +45,15 @@ export function parseMustacheXml(
   // const preParse = parseXml(template.template, options);
   // const stringified = JSON.stringify(preParse);
   const mustacheResolvedXml = Mustache.render(template.template, data, partials);
-  const validationErrors = validateXml(mustacheResolvedXml, parsedXsd);
+  const validationErrors = validateXml(mustacheResolvedXml);
   if (validationErrors.length > 0) {
     return { type: "Err", error: errorToReadableText(validationErrors, template.name) };
   }
 
-  return { type: "Ok", xml: parseXml(mustacheResolvedXml, options) };
+  return { type: "Ok", xml: parseXml(mustacheResolvedXml) };
 }
 
-export function parseXml(text: string, options?: Partial<X2jOptions>): ReadonlyArray<XmlElement> {
+export function parseXml(text: string, options: Partial<X2jOptions> = defaultOptions): ReadonlyArray<XmlElement> {
   const parser = new XMLParser(options);
   // Unescape HTML entity
   parser.addEntity("#x2F", "/");
