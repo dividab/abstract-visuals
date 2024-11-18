@@ -16,9 +16,9 @@ export const svgPolygon = (points: ReadonlyArray<Vec2>, fill: string, stroke: st
     .slice(0, -1)}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
 
 export const svgCircle = (radius: number, pos: Vec2, fill: string, stroke: string, strokeWidth: number): string =>
-  `<circle r=${radius.toFixed(0)} cx=${pos.x.toFixed(0)} cy=${pos.y.toFixed(
+  `<circle r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(
     0
-  )} fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
+  )}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
 
 export const svgText = (p: Vec2, text: string, rot: number, color: string, font: string, fontSize: number): string =>
   `<text font-family="${font}" font-size="${fontSize}px" text-anchor="middle" alignment-baseline="middle" fill="${color}" transform="${translate(
