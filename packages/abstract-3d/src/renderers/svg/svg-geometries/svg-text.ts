@@ -2,6 +2,7 @@ import * as A3D from "../../../abstract-3d";
 import { zElem, zOrderElement } from "./shared";
 import { svgText } from "../svg-encoding";
 
+// dummy
 export function text(
   t: A3D.Text,
   point: (x: number, y: number) => A3D.Vec2,
