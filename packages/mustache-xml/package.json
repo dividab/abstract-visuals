@@ -1,7 +1,8 @@
 {
+  "private": true,
   "name": "@abstract-visuals/mustache-xml",
   "version": "0.1.1",
-  "description": "Mustache xml",
+  "description": "Internal Mustache xml",
   "main": "lib/index.js",
   "types": "lib/index",
   "license": "MIT",
