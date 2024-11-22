@@ -6,7 +6,10 @@ import {
   creators,
   extractImageFontsStyleNames,
   parsedXsd,
-  MustacheXml,
+  errorToReadableText,
+  parseXml,
+  render,
+  validateXml,
 } from "../../../abstract-document/src/abstract-document-xml";
 
 export function AbstractDocumentXMLExample(): JSX.Element {
@@ -83,12 +86,12 @@ async function generatePDF(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const mustacheResolvedXml = MustacheXml.render(template, dataObject, {});
-  const validationErrors = MustacheXml.validateMustacheXml(mustacheResolvedXml, parsedXsd);
+  const mustacheResolvedXml = render(template, dataObject, {});
+  const validationErrors = validateXml(mustacheResolvedXml, parsedXsd);
   if (validationErrors.length > 0) {
-    return { type: "Err", error: MustacheXml.errorToReadableText(validationErrors, "template") };
+    return { type: "Err", error: errorToReadableText(validationErrors, "template") };
   }
-  const xml = MustacheXml.parseXml(template);
+  const xml = parseXml(template);
   const doc = abstractDocOfXml(
     creators({}, {}, extractImageFontsStyleNames(xml)[2]),
     xml[0]!

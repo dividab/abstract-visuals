@@ -33,7 +33,7 @@ const defaultOptions: Partial<FXmlP.X2jOptions> = {
 
 export const render = Mustache.render;
 
-export function parseMustacheXml(
+export function parseRenderedXml(
   template: string,
   data: any,
   partials: Record<string, string>
