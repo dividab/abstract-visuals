@@ -6,5 +6,5 @@
     "rootDir": "src",
     "lib": ["dom", "es2022"]
   },
-  "references": [{ "path": "../abstract-image" }, { "path": "../test-utils" }, { "path": "../mustache-xml" }]
+  "references": [{ "path": "../abstract-image" }, { "path": "../test-utils" }]
 }

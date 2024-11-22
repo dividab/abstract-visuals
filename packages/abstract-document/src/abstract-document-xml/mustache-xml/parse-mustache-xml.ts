@@ -8,8 +8,6 @@ export type XmlElement = {
   readonly textContent?: string;
 };
 
-//dummy
-
 type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
 const defaultOptions: Partial<FXmlP.X2jOptions> = {
@@ -33,7 +31,7 @@ const defaultOptions: Partial<FXmlP.X2jOptions> = {
   },
 };
 
-export const mustacheRender = Mustache.render;
+export const render = Mustache.render;
 
 export function parseMustacheXml(
   template: string,
