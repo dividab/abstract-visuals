@@ -1,7 +1,5 @@
-import { X2jOptions, XMLParser } from "fast-xml-parser";
+import * as FXmlP from "fast-xml-parser";
 import Mustache from "mustache";
-
-import { errorToReadableText, validateXml } from "./validation";
 
 export type XmlElement = {
   readonly tagName: string;
@@ -14,7 +12,7 @@ export type XmlElement = {
 
 export type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
-const defaultOptions: Partial<X2jOptions> = {
+const defaultOptions: Partial<FXmlP.X2jOptions> = {
   preserveOrder: true,
   ignoreAttributes: false,
   attributeNamePrefix: "",
@@ -41,25 +39,15 @@ export function parseMustacheXml(
   template: { readonly name: string; readonly template: string },
   data: any,
   partials: Record<string, string>
-): { readonly type: "Ok"; readonly xml: ReadonlyArray<XmlElement> } | { readonly type: "Err"; readonly error: string } {
-  // const preParse = parseXml(template.template, options);
-  // const stringified = JSON.stringify(preParse);
-  const mustacheResolvedXml = Mustache.render(template.template, data, partials);
-  const validationErrors = validateXml(mustacheResolvedXml);
-  if (validationErrors.length > 0) {
-    return { type: "Err", error: errorToReadableText(validationErrors, template.name) };
-  }
-
-  return { type: "Ok", xml: parseXml(mustacheResolvedXml) };
+): ReadonlyArray<XmlElement> {
+  return parseXml(Mustache.render(template.template, data, partials));
 }
 
-export function parseXml(text: string, options: Partial<X2jOptions> = defaultOptions): ReadonlyArray<XmlElement> {
-  const parser = new XMLParser(options);
-  // Unescape HTML entity
+export function parseXml(text: string, options: Partial<FXmlP.X2jOptions> = defaultOptions): ReadonlyArray<XmlElement> {
+  const parser = new FXmlP.XMLParser(options);
   parser.addEntity("#x2F", "/");
   parser.addEntity("#x3D", "=");
-  const parsedXml = parser.parse(text);
-  return transformFXP(parsedXml);
+  return transformFXP(parser.parse(text));
 }
 
 // Transforms fast-xml-parser format to a format that is much easier to work with

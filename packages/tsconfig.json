@@ -13,6 +13,7 @@
     { "path": "abstract-image" },
     { "path": "abstract-3d" },
     { "path": "abstract-visuals-example" },
-    { "path": "test-utils" }
+    { "path": "test-utils" },
+    { "path": "mustache-xml" }
   ]
 }

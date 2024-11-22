@@ -1,6 +1,5 @@
-import { ValidationError, XMLValidator } from "fast-xml-parser";
-import { XmlElement, parseXml, findElement } from "./parse-xml";
-import { xsd } from "../xsd-template";
+import * as FXmlP from "fast-xml-parser";
+import { XmlElement, parseXml, findElement } from "./parse-mustache-xml";
 
 enum ErrorType {
   warning = 0,
@@ -37,17 +36,8 @@ type XmlError = {
   readonly range: Range;
 };
 
-export const parsedXsd = parseXml(xsd.replace(/xs:/g, ""), {
-  preserveOrder: true,
-  ignoreAttributes: false,
-  attributeNamePrefix: "",
-  allowBooleanAttributes: true,
-  trimValues: false,
-  ignoreDeclaration: true,
-});
-
 // eslint-disable-next-line functional/prefer-readonly-type
-export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement> = parsedXsd): Array<ErrorObject> {
+export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement>): Array<ErrorObject> {
   const errors: Array<XmlError> = [];
 
   // ignore all mustache brackets
@@ -66,7 +56,7 @@ export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement
 
   if (xml) {
     try {
-      const result = XMLValidator.validate(xml, {
+      const result = FXmlP.XMLValidator.validate(xml, {
         allowBooleanAttributes: true,
       });
 
@@ -208,7 +198,7 @@ function getDecorationsFromError(error: XmlError): ErrorObject {
   };
 }
 
-function getErrorFromException(result: ValidationError, xml: string): XmlError {
+function getErrorFromException(result: FXmlP.ValidationError, xml: string): XmlError {
   const { col, line, msg } = result.err;
   const startLine = line - 1;
   const lines = xml.split("\n");
@@ -241,13 +231,9 @@ function getErrorType(error: XmlError): string {
   }
 }
 
-function getErrorMessage(error: XmlError): string {
-  return error.message.split(/[\t\n]/g)[1] ?? error.message;
-}
+const getErrorMessage = (error: XmlError): string => error.message.split(/[\t\n]/g)[1] ?? error.message;
 
-function createError(message: string, type: ErrorType, range: Range): XmlError {
-  return { message, type, range };
-}
+const createError = (message: string, type: ErrorType, range: Range): XmlError => ({ message, type, range });
 
 function getPositionFromIndex(lines: ReadonlyArray<string>, index: number): Position {
   let totalLength = 0;
@@ -263,9 +249,12 @@ function getPositionFromIndex(lines: ReadonlyArray<string>, index: number): Posi
   return { lineNumber: lines.length, column: 1 };
 }
 
-function toRange(startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number): Range {
-  return { startLineNumber, startColumn, endLineNumber, endColumn };
-}
+const toRange = (startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number): Range => ({
+  startLineNumber,
+  startColumn,
+  endLineNumber,
+  endColumn,
+});
 
 export function errorToReadableText(errors: ReadonlyArray<ErrorObject>, templateName: string = ""): string {
   const errorLines: Array<string> = [];

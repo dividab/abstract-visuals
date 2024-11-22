@@ -1,4 +1,4 @@
-import { XmlElement } from "../parse-xml";
+import { XmlElement } from "@abstract-visuals/mustache-xml";
 import { ADCreatorFn, propsCreators } from "./creator";
 
 export function abstractDocOfXml(
