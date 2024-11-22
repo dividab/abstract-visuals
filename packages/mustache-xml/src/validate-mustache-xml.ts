@@ -37,7 +37,7 @@ type XmlError = {
 };
 
 // eslint-disable-next-line functional/prefer-readonly-type
-export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement>): Array<ErrorObject> {
+export function validateMustacheXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement>): Array<ErrorObject> {
   const errors: Array<XmlError> = [];
 
   // ignore all mustache brackets

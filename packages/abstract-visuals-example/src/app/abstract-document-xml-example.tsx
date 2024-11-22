@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import { parseMustacheXml } from "@abstract-visuals/mustache-xml";
+import { errorToReadableText, mustacheRender, parseXml, validateMustacheXml } from "@abstract-visuals/mustache-xml";
 import * as AD from "../../../abstract-document";
 import {
   abstractDocOfXml,
   creators,
   extractImageFontsStyleNames,
+  parsedXsd,
 } from "../../../abstract-document/src/abstract-document-xml";
 
 export function AbstractDocumentXMLExample(): JSX.Element {
@@ -82,13 +83,15 @@ async function generatePDF(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const parsed = parseMustacheXml({ name: "template", template }, dataObject, {});
-  if (parsed.type === "Err") {
-    return parsed;
+  const mustacheResolvedXml = mustacheRender(template, dataObject, {});
+  const validationErrors = validateMustacheXml(mustacheResolvedXml, parsedXsd);
+  if (validationErrors.length > 0) {
+    return { type: "Err", error: errorToReadableText(validationErrors, "template") };
   }
+  const xml = parseXml(template);
   const doc = abstractDocOfXml(
-    creators({}, {}, extractImageFontsStyleNames(parsed.xml)[2]),
-    parsed.xml[0]!
+    creators({}, {}, extractImageFontsStyleNames(xml)[2]),
+    xml[0]!
   ) as unknown as AD.AbstractDoc.AbstractDoc.AbstractDoc;
   const blob: Blob = await AD.AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);

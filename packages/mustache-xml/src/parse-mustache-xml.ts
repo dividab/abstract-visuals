@@ -36,11 +36,11 @@ const defaultOptions: Partial<FXmlP.X2jOptions> = {
 export const mustacheRender = Mustache.render;
 
 export function parseMustacheXml(
-  template: { readonly name: string; readonly template: string },
+  template: string,
   data: any,
   partials: Record<string, string>
 ): ReadonlyArray<XmlElement> {
-  return parseXml(Mustache.render(template.template, data, partials));
+  return parseXml(Mustache.render(template, data, partials));
 }
 
 export function parseXml(text: string, options: Partial<FXmlP.X2jOptions> = defaultOptions): ReadonlyArray<XmlElement> {
