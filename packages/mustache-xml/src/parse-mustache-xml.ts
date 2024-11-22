@@ -10,7 +10,7 @@ export type XmlElement = {
 
 //dummy
 
-export type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
+type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
 const defaultOptions: Partial<FXmlP.X2jOptions> = {
   preserveOrder: true,
