@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
+import { parseMustacheXml } from "@abstract-visuals/mustache-xml";
 import * as AD from "../../../abstract-document";
 import {
   abstractDocOfXml,
   creators,
   extractImageFontsStyleNames,
-  parseMustacheXml,
 } from "../../../abstract-document/src/abstract-document-xml";
 
 export function AbstractDocumentXMLExample(): JSX.Element {

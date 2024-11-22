@@ -8,6 +8,7 @@
     { "path": "../abstract-image" },
     { "path": "../abstract-chart" },
     { "path": "../abstract-document" },
+    { "path": "../mustache-xml" },
     { "path": "../abstract-3d" }
   ]
 }
