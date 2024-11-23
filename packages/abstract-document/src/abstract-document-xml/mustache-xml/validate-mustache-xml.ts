@@ -63,14 +63,7 @@ export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement
       if (result !== true) {
         errors.push(getErrorFromException(result, xml));
       }
-      const entryPointXml = parseXml(xml, {
-        preserveOrder: true,
-        ignoreAttributes: false,
-        attributeNamePrefix: "",
-        allowBooleanAttributes: true,
-        trimValues: false,
-        ignoreDeclaration: true,
-      })[0]!;
+      const entryPointXml = parseXml(xml)[0]!;
 
       const entryPointSchema = xsdSchema[0]!;
       let pos = 0;
