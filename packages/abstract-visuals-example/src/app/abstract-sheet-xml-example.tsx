@@ -126,13 +126,13 @@ function createSheet(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const mustacheResolvedXml = render(template, dataObject, {});
-  const validationErrors = validateXml(mustacheResolvedXml, parsedXsd);
+  const mustacheRendered = render(template, dataObject, {});
+  const validationErrors = validateXml(mustacheRendered, parsedXsd);
   if (validationErrors.length > 0) {
     return { type: "Err", error: errorToReadableText(validationErrors, "template") };
   }
   try {
-    return { type: "Ok", sheet: abstractSheetXml(parseXml(mustacheResolvedXml)[0]!) as AbstractSheet };
+    return { type: "Ok", sheet: abstractSheetXml(parseXml(mustacheRendered)[0]!) as AbstractSheet };
   } catch (e) {
     return { type: "Err", error: e.message };
   }

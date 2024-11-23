@@ -8,45 +8,20 @@ export type XmlElement = {
   readonly textContent?: string;
 };
 
-type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
-
-const defaultOptions: Partial<FXmlP.X2jOptions> = {
-  preserveOrder: true,
-  ignoreAttributes: false,
-  attributeNamePrefix: "",
-  allowBooleanAttributes: true,
-  trimValues: false,
-  ignoreDeclaration: true,
-  processEntities: true,
-  htmlEntities: true,
-  attributeValueProcessor: (_name, value) => {
-    if (!value?.trim()) {
-      return value;
-    }
-    const nValue = Number(value);
-    if (!Number.isNaN(nValue)) {
-      return nValue;
-    }
-    return value;
-  },
-};
-
-export const render = Mustache.render;
-
-export function parseRenderedXml(
+export const parseMustacheXml = (
   template: string,
   data: any,
   partials: Record<string, string>
-): ReadonlyArray<XmlElement> {
-  return parseXml(Mustache.render(template, data, partials));
-}
+): ReadonlyArray<XmlElement> => parseXml(Mustache.render(template, data, partials));
 
-export function parseXml(text: string, options: Partial<FXmlP.X2jOptions> = defaultOptions): ReadonlyArray<XmlElement> {
-  const parser = new FXmlP.XMLParser(options);
-  parser.addEntity("#x2F", "/");
-  parser.addEntity("#x3D", "=");
-  return transformFXP(parser.parse(text));
-}
+export const render = Mustache.render;
+
+export const parseXml = (text: string): ReadonlyArray<XmlElement> => transformFXP(xmlParser.parse(text));
+
+export const parseXsd = (text: string): ReadonlyArray<XmlElement> =>
+  transformFXP(xsdParser.parse(text.replace(/xs:/g, "")));
+
+type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
 // Transforms fast-xml-parser format to a format that is much easier to work with
 function transformFXP(parsedXml: ReadonlyArray<FastXmlElement>): ReadonlyArray<XmlElement> {
@@ -123,3 +98,37 @@ function shouldSkipLevel(tag: XmlElement): boolean {
     tag.tagName === "all" || tag.tagName === "sequence" || tag.tagName === "choice" || tag.attributes.name === undefined
   );
 }
+
+const xmlParser = new FXmlP.XMLParser({
+  preserveOrder: true,
+  ignoreAttributes: false,
+  attributeNamePrefix: "",
+  allowBooleanAttributes: true,
+  trimValues: false,
+  ignoreDeclaration: true,
+  processEntities: true,
+  htmlEntities: true,
+  attributeValueProcessor: (_name, value) => {
+    if (!value?.trim()) {
+      return value;
+    }
+    const nValue = Number(value);
+    if (!Number.isNaN(nValue)) {
+      return nValue;
+    }
+    return value;
+  },
+});
+xmlParser.addEntity("#x2F", "/");
+xmlParser.addEntity("#x3D", "=");
+
+const xsdParser = new FXmlP.XMLParser({
+  preserveOrder: true,
+  ignoreAttributes: false,
+  attributeNamePrefix: "",
+  allowBooleanAttributes: true,
+  trimValues: false,
+  ignoreDeclaration: true,
+});
+xsdParser.addEntity("#x2F", "/");
+xsdParser.addEntity("#x3D", "=");

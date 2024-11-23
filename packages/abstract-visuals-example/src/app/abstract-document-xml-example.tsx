@@ -92,12 +92,12 @@ async function generatePDF(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const mustacheResolvedXml = render(template, dataObject, {});
-  const validationErrors = validateXml(mustacheResolvedXml, parsedXsd);
+  const mustacheRendered = render(template, dataObject, {});
+  const validationErrors = validateXml(mustacheRendered, parsedXsd);
   if (validationErrors.length > 0) {
     return { type: "Err", error: errorToReadableText(validationErrors, "template") };
   }
-  const xml = parseXml(mustacheResolvedXml);
+  const xml = parseXml(mustacheRendered);
 
   const doc = abstractDocOfXml(
     creators({}, {}, extractImageFontsStyleNames(xml)[2]),

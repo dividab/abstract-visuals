@@ -13,7 +13,7 @@ import {
   Styles,
 } from "../abstract-sheet/abstract-sheet";
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd";
-import { parseXml, XmlElement } from "./mustache-xml";
+import { parseXml, parseXsd, XmlElement } from "./mustache-xml";
 
 export function abstractSheetXml(el: XmlElement): unknown {
   const children = Array<unknown>();
@@ -125,11 +125,4 @@ export function abstractSheetXml(el: XmlElement): unknown {
   }
 }
 
-export const parsedXsd = parseXml(xsd.replace(/xs:/g, ""), {
-  preserveOrder: true,
-  ignoreAttributes: false,
-  attributeNamePrefix: "",
-  allowBooleanAttributes: true,
-  trimValues: false,
-  ignoreDeclaration: true,
-});
+export const parsedXsd = parseXsd(xsd);

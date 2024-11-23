@@ -1,7 +1,7 @@
 import * as Elements from "./elements";
 import * as Styles from "./styles";
 import * as CustomElements from "./custom-elements";
-import { parseXml } from "../mustache-xml";
+import { parseXml, parseXsd } from "../mustache-xml";
 
 const commonParts = `${Styles.layoutFoundation}
 ${Elements.section}
@@ -54,20 +54,6 @@ export const xsdPartial = `<?xml version="1.0" encoding="UTF-8"?>
     <xs:element name="Markdown" type="Markdown" />
 </xs:schema>`;
 
-export const parsedXsd = parseXml(xsd.replace(/xs:/g, ""), {
-  preserveOrder: true,
-  ignoreAttributes: false,
-  attributeNamePrefix: "",
-  allowBooleanAttributes: true,
-  trimValues: false,
-  ignoreDeclaration: true,
-});
+export const parsedXsd = parseXsd(xsd);
 
-export const parsedXsdPartial = parseXml(xsdPartial.replace(/xs:/g, ""), {
-  preserveOrder: true,
-  ignoreAttributes: false,
-  attributeNamePrefix: "",
-  allowBooleanAttributes: true,
-  trimValues: false,
-  ignoreDeclaration: true,
-});
+export const parsedXsdPartial = parseXml(xsdPartial);
