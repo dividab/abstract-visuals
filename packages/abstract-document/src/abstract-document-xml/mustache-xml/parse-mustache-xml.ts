@@ -16,8 +16,13 @@ export const parseMustacheXml = (
 
 export const render = Mustache.render;
 
+export function parseXmlCustom(text: string, options: Partial<FXmlP.X2jOptions>): ReadonlyArray<XmlElement> {
+  const parser = new FXmlP.XMLParser(options);
+  parser.addEntity("#x2F", "/");
+  parser.addEntity("#x3D", "=");
+  return transformFXP(parser.parse(text));
+}
 export const parseXml = (text: string): ReadonlyArray<XmlElement> => transformFXP(xmlParser.parse(text));
-
 export const parseXsd = (text: string): ReadonlyArray<XmlElement> =>
   transformFXP(xsdParser.parse(text.replace(/xs:/g, "")));
 
