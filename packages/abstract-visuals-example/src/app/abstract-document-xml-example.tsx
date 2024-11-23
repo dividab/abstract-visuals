@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import * as AD from "../../../abstract-document";
+import * as AD from "abstract-document";
 import {
   abstractDocOfXml,
   creators,
@@ -10,25 +10,31 @@ import {
   parseXml,
   render,
   validateXml,
-} from "../../../abstract-document/src/abstract-document-xml";
+} from "abstract-document/src/abstract-document-xml";
 
 export function AbstractDocumentXMLExample(): JSX.Element {
   const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
     undefined
   );
-  const [data, setData] = React.useState('{ "test": "Hello world" }');
+  const [data, setData] = React.useState('{ "test": "Hello world", "truthy": true, "falsy": false }');
   const [template, setTemplate] = React.useState(`<AbstractDoc>
     <StyleNames>
         <StyleName name="footerResultText" type="TextStyle" fontSize="8" color="#353535" bold="true"/>
         <StyleName name="footerResultCell" type="TableCellStyle" padding="4 4 3 0" borders="1 0 0 0" borderColor="#123151" verticalAlignment="Bottom"/>
     </StyleNames>
     <Section>
-        <Table columnWidths="375,70,60">
+        <Table columnWidths="200,70,60, 60">
             <style margins="150 0 0 0"/>
             <TableRow>
                 <TableCell styleName="footerResultCell"/>
                 <TextCell text="{{test}}" styleNames="footerResultText, footerResultCell"/>
                 <TextCell text="Price €" styleNames="footerResultText, footerResultCell"/>
+                {{#truthy}}
+                <TextCell text="Price2 €" styleNames="footerResultText, footerResultCell"/>
+                {{/truthy}}
+                {{#falsy}}
+                <TextCell text="Price3 €" styleNames="footerResultText, footerResultCell"/>
+                {{/falsy}}
             </TableRow>
         </Table>
     </Section>
@@ -91,7 +97,8 @@ async function generatePDF(
   if (validationErrors.length > 0) {
     return { type: "Err", error: errorToReadableText(validationErrors, "template") };
   }
-  const xml = parseXml(template);
+  const xml = parseXml(mustacheResolvedXml);
+
   const doc = abstractDocOfXml(
     creators({}, {}, extractImageFontsStyleNames(xml)[2]),
     xml[0]!

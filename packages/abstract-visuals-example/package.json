@@ -20,6 +20,7 @@
     "abstract-3d": "^0.3.0",
     "abstract-chart": "^8.2.1",
     "abstract-document": "^12.0.6",
+    "abstract-sheet": "^0.0.1",
     "abstract-image": "^8.3.1",
     "base64-js": "^1.5.1",
     "file-saver": "^2.0.5",

@@ -6,6 +6,8 @@ import { AbstractChartExample } from "./abstract-chart-example";
 import { AbstractDocumentExample } from "./abstract-document-example";
 import { AbstractDocumentXMLExample } from "./abstract-document-xml-example";
 import { AbstractImageExampleSvg } from "./abstract-image-example-svg";
+import { AbstractSheetExample } from "./abstract-sheet-example";
+import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example";
 
 type Example = (typeof examples)[number];
 
@@ -17,6 +19,8 @@ const examples = [
   "AbstractDocument",
   "AbstractDocumentXML",
   "Abstract3D",
+  "AbstractSheet",
+  "AbstractSheetXML",
 ] as const;
 
 export function Container(): JSX.Element {
@@ -56,6 +60,10 @@ export function Container(): JSX.Element {
             return <AbstractDocumentXMLExample />;
           case "Abstract3D":
             return <Abstract3DExample />;
+          case "AbstractSheet":
+            return <AbstractSheetExample />;
+          case "AbstractSheetXML":
+            return <AbstractSheetXMLExample />;
           default:
             return <></>;
         }

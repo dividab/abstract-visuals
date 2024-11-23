@@ -12,6 +12,7 @@
     { "path": "abstract-document" },
     { "path": "abstract-image" },
     { "path": "abstract-3d" },
+    { "path": "abstract-sheet" },
     { "path": "abstract-visuals-example" },
     { "path": "test-utils" }
   ]

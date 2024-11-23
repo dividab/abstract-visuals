@@ -1,0 +1,27 @@
+{
+  "name": "abstract-sheet",
+  "version": "0.0.1",
+  "description": "Abstract sheet",
+  "author": "Divid AB <info@divid.se>",
+  "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-sheet",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index",
+  "files": [
+    "/lib",
+    "/src",
+    "CHANGELOG.md",
+    "README.md",
+    "package.json"
+  ],
+  "dependencies": {
+    "xlsx-js-style": "^1.2.0",
+    "mustache": "^4.2.0",
+    "ts-exhaustive-check": "^1.0.0",
+    "fast-xml-parser": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/mustache": "^4.2.5",
+    "@types/xml": "^1.0.11"
+  }
+}

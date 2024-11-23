@@ -36,6 +36,10 @@ module.exports = {
           options: { projectReferences: true, transpileOnly: true, ignoreDiagnostics: [2322] },
         },
       },
+      {
+        test: /\.xml$/i,
+        use: "raw-loader",
+      },
     ],
   },
 };

@@ -36,9 +36,13 @@
     "ts-jest": "^29.1.2",
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.5",
-    "webpack": "^5.91.0",
+    "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4"
+    "webpack-dev-server": "^5.1.0",
+    "@xsd-tools/typescript": "^0.2.0",
+    "raw-loader": "^4.0.2",
+    "xmldom": "^0.6.0",
+    "xsd-tools": "^0.2.0"
   },
   "scripts": {
     "precommit": "lint-staged",
@@ -58,6 +62,7 @@
     "dist": "cd packages/abstract-visuals-example && webpack",
     "storybook": "start-storybook -p 6006 --ci",
     "build-storybook": "build-storybook",
+    "gen": "xsd-ts ./packages/abstract-document/src/abstract-document-xml/xsd.xml ./packages/abstract-document/src/abstract-document-xml/abstract-document.ts",
     "clean-node-modules": "rm -rf node_modules && rm -rf ./packages/*/node_modules"
   },
   "lint-staged": {
