@@ -120,11 +120,13 @@ export function AbstractSheetXMLExample(): JSX.Element {
                 FileSaver.saveAs(
                   new Blob(
                     [
-                      AS.toCsv(sheet.sheet)
-                        .map((s) => s.csv)
+                      AS.toCsv([sheet.sheet])
+                        .flatMap((s) => s.map((s) => s.csv))
                         .join("\n\n"),
                     ],
-                    { type: "text/plain" }
+                    {
+                      type: "text/plain",
+                    }
                   ),
                   `abstract-visuals.txt`
                 );

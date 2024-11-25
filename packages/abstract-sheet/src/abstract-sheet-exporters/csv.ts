@@ -6,7 +6,7 @@ import { createStyle } from "./_style";
 export type CsvFile = { readonly name: string; readonly csv: string };
 
 export function toCsv(
-  as: AbstractSheet,
+  abstractSheets: ReadonlyArray<AbstractSheet>,
   options?: {
     readonly separator?: string;
     readonly rowSeparator?: string;
@@ -17,21 +17,24 @@ export function toCsv(
     readonly rawNumber?: boolean;
     readonly dateFormat?: string;
   }
-): ReadonlyArray<CsvFile> {
-  const styles = Object.fromEntries(as.styles?.map((s) => [s.name, createStyle(s)]) ?? []);
-  const mappedOptions: XLSX.Sheet2CSVOpts | undefined = options
-    ? {
-        FS: options.separator,
-        RS: options.rowSeparator,
-        strip: options.noTrailingSeparator,
-        blankrows: options.blankRows,
-        skipHidden: options.skipHidden,
-        forceQuotes: options.forceQuotes,
-        rawNumbers: options.rawNumber,
-        dateNF: options.dateFormat,
-      }
-    : undefined;
-  return as.sheets.map(
-    (s): CsvFile => ({ name: s.name, csv: XLSX.utils.sheet_to_csv(xlsxWorkSheet(s, styles), mappedOptions) })
-  );
+): ReadonlyArray<ReadonlyArray<CsvFile>> {
+  return (abstractSheets as Array<AbstractSheet>).map((as) => {
+    const styles = Object.fromEntries(as.styles?.map((s) => [s.name, createStyle(s)]) ?? []);
+    const mappedOptions: XLSX.Sheet2CSVOpts | undefined = options
+      ? {
+          FS: options.separator,
+          RS: options.rowSeparator,
+          strip: options.noTrailingSeparator,
+          blankrows: options.blankRows,
+          skipHidden: options.skipHidden,
+          forceQuotes: options.forceQuotes,
+          rawNumbers: options.rawNumber,
+          dateNF: options.dateFormat,
+        }
+      : undefined;
+
+    return as.sheets.map(
+      (s): CsvFile => ({ name: s.name, csv: XLSX.utils.sheet_to_csv(xlsxWorkSheet(s, styles), mappedOptions) })
+    );
+  }) as unknown as ReadonlyArray<ReadonlyArray<CsvFile>>;
 }
