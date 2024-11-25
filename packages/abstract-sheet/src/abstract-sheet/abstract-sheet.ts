@@ -1,15 +1,14 @@
 export type AbstractSheet = {
-  readonly sheets: Sheets;
+  readonly sheets: ReadonlyArray<Sheet>;
   readonly styles?: Styles;
 };
 
-export type Sheets = ReadonlyArray<Sheet>;
-
 export type Sheet = {
   readonly name: string;
-  readonly rows: Rows;
+  readonly cells: ReadonlyArray<Cells>;
   readonly colInfo?: ColInfos;
   readonly rowInfo?: RowInfos;
+  readonly direction?: "row" | "col";
 };
 
 export type ColInfos = ReadonlyArray<ColInfo>;
@@ -20,17 +19,16 @@ export type RowInfos = ReadonlyArray<RowInfo>;
 
 export type RowInfo = { readonly hidden?: boolean; readonly heightPixels?: number };
 
-export type Rows = ReadonlyArray<Row>;
+export type Cells = ReadonlyArray<Cell>;
 
-export type Row = ReadonlyArray<Cell>;
+export type Cell = (NumberCell | TextCell | BoolCell | DateCell) & { readonly styles?: ReadonlyArray<string> };
 
-export type Cell = {
-  readonly value: string | number;
-  readonly styles?: ReadonlyArray<string>;
-  readonly type: CellType;
-};
+export type NumberCell = { readonly type: "number"; readonly value: string | number | boolean | Date };
+export type TextCell = { readonly type: "string"; readonly value: string | number | boolean | Date };
+export type BoolCell = { readonly type: "boolean"; readonly value: string | number | boolean | Date };
+export type DateCell = { readonly type: "date"; readonly value: string | number | boolean | Date };
 
-export type CellType = "string" | "number";
+export type CellType = Cell["type"];
 
 export type Styles = ReadonlyArray<Style>;
 

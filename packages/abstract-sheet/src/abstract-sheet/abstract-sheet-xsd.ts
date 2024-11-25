@@ -1,29 +1,30 @@
-export const xsd = `<?xml version="1.0" encoding="UTF-8"?>
+export const xsd = `<?xml version="1.1" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
 	<xs:element name="AbstractSheet">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Styles" type="Styles" minOccurs="0" />
-				<xs:element name="Sheets" type="Sheets" minOccurs="0" />
+				<xs:element name="Styles" type="Styles" minOccurs="0" maxOccurs="1" />
+				<xs:element name="Sheet" type="Sheet" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 
-
-	<xs:complexType name="Sheets">
-		<xs:sequence>
-			<xs:element name="Sheet" type="Sheet" minOccurs="0" />
-		</xs:sequence>
-	</xs:complexType>
-
 	<xs:complexType name="Sheet">
 		<xs:sequence>
-			<xs:element name="Rows" type="Rows" minOccurs="0" maxOccurs="1" />
+			<xs:element name="Cells" type="Cells" />
 			<xs:element name="RowInfos" type="RowInfos" minOccurs="0" maxOccurs="1" />
 			<xs:element name="ColInfos" type="ColInfos" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="direction">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="row" />
+					<xs:enumeration value="col" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 
 	<xs:complexType name="ColInfos">
@@ -48,42 +49,19 @@ export const xsd = `<?xml version="1.0" encoding="UTF-8"?>
 		<xs:attribute name="heightPixels" type="xs:integer" />
 	</xs:complexType>
 
-
-	<xs:complexType name="Rows">
-		<xs:sequence>
-			<xs:element name="Row" type="Row" />
-		</xs:sequence>
-	</xs:complexType>
-
-	<xs:complexType name="Row">
+	<xs:complexType name="Cells">
 		<xs:sequence>
 			<xs:element name="Cell" type="Cell" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="Cell">
-		<xs:attribute name="value" type="NumberOrString" use="required" />
+		<xs:attribute name="number" type="xs:string" use="optional" />
+		<xs:attribute name="text" type="xs:string" use="optional" />
+		<xs:attribute name="bool" type="xs:string" use="optional" />
+		<xs:attribute name="date" type="xs:string" use="optional" />
 		<xs:attribute name="styles" type="xs:string" />
-		<xs:attribute name="type">
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="string" />
-					<xs:enumeration value="number" />
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
 	</xs:complexType>
-
-	<xs:simpleType name="NumberOrString">
-		<xs:union>
-			<xs:simpleType>
-				<xs:restriction base="xs:double" />
-			</xs:simpleType>
-			<xs:simpleType>
-				<xs:restriction base="xs:string" />
-			</xs:simpleType>
-		</xs:union>
-	</xs:simpleType>
 
 	<xs:complexType name="Styles">
 		<xs:sequence>
@@ -112,9 +90,9 @@ export const xsd = `<?xml version="1.0" encoding="UTF-8"?>
 			</xs:simpleType>
 		</xs:attribute>
 		<xs:attribute name="wrapText" type="xs:boolean" />
-		<xs:attribute name="textRotation" type="xs:boolean" />
-		<xs:attribute name="borderStyle" type="xs:string" />
-		<xs:attribute name="borderColor" type="xs:string" />
+		<xs:attribute name="textRotation" type="xs:double" />
+		<xs:attribute name="borderStyle" type="BorderStyle" />
+		<xs:attribute name="borderColor" type="BorderColor" />
 		<xs:attribute name="fillType">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
@@ -123,10 +101,10 @@ export const xsd = `<?xml version="1.0" encoding="UTF-8"?>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
-		<xs:attribute name="foreground" type="xs:string" />
-		<xs:attribute name="background" type="xs:string" />
+		<xs:attribute name="foreground" type="HexColorWithOpacity" />
+		<xs:attribute name="background" type="HexColorWithOpacity" />
 		<xs:attribute name="bold" type="xs:boolean" />
-		<xs:attribute name="color" type="xs:string" />
+		<xs:attribute name="color" type="HexColorWithOpacity" />
 		<xs:attribute name="italic" type="xs:boolean" />
 		<xs:attribute name="font" type="xs:string" />
 		<xs:attribute name="strike" type="xs:boolean" />
@@ -142,5 +120,23 @@ export const xsd = `<?xml version="1.0" encoding="UTF-8"?>
 		</xs:attribute>
 		<xs:attribute name="numberFormat" type="xs:string" />
 	</xs:complexType>
+
+	<xs:simpleType name="HexColorWithOpacity">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="#[0-9a-fA-F]{8}" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="BorderColor">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})(\\s#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})){0,3}$" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="BorderStyle">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="^(dashDotDot|dashDot|dashed|dotted|hair|mediumDashDotDot|mediumDashDot|mediumDashed|medium|slantDashDot|thick|thin)(\\s(dashDotDot|dashDot|dashed|dotted|hair|mediumDashDotDot|mediumDashDot|mediumDashed|medium|slantDashDot|thick|thin)){0,3}$" />
+		</xs:restriction>
+	</xs:simpleType>
 
 </xs:schema>`;

@@ -3,43 +3,44 @@ import {
   Cell,
   ColInfo,
   ColInfos,
-  Row,
+  Cells,
   RowInfo,
   RowInfos,
-  Rows,
   Sheet,
-  Sheets,
   Style,
   Styles,
+  AbstractSheet,
 } from "../abstract-sheet/abstract-sheet";
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd";
-import { parseXml, parseXsd, XmlElement } from "./mustache-xml";
+import { parseMustacheXml, parseXsd, XmlElement } from "./mustache-xml";
 
-export function abstractSheetXml(el: XmlElement): unknown {
+export const abstractSheetXml = (template: string, data: any, partials: Record<string, string>): AbstractSheet =>
+  abstractSheetOfXml(parseMustacheXml(template, data, partials)[0]!) as AbstractSheet;
+
+export function abstractSheetOfXml(el: XmlElement): unknown {
   const children = Array<unknown>();
   const childElements = Array<XmlElement>();
   for (const child of el.children ?? []) {
     if (child.tagName !== undefined) {
-      children.push(abstractSheetXml(child));
+      children.push(abstractSheetOfXml(child));
       childElements.push(child);
     }
   }
+
   switch (el.tagName) {
     case "AbstractSheet":
       let styles: Styles | undefined = undefined;
-      let sheets: Sheets = [];
+      const sheets: Array<Sheet> = [];
       childElements.forEach((childEl, i) => {
-        if (childEl.tagName === "Sheets") {
-          sheets = children[i] as Sheets;
+        if (childEl.tagName === "Sheet") {
+          sheets.push(children[i] as Sheet);
         } else if (childEl.tagName === "Styles") {
           styles = children[i] as Styles;
         }
       });
-      return { styles, sheets };
-    case "Sheets":
-      return children as Sheets;
+      return { styles, sheets } satisfies AbstractSheet;
     case "Sheet": {
-      let rows: Rows = [];
+      const cells: Array<Cells> = [];
       let colInfo: ColInfos | undefined = undefined;
       let rowInfo: RowInfos | undefined = undefined;
       childElements.forEach((childEl, i) => {
@@ -47,16 +48,17 @@ export function abstractSheetXml(el: XmlElement): unknown {
           colInfo = children[i] as ColInfos;
         } else if (childEl.tagName === "RowInfos") {
           rowInfo = children[i] as RowInfos;
-        } else if (childEl.tagName === "Rows") {
-          rows = children[i] as Rows;
+        } else if (childEl.tagName === "Cells") {
+          cells.push(children[i] as Cells);
         }
       });
       return {
         name: ((el.attributes as Partial<Record<keyof Sheet, unknown>>)?.name ?? "") as string,
-        rows,
+        cells,
         colInfo,
         rowInfo,
-      };
+        direction: ((el.attributes as Partial<Record<keyof Sheet, unknown>>)?.direction ?? "") as Sheet["direction"],
+      } satisfies Sheet;
     }
     case "ColInfos":
       return children as ColInfos;
@@ -66,12 +68,19 @@ export function abstractSheetXml(el: XmlElement): unknown {
       return children as RowInfos;
     case "RowInfo":
       return el.attributes as RowInfo;
-    case "Rows":
-      return children as Rows;
-    case "Row":
-      return children as Row;
+    case "Cells":
+      return children as Cells;
     case "Cell": {
-      return { ...el.attributes, styles: el.attributes.styles?.split(",") } as Cell;
+      const styles = el.attributes.styles?.split(",");
+      if (el.attributes.number !== undefined) {
+        return { ...el.attributes, type: "number", value: el.attributes.number, styles } as Cell;
+      } else if (el.attributes.bool !== undefined) {
+        return { ...el.attributes, type: "boolean", value: el.attributes.boolean, styles } as Cell;
+      } else if (el.attributes.date !== undefined) {
+        return { ...el.attributes, type: "date", value: el.attributes.date, styles } as Cell;
+      } else {
+        return { ...el.attributes, type: "string", value: el.attributes.text, styles } as Cell;
+      }
     }
     case "Styles":
       return children as Styles;

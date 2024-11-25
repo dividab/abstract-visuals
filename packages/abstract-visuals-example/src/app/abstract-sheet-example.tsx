@@ -7,7 +7,7 @@ export function AbstractSheetExample(): JSX.Element {
     sheets: [
       {
         name: "sheet1",
-        rows: [
+        cells: [
           [
             { type: "number", value: 1 },
             { type: "number", value: 1, styles: ["yellow"] },

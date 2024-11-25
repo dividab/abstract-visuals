@@ -1,60 +1,72 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import {
-  AbstractSheet,
-  abstractSheetXml,
-  errorToReadableText,
-  parsedXsd,
-  parseXml,
-  render,
-  toCsv,
-  toXlsx,
-  validateXml,
-} from "abstract-sheet";
+import * as AS from "abstract-sheet";
 import FileSaver from "file-saver";
 
 export function AbstractSheetXMLExample(): JSX.Element {
   const [data, setData] = React.useState('{ "test": "Hello world", "truthy": true, "falsy": false }');
   const [template, setTemplate] = React.useState(`<AbstractSheet>
   <Styles>
-    <Style name="boldText" size="8" bold="true"/>
-    <Style name="yellowBackground" foreground="FFFFAA00"/>
+    <Style name="boldText" size="12" bold="true" horizontal="left"/>
+    <Style name="yellowBackground" foreground="#FFAA00"/>
+    <Style name="blueBorder" borderColor="#0000FF"/>
+    <Style name="border" size="16" borderStyle="dotted" borderColor="#FF0000"/>
   </Styles>
-  <Sheets>
-    <Sheet name="sheet1">
-      <Rows>
-        <Row>
-          <Cell value="4" type="number" />
-          <Cell value="24" type="number" styles="boldText"/>
-          <Cell value="4" type="number" styles="boldText"/>
-          <Cell value="4" type="number"/>
-          <Cell value="4" type="number"/>
-          <Cell value="4" type="number"/>
-        </Row>
-        <Row>
-          <Cell value="0" type="number" styles="yellowBackground"/>
-          <Cell value="4" type="number"/>
-          <Cell value="1" type="number"/>
-          <Cell value="4" type="number" styles="yellowBackground,boldText"/>
-          <Cell value="4" type="number"/>
-          {{#truthy}}
-          <Cell value="rendered" type="string"/>
-          {{/truthy}}
-          {{#falsy}}
-          <Cell value="not rendered:" type="string"/>
-          {{/falsy}}
-        </Row>
-      </Rows>
-      <ColInfos>
-      </ColInfos>
-      <RowInfos>
-      </RowInfos>
-    </Sheet>
-  </Sheets>
+  <Sheet name="sheet1" direction="row">
+    <Cells>
+      <Cell number="4" />
+      <Cell text="24" styles="boldText"/>
+      <Cell number="4" styles="boldText"/>
+      <Cell number="4"/>
+      <Cell number="4" />
+      <Cell number="4"/>
+    </Cells>
+    <Cells>
+      <Cell number="4" />
+      <Cell text="24"/>
+      <Cell number="4" styles="border" />
+      <Cell number="4"/>
+      <Cell number="4" styles="blueBorder"/>
+      <Cell number="4"/>
+      <Cell number="4" />
+      <Cell number="4"/>
+    </Cells>
+    <Cells>
+      <Cell number="4" />
+      <Cell text="24" styles="boldText"/>
+      <Cell number="4" styles="boldText"/>
+      <Cell number="4"/>
+      <Cell number="4" />
+      <Cell number="4"/>
+    </Cells>
+    <Cells>
+      <Cell number="0" styles="yellowBackground"/>
+      <Cell number="4" />
+      <Cell number="1" />
+      <Cell number="4" styles="yellowBackground,boldText"/>
+      <Cell number="4" />
+      {{#truthy}}
+      <Cell text="rendered"/>
+      {{/truthy}}
+      {{#falsy}}
+      <Cell text="not rendered:"/>
+      {{/falsy}}
+    </Cells>
+    <ColInfos>
+       <ColInfo />
+       <ColInfo />
+       <ColInfo widthPixels="70" />
+    </ColInfos>
+    <RowInfos>
+       <RowInfo />
+       <RowInfo />
+       <RowInfo heightPixels="45" />
+    </RowInfos>
+  </Sheet>
 </AbstractSheet>`);
 
   const [sheet, setSheet] = React.useState<
-    { type: "Ok"; sheet: AbstractSheet } | { type: "Err"; error: string } | undefined
+    { type: "Ok"; sheet: AS.AbstractSheet } | { type: "Err"; error: string } | undefined
   >(createSheet(data, template));
 
   return (
@@ -90,26 +102,45 @@ export function AbstractSheetXMLExample(): JSX.Element {
           height: "100%",
         }}
       >
-        <button
-          disabled={sheet?.type !== "Ok"}
-          onClick={() => {
-            if (sheet?.type === "Ok") {
-              FileSaver.saveAs(new Blob([toXlsx(sheet.sheet)], { type: "text/plain" }), `abstract-visuals.xlsx`);
-            }
-          }}
-        >
-          Download Xlsx
-        </button>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            disabled={sheet?.type !== "Ok"}
+            onClick={() => {
+              if (sheet?.type === "Ok") {
+                FileSaver.saveAs(new Blob([AS.toXlsx(sheet.sheet)], { type: "text/plain" }), `abstract-visuals.xlsx`);
+              }
+            }}
+          >
+            Download Xlsx
+          </button>
+          <button
+            disabled={sheet?.type !== "Ok"}
+            onClick={() => {
+              if (sheet?.type === "Ok") {
+                FileSaver.saveAs(
+                  new Blob(
+                    [
+                      AS.toCsv(sheet.sheet)
+                        .map((s) => s.csv)
+                        .join("\n\n"),
+                    ],
+                    { type: "text/plain" }
+                  ),
+                  `abstract-visuals.txt`
+                );
+              }
+            }}
+          >
+            Download Csv
+          </button>
+        </div>
+
         {sheet?.type === "Err" ? (
           <h3>{sheet.error}</h3>
         ) : (
-          <pre style={{ width: "100%", height: "calc(100% - 30px)" }}>
-            {sheet?.type === "Ok"
-              ? toCsv(sheet.sheet)
-                  .map((s) => s.csv)
-                  .join("\n\n")
-              : ""}
-          </pre>
+          <div style={{ width: "100%", height: "calc(100% - 30px)" }}>
+            {sheet?.type === "Ok" ? <AS.toReact abstractSheet={sheet.sheet} /> : ""}
+          </div>
         )}
       </div>
     </div>
@@ -119,20 +150,20 @@ export function AbstractSheetXMLExample(): JSX.Element {
 function createSheet(
   data: string,
   template: string
-): { type: "Ok"; sheet: AbstractSheet } | { type: "Err"; error: string } {
+): { type: "Ok"; sheet: AS.AbstractSheet } | { type: "Err"; error: string } {
   let dataObject = {};
   try {
     dataObject = JSON.parse(data);
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const mustacheRendered = render(template, dataObject, {});
-  const validationErrors = validateXml(mustacheRendered, parsedXsd);
+  const mustacheRendered = AS.render(template, dataObject, {});
+  const validationErrors = AS.validateXml(mustacheRendered, AS.parsedXsd);
   if (validationErrors.length > 0) {
-    return { type: "Err", error: errorToReadableText(validationErrors, "template") };
+    return { type: "Err", error: AS.errorToReadableText(validationErrors, "template") };
   }
   try {
-    return { type: "Ok", sheet: abstractSheetXml(parseXml(mustacheRendered)[0]!) as AbstractSheet };
+    return { type: "Ok", sheet: AS.abstractSheetOfXml(AS.parseXml(mustacheRendered)[0]!) as AS.AbstractSheet };
   } catch (e) {
     return { type: "Err", error: e.message };
   }
