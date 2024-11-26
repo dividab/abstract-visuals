@@ -8,7 +8,7 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
   );
 
   return (
-    <div className="abstract-sheet">
+    <div className="abstract-sheet" style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
       {abstractSheet.sheets.map((s, si) => {
         const maxCols = s.cells.reduce((a, c) => Math.max(a, c.length), 0);
         const colArray = Array.from({ length: maxCols }, (_, i) => i);
