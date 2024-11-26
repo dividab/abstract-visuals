@@ -134,6 +134,7 @@ const xsdParser = new FXmlP.XMLParser({
   allowBooleanAttributes: true,
   trimValues: false,
   ignoreDeclaration: true,
+  stopNodes: ["*.documentation"],
 });
 xsdParser.addEntity("#x2F", "/");
 xsdParser.addEntity("#x3D", "=");

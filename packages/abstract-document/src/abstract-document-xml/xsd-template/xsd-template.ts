@@ -56,4 +56,4 @@ export const xsdPartial = `<?xml version="1.0" encoding="UTF-8"?>
 
 export const parsedXsd = parseXsd(xsd);
 
-export const parsedXsdPartial = parseXml(xsdPartial);
+export const parsedXsdPartial = parseXsd(xsdPartial);
