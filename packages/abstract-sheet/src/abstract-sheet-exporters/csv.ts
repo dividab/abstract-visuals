@@ -5,18 +5,20 @@ import { createStyle } from "./_style";
 
 export type CsvFile = { readonly name: string; readonly csv: string };
 
+export type CsvOptions = {
+  readonly separator?: string;
+  readonly rowSeparator?: string;
+  readonly noTrailingSeparator?: boolean;
+  readonly blankRows?: boolean;
+  readonly skipHidden?: boolean;
+  readonly forceQuotes?: boolean;
+  readonly rawNumber?: boolean;
+  readonly dateFormat?: string;
+};
+
 export function toCsv(
   abstractSheets: ReadonlyArray<AbstractSheet>,
-  options?: {
-    readonly separator?: string;
-    readonly rowSeparator?: string;
-    readonly noTrailingSeparator?: boolean;
-    readonly blankRows?: boolean;
-    readonly skipHidden?: boolean;
-    readonly forceQuotes?: boolean;
-    readonly rawNumber?: boolean;
-    readonly dateFormat?: string;
-  }
+  options?: CsvOptions
 ): ReadonlyArray<ReadonlyArray<CsvFile>> {
   return (abstractSheets as Array<AbstractSheet>).map((as) => {
     const styles = Object.fromEntries(as.styles?.map((s) => [s.name, createStyle(s)]) ?? []);
