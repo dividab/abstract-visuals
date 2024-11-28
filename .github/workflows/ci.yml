@@ -15,10 +15,10 @@ jobs:
         with:
           node-version: "lts/*"
 
-      - name: Pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Pnpm install
+      - name: pnpm install
         run: pnpm install
 
       - name: Run Linting Checks
@@ -46,10 +46,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Pnpm install
+      - name: pnpm install
         run: pnpm install
 
       - name: lint
