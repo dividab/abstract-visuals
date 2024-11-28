@@ -31,9 +31,9 @@ jobs:
         os:
           - "ubuntu-latest"
         node_version:
-          - "12"
-          - "14"
-          - "16"
+          - "18"
+          - "20"
+          - "22"
 
     steps:
       - uses: actions/checkout@v1
