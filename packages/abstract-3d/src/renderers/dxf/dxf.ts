@@ -37,6 +37,6 @@ function dxfGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): strin
         default:
           return a;
       }
-    }, "") ?? "") + g.groups?.reduce((a, c) => a + dxfGroup(c, pos, rot), "") ?? ""
+    }, "") ?? "") + g.groups?.reduce((a, c) => a + dxfGroup(c, pos, rot), "")
   );
 }
