@@ -1,7 +1,7 @@
-import * as A3D from "../../../abstract-3d";
-import { gray, black, zElem, zOrderElement } from "./shared";
-import { svgPolygon } from "../svg-encoding";
-import { rgbGrayScale } from "../../shared";
+import * as A3D from "../../../abstract-3d.js";
+import { gray, black, zElem, zOrderElement } from "./shared.js";
+import { svgPolygon } from "../svg-encoding.js";
+import { rgbGrayScale } from "../../shared.js";
 
 export function box(
   b: A3D.Box,

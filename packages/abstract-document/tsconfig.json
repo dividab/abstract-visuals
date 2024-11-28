@@ -4,7 +4,7 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["dom", "es2022"]
+    "noUncheckedIndexedAccess": false
   },
   "references": [{ "path": "../abstract-image" }, { "path": "../test-utils" }]
 }

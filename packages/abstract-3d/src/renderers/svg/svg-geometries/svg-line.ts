@@ -1,7 +1,7 @@
-import * as A3D from "../../../abstract-3d";
-import { zElem, zOrderElement } from "./shared";
-import { svgLine } from "../svg-encoding";
-import { rgbGrayScale } from "../../shared";
+import * as A3D from "../../../abstract-3d.js";
+import { zElem, zOrderElement } from "./shared.js";
+import { svgLine } from "../svg-encoding.js";
+import { rgbGrayScale } from "../../shared.js";
 
 export function line(
   l: A3D.Line,

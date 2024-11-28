@@ -1,7 +1,7 @@
-import { Polygon, vec3ZMean, Vec3, Vec2, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d";
-import { gray, zElem, zOrderElement, transparent } from "./shared";
-import { svgPolygon } from "../svg-encoding";
-import { rgbGrayScale } from "../../shared";
+import { Polygon, vec3ZMean, Vec3, Vec2, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d.js";
+import { gray, zElem, zOrderElement, transparent } from "./shared.js";
+import { svgPolygon } from "../svg-encoding.js";
+import { rgbGrayScale } from "../../shared.js";
 
 export function polygon(
   p: Polygon,

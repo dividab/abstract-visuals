@@ -20,7 +20,7 @@ import {
 import { Vector3 } from "three";
 import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import { View, Scene, Vec3, vec3 } from "../../abstract-3d";
+import { View, Scene, Vec3, vec3 } from "../../abstract-3d.js";
 
 export type Camera = A3dPerspectiveCamera | A3dOrthographicCamera;
 export type CameraType = Camera["type"];

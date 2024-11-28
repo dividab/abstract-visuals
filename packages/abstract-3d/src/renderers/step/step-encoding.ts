@@ -1,4 +1,4 @@
-import { Vec2, Vec3 } from "../../abstract-3d";
+import { Vec2, Vec3 } from "../../abstract-3d.js";
 
 export type MutableStep = { refs: Map<string, number>; step: string };
 

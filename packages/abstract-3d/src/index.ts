@@ -1,4 +1,4 @@
-export * from "./renderers";
-export * from "./abstract-3d";
+export * from "./renderers/index.js";
+export * from "./abstract-3d.js";
 
 //dummy

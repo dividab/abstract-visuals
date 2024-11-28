@@ -3,9 +3,9 @@
     "noErrorTruncation": true,
 
     // From the lern-a
-    "target": "es2017",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -21,6 +21,7 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
+    "noUncheckedIndexedAccess": true,
     // We use eslint @typescript-eslint/no-unused-vars instead
     //"noUnusedLocals": true,
     //"noUnusedParameters": true,
@@ -28,6 +29,6 @@
     // "keyofStringsOnly": true,
     // "keyofStringsOnly": false, // Needed for Object.fromEntries to work
     "skipLibCheck": true,
-    "lib": ["esnext"]
+    "lib": ["ES2023", "DOM", "ESNext"]
   }
 }

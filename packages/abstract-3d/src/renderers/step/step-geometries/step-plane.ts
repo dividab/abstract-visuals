@@ -9,8 +9,8 @@ import {
   vec3,
   vec3PosX,
   vec3PosZ,
-} from "../../../abstract-3d";
-import { parseRgb } from "../../shared";
+} from "../../../abstract-3d.js";
+import { parseRgb } from "../../shared.js";
 import {
   ADVANCED_FACE,
   AXIS2_PLACEMENT_3D,
@@ -38,7 +38,7 @@ import {
   SURFACE_STYLE_USAGE,
   VECTOR,
   VERTEX_POINT,
-} from "../step-encoding";
+} from "../step-encoding.js";
 
 export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
   const half = vec2Scale(p.size, 0.5);

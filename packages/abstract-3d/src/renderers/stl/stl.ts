@@ -1,9 +1,9 @@
-import * as A3D from "../../abstract-3d";
-import { stlPlane } from "./stl-geometries/stl-plane";
-import { stlBox } from "./stl-geometries/stl-box";
-import { stlCylinder } from "./stl-geometries/stl-cylinder";
-import { stlCone } from "./stl-geometries/stl-cone";
-import { stlPolygon } from "./stl-geometries/stl-polygon";
+import * as A3D from "../../abstract-3d.js";
+import { stlPlane } from "./stl-geometries/stl-plane.js";
+import { stlBox } from "./stl-geometries/stl-box.js";
+import { stlCylinder } from "./stl-geometries/stl-cylinder.js";
+import { stlCone } from "./stl-geometries/stl-cone.js";
+import { stlPolygon } from "./stl-geometries/stl-polygon.js";
 
 export const toStl = (scene: A3D.Scene): string =>
   `solid

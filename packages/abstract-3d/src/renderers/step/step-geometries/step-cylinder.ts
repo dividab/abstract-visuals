@@ -16,8 +16,8 @@ import {
   vec3NegY,
   vec3NegZ,
   vec3PosY,
-} from "../../../abstract-3d";
-import { parseRgb } from "../../shared";
+} from "../../../abstract-3d.js";
+import { parseRgb } from "../../shared.js";
 import {
   ADVANCED_BREP_SHAPE_REPRESENTATION,
   ADVANCED_FACE,
@@ -54,7 +54,7 @@ import {
   SURFACE_STYLE_USAGE,
   VECTOR,
   VERTEX_POINT,
-} from "../step-encoding";
+} from "../step-encoding.js";
 
 export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
   const pos = vec3TransRot(c.pos, parentPos, parentRot);

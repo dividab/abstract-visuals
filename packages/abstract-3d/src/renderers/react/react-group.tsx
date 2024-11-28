@@ -1,9 +1,9 @@
 import React from "react";
 import { Group } from "three";
 import { useFrame } from "@react-three/fiber";
-import * as A3d from "../../abstract-3d";
-import { MaterialState, ReactMaterial } from "./react-material";
-import { ReactMesh } from "./react-mesh";
+import * as A3d from "../../abstract-3d.js";
+import { MaterialState, ReactMaterial } from "./react-material.js";
+import { ReactMesh } from "./react-mesh.js";
 
 export function ReactGroup({
   g,

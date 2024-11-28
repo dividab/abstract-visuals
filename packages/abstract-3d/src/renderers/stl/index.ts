@@ -1,1 +1,1 @@
-export * from "./stl";
+export * from "./stl.js";

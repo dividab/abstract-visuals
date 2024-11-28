@@ -23,8 +23,8 @@ import {
   SphereGeometry,
 } from "three";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import * as A3d from "../../abstract-3d";
-import { Hole } from "../../abstract-3d";
+import * as A3d from "../../abstract-3d.js";
+import { Hole } from "../../abstract-3d.js";
 
 const boxGeometry = new BoxGeometry();
 const cylinderGeometry = new CylinderGeometry(1, 1, 1, 40, 1);

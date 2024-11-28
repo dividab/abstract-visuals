@@ -1,5 +1,5 @@
-import * as A3D from "../../../abstract-3d";
-import { stlTriangle } from "../stl-encoding";
+import * as A3D from "../../../abstract-3d.js";
+import { stlTriangle } from "../stl-encoding.js";
 
 export function stlPlane(p: A3D.Plane, _m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   const half = A3D.vec2Scale(p.size, 0.5);

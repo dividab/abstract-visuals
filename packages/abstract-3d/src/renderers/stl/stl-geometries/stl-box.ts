@@ -1,5 +1,5 @@
-import * as A3D from "../../../abstract-3d";
-import { stlTriangle } from "../stl-encoding";
+import * as A3D from "../../../abstract-3d.js";
+import { stlTriangle } from "../stl-encoding.js";
 
 export function stlBox(b: A3D.Box, _m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
   const half = A3D.vec3Scale(b.size, 0.5);

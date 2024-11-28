@@ -54,7 +54,7 @@ export function Abstract3DExample(): React.ReactNode {
             onClickGroup={(id) => setSelected(id)}
             createGroupId={(g) => g.data?.id ?? ""}
             scene={systemair}
-            orbitContolsProps={{ enableDamping: false, minDistance: 100, maxDistance: 10000, zoomSpeed: 1.5 }}
+            orbitContolsProps={{ enableDamping: false }}
             camera={camera}
           />
         </div>
@@ -64,7 +64,7 @@ export function Abstract3DExample(): React.ReactNode {
             onClickGroup={(id) => setSelected(id)}
             createGroupId={(g) => g.data?.id ?? ""}
             scene={vortice}
-            orbitContolsProps={{ enableDamping: false, minDistance: 100, maxDistance: 10000, zoomSpeed: 1.5 }}
+            orbitContolsProps={{ enableDamping: false }}
             camera={camera}
           />
         </div>

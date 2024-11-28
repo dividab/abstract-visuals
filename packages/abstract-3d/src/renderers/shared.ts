@@ -10,7 +10,7 @@ import {
   bounds3FromVec3Array,
   bounds3ToSize,
   vec3Zero,
-} from "../abstract-3d";
+} from "../abstract-3d.js";
 
 export function sizeCenterForCameraPos(
   size: Vec3,
@@ -122,9 +122,9 @@ export function shade(p: number, from: string, to?: string): string | undefined 
     if (l > 9) {
       const dArr = d.split(",");
       if (dArr.length < 3 || dArr.length > 4) return null; // ErrorCheck
-      RGB[0] = i(dArr[0].split("(")[1]);
-      RGB[1] = i(dArr[1]);
-      RGB[2] = i(dArr[2]);
+      RGB[0] = i(dArr[0]!.split("(")[1]!);
+      RGB[1] = i(dArr[1]!);
+      RGB[2] = i(dArr[2]!);
       RGB[3] = dArr[3] ? parseFloat(dArr[3]) : -1;
     } else {
       if (l === 8 || l === 6 || l < 4) return null; // ErrorCheck
@@ -165,15 +165,17 @@ export function shade(p: number, from: string, to?: string): string | undefined 
   if (h) {
     return (
       "rgb" +
-      (f[3] > -1 || t[3] > -1 ? "a(" : "(") +
-      r((t[0] - f[0]) * p + f[0]) +
+      (f[3]! > -1 || t[3]! > -1 ? "a(" : "(") +
+      r((t[0]! - f[0]!) * p + f[0]!) +
       "," +
-      r((t[1] - f[1]) * p + f[1]) +
+      r((t[1]! - f[1]!) * p + f[1]!) +
       "," +
-      r((t[2] - f[2]) * p + f[2]) +
-      (f[3] < 0 && t[3] < 0
+      r((t[2]! - f[2]!) * p + f[2]!) +
+      (f[3]! < 0 && t[3]! < 0
         ? ")"
-        : "," + (f[3] > -1 && t[3] > -1 ? r(((t[3] - f[3]) * p + f[3]) * 10000) / 10000 : t[3] < 0 ? f[3] : t[3]) + ")")
+        : "," +
+          (f[3]! > -1 && t[3]! > -1 ? r(((t[3]! - f[3]!) * p + f[3]!) * 10000) / 10000 : t[3]! < 0 ? f[3] : t[3]) +
+          ")")
     );
   }
 
@@ -181,18 +183,18 @@ export function shade(p: number, from: string, to?: string): string | undefined 
     "#" +
     (
       0x100000000 +
-      r((t[0] - f[0]) * p + f[0]) * 0x1000000 +
-      r((t[1] - f[1]) * p + f[1]) * 0x10000 +
-      r((t[2] - f[2]) * p + f[2]) * 0x100 +
-      (f[3] > -1 && t[3] > -1
-        ? r(((t[3] - f[3]) * p + f[3]) * 255)
-        : t[3] > -1
-        ? r(t[3] * 255)
-        : f[3] > -1
-        ? r(f[3] * 255)
+      r((t[0]! - f[0]!) * p + f[0]!) * 0x1000000 +
+      r((t[1]! - f[1]!) * p + f[1]!) * 0x10000 +
+      r((t[2]! - f[2]!) * p + f[2]!) * 0x100 +
+      (f[3]! > -1 && t[3]! > -1
+        ? r(((t[3]! - f[3]!) * p + f[3]!) * 255)
+        : t[3]! > -1
+        ? r(t[3]! * 255)
+        : f[3]! > -1
+        ? r(f[3]! * 255)
         : 255)
     )
       .toString(16)
-      .slice(1, f[3] > -1 || t[3] > -1 ? undefined : -2)
+      .slice(1, f[3]! > -1 || t[3]! > -1 ? undefined : -2)
   );
 }

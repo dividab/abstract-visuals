@@ -1,8 +1,8 @@
 import React from "react";
 import { Color, DoubleSide, MaterialParameters, SRGBColorSpace, Texture, TextureLoader } from "three";
 import { suspend } from "suspend-react";
-import * as A3d from "../../abstract-3d";
-import { shade } from "../shared";
+import * as A3d from "../../abstract-3d.js";
+import { shade } from "../shared.js";
 
 const decreasedOpacity = 0.2;
 

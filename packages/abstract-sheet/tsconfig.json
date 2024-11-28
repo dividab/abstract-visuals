@@ -3,10 +3,8 @@
   "include": ["src"],
   "typeRoots": ["src/@types", "node_modules/@types"],
   "compilerOptions": {
-    "noUncheckedIndexedAccess": true,
     "outDir": "lib",
-    "rootDir": "src",
-    "lib": ["dom", "es2022"]
+    "rootDir": "src"
   },
   "references": []
 }

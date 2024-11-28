@@ -1,2 +1,2 @@
-export * from "./svg";
-export type { EmbededImage } from "./svg-encoding";
+export * from "./svg.js";
+export type { EmbededImage } from "./svg-encoding.js";

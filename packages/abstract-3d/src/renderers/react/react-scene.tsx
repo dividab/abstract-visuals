@@ -17,11 +17,11 @@ import {
   Path,
   ExtrudeGeometry,
 } from "three";
-import * as A3d from "../../abstract-3d";
-import { HotSpotInfo, ReactHotSpots } from "./react-hotspot";
-import { ReactDimensions } from "./react-dimension";
-import { ReactGroup } from "./react-group";
-import { MaterialState } from "./react-material";
+import * as A3d from "../../abstract-3d.js";
+import { HotSpotInfo, ReactHotSpots } from "./react-hotspot.js";
+import { ReactDimensions } from "./react-dimension.js";
+import { ReactGroup } from "./react-group.js";
+import { MaterialState } from "./react-material.js";
 
 extend({
   Mesh,

@@ -1,4 +1,4 @@
-import * as A3D from "../../abstract-3d";
+import * as A3D from "../../abstract-3d.js";
 import {
   MutableStep,
   GEOMETRIC_REPRESENTATION_CONTEXT_3D,
@@ -8,9 +8,9 @@ import {
   GEOMETRIC_REPRESENTATION_CONTEXT_2D,
   HEADER,
   ENDSEC,
-} from "./step-encoding";
-import { stepBox } from "./step-geometries/step-box";
-import { stepPlane } from "./step-geometries/step-plane";
+} from "./step-encoding.js";
+import { stepBox } from "./step-geometries/step-box.js";
+import { stepPlane } from "./step-geometries/step-plane.js";
 
 // export const toStep2 = (scene: A3D.Scene): string => {
 //   const start = performance.now();

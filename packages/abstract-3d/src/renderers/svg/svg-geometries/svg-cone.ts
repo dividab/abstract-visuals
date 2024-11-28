@@ -1,7 +1,7 @@
-import * as A3D from "../../../abstract-3d";
-import { gray, stBW, zElem, zOrderElement, transparent } from "./shared";
-import { svgCircle, svgPolygon } from "../svg-encoding";
-import { rgbGrayScale } from "../../shared";
+import * as A3D from "../../../abstract-3d.js";
+import { gray, stBW, zElem, zOrderElement, transparent } from "./shared.js";
+import { svgCircle, svgPolygon } from "../svg-encoding.js";
+import { rgbGrayScale } from "../../shared.js";
 
 export function cone(
   c: A3D.Cone,

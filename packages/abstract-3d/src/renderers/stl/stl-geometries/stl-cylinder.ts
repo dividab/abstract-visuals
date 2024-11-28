@@ -1,5 +1,5 @@
-import * as A3D from "../../../abstract-3d";
-import { stlPlaneOfVertices } from "../stl-encoding";
+import * as A3D from "../../../abstract-3d.js";
+import { stlPlaneOfVertices } from "../stl-encoding.js";
 
 export function stlCylinder(
   c: A3D.Cylinder,
