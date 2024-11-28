@@ -8099,14 +8099,14 @@
         function (r, e, n) {
           "use strict";
           e.exports = function (r, e, n, t) {
-            for (var a = 65535 & r, i = (r >>> 16) & 65535, c = 0; 0 !== n; ) {
+            for (var a = (65535 & r) | 0, i = ((r >>> 16) & 65535) | 0, c = 0; 0 !== n; ) {
               n -= c = n > 2e3 ? 2e3 : n;
               do {
                 i = (i + (a = (a + e[t++]) | 0)) | 0;
               } while (--c);
               (a %= 65521), (i %= 65521);
             }
-            return a | (i << 16);
+            return a | (i << 16) | 0;
           };
         },
         {},
@@ -8162,7 +8162,7 @@
               c = a + n;
             r ^= -1;
             for (var o = a; o < c; o++) r = (r >>> 8) ^ i[255 & (r ^ e[o])];
-            return ~r;
+            return -1 ^ r;
           };
         },
         {},
@@ -8950,85 +8950,83 @@
                 if (((K >>>= A = p >>> 24), (m -= A), 0 === (A = (p >>> 16) & 255))) B[i++] = 65535 & p;
                 else {
                   if (!(16 & A)) {
-                    if (64 & A) {
-                      if (32 & A) {
-                        n.mode = 12;
-                        break r;
-                      }
-                      (r.msg = "invalid literal/length code"), (n.mode = 30);
+                    if (0 == (64 & A)) {
+                      p = d[(65535 & p) + (K & ((1 << A) - 1))];
+                      continue e;
+                    }
+                    if (32 & A) {
+                      n.mode = 12;
                       break r;
                     }
-                    p = d[(65535 & p) + (K & ((1 << A) - 1))];
-                    continue e;
+                    (r.msg = "invalid literal/length code"), (n.mode = 30);
+                    break r;
                   }
-                  for (
-                    y = 65535 & p,
-                      (A &= 15) &&
-                        (m < A && ((K += W[t++] << m), (m += 8)), (y += K & ((1 << A) - 1)), (K >>>= A), (m -= A)),
-                      m < 15 && ((K += W[t++] << m), (m += 8), (K += W[t++] << m), (m += 8)),
-                      p = f[K & g];
-                    ;
-
-                  ) {
-                    if (((K >>>= A = p >>> 24), (m -= A), 16 & (A = (p >>> 16) & 255))) {
-                      if (
-                        ((v = 65535 & p),
-                        m < (A &= 15) && ((K += W[t++] << m), (m += 8) < A && ((K += W[t++] << m), (m += 8))),
-                        (v += K & ((1 << A) - 1)) > s)
-                      ) {
+                  (y = 65535 & p),
+                    (A &= 15) &&
+                      (m < A && ((K += W[t++] << m), (m += 8)), (y += K & ((1 << A) - 1)), (K >>>= A), (m -= A)),
+                    m < 15 && ((K += W[t++] << m), (m += 8), (K += W[t++] << m), (m += 8)),
+                    (p = f[K & g]);
+                  n: for (;;) {
+                    if (((K >>>= A = p >>> 24), (m -= A), !(16 & (A = (p >>> 16) & 255)))) {
+                      if (0 == (64 & A)) {
+                        p = f[(65535 & p) + (K & ((1 << A) - 1))];
+                        continue n;
+                      }
+                      (r.msg = "invalid distance code"), (n.mode = 30);
+                      break r;
+                    }
+                    if (
+                      ((v = 65535 & p),
+                      m < (A &= 15) && ((K += W[t++] << m), (m += 8) < A && ((K += W[t++] << m), (m += 8))),
+                      (v += K & ((1 << A) - 1)) > s)
+                    ) {
+                      (r.msg = "invalid distance too far back"), (n.mode = 30);
+                      break r;
+                    }
+                    if (((K >>>= A), (m -= A), v > (A = i - c))) {
+                      if ((A = v - A) > X && n.sane) {
                         (r.msg = "invalid distance too far back"), (n.mode = 30);
                         break r;
                       }
-                      if (((K >>>= A), (m -= A), v > (A = i - c))) {
-                        if ((A = v - A) > X && n.sane) {
-                          (r.msg = "invalid distance too far back"), (n.mode = 30);
-                          break r;
-                        }
-                        if (((b = 0), (C = P), 0 === l)) {
-                          if (((b += u - A), A < y)) {
-                            y -= A;
-                            do {
-                              B[i++] = P[b++];
-                            } while (--A);
-                            (b = i - v), (C = B);
-                          }
-                        } else if (l < A) {
-                          if (((b += u + l - A), (A -= l) < y)) {
-                            y -= A;
-                            do {
-                              B[i++] = P[b++];
-                            } while (--A);
-                            if (((b = 0), l < y)) {
-                              y -= A = l;
-                              do {
-                                B[i++] = P[b++];
-                              } while (--A);
-                              (b = i - v), (C = B);
-                            }
-                          }
-                        } else if (((b += l - A), A < y)) {
+                      if (((b = 0), (C = P), 0 === l)) {
+                        if (((b += u - A), A < y)) {
                           y -= A;
                           do {
                             B[i++] = P[b++];
                           } while (--A);
                           (b = i - v), (C = B);
                         }
-                        for (; y > 2; ) (B[i++] = C[b++]), (B[i++] = C[b++]), (B[i++] = C[b++]), (y -= 3);
-                        y && ((B[i++] = C[b++]), y > 1 && (B[i++] = C[b++]));
-                      } else {
-                        b = i - v;
+                      } else if (l < A) {
+                        if (((b += u + l - A), (A -= l) < y)) {
+                          y -= A;
+                          do {
+                            B[i++] = P[b++];
+                          } while (--A);
+                          if (((b = 0), l < y)) {
+                            y -= A = l;
+                            do {
+                              B[i++] = P[b++];
+                            } while (--A);
+                            (b = i - v), (C = B);
+                          }
+                        }
+                      } else if (((b += l - A), A < y)) {
+                        y -= A;
                         do {
-                          (B[i++] = B[b++]), (B[i++] = B[b++]), (B[i++] = B[b++]), (y -= 3);
-                        } while (y > 2);
-                        y && ((B[i++] = B[b++]), y > 1 && (B[i++] = B[b++]));
+                          B[i++] = P[b++];
+                        } while (--A);
+                        (b = i - v), (C = B);
                       }
-                      break;
+                      for (; y > 2; ) (B[i++] = C[b++]), (B[i++] = C[b++]), (B[i++] = C[b++]), (y -= 3);
+                      y && ((B[i++] = C[b++]), y > 1 && (B[i++] = C[b++]));
+                    } else {
+                      b = i - v;
+                      do {
+                        (B[i++] = B[b++]), (B[i++] = B[b++]), (B[i++] = B[b++]), (y -= 3);
+                      } while (y > 2);
+                      y && ((B[i++] = B[b++]), y > 1 && (B[i++] = B[b++]));
                     }
-                    if (64 & A) {
-                      (r.msg = "invalid distance code"), (n.mode = 30);
-                      break r;
-                    }
-                    p = f[(65535 & p) + (K & ((1 << A) - 1))];
+                    break;
                   }
                 }
                 break;
@@ -9582,7 +9580,7 @@
                       if (0 === A) break r;
                       A--, (v += d[g++] << b), (b += 8);
                     }
-                    if (T && !(240 & T)) {
+                    if (T && 0 == (240 & T)) {
                       for (
                         U = k, Y = T, S = _;
                         (T = ((F = n.lencode[S + ((v & ((1 << (U + Y)) - 1)) >> U)]) >>> 16) & 255),
@@ -9628,7 +9626,7 @@
                       if (0 === A) break r;
                       A--, (v += d[g++] << b), (b += 8);
                     }
-                    if (!(240 & T)) {
+                    if (0 == (240 & T)) {
                       for (
                         U = k, Y = T, S = _;
                         (T = ((F = n.distcode[S + ((v & ((1 << (U + Y)) - 1)) >> U)]) >>> 16) & 255),
@@ -9759,7 +9757,7 @@
             }),
             (n.inflateGetHeader = function (r, e) {
               var n;
-              return r && r.state && 2 & (n = r.state).wrap ? ((n.head = e), (e.done = !1), X) : l;
+              return r && r.state ? (0 == (2 & (n = r.state).wrap) ? l : ((n.head = e), (e.done = !1), X)) : l;
             }),
             (n.inflateSetDictionary = function (r, e) {
               var n,
@@ -9862,7 +9860,7 @@
                 (m = 1 << (C - w)),
                 (B = d = 1 << x);
               do {
-                X[g + (_ >> w) + (d -= m)] = (A << 24) | (y << 16) | v;
+                X[g + (_ >> w) + (d -= m)] = (A << 24) | (y << 16) | v | 0;
               } while (0 !== d);
               for (m = 1 << (C - 1); _ & m; ) m >>= 1;
               if ((0 !== m ? ((_ &= m - 1), (_ += m)) : (_ = 0), W++, 0 == --S[C])) {
@@ -9873,10 +9871,10 @@
                 for (0 === w && (w = O), g += B, k = 1 << (x = C - w); x + w < N && !((k -= S[x + w]) <= 0); )
                   x++, (k <<= 1);
                 if (((T += 1 << x), (1 === r && T > 852) || (2 === r && T > 592))) return 1;
-                X[(f = _ & h)] = (O << 24) | (x << 16) | (g - l);
+                X[(f = _ & h)] = (O << 24) | (x << 16) | (g - l) | 0;
               }
             }
-            return 0 !== _ && (X[g + _] = ((C - w) << 24) | (64 << 16)), (K.bits = O), 0;
+            return 0 !== _ && (X[g + _] = ((C - w) << 24) | (64 << 16) | 0), (K.bits = O), 0;
           };
         },
         { "../utils/common": 102 },
@@ -11060,7 +11058,7 @@
                     c = 1,
                     o = 0;
                   for (this[e] = 255 & r; ++i < n && (c *= 256); )
-                    r < 0 && 0 === o && 0 !== this[e + i - 1] && (o = 1), (this[e + i] = (((r / c) | 0) - o) & 255);
+                    r < 0 && 0 === o && 0 !== this[e + i - 1] && (o = 1), (this[e + i] = (((r / c) >> 0) - o) & 255);
                   return e + n;
                 }),
                 (c.prototype.writeIntBE = function (r, e, n, t) {
@@ -11072,7 +11070,7 @@
                     c = 1,
                     o = 0;
                   for (this[e + i] = 255 & r; --i >= 0 && (c *= 256); )
-                    r < 0 && 0 === o && 0 !== this[e + i + 1] && (o = 1), (this[e + i] = (((r / c) | 0) - o) & 255);
+                    r < 0 && 0 === o && 0 !== this[e + i + 1] && (o = 1), (this[e + i] = (((r / c) >> 0) - o) & 255);
                   return e + n;
                 }),
                 (c.prototype.writeInt8 = function (r, e, n) {
@@ -12975,8 +12973,7 @@
                 (r.mode.CTRGladman = (function () {
                   var e = r.lib.BlockCipherMode.extend();
                   function n(r) {
-                    if (255 & ~(r >> 24)) r += 1 << 24;
-                    else {
+                    if (255 == ((r >> 24) & 255)) {
                       var e = (r >> 16) & 255,
                         n = (r >> 8) & 255,
                         t = 255 & r;
@@ -12985,7 +12982,7 @@
                         (r += e << 16),
                         (r += n << 8),
                         (r += t);
-                    }
+                    } else r += 1 << 24;
                     return r;
                   }
                   var t = (e.Encryptor = e.extend({
@@ -23791,7 +23788,7 @@
                     a = e.readUInt16BE();
                     let s = e.pos - n,
                       u = e.readUInt16BE();
-                    if ((t || (t = !!(256 & a)), 1 & a))
+                    if ((t || (t = 0 != (256 & a)), 1 & a))
                       var i = e.readInt16BE(),
                         c = e.readInt16BE();
                     else (i = e.readInt8()), (c = e.readInt8());
@@ -24466,15 +24463,15 @@
                   for (let o = 0; o < i.axisCount; o++)
                     if (0 !== e[o]) {
                       if (0 === a[o]) return 0;
-                      if (16384 & r) {
+                      if (0 == (16384 & r)) {
+                        if (a[o] < Math.min(0, e[o]) || a[o] > Math.max(0, e[o])) return 0;
+                        c = (c * a[o] + Number.EPSILON) / (e[o] + Number.EPSILON);
+                      } else {
                         if (a[o] < n[o] || a[o] > t[o]) return 0;
                         c =
                           a[o] < e[o]
                             ? (c * (a[o] - n[o] + Number.EPSILON)) / (e[o] - n[o] + Number.EPSILON)
                             : (c * (t[o] - a[o] + Number.EPSILON)) / (t[o] - e[o] + Number.EPSILON);
-                      } else {
-                        if (a[o] < Math.min(0, e[o]) || a[o] > Math.max(0, e[o])) return 0;
-                        c = (c * a[o] + Number.EPSILON) / (e[o] + Number.EPSILON);
                       }
                     }
                   return c;
@@ -25179,7 +25176,7 @@
                   for (let t = 0; t < n.length; t++) {
                     let n = r.readUInt8();
                     if (3758096384 & e) throw new Error("Overflow");
-                    if (((e = (e << 7) | (127 & n)), !(128 & n))) return e;
+                    if (((e = (e << 7) | (127 & n)), 0 == (128 & n))) return e;
                   }
                   throw new Error("Bad base 128 number");
                 },
@@ -25251,7 +25248,7 @@
                 ],
                 lo = new (h(t).Struct)({
                   flags: h(t).uint8,
-                  customTag: new (h(t).Optional)(new (h(t).String)(4), (r) => !(63 & ~r.flags)),
+                  customTag: new (h(t).Optional)(new (h(t).String)(4), (r) => 63 == (63 & r.flags)),
                   tag: (r) => r.customTag || Xo[63 & r.flags],
                   length: uo,
                   transformVersion: (r) => (r.flags >>> 6) & 3,
