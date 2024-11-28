@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [13.0.0] - 2024-11-28
+
+- Switch from yarn to pnpm.
+
+## [12.0.0] - 2024-11-27
+
+- AD xml fixes.
+
 ## [11.2.0] - 2024-07-08
 
 ### Added

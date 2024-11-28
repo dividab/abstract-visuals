@@ -3,6 +3,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "packageManager": "pnpm@9.14.2",
   "repository": "https://github.com/dividab/abstract-visuals",
   "devDependencies": {
     "@storybook/addon-actions": "^8.1.1",

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [9.0.0] - 2024-11-28
+
+- Switch from yarn to pnpm.
+
 ## [8.3.0] - 2024-10-16
 
 ### Added
