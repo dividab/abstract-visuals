@@ -16,7 +16,7 @@ jobs:
           node-version: "lts/*"
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Run Linting Checks
         run: pnpm lint
@@ -44,7 +44,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: pnpm install
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: lint
         run: pnpm lint
