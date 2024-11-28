@@ -199,6 +199,9 @@ importers:
         specifier: ^6.1.6
         version: 6.2.0
     devDependencies:
+      '@abstract-visuals/test-utils':
+        specifier: 1.0.2
+        version: link:../test-utils
       '@types/base64-js':
         specifier: ^1.3.2
         version: 1.3.2
@@ -239,6 +242,9 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
     devDependencies:
+      '@abstract-visuals/test-utils':
+        specifier: 1.0.2
+        version: link:../test-utils
       '@types/base64-js':
         specifier: ^1.3.2
         version: 1.3.2
