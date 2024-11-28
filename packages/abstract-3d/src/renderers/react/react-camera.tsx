@@ -1,22 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
-import { OrbitControls, OrbitControlsProps } from "@react-three/drei/core/OrbitControls";
-import { GizmoHelper, GizmoHelperProps } from "@react-three/drei/core/GizmoHelper";
-import { GizmoViewcube } from "@react-three/drei/core/GizmoViewcube";
-import { OrthographicCamera } from "@react-three/drei/core/OrthographicCamera";
-import { PerspectiveCamera } from "@react-three/drei/core/PerspectiveCamera";
-import { GizmoViewport } from "@react-three/drei/core/GizmoViewport";
-// import {
-//   GizmoHelperProps,
-//   PerspectiveCamera,
-//   OrthographicCamera,
-//   OrbitControlsProps,
-//   OrbitControls,
-//   GizmoHelper,
-//   GizmoViewcube,
-//   GizmoViewport,
-// } from "@react-three/drei";
+// import { OrbitControls, OrbitControlsProps } from "@react-three/drei/core/OrbitControls";
+// import { GizmoHelper, GizmoHelperProps } from "@react-three/drei/core/GizmoHelper";
+// import { GizmoViewcube } from "@react-three/drei/core/GizmoViewcube";
+// import { OrthographicCamera } from "@react-three/drei/core/OrthographicCamera";
+// import { PerspectiveCamera } from "@react-three/drei/core/PerspectiveCamera";
+// import { GizmoViewport } from "@react-three/drei/core/GizmoViewport";
+import {
+  GizmoHelperProps,
+  PerspectiveCamera,
+  OrthographicCamera,
+  OrbitControlsProps,
+  OrbitControls,
+  GizmoHelper,
+  GizmoViewcube,
+  GizmoViewport,
+} from "@react-three/drei";
 import { Vector3 } from "three";
 import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import { exhaustiveCheck } from "ts-exhaustive-check";

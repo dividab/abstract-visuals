@@ -1,6 +1,6 @@
 import React from "react";
-import { Html } from "@react-three/drei/web/Html";
-// import { Html } from "@react-three/drei";
+// import { Html } from "@react-three/drei/web/Html";
+import { Html } from "@react-three/drei";
 import * as A3d from "../../abstract-3d";
 import { ReactMesh } from "./react-mesh";
 import { ReactMaterial } from "./react-material";

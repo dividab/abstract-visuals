@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Canvas, Props } from "@react-three/fiber";
-import { OrbitControlsProps } from "@react-three/drei/core/OrbitControls";
+import { OrbitControlsProps } from "@react-three/drei";
 import { ReactScene } from "./react-scene";
 import * as A3d from "../../abstract-3d";
 import { ReactCamera, ControlsHelper, Camera } from "./react-camera";

@@ -2,9 +2,9 @@
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/prefer-readonly-type */
 import React from "react";
-import { Text } from "@react-three/drei/core/Text";
-import { Line } from "@react-three/drei/core/Line";
-// import { Text, Line } from "@react-three/drei";
+// import { Text } from "@react-three/drei/core/Text";
+// import { Line } from "@react-three/drei/core/Line";
+import { Text, Line } from "@react-three/drei";
 import {
   BoxGeometry,
   CylinderGeometry,
