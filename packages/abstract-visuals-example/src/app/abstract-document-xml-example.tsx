@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import * as AD from "abstract-document";
+import * as AD from "../../../abstract-document";
 import {
   abstractDocOfXml,
   creators,
@@ -10,7 +10,7 @@ import {
   parseXml,
   render,
   validateXml,
-} from "abstract-document/src/abstract-document-xml";
+} from "../../../abstract-document/src/abstract-document-xml";
 
 export function AbstractDocumentXMLExample(): JSX.Element {
   const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(

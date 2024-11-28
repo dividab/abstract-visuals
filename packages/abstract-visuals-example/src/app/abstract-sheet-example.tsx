@@ -33,23 +33,26 @@ export function AbstractSheetExample(): JSX.Element {
     ],
   };
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
-        <button
-          onClick={() => {
-            for (const f of AS.toCsv([as])) {
-              FileSaver.saveAs(new Blob([f[0]?.csv ?? ""], { type: "text/plain" }), `${f[0]?.name ?? ""}.txt`);
-            }
-          }}
-        >
-          csv
-        </button>
-        <button
-          onClick={() => FileSaver.saveAs(new Blob([AS.toXlsx(as)], { type: "text/plain" }), `abstract-visuals.xlsx`)}
-        >
-          xlsx
-        </button>
+    <div style={{ display: "flex", height: "100%" }}>
+      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
+          <button
+            onClick={() => {
+              for (const f of AS.toCsv([as])) {
+                FileSaver.saveAs(new Blob([f[0]?.csv ?? ""], { type: "text/plain" }), `${f[0]?.name ?? ""}.txt`);
+              }
+            }}
+          >
+            csv
+          </button>
+          <button
+            onClick={() => FileSaver.saveAs(new Blob([AS.toXlsx(as)], { type: "text/plain" }), `abstract-visuals.xlsx`)}
+          >
+            xlsx
+          </button>
+        </div>
       </div>
+      <AS.toReact abstractSheet={as} />
     </div>
   );
 }

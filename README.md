@@ -16,6 +16,7 @@ For more information see the readme for each package:
 | [abstract-chart](packages/abstract-chart)       | [![npm version][i-ac]][u-ac]   | [README](packages/abstract-chart/README.md)    | [CHANGELOG](packages/abstract-chart/CHANGELOG.md)    |
 | [abstract-document](packages/abstract-document) | [![npm version][i-ad]][u-ad]   | [README](packages/abstract-document/README.md) | [CHANGELOG](packages/abstract-document/CHANGELOG.md) |
 | [abstract-3d](packages/abstract-3d)             | [![npm version][i-a3d]][u-a3d] | [README](packages/abstract-3d/README.md)       | [CHANGELOG](packages/abstract-3d/CHANGELOG.md)       |
+| [abstract-sheet](packages/abstract-sheet)       | [![npm version][i-as]][u-as]   | [README](packages/abstract-sheet/README.md)    | [CHANGELOG](packages/abstract-sheet/CHANGELOG.md)    |
 
 There is also a package with examples:
 
@@ -23,9 +24,9 @@ There is also a package with examples:
 
 ## How to develop
 
-For development of the react components, use `yarn storybook` to start storybook in development mode.
+For development of the react components, use `pnpm storybook` to start storybook in development mode.
 
-For the other packages, use `yarn test` to test them.
+For the other packages, use `pnpm test` to test them.
 
 ## How to publish
 
@@ -34,7 +35,7 @@ First update changelog.
 The packages are published on npmjs.org. To publish run this command:
 
 ```
-yarn publish-npm
+pnpm publish-npm
 ```
 
 It will build the packages and call `lerna publish` which will figure out which packages has changed, ask for new versions of them, and then publish them.
@@ -55,5 +56,7 @@ It will build the packages and call `lerna publish` which will figure out which 
 [u-ac]: https://www.npmjs.com/package/abstract-chart
 [i-ad]: https://img.shields.io/npm/v/abstract-document.svg?style=flat
 [u-ad]: https://www.npmjs.com/package/abstract-document
-[i-ad]: https://img.shields.io/npm/v/abstract-3d.svg?style=flat
+[i-ad3]: https://img.shields.io/npm/v/abstract-3d.svg?style=flat
 [u-ad3]: https://www.npmjs.com/package/abstract-3d
+[i-as]: https://img.shields.io/npm/v/abstract-sheet.svg?style=flat
+[u-as]: https://www.npmjs.com/package/abstract-sheet

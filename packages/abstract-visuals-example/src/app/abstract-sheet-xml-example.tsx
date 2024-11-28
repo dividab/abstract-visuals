@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import * as AS from "abstract-sheet";
+import * as AS from "../../../abstract-sheet";
 import FileSaver from "file-saver";
 
 export function AbstractSheetXMLExample(): JSX.Element {
