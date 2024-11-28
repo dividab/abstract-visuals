@@ -157,8 +157,8 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^8.3.1
-        version: 8.3.1
+        specifier: ^9.0.1
+        version: 9.0.1
       ts-exhaustive-check:
         specifier: ^1.0.0
         version: 1.0.0
@@ -166,8 +166,8 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^8.3.1
-        version: 8.3.1
+        specifier: ^9.0.1
+        version: 9.0.1
       base64-js:
         specifier: ^1.5.1
         version: 1.5.1
@@ -289,20 +289,20 @@ importers:
         specifier: ^7.12.1
         version: 7.12.1
       abstract-3d:
-        specifier: ^0.3.1
-        version: 0.3.1(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))
+        specifier: ^0.3.3
+        version: 0.3.3(@types/react@18.3.12)(@types/three@0.170.0)(react-dom@18.3.1(react@18.3.1))(use-sync-external-store@1.2.2(react@18.3.1))
       abstract-chart:
-        specifier: ^8.2.1
-        version: 8.2.1
+        specifier: ^9.0.1
+        version: 9.0.1
       abstract-document:
-        specifier: ^12.0.9
-        version: 12.0.9
+        specifier: ^13.0.1
+        version: 13.0.1
       abstract-image:
-        specifier: ^8.3.1
-        version: 8.3.1
+        specifier: ^9.0.1
+        version: 9.0.1
       abstract-sheet:
-        specifier: ^0.0.7
-        version: 0.0.7
+        specifier: ^0.0.8
+        version: 0.0.8
       base64-js:
         specifier: ^1.5.1
         version: 1.5.1
@@ -1744,20 +1744,20 @@ packages:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
     engines: {node: '>=6.5'}
 
-  abstract-3d@0.3.1:
-    resolution: {integrity: sha512-uHZJ6SGjkKkS/6eZhYww+t/+5+QTfdnCrp+z9bN1+kLt0gGudGg513eWoXjaVQJh/3KKovx7R5SgCh23MxHDwA==}
+  abstract-3d@0.3.3:
+    resolution: {integrity: sha512-LTmxx5jAVUXx7o4Zoa6I2LyiJ+cLv3sBfDtkaaq5CE7lJTi59ORJt5WWixVKmy6TBOYLRe0EFS6fASfFCTXokQ==}
 
-  abstract-chart@8.2.1:
-    resolution: {integrity: sha512-uA9SJKpQQkWxsYLcIaoNQojRScxpSYA/vjN2r9ceWF+tijjN6FizMAHLUyPod7jbuICoBYFkxliRGfraItLCsQ==}
+  abstract-chart@9.0.1:
+    resolution: {integrity: sha512-uaaHjWLqihQtfD8s9jnz260AkaB1qdklG+cSlZDfhEP3jxgKjP9KxnVDq0NmUKBmgq9HM2UyrsCFqXZHsvKVKw==}
 
-  abstract-document@12.0.9:
-    resolution: {integrity: sha512-DbEQLJc0DYJdFozsXy6GMdJIV1lvfL81cFw2QiEIwRaBi9JTTOIcYo8/51UuUrB+9eAu8Z9gJuBxOI8gL6xvlg==}
+  abstract-document@13.0.1:
+    resolution: {integrity: sha512-+BQGUzwrAoegwR4YPnyM1/+UX32nXTSBlIffoh+xryD+TNUCDDaxFYPcIPtaO4vemoRuHCbGFdS1eRLMx9VzcA==}
 
-  abstract-image@8.3.1:
-    resolution: {integrity: sha512-MDqjE0JwG5sCNJexAlK1jYj+77HBn/Zd5kLQZZpGBrnIaD/whIES5P3c2DKUVe8EfzKh35a+o9Gq8v2VVROrGQ==}
+  abstract-image@9.0.1:
+    resolution: {integrity: sha512-KShumLJ8fC2n14zvPiWyku7gDlPrgyRp5YNu2KISX9iE4N4YnMloK36aJPPZoIdfAOWLh/7IbmYpv1BfVUI0Xg==}
 
-  abstract-sheet@0.0.7:
-    resolution: {integrity: sha512-hUx6lM7vFDyN5HEEIFBzjvkogVRtjRhXHYVFYgmCttFosmXjcDoKxINavnWgVoK+Po3w8ZE4faK98/4aYPMBPw==}
+  abstract-sheet@0.0.8:
+    resolution: {integrity: sha512-iSWC86ifuEcszkGe1q7ORjz65hjkSMKk3J0qVmgmJBHqIlJLqt2bpJnEg3fFdalRYxGroZL52OUJR++gqB61lQ==}
 
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -2722,15 +2722,6 @@ packages:
 
   debug@3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-
-  debug@4.3.4:
-    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
-    engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
     peerDependenciesMeta:
@@ -4927,9 +4918,6 @@ packages:
   ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
 
-  ms@2.1.2:
-    resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
-
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
@@ -5977,11 +5965,6 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.6.2:
-    resolution: {integrity: sha512-FNAIBWCx9qcRhoHcgcJ0gvU7SN1lYU2ZXuSfl04bSC5OpvDHFyJCjdNHomPXxjQlCBU67YW64PzY7/VIEH7F2w==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.6.3:
     resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
     engines: {node: '>=10'}
@@ -6627,9 +6610,6 @@ packages:
 
   tslib@1.14.1:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
-
-  tslib@2.6.2:
-    resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
@@ -8682,7 +8662,7 @@ snapshots:
       jsdoc-type-pratt-parser: 4.1.0
       process: 0.11.10
       recast: 0.23.7
-      semver: 7.6.2
+      semver: 7.6.3
       util: 0.12.5
       ws: 8.18.0
     optionalDependencies:
@@ -9280,7 +9260,7 @@ snapshots:
     dependencies:
       event-target-shim: 5.0.1
 
-  abstract-3d@0.3.1(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1)):
+  abstract-3d@0.3.3(@types/react@18.3.12)(@types/three@0.170.0)(react-dom@18.3.1(react@18.3.1))(use-sync-external-store@1.2.2(react@18.3.1)):
     dependencies:
       '@react-three/drei': 9.117.3(@react-three/fiber@8.17.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.170.0))(@types/react@18.3.12)(@types/three@0.170.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.170.0)(use-sync-external-store@1.2.2(react@18.3.1))
       '@react-three/fiber': 8.17.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.170.0)
@@ -9300,14 +9280,14 @@ snapshots:
       - react-native
       - use-sync-external-store
 
-  abstract-chart@8.2.1:
+  abstract-chart@9.0.1:
     dependencies:
-      abstract-image: 8.3.1
+      abstract-image: 9.0.1
       ts-exhaustive-check: 1.0.0
 
-  abstract-document@12.0.9:
+  abstract-document@13.0.1:
     dependencies:
-      abstract-image: 8.3.1
+      abstract-image: 9.0.1
       base64-js: 1.5.1
       docx: 6.0.3
       fast-xml-parser: 4.5.0
@@ -9319,13 +9299,13 @@ snapshots:
       ts-exhaustive-check: 1.0.0
       unified: 6.2.0
 
-  abstract-image@8.3.1:
+  abstract-image@9.0.1:
     dependencies:
       base64-js: 1.5.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  abstract-sheet@0.0.7:
+  abstract-sheet@0.0.8:
     dependencies:
       fast-xml-parser: 4.5.0
       mustache: 4.2.0
@@ -9584,7 +9564,7 @@ snapshots:
 
   ast-types@0.16.1:
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.8.1
 
   astral-regex@2.0.0: {}
 
@@ -10463,10 +10443,6 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  debug@4.3.4:
-    dependencies:
-      ms: 2.1.2
-
   debug@4.3.7:
     dependencies:
       ms: 2.1.3
@@ -10910,7 +10886,7 @@ snapshots:
 
   esbuild-register@3.5.0(esbuild@0.20.2):
     dependencies:
-      debug: 4.3.4
+      debug: 4.3.7
       esbuild: 0.20.2
     transitivePeerDependencies:
       - supports-color
@@ -13179,8 +13155,6 @@ snapshots:
 
   ms@2.0.0: {}
 
-  ms@2.1.2: {}
-
   ms@2.1.3: {}
 
   multicast-dns@7.2.5:
@@ -14085,7 +14059,7 @@ snapshots:
       esprima: 4.0.1
       source-map: 0.6.1
       tiny-invariant: 1.3.3
-      tslib: 2.6.2
+      tslib: 2.8.1
 
   rechoir@0.8.0:
     dependencies:
@@ -14349,8 +14323,6 @@ snapshots:
   semver@5.7.2: {}
 
   semver@6.3.1: {}
-
-  semver@7.6.2: {}
 
   semver@7.6.3: {}
 
@@ -15060,8 +15032,6 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@1.14.1: {}
-
-  tslib@2.6.2: {}
 
   tslib@2.8.1: {}
 
