@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "abstract-visuals-example",
-  "version": "9.6.26",
+  "version": "9.6.27",
   "description": "abstract-visuals-example",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib/index.js",
@@ -22,7 +22,7 @@
     "abstract-chart": "^10.0.2",
     "abstract-document": "^14.0.3",
     "abstract-image": "^10.0.2",
-    "abstract-sheet": "^0.0.12",
+    "abstract-sheet": "^0.0.13",
     "base64-js": "^1.5.1",
     "file-saver": "^2.0.5",
     "react": "^18.3.1",
