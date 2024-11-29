@@ -36,16 +36,16 @@
     "vite-plugin-node-polyfills": "^0.22.0",
     "xmldom": "^0.6.0",
     "xsd-tools": "^0.2.0",
-    "vitest": "^2.1.6"
+    "vitest": "^2.1.6",
+    "@vitest/coverage-v8": "^2.1.6"
   },
   "scripts": {
     "precommit": "lint-staged",
     "publish-npm": "run-s verify && lerna publish",
     "verify": "run-s lint build test",
     "updated": "lerna updated",
-    "test2": "jest",
     "test": "vitest run",
-    "test-coverage": "vitest --coverage",
+    "test-coverage": "vitest run --coverage",
     "test:abstract-image": "vitest run --dir packages/abstract-image",
     "test:abstract-document": "vitest run --dir packages/abstract-document",
     "lint": "eslint ./packages/*/src/**/*.ts{,x} --ext .js,.ts,.tsx -f visualstudio",
