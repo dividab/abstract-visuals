@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx-js-style";
+import * as XLSX from "xlsx";
 import { CellType, Sheet } from "../abstract-sheet/abstract-sheet.js";
 
 export function xlsxWorkSheet(sheet: Sheet, styles: Record<string, any>): XLSX.WorkSheet {

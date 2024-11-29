@@ -24,12 +24,14 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "ts-exhaustive-check": "^1.0.0",
-    "xlsx-js-style": "^1.2.0"
+    "xlsx-js-style": "^1.2.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.5",
     "@types/react": "18.3.12",
     "@types/react-dom": "^18.3.0",
-    "@types/xml": "^1.0.11"
+    "@types/xml": "^1.0.11",
+    "@types/node": "^22.10.1"
   }
 }
