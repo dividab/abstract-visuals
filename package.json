@@ -70,7 +70,13 @@
     "trailingComma": "es5",
     "arrowParens": "always"
   },
-  "dependencies": {
-    "abstract-image": "^9.0.2"
+  "pnpm": {
+    "packageExtensions": {
+      "tunnel-rat": {
+        "peerDependencies": {
+          "react": "^18.3.1"
+        }
+      }
+    }
   }
 }

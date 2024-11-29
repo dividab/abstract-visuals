@@ -4,13 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+packageExtensionsChecksum: 13ef7affa6e695381a6164f7925dd98a
+
 importers:
 
   .:
-    dependencies:
-      abstract-image:
-        specifier: ^9.0.2
-        version: 9.0.2
     devDependencies:
       '@cfaester/enzyme-adapter-react-18':
         specifier: ^0.8.0
@@ -284,7 +282,7 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0(@types/three@0.170.0)(react-dom@18.3.1(react@18.3.1))
       abstract-chart:
-        specifier: ^10.0.2
+        specifier: ^10.0.3
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.3
@@ -1584,9 +1582,6 @@ packages:
 
   abstract-3d@0.4.0:
     resolution: {integrity: sha512-mav4tgrJUlpG/6mANxjERhiD/INhoJ8JCc3ByFNbJSZnaaJBIjymeFxYRfErQ+o1k7yYOODANksya8HIwwV2Uw==}
-
-  abstract-image@9.0.2:
-    resolution: {integrity: sha512-qbrtZpioJDpSITLYyZrLIq8M9xMyr/qxMk11OBp46/vKx9qRfprESraePrW0FBtNE1bhopGpJgrHUUlYnXtKlA==}
 
   acorn-globals@7.0.1:
     resolution: {integrity: sha512-umOSDSDrfHbTNPuNpC2NSnnA3LUrqpevPb4T9jRx4MagXNS0rs+gwiTcAvqCRmsD6utzsrzNt+ebm00SNWiC3Q==}
@@ -5649,6 +5644,8 @@ packages:
 
   tunnel-rat@0.1.2:
     resolution: {integrity: sha512-lR5VHmkPhzdhrM092lI2nACsLO4QubF0/yoOhzX7c+wIpbN1GjHNzCc91QlpxBi+cnx8vVJ+Ur6vL5cEoQPFpQ==}
+    peerDependencies:
+      react: ^18.3.1
 
   tweetnacl@0.14.5:
     resolution: {integrity: sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==}
@@ -8004,12 +8001,6 @@ snapshots:
       - expo-gl
       - react-dom
       - react-native
-
-  abstract-image@9.0.2:
-    dependencies:
-      base64-js: 1.5.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
 
   acorn-globals@7.0.1:
     dependencies:
@@ -12716,11 +12707,11 @@ snapshots:
 
   tunnel-rat@0.1.2(@types/react@18.3.12)(react@18.3.1):
     dependencies:
+      react: 18.3.1
       zustand: 4.5.5(@types/react@18.3.12)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
       - immer
-      - react
 
   tweetnacl@0.14.5: {}
 
