@@ -6,7 +6,6 @@
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-sheet",
   "license": "MIT",
   "main": "lib/index.js",
-  "type": "module",
   "types": "lib/index",
   "exports": {
     ".": "./lib/index.js"
@@ -24,7 +23,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "ts-exhaustive-check": "^1.0.0",
-    "xlsx": "^0.18.5",
     "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
