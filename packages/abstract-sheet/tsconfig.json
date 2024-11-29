@@ -4,7 +4,8 @@
   "typeRoots": ["src/@types", "node_modules/@types"],
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src"
+    "rootDir": "src",
+    "lib": ["dom", "es2022"]
   },
   "references": []
 }

@@ -293,7 +293,7 @@ importers:
         specifier: ^10.0.2
         version: link:../abstract-image
       abstract-sheet:
-        specifier: ^0.0.12
+        specifier: ^0.0.13
         version: link:../abstract-sheet
       base64-js:
         specifier: ^1.5.1
