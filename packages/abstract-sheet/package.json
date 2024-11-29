@@ -1,6 +1,6 @@
 {
   "name": "abstract-sheet",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Abstract sheet",
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-sheet",
@@ -24,14 +24,14 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "ts-exhaustive-check": "^1.0.0",
-    "xlsx-js-style": "^1.2.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.5",
+    "@types/node": "^22.10.1",
     "@types/react": "18.3.12",
     "@types/react-dom": "^18.3.0",
-    "@types/xml": "^1.0.11",
-    "@types/node": "^22.10.1"
+    "@types/xml": "^1.0.11"
   }
 }
