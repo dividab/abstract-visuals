@@ -1,6 +1,6 @@
 import React from "react";
 // import { Html } from "@react-three/drei/web/Html.js";
-// import { Html } from "@react-three/drei";
+import { Html } from "@react-three/drei";
 import * as A3d from "../../abstract-3d.js";
 import { ReactMesh } from "./react-mesh.js";
 import { ReactMaterial } from "./react-material.js";
@@ -104,13 +104,13 @@ export function ReactHotSpot({
           <ReactMaterial id={h.id} isText={false} material={h.mesh.material} hoveredId={hoveredId} />
         </ReactMesh>
       </group>
-      {/* {hotSpotTexts && text && (
+      {hotSpotTexts && text && (
         <Html position={[hsPos.x, hsPos.y, hotSpotZAdjPos]} center>
           <div className={`air-states-container ${showHotSpotTexts ? "" : "air-states-container-hidden"}`}>
             <span className="air-states-text">{text}</span>
           </div>
         </Html>
-      )} */}
+      )}
     </>
   );
 }
