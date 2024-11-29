@@ -1,7 +1,6 @@
 export type AbstractSheet = {
   readonly sheets: ReadonlyArray<Sheet>;
   readonly styles?: Styles;
-  readonly name?: string;
 };
 
 export type Sheet = {

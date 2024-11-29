@@ -16,27 +16,22 @@ export type CsvOptions = {
   readonly dateFormat?: string;
 };
 
-export function toCsv(
-  abstractSheets: ReadonlyArray<AbstractSheet>,
-  options?: CsvOptions
-): ReadonlyArray<ReadonlyArray<CsvFile>> {
-  return (abstractSheets as Array<AbstractSheet>).map((as) => {
-    const styles = Object.fromEntries(as.styles?.map((s) => [s.name, createStyle(s)]) ?? []);
-    const mappedOptions: XLSX.Sheet2CSVOpts | undefined = options
-      ? {
-          FS: options.separator,
-          RS: options.rowSeparator,
-          strip: options.noTrailingSeparator,
-          blankrows: options.blankRows,
-          skipHidden: options.skipHidden,
-          forceQuotes: options.forceQuotes,
-          rawNumbers: options.rawNumber,
-          dateNF: options.dateFormat,
-        }
-      : undefined;
+export function toCsv(as: AbstractSheet, options?: CsvOptions): ReadonlyArray<CsvFile> {
+  const styles = Object.fromEntries(as.styles?.map((s) => [s.name, createStyle(s)]) ?? []);
+  const mappedOptions: XLSX.Sheet2CSVOpts | undefined = options
+    ? {
+        FS: options.separator,
+        RS: options.rowSeparator,
+        strip: options.noTrailingSeparator,
+        blankrows: options.blankRows,
+        skipHidden: options.skipHidden,
+        forceQuotes: options.forceQuotes,
+        rawNumbers: options.rawNumber,
+        dateNF: options.dateFormat,
+      }
+    : undefined;
 
-    return as.sheets.map(
-      (s): CsvFile => ({ name: s.name, csv: XLSX.utils.sheet_to_csv(xlsxWorkSheet(s, styles), mappedOptions) })
-    );
-  }) as unknown as ReadonlyArray<ReadonlyArray<CsvFile>>;
+  return as.sheets.map(
+    (s): CsvFile => ({ name: s.name, csv: XLSX.utils.sheet_to_csv(xlsxWorkSheet(s, styles), mappedOptions) })
+  );
 }

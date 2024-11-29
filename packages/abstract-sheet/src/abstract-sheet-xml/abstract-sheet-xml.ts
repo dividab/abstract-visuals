@@ -14,19 +14,15 @@ import {
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
 import { parseMustacheXml, parseXsd, XmlElement } from "./mustache-xml/index.js";
 
-export const abstractSheetXml = (
-  template: string,
-  data: any,
-  partials: Record<string, string>,
-  sheetPrefix?: string
-): AbstractSheet => abstractSheetOfXml(parseMustacheXml(template, data, partials)[0]!, sheetPrefix) as AbstractSheet;
+export const abstractSheetXml = (template: string, data: any, partials: Record<string, string>): AbstractSheet =>
+  abstractSheetOfXml(parseMustacheXml(template, data, partials)[0]!) as AbstractSheet;
 
-export function abstractSheetOfXml(el: XmlElement, sheetPrefix?: string): unknown {
+export function abstractSheetOfXml(el: XmlElement): unknown {
   const children = Array<unknown>();
   const childElements = Array<XmlElement>();
   for (const child of el.children ?? []) {
     if (child.tagName !== undefined) {
-      children.push(abstractSheetOfXml(child, sheetPrefix));
+      children.push(abstractSheetOfXml(child));
       childElements.push(child);
     }
   }
@@ -57,7 +53,7 @@ export function abstractSheetOfXml(el: XmlElement, sheetPrefix?: string): unknow
         }
       });
       return {
-        name: `${sheetPrefix ?? ""}${((el.attributes as Partial<Record<keyof Sheet, unknown>>)?.name ?? "") as string}`,
+        name: ((el.attributes as Partial<Record<keyof Sheet, unknown>>)?.name ?? "") as string,
         cells,
         colInfo,
         rowInfo,

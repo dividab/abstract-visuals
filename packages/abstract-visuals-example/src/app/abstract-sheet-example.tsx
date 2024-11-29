@@ -38,8 +38,8 @@ export function AbstractSheetExample(): JSX.Element {
         <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
           <button
             onClick={() => {
-              for (const f of AS.toCsv([as])) {
-                FileSaver.saveAs(new Blob([f[0]?.csv ?? ""], { type: "text/plain" }), `${f[0]?.name ?? ""}.txt`);
+              for (const f of AS.toCsv(as)) {
+                FileSaver.saveAs(new Blob([f.csv], { type: "text/plain" }), `${f.name}.txt`);
               }
             }}
           >
