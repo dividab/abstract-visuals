@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import * as XLSX from "xlsx-js-style";
 import { AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
 import { xlsxWorkSheet } from "./_xlsx-sheet.js";
 import { createStyle } from "./_style.js";
