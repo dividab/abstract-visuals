@@ -1,6 +1,6 @@
-import { Resources } from "../resources";
-import * as TableRow from "../table/table-row";
-import * as TableStyle from "../styles/table-style";
+import { Resources } from "../resources.js";
+import * as TableRow from "../table/table-row.js";
+import * as TableStyle from "../styles/table-style.js";
 
 export const sectionType = "Table";
 

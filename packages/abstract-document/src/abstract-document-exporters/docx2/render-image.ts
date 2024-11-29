@@ -1,5 +1,5 @@
 import * as AbstractImage from "abstract-image";
-import * as AD from "../../abstract-document";
+import * as AD from "../../abstract-document/index.js";
 import * as DOCXJS from "docx";
 
 export function renderImage(image: AD.Image.Image, textStyle: AD.TextStyle.TextStyle): DOCXJS.ImageRun {

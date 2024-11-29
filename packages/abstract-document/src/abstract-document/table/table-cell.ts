@@ -1,5 +1,5 @@
-import * as SectionElement from "../section-elements/section-element";
-import * as TableCellStyle from "../styles/table-cell-style";
+import * as SectionElement from "../section-elements/section-element.js";
+import * as TableCellStyle from "../styles/table-cell-style.js";
 
 export interface TableCell {
   readonly styleName: string;

@@ -1,11 +1,11 @@
-import { ImageResource } from "./primitives/image-resource";
-import { NumberingDefinition } from "./numberings/numbering-definition";
-import { Numbering } from "./numberings/numbering";
-import * as StyleKey from "./styles/style-key";
-import { Style, overrideWith } from "./styles/style";
-import { Font } from "./primitives/font";
-import { Indexer } from "./types";
-import { defaultAndStandardStyles } from "./default-styles";
+import { ImageResource } from "./primitives/image-resource.js";
+import { NumberingDefinition } from "./numberings/numbering-definition.js";
+import { Numbering } from "./numberings/numbering.js";
+import * as StyleKey from "./styles/style-key.js";
+import { Style, overrideWith } from "./styles/style.js";
+import { Font } from "./primitives/font.js";
+import { Indexer } from "./types.js";
+import { defaultAndStandardStyles } from "./default-styles.js";
 
 export interface Resources {
   readonly fonts?: Indexer<Font>;

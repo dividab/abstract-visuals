@@ -17,7 +17,7 @@ import {
   TextRun,
   TocSeparator,
   Types,
-} from "../../abstract-document/index";
+} from "../../abstract-document/index.js";
 import {
   TextRowProps,
   TextRow,
@@ -32,7 +32,7 @@ import {
   ImageParagraph,
   ImageRow,
   ImageResource,
-} from "./custom-elements";
+} from "./custom-elements.js";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
 

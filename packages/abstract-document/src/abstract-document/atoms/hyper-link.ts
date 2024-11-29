@@ -1,4 +1,4 @@
-import * as TextStyle from "../styles/text-style";
+import * as TextStyle from "../styles/text-style.js";
 
 export interface HyperLink {
   readonly type: "HyperLink";
@@ -22,6 +22,6 @@ export function create(props: HyperLinkProps): HyperLink {
     styleName,
     text,
     target,
-    style
+    style,
   };
 }

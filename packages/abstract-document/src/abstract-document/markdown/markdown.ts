@@ -1,12 +1,12 @@
 import unified from "unified";
 import remarkParse from "remark-parse";
 import remarkSubSuper from "remark-sub-super";
-import { SectionElement } from "../section-elements/section-element";
-import * as Paragraph from "../section-elements/paragraph";
-import * as Atom from "../atoms/atom";
-import * as TextRun from "../atoms/text-run";
-import * as Group from "../section-elements/group";
-import { AstElements, MarkDownProcessData, AstRoot } from "./types";
+import { SectionElement } from "../section-elements/section-element.js";
+import * as Paragraph from "../section-elements/paragraph.js";
+import * as Atom from "../atoms/atom.js";
+import * as TextRun from "../atoms/text-run.js";
+import * as Group from "../section-elements/group.js";
+import { AstElements, MarkDownProcessData, AstRoot } from "./types.js";
 
 export interface MarkdownProps {
   readonly text: string;

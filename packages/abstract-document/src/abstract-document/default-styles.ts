@@ -1,11 +1,11 @@
-import * as LayoutFoundation from "./primitives/layout-foundation";
-import * as ParagraphStyle from "./styles/paragraph-style";
-import * as Style from "./styles/style";
-import * as StyleKey from "./styles/style-key";
-import * as TableCellStyle from "./styles/table-cell-style";
-import * as TableStyle from "./styles/table-style";
-import * as TextStyle from "./styles/text-style";
-import { Indexer } from "./types";
+import * as LayoutFoundation from "./primitives/layout-foundation.js";
+import * as ParagraphStyle from "./styles/paragraph-style.js";
+import * as Style from "./styles/style.js";
+import * as StyleKey from "./styles/style-key.js";
+import * as TableCellStyle from "./styles/table-cell-style.js";
+import * as TableStyle from "./styles/table-style.js";
+import * as TextStyle from "./styles/text-style.js";
+import { Indexer } from "./types.js";
 
 export const defaultAndStandardStyles = createDefaultAndStandardStyles();
 

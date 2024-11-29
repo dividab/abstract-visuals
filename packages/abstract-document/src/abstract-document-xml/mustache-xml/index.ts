@@ -1,2 +1,2 @@
-export * from "./validate-mustache-xml";
-export * from "./parse-mustache-xml";
+export * from "./validate-mustache-xml.js";
+export * from "./parse-mustache-xml.js";

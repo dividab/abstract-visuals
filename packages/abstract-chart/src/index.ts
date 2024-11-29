@@ -1,2 +1,2 @@
-export * from "./axis";
-export * from "./chart";
+export * from "./axis.js";
+export * from "./chart.js";

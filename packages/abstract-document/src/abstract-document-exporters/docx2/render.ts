@@ -1,6 +1,6 @@
-import * as AD from "../../abstract-document";
+import * as AD from "../../abstract-document/index.js";
 import * as DOCXJS from "docx";
-import { renderImage } from "./render-image";
+import { renderImage } from "./render-image.js";
 import { Readable } from "stream";
 
 const abstractDocToDocxFontRatio = 2;

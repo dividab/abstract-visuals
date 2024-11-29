@@ -1,7 +1,7 @@
-import * as AD from "../../abstract-document/index";
+import * as AD from "../../abstract-document/index.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import { Page } from "./paginate";
-import { registerFonts, getFontNameStyle } from "./font";
+import { Page } from "./paginate.js";
+import { registerFonts, getFontNameStyle } from "./font.js";
 
 //tslint:disable:no-any variable-name
 

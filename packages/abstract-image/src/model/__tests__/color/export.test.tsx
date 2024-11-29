@@ -1,13 +1,12 @@
-import path from "path";
-import { loadTests, onlySkip } from "@abstract-visuals/test-utils";
-import { ExportTestDef } from "./export-test-def";
-
-export const tests = loadTests<ExportTestDef>(path.join(__dirname, "test-defs/"));
+import { describe, test, expect } from "vitest";
+import { testColorFromString } from "./test-defs/color-from-string.js";
+import { testColorToString } from "./test-defs/color-to-string.js";
+import { testColorUndefined2 } from "./test-defs/color-undefined-2.js";
+import { testColorUndefined } from "./test-defs/color-undefined.js";
 
 describe("color", () => {
-  onlySkip(tests).forEach((item) => {
-    test(item.name, async () => {
-      // const abstractDoc = render(item.abstractDocJsx);
+  [testColorFromString, testColorToString, testColorUndefined2, testColorUndefined].forEach((item) => {
+    test(item.name, () => {
       expect(item.abstractColor).toEqual(item.expectedColor);
     });
   });

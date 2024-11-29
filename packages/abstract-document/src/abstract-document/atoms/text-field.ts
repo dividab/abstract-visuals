@@ -1,4 +1,4 @@
-import * as TextStyle from "../styles/text-style";
+import * as TextStyle from "../styles/text-style.js";
 
 export type FieldType = "Date" | "PageNumber" | "TotalPages" | "PageNumberOf";
 

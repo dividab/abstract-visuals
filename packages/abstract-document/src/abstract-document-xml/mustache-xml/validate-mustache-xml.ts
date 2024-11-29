@@ -1,5 +1,5 @@
 import * as FXmlP from "fast-xml-parser";
-import { XmlElement, parseXml, findElement } from "./parse-mustache-xml";
+import { XmlElement, parseXml, findElement } from "./parse-mustache-xml.js";
 
 enum ErrorType {
   warning = 0,

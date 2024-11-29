@@ -1,6 +1,6 @@
-import * as AD from "../../abstract-document/index";
-import { TextFontWeight } from "../../abstract-document/styles/text-style";
-import { getResources } from "../shared/get_resources";
+import * as AD from "../../abstract-document/index.js";
+import { TextFontWeight } from "../../abstract-document/styles/text-style.js";
+import { getResources } from "../shared/get_resources.js";
 
 export function registerFonts(
   registerFont: (fontName: string, fontSource: AD.Font.FontSource) => void,

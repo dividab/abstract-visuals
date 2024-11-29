@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import * as AI from "abstract-image";
-import * as Axis from "./axis";
+import * as Axis from "./axis.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 
 // tslint:disable:max-file-line-count

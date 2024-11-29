@@ -1,7 +1,7 @@
-import { Resources } from "../resources";
-import { Atom } from "../atoms/atom";
-import { ParagraphNumbering } from "./paragraph-numbering";
-import * as ParagraphStyle from "../styles/paragraph-style";
+import { Resources } from "../resources.js";
+import { Atom } from "../atoms/atom.js";
+import { ParagraphNumbering } from "./paragraph-numbering.js";
+import * as ParagraphStyle from "../styles/paragraph-style.js";
 
 export const sectionType = "Paragraph";
 

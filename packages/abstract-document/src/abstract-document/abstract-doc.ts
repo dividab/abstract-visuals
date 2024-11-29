@@ -1,11 +1,11 @@
-import { Section } from "./page/section";
-import { Resources } from "./resources";
-import { NumberingDefinition } from "./numberings/numbering-definition";
-import { Numbering } from "./numberings/numbering";
-import { ImageResource } from "./primitives/image-resource";
-import { Indexer } from "./types";
-import { Font } from "./primitives/font";
-import { Style } from "./styles/style";
+import { Section } from "./page/section.js";
+import { Resources } from "./resources.js";
+import { NumberingDefinition } from "./numberings/numbering-definition.js";
+import { Numbering } from "./numberings/numbering.js";
+import { ImageResource } from "./primitives/image-resource.js";
+import { Indexer } from "./types.js";
+import { Font } from "./primitives/font.js";
+import { Style } from "./styles/style.js";
 
 export type AbstractDoc = Resources & {
   readonly children: ReadonlyArray<Section>;

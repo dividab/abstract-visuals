@@ -1,9 +1,9 @@
 import * as React from "react";
 import FileSaver from "file-saver";
-import * as A3D from "abstract-3d";
-import { systemair } from "./systemair";
-import { vortice } from "./vortice";
-import { cylinderFilter } from "./cylinder-filter";
+import * as A3D from "../../../abstract-3d/src/index.js";
+import { systemair } from "./systemair.js";
+import { vortice } from "./vortice.js";
+import { cylinderFilter } from "./cylinder-filter.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);

@@ -1,5 +1,5 @@
-import * as LayoutFoundation from "../primitives/layout-foundation";
-import * as Position from "./position";
+import * as LayoutFoundation from "../primitives/layout-foundation.js";
+import * as Position from "./position.js";
 
 export interface GroupStyle {
   readonly type: "GroupStyle";

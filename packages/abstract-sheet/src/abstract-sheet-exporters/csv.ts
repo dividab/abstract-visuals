@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx-js-style";
-import { AbstractSheet } from "../abstract-sheet/abstract-sheet";
-import { xlsxWorkSheet } from "./_xlsx-sheet";
-import { createStyle } from "./_style";
+import { AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
+import { xlsxWorkSheet } from "./_xlsx-sheet.js";
+import { createStyle } from "./_style.js";
 
 export type CsvFile = { readonly name: string; readonly csv: string };
 

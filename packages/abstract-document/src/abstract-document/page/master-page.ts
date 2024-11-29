@@ -1,5 +1,5 @@
-import * as PageStyle from "../styles/page-style";
-import * as SectionElement from "../section-elements/section-element";
+import * as PageStyle from "../styles/page-style.js";
+import * as SectionElement from "../section-elements/section-element.js";
 
 export interface MasterPage {
   readonly style: PageStyle.PageStyle;
@@ -18,6 +18,6 @@ export function create(props?: MasterPageProps): MasterPage {
   return {
     style,
     header,
-    footer
+    footer,
   };
 }

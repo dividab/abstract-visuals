@@ -1,1 +1,1 @@
-export * from "./xsd-template";
+export * from "./xsd-template.js";

@@ -1,6 +1,6 @@
-import * as TextStyle from "./text-style";
-import * as LayoutFoundation from "../primitives/layout-foundation";
-import * as Position from "./position";
+import * as TextStyle from "./text-style.js";
+import * as LayoutFoundation from "../primitives/layout-foundation.js";
+import * as Position from "./position.js";
 
 export type TextAlignment = "Start" | "Center" | "End" | "Justify";
 

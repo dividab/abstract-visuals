@@ -5,5 +5,8 @@
     "outDir": "lib",
     "rootDir": "src"
   },
+  "exports": {
+    ".": "./lib/index.js"
+  },
   "references": [{ "path": "../abstract-image" }]
 }

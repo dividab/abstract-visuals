@@ -1,9 +1,9 @@
 /*
 import {assert} from "chai";
-import {DocumentBuilder} from "../../src/abstract-document-builder/index";
-import {create as createPageStyle} from "../../src/abstract-document/styles/page-style";
+import {DocumentBuilder} from "../../src/abstract-document-builder/index.js";
+import {create as createPageStyle} from "../../src/abstract-document/styles/page-style.js";
 import {create as createHeaderStyle} from "../../src/abstract-document/styles/header-style";
-import {create as createMasterPage} from "../../src/abstract-document/page/master-page";
+import {create as createMasterPage} from "../../src/abstract-document/page/master-page.js";
 import {helloWorldDoc} from "./hello-world-abstract-doc";
 
 describe("model builder", () => {

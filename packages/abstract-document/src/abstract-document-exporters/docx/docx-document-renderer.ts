@@ -5,7 +5,7 @@
 //   Table, Paragraph, TextField, TextRun, TableCell,
 //   PageStyle, SectionElement, Image, MasterPage, TextProperties,
 //   Atom, TableCellProperties, TextAlignment, NumberingFormat, LayoutFoundation
-// } from "../../abstract-document/index";
+// } from "../../abstract-document/index.js";
 // import * as Color from "../../abstract-image/color";
 // import {DocumentContainer} from "./document-container";
 // import * as DocxConstants from "./docx-constants";

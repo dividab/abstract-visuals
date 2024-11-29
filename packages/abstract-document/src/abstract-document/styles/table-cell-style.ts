@@ -1,5 +1,5 @@
-import * as LayoutFoundation from "../primitives/layout-foundation";
-import * as LayoutFoundationColor from "../primitives/layout-foundation-color";
+import * as LayoutFoundation from "../primitives/layout-foundation.js";
+import * as LayoutFoundationColor from "../primitives/layout-foundation-color.js";
 
 export type RowAlignment = "Top" | "Middle" | "Bottom";
 

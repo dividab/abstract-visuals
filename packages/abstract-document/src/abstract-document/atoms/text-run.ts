@@ -1,4 +1,4 @@
-import * as TextStyle from "../styles/text-style";
+import * as TextStyle from "../styles/text-style.js";
 
 export interface TextRun {
   readonly type: "TextRun";
@@ -20,6 +20,6 @@ export function create(props: TextRunProps): TextRun {
     type: "TextRun",
     styleName,
     text,
-    style
+    style,
   };
 }

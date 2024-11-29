@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import * as AD from "../../../../packages/abstract-document/src";
+import * as AD from "../../../../packages/abstract-document/src/index.js";
 import {
   AbstractDoc,
   Section,
@@ -16,15 +16,15 @@ import {
   render,
   TocSeparator,
   Image,
-} from "../../../../packages/abstract-document/src/abstract-document-jsx";
-import { AbstractDocExporters } from "../../../../packages/abstract-document/src";
+} from "../../../../packages/abstract-document/src/abstract-document-jsx/index.js";
+import { AbstractDocExporters } from "../../../../packages/abstract-document/src/index.js";
 import {
   LayoutFoundation,
   LayoutFoundationColor,
   TableCellStyle,
   TableStyle,
-} from "../../../../packages/abstract-document/src/abstract-document";
-import * as AI from "../../../abstract-image";
+} from "../../../../packages/abstract-document/src/abstract-document/index.js";
+import * as AI from "../../../abstract-image/src/index.js";
 
 const header = [
   render(

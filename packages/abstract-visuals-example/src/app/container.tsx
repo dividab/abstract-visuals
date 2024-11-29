@@ -1,13 +1,13 @@
 import * as React from "react";
-import { AbstractImageExampleReact } from "./abstract-image-example-react";
-import { Abstract3DExample } from "./abstract-3d-example";
-import { AbstractImageExampleDxf } from "./abstract-image-example-dxf";
-import { AbstractChartExample } from "./abstract-chart-example";
-import { AbstractDocumentExample } from "./abstract-document-example";
-import { AbstractDocumentXMLExample } from "./abstract-document-xml-example";
-import { AbstractImageExampleSvg } from "./abstract-image-example-svg";
-import { AbstractSheetExample } from "./abstract-sheet-example";
-import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example";
+import { AbstractImageExampleReact } from "./abstract-image-example-react.js";
+import { Abstract3DExample } from "./abstract-3d-example.js";
+import { AbstractImageExampleDxf } from "./abstract-image-example-dxf.js";
+import { AbstractChartExample } from "./abstract-chart-example.js";
+import { AbstractDocumentExample } from "./abstract-document-example.js";
+import { AbstractDocumentXMLExample } from "./abstract-document-xml-example.js";
+import { AbstractImageExampleSvg } from "./abstract-image-example-svg.js";
+import { AbstractSheetExample } from "./abstract-sheet-example.js";
+import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
 
 type Example = (typeof examples)[number];
 

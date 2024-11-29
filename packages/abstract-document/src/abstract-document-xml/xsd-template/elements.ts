@@ -1,4 +1,4 @@
-import * as Custom from "./custom-elements";
+import * as Custom from "./custom-elements.js";
 
 export const abstractDoc = `<xs:element name="AbstractDoc">
     <xs:complexType>

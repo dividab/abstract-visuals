@@ -1,4 +1,4 @@
-import * as LayoutFoundation from "../primitives/layout-foundation";
+import * as LayoutFoundation from "../primitives/layout-foundation.js";
 
 export type PageOrientation = "Portrait" | "Landscape";
 export type PaperSize = "A4" | "Letter" | { readonly width: number; readonly height: number };

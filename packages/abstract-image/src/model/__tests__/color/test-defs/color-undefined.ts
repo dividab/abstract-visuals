@@ -1,7 +1,7 @@
-import { ExportTestDef } from "../export-test-def";
-import * as AbstractImage from "../../../../../src/index";
+import { ExportTestDef } from "../export-test-def.js";
+import * as AbstractImage from "../../../../../src/index.js";
 
-export const test: ExportTestDef = {
+export const testColorUndefined: ExportTestDef = {
   name: "color undefined",
   abstractColor: AbstractImage.fromString("#fff"),
   expectedColor: undefined,

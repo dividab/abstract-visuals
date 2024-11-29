@@ -1,7 +1,7 @@
-import * as AD from "../../abstract-document/index";
-import { getResources } from "../shared/get_resources";
-import { registerFonts } from "./font";
-import { measureTable } from "./measure";
+import * as AD from "../../abstract-document/index.js";
+import { getResources } from "../shared/get_resources.js";
+import { registerFonts } from "./font.js";
+import { measureTable } from "./measure.js";
 
 export interface Page {
   readonly pageNo: number;

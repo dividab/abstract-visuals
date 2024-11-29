@@ -6,6 +6,7 @@
   "main": "lib/index.js",
   "types": "lib/index",
   "license": "MIT",
+  "type": "module",
   "files": [
     "/lib",
     "/src",

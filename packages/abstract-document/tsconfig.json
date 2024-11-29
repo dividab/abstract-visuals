@@ -6,5 +6,5 @@
     "rootDir": "src",
     "noUncheckedIndexedAccess": false
   },
-  "references": [{ "path": "../abstract-image" }, { "path": "../test-utils" }]
+  "references": [{ "path": "../abstract-image" }]
 }

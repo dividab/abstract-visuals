@@ -1,5 +1,5 @@
-﻿import { RefContainer } from "./ref-container";
-import { XmlWriter } from "./xml-writer";
+﻿import { RefContainer } from "./ref-container.js";
+import { XmlWriter } from "./xml-writer.js";
 
 //tslint:disable:no-class no-this
 

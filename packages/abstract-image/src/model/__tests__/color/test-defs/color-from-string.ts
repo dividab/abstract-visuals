@@ -1,5 +1,5 @@
-import { ExportTestDef } from "../export-test-def";
-import * as AbstractImage from "../../../../../src/index";
+import { ExportTestDef } from "../export-test-def.js";
+import * as AbstractImage from "../../../../../src/index.js";
 
 const colorStrings = [
   "#ff000000",
@@ -22,7 +22,7 @@ const colorStrings = [
 
 const fromColor = colorStrings.map((color) => AbstractImage.fromString(color));
 
-export const test: ExportTestDef = {
+export const testColorFromString: ExportTestDef = {
   name: "color from string",
   abstractColor: fromColor,
   expectedColor: [

@@ -1,4 +1,4 @@
-import { Scene } from "abstract-3d";
+import { Scene } from "../../../abstract-3d/src/index.js";
 
 /* eslint-disable max-lines */
 export const systemair = {

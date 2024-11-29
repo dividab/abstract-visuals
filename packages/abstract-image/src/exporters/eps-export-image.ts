@@ -1,4 +1,4 @@
-import * as AI from "../model/index";
+import * as AI from "../model/index.js";
 
 type CharacterEncoding = "standard-encoding" | "iso-latin-1-encoding";
 

@@ -1,5 +1,5 @@
-import * as TextStyle from "../styles/text-style";
-import { NumberingFormat } from "./numbering-format";
+import * as TextStyle from "../styles/text-style.js";
+import { NumberingFormat } from "./numbering-format.js";
 
 export interface NumberingLevelDefinition {
   readonly level: number;
@@ -28,7 +28,7 @@ export function create({
   levelText,
   levelIndention,
   numberingWidth,
-  style
+  style,
 }: NumberingLevelDefinitionProps): NumberingLevelDefinition {
   return {
     level,
@@ -37,6 +37,6 @@ export function create({
     levelText,
     levelIndention,
     numberingWidth: numberingWidth || 40,
-    style: style || TextStyle.create()
+    style: style || TextStyle.create(),
   };
 }

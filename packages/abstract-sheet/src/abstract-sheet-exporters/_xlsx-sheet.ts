@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx-js-style";
-import { CellType, Sheet } from "../abstract-sheet/abstract-sheet";
+import { CellType, Sheet } from "../abstract-sheet/abstract-sheet.js";
 
 export function xlsxWorkSheet(sheet: Sheet, styles: Record<string, any>): XLSX.WorkSheet {
   let colMax = -1;

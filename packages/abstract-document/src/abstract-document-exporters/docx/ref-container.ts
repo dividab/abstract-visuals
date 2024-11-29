@@ -1,5 +1,5 @@
-﻿import * as DocxConstants from "./docx-constants";
-import { XmlWriter } from "./xml-writer";
+﻿import * as DocxConstants from "./docx-constants.js";
+import { XmlWriter } from "./xml-writer.js";
 
 //tslint:disable:no-class no-this
 
@@ -15,10 +15,7 @@ export class RefContainer {
 
   constructor() {
     this.XMLWriter.WriteStartDocument(true);
-    this.XMLWriter.WriteStartElement(
-      "Relationships",
-      DocxConstants.RelationNamespace
-    );
+    this.XMLWriter.WriteStartElement("Relationships", DocxConstants.RelationNamespace);
   }
 
   AddReference(refId: string, filePath: string, type: string): void {

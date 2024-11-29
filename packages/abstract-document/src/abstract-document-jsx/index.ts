@@ -16,7 +16,7 @@ import {
   TextRun as TextRun1,
   PageBreak as PageBreak1,
   LineBreak as LineBreak1,
-} from "../abstract-document/index";
+} from "../abstract-document/index.js";
 
 export interface ChildrenProp {
   readonly children?: Child;

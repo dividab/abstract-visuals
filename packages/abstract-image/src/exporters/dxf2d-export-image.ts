@@ -1,4 +1,4 @@
-import * as AbstractImage from "../model/index";
+import * as AbstractImage from "../model/index.js";
 
 export function dxf2dExportImage(root: AbstractImage.AbstractImage): string {
   const builder: Builder = createBuilder();
@@ -7,9 +7,7 @@ export function dxf2dExportImage(root: AbstractImage.AbstractImage): string {
 
   builder.append("999\nELIGO DXF GENERATOR\n");
   builder.append("0\nSECTION\n2\nHEADER\n");
-  builder.append(
-    "9\n$ACADVER\n1\nAC1009\n9\n$INSBASE\n10\n0.0\n20\n0.0\n30\n0.0\n"
-  );
+  builder.append("9\n$ACADVER\n1\nAC1009\n9\n$INSBASE\n10\n0.0\n20\n0.0\n30\n0.0\n");
   builder.append("9\n$EXTMIN\n10\n0.0\n20\n0.0\n");
   builder.append("9\n$EXTMAX\n");
   builder.append("10\n" + root.size.width.toString() + "\n");
@@ -36,7 +34,7 @@ function createBuilder(): Builder {
     append: (addedStr: string) => {
       str += addedStr;
     },
-    build: () => str
+    build: () => str,
   };
 }
 
@@ -155,7 +153,7 @@ function _visit(
 
     let mylist: Array<number> = [];
     for (let i: number = 0; i <= numPoints; i++) {
-      mylist.push(2 * Math.PI * i / numPoints);
+      mylist.push((2 * Math.PI * i) / numPoints);
     }
 
     for (let t of mylist) {

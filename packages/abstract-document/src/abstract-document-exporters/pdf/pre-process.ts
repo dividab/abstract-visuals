@@ -1,6 +1,6 @@
-import * as AD from "../../abstract-document/index";
+import * as AD from "../../abstract-document/index.js";
 import { exhaustiveCheck } from "ts-exhaustive-check/lib-cjs";
-import * as TextStyle from "../../abstract-document/styles/text-style";
+import * as TextStyle from "../../abstract-document/styles/text-style.js";
 
 const alphabet = [
   "a",

@@ -1,4 +1,4 @@
-import * as SectionElement from "../section-elements/section-element";
+import * as SectionElement from "../section-elements/section-element.js";
 
 export type Position = "absolute" | "relative";
 

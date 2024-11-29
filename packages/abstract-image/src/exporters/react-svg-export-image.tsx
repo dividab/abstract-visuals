@@ -1,6 +1,6 @@
 import * as B64 from "base64-js";
 import * as React from "react";
-import * as AbstractImage from "../model/index";
+import * as AbstractImage from "../model/index.js";
 
 export interface ReactSvgCallbacks {
   readonly onClick?: MouseCallback;

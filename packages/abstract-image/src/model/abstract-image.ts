@@ -1,7 +1,7 @@
-import * as Size from "./size";
-import * as Color from "./color";
-import * as Component from "./component";
-import * as Point from "./point";
+import * as Size from "./size.js";
+import * as Color from "./color.js";
+import * as Component from "./component.js";
+import * as Point from "./point.js";
 
 export interface AbstractImage {
   readonly topLeft: Point.Point;
@@ -20,6 +20,6 @@ export function createAbstractImage(
     topLeft: topLeft,
     size: size,
     backgroundColor: backgroundColor,
-    components: components
+    components: components,
   };
 }

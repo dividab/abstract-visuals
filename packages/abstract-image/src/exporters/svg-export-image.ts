@@ -1,5 +1,5 @@
 import * as B64 from "base64-js";
-import * as AbstractImage from "../model/index";
+import * as AbstractImage from "../model/index.js";
 
 export function createSVG(image: AbstractImage.AbstractImage, pixelWidth?: number, pixelHeight?: number): string {
   const imageElements = image.components.map((c: AbstractImage.Component) => abstractComponentToSVG(c));

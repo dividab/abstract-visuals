@@ -1,7 +1,7 @@
-import * as Point from "./point";
-import * as Color from "./color";
-import * as DashStyle from "./dash-style";
-import * as AbstractImage from "./abstract-image";
+import * as Point from "./point.js";
+import * as Color from "./color.js";
+import * as DashStyle from "./dash-style.js";
+import * as AbstractImage from "./abstract-image.js";
 
 export type Component = BinaryImage | Ellipse | Line | PolyLine | Polygon | Rectangle | Text | SubImage | Group;
 

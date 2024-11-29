@@ -1,5 +1,5 @@
 /*
-import {AbstractDoc} from "../../src/abstract-document/index";
+import {AbstractDoc} from "../../src/abstract-document/index.js";
 
 export const helloWorldDoc: AbstractDoc.AbstractDoc = {
   "imageResources": {},

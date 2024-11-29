@@ -1,6 +1,6 @@
 {
   "extends": "../tsconfig.settings.json",
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "vite.config.js"],
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
@@ -11,5 +11,5 @@
       "*": ["./custom_typings/*"]
     }
   },
-  "references": [{ "path": "../test-utils" }]
+  "references": []
 }

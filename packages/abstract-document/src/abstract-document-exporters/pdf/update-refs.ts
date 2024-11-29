@@ -1,8 +1,8 @@
-import * as AD from "../../abstract-document/index";
-import { Page } from "./paginate";
+import * as AD from "../../abstract-document/index.js";
+import { Page } from "./paginate.js";
 
 export function updatePageRefs(pages: ReadonlyArray<Page>): Array<Page> {
-  return pages.map(page => updateRefsOnPage(page, pages));
+  return pages.map((page) => updateRefsOnPage(page, pages));
 }
 
 export function updateRefsOnPage(page: Page, pages: ReadonlyArray<Page>): Page {
@@ -13,7 +13,7 @@ export function updateRefsOnPage(page: Page, pages: ReadonlyArray<Page>): Page {
     ...page,
     elements: updatedElements,
     header: updatedHeader,
-    footer: updatedFooter
+    footer: updatedFooter,
   };
 }
 
@@ -52,12 +52,10 @@ function updateRefsInParagraph(
   page: Page,
   pages: ReadonlyArray<Page>
 ): AD.SectionElement.SectionElement {
-  const updatedChildren = paragraph.children.map(atom =>
-    updateRefInAtom(atom, page, pages)
-  );
+  const updatedChildren = paragraph.children.map((atom) => updateRefInAtom(atom, page, pages));
   return {
     ...paragraph,
-    children: updatedChildren
+    children: updatedChildren,
   };
 }
 
@@ -66,26 +64,18 @@ function updateRefsInTable(
   page: Page,
   pages: ReadonlyArray<Page>
 ): AD.SectionElement.SectionElement {
-  const updatedChildren = table.children.map(row =>
-    updateRefsInTableRow(row, page, pages)
-  );
+  const updatedChildren = table.children.map((row) => updateRefsInTableRow(row, page, pages));
   return {
     ...table,
-    children: updatedChildren
+    children: updatedChildren,
   };
 }
 
-function updateRefsInTableRow(
-  row: AD.TableRow.TableRow,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.TableRow.TableRow {
-  const updatedChildren = row.children.map(cell =>
-    updateRefsInTableCell(cell, page, pages)
-  );
+function updateRefsInTableRow(row: AD.TableRow.TableRow, page: Page, pages: ReadonlyArray<Page>): AD.TableRow.TableRow {
+  const updatedChildren = row.children.map((cell) => updateRefsInTableCell(cell, page, pages));
   return {
     ...row,
-    children: updatedChildren
+    children: updatedChildren,
   };
 }
 
@@ -94,12 +84,10 @@ function updateRefsInTableCell(
   page: Page,
   pages: ReadonlyArray<Page>
 ): AD.TableCell.TableCell {
-  const updatedChildren = cell.children.map(element =>
-    updateRefsInElement(element, page, pages)
-  );
+  const updatedChildren = cell.children.map((element) => updateRefsInElement(element, page, pages));
   return {
     ...cell,
-    children: updatedChildren
+    children: updatedChildren,
   };
 }
 
@@ -108,20 +96,14 @@ function updateRefsInGroup(
   page: Page,
   pages: ReadonlyArray<Page>
 ): AD.SectionElement.SectionElement {
-  const updatedChildren = group.children.map(element =>
-    updateRefsInElement(element, page, pages)
-  );
+  const updatedChildren = group.children.map((element) => updateRefsInElement(element, page, pages));
   return {
     ...group,
-    children: updatedChildren
+    children: updatedChildren,
   };
 }
 
-function updateRefInAtom(
-  atom: AD.Atom.Atom,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.Atom.Atom {
+function updateRefInAtom(atom: AD.Atom.Atom, page: Page, pages: ReadonlyArray<Page>): AD.Atom.Atom {
   if (atom.type === "TextField") {
     return updateRefInTextField(atom, page, pages);
   } else {
@@ -138,21 +120,19 @@ function updateRefInTextField(
     case "PageNumber":
       return {
         ...textField,
-        text: page.pageNo.toString()
+        text: page.pageNo.toString(),
       };
     case "TotalPages":
       return {
         ...textField,
-        text: pages.length.toString()
+        text: pages.length.toString(),
       };
     case "PageNumberOf":
-      const targetPage = pages.find(p =>
-        p.namedDestionations.some(dest => dest === textField.target)
-      );
+      const targetPage = pages.find((p) => p.namedDestionations.some((dest) => dest === textField.target));
       if (targetPage) {
         return {
           ...textField,
-          text: targetPage.pageNo.toString()
+          text: targetPage.pageNo.toString(),
         };
       } else {
         return textField;

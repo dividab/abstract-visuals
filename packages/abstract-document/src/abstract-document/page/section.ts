@@ -1,6 +1,6 @@
-import { Resources } from "../resources";
-import * as MasterPage from "./master-page";
-import { SectionElement } from "../section-elements/section-element";
+import { Resources } from "../resources.js";
+import * as MasterPage from "./master-page.js";
+import { SectionElement } from "../section-elements/section-element.js";
 
 export type Section = Resources & {
   readonly page: MasterPage.MasterPage;
@@ -13,15 +13,12 @@ export type SectionProps = Resources & {
   readonly id?: string;
 };
 
-export function create(
-  props?: SectionProps,
-  children?: ReadonlyArray<SectionElement>
-): Section {
+export function create(props?: SectionProps, children?: ReadonlyArray<SectionElement>): Section {
   const { page = MasterPage.create(), id = "", ...rest } = props || {};
   return {
     page,
     id,
     children: children || [],
-    ...rest
+    ...rest,
   };
 }

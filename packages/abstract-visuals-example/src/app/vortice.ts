@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Scene } from "abstract-3d";
+import { Scene } from "../../../abstract-3d/src/index.js";
 
 export const vortice: Scene = {
   center_deprecated: {

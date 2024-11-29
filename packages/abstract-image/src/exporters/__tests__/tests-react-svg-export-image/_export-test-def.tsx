@@ -1,0 +1,11 @@
+/**
+ * Defines a data-type that represents a single test for the Docx render function
+ */
+
+import * as React from "react";
+
+export type ExportTestDef = {
+  readonly name: string;
+  readonly abstractImage: React.ReactElement<{}, string | React.JSXElementConstructor<any>> | string;
+  readonly expectedSerializedJsx: string;
+};

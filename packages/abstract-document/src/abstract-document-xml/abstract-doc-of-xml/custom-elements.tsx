@@ -8,8 +8,8 @@ import {
   TableRow,
   Image,
   ImageResource as ADImageResource,
-} from "../../abstract-document/index";
-import { ParagraphProps } from "../../abstract-document/section-elements/paragraph";
+} from "../../abstract-document/index.js";
+import { ParagraphProps } from "../../abstract-document/section-elements/paragraph.js";
 //dummy2
 
 type StyleProps = {

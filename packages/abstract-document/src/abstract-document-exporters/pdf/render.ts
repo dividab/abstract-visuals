@@ -1,10 +1,10 @@
-import * as AD from "../../abstract-document/index";
-import { preProcess } from "./pre-process";
-import { measure, measurePages } from "./measure";
-import { paginate, Page } from "./paginate";
-import { updatePageRefs } from "./update-refs";
-import { renderImage } from "./render-image";
-import { registerFonts, getFontNameStyle } from "./font";
+import * as AD from "../../abstract-document/index.js";
+import { preProcess } from "./pre-process.js";
+import { measure, measurePages } from "./measure.js";
+import { paginate, Page } from "./paginate.js";
+import { updatePageRefs } from "./update-refs.js";
+import { renderImage } from "./render-image.js";
+import { registerFonts, getFontNameStyle } from "./font.js";
 
 export type PdfExportOptions = {
   compress: boolean;

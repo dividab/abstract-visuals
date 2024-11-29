@@ -1,6 +1,6 @@
 import * as React from "react";
 import FileSaver from "file-saver";
-import * as AS from "../../../abstract-sheet";
+import * as AS from "../../../abstract-sheet/src/index.js";
 
 export function AbstractSheetExample(): JSX.Element {
   const as: AS.AbstractSheet = {

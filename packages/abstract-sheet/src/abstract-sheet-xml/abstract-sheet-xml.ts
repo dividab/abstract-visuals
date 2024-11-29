@@ -10,9 +10,9 @@ import {
   Style,
   Styles,
   AbstractSheet,
-} from "../abstract-sheet/abstract-sheet";
-import { xsd } from "../abstract-sheet/abstract-sheet-xsd";
-import { parseMustacheXml, parseXsd, XmlElement } from "./mustache-xml";
+} from "../abstract-sheet/abstract-sheet.js";
+import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
+import { parseMustacheXml, parseXsd, XmlElement } from "./mustache-xml/index.js";
 
 export const abstractSheetXml = (
   template: string,

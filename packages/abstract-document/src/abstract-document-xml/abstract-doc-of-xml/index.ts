@@ -1,3 +1,3 @@
-export * from "./abstract-doc-of-xml";
-export { creators } from "./creator";
-export type { ImageResource } from "./custom-elements";
+export * from "./abstract-doc-of-xml.js";
+export { creators } from "./creator.js";
+export type { ImageResource } from "./custom-elements.js";
