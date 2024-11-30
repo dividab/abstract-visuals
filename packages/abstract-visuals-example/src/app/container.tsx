@@ -47,6 +47,11 @@ export function Container(): JSX.Element {
       </select>
       {(() => {
         switch (selected) {
+          //TODO: Uncaught ReferenceError: exports is not defined
+          //   Object.defineProperty(exports, "__esModule", {
+          //     value: true
+          // });
+          //
           // case "AbstractChart":
           //   return <AbstractChartExample />;
           case "AbstractImageSvg":
