@@ -7,6 +7,10 @@
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index",
+  "type": "module",
+  "exports": {
+    ".": "./lib/index.js"
+  },
   "files": [
     "/lib",
     "/src",

@@ -1,11 +1,12 @@
 import * as React from "react";
-import { AbstractImageExampleReact } from "./abstract-image-example-react.js";
+
 import { Abstract3DExample } from "./abstract-3d-example.js";
+import { AbstractImageExampleReact } from "./abstract-image-example-react.js";
 import { AbstractImageExampleDxf } from "./abstract-image-example-dxf.js";
+import { AbstractImageExampleSvg } from "./abstract-image-example-svg.js";
 import { AbstractChartExample } from "./abstract-chart-example.js";
 import { AbstractDocumentExample } from "./abstract-document-example.js";
 import { AbstractDocumentXMLExample } from "./abstract-document-xml-example.js";
-import { AbstractImageExampleSvg } from "./abstract-image-example-svg.js";
 import { AbstractSheetExample } from "./abstract-sheet-example.js";
 import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
 
@@ -46,8 +47,8 @@ export function Container(): JSX.Element {
       </select>
       {(() => {
         switch (selected) {
-          case "AbstractChart":
-            return <AbstractChartExample />;
+          // case "AbstractChart":
+          //   return <AbstractChartExample />;
           case "AbstractImageSvg":
             return <AbstractImageExampleSvg />;
           case "AbstractImageReact":

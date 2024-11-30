@@ -5,7 +5,8 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "lib": ["dom", "es2022"]
+    "module": "NodeNext",
+    "moduleResolution": "nodenext"
   },
   "references": []
 }

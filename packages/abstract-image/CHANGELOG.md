@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [10.0.0] - 2024-11-29
 
-- Switch to ES Modules from CommonJS
+- ~~Switch to ES Modules from CommonJS~~
 
 ## [9.0.0] - 2024-11-28
 

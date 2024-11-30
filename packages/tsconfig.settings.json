@@ -4,8 +4,8 @@
 
     // From the lern-a
     "target": "ES2023",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,

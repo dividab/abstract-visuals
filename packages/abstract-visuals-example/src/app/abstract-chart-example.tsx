@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import FileSaver from "file-saver";
-import * as AC from "../../../../packages/abstract-chart/src/index.js";
-import * as AI from "../../../../packages/abstract-image/src/index.js";
+import * as AC from "../../../abstract-chart/src/index.js";
+import * as AI from "../../../abstract-image/src/index.js";
 
 export function AbstractChartExample(): JSX.Element {
   const [hovered, setHovered] = useState("");
