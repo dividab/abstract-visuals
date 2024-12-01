@@ -1,15 +1,11 @@
 {
   "extends": "../tsconfig.settings.json",
-  "include": ["src/**/*", "vite.config.js"],
+  "include": ["src/**/*"],
+  "exclude": ["./vite.config.ts"],
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "noUncheckedIndexedAccess": false,
-    // Paths options
-    "baseUrl": ".",
-    "paths": {
-      "*": ["./custom_typings/*"]
-    }
+    "noUncheckedIndexedAccess": false
   },
   "references": []
 }

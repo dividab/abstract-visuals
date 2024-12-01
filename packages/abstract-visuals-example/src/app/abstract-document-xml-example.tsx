@@ -1,16 +1,10 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import * as AD from "../../../abstract-document/src/index.js";
 import {
-  abstractDocOfXml,
-  creators,
-  extractImageFontsStyleNames,
-  parsedXsd,
-  errorToReadableText,
-  parseXml,
-  render,
-  validateXml,
-} from "../../../abstract-document/src/abstract-document-xml/index.js";
+  AbstractDoc as AD,
+  AbstractDocExporters,
+  AbstractDocXml as ADXml,
+} from "../../../abstract-document/src/index.js";
 
 export function AbstractDocumentXMLExample(): JSX.Element {
   const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
@@ -92,18 +86,18 @@ async function generatePDF(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const mustacheRendered = render(template, dataObject, {});
-  const validationErrors = validateXml(mustacheRendered, parsedXsd);
+  const mustacheRendered = ADXml.render(template, dataObject, {});
+  const validationErrors = ADXml.validateXml(mustacheRendered, ADXml.parsedXsd);
   if (validationErrors.length > 0) {
-    return { type: "Err", error: errorToReadableText(validationErrors, "template") };
+    return { type: "Err", error: ADXml.errorToReadableText(validationErrors, "template") };
   }
-  const xml = parseXml(mustacheRendered);
+  const xml = ADXml.parseXml(mustacheRendered);
 
-  const doc = abstractDocOfXml(
-    creators({}, {}, extractImageFontsStyleNames(xml)[2]),
+  const doc = ADXml.abstractDocOfXml(
+    ADXml.creators({}, {}, ADXml.extractImageFontsStyleNames(xml)[2]),
     xml[0]!
-  ) as unknown as AD.AbstractDoc.AbstractDoc.AbstractDoc;
-  const blob: Blob = await AD.AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
+  ) as unknown as AD.AbstractDoc.AbstractDoc;
+  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);
   return { type: "Ok", url: objectURL };
 }

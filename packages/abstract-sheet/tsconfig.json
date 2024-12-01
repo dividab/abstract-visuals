@@ -4,9 +4,7 @@
   "typeRoots": ["src/@types", "node_modules/@types"],
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
-    "module": "NodeNext",
-    "moduleResolution": "nodenext"
+    "rootDir": "src"
   },
   "references": []
 }

@@ -1,151 +1,132 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import * as React from "react";
-import * as AD from "../../../abstract-document/src/index.js";
 import {
-  AbstractDoc,
-  Section,
-  Paragraph,
-  TextRun,
-  TextField,
-  HyperLink,
-  Table,
-  TableRow,
-  TableCell,
-  PageBreak,
-  Group,
-  render,
-  TocSeparator,
-  Image,
-} from "../../../abstract-document/src/abstract-document-jsx/index.js";
-import { AbstractDocExporters } from "../../../abstract-document/src/index.js";
-import {
-  LayoutFoundation,
-  LayoutFoundationColor,
-  TableCellStyle,
-  TableStyle,
-} from "../../../abstract-document/src/abstract-document/index.js";
+  AbstractDoc as AD,
+  AbstractDocExporters,
+  AbstractDocJsx as ADJsx,
+} from "../../../abstract-document/src/index.js";
 import * as AI from "../../../abstract-image/src/index.js";
 
 const header = [
-  render(
-    <Paragraph>
-      <TextRun text="I am a header" />
-      <TextField fieldType="PageNumber" />
-      <TextRun text="/" />
-      <TextField fieldType="TotalPages" />
-    </Paragraph>
+  ADJsx.render(
+    <ADJsx.Paragraph>
+      <ADJsx.TextRun text="I am a header" />
+      <ADJsx.TextField fieldType="PageNumber" />
+      <ADJsx.TextRun text="/" />
+      <ADJsx.TextField fieldType="TotalPages" />
+    </ADJsx.Paragraph>
   ),
 ];
 
 const footer = [
-  render(
-    <Paragraph>
-      <TextRun text="I am a footer" />
-    </Paragraph>
+  ADJsx.render(
+    <ADJsx.Paragraph>
+      <ADJsx.TextRun text="I am a footer" />
+    </ADJsx.Paragraph>
   ),
 ];
 
-const cellstyleborders = TableCellStyle.create({
+const cellstyleborders = AD.TableCellStyle.create({
   borders: { left: 1, right: 1, top: 1, bottom: 1 },
-  borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+  borderColors: AD.LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
 });
-const headerstyle = TableCellStyle.create({
+const headerstyle = AD.TableCellStyle.create({
   background: "green",
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
 
-const cellstyle = TableCellStyle.create({
+const cellstyle = AD.TableCellStyle.create({
   background: "blue",
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
 
-const normalCellstyle = TableCellStyle.create({
+const normalCellstyle = AD.TableCellStyle.create({
   background: "white",
   padding: { left: 2, right: 2, top: 2, bottom: 2 },
   borders: { left: 1, right: 1, top: 1, bottom: 1 },
 });
 
-const cellStyleRightBorders = TableCellStyle.create({
+const cellStyleRightBorders = AD.TableCellStyle.create({
   borders: { left: 1, right: 1, top: 1, bottom: 0 },
-  borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+  borderColors: AD.LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
   background: "blue",
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
-const cellStyleMiddleBorders = TableCellStyle.create({
+const cellStyleMiddleBorders = AD.TableCellStyle.create({
   borders: { left: 1, right: 1, top: 1, bottom: 0 },
-  borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+  borderColors: AD.LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
   background: "blue",
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
-const cellStyleLeftBorders = TableCellStyle.create({
+const cellStyleLeftBorders = AD.TableCellStyle.create({
   borders: { left: 1, right: 1, top: 1, bottom: 0 },
-  borderColors: LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
+  borderColors: AD.LayoutFoundationColor.create({ top: "red", left: "red", right: "red", bottom: "red" }),
   background: "blue",
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
 
-const cellStyleWithBorders = TableCellStyle.create({
+const cellStyleWithBorders = AD.TableCellStyle.create({
   borders: { left: 1, bottom: 1, right: 1, top: 1 },
-  borderColors: LayoutFoundationColor.create({ top: "blue", left: "green", right: "white", bottom: "red" }),
+  borderColors: AD.LayoutFoundationColor.create({ top: "blue", left: "green", right: "white", bottom: "red" }),
   background: "white",
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
 
-const cellStyleNoBorders = TableCellStyle.create({
+const cellStyleNoBorders = AD.TableCellStyle.create({
   background: "blue",
   padding: { left: 2, right: 2, top: 2, bottom: 0 },
 });
 
 const headerRows = [
-  render(
-    <TableRow>
-      <TableCell style={headerstyle}>
-        <Paragraph>
-          <TextRun text="Header 1" style={{ type: "TextStyle" }} />
-        </Paragraph>
-      </TableCell>
-      <TableCell style={headerstyle}>
-        <Paragraph>
-          <TextRun text="Header 2" style={{ type: "TextStyle" }} />
-        </Paragraph>
-      </TableCell>
-      <TableCell style={headerstyle}>
-        <Paragraph>
-          <TextRun text="Header 3" style={{ type: "TextStyle" }} />
-        </Paragraph>
-      </TableCell>
-    </TableRow>
+  ADJsx.render(
+    <ADJsx.TableRow>
+      <ADJsx.TableCell style={headerstyle}>
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="Header 1" style={{ type: "TextStyle" }} />
+        </ADJsx.Paragraph>
+      </ADJsx.TableCell>
+      <ADJsx.TableCell style={headerstyle}>
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="Header 2" style={{ type: "TextStyle" }} />
+        </ADJsx.Paragraph>
+      </ADJsx.TableCell>
+      <ADJsx.TableCell style={headerstyle}>
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="Header 3" style={{ type: "TextStyle" }} />
+        </ADJsx.Paragraph>
+      </ADJsx.TableCell>
+    </ADJsx.TableRow>
   ),
-  render(
-    <TableRow>
-      <TableCell style={headerstyle}>
-        <Paragraph>
-          <TextRun text="Header 4" style={{ type: "TextStyle" }} />
-        </Paragraph>
-      </TableCell>
-      <TableCell style={headerstyle}>
-        <Paragraph>
-          <TextRun text="Header 5" style={{ type: "TextStyle" }} />
-        </Paragraph>
-      </TableCell>
-      <TableCell style={headerstyle}>
-        <Paragraph>
-          <TextRun text="Header 6" style={{ type: "TextStyle" }} />
-        </Paragraph>
-      </TableCell>
-    </TableRow>
+  ADJsx.render(
+    <ADJsx.TableRow>
+      <ADJsx.TableCell style={headerstyle}>
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="Header 4" style={{ type: "TextStyle" }} />
+        </ADJsx.Paragraph>
+      </ADJsx.TableCell>
+      <ADJsx.TableCell style={headerstyle}>
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="Header 5" style={{ type: "TextStyle" }} />
+        </ADJsx.Paragraph>
+      </ADJsx.TableCell>
+      <ADJsx.TableCell style={headerstyle}>
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="Header 6" style={{ type: "TextStyle" }} />
+        </ADJsx.Paragraph>
+      </ADJsx.TableCell>
+    </ADJsx.TableRow>
   ),
 ];
 
 export function AbstractDocumentExample(): JSX.Element {
-  const page = AD.AbstractDoc.MasterPage.create({
+  const page = AD.MasterPage.create({
     header: header,
     footer: footer,
     style: {
       paperSize: "A4",
-      headerMargins: LayoutFoundation.create(),
-      footerMargins: LayoutFoundation.create(),
-      contentMargins: LayoutFoundation.create(),
+      headerMargins: AD.LayoutFoundation.create(),
+      footerMargins: AD.LayoutFoundation.create(),
+      contentMargins: AD.LayoutFoundation.create(),
       orientation: "Portrait",
       noTopBottomMargin: false,
     },
@@ -153,368 +134,368 @@ export function AbstractDocumentExample(): JSX.Element {
 
   const image = createAbstractImage();
 
-  const doc = render(
-    <AbstractDoc styles={{}}>
-      <Section page={page}>
-        <Paragraph>
-          <HyperLink text="Go to chapter1" target="#chapter1" />
-          <TocSeparator />
-        </Paragraph>
-        <Paragraph>
-          <HyperLink text="Go to page 2" target="#page=2" />
-          <TocSeparator />
-        </Paragraph>
+  const doc = ADJsx.render(
+    <ADJsx.AbstractDoc styles={{}}>
+      <ADJsx.Section page={page}>
+        <ADJsx.Paragraph>
+          <ADJsx.HyperLink text="Go to chapter1" target="#chapter1" />
+          <ADJsx.TocSeparator />
+        </ADJsx.Paragraph>
+        <ADJsx.Paragraph>
+          <ADJsx.HyperLink text="Go to page 2" target="#page=2" />
+          <ADJsx.TocSeparator />
+        </ADJsx.Paragraph>
 
-        <Table
+        <ADJsx.Table
           columnWidths={[100, 100, 100]}
-          style={TableStyle.create({
-            margins: LayoutFoundation.create({ top: 10, left: 10 }),
+          style={AD.TableStyle.create({
+            margins: AD.LayoutFoundation.create({ top: 10, left: 10 }),
             cellStyle: cellstyleborders,
           })}
           headerRows={headerRows}
         >
-          <TableRow>
-            <TableCell style={cellstyle}>
-              <Paragraph>
-                <TextRun text="Table cell 1" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellstyle}>
-              <Paragraph>
-                <TextRun text="Table cell 2" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellstyle}>
-              <Paragraph>
-                <TextRun text="Table cell 3" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell style={cellstyle}>
-              <Paragraph>
-                <TextRun text="Table cell 4" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellstyle}>
-              <Paragraph>
-                <TextRun text="Table cell 5" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellstyle}>
-              <Paragraph>
-                <TextRun text="Table cell 6" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-        </Table>
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellstyle}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 1" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellstyle}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 2" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellstyle}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 3" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellstyle}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 4" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellstyle}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 5" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellstyle}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 6" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+        </ADJsx.Table>
 
-        <Table
+        <ADJsx.Table
           columnWidths={[100]}
-          style={TableStyle.create({ margins: LayoutFoundation.create({ top: 10, left: 10 }) })}
+          style={AD.TableStyle.create({ margins: AD.LayoutFoundation.create({ top: 10, left: 10 }) })}
         >
-          <TableRow>
-            <TableCell style={cellstyle}>
-              <Paragraph>
-                <TextRun text="Table cell 1" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-        </Table>
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellstyle}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 1" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+        </ADJsx.Table>
 
-        <Table
+        <ADJsx.Table
           columnWidths={[100, 100, 100]}
-          style={TableStyle.create({ margins: LayoutFoundation.create({ top: 10, left: 10 }) })}
+          style={AD.TableStyle.create({ margins: AD.LayoutFoundation.create({ top: 10, left: 10 }) })}
         >
-          <TableRow>
-            <TableCell style={cellStyleRightBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 1" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleMiddleBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 2" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleLeftBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 3" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell style={cellStyleRightBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 1" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleMiddleBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 2" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleLeftBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 3" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell style={cellStyleWithBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 4" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleWithBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 5" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleWithBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 6" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell style={cellStyleWithBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 7" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleWithBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 8" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleWithBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 9" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-        </Table>
-        <Table
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellStyleRightBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 1" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleMiddleBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 2" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleLeftBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 3" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellStyleRightBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 1" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleMiddleBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 2" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleLeftBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 3" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellStyleWithBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 4" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleWithBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 5" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleWithBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 6" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellStyleWithBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 7" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleWithBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 8" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleWithBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 9" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+        </ADJsx.Table>
+        <ADJsx.Table
           columnWidths={[100, 100, 100]}
-          style={TableStyle.create({ margins: LayoutFoundation.create({ top: 10, left: 10 }) })}
+          style={AD.TableStyle.create({ margins: AD.LayoutFoundation.create({ top: 10, left: 10 }) })}
         >
-          <TableRow>
-            <TableCell style={cellStyleNoBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 4" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleNoBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 5" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleNoBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 6" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell style={cellStyleNoBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 7" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleNoBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 8" />
-              </Paragraph>
-            </TableCell>
-            <TableCell style={cellStyleNoBorders}>
-              <Paragraph>
-                <TextRun text="Table cell 9" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-        </Table>
-        <Table
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellStyleNoBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 4" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleNoBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 5" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleNoBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 6" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={cellStyleNoBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 7" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleNoBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 8" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+            <ADJsx.TableCell style={cellStyleNoBorders}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Table cell 9" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+        </ADJsx.Table>
+        <ADJsx.Table
           columnWidths={[150]}
-          style={AD.AbstractDoc.TableStyle.create({
+          style={AD.TableStyle.create({
             position: "absolute",
-            margins: AD.AbstractDoc.LayoutFoundation.create({ top: 100, left: 350 }),
+            margins: AD.LayoutFoundation.create({ top: 100, left: 350 }),
           })}
         >
-          <TableRow>
-            <TableCell style={normalCellstyle}>
-              <Paragraph>
-                <TextRun text="Absolute positioned Table" />
-              </Paragraph>
-            </TableCell>
-          </TableRow>
-        </Table>
-        <Group
-          style={AD.AbstractDoc.GroupStyle.create({
+          <ADJsx.TableRow>
+            <ADJsx.TableCell style={normalCellstyle}>
+              <ADJsx.Paragraph>
+                <ADJsx.TextRun text="Absolute positioned Table" />
+              </ADJsx.Paragraph>
+            </ADJsx.TableCell>
+          </ADJsx.TableRow>
+        </ADJsx.Table>
+        <ADJsx.Group
+          style={AD.GroupStyle.create({
             position: "absolute",
-            margins: AD.AbstractDoc.LayoutFoundation.create({ top: 150, left: 350 }),
+            margins: AD.LayoutFoundation.create({ top: 150, left: 350 }),
           })}
         >
-          <Paragraph>
-            <TextRun text="Absolute positioned Group" />
-          </Paragraph>
-        </Group>
-        <Paragraph
-          style={AD.AbstractDoc.ParagraphStyle.create({
+          <ADJsx.Paragraph>
+            <ADJsx.TextRun text="Absolute positioned Group" />
+          </ADJsx.Paragraph>
+        </ADJsx.Group>
+        <ADJsx.Paragraph
+          style={AD.ParagraphStyle.create({
             position: "absolute",
-            margins: AD.AbstractDoc.LayoutFoundation.create({ top: 200, left: 350 }),
+            margins: AD.LayoutFoundation.create({ top: 200, left: 350 }),
           })}
         >
-          <TextRun text="Absolute positioned Paragraph" />
-        </Paragraph>
-      </Section>
-      <Section page={page}>
-        <Group>
-          <Paragraph>
-            <TextField fieldType="PageNumber" />
-          </Paragraph>
-          <Table columnWidths={[Infinity, Infinity, Infinity]}>
-            <TableRow>
-              <TableCell>
-                <Paragraph>
-                  <TextField fieldType="PageNumberOf" target="chapter1" />
-                </Paragraph>
-              </TableCell>
-              <TableCell>
-                <Paragraph>
-                  <TextField fieldType="PageNumberOf" target="chapter2" />
-                </Paragraph>
-              </TableCell>
-              <TableCell>
-                <Paragraph>
-                  <TextField fieldType="PageNumberOf" target="chapter3" />
-                </Paragraph>
-              </TableCell>
-            </TableRow>
-          </Table>
-          <Paragraph>
-            <TextRun text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Egestas congue quisque egestas diam in arcu cursus. A cras semper auctor neque vitae tempus quam pellentesque. In fermentum et sollicitudin ac orci. Scelerisque viverra mauris in aliquam. Nunc lobortis mattis aliquam faucibus. " />
-            <TextRun
+          <ADJsx.TextRun text="Absolute positioned Paragraph" />
+        </ADJsx.Paragraph>
+      </ADJsx.Section>
+      <ADJsx.Section page={page}>
+        <ADJsx.Group>
+          <ADJsx.Paragraph>
+            <ADJsx.TextField fieldType="PageNumber" />
+          </ADJsx.Paragraph>
+          <ADJsx.Table columnWidths={[Infinity, Infinity, Infinity]}>
+            <ADJsx.TableRow>
+              <ADJsx.TableCell>
+                <ADJsx.Paragraph>
+                  <ADJsx.TextField fieldType="PageNumberOf" target="chapter1" />
+                </ADJsx.Paragraph>
+              </ADJsx.TableCell>
+              <ADJsx.TableCell>
+                <ADJsx.Paragraph>
+                  <ADJsx.TextField fieldType="PageNumberOf" target="chapter2" />
+                </ADJsx.Paragraph>
+              </ADJsx.TableCell>
+              <ADJsx.TableCell>
+                <ADJsx.Paragraph>
+                  <ADJsx.TextField fieldType="PageNumberOf" target="chapter3" />
+                </ADJsx.Paragraph>
+              </ADJsx.TableCell>
+            </ADJsx.TableRow>
+          </ADJsx.Table>
+          <ADJsx.Paragraph>
+            <ADJsx.TextRun text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Egestas congue quisque egestas diam in arcu cursus. A cras semper auctor neque vitae tempus quam pellentesque. In fermentum et sollicitudin ac orci. Scelerisque viverra mauris in aliquam. Nunc lobortis mattis aliquam faucibus. " />
+            <ADJsx.TextRun
               text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
-              style={AD.AbstractDoc.TextStyle.create({ color: "red", opacity: 0.2 })}
+              style={AD.TextStyle.create({ color: "red", opacity: 0.2 })}
             />
-            <TextRun text=" Nulla aliquet enim tortor at." />
-            <TextRun
+            <ADJsx.TextRun text=" Nulla aliquet enim tortor at." />
+            <ADJsx.TextRun
               text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
-              style={AD.AbstractDoc.TextStyle.create({ color: "red" })}
+              style={AD.TextStyle.create({ color: "red" })}
             />
-            <TextRun text=" Nulla aliquet enim tortor at." />
-            <TextRun
+            <ADJsx.TextRun text=" Nulla aliquet enim tortor at." />
+            <ADJsx.TextRun
               text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
-              style={AD.AbstractDoc.TextStyle.create({ color: "red" })}
+              style={AD.TextStyle.create({ color: "red" })}
             />
-            <TextRun text=" Nulla aliquet enim tortor at." />
-            <TextRun
+            <ADJsx.TextRun text=" Nulla aliquet enim tortor at." />
+            <ADJsx.TextRun
               text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
-              style={AD.AbstractDoc.TextStyle.create({ color: "red" })}
+              style={AD.TextStyle.create({ color: "red" })}
             />
-            <TextRun text=" Nulla aliquet enim tortor at." />
-            <TextRun
+            <ADJsx.TextRun text=" Nulla aliquet enim tortor at." />
+            <ADJsx.TextRun
               text=" pretium quam vulputate. Tincidunt augue interdum velit euismod in."
-              style={AD.AbstractDoc.TextStyle.create({ strike: true })}
+              style={AD.TextStyle.create({ strike: true })}
             />
-          </Paragraph>
-          <Paragraph>
-            <TextRun text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Egestas congue quisque egestas diam in arcu cursus. A cras semper auctor neque vitae tempus quam pellentesque. In fermentum et sollicitudin ac orci. Scelerisque viverra mauris in aliquam. Nunc lobortis mattis aliquam faucibus. " />
-            <TextRun
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph>
+            <ADJsx.TextRun text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Egestas congue quisque egestas diam in arcu cursus. A cras semper auctor neque vitae tempus quam pellentesque. In fermentum et sollicitudin ac orci. Scelerisque viverra mauris in aliquam. Nunc lobortis mattis aliquam faucibus. " />
+            <ADJsx.TextRun
               text="Amet venenatis urna cursus eget. Sed elementum tempus egestas sed sed risus pretium quam vulputate. Tincidunt augue interdum velit euismod in."
-              style={AD.AbstractDoc.TextStyle.create({ bold: true })}
+              style={AD.TextStyle.create({ bold: true })}
             />
-            <TextRun text=" Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum. Nulla aliquet enim tortor at." />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <TextRun text="This" />
-            <TextRun text=" is" style={AD.AbstractDoc.TextStyle.create({ bold: true })} />
-            <TextRun text=" centered" />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "End" })}>
-            <TextRun text="This" />
-            <TextRun text=" is" style={AD.AbstractDoc.TextStyle.create({ bold: true })} />
-            <TextRun text=" right aligned" />
-          </Paragraph>
+            <ADJsx.TextRun text=" Nibh tellus molestie nunc non blandit massa enim nec dui. Et ligula ullamcorper malesuada proin libero nunc consequat interdum. Nulla aliquet enim tortor at." />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.TextRun text="This" />
+            <ADJsx.TextRun text=" is" style={AD.TextStyle.create({ bold: true })} />
+            <ADJsx.TextRun text=" centered" />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+            <ADJsx.TextRun text="This" />
+            <ADJsx.TextRun text=" is" style={AD.TextStyle.create({ bold: true })} />
+            <ADJsx.TextRun text=" right aligned" />
+          </ADJsx.Paragraph>
 
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <TextRun text=" " />
-          </Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.TextRun text=" " />
+          </ADJsx.Paragraph>
 
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Start" })}>
-            <TextRun text="Some text before. " />
-            <HyperLink text="This is a left aligned link" target="" />
-            <TextRun text=" with some text after" />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <TextRun text=" " />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <HyperLink text="This is a centered link" target="" />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <TextRun text=" " />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "End" })}>
-            <HyperLink text="This is a right aligned link" target="" />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <TextRun text=" " />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <TextRun text="This is a long text that is centered and should line break just fine. This is a long text that is centered and should line break just fine.  This is a long text that is centered and should line break just fine." />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <TextRun text=" " />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "End" })}>
-            <TextRun text="This is a long text that is right aligned and should line break just fine. This is a long text that is right aligned and should line break just fine.  This is a long text that is right aligned and should line break just fine." />
-          </Paragraph>
-          <Paragraph style={AD.AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
-            <TextRun text=" " />
-          </Paragraph>
-        </Group>
-      </Section>
-      <Section page={page} id="chapter1">
-        <Paragraph>
-          <TextField fieldType="PageNumber" />
-          <TextRun text=" / " />
-          <TextField fieldType="TotalPages" />
-        </Paragraph>
-        <Paragraph>
-          <TextRun text="Page1" />
-        </Paragraph>
-      </Section>
-      <Section page={page} id="chapter2">
-        <Paragraph>
-          <TextField fieldType="PageNumber" />
-          <TextRun text=" / " />
-          <TextField fieldType="TotalPages" />
-        </Paragraph>
-        <PageBreak />
-        <Paragraph>
-          <TextRun text="A nice image" />
-        </Paragraph>
-        <Paragraph>
-          <Image
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Start" })}>
+            <ADJsx.TextRun text="Some text before. " />
+            <ADJsx.HyperLink text="This is a left aligned link" target="" />
+            <ADJsx.TextRun text=" with some text after" />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.TextRun text=" " />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.HyperLink text="This is a centered link" target="" />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.TextRun text=" " />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+            <ADJsx.HyperLink text="This is a right aligned link" target="" />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.TextRun text=" " />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.TextRun text="This is a long text that is centered and should line break just fine. This is a long text that is centered and should line break just fine.  This is a long text that is centered and should line break just fine." />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.TextRun text=" " />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+            <ADJsx.TextRun text="This is a long text that is right aligned and should line break just fine. This is a long text that is right aligned and should line break just fine.  This is a long text that is right aligned and should line break just fine." />
+          </ADJsx.Paragraph>
+          <ADJsx.Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+            <ADJsx.TextRun text=" " />
+          </ADJsx.Paragraph>
+        </ADJsx.Group>
+      </ADJsx.Section>
+      <ADJsx.Section page={page} id="chapter1">
+        <ADJsx.Paragraph>
+          <ADJsx.TextField fieldType="PageNumber" />
+          <ADJsx.TextRun text=" / " />
+          <ADJsx.TextField fieldType="TotalPages" />
+        </ADJsx.Paragraph>
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="Page1" />
+        </ADJsx.Paragraph>
+      </ADJsx.Section>
+      <ADJsx.Section page={page} id="chapter2">
+        <ADJsx.Paragraph>
+          <ADJsx.TextField fieldType="PageNumber" />
+          <ADJsx.TextRun text=" / " />
+          <ADJsx.TextField fieldType="TotalPages" />
+        </ADJsx.Paragraph>
+        <ADJsx.PageBreak />
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="A nice image" />
+        </ADJsx.Paragraph>
+        <ADJsx.Paragraph>
+          <ADJsx.Image
             width={image.abstractImage.size.width}
             height={image.abstractImage.size.height}
             imageResource={image}
           />
-        </Paragraph>
-      </Section>
-      <Section page={page} id="chapter3">
-        <Paragraph>
-          <TextField fieldType="PageNumber" />
-          <TextRun text=" / " />
-          <TextField fieldType="TotalPages" />
-        </Paragraph>
-        <Paragraph>
-          <TextRun text="Page3" />
-        </Paragraph>
-      </Section>
-    </AbstractDoc>
+        </ADJsx.Paragraph>
+      </ADJsx.Section>
+      <ADJsx.Section page={page} id="chapter3">
+        <ADJsx.Paragraph>
+          <ADJsx.TextField fieldType="PageNumber" />
+          <ADJsx.TextRun text=" / " />
+          <ADJsx.TextField fieldType="TotalPages" />
+        </ADJsx.Paragraph>
+        <ADJsx.Paragraph>
+          <ADJsx.TextRun text="Page3" />
+        </ADJsx.Paragraph>
+      </ADJsx.Section>
+    </ADJsx.AbstractDoc>
   );
   return (
     <div>
@@ -525,13 +506,13 @@ export function AbstractDocumentExample(): JSX.Element {
   );
 }
 
-async function generatePDF(doc: AD.AbstractDoc.AbstractDoc.AbstractDoc): Promise<void> {
+async function generatePDF(doc: AD.AbstractDoc.AbstractDoc): Promise<void> {
   const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);
   window.open(objectURL);
 }
 
-function createAbstractImage(): AD.AbstractDoc.ImageResource.ImageResource {
+function createAbstractImage(): AD.ImageResource.ImageResource {
   const components = [
     AI.createLine(AI.createPoint(25, 125), AI.createPoint(280, 125), AI.red, 2, undefined, AI.createDashStyle([10, 5])),
     AI.createLine(
@@ -545,7 +526,7 @@ function createAbstractImage(): AD.AbstractDoc.ImageResource.ImageResource {
     AI.createRectangle(AI.createPoint(10, 10), AI.createPoint(300, 135), AI.blue, 2, AI.fromArgb(100, 0, 0, 0)),
   ];
   const image = AI.createAbstractImage(AI.createPoint(0, 0), AI.createSize(300, 135), AI.white, components);
-  const imageResource = AD.AbstractDoc.ImageResource.create({
+  const imageResource = AD.ImageResource.create({
     id: "test",
     abstractImage: image,
   });

@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Abstract3DExample } from "./abstract-3d-example.js";
 import { AbstractImageExampleReact } from "./abstract-image-example-react.js";
 import { AbstractImageExampleDxf } from "./abstract-image-example-dxf.js";
@@ -13,10 +12,10 @@ import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
 type Example = (typeof examples)[number];
 
 const examples = [
-  "AbstractChart",
   "AbstractImageSvg",
   "AbstractImageReact",
   "AbstractImageDxf",
+  "AbstractChart",
   "AbstractDocument",
   "AbstractDocumentXML",
   "Abstract3D",
@@ -51,6 +50,8 @@ export function Container(): JSX.Element {
           //   Object.defineProperty(exports, "__esModule", {
           //     value: true
           // });
+          //
+          // temp soltion for testing chart is to add to make ad, ac, and ai esm with "type": "module" in package.json.
           //
           // case "AbstractChart":
           //   return <AbstractChartExample />;
