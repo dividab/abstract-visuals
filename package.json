@@ -50,7 +50,7 @@
     "test:abstract-document": "vitest run --dir packages/abstract-document",
     "lint": "eslint ./packages/*/src/**/*.ts{,x} --ext .js,.ts,.tsx -f visualstudio",
     "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
-    "rebuild": "run-s clean build",
+    "cleanbuild": "run-s clean build",
     "build": "tsc -b packages",
     "build-watch": "tsc -b -w --preserveWatchOutput packages",
     "start": "cd packages/abstract-visuals-example && vite",
