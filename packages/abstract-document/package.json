@@ -25,19 +25,21 @@
     "fast-xml-parser": "^4.5.0",
     "mustache": "^4.2.0",
     "pdfkit": "^0.15.0",
-    "react": "^18.3.1",
     "remark-parse": "^6.0.3",
     "remark-sub-super": "^1.0.19",
     "svg-to-pdfkit": "^0.1.8",
     "ts-exhaustive-check": "^1.0.0",
     "unified": "^6.1.6"
   },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
   "devDependencies": {
     "@types/base64-js": "^1.3.2",
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/mustache": "^4.2.5",
     "@types/pdfkit": "^0.13.4",
-    "@types/react": "^18.3.3",
+    "@types/react": "^19.0.1",
     "diff-js-xml": "^1.0.8",
     "jszip": "^3.10.1",
     "pdf2json": "2.0.1",

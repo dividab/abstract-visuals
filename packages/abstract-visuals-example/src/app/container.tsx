@@ -65,8 +65,8 @@ export function Container(): React.JSX.Element {
             return <AbstractDocumentExample />;
           case "AbstractDocumentXML":
             return <AbstractDocumentXMLExample />;
-          // case "Abstract3D":
-          //   return <Abstract3DExample />;
+          case "Abstract3D":
+            return <Abstract3DExample />;
           case "AbstractSheet":
             return <AbstractSheetExample />;
           case "AbstractSheetXML":

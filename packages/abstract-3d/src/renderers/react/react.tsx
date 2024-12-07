@@ -1,4 +1,4 @@
-import React, { memo, NamedExoticComponent, PropsWithChildren, ReactNode } from "react";
+import React, { memo } from "react";
 import { Canvas, Props } from "@react-three/fiber";
 // import { OrbitControlsProps } from "@react-three/drei";
 import { OrbitControlsProps } from "@react-three/drei/core/OrbitControls.js";
