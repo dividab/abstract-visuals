@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Canvas, Props } from "@react-three/fiber";
+import { Canvas, CanvasProps } from "@react-three/fiber";
 // import { OrbitControlsProps } from "@react-three/drei";
 import { OrbitControlsProps } from "@react-three/drei/core/OrbitControls.js";
 import { ReactScene } from "./react-scene.js";
@@ -21,7 +21,7 @@ type ToReactProps = {
   readonly camera?: Camera;
   readonly view?: A3d.View;
   readonly controlsHelper?: ControlsHelper;
-  readonly canvasProps?: Omit<Props & React.RefAttributes<HTMLCanvasElement>, "children">;
+  readonly canvasProps?: Omit<CanvasProps & React.RefAttributes<HTMLCanvasElement>, "children">;
   readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
   readonly materialStateImages?: Record<string, string>;
   readonly onClickGroup?: (

@@ -330,6 +330,7 @@ function Polygon({
           attach="attributes-position"
           needsUpdate={true}
           ref={ref}
+          args={fakeArgs}
           array={vertices}
           count={vertices.length / 3}
           itemSize={3}
@@ -339,6 +340,8 @@ function Polygon({
     </mesh>
   );
 }
+
+const fakeArgs = [] as any;
 
 function Tube({
   tube,

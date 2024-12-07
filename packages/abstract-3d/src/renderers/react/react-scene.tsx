@@ -1,45 +1,45 @@
 import React from "react";
-import { extend } from "@react-three/fiber";
-import {
-  Mesh,
-  Group,
-  MeshLambertMaterial,
-  MeshPhongMaterial,
-  MeshBasicMaterial,
-  BoxGeometry,
-  PlaneGeometry,
-  CylinderGeometry,
-  ConeGeometry,
-  Texture,
-  DoubleSide,
-  BufferAttribute,
-  Shape,
-  Path,
-  ExtrudeGeometry,
-} from "three";
+// import { extend } from "@react-three/fiber";
+// import {
+//   Mesh,
+//   Group,
+//   MeshLambertMaterial,
+//   MeshPhongMaterial,
+//   MeshBasicMaterial,
+//   BoxGeometry,
+//   PlaneGeometry,
+//   CylinderGeometry,
+//   ConeGeometry,
+//   Texture,
+//   DoubleSide,
+//   BufferAttribute,
+//   Shape,
+//   Path,
+//   ExtrudeGeometry,
+// } from "three";
 import * as A3d from "../../abstract-3d.js";
 import { HotSpotInfo, ReactHotSpots } from "./react-hotspot.js";
 import { ReactDimensions } from "./react-dimension.js";
 import { ReactGroup } from "./react-group.js";
 import { MaterialState } from "./react-material.js";
 
-extend({
-  Mesh,
-  Group,
-  MeshLambertMaterial,
-  MeshPhongMaterial,
-  MeshBasicMaterial,
-  BufferAttribute,
-  Shape,
-  ExtrudeGeometry,
-  Path,
-  Texture,
-  CylinderGeometry,
-  BoxGeometry,
-  PlaneGeometry,
-  ConeGeometry,
-  DoubleSide,
-});
+// extend({
+//   Mesh,
+//   Group,
+//   MeshLambertMaterial,
+//   MeshPhongMaterial,
+//   MeshBasicMaterial,
+//   BufferAttribute,
+//   Shape,
+//   ExtrudeGeometry,
+//   Path,
+//   Texture,
+//   CylinderGeometry,
+//   BoxGeometry,
+//   PlaneGeometry,
+//   ConeGeometry,
+//   DoubleSide,
+// });
 
 export function ReactScene({
   scene,

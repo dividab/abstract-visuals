@@ -204,7 +204,7 @@ export function ReactCamera({
   );
 }
 
-type GizmoViewportProps = JSX.IntrinsicElements["group"] & {
+type GizmoViewportProps = React.JSX.IntrinsicElements["group"] & {
   readonly axisColors?: readonly [string, string, string];
   readonly axisScale?: readonly [number, number, number];
   readonly labels?: readonly [string, string, string];
