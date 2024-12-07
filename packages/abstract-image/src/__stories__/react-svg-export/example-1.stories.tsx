@@ -38,7 +38,7 @@ export function ReactSvgExportExample1(): React.ReactElement<{}> {
     AbstractImage.white,
     components
   );
-  const svg = AbstractImage.createReactSvg(image);
+  const svg = <AbstractImage.ReactSvg image={image} />;
   return (
     <div>
       <h1>React Svg</h1>

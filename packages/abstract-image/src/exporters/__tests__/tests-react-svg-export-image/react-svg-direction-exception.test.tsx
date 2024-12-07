@@ -31,7 +31,7 @@ import * as AbstractImage from "../../../index.js";
 
 // describe("react svg text unknown direction", () => {
 //   it("should throw an exception", () =>
-//     expect(() => render(AbstractImage.createReactSvg(image))).toThrow("Unknown text anchor down"));
+//     expect(() => render(<AbstractImage.ReactSvg image={image} />)).toThrow("Unknown text anchor down"));
 // });
 
 // const components2 = [

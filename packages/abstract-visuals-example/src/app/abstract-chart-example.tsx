@@ -56,7 +56,7 @@ export function AbstractChartExample(): React.JSX.Element {
         <div style={{ display: "flex", gap: "10px" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h4>React</h4>
-            {AI.createReactSvg(ac, callbacks)}
+            <AI.ReactSvg image={ac} callbacks={callbacks} />
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h4 style={{ display: "flex", alignItems: "center", gap: "10px" }}>

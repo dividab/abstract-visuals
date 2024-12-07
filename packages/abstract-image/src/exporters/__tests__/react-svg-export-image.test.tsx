@@ -16,6 +16,7 @@ import { testReactSvgTextGrowthDirections } from "./tests-react-svg-export-image
 import { testReactSvgItalic } from "./tests-react-svg-export-image/react-svg-text-italic.js";
 import { testReactSvgSub } from "./tests-react-svg-export-image/react-svg-text-sub.js";
 import { testReactSvgText } from "./tests-react-svg-export-image/react-svg-text.js";
+import { testReactSvgRectangle } from "./tests-react-svg-export-image/react-svg-rectangle.js";
 
 describe("react-svg-export-image", () => {
   [
@@ -30,6 +31,7 @@ describe("react-svg-export-image", () => {
     testReactSvgLine,
     testReactSvgPolygon,
     testReactSvgPolyline,
+    testReactSvgRectangle,
     testReactSvgSubImage,
     testReactSvgBold,
     testReactSvgTextGrowthDirections,

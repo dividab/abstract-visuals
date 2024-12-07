@@ -103,14 +103,19 @@ export function AbstractImageExampleReact(): React.JSX.Element {
     AbstractImage.white,
     components
   );
-  const svg = AbstractImage.createReactSvg(image, {
-    onClick: (id, position) => window.alert(JSON.stringify({ id, position })),
-    onMouseMove: (id) => setHovered(id ?? ""),
-  });
+
   return (
     <div>
       <h1>React</h1>
-      <div>{svg}</div>
+      <div>
+        <AbstractImage.ReactSvg
+          image={image}
+          callbacks={{
+            onClick: (id, position) => window.alert(JSON.stringify({ id, position })),
+            onMouseMove: (id) => setHovered(id ?? ""),
+          }}
+        />
+      </div>
       <div>{hovered}</div>
     </div>
   );

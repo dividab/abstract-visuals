@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, NamedExoticComponent, PropsWithChildren, ReactNode } from "react";
 import { Canvas, Props } from "@react-three/fiber";
 // import { OrbitControlsProps } from "@react-three/drei";
 import { OrbitControlsProps } from "@react-three/drei/core/OrbitControls.js";
@@ -7,6 +7,44 @@ import * as A3d from "../../abstract-3d.js";
 import { ReactCamera, ControlsHelper, Camera } from "./react-camera.js";
 import { HotSpotInfo } from "./react-hotspot.js";
 import { MaterialState } from "./react-material.js";
+
+type ToReactProps = {
+  readonly scene: A3d.Scene;
+  readonly selectedId?: string | undefined;
+  readonly activeHotSpots?: Record<string, HotSpotInfo> | undefined;
+  readonly activeComponents?: Record<string, MaterialState> | undefined;
+  readonly hoveredIdExternal?: string | undefined;
+  readonly showHotSpotTexts?: boolean;
+  readonly showDimensions?: boolean;
+  readonly hotSpotTexts?: Record<string, string>;
+  readonly useAnimations?: boolean;
+  readonly camera?: Camera;
+  readonly view?: A3d.View;
+  readonly controlsHelper?: ControlsHelper;
+  readonly canvasProps?: Omit<Props & React.RefAttributes<HTMLCanvasElement>, "children">;
+  readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
+  readonly materialStateImages?: Record<string, string>;
+  readonly onClickGroup?: (
+    id: string | undefined,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined
+  ) => void;
+  readonly onContextMenuGroup?: (
+    id: string,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined,
+    left: number,
+    top: number
+  ) => void;
+  readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
+  readonly createGroupKey?: (
+    g: A3d.Group,
+    idx: number,
+    rootData: Record<string, string> | undefined,
+    id: string
+  ) => string;
+  readonly createGroupId?: (g: A3d.Group) => string;
+};
 
 export const toReact = memo(
   ({
@@ -30,43 +68,7 @@ export const toReact = memo(
     onClickHotSpot,
     createGroupKey,
     createGroupId,
-  }: {
-    readonly scene: A3d.Scene;
-    readonly selectedId?: string | undefined;
-    readonly activeHotSpots?: Record<string, HotSpotInfo> | undefined;
-    readonly activeComponents?: Record<string, MaterialState> | undefined;
-    readonly hoveredIdExternal?: string | undefined;
-    readonly showHotSpotTexts?: boolean;
-    readonly showDimensions?: boolean;
-    readonly hotSpotTexts?: Record<string, string>;
-    readonly useAnimations?: boolean;
-    readonly camera?: Camera;
-    readonly view?: A3d.View;
-    readonly controlsHelper?: ControlsHelper;
-    readonly canvasProps?: Omit<Props & React.RefAttributes<HTMLCanvasElement>, "children">;
-    readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
-    readonly materialStateImages?: Record<string, string>;
-    readonly onClickGroup?: (
-      id: string | undefined,
-      rootData: Record<string, string> | undefined,
-      data: Record<string, string> | undefined
-    ) => void;
-    readonly onContextMenuGroup?: (
-      id: string,
-      rootData: Record<string, string> | undefined,
-      data: Record<string, string> | undefined,
-      left: number,
-      top: number
-    ) => void;
-    readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
-    readonly createGroupKey?: (
-      g: A3d.Group,
-      idx: number,
-      rootData: Record<string, string> | undefined,
-      id: string
-    ) => string;
-    readonly createGroupId?: (g: A3d.Group) => string;
-  }): React.JSX.Element => {
+  }: ToReactProps): React.JSX.Element => {
     return (
       <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
         {/* <Stats showPanel={0} className="stats" /> */}

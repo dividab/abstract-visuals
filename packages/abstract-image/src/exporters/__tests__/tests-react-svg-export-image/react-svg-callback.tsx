@@ -34,11 +34,16 @@ const image = AbstractImage.createAbstractImage(
 // eslint-disable-next-line functional/no-let
 let testVariable = "not clicked";
 
-const svg = AbstractImage.createReactSvg(image, {
-  onClick: (_id: string | undefined, _point: AbstractImage.Point) => {
-    testVariable = "clicked";
-  },
-}) as React.JSX.Element;
+const svg = (
+  <AbstractImage.ReactSvg
+    image={image}
+    callbacks={{
+      onClick: (_id: string | undefined, _point: AbstractImage.Point) => {
+        testVariable = "clicked";
+      },
+    }}
+  />
+);
 
 // const wrapper = Enzyme.shallow(svg);
 // wrapper.find("svg").simulate("click", {

@@ -1,5 +1,5 @@
 import * as B64 from "base64-js";
-import * as React from "react";
+import React from "react";
 import * as AbstractImage from "../model/index.js";
 
 export interface ReactSvgCallbacks {
@@ -11,10 +11,13 @@ export interface ReactSvgCallbacks {
 
 export type MouseCallback = (id: string | undefined, point: AbstractImage.Point) => void;
 
-export function createReactSvg(
-  image: AbstractImage.AbstractImage,
-  callbacks?: ReactSvgCallbacks
-): React.ReactElement<{}> {
+export function ReactSvg({
+  image,
+  callbacks,
+}: {
+  readonly image: AbstractImage.AbstractImage;
+  readonly callbacks?: ReactSvgCallbacks;
+}): React.JSX.Element {
   const cb = callbacks || {};
   const id = "ai_root";
   return (

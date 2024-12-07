@@ -46,7 +46,7 @@
     "updated": "lerna updated",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
-    "test:abstract-image": "vitest run --dir packages/abstract-image",
+    "test:abstract-image": "vitest run --dir packages/abstract-image --silent=false",
     "test:abstract-document": "vitest run --dir packages/abstract-document",
     "lint": "eslint ./packages/*/src/**/*.ts{,x} --ext .js,.ts,.tsx -f visualstudio",
     "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
