@@ -38,7 +38,7 @@ const svg = AbstractImage.createReactSvg(image, {
   onClick: (_id: string | undefined, _point: AbstractImage.Point) => {
     testVariable = "clicked";
   },
-}) as JSX.Element;
+}) as React.JSX.Element;
 
 // const wrapper = Enzyme.shallow(svg);
 // wrapper.find("svg").simulate("click", {

@@ -3,7 +3,7 @@ import FileSaver from "file-saver";
 import * as AC from "../../../abstract-chart/src/index.js";
 import * as AI from "../../../abstract-image/src/index.js";
 
-export function AbstractChartExample(): JSX.Element {
+export function AbstractChartExample(): React.JSX.Element {
   const [hovered, setHovered] = useState("");
   return (
     <div>
@@ -43,10 +43,10 @@ export function AbstractChartExample(): JSX.Element {
     readonly chart: AC.Chart;
     readonly name: string;
     readonly callbacks?: AI.ReactSvgCallbacks;
-    readonly children?: JSX.Element;
+    readonly children?: React.JSX.Element;
     readonly width?: string;
     readonly height?: string;
-  }): JSX.Element {
+  }): React.JSX.Element {
     const ac = AC.renderChart(chart);
     const svg = AI.createSVG(ac);
     return (

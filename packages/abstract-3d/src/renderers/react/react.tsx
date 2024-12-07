@@ -66,7 +66,7 @@ export const toReact = memo(
       id: string
     ) => string;
     readonly createGroupId?: (g: A3d.Group) => string;
-  }): JSX.Element => {
+  }): React.JSX.Element => {
     return (
       <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
         {/* <Stats showPanel={0} className="stats" /> */}

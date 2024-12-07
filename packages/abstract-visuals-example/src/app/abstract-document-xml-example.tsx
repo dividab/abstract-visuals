@@ -6,7 +6,7 @@ import {
   AbstractDocXml as ADXml,
 } from "../../../abstract-document/src/index.js";
 
-export function AbstractDocumentXMLExample(): JSX.Element {
+export function AbstractDocumentXMLExample(): React.JSX.Element {
   const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
     undefined
   );

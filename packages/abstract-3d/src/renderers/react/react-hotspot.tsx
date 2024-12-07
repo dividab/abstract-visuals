@@ -32,7 +32,7 @@ export const ReactHotSpots = React.memo(
     readonly hoveredId: string | undefined;
     readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
     readonly setHoveredId: (id: string | undefined) => void;
-  }): JSX.Element => {
+  }): React.JSX.Element => {
     return (
       <>
         {hotSpots?.map((h) => (
@@ -71,7 +71,7 @@ export function ReactHotSpot({
   readonly hoveredId: string | undefined;
   readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
   readonly setHoveredId: (id: string | undefined) => void;
-}): JSX.Element {
+}): React.JSX.Element {
   const hotSpot = activeHotSpots ? activeHotSpots[h.id] : undefined;
   const hsPos = h.mesh.geometry.type === "Box" ? h.mesh.geometry.pos : A3d.vec3Zero;
   const text = hotSpotTexts?.[h.id];

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as AI from "../../../abstract-image/src/index.js";
 
-export function AbstractImageExampleSvg(): JSX.Element {
+export function AbstractImageExampleSvg(): React.JSX.Element {
   const components = [
     AI.createLine(AI.createPoint(25, 125), AI.createPoint(280, 125), AI.red, 2, undefined, AI.createDashStyle([10, 5])),
     AI.createLine(

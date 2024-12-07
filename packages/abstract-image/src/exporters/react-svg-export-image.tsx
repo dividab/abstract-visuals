@@ -68,7 +68,7 @@ function getIdAttr(target: Element | undefined, rootId: string): string | undefi
   return parts[1];
 }
 
-function Component({ component }: { readonly component: AbstractImage.Component }): JSX.Element {
+function Component({ component }: { readonly component: AbstractImage.Component }): React.JSX.Element {
   switch (component.type) {
     case "group":
       return (
@@ -294,10 +294,10 @@ function TSpan({
   readonly fontSize: number;
   readonly alignmentBaseline: "baseline" | "central" | "hanging";
   readonly lineHeight: number;
-}): JSX.Element {
+}): React.JSX.Element {
   const split = text.split("<sub>").flatMap((t) => t.split("</sub>"));
   let inside = false;
-  const tags: Array<JSX.Element> = [];
+  const tags: Array<React.JSX.Element> = [];
   for (let i = 0; i < split.length; ++i) {
     const splitText = split[i];
     if (inside) {

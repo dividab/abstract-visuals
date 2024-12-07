@@ -39,8 +39,8 @@ type Viewport = { readonly type: "Viewport"; readonly viewportProps: GizmoViewpo
 
 const ControlsWrapper = (
   props: OrbitControlsProps & { readonly setControls: (r: React.MutableRefObject<any>) => void }
-): JSX.Element => {
-  const ref = useRef<any>();
+): React.JSX.Element => {
+  const ref = useRef<any>(undefined!);
 
   useEffect(() => {
     if (!ref.current) {
@@ -65,7 +65,7 @@ export function ReactCamera({
   readonly scene: Scene;
   readonly controlsHelper?: ControlsHelper;
   readonly orbitContolsProps?: OrbitControlsProps;
-}): JSX.Element {
+}): React.JSX.Element {
   const [controls, setControls] = useState<any | null>(null);
   const perspectiveRef = useRef<any | undefined>(undefined);
   const orthographicRef = useRef<any | undefined>(undefined);

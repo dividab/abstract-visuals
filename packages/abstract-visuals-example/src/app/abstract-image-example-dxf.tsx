@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as AI from "../../../abstract-image/src/index.js";
 
-export function AbstractImageExampleDxf(): JSX.Element {
+export function AbstractImageExampleDxf(): React.JSX.Element {
   const components = [
     AI.createLine(AI.createPoint(200, 0), AI.createPoint(200, 400), AI.green, 1),
     AI.createLine(AI.createPoint(0, 200), AI.createPoint(400, 200), AI.green, 1),

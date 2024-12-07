@@ -16,7 +16,7 @@ export const ReactDimensions = React.memo(
     readonly showDimensions: boolean;
     readonly sceneRotation: A3d.Vec3 | undefined;
     readonly sceneCenter: A3d.Vec3 | undefined;
-  }): JSX.Element => {
+  }): React.JSX.Element => {
     const dimensionMaterial = React.useMemo(
       () => (dimensions?.material ? <ReactMaterial isText={true} material={dimensions?.material} /> : <></>),
       []
@@ -48,10 +48,10 @@ export function ReactDimension({
 }: {
   readonly d: A3d.Dimension;
   readonly visible: boolean;
-  readonly children: JSX.Element;
+  readonly children: React.JSX.Element;
   readonly sceneRotation: A3d.Vec3 | undefined;
   readonly sceneCenter: A3d.Vec3 | undefined;
-}): JSX.Element {
+}): React.JSX.Element {
   const ref = React.useRef<Group>(undefined!);
   useFrame(({ camera }) => {
     ref.current.visible =
@@ -74,7 +74,13 @@ export function ReactDimension({
 }
 
 const DimensionMeshes = React.memo(
-  ({ meshes, children }: { readonly meshes: ReadonlyArray<A3d.Mesh>; readonly children: JSX.Element }): JSX.Element => (
+  ({
+    meshes,
+    children,
+  }: {
+    readonly meshes: ReadonlyArray<A3d.Mesh>;
+    readonly children: React.JSX.Element;
+  }): React.JSX.Element => (
     <>
       {meshes.map((m, i) => (
         <ReactMesh key={i} mesh={m}>

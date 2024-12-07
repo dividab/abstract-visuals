@@ -118,7 +118,7 @@ const headerRows = [
   ),
 ];
 
-export function AbstractDocumentExample(): JSX.Element {
+export function AbstractDocumentExample(): React.JSX.Element {
   const page = AD.MasterPage.create({
     header: header,
     footer: footer,

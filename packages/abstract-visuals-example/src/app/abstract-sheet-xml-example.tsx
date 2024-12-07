@@ -3,7 +3,7 @@ import * as React from "react";
 import * as AS from "../../../abstract-sheet/src/index.js";
 import FileSaver from "file-saver";
 
-export function AbstractSheetXMLExample(): JSX.Element {
+export function AbstractSheetXMLExample(): React.JSX.Element {
   const [data, setData] = React.useState('{ "test": "Hello world", "truthy": true, "falsy": false }');
   const [template, setTemplate] = React.useState(`<AbstractSheet>
   <Styles>

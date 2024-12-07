@@ -86,7 +86,7 @@ export function ReactScene({
     id: string
   ) => string;
   readonly createGroupId?: (g: A3d.Group) => string;
-}): JSX.Element {
+}): React.JSX.Element {
   const [hoveredId, setHoveredId] = React.useState<string | undefined>(undefined);
   return (
     <group

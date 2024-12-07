@@ -27,7 +27,7 @@ export function ReactMaterial({
   readonly materialStateImages?: Record<string, string>;
   readonly state?: MaterialState | undefined;
   readonly isText: boolean;
-}): JSX.Element {
+}): React.JSX.Element {
   const mat =
     !state || material.image?.type === "UrlImage"
       ? material
@@ -85,7 +85,7 @@ function TextureMaterial({
   readonly url: string;
   readonly color: string | Color | undefined;
   readonly material: A3d.Material;
-}): JSX.Element {
+}): React.JSX.Element {
   const texture = suspend(
     new Promise((res) =>
       textureLoader.load(

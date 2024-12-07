@@ -40,8 +40,8 @@ export function ReactMesh({
   children,
 }: {
   readonly mesh: A3d.Mesh;
-  readonly children?: JSX.Element;
-}): JSX.Element {
+  readonly children?: React.JSX.Element;
+}): React.JSX.Element {
   switch (mesh.geometry.type) {
     case "Box": {
       const { pos, size, rot, holes } = mesh.geometry;
@@ -166,8 +166,8 @@ function ExcrudeBoxPlane({
 }: {
   readonly geo: A3d.Box | A3d.Plane;
   readonly sizeZ: number;
-  readonly children?: JSX.Element;
-}): JSX.Element {
+  readonly children?: React.JSX.Element;
+}): React.JSX.Element {
   const half = A3d.vec2Scale(geo.size, 0.5);
 
   const excrudeGeometry = React.useMemo(() => {
@@ -187,7 +187,13 @@ function ExcrudeBoxPlane({
   );
 }
 
-function ExcrudeShape({ s, children }: { readonly s: A3d.Shape; readonly children?: JSX.Element }): JSX.Element {
+function ExcrudeShape({
+  s,
+  children,
+}: {
+  readonly s: A3d.Shape;
+  readonly children?: React.JSX.Element;
+}): React.JSX.Element {
   const excrudeGeometry = React.useMemo(() => {
     const shape = new Shape();
     if (s.points.length > 0) {
@@ -218,8 +224,8 @@ function ExcrudeCylinder({
   children,
 }: {
   readonly cyl: A3d.Cylinder;
-  readonly children?: JSX.Element;
-}): JSX.Element {
+  readonly children?: React.JSX.Element;
+}): React.JSX.Element {
   const excrudeGeometry = React.useMemo(() => {
     const shape = new Shape();
     shape.moveTo(0, cyl.radius).absellipse(0, 0, cyl.radius, cyl.radius, 0, Math.PI * 2, true);
@@ -263,8 +269,8 @@ function Polygon({
   children,
 }: {
   readonly polygon: A3d.Polygon;
-  readonly children?: JSX.Element;
-}): JSX.Element {
+  readonly children?: React.JSX.Element;
+}): React.JSX.Element {
   const ref = React.useRef<BufferAttribute>(undefined!);
   const vertices = React.useMemo(() => {
     let newVertices: Float32Array = undefined!;
@@ -334,7 +340,13 @@ function Polygon({
   );
 }
 
-function Tube({ tube, children }: { readonly tube: A3d.Tube; readonly children?: JSX.Element }): JSX.Element {
+function Tube({
+  tube,
+  children,
+}: {
+  readonly tube: A3d.Tube;
+  readonly children?: React.JSX.Element;
+}): React.JSX.Element {
   const tubeGeometry = React.useMemo(() => {
     return new TubeGeometry(
       tube.curve.type === "SplineCurve"

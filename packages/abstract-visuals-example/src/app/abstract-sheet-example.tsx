@@ -2,7 +2,7 @@ import * as React from "react";
 import FileSaver from "file-saver";
 import * as AS from "../../../abstract-sheet/src/index.js";
 
-export function AbstractSheetExample(): JSX.Element {
+export function AbstractSheetExample(): React.JSX.Element {
   const as: AS.AbstractSheet = {
     sheets: [
       {

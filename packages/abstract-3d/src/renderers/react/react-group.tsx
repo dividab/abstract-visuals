@@ -48,7 +48,7 @@ export function ReactGroup({
     rootData: Record<string, string> | undefined,
     id: string
   ) => string;
-}): JSX.Element {
+}): React.JSX.Element {
   const ref = React.useRef<Group>(undefined!);
   useFrame(({ invalidate }, delta) => {
     if (g.animation) {
