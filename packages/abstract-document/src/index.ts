@@ -4,4 +4,3 @@ import * as AbstractDocJsx from "./abstract-document-jsx/index.js";
 import * as AbstractDocXml from "./abstract-document-xml/index.js";
 
 export { AbstractDoc, AbstractDocExporters, AbstractDocJsx, AbstractDocXml };
-//dummy
