@@ -25,7 +25,7 @@
     "xlsx-js-style": "^1.2.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": ">=17.0.0 <^19.0.0"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.5",

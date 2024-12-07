@@ -30,7 +30,8 @@
   "devDependencies": {
     "@types/react": "^19.0.1",
     "@types/react-reconciler": "^0.28.8",
-    "@types/three": "^0.170.0"
+    "@types/three": "^0.170.0",
+    "react": "^19.0.0"
   },
   "gitHead": "0c3b26e59c7ef854cb8aae96a9f56dd7d82cbc9c"
 }

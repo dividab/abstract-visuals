@@ -32,7 +32,7 @@
     "unified": "^6.1.6"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": ">=17.0.0 <^19.0.0"
   },
   "devDependencies": {
     "@types/base64-js": "^1.3.2",
@@ -44,6 +44,7 @@
     "jszip": "^3.10.1",
     "pdf2json": "2.0.1",
     "vite": "^6.0.1",
+    "react": "^19.0.0",
     "vitest": "^2.1.6"
   },
   "gitHead": "0c3b26e59c7ef854cb8aae96a9f56dd7d82cbc9c"
