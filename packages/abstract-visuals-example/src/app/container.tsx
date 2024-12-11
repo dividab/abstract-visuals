@@ -46,15 +46,8 @@ export function Container(): React.JSX.Element {
       </select>
       {(() => {
         switch (selected) {
-          //TODO: Uncaught ReferenceError: exports is not defined
-          //   Object.defineProperty(exports, "__esModule", {
-          //     value: true
-          // });
-          //
-          // temp soltion for testing chart is to add to make ad, ac, and ai esm with "type": "module" in package.json.
-          //
-          // case "AbstractChart":
-          //   return <AbstractChartExample />;
+          case "AbstractChart":
+            return <AbstractChartExample />;
           case "AbstractImageSvg":
             return <AbstractImageExampleSvg />;
           case "AbstractImageReact":
