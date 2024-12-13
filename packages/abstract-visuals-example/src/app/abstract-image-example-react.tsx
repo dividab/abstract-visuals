@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import * as AbstractImage from "../../../abstract-image/src/index.js";
 
 const pngEncoded =

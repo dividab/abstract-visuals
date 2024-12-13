@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import * as AI from "../../../abstract-image/src/index.js";
 
 export function AbstractImageExampleSvg(): React.JSX.Element {

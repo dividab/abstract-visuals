@@ -1,4 +1,4 @@
-import * as FXmlP from "fast-xml-parser";
+import { X2jOptions, XMLParser } from "fast-xml-parser";
 import Mustache from "mustache";
 
 export type XmlElement = {
@@ -16,8 +16,8 @@ export const parseMustacheXml = (
 
 export const render = Mustache.render;
 
-export function parseXmlCustom(text: string, options: Partial<FXmlP.X2jOptions>): ReadonlyArray<XmlElement> {
-  const parser = new FXmlP.XMLParser(options);
+export function parseXmlCustom(text: string, options: Partial<X2jOptions>): ReadonlyArray<XmlElement> {
+  const parser = new XMLParser(options);
   parser.addEntity("#x2F", "/");
   parser.addEntity("#x3D", "=");
   return transformFXP(parser.parse(text));
@@ -104,7 +104,7 @@ function shouldSkipLevel(tag: XmlElement): boolean {
   );
 }
 
-const xmlParser = new FXmlP.XMLParser({
+const xmlParser = new XMLParser({
   preserveOrder: true,
   ignoreAttributes: false,
   attributeNamePrefix: "",
@@ -127,7 +127,7 @@ const xmlParser = new FXmlP.XMLParser({
 xmlParser.addEntity("#x2F", "/");
 xmlParser.addEntity("#x3D", "=");
 
-const xsdParser = new FXmlP.XMLParser({
+const xsdParser = new XMLParser({
   preserveOrder: true,
   ignoreAttributes: false,
   attributeNamePrefix: "",

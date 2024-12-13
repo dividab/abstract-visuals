@@ -1,4 +1,4 @@
-import * as A3D from "../../abstract-3d.js";
+import { Scene, vec3Zero, Group, Vec3, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
 import {
   MutableStep,
   GEOMETRIC_REPRESENTATION_CONTEXT_3D,
@@ -21,7 +21,7 @@ import { stepPlane } from "./step-geometries/step-plane.js";
 //   return "";
 // };
 
-export const toStep = (scene: A3D.Scene): string => {
+export const toStep = (scene: Scene): string => {
   const m: MutableStep = { refs: new Map<string, number>([]), step: "" };
   GEOMETRIC_REPRESENTATION_CONTEXT_3D(
     // 1
@@ -34,15 +34,15 @@ export const toStep = (scene: A3D.Scene): string => {
   GEOMETRIC_REPRESENTATION_CONTEXT_2D(m); //
 
   for (const g of scene.groups) {
-    stepGroup(g, scene.center_deprecated ?? A3D.vec3Zero, scene.rotation_deprecated ?? A3D.vec3Zero, m);
+    stepGroup(g, scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero, m);
   }
 
   return `${HEADER()}${m.step}${ENDSEC()}`;
 };
 
-function stepGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3, m: MutableStep): void {
-  const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, g.rot ?? A3D.vec3Zero);
+function stepGroup(g: Group, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
+  const pos = vec3TransRot(g.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
   for (const mesh of g.meshes ?? []) {
     switch (mesh.geometry.type) {
       case "Box":

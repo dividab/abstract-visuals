@@ -1,4 +1,4 @@
-import * as A3D from "../../abstract-3d.js";
+import { Scene, View, vec3RotCombine, vec3Zero, vec3Rot, Group, Vec3, vec3TransRot } from "../../abstract-3d.js";
 import { dxfFooter, dxfHeader } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
@@ -7,20 +7,16 @@ import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
 
-export const toDxf = (scene: A3D.Scene, view: A3D.View): string => {
-  const unitRot = A3D.vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? A3D.vec3Zero);
-  const rotatedCenter = A3D.vec3Rot(
-    scene.center_deprecated ?? A3D.vec3Zero,
-    A3D.vec3Zero,
-    scene.rotation_deprecated ?? A3D.vec3Zero
-  );
-  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, rotatedCenter, A3D.vec3Zero, 1);
+export const toDxf = (scene: Scene, view: View): string => {
+  const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? vec3Zero);
+  const rotatedCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
+  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, rotatedCenter, vec3Zero, 1);
   return dxfHeader(size, center) + scene.groups.reduce((a, c) => a + dxfGroup(c, center, unitRot), "") + dxfFooter;
 };
 
-function dxfGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
-  const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, g.rot ?? A3D.vec3Zero);
+function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3): string {
+  const pos = vec3TransRot(g.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
   return (
     (g.meshes?.reduce((a, c) => {
       switch (c.geometry.type) {

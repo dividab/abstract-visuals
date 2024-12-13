@@ -1,19 +1,27 @@
-import * as AD from "../../abstract-document/index.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
+import { AbstractDoc } from "../../abstract-document/abstract-doc.js";
+import { Resources, mergeResources } from "../../abstract-document/resources.js";
+import { Group } from "../../abstract-document/section-elements/group.js";
+import { Table } from "../../abstract-document/section-elements/table.js";
+import { SectionElement } from "../../abstract-document/section-elements/section-element.js";
+import { Paragraph } from "../../abstract-document/section-elements/paragraph.js";
+import { Section } from "../../abstract-document/page/section.js";
+import { TableRow } from "../../abstract-document/table/table-row.js";
+import { TableCell } from "../../abstract-document/table/table-cell.js";
 
-export function getResources(doc: AD.AbstractDoc.AbstractDoc): AD.Resources.Resources {
+export function getResources(doc: AbstractDoc): Resources {
   const resources = doc.children.map((s) => getResourcesSection(s));
-  return AD.Resources.mergeResources([...resources, doc]);
+  return mergeResources([...resources, doc]);
 }
 
-function getResourcesSection(s: AD.Section.Section): AD.Resources.Resources {
-  const header = AD.Resources.mergeResources(s.page.header.map((e) => getResourcesSectionElement(e)));
-  const footer = AD.Resources.mergeResources(s.page.footer.map((e) => getResourcesSectionElement(e)));
-  const children = AD.Resources.mergeResources(s.children.map((e) => getResourcesSectionElement(e)));
-  return AD.Resources.mergeResources([header, footer, children]);
+function getResourcesSection(s: Section): Resources {
+  const header = mergeResources(s.page.header.map((e) => getResourcesSectionElement(e)));
+  const footer = mergeResources(s.page.footer.map((e) => getResourcesSectionElement(e)));
+  const children = mergeResources(s.children.map((e) => getResourcesSectionElement(e)));
+  return mergeResources([header, footer, children]);
 }
 
-function getResourcesSectionElement(e: AD.SectionElement.SectionElement): AD.Resources.Resources {
+function getResourcesSectionElement(e: SectionElement): Resources {
   switch (e.type) {
     case "Paragraph":
       return getResourcesParagraph(e);
@@ -28,22 +36,22 @@ function getResourcesSectionElement(e: AD.SectionElement.SectionElement): AD.Res
   }
 }
 
-function getResourcesParagraph(paragraph: AD.Paragraph.Paragraph): AD.Resources.Resources {
+function getResourcesParagraph(paragraph: Paragraph): Resources {
   return paragraph;
 }
 
-function getResourcesTable(table: AD.Table.Table): AD.Resources.Resources {
-  return AD.Resources.mergeResources(table.children.map((r) => getResourcesTableRow(r)));
+function getResourcesTable(table: Table): Resources {
+  return mergeResources(table.children.map((r) => getResourcesTableRow(r)));
 }
 
-function getResourcesTableRow(r: AD.TableRow.TableRow): AD.Resources.Resources {
-  return AD.Resources.mergeResources(r.children.map((c) => getResourcesTableCell(c)));
+function getResourcesTableRow(r: TableRow): Resources {
+  return mergeResources(r.children.map((c) => getResourcesTableCell(c)));
 }
 
-function getResourcesTableCell(c: AD.TableCell.TableCell): AD.Resources.Resources {
-  return AD.Resources.mergeResources(c.children.map((e) => getResourcesSectionElement(e)));
+function getResourcesTableCell(c: TableCell): Resources {
+  return mergeResources(c.children.map((e) => getResourcesSectionElement(e)));
 }
 
-function getResourcesGroup(group: AD.Group.Group): AD.Resources.Resources {
-  return AD.Resources.mergeResources(group.children.map((e) => getResourcesSectionElement(e)));
+function getResourcesGroup(group: Group): Resources {
+  return mergeResources(group.children.map((e) => getResourcesSectionElement(e)));
 }

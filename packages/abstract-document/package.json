@@ -24,7 +24,7 @@
     "docx": "^6.0.3",
     "fast-xml-parser": "^4.5.0",
     "mustache": "^4.2.0",
-    "pdfkit": "^0.15.0",
+    "pdfkit": "^0.15.1",
     "remark-parse": "^6.0.3",
     "remark-sub-super": "^1.0.19",
     "svg-to-pdfkit": "^0.1.8",

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Abstract3DExample } from "./abstract-3d-example.js";
 import { AbstractImageExampleReact } from "./abstract-image-example-react.js";
 import { AbstractImageExampleDxf } from "./abstract-image-example-dxf.js";

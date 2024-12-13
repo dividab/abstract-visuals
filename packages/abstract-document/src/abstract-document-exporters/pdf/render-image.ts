@@ -1,5 +1,5 @@
 import * as AbstractImage from "abstract-image";
-import * as base64 from "base64-js";
+import { fromByteArray } from "base64-js";
 import svgToPdfKit from "svg-to-pdfkit";
 import * as AD from "../../abstract-document/index.js";
 import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
@@ -41,12 +41,12 @@ function abstractComponentToPdf(
           fit: [imageWidth, imageHeight],
         });
       } else if (format === "png") {
-        const data = "data:image/png;base64," + base64.fromByteArray(component.data.bytes);
+        const data = "data:image/png;base64," + fromByteArray(component.data.bytes);
         pdf.image(data, component.topLeft.x, component.topLeft.y, {
           fit: [imageWidth, imageHeight],
         });
       } else if (format === "jpg") {
-        const data = "data:image/jpeg;base64," + base64.fromByteArray(component.data.bytes);
+        const data = "data:image/jpeg;base64," + fromByteArray(component.data.bytes);
         pdf.image(data, component.topLeft.x, component.topLeft.y, {
           fit: [imageWidth, imageHeight],
         });

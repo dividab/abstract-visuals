@@ -1,19 +1,19 @@
-import * as A3D from "../../../abstract-3d.js";
+import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d.js";
 import { zElem, zOrderElement } from "./shared.js";
 import { svgText } from "../svg-encoding.js";
 
 // dummy
 export function text(
-  t: A3D.Text,
-  point: (x: number, y: number) => A3D.Vec2,
+  t: Text,
+  point: (x: number, y: number) => Vec2,
   fill: string,
-  parentPos: A3D.Vec3,
-  parentRot: A3D.Vec3,
+  parentPos: Vec3,
+  parentRot: Vec3,
   factor: number,
   font: string
 ): ReadonlyArray<zOrderElement> {
-  const pos = A3D.vec3TransRot(t.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, t.rot ?? A3D.vec3Zero);
+  const pos = vec3TransRot(t.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, t.rot ?? vec3Zero);
   const texts = Array<zOrderElement>();
   const fontSize = t.fontSize * factor;
   const strings = t.text.split("\n");

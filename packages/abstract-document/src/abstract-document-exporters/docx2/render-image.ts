@@ -1,8 +1,9 @@
 import * as AbstractImage from "abstract-image";
-import * as AD from "../../abstract-document/index.js";
-import * as DOCXJS from "docx";
+import { ImageRun } from "docx";
+import { TextStyle } from "../../abstract-document/styles/text-style.js";
+import { Image } from "../../abstract-document/atoms/image.js";
 
-export function renderImage(image: AD.Image.Image, textStyle: AD.TextStyle.TextStyle): DOCXJS.ImageRun {
+export function renderImage(image: Image, textStyle: TextStyle): ImageRun {
   const aImage = image.imageResource.abstractImage;
   const images = aImage.components.map((c: AbstractImage.Component) =>
     abstractComponentToDocX(c, image.width, image.height, textStyle)
@@ -14,8 +15,8 @@ function abstractComponentToDocX(
   component: AbstractImage.Component,
   width: number,
   height: number,
-  _textStyle: AD.TextStyle.TextStyle
-): DOCXJS.ImageRun | undefined {
+  _textStyle: TextStyle
+): ImageRun | undefined {
   switch (component.type) {
     // case "group":
     //   component.children.forEach((c) => abstractComponentToPdf(c, textStyle));
@@ -23,7 +24,7 @@ function abstractComponentToDocX(
     case "binaryimage":
       const format = component.format.toLowerCase();
       if (component.data.type === "bytes" && (format === "png" || format === "jpg")) {
-        return new DOCXJS.ImageRun({
+        return new ImageRun({
           data: Buffer.from(component.data.bytes),
           transformation: {
             width: width,

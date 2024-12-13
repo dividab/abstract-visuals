@@ -1,45 +1,9 @@
 import React from "react";
-// import { extend } from "@react-three/fiber";
-// import {
-//   Mesh,
-//   Group,
-//   MeshLambertMaterial,
-//   MeshPhongMaterial,
-//   MeshBasicMaterial,
-//   BoxGeometry,
-//   PlaneGeometry,
-//   CylinderGeometry,
-//   ConeGeometry,
-//   Texture,
-//   DoubleSide,
-//   BufferAttribute,
-//   Shape,
-//   Path,
-//   ExtrudeGeometry,
-// } from "three";
-import * as A3d from "../../abstract-3d.js";
+import { Scene, Group } from "../../abstract-3d.js";
 import { HotSpotInfo, ReactHotSpots } from "./react-hotspot.js";
 import { ReactDimensions } from "./react-dimension.js";
 import { ReactGroup } from "./react-group.js";
 import { MaterialState } from "./react-material.js";
-
-// extend({
-//   Mesh,
-//   Group,
-//   MeshLambertMaterial,
-//   MeshPhongMaterial,
-//   MeshBasicMaterial,
-//   BufferAttribute,
-//   Shape,
-//   ExtrudeGeometry,
-//   Path,
-//   Texture,
-//   CylinderGeometry,
-//   BoxGeometry,
-//   PlaneGeometry,
-//   ConeGeometry,
-//   DoubleSide,
-// });
 
 export function ReactScene({
   scene,
@@ -57,7 +21,7 @@ export function ReactScene({
   createGroupKey,
   createGroupId,
 }: {
-  readonly scene: A3d.Scene;
+  readonly scene: Scene;
   readonly selectedId: string | undefined;
   readonly hoveredIdExternal: string | undefined;
   readonly activeHotSpots: Record<string, HotSpotInfo> | undefined;
@@ -79,13 +43,8 @@ export function ReactScene({
     top: number
   ) => void;
   readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
-  readonly createGroupKey?: (
-    g: A3d.Group,
-    idx: number,
-    rootData: Record<string, string> | undefined,
-    id: string
-  ) => string;
-  readonly createGroupId?: (g: A3d.Group) => string;
+  readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
+  readonly createGroupId?: (g: Group) => string;
 }): React.JSX.Element {
   const [hoveredId, setHoveredId] = React.useState<string | undefined>(undefined);
   return (

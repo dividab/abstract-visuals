@@ -1,11 +1,13 @@
-import * as AI from "../model/index.js";
+import { AbstractImage } from "../model/abstract-image.js";
+import { Color } from "../model/color.js";
+import { Component, Text } from "../model/component.js";
 
 type CharacterEncoding = "standard-encoding" | "iso-latin-1-encoding";
 
-export function epsExportImage(root: AI.AbstractImage): string;
-export function epsExportImage(root: AI.AbstractImage, characterEncoding: "standard-encoding"): string;
-export function epsExportImage(root: AI.AbstractImage, characterEncoding: "iso-latin-1-encoding"): Uint8Array;
-export function epsExportImage(root: AI.AbstractImage, characterEncoding?: CharacterEncoding): string | Uint8Array {
+export function epsExportImage(root: AbstractImage): string;
+export function epsExportImage(root: AbstractImage, characterEncoding: "standard-encoding"): string;
+export function epsExportImage(root: AbstractImage, characterEncoding: "iso-latin-1-encoding"): Uint8Array;
+export function epsExportImage(root: AbstractImage, characterEncoding?: CharacterEncoding): string | Uint8Array {
   if (characterEncoding === "iso-latin-1-encoding") {
     const eps = [
       ...createEpsHeaderLines(root),
@@ -21,7 +23,7 @@ export function epsExportImage(root: AI.AbstractImage, characterEncoding?: Chara
   }
 }
 
-function createEpsHeaderLines(root: AI.AbstractImage): ReadonlyArray<string> {
+function createEpsHeaderLines(root: AbstractImage): ReadonlyArray<string> {
   return [
     "%!PS-Adobe-3.0 EPSF-3.0",
     `%%BoundingBox: 0 0 ${root.size.width} ${root.size.height}`,
@@ -42,7 +44,7 @@ function createEpsHeaderLines(root: AI.AbstractImage): ReadonlyArray<string> {
   ];
 }
 
-function epsExportComponent(c: AI.Component, height: number, characterEncoding: CharacterEncoding): Array<string> {
+function epsExportComponent(c: Component, height: number, characterEncoding: CharacterEncoding): Array<string> {
   switch (c.type) {
     case "ellipse": {
       const cx = (c.topLeft.x + c.bottomRight.x) * 0.5;
@@ -125,7 +127,7 @@ function epsExportComponent(c: AI.Component, height: number, characterEncoding: 
   }
 }
 
-function getTextXOffset(c: AI.Text): string {
+function getTextXOffset(c: Text): string {
   if (c.horizontalGrowthDirection === "left") {
     return `(${c.text}) stringwidth pop neg`;
   } else if (c.horizontalGrowthDirection === "uniform") {
@@ -135,7 +137,7 @@ function getTextXOffset(c: AI.Text): string {
   }
 }
 
-function getTextYOffset(c: AI.Text): string {
+function getTextYOffset(c: Text): string {
   if (c.verticalGrowthDirection === "down") {
     return `gsave (${c.text}) true charpath pathbbox exch pop 3 -1 roll pop sub grestore`;
   } else if (c.verticalGrowthDirection === "uniform") {
@@ -145,7 +147,7 @@ function getTextYOffset(c: AI.Text): string {
   }
 }
 
-function getColored(color: AI.Color, instructions: Array<string>): Array<string> {
+function getColored(color: Color, instructions: Array<string>): Array<string> {
   if (color.a === 0) {
     return [];
   }
@@ -180,7 +182,7 @@ function encodeLatin1Encoding(text: string): Uint8Array {
   return new Uint8Array(output);
 }
 
-function createIsoLatin1FontLines(root: AI.AbstractImage): ReadonlyArray<string> {
+function createIsoLatin1FontLines(root: AbstractImage): ReadonlyArray<string> {
   const fontFamilies = getUsedFontFamilies(root.components);
   const lines = [];
   for (const fontFamily of fontFamilies) {
@@ -214,7 +216,7 @@ function createIsoLatin1FontLines(root: AI.AbstractImage): ReadonlyArray<string>
   return lines;
 }
 
-function getUsedFontFamilies(components: ReadonlyArray<AI.Component>): ReadonlyArray<string> {
+function getUsedFontFamilies(components: ReadonlyArray<Component>): ReadonlyArray<string> {
   const families = [];
   for (const c of components) {
     switch (c.type) {

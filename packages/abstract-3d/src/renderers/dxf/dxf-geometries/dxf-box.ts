@@ -1,12 +1,12 @@
-import * as A3D from "../../../abstract-3d.js";
+import { Box, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3Scale, vec3 } from "../../../abstract-3d.js";
 import { color } from "../color.js";
 import { dxf3DFACE } from "../dxf-encoding.js";
 
-export function dxfBox(b: A3D.Box, m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
-  const pos = A3D.vec3TransRot(b.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, b.rot ?? A3D.vec3Zero);
-  const half = A3D.vec3Scale(b.size, 0.5);
-  const vec3tr3 = (x: number, y: number, z: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, z), pos, rot);
+export function dxfBox(b: Box, m: Material, parentPos: Vec3, parentRot: Vec3): string {
+  const pos = vec3TransRot(b.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
+  const half = vec3Scale(b.size, 0.5);
+  const vec3tr3 = (x: number, y: number, z: number): Vec3 => vec3TransRot(vec3(x, y, z), pos, rot);
 
   const v1 = vec3tr3(-half.x, -half.y, half.z);
   const v2 = vec3tr3(half.x, -half.y, half.z);

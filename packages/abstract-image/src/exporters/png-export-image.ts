@@ -1,6 +1,6 @@
-import * as AbstractImage from "../model/index.js";
+import { AbstractImage } from "../model/abstract-image.js";
 
-export function createPNG(image: AbstractImage.AbstractImage): Uint8Array {
+export function createPNG(image: AbstractImage): Uint8Array {
   if (image.components.length !== 1) {
     throw new Error("Not supported!");
   }

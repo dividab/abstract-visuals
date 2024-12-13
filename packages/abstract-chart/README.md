@@ -23,7 +23,7 @@ The library is compiled to ES5 and no polyfills are required.
 Example of chart <a href="https://www.xkcd.com/1612/">XKCD 1612</a>, "The worst part of colds".
 
 ```typescript
-import * as React from "react";
+import React from "react";
 import * as AbstractChart from "abstract-chart";
 import * as AbstractImage from "abstract-image";
 

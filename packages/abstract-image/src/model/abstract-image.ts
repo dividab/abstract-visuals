@@ -1,20 +1,20 @@
-import * as Size from "./size.js";
-import * as Color from "./color.js";
-import * as Component from "./component.js";
-import * as Point from "./point.js";
+import { Size } from "./size.js";
+import { Color } from "./color.js";
+import { Component } from "./component.js";
+import { Point } from "./point.js";
 
 export interface AbstractImage {
-  readonly topLeft: Point.Point;
-  readonly size: Size.Size;
-  readonly backgroundColor: Color.Color;
-  readonly components: Array<Component.Component>;
+  readonly topLeft: Point;
+  readonly size: Size;
+  readonly backgroundColor: Color;
+  readonly components: Array<Component>;
 }
 
 export function createAbstractImage(
-  topLeft: Point.Point,
-  size: Size.Size,
-  backgroundColor: Color.Color,
-  components: Array<Component.Component>
+  topLeft: Point,
+  size: Size,
+  backgroundColor: Color,
+  components: Array<Component>
 ): AbstractImage {
   return {
     topLeft: topLeft,

@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Euler, Quaternion, Vector3 } from "three";
 
 export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??
@@ -389,11 +389,11 @@ export function bounds3FromVec3Array(vec3Array: ReadonlyArray<Vec3>): Bounds3 {
 
 // -- Transformations
 
-const quaternion1 = new THREE.Quaternion();
-const quaternion2 = new THREE.Quaternion();
-const euler1 = new THREE.Euler();
-const euler2 = new THREE.Euler();
-const vector = new THREE.Vector3();
+const quaternion1 = new Quaternion();
+const quaternion2 = new Quaternion();
+const euler1 = new Euler();
+const euler2 = new Euler();
+const vector = new Vector3();
 
 export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
   euler1.set(outer.x, outer.y, outer.z);

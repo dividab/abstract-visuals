@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import * as React from "react";
+import React from "react";
 import * as AS from "../../../abstract-sheet/src/index.js";
 import FileSaver from "file-saver";
 

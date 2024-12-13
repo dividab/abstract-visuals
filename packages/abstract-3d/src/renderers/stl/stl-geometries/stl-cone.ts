@@ -1,17 +1,11 @@
-import * as A3D from "../../../abstract-3d.js";
+import { Cone, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import { stlPlaneOfVertices } from "../stl-encoding.js";
 
-export function stlCone(
-  c: A3D.Cone,
-  _m: A3D.Material,
-  sides: number,
-  parentPos: A3D.Vec3,
-  parentRot: A3D.Vec3
-): string {
+export function stlCone(c: Cone, _m: Material, sides: number, parentPos: Vec3, parentRot: Vec3): string {
   let dxfString = "";
-  const pos = A3D.vec3TransRot(c.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, c.rot ?? A3D.vec3Zero);
-  const vec3tr = (x: number, y: number, z: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, z), pos, rot);
+  const pos = vec3TransRot(c.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
+  const vec3tr = (x: number, y: number, z: number): Vec3 => vec3TransRot(vec3(x, y, z), pos, rot);
 
   const angleStep = (2 * Math.PI) / sides;
   let currentAngle = 0;
@@ -20,7 +14,7 @@ export function stlCone(
   const botPos = vec3tr(0, -half, 0);
   const topPos = vec3tr(0, half, 0);
 
-  const botVec3Array = Array<A3D.Vec3>();
+  const botVec3Array = Array<Vec3>();
   for (let i = 0; i <= sides; i++) {
     const currBot = vec3tr(Math.sin(currentAngle) * c.radius, -half, Math.cos(currentAngle) * c.radius);
     botVec3Array.push(currBot);

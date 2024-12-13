@@ -1,7 +1,7 @@
-import * as Point from "./point.js";
-import * as Color from "./color.js";
-import * as DashStyle from "./dash-style.js";
-import * as AbstractImage from "./abstract-image.js";
+import { Point, createPoint } from "./point.js";
+import { Color } from "./color.js";
+import { DashStyle, solidLine } from "./dash-style.js";
+import { AbstractImage } from "./abstract-image.js";
 
 export type Component = BinaryImage | Ellipse | Line | PolyLine | Polygon | Rectangle | Text | SubImage | Group;
 
@@ -27,8 +27,8 @@ export type BinaryFormat = "svg" | "png";
 
 export interface BinaryImage {
   readonly type: "binaryimage";
-  readonly topLeft: Point.Point;
-  readonly bottomRight: Point.Point;
+  readonly topLeft: Point;
+  readonly bottomRight: Point;
   readonly format: BinaryFormat;
   readonly data: ImageData;
   readonly id: string | undefined;
@@ -47,8 +47,8 @@ export interface ImageUrl {
 }
 
 export function createBinaryImage(
-  topLeft: Point.Point,
-  bottomRight: Point.Point,
+  topLeft: Point,
+  bottomRight: Point,
   format: BinaryFormat,
   data: ImageData,
   id?: string
@@ -65,23 +65,23 @@ export function createBinaryImage(
 
 export interface Ellipse {
   readonly type: "ellipse";
-  readonly topLeft: Point.Point;
-  readonly bottomRight: Point.Point;
-  readonly strokeColor: Color.Color;
+  readonly topLeft: Point;
+  readonly bottomRight: Point;
+  readonly strokeColor: Color;
   readonly strokeThickness: number;
-  readonly strokeDashStyle: DashStyle.DashStyle;
-  readonly fillColor: Color.Color;
+  readonly strokeDashStyle: DashStyle;
+  readonly fillColor: Color;
   readonly id: string | undefined;
 }
 
 export function createEllipse(
-  topLeft: Point.Point,
-  bottomRight: Point.Point,
-  strokeColor: Color.Color,
+  topLeft: Point,
+  bottomRight: Point,
+  strokeColor: Color,
   strokeThickness: number,
-  fillColor: Color.Color,
+  fillColor: Color,
   id?: string,
-  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
+  strokeDashStyle: DashStyle = solidLine
 ): Ellipse {
   return {
     type: "ellipse",
@@ -97,21 +97,21 @@ export function createEllipse(
 
 export interface Line {
   readonly type: "line";
-  readonly start: Point.Point;
-  readonly end: Point.Point;
-  readonly strokeColor: Color.Color;
+  readonly start: Point;
+  readonly end: Point;
+  readonly strokeColor: Color;
   readonly strokeThickness: number;
-  readonly strokeDashStyle: DashStyle.DashStyle;
+  readonly strokeDashStyle: DashStyle;
   readonly id: string | undefined;
 }
 
 export function createLine(
-  start: Point.Point,
-  end: Point.Point,
-  strokeColor: Color.Color,
+  start: Point,
+  end: Point,
+  strokeColor: Color,
   strokeThickness: number,
   id?: string,
-  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
+  strokeDashStyle: DashStyle = solidLine
 ): Line {
   return {
     type: "line",
@@ -126,19 +126,19 @@ export function createLine(
 
 export interface PolyLine {
   readonly type: "polyline";
-  readonly points: Array<Point.Point>;
-  readonly strokeColor: Color.Color;
+  readonly points: Array<Point>;
+  readonly strokeColor: Color;
   readonly strokeThickness: number;
-  readonly strokeDashStyle: DashStyle.DashStyle;
+  readonly strokeDashStyle: DashStyle;
   readonly id: string | undefined;
 }
 
 export function createPolyLine(
-  points: Array<Point.Point>,
-  strokeColor: Color.Color,
+  points: Array<Point>,
+  strokeColor: Color,
   strokeThickness: number,
   id?: string,
-  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
+  strokeDashStyle: DashStyle = solidLine
 ): PolyLine {
   return {
     type: "polyline",
@@ -152,21 +152,21 @@ export function createPolyLine(
 
 export interface Polygon {
   readonly type: "polygon";
-  readonly points: Array<Point.Point>;
-  readonly strokeColor: Color.Color;
+  readonly points: Array<Point>;
+  readonly strokeColor: Color;
   readonly strokeThickness: number;
-  readonly strokeDashStyle: DashStyle.DashStyle;
-  readonly fillColor: Color.Color;
+  readonly strokeDashStyle: DashStyle;
+  readonly fillColor: Color;
   readonly id: string | undefined;
 }
 
 export function createPolygon(
-  points: Array<Point.Point>,
-  strokeColor: Color.Color,
+  points: Array<Point>,
+  strokeColor: Color,
   strokeThickness: number,
-  fillColor: Color.Color,
+  fillColor: Color,
   id?: string,
-  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine
+  strokeDashStyle: DashStyle = solidLine
 ): Polygon {
   return {
     type: "polygon",
@@ -181,25 +181,25 @@ export function createPolygon(
 
 export interface Rectangle {
   readonly type: "rectangle";
-  readonly topLeft: Point.Point;
-  readonly bottomRight: Point.Point;
-  readonly strokeColor: Color.Color;
+  readonly topLeft: Point;
+  readonly bottomRight: Point;
+  readonly strokeColor: Color;
   readonly strokeThickness: number;
-  readonly strokeDashStyle: DashStyle.DashStyle;
-  readonly fillColor: Color.Color;
+  readonly strokeDashStyle: DashStyle;
+  readonly fillColor: Color;
   readonly id: string | undefined;
-  readonly radius?: Point.Point;
+  readonly radius?: Point;
 }
 
 export function createRectangle(
-  topLeft: Point.Point,
-  bottomRight: Point.Point,
-  strokeColor: Color.Color,
+  topLeft: Point,
+  bottomRight: Point,
+  strokeColor: Color,
   strokeThickness: number,
-  fillColor: Color.Color,
+  fillColor: Color,
   id?: string,
-  strokeDashStyle: DashStyle.DashStyle = DashStyle.solidLine,
-  radius?: Point.Point
+  strokeDashStyle: DashStyle = solidLine,
+  radius?: Point
 ): Rectangle {
   return {
     type: "rectangle",
@@ -214,12 +214,12 @@ export function createRectangle(
   };
 }
 
-export function corners(rectangle: Rectangle): Array<Point.Point> {
+export function corners(rectangle: Rectangle): Array<Point> {
   return [
     rectangle.topLeft,
-    Point.createPoint(rectangle.bottomRight.x, rectangle.topLeft.y),
+    createPoint(rectangle.bottomRight.x, rectangle.topLeft.y),
     rectangle.bottomRight,
-    Point.createPoint(rectangle.topLeft.x, rectangle.bottomRight.y),
+    createPoint(rectangle.topLeft.x, rectangle.bottomRight.y),
   ];
 }
 
@@ -231,35 +231,35 @@ export type GrowthDirection = "up" | "down" | "uniform" | "left" | "right";
 
 export interface Text {
   readonly type: "text";
-  readonly position: Point.Point;
+  readonly position: Point;
   readonly text: string;
   readonly fontFamily: string;
   readonly fontSize: number;
-  readonly textColor: Color.Color;
+  readonly textColor: Color;
   readonly fontWeight: AbstractFontWeight;
   readonly clockwiseRotationDegrees: number;
   readonly textAlignment: TextAlignment;
   readonly horizontalGrowthDirection: GrowthDirection;
   readonly verticalGrowthDirection: GrowthDirection;
   readonly strokeThickness: number;
-  readonly strokeColor: Color.Color;
+  readonly strokeColor: Color;
   readonly italic: boolean;
   readonly id: string | undefined;
 }
 
 export function createText(
-  position: Point.Point,
+  position: Point,
   text: string,
   fontFamily: string,
   fontSize: number,
-  textColor: Color.Color,
+  textColor: Color,
   fontWeight: AbstractFontWeight,
   clockwiseRotationDegrees: number,
   textAlignment: TextAlignment,
   horizontalGrowthDirection: GrowthDirection,
   verticalGrowthDirection: GrowthDirection,
   strokeThickness: number,
-  strokeColor: Color.Color,
+  strokeColor: Color,
   italic: boolean,
   id?: string
 ): Text {
@@ -284,14 +284,14 @@ export function createText(
 
 export interface SubImage {
   readonly type: "subimage";
-  readonly topLeft: Point.Point;
+  readonly topLeft: Point;
   readonly image: Component;
 }
 
-export function createSubImage(topLeft: Point.Point, image: Component): SubImage {
+export function createSubImage(topLeft: Point, image: Component): SubImage {
   return { type: "subimage", topLeft, image };
 }
 
-export function embedAbstractImage(topLeft: Point.Point, name: string, image: AbstractImage.AbstractImage): Component {
+export function embedAbstractImage(topLeft: Point, name: string, image: AbstractImage): Component {
   return createSubImage(topLeft, createGroup(name, image.components));
 }

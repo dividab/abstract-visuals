@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import FileSaver from "file-saver";
 import * as A3D from "../../../abstract-3d/src/index.js";
 import { systemair } from "./systemair.js";

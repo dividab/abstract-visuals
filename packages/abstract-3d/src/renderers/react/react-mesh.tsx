@@ -2,29 +2,57 @@
 /* eslint-disable functional/no-this-expression */
 /* eslint-disable functional/prefer-readonly-type */
 import React from "react";
-// import { Text } from "@react-three/drei/core/Text";
-// import { Line } from "@react-three/drei/core/Line";
+import { extend } from "@react-three/fiber";
 import { Text, Line } from "@react-three/drei";
 import {
   BoxGeometry,
-  CylinderGeometry,
+  BufferAttribute,
+  CatmullRomCurve3,
   ConeGeometry,
-  PlaneGeometry,
-  Shape,
-  Path,
+  Curve,
+  CylinderGeometry,
+  Euler,
   ExtrudeGeometry,
+  Path,
+  PlaneGeometry,
+  Quaternion,
+  Shape,
+  SphereGeometry,
+  TubeGeometry,
+  Vector3,
+} from "three";
+import {
+  Mesh,
+  Box,
+  Plane,
+  vec2Scale,
+  Shape as Shape_1,
+  Cylinder,
+  vec2Sub,
+  vec2Add,
+  Polygon as A3dPolygon,
+  Tube as A3dTube,
+  CircleCurve as A3dCircleCurve,
+  Hole,
+} from "../../abstract-3d.js";
+import { exhaustiveCheck } from "ts-exhaustive-check";
+
+extend({
+  SphereGeometry,
+  PlaneGeometry,
+  ConeGeometry,
+  Quaternion,
   Vector3,
   Euler,
-  Quaternion,
+  BoxGeometry,
+  Path,
+  Shape,
   TubeGeometry,
   CatmullRomCurve3,
-  Curve,
   BufferAttribute,
-  SphereGeometry,
-} from "three";
-import { exhaustiveCheck } from "ts-exhaustive-check";
-import * as A3d from "../../abstract-3d.js";
-import { Hole } from "../../abstract-3d.js";
+  ExtrudeGeometry,
+  CylinderGeometry,
+});
 
 const boxGeometry = new BoxGeometry();
 const cylinderGeometry = new CylinderGeometry(1, 1, 1, 40, 1);
@@ -39,7 +67,7 @@ export function ReactMesh({
   mesh,
   children,
 }: {
-  readonly mesh: A3d.Mesh;
+  readonly mesh: Mesh;
   readonly children?: React.JSX.Element;
 }): React.JSX.Element {
   switch (mesh.geometry.type) {
@@ -164,11 +192,11 @@ function ExcrudeBoxPlane({
   sizeZ,
   children,
 }: {
-  readonly geo: A3d.Box | A3d.Plane;
+  readonly geo: Box | Plane;
   readonly sizeZ: number;
   readonly children?: React.JSX.Element;
 }): React.JSX.Element {
-  const half = A3d.vec2Scale(geo.size, 0.5);
+  const half = vec2Scale(geo.size, 0.5);
 
   const excrudeGeometry = React.useMemo(() => {
     const shape = new Shape();
@@ -191,7 +219,7 @@ function ExcrudeShape({
   s,
   children,
 }: {
-  readonly s: A3d.Shape;
+  readonly s: Shape_1;
   readonly children?: React.JSX.Element;
 }): React.JSX.Element {
   const excrudeGeometry = React.useMemo(() => {
@@ -223,7 +251,7 @@ function ExcrudeCylinder({
   cyl,
   children,
 }: {
-  readonly cyl: A3d.Cylinder;
+  readonly cyl: Cylinder;
   readonly children?: React.JSX.Element;
 }): React.JSX.Element {
   const excrudeGeometry = React.useMemo(() => {
@@ -251,9 +279,9 @@ function holes(holes: ReadonlyArray<Hole> | undefined, shape: Shape): void {
         break;
       case "SquareHole": {
         const path = new Path();
-        const halfHole = A3d.vec2Scale(h.size, 0.5);
-        const min = A3d.vec2Sub(h.pos, halfHole);
-        const max = A3d.vec2Add(h.pos, halfHole);
+        const halfHole = vec2Scale(h.size, 0.5);
+        const min = vec2Sub(h.pos, halfHole);
+        const max = vec2Add(h.pos, halfHole);
         path.moveTo(min.x, min.y).lineTo(min.x, max.y).lineTo(max.x, max.y).lineTo(max.x, min.y).closePath();
         shape.holes.push(path);
         break;
@@ -268,7 +296,7 @@ function Polygon({
   polygon,
   children,
 }: {
-  readonly polygon: A3d.Polygon;
+  readonly polygon: A3dPolygon;
   readonly children?: React.JSX.Element;
 }): React.JSX.Element {
   const ref = React.useRef<BufferAttribute>(undefined!);
@@ -347,7 +375,7 @@ function Tube({
   tube,
   children,
 }: {
-  readonly tube: A3d.Tube;
+  readonly tube: A3dTube;
   readonly children?: React.JSX.Element;
 }): React.JSX.Element {
   const tubeGeometry = React.useMemo(() => {
@@ -378,7 +406,7 @@ class CircleCurve extends Curve<Vector3> {
   angleLength: number;
   startAngle: number;
 
-  constructor(circleCurve: A3d.CircleCurve) {
+  constructor(circleCurve: A3dCircleCurve) {
     super();
     this.radius = circleCurve.radius;
     this.startAngle = circleCurve.angleStart;

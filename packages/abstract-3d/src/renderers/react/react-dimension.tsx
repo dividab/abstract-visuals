@@ -1,9 +1,11 @@
-import { useFrame } from "@react-three/fiber";
+import { extend, useFrame } from "@react-three/fiber";
 import React from "react";
 import { Group } from "three";
-import * as A3d from "../../abstract-3d.js";
+import { Dimensions, Vec3, Dimension, vec3TransRot, vec3Flip, Mesh } from "../../abstract-3d.js";
 import { ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
+
+extend({ Group });
 
 export const ReactDimensions = React.memo(
   ({
@@ -12,10 +14,10 @@ export const ReactDimensions = React.memo(
     sceneRotation,
     sceneCenter,
   }: {
-    readonly dimensions: A3d.Dimensions | undefined;
+    readonly dimensions: Dimensions | undefined;
     readonly showDimensions: boolean;
-    readonly sceneRotation: A3d.Vec3 | undefined;
-    readonly sceneCenter: A3d.Vec3 | undefined;
+    readonly sceneRotation: Vec3 | undefined;
+    readonly sceneCenter: Vec3 | undefined;
   }): React.JSX.Element => {
     const dimensionMaterial = React.useMemo(
       () => (dimensions?.material ? <ReactMaterial isText={true} material={dimensions?.material} /> : <></>),
@@ -46,18 +48,18 @@ export function ReactDimension({
   sceneRotation,
   sceneCenter,
 }: {
-  readonly d: A3d.Dimension;
+  readonly d: Dimension;
   readonly visible: boolean;
   readonly children: React.JSX.Element;
-  readonly sceneRotation: A3d.Vec3 | undefined;
-  readonly sceneCenter: A3d.Vec3 | undefined;
+  readonly sceneRotation: Vec3 | undefined;
+  readonly sceneCenter: Vec3 | undefined;
 }): React.JSX.Element {
   const ref = React.useRef<Group>(undefined!);
   useFrame(({ camera }) => {
     ref.current.visible =
       visible &&
       ((): boolean => {
-        const cam = A3d.vec3TransRot(camera.position, A3d.vec3Flip(sceneCenter!), sceneRotation!);
+        const cam = vec3TransRot(camera.position, vec3Flip(sceneCenter!), sceneRotation!);
         const cameraPositions = {
           [cam.x >= 0 ? "right" : "left"]: true,
           [cam.y >= 0 ? "top" : "bottom"]: true,
@@ -78,7 +80,7 @@ const DimensionMeshes = React.memo(
     meshes,
     children,
   }: {
-    readonly meshes: ReadonlyArray<A3d.Mesh>;
+    readonly meshes: ReadonlyArray<Mesh>;
     readonly children: React.JSX.Element;
   }): React.JSX.Element => (
     <>

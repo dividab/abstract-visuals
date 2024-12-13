@@ -1,6 +1,7 @@
-import * as AbstractImage from "../model/index.js";
+import { AbstractImage } from "../model/abstract-image.js";
+import { Component, corners, Ellipse, Group, Line, Polygon, PolyLine, Rectangle, Text } from "../model/component.js";
 
-export function dxf2dExportImage(root: AbstractImage.AbstractImage): string {
+export function dxf2dExportImage(root: AbstractImage): string {
   const builder: Builder = createBuilder();
   let height: number = root.size.height;
   let layer: number = 0;
@@ -40,7 +41,7 @@ function createBuilder(): Builder {
 
 function _visit(
   // tslint:disable-next-line:variable-name
-  c_in: AbstractImage.Component,
+  c_in: Component,
   builder: Builder,
   layer: number,
   height: number
@@ -52,7 +53,7 @@ function _visit(
   }*/
 
   if (c_in.type === "group") {
-    let c: AbstractImage.Group = c_in;
+    let c: Group = c_in;
     for (const child of c.children) {
       _visit(child, builder, layer, height);
     }
@@ -74,7 +75,7 @@ function _visit(
   }
 
   if (c_in.type === "line") {
-    let c: AbstractImage.Line = c_in;
+    let c: Line = c_in;
     builder.append("0\nLINE\n");
     builder.append("8\nLines\n");
     builder.append("10\n" + c.start.x.toString() + "\n");
@@ -86,7 +87,7 @@ function _visit(
   }
 
   if (c_in.type === "polyline") {
-    let c: AbstractImage.PolyLine = c_in;
+    let c: PolyLine = c_in;
     builder.append("0\nPOLYLINE\n");
     builder.append("8\n" + layer.toString() + "\n");
     builder.append("66\n" + "1" + "\n");
@@ -102,7 +103,7 @@ function _visit(
   }
 
   if (c_in.type === "text") {
-    let c: AbstractImage.Text = c_in;
+    let c: Text = c_in;
     let horizontalAlignment: number;
     if (c.horizontalGrowthDirection === "left") {
       horizontalAlignment = 2;
@@ -138,7 +139,7 @@ function _visit(
   }
 
   if (c_in.type === "ellipse") {
-    let c: AbstractImage.Ellipse = c_in;
+    let c: Ellipse = c_in;
     layer++;
 
     builder.append("0\nPOLYLINE\n");
@@ -170,7 +171,7 @@ function _visit(
   }
 
   if (c_in.type === "polygon") {
-    let c: AbstractImage.Polygon = c_in;
+    let c: Polygon = c_in;
 
     builder.append("0\nPOLYLINE\n");
     builder.append("8\n" + layer.toString() + "\n");
@@ -189,15 +190,15 @@ function _visit(
   }
 
   if (c_in.type === "rectangle") {
-    let c: AbstractImage.Rectangle = c_in;
+    let c: Rectangle = c_in;
 
     builder.append("0\nPOLYLINE\n");
     builder.append("8\n" + layer.toString() + "\n");
     builder.append("66\n" + "1" + "\n");
-    let corners = AbstractImage.corners(c);
+    let cors = corners(c);
     //      for (let point in c.Corners().Concat(c.Corners().Take(1))) {
     //      for (let point of concat([corners, corners.take(1)])) {
-    for (let point of corners.concat(corners[0])) {
+    for (let point of cors.concat(cors[0])) {
       builder.append("0\nVERTEX\n");
       builder.append("8\n" + layer.toString() + "\n");
       builder.append("10\n" + point.x.toString() + "\n");

@@ -1,9 +1,11 @@
 import React from "react";
+import { extend, useFrame } from "@react-three/fiber";
 import { Group } from "three";
-import { useFrame } from "@react-three/fiber";
-import * as A3d from "../../abstract-3d.js";
+import { Group as Group_1 } from "../../abstract-3d.js";
 import { MaterialState, ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
+
+extend({ Group });
 
 export function ReactGroup({
   g,
@@ -20,7 +22,7 @@ export function ReactGroup({
   setHoveredId,
   createGroupKey,
 }: {
-  readonly g: A3d.Group;
+  readonly g: Group_1;
   readonly materialStateImages?: Record<string, string>;
   readonly hoveredId: string | undefined;
   readonly hoveredIdExternal: string | undefined;
@@ -43,7 +45,7 @@ export function ReactGroup({
   ) => void;
   readonly setHoveredId: (id: string | undefined) => void;
   readonly createGroupKey?: (
-    g: A3d.Group,
+    g: Group_1,
     idx: number,
     rootData: Record<string, string> | undefined,
     id: string

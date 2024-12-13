@@ -1,7 +1,6 @@
 import React from "react";
-// import { Html } from "@react-three/drei/web/Html.js";
 import { Html } from "@react-three/drei";
-import * as A3d from "../../abstract-3d.js";
+import { HotSpot, vec3Zero } from "../../abstract-3d.js";
 import { ReactMesh } from "./react-mesh.js";
 import { ReactMaterial } from "./react-material.js";
 
@@ -24,7 +23,7 @@ export const ReactHotSpots = React.memo(
     onClickHotSpot,
     setHoveredId,
   }: {
-    readonly hotSpots?: ReadonlyArray<A3d.HotSpot>;
+    readonly hotSpots?: ReadonlyArray<HotSpot>;
     readonly showHotSpotTexts: boolean;
     readonly hotSpotZAdjPos: number;
     readonly hotSpotTexts?: Record<string, string>;
@@ -63,7 +62,7 @@ export function ReactHotSpot({
   onClickHotSpot,
   setHoveredId,
 }: {
-  readonly h: A3d.HotSpot;
+  readonly h: HotSpot;
   readonly hotSpotZAdjPos: number;
   readonly showHotSpotTexts: boolean;
   readonly hotSpotTexts?: Record<string, string>;
@@ -73,7 +72,7 @@ export function ReactHotSpot({
   readonly setHoveredId: (id: string | undefined) => void;
 }): React.JSX.Element {
   const hotSpot = activeHotSpots ? activeHotSpots[h.id] : undefined;
-  const hsPos = h.mesh.geometry.type === "Box" ? h.mesh.geometry.pos : A3d.vec3Zero;
+  const hsPos = h.mesh.geometry.type === "Box" ? h.mesh.geometry.pos : vec3Zero;
   const text = hotSpotTexts?.[h.id];
   return (
     <>

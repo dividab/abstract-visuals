@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import * as React from "react";
+import React from "react";
 import {
   AbstractDoc as AD,
   AbstractDocExporters,

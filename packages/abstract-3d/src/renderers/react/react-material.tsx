@@ -1,7 +1,7 @@
 import React from "react";
-import { Color, DoubleSide, MaterialParameters, SRGBColorSpace, Texture, TextureLoader } from "three";
 import { suspend } from "suspend-react";
-import * as A3d from "../../abstract-3d.js";
+import { Color, DoubleSide, MaterialParameters, SRGBColorSpace, Texture, TextureLoader } from "three";
+import { Material } from "../../abstract-3d.js";
 import { shade } from "../shared.js";
 
 const decreasedOpacity = 0.2;
@@ -19,7 +19,7 @@ export function ReactMaterial({
   state,
   isText,
 }: {
-  readonly material: A3d.Material;
+  readonly material: Material;
   readonly id?: string;
   readonly hoveredId?: string | undefined;
   readonly selectedId?: string | undefined;
@@ -84,7 +84,7 @@ function TextureMaterial({
 }: {
   readonly url: string;
   readonly color: string | Color | undefined;
-  readonly material: A3d.Material;
+  readonly material: Material;
 }): React.JSX.Element {
   const texture = suspend(
     new Promise((res) =>
@@ -117,7 +117,7 @@ const textureLoader = new TextureLoader();
 
 const materialDefaults: MaterialParameters = { transparent: false, opacity: 1.0, depthWrite: true, depthTest: true };
 
-const acceptMat: A3d.Material = { normal: "rgb(0,148,91)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
-const selectMat: A3d.Material = { normal: "rgb(14,82,184)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
-const errorMar: A3d.Material = { normal: "#b82f3a", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
-const warningMat: A3d.Material = { normal: "rgb(240, 197, 48)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+const acceptMat: Material = { normal: "rgb(0,148,91)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+const selectMat: Material = { normal: "rgb(14,82,184)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+const errorMar: Material = { normal: "#b82f3a", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+const warningMat: Material = { normal: "rgb(240, 197, 48)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };

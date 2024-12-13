@@ -1,8 +1,10 @@
-import * as B64 from "base64-js";
-import * as AbstractImage from "../model/index.js";
+import { fromByteArray } from "base64-js";
+import { Component, GrowthDirection, BinaryFormat, ImageData } from "../model/component.js";
+import { AbstractImage } from "../model/abstract-image.js";
+import { Color } from "../model/color.js";
 
-export function createSVG(image: AbstractImage.AbstractImage, pixelWidth?: number, pixelHeight?: number): string {
-  const imageElements = image.components.map((c: AbstractImage.Component) => abstractComponentToSVG(c));
+export function createSVG(image: AbstractImage, pixelWidth?: number, pixelHeight?: number): string {
+  const imageElements = image.components.map((c: Component) => abstractComponentToSVG(c));
 
   return createElement(
     "svg",
@@ -16,7 +18,7 @@ export function createSVG(image: AbstractImage.AbstractImage, pixelWidth?: numbe
   );
 }
 
-function abstractComponentToSVG(component: AbstractImage.Component): string {
+function abstractComponentToSVG(component: Component): string {
   switch (component.type) {
     case "group":
       return createElement(
@@ -301,7 +303,7 @@ function convertUpperToHyphenLower(elementName: string): string {
   return elementName !== "viewBox" ? elementName.replace(/[A-Z]/g, upperToHyphenLower) : elementName;
 }
 
-function getBaselineAdjustment(d: AbstractImage.GrowthDirection): "baseline" | "central" | "hanging" {
+function getBaselineAdjustment(d: GrowthDirection): "baseline" | "central" | "hanging" {
   if (d === "up") {
     return "baseline";
   }
@@ -314,7 +316,7 @@ function getBaselineAdjustment(d: AbstractImage.GrowthDirection): "baseline" | "
   throw "Unknown text alignment " + d;
 }
 
-function getTextAnchor(d: AbstractImage.GrowthDirection): string {
+function getTextAnchor(d: GrowthDirection): string {
   if (d === "left") {
     return "end";
   }
@@ -327,19 +329,19 @@ function getTextAnchor(d: AbstractImage.GrowthDirection): string {
   throw "Unknown text anchor " + d;
 }
 
-function colorToRgb(color: AbstractImage.Color): string {
+function colorToRgb(color: Color): string {
   return `rgb(${color.r.toString()}, ${color.g.toString()}, ${color.b.toString()})`;
 }
 
-function colorToOpacity(color: AbstractImage.Color): string {
+function colorToOpacity(color: Color): string {
   return (color.a / 255).toString();
 }
 
-function getImageUrl(format: AbstractImage.BinaryFormat, data: AbstractImage.ImageData): string {
+function getImageUrl(format: BinaryFormat, data: ImageData): string {
   if (data.type === "url") {
     return data.url;
   } else if (format === "png") {
-    const base64 = B64.fromByteArray(data.bytes);
+    const base64 = fromByteArray(data.bytes);
     return `data:image/png;base64,${base64}`;
   } else {
     const svg = String.fromCharCode(...data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
@@ -347,7 +349,7 @@ function getImageUrl(format: AbstractImage.BinaryFormat, data: AbstractImage.Ima
     for (let i = 0; i < svg.length; ++i) {
       bytes.push(svg.charCodeAt(i));
     }
-    const base64 = B64.fromByteArray(new Uint8Array(bytes));
+    const base64 = fromByteArray(new Uint8Array(bytes));
     return `data:image/svg+xml;base64,${base64}`;
   }
 }

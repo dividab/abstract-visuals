@@ -1,7 +1,16 @@
 /* eslint-disable max-lines */
-import * as AI from "abstract-image";
-import * as Axis from "./axis.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
+import * as AI from "abstract-image";
+import {
+  Axis,
+  AxisBase,
+  inverseTransformValue,
+  getTicks,
+  createLinearAxis,
+  transformValue,
+  transformPoint,
+  DiscreteAxisPoint,
+} from "./axis.js";
 
 // tslint:disable:max-file-line-count
 
@@ -22,10 +31,10 @@ export interface Chart {
   readonly chartDataAxisesTop: Array<ChartDataAxis>;
   readonly chartDataAxisesLeft: Array<ChartDataAxis>;
   readonly chartDataAxisesRight: Array<ChartDataAxis>;
-  readonly xAxisesBottom: ReadonlyArray<Axis.Axis>;
-  readonly xAxisesTop: ReadonlyArray<Axis.Axis>;
-  readonly yAxisesLeft: ReadonlyArray<Axis.Axis>;
-  readonly yAxisesRight: ReadonlyArray<Axis.Axis>;
+  readonly xAxisesBottom: ReadonlyArray<Axis>;
+  readonly xAxisesTop: ReadonlyArray<Axis>;
+  readonly yAxisesLeft: ReadonlyArray<Axis>;
+  readonly yAxisesRight: ReadonlyArray<Axis>;
   readonly backgroundColor: AI.Color;
   readonly xGrid: ChartGrid;
   readonly yGrid: ChartGrid;
@@ -230,7 +239,7 @@ export function createChartStack(props: ChartStackProps): ChartStack {
   return { points, xAxis, yAxis, config };
 }
 
-export type ChartDataAxis = Axis.AxisBase & {
+export type ChartDataAxis = AxisBase & {
   readonly points: Array<AI.Point>;
 };
 
@@ -268,13 +277,8 @@ export function inverseTransformPoint(point: AI.Point, chart: Chart, xAxis: XAxi
   const xMax = chart.width - padding.right;
   const yMin = chart.height - padding.bottom;
   const yMax = padding.top;
-  const x = Axis.inverseTransformValue(
-    point.x,
-    xMin,
-    xMax,
-    xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0]
-  );
-  const y = Axis.inverseTransformValue(
+  const x = inverseTransformValue(point.x, xMin, xMax, xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0]);
+  const y = inverseTransformValue(
     point.y,
     yMin,
     yMax,
@@ -461,7 +465,7 @@ export function generateBackground(xMin: number, xMax: number, yMin: number, yMa
 export function xAxises(
   xAxis: XAxis,
   xNumTicks: number,
-  axises: ReadonlyArray<Axis.Axis>,
+  axises: ReadonlyArray<Axis>,
   xMin: number,
   xMax: number,
   yMin: number,
@@ -476,7 +480,7 @@ export function xAxises(
   const [dirFactor, axisWidth] = xAxis === "bottom" ? [1, chart.axisWidth.bottom] : [-1, chart.axisWidth.top];
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && xAxis === "bottom";
-    const xTicks = Axis.getTicks(xNumTicks, axis);
+    const xTicks = getTicks(xNumTicks, axis);
     if (chart.xGrid && !axis.noTicks) {
       gridLineComponents.push(
         generateXAxisGridLines(xMin, xMax, lineY + dirFactor * 10, fullGrid ? yMax : lineY, xTicks, axis, chart.xGrid)
@@ -533,7 +537,7 @@ export function xAxises(
 export function yAxises(
   yAxis: YAxis,
   yNumTicks: number,
-  axises: ReadonlyArray<Axis.Axis>,
+  axises: ReadonlyArray<Axis>,
   xMin: number,
   xMax: number,
   yMin: number,
@@ -549,7 +553,7 @@ export function yAxises(
 
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && yAxis === "left";
-    const yTicks = Axis.getTicks(yNumTicks, axis);
+    const yTicks = getTicks(yNumTicks, axis);
     if (chart.yGrid && !axis.noTicks) {
       gridLineComponents.push(
         generateYAxisLines(
@@ -624,7 +628,7 @@ export function generateDataAxisesX(
   for (const axis of axises) {
     const min = Math.min(...axis.points.map((p) => p.y));
     const max = Math.max(...axis.points.map((p) => p.y));
-    const linear = Axis.createLinearAxis(
+    const linear = createLinearAxis(
       min,
       max,
       axis.label,
@@ -653,12 +657,12 @@ export function generateDataAxisesX(
       }
       return axis.points[axis.points.length - 1]?.x ?? 0;
     };
-    const yValues = Axis.getTicks(numTicks, linear).map((t) => t.value);
+    const yValues = getTicks(numTicks, linear).map((t) => t.value);
     const lineY2 = lineY;
     components.push(
       ...yValues.flatMap((y) => {
         const tickX = findX(y);
-        const x = Axis.transformValue(tickX, xMin, xMax, chart.xAxisesBottom[0]);
+        const x = transformValue(tickX, xMin, xMax, chart.xAxisesBottom[0]);
         const start = AI.createPoint(x, lineY2);
         const end = AI.createPoint(x, lineY2 + dirFactor * 10);
         const textPos = AI.createPoint(x, lineY2 + dirFactor * 12);
@@ -734,7 +738,7 @@ export function generateDataAxisesY(
   for (const axis of axises) {
     const min = Math.min(...axis.points.map((p) => p.y));
     const max = Math.max(...axis.points.map((p) => p.y));
-    const linear = Axis.createLinearAxis(
+    const linear = createLinearAxis(
       min,
       max,
       axis.label,
@@ -763,12 +767,12 @@ export function generateDataAxisesY(
       }
       return axis.points[axis.points.length - 1]?.x ?? 0;
     };
-    const yValues = Axis.getTicks(numTicks, linear).map((t) => t.value);
+    const yValues = getTicks(numTicks, linear).map((t) => t.value);
     const lineX2 = lineX;
     components.push(
       ...yValues.flatMap((y) => {
         const tickY = findX(y);
-        const yPx = Axis.transformValue(tickY, yMin, yMax, chart.yAxisesLeft[0]);
+        const yPx = transformValue(tickY, yMin, yMax, chart.yAxisesLeft[0]);
         const start = AI.createPoint(lineX2, yPx);
         const end = AI.createPoint(lineX2 + dirFactor * 10, yPx);
         const textPos = AI.createPoint(lineX2 + dirFactor * 12, yPx);
@@ -864,7 +868,7 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
     let sumY = 0;
     const points = stackPoints.ys.map((y) => {
       sumY += y;
-      return Axis.transformPoint(AI.createPoint(stackPoints.x, sumY), xMin, xMax, yMin, yMax, xAxis, yAxis);
+      return transformPoint(AI.createPoint(stackPoints.x, sumY), xMin, xMax, yMin, yMax, xAxis, yAxis);
     });
     return points;
   });
@@ -880,7 +884,7 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
 
   const polygons: Array<AI.Polygon> = [];
   let lastLine = chart.chartStack.points.map((stackPoint) =>
-    Axis.transformPoint(AI.createPoint(stackPoint.x, 0), xMin, xMax, yMin, yMax, xAxis, yAxis)
+    transformPoint(AI.createPoint(stackPoint.x, 0), xMin, xMax, yMin, yMax, xAxis, yAxis)
   );
   lines.forEach((line, index) => {
     const config = chart.chartStack.config[index];
@@ -903,7 +907,7 @@ export function generateLines(xMin: number, xMax: number, yMin: number, yMax: nu
     }
     const xAxis = l.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
     const yAxis = l.yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0];
-    const points = l.points.map((p) => Axis.transformPoint(p, xMin, xMax, yMin, yMax, xAxis, yAxis));
+    const points = l.points.map((p) => transformPoint(p, xMin, xMax, yMin, yMax, xAxis, yAxis));
     const segments = getLineSegmentsInsideChart(xMin, xMax, yMin, yMax, points);
     const components = [];
     const outlineColor = l.textOutlineColor ?? chart.textOutlineColor;
@@ -1020,7 +1024,7 @@ export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: n
   const points = chart.chartPoints.map((p) => {
     const xAxis = p.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
     const yAxis = p.yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0];
-    const position = Axis.transformPoint(p.position, xMin, xMax, yMin, yMax, xAxis, yAxis);
+    const position = transformPoint(p.position, xMin, xMax, yMin, yMax, xAxis, yAxis);
     const outlineColor = p.textOutlineColor ?? chart.textOutlineColor;
     const components = [
       generatePointShape(p, position, undefined),
@@ -1090,9 +1094,9 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
               AI.createPoint(barPos, (b.max + (b.min ?? yMinValue)) / 2),
               AI.createPoint(barPos + bars.width / 2, b.min ?? yMinValue),
             ];
-      const pos = Axis.transformPoint(middle, xMin, xMax, yMin, yMax, xAxis, yAxis);
-      const topLeft = Axis.transformPoint(tl, xMin, xMax, yMin, yMax, xAxis, yAxis);
-      const bottomRight = Axis.transformPoint(br, xMin, xMax, yMin, yMax, xAxis, yAxis);
+      const pos = transformPoint(middle, xMin, xMax, yMin, yMax, xAxis, yAxis);
+      const topLeft = transformPoint(tl, xMin, xMax, yMin, yMax, xAxis, yAxis);
+      const bottomRight = transformPoint(br, xMin, xMax, yMin, yMax, xAxis, yAxis);
       components.push(
         AI.createRectangle(
           topLeft,
@@ -1164,12 +1168,12 @@ export function generateXAxisGridLines(
   xMax: number,
   yMin: number,
   yMax: number,
-  xTicks: ReadonlyArray<Axis.DiscreteAxisPoint>,
-  xAxis: Axis.Axis,
+  xTicks: ReadonlyArray<DiscreteAxisPoint>,
+  xAxis: Axis,
   xGrid: { readonly color: AI.Color; readonly thickness: number }
 ): AI.Component {
   const xLines = xTicks.map((l) => {
-    const x = Axis.transformValue(l.value, xMin, xMax, xAxis);
+    const x = transformValue(l.value, xMin, xMax, xAxis);
     const start = AI.createPoint(x, yMin);
     const end = AI.createPoint(x, yMax);
     return AI.createLine(start, end, xGrid.color, xGrid.thickness);
@@ -1183,8 +1187,8 @@ export function generateXAxisLabels(
   xMax: number,
   y: number,
   growVertical: AI.GrowthDirection,
-  ticks: ReadonlyArray<Axis.DiscreteAxisPoint>,
-  axis: Axis.Axis,
+  ticks: ReadonlyArray<DiscreteAxisPoint>,
+  axis: Axis,
   chart: Chart
 ): AI.Component {
   const rotation = axis.labelRotation ?? 0;
@@ -1200,7 +1204,7 @@ export function generateXAxisLabels(
     }
   })();
   const xLabels = ticks.map((l) => {
-    const position = AI.createPoint(Axis.transformValue(l.value, xMin, xMax, axis), y);
+    const position = AI.createPoint(transformValue(l.value, xMin, xMax, axis), y);
     return AI.createText(
       position,
       l.label ?? formatNumber(l.value),
@@ -1225,7 +1229,7 @@ export function generateXAxisLabel(
   y: number,
   horizontalGrowthDirection: AI.GrowthDirection,
   verticalGrowthDirection: AI.GrowthDirection,
-  axis: Axis.Axis,
+  axis: Axis,
   chart: Chart
 ): AI.Component {
   const position = AI.createPoint(x, y);
@@ -1252,13 +1256,13 @@ export function generateYAxisLines(
   xMax: number,
   yMin: number,
   yMax: number,
-  yTicks: ReadonlyArray<Axis.DiscreteAxisPoint>,
-  yAxis: Axis.Axis,
+  yTicks: ReadonlyArray<DiscreteAxisPoint>,
+  yAxis: Axis,
   yGrid: { readonly color: AI.Color; readonly thickness: number },
   xGrid: { readonly color: AI.Color; readonly thickness: number }
 ): AI.Component {
   const yLines = yTicks.map((l) => {
-    const y = Axis.transformValue(l.value, yMin, yMax, yAxis);
+    const y = transformValue(l.value, yMin, yMax, yAxis);
     const start = AI.createPoint(xMin - xGrid.thickness / 2, y);
     const end = AI.createPoint(xMax + xGrid.thickness / 2, y);
     return AI.createLine(start, end, yGrid.color, yGrid.thickness);
@@ -1271,8 +1275,8 @@ export function generateYAxisLabels(
   yMin: number,
   yMax: number,
   growHorizontal: AI.GrowthDirection,
-  yTicks: ReadonlyArray<Axis.DiscreteAxisPoint>,
-  yAxis: Axis.Axis,
+  yTicks: ReadonlyArray<DiscreteAxisPoint>,
+  yAxis: Axis,
   chart: Chart
 ): AI.Component {
   const rotation = yAxis.labelRotation ?? 0;
@@ -1288,7 +1292,7 @@ export function generateYAxisLabels(
   })();
 
   const yLabels = yTicks.map((l) => {
-    const position = AI.createPoint(x, Axis.transformValue(l.value, yMin, yMax, yAxis));
+    const position = AI.createPoint(x, transformValue(l.value, yMin, yMax, yAxis));
     return AI.createText(
       position,
       l.label ?? formatNumber(l.value),
@@ -1314,7 +1318,7 @@ export function generateYAxisLabel(
   rotation: number,
   horizontalGrowthDirection: AI.GrowthDirection,
   verticalGrowthDirection: AI.GrowthDirection,
-  axis: Axis.Axis,
+  axis: Axis,
   chart: Chart
 ): AI.Component {
   const position = AI.createPoint(x, y);

@@ -1,12 +1,21 @@
-import * as A3D from "../../../abstract-3d.js";
+import {
+  Plane,
+  Material,
+  Vec3,
+  vec2Scale,
+  vec3TransRot,
+  vec3RotCombine,
+  vec3Zero,
+  vec3,
+} from "../../../abstract-3d.js";
 import { color } from "../color.js";
 import { dxf3DFACE } from "../dxf-encoding.js";
 
-export function dxfPlane(p: A3D.Plane, m: A3D.Material, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
-  const half = A3D.vec2Scale(p.size, 0.5);
-  const pos = A3D.vec3TransRot(p.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, p.rot ?? A3D.vec3Zero);
-  const vec3tr = (x: number, y: number): A3D.Vec3 => A3D.vec3TransRot(A3D.vec3(x, y, 0), pos, rot);
+export function dxfPlane(p: Plane, m: Material, parentPos: Vec3, parentRot: Vec3): string {
+  const half = vec2Scale(p.size, 0.5);
+  const pos = vec3TransRot(p.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
+  const vec3tr = (x: number, y: number): Vec3 => vec3TransRot(vec3(x, y, 0), pos, rot);
   return dxf3DFACE(
     vec3tr(-half.x, -half.y),
     vec3tr(half.x, -half.y),

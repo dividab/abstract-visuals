@@ -1,15 +1,14 @@
 import React, { memo } from "react";
 import { Canvas, CanvasProps } from "@react-three/fiber";
-// import { OrbitControlsProps } from "@react-three/drei";
-import { OrbitControlsProps } from "@react-three/drei/core/OrbitControls.js";
+import { OrbitControlsProps } from "@react-three/drei";
 import { ReactScene } from "./react-scene.js";
-import * as A3d from "../../abstract-3d.js";
+import { Scene, View, Group } from "../../abstract-3d.js";
 import { ReactCamera, ControlsHelper, Camera } from "./react-camera.js";
 import { HotSpotInfo } from "./react-hotspot.js";
 import { MaterialState } from "./react-material.js";
 
 type ToReactProps = {
-  readonly scene: A3d.Scene;
+  readonly scene: Scene;
   readonly selectedId?: string | undefined;
   readonly activeHotSpots?: Record<string, HotSpotInfo> | undefined;
   readonly activeComponents?: Record<string, MaterialState> | undefined;
@@ -19,7 +18,7 @@ type ToReactProps = {
   readonly hotSpotTexts?: Record<string, string>;
   readonly useAnimations?: boolean;
   readonly camera?: Camera;
-  readonly view?: A3d.View;
+  readonly view?: View;
   readonly controlsHelper?: ControlsHelper;
   readonly canvasProps?: Omit<CanvasProps & React.RefAttributes<HTMLCanvasElement>, "children">;
   readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
@@ -37,13 +36,8 @@ type ToReactProps = {
     top: number
   ) => void;
   readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
-  readonly createGroupKey?: (
-    g: A3d.Group,
-    idx: number,
-    rootData: Record<string, string> | undefined,
-    id: string
-  ) => string;
-  readonly createGroupId?: (g: A3d.Group) => string;
+  readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
+  readonly createGroupId?: (g: Group) => string;
 };
 
 export const toReact = memo(

@@ -1,21 +1,21 @@
-import * as A3D from "../../abstract-3d.js";
+import { Scene, vec3Zero, Group, Vec3, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
 import { stlPlane } from "./stl-geometries/stl-plane.js";
 import { stlBox } from "./stl-geometries/stl-box.js";
 import { stlCylinder } from "./stl-geometries/stl-cylinder.js";
 import { stlCone } from "./stl-geometries/stl-cone.js";
 import { stlPolygon } from "./stl-geometries/stl-polygon.js";
 
-export const toStl = (scene: A3D.Scene): string =>
+export const toStl = (scene: Scene): string =>
   `solid
 ` +
   scene.groups.reduce(
-    (a, c) => a + stlGroup(c, scene.center_deprecated ?? A3D.vec3Zero, scene.rotation_deprecated ?? A3D.vec3Zero),
+    (a, c) => a + stlGroup(c, scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero),
     ""
   );
 
-function stlGroup(g: A3D.Group, parentPos: A3D.Vec3, parentRot: A3D.Vec3): string {
-  const pos = A3D.vec3TransRot(g.pos, parentPos, parentRot);
-  const rot = A3D.vec3RotCombine(parentRot, g.rot ?? A3D.vec3Zero);
+function stlGroup(g: Group, parentPos: Vec3, parentRot: Vec3): string {
+  const pos = vec3TransRot(g.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
   return (
     (g.meshes?.reduce((a, m) => {
       switch (m.geometry.type) {
