@@ -52,3 +52,5 @@ const cellObject = (colType: CellType | undefined): Xlsx.CellObject["t"] => {
 };
 
 const exhaustiveCheck = (check: never): never => check;
+
+//dummy
