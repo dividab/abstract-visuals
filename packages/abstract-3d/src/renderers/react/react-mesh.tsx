@@ -56,6 +56,7 @@ extend({
 
 const boxGeometry = new BoxGeometry();
 const cylinderGeometry = new CylinderGeometry(1, 1, 1, 40, 1);
+const cylinderGeometryOpen = new CylinderGeometry(1, 1, 1, 40, 1, true);
 const coneGeometry = new ConeGeometry(1, 1, 16, 1);
 const planeGeometry = new PlaneGeometry();
 const sphereGeometry = new SphereGeometry(1, 12, 12);
@@ -102,10 +103,10 @@ export function ReactMesh({
       );
     }
     case "Cylinder": {
-      const { pos, radius, rot, length, holes } = mesh.geometry;
+      const { pos, radius, rot, length, holes, open } = mesh.geometry;
       return !holes || holes.length === 0 ? (
         <mesh
-          geometry={cylinderGeometry}
+          geometry={open ? cylinderGeometryOpen : cylinderGeometry}
           scale={[radius, length, radius]}
           position={[pos.x, pos.y, pos.z]}
           rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}

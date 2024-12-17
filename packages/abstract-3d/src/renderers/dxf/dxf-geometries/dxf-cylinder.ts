@@ -28,10 +28,11 @@ export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
       const prevTop = topVec3Array[i - 1]!;
-      dxfString +=
-        dxf3DFACE(botPos, prevBot, currBot, currBot, mat) +
-        dxf3DFACE(topPos, prevTop, currTop, currTop, mat) +
-        dxf3DFACE(currBot, prevBot, prevTop, currTop, mat);
+      if (!c.open) {
+        dxfString +=
+          dxf3DFACE(botPos, prevBot, currBot, currBot, mat) + dxf3DFACE(topPos, prevTop, currTop, currTop, mat);
+      }
+      dxfString += dxf3DFACE(currBot, prevBot, prevTop, currTop, mat);
     }
     currentAngle += angleStep;
   }

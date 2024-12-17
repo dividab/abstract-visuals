@@ -73,6 +73,7 @@ export type Cylinder = {
   readonly length: number;
   readonly radius: number;
   readonly holes?: ReadonlyArray<Hole>;
+  readonly open?: boolean;
 };
 
 export type Sphere = {

@@ -27,10 +27,11 @@ export function stlCylinder(c: Cylinder, _m: Material, sides: number, parentPos:
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
       const prevTop = topVec3Array[i - 1]!;
-      dxfString +=
-        stlPlaneOfVertices(botPos, prevBot, currBot, currBot) +
-        stlPlaneOfVertices(topPos, prevTop, currTop, currTop) +
-        stlPlaneOfVertices(currBot, prevBot, prevTop, currTop);
+      if (!c.open) {
+        dxfString +=
+          stlPlaneOfVertices(botPos, prevBot, currBot, currBot) + stlPlaneOfVertices(topPos, prevTop, currTop, currTop);
+      }
+      dxfString += stlPlaneOfVertices(currBot, prevBot, prevTop, currTop);
     }
     currentAngle += angleStep;
   }
