@@ -523,8 +523,9 @@ export const cylinder = (
   length: number,
   material: Material,
   rot = vec3Zero,
+  open = false,
   holes: ReadonlyArray<Hole> = []
-): CylinderMesh => ({ geometry: { type: "Cylinder", pos, radius, length, rot, holes }, material });
+): CylinderMesh => ({ geometry: { type: "Cylinder", pos, radius, length, rot, holes, open }, material });
 
 export const sphere = (radius: number, material: Material, pos = vec3Zero): SphereMesh => ({
   geometry: { type: "Sphere", pos, radius },
