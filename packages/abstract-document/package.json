@@ -39,7 +39,7 @@
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/mustache": "^4.2.5",
     "@types/pdfkit": "^0.13.4",
-    "@types/react": "^19.0.1",
+    "@types/react": "^19.0.8",
     "diff-js-xml": "^1.0.8",
     "jszip": "^3.10.1",
     "pdf2json": "2.0.1",
