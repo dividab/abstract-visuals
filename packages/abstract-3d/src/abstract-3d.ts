@@ -1,4 +1,4 @@
-import { Euler, Quaternion, Vector3 } from "three";
+import { Euler, Matrix4, Quaternion, Vector3 } from "three";
 
 export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??
@@ -404,6 +404,19 @@ export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
   quaternion1.multiply(quaternion2);
   euler1.setFromQuaternion(quaternion1);
   return vec3(euler1.x, euler1.y, euler1.z);
+}
+
+export function vec3RotNormal(referenceNormal: Vec3, eulerRot: Vec3): Vec3 {
+  const rotationMatrix = new Matrix4();
+  const euler = new Euler();
+  euler.set(eulerRot.x, eulerRot.y, eulerRot.z);
+  rotationMatrix.makeRotationFromEuler(euler);
+
+  const normal = new Vector3();
+  normal.set(referenceNormal.x, referenceNormal.y, referenceNormal.z);
+  normal.applyMatrix4(rotationMatrix);
+  const normalized = normal.normalize();
+  return vec3(normalized.x, normalized.y, normalized.z);
 }
 
 export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {

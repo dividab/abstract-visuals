@@ -52,16 +52,16 @@ export const VERTEX_POINT = (CARTESIAN_POINT: number, m: MutableStep): number =>
 export const LINE = (CARTESIAN_POINT: number, VECTOR: number, m: MutableStep): number =>
   mutate(`LINE('',#${CARTESIAN_POINT},#${VECTOR})`, m);
 
-export const CIRCLE = (AXIS2_PLACEMENT_3D: number, m: MutableStep): number =>
-  mutate(`CIRCLE('',#${AXIS2_PLACEMENT_3D},2.)`, m);
+export const CIRCLE = (AXIS2_PLACEMENT_3D: number, radius: number, m: MutableStep): number =>
+  mutate(`CIRCLE('',#${AXIS2_PLACEMENT_3D},${radius})`, m);
 
 export const VECTOR = (DIRECTION: number, m: MutableStep): number => mutate(`VECTOR('',#${DIRECTION},1.)`, m);
 
-export const EDGE_CURVE = (VERTEX_POINT_FROM: number, VERTEX_POINT_TO: number, LINE: number, m: MutableStep): number =>
-  mutate(`EDGE_CURVE('',#${VERTEX_POINT_TO},#${VERTEX_POINT_FROM},#${LINE},.T.)`, m);
+export const EDGE_CURVE = (VERTEX_POINT_FROM: number, VERTEX_POINT_TO: number, LINE: number, m: MutableStep, type: "T" | "F" = "F"): number =>
+  mutate(`EDGE_CURVE('',#${VERTEX_POINT_TO},#${VERTEX_POINT_FROM},#${LINE},.${type}.)`, m);
 
-export const ORIENTED_EDGE = (EDGE_CURVE: number, m: MutableStep): number =>
-  mutate(`ORIENTED_EDGE('',*,*,#${EDGE_CURVE},.F.)`, m);
+export const ORIENTED_EDGE = (EDGE_CURVE: number, m: MutableStep, type: "T" | "F" = "F"): number =>
+  mutate(`ORIENTED_EDGE('',*,*,#${EDGE_CURVE},.${type}.)`, m);
 
 export const SURFACE_CURVE = (CIRCLE: number, PCURVE1: number, PCURVE2: number, m: MutableStep): number =>
   mutate(`SURFACE_CURVE('',#${CIRCLE},(#${PCURVE1},#${PCURVE2}),.PCURVE_S1.)`, m);
@@ -94,8 +94,8 @@ export const PCURVE = (
   m: MutableStep
 ): number => mutate(`PCURVE('',#${CYLINDRICAL_SURFACE_or_PLANE},#${DEFINITIONAL_REPRESENTATION})`, m);
 
-export const CYLINDRICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, m: MutableStep): number =>
-  mutate(`CYLINDRICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},2.)`, m);
+export const CYLINDRICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, radius: number, m: MutableStep): number =>
+  mutate(`CYLINDRICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${radius})`, m);
 
 export const DEFINITIONAL_REPRESENTATION = (LINEorCircle: number, m: MutableStep): number =>
   mutate(`DEFINITIONAL_REPRESENTATION('',(#${LINEorCircle}),#7)`, m);
@@ -206,3 +206,53 @@ export const UNCERTAINTY_MEASURE_WITH_UNIT = (LENGTH_UNIT: number, m: MutableSte
   'distance_accuracy_value','confusion accuracy')`,
     m
   );
+
+export const APPLICATION_PROTOCOL_DEFINITION = (m: MutableStep): number =>
+  mutate(`APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000,#q2);`, m);
+
+export const APPLICATION_CONTEXT = (m: MutableStep): number =>
+  mutate(`APPLICATION_CONTEXT('core data for automotive mechanical design processes');`, m);
+
+
+export const SHAPE_DEFINITION_REPRESENTATION = (productDefinitionShape: number, manifoldSurfaceShapeRepr: number, m: MutableStep): number =>
+  mutate(
+    `SHAPE_DEFINITION_REPRESENTATION(#${productDefinitionShape}, #${manifoldSurfaceShapeRepr})`,
+    m
+  );
+
+export const PRODUCT_DEFINITION_SHAPE = (productDefinition: number, m: MutableStep): number =>
+  mutate(
+    `PRODUCT_DEFINITION_SHAPE('','',#${productDefinition})`,
+    m
+  )
+
+export const PRODUCT_DEFINITION = (productDefinitionFormation: number, productDefinitionContext: number, m: MutableStep): number =>
+  mutate(
+    `PRODUCT_DEFINITION('design', #${productDefinitionFormation},#${productDefinitionContext})`,
+    m
+  )
+
+export const PRODUCT_DEFINITION_FORMATION = (product: number, m: MutableStep): number =>
+  mutate(
+    `PRODUCT_DEFINITION_FORMATION('','',#${product})`,
+    m
+  )
+
+export const PRODUCT = (productContext: number, name: string, m: MutableStep): number =>
+  mutate(
+    `PRODUCT('${name}','${name}','',(#${productContext}))`,
+    m
+  )
+
+export const PRODUCT_CONTEXT = (applicationContext: number, m: MutableStep): number =>
+  mutate(
+    `PRODUCT_CONTEXT('',#${applicationContext}, 'mechanical')`,
+    m
+  )
+
+export const PRODUCT_DEFINITION_CONTEXT = (applicationContext: number, m: MutableStep): number =>
+  mutate(
+    `PRODUCT_DEFINITION_CONTEXT('part definition',#${applicationContext},'design')`,
+    m
+  )
+

@@ -1,3 +1,4 @@
+import { Euler, Matrix4, Vector3 } from "three";
 import {
   Box,
   Material,
@@ -13,11 +14,14 @@ import {
   vec3NegX,
   vec3NegY,
   vec3NegZ,
+  vec3RotNormal,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../shared.js";
 import {
   ADVANCED_BREP_SHAPE_REPRESENTATION,
   ADVANCED_FACE,
+  APPLICATION_CONTEXT,
+  APPLICATION_PROTOCOL_DEFINITION,
   AXIS2_PLACEMENT_3D,
   CARTESIAN_POINT,
   CLOSED_SHELL,
@@ -36,6 +40,13 @@ import {
   ORIENTED_EDGE,
   PLANE,
   PRESENTATION_STYLE_ASSIGNMENT,
+  PRODUCT,
+  PRODUCT_CONTEXT,
+  PRODUCT_DEFINITION,
+  PRODUCT_DEFINITION_CONTEXT,
+  PRODUCT_DEFINITION_FORMATION,
+  PRODUCT_DEFINITION_SHAPE,
+  SHAPE_DEFINITION_REPRESENTATION,
   STYLED_ITEM,
   SURFACE_SIDE_STYLE,
   SURFACE_STYLE_FILL_AREA,
@@ -50,7 +61,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
   const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
   const cart3tr = (x: number, y: number, z: number): number =>
     CARTESIAN_POINT(vec3TransRot(vec3(x, y, z), pos, rot), m);
-  const v0 = VECTOR(DIRECTION(vec3Zero, m), m);
+  const v0 = VECTOR(DIRECTION(vec3PosY, m), m);
   const c0 = CARTESIAN_POINT(vec3Zero, m);
   const [c1, c2] = [cart3tr(-half.x, -half.y, -half.z), cart3tr(half.x, -half.y, -half.z)];
   const [c3, c4] = [cart3tr(half.x, half.y, -half.z), cart3tr(-half.x, half.y, -half.z)];
@@ -60,10 +71,13 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
   const [v5, v6, v7, v8] = [VERTEX_POINT(c5, m), VERTEX_POINT(c6, m), VERTEX_POINT(c7, m), VERTEX_POINT(c8, m)];
   const [l1, l2, l3, l4] = [LINE(c1, v0, m), LINE(c2, v0, m), LINE(c3, v0, m), LINE(c4, v0, m)];
   const [l5, l6, l7, l8] = [LINE(c5, v0, m), LINE(c6, v0, m), LINE(c7, v0, m), LINE(c8, v0, m)];
-  const [d1, d2] = [DIRECTION(vec3RotCombine(vec3PosX, rot), m), DIRECTION(vec3RotCombine(vec3PosY, rot), m)];
-  const [d3, d4] = [DIRECTION(vec3RotCombine(vec3PosZ, rot), m), DIRECTION(vec3RotCombine(vec3NegX, rot), m)];
-  const [d5, d6] = [DIRECTION(vec3RotCombine(vec3NegY, rot), m), DIRECTION(vec3RotCombine(vec3NegZ, rot), m)];
+  const [d1, d2] = [DIRECTION(vec3RotNormal(vec3PosX, rot), m), DIRECTION(vec3RotNormal(vec3PosY, rot), m)];
+  const [d3, d4] = [DIRECTION(vec3RotNormal(vec3PosZ, rot), m), DIRECTION(vec3RotNormal(vec3PosX, rot), m)];
+  const [d5, d6] = [DIRECTION(vec3RotNormal(vec3PosY, rot), m), DIRECTION(vec3RotNormal(vec3PosZ, rot), m)];
   const color = COLOUR_RGB(parseRgb(mat.normal), m);
+
+  APPLICATION_PROTOCOL_DEFINITION(m);
+  const applicationContext = APPLICATION_CONTEXT(m);
 
   const msb = MANIFOLD_SOLID_BREP(
     CLOSED_SHELL(
@@ -83,7 +97,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
             "T",
             m
           ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d3, d1, m), m),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d3, v0, m), m),
           m
         ),
         // Back
@@ -101,7 +115,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
             "T",
             m
           ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d6, d4, m), m),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d6, v0, m), m),
           m
         ),
         // Left
@@ -119,7 +133,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
             "T",
             m
           ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d4, d3, m), m),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d4, v0, m), m),
           m
         ),
         // Right
@@ -137,7 +151,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
             "T",
             m
           ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d1, d6, m), m),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d1, v0, m), m),
           m
         ),
         // Top
@@ -155,7 +169,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
             "T",
             m
           ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d2, d1, m), m),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d2, v0, m), m),
           m
         ),
         // Bottom
@@ -173,7 +187,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
             "T",
             m
           ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d5, d4, m), m),
+          PLANE(AXIS2_PLACEMENT_3D(c0, d5, v0, m), m),
           m
         ),
       ],
@@ -181,7 +195,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
     ),
     m
   );
-  ADVANCED_BREP_SHAPE_REPRESENTATION(AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m), msb, m);
+  const absp = ADVANCED_BREP_SHAPE_REPRESENTATION(AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m), msb, m);
   MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(
     STYLED_ITEM(
       PRESENTATION_STYLE_ASSIGNMENT(
@@ -194,4 +208,29 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
     ),
     m
   );
+  SHAPE_DEFINITION_REPRESENTATION(
+      PRODUCT_DEFINITION_SHAPE(
+        PRODUCT_DEFINITION(
+          PRODUCT_DEFINITION_FORMATION(
+            PRODUCT(
+              PRODUCT_CONTEXT(
+                applicationContext,
+                m
+              ),
+              "Cube",
+              m
+            ),
+            m
+          ),
+          PRODUCT_DEFINITION_CONTEXT(
+            applicationContext,
+            m
+          ),
+          m
+        ),
+        m
+      ),
+      absp,
+      m
+    );
 }

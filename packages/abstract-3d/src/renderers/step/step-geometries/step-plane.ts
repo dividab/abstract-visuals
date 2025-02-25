@@ -10,10 +10,13 @@ import {
   vec3PosX,
   vec3PosZ,
   vec3PosY,
+  vec3RotNormal,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../shared.js";
 import {
   ADVANCED_FACE,
+  APPLICATION_CONTEXT,
+  APPLICATION_PROTOCOL_DEFINITION,
   AXIS2_PLACEMENT_3D,
   CARTESIAN_POINT,
   COLOUR_RGB,
@@ -32,6 +35,13 @@ import {
   ORIENTED_EDGE,
   PLANE,
   PRESENTATION_STYLE_ASSIGNMENT,
+  PRODUCT,
+  PRODUCT_CONTEXT,
+  PRODUCT_DEFINITION,
+  PRODUCT_DEFINITION_CONTEXT,
+  PRODUCT_DEFINITION_FORMATION,
+  PRODUCT_DEFINITION_SHAPE,
+  SHAPE_DEFINITION_REPRESENTATION,
   SHELL_BASED_SURFACE_MODEL,
   STYLED_ITEM,
   SURFACE_SIDE_STYLE,
@@ -59,7 +69,10 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
     ORIENTED_EDGE(EDGE_CURVE(v4, v1, l4, m), m),
   ];
 
-  const [d1, d2] = [DIRECTION(vec3RotCombine(vec3PosX, rot), m), DIRECTION(vec3RotCombine(vec3PosZ, rot), m)];
+  APPLICATION_PROTOCOL_DEFINITION(m);
+  const applicationContext = APPLICATION_CONTEXT(m);
+
+  const [d1, d2] = [DIRECTION(vec3RotNormal(vec3PosX, rot), m), DIRECTION(vec3RotNormal(vec3PosZ, rot), m)];
 
   const color = COLOUR_RGB(parseRgb(mat.normal), m);
   const sbsm = SHELL_BASED_SURFACE_MODEL(
@@ -74,7 +87,7 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
     m
   );
 
-  MANIFOLD_SURFACE_SHAPE_REPRESENTATION(
+  const mssr = MANIFOLD_SURFACE_SHAPE_REPRESENTATION(
     AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m),
     sbsm,
     m
@@ -90,6 +103,32 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
       sbsm,
       m
     ),
+    m
+  );
+
+  SHAPE_DEFINITION_REPRESENTATION(
+    PRODUCT_DEFINITION_SHAPE(
+      PRODUCT_DEFINITION(
+        PRODUCT_DEFINITION_FORMATION(
+          PRODUCT(
+            PRODUCT_CONTEXT(
+              applicationContext,
+              m
+            ),
+            "Plane",
+            m
+          ),
+          m
+        ),
+        PRODUCT_DEFINITION_CONTEXT(
+          applicationContext,
+          m
+        ),
+        m
+      ),
+      m
+    ),
+    mssr,
     m
   );
 }
