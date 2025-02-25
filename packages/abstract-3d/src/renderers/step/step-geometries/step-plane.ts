@@ -9,6 +9,7 @@ import {
   vec3,
   vec3PosX,
   vec3PosZ,
+  vec3PosY,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../shared.js";
 import {
@@ -45,7 +46,7 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
   const cart3tr = (x: number, y: number): number => CARTESIAN_POINT(vec3TransRot(vec3(x, y, 0), pos, rot), m);
-  const v0 = VECTOR(DIRECTION(vec3Zero, m), m);
+  const v0 = VECTOR(DIRECTION(vec3PosY, m), m);
   const c0 = CARTESIAN_POINT(vec3Zero, m);
   const [c1, c2] = [cart3tr(-half.x, -half.y), cart3tr(half.x, -half.y)];
   const [c3, c4] = [cart3tr(half.x, half.y), cart3tr(-half.x, half.y)];

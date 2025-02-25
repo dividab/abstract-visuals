@@ -16,7 +16,7 @@ const mutate = (step: string, m: MutableStep): number => {
 };
 
 export const HEADER = (): string =>
-  `ISO-10303-21
+  `ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('FreeCAD Model'),'2;1');
 FILE_NAME('Open CASCADE Shape Model','2024-09-10T08:42:01',('Author'),(
