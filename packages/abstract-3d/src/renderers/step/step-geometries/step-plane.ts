@@ -11,6 +11,7 @@ import {
   vec3PosZ,
   vec3PosY,
   vec3RotNormal,
+  vec3NegZ,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../shared.js";
 import {
@@ -56,7 +57,7 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
   const cart3tr = (x: number, y: number): number => CARTESIAN_POINT(vec3TransRot(vec3(x, y, 0), pos, rot), m);
-  const v0 = VECTOR(DIRECTION(vec3PosY, m), m);
+  const v0 = VECTOR(DIRECTION(vec3PosX, m), m);
   const c0 = CARTESIAN_POINT(vec3Zero, m);
   const [c1, c2] = [cart3tr(-half.x, -half.y), cart3tr(half.x, -half.y)];
   const [c3, c4] = [cart3tr(half.x, half.y), cart3tr(-half.x, half.y)];
@@ -72,14 +73,15 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
   APPLICATION_PROTOCOL_DEFINITION(m);
   const applicationContext = APPLICATION_CONTEXT(m);
 
-  const [d1, d2] = [DIRECTION(vec3RotNormal(vec3PosX, rot), m), DIRECTION(vec3RotNormal(vec3PosZ, rot), m)];
+  const normal = DIRECTION(vec3RotNormal(vec3NegZ, rot), m);
+  const up = DIRECTION(vec3NegZ, m);
 
   const color = COLOUR_RGB(parseRgb(mat.normal), m);
   const sbsm = SHELL_BASED_SURFACE_MODEL(
     OPEN_SHELL(
       ADVANCED_FACE(
         FACE_BOUND(EDGE_LOOP([oe1, oe2, oe3, oe4], m), "T", m),
-        PLANE(AXIS2_PLACEMENT_3D(c0, d2, d1, m), m),
+        PLANE(AXIS2_PLACEMENT_3D(c0, normal, up, m), m),
         m
       ),
       m
