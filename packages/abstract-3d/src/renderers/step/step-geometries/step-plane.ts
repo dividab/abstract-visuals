@@ -9,10 +9,15 @@ import {
   vec3,
   vec3PosX,
   vec3PosZ,
+  vec3PosY,
+  vec3RotNormal,
+  vec3NegZ,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../shared.js";
 import {
   ADVANCED_FACE,
+  APPLICATION_CONTEXT,
+  APPLICATION_PROTOCOL_DEFINITION,
   AXIS2_PLACEMENT_3D,
   CARTESIAN_POINT,
   COLOUR_RGB,
@@ -31,6 +36,13 @@ import {
   ORIENTED_EDGE,
   PLANE,
   PRESENTATION_STYLE_ASSIGNMENT,
+  PRODUCT,
+  PRODUCT_CONTEXT,
+  PRODUCT_DEFINITION,
+  PRODUCT_DEFINITION_CONTEXT,
+  PRODUCT_DEFINITION_FORMATION,
+  PRODUCT_DEFINITION_SHAPE,
+  SHAPE_DEFINITION_REPRESENTATION,
   SHELL_BASED_SURFACE_MODEL,
   STYLED_ITEM,
   SURFACE_SIDE_STYLE,
@@ -45,7 +57,7 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
   const cart3tr = (x: number, y: number): number => CARTESIAN_POINT(vec3TransRot(vec3(x, y, 0), pos, rot), m);
-  const v0 = VECTOR(DIRECTION(vec3Zero, m), m);
+  const v0 = VECTOR(DIRECTION(vec3PosX, m), m);
   const c0 = CARTESIAN_POINT(vec3Zero, m);
   const [c1, c2] = [cart3tr(-half.x, -half.y), cart3tr(half.x, -half.y)];
   const [c3, c4] = [cart3tr(half.x, half.y), cart3tr(-half.x, half.y)];
@@ -58,14 +70,18 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
     ORIENTED_EDGE(EDGE_CURVE(v4, v1, l4, m), m),
   ];
 
-  const [d1, d2] = [DIRECTION(vec3RotCombine(vec3PosX, rot), m), DIRECTION(vec3RotCombine(vec3PosZ, rot), m)];
+  APPLICATION_PROTOCOL_DEFINITION(m);
+  const applicationContext = APPLICATION_CONTEXT(m);
+
+  const normal = DIRECTION(vec3RotNormal(vec3PosZ, rot), m);
+  const up = DIRECTION(vec3PosZ, m);
 
   const color = COLOUR_RGB(parseRgb(mat.normal), m);
   const sbsm = SHELL_BASED_SURFACE_MODEL(
     OPEN_SHELL(
       ADVANCED_FACE(
         FACE_BOUND(EDGE_LOOP([oe1, oe2, oe3, oe4], m), "T", m),
-        PLANE(AXIS2_PLACEMENT_3D(c0, d2, d1, m), m),
+        PLANE(AXIS2_PLACEMENT_3D(c0, normal, up, m), m),
         m
       ),
       m
@@ -73,7 +89,7 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
     m
   );
 
-  MANIFOLD_SURFACE_SHAPE_REPRESENTATION(
+  const mssr = MANIFOLD_SURFACE_SHAPE_REPRESENTATION(
     AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m),
     sbsm,
     m
@@ -89,6 +105,32 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
       sbsm,
       m
     ),
+    m
+  );
+
+  SHAPE_DEFINITION_REPRESENTATION(
+    PRODUCT_DEFINITION_SHAPE(
+      PRODUCT_DEFINITION(
+        PRODUCT_DEFINITION_FORMATION(
+          PRODUCT(
+            PRODUCT_CONTEXT(
+              applicationContext,
+              m
+            ),
+            "Plane",
+            m
+          ),
+          m
+        ),
+        PRODUCT_DEFINITION_CONTEXT(
+          applicationContext,
+          m
+        ),
+        m
+      ),
+      m
+    ),
+    mssr,
     m
   );
 }
