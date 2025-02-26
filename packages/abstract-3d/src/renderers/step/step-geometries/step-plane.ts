@@ -73,8 +73,8 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
   APPLICATION_PROTOCOL_DEFINITION(m);
   const applicationContext = APPLICATION_CONTEXT(m);
 
-  const normal = DIRECTION(vec3RotNormal(vec3NegZ, rot), m);
-  const up = DIRECTION(vec3NegZ, m);
+  const normal = DIRECTION(vec3RotNormal(vec3PosZ, rot), m);
+  const up = DIRECTION(vec3PosZ, m);
 
   const color = COLOUR_RGB(parseRgb(mat.normal), m);
   const sbsm = SHELL_BASED_SURFACE_MODEL(
