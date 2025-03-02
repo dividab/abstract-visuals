@@ -2,6 +2,7 @@
   //dummy
   "extends": "../tsconfig.settings.json",
   "exclude": ["./vite.config.ts"],
+  "include": ["src"],
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src"
