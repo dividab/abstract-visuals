@@ -56,7 +56,7 @@ It will build the packages and call `lerna publish` which will figure out which 
 [u-ac]: https://www.npmjs.com/package/abstract-chart
 [i-ad]: https://img.shields.io/npm/v/abstract-document.svg?style=flat
 [u-ad]: https://www.npmjs.com/package/abstract-document
-[i-ad3]: https://img.shields.io/npm/v/abstract-3d.svg?style=flat
-[u-ad3]: https://www.npmjs.com/package/abstract-3d
+[i-a3d]: https://img.shields.io/npm/v/abstract-3d.svg?style=flat
+[u-a3d]: https://www.npmjs.com/package/abstract-3d
 [i-as]: https://img.shields.io/npm/v/abstract-sheet.svg?style=flat
 [u-as]: https://www.npmjs.com/package/abstract-sheet
