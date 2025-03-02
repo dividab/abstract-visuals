@@ -31,7 +31,7 @@
     "prettier": "^2.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "typescript": "^5.4.5",
+    "typescript": "^5.8.2",
     "vite": "^6.0.3",
     "vite-plugin-node-polyfills": "^0.22.0",
     "xmldom": "^0.6.0",

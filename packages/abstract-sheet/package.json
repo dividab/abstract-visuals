@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/mustache": "^4.2.5",
     "@types/node": "^22.10.1",
-    "@types/react": "^19.0.8",
+    "@types/react": "^19.0.10",
     "@types/xml": "^1.0.11"
   },
   "gitHead": "0c3b26e59c7ef854cb8aae96a9f56dd7d82cbc9c"

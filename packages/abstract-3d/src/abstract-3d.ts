@@ -395,6 +395,7 @@ const quaternion2 = new Quaternion();
 const euler1 = new Euler();
 const euler2 = new Euler();
 const vector = new Vector3();
+const matrix = new Matrix4();
 
 export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
   euler1.set(outer.x, outer.y, outer.z);
@@ -407,15 +408,11 @@ export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
 }
 
 export function vec3RotNormal(referenceNormal: Vec3, eulerRot: Vec3): Vec3 {
-  const rotationMatrix = new Matrix4();
-  const euler = new Euler();
-  euler.set(eulerRot.x, eulerRot.y, eulerRot.z);
-  rotationMatrix.makeRotationFromEuler(euler);
-
-  const normal = new Vector3();
-  normal.set(referenceNormal.x, referenceNormal.y, referenceNormal.z);
-  normal.applyMatrix4(rotationMatrix);
-  const normalized = normal.normalize();
+  euler1.set(eulerRot.x, eulerRot.y, eulerRot.z);
+  matrix.makeRotationFromEuler(euler1);
+  vector.set(referenceNormal.x, referenceNormal.y, referenceNormal.z);
+  vector.applyMatrix4(matrix);
+  const normalized = vector.normalize();
   return vec3(normalized.x, normalized.y, normalized.z);
 }
 

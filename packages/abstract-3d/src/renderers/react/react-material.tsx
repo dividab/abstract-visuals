@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { suspend } from "suspend-react";
 import { Color, DoubleSide, MaterialParameters, SRGBColorSpace, Texture, TextureLoader } from "three";
 import { Material } from "../../abstract-3d.js";
@@ -100,6 +100,14 @@ function TextureMaterial({
     ),
     [url]
   ) as Texture | null;
+
+  useEffect(() => {
+    return () => {
+      if (texture) {
+        texture.dispose();
+      }
+    };
+  }, [texture]);
 
   return (
     <meshBasicMaterial

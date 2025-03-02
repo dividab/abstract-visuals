@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   GizmoHelperProps,
   PerspectiveCamera,
@@ -11,7 +11,7 @@ import {
   GizmoViewcube,
   GizmoViewport,
 } from "@react-three/drei";
-import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import { ThreeEvent, useThree } from "@react-three/fiber";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import { Vector3 } from "three/src/math/Vector3.js";
 import { View, Scene, Vec3, vec3 } from "../../abstract-3d.js";
@@ -65,7 +65,7 @@ export function ReactCamera({
   const orthographicRef = useRef<any | undefined>(undefined);
   const viewPortAspect = useThree(({ viewport: { aspect } }) => aspect);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const [posX, posY, posZ, size, sceneAspect] = (() => {
       switch (view) {
         case "front":
@@ -136,17 +136,17 @@ export function ReactCamera({
   //   prevScene.current = scene;
   // }, [scene]);
 
-  useFrame(() => {
-    // if (useAnimations && camera && prevScene.current !== scene) {
-    //   const [, , z] = cameraDist(scene);
-    //   vector3.set(camera.position.x, camera.position.y, z);
-    //   camera.position.lerp(vector3, 0.12);
-    //   ref.current.enabled = false;
-    //   invalidate();
-    // } else {
-    //   ref.current.enabled = true;
-    // }
-  });
+  // useFrame(() => {
+  // if (useAnimations && camera && prevScene.current !== scene) {
+  //   const [, , z] = cameraDist(scene);
+  //   vector3.set(camera.position.x, camera.position.y, z);
+  //   camera.position.lerp(vector3, 0.12);
+  //   ref.current.enabled = false;
+  //   invalidate();
+  // } else {
+  //   ref.current.enabled = true;
+  // }
+  // });
   return (
     <>
       <PerspectiveCamera
