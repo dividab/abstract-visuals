@@ -31,20 +31,6 @@ export type ControlsHelper = (Viewcube | Viewport) & { readonly props: Pick<Gizm
 type Viewcube = { readonly type: "Viewcube"; readonly viewcubeProps: GenericProps };
 type Viewport = { readonly type: "Viewport"; readonly viewportProps: GizmoViewportProps };
 
-const ControlsWrapper = (
-  props: OrbitControlsProps & { readonly setControls: (r: React.MutableRefObject<any>) => void }
-): React.JSX.Element => {
-  const ref = useRef<any>(undefined!);
-
-  useEffect(() => {
-    if (!ref.current) {
-      return;
-    }
-    props.setControls(ref.current);
-  }, [ref.current]);
-  return <OrbitControls {...props} makeDefault ref={ref} />;
-};
-
 export function ReactCamera({
   useAnimations,
   camera,
@@ -197,6 +183,20 @@ export function ReactCamera({
     </>
   );
 }
+
+const ControlsWrapper = (
+  props: OrbitControlsProps & { readonly setControls: (r: React.MutableRefObject<any>) => void }
+): React.JSX.Element => {
+  const ref = useRef<any>(undefined!);
+
+  useLayoutEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    props.setControls(ref.current);
+  }, [ref.current]);
+  return <OrbitControls {...props} makeDefault ref={ref} />;
+};
 
 type GizmoViewportProps = React.JSX.IntrinsicElements["group"] & {
   readonly axisColors?: readonly [string, string, string];
