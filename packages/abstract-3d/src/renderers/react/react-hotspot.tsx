@@ -100,7 +100,7 @@ export function ReactHotSpot({
         })}
       >
         <ReactMesh mesh={h.mesh}>
-          <ReactMaterial id={h.id} isText={false} material={h.mesh.material} hoveredId={hoveredId} />
+          <ReactMaterial id={h.id} isText={false} isHotSpot={true} material={h.mesh.material} hoveredId={hoveredId} />
         </ReactMesh>
       </group>
       {hotSpotTexts && text && (

@@ -18,6 +18,7 @@ export function ReactMaterial({
   materialStateImages,
   state,
   isText,
+  isHotSpot,
 }: {
   readonly material: Material;
   readonly id?: string;
@@ -27,6 +28,7 @@ export function ReactMaterial({
   readonly materialStateImages?: Record<string, string>;
   readonly state?: MaterialState | undefined;
   readonly isText: boolean;
+  readonly isHotSpot?: boolean;
 }): React.JSX.Element {
   const mat =
     !state || material.image?.type === "UrlImage"
@@ -70,7 +72,7 @@ export function ReactMaterial({
       roughness={mat.roughness}
       metalness={mat.metalness}
       side={DoubleSide}
-      {...(opacity < 1 || disabled
+      {...((opacity < 1 || disabled) && !isHotSpot
         ? { transparent: true, opacity: disabled ? opacity * decreasedOpacity : opacity }
         : materialDefaults)}
     />
