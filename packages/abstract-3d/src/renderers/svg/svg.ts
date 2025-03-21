@@ -35,7 +35,8 @@ export function toSvg(
   grayScale?: boolean,
   onlyStrokeFill: string = "rgba(255,255,255,0)",
   font: string = "",
-  buffers?: Record<string, string>
+  buffers?: Record<string, string>,
+  rotation?: number
 ): { readonly image: string; readonly width: number; readonly height: number } {
   const factor = scale
     ? scale.size /
@@ -94,7 +95,8 @@ export function toSvg(
   const image = svg(
     width,
     height,
-    elements.reduce((a, { element }) => `${a} ${element}`, "")
+    elements.reduce((a, { element }) => `${a} ${element}`, ""),
+    rotation
   );
   return { image, width, height };
 }

@@ -42,7 +42,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "publish-npm": "run-s verify && lerna publish",
+    "a3": "run-s verify && lerna publish",
     "verify": "run-s lint build test",
     "updated": "lerna updated",
     "test": "vitest run",
