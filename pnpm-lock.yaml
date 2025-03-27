@@ -279,7 +279,7 @@ importers:
         specifier: ^10.0.15
         version: link:../abstract-chart
       abstract-document:
-        specifier: ^14.0.15
+        specifier: ^14.0.16
         version: link:../abstract-document
       abstract-image:
         specifier: ^11.0.7
