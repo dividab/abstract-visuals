@@ -23,7 +23,7 @@ describe("markdown", () => {
   ].forEach((item) => {
     test(item.name, async () => {
       const abstractDoc = render(item.abstractDocJsx);
-      expect(abstractDoc).toEqual(item.expectedMarkdown);
+      expect(abstractDoc.children[0]).toEqual(item.expectedMarkdown);
     });
   });
 });
