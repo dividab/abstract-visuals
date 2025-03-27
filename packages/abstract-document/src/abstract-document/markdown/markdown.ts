@@ -113,11 +113,11 @@ function preProcessMarkdownAst(
   return { atoms, paragraphs };
 }
 
-export function create({ text, keepTogetherSections }: MarkdownProps): Array<SectionElement> {
+export function create({ text, keepTogetherSections }: MarkdownProps): SectionElement {
   const ast = unified().use(remarkParse, { commonmark: true }).use(remarkSubSuper).parse(text);
   const { paragraphs } = preProcessMarkdownAst(ast as AstRoot, [], [], [], 0);
   if (!keepTogetherSections) {
-    return paragraphs;
+    return Group.create({ keepTogether: false }, paragraphs);
   }
   const groups: Array<Array<SectionElement>> = [];
   let group: Array<SectionElement> = [];
@@ -136,9 +136,8 @@ export function create({ text, keepTogetherSections }: MarkdownProps): Array<Sec
     }
     ++i;
   }
-  if (groups.length > 0) {
-    return groups.map((group) => Group.create({ keepTogether: true }, group));
-  } else {
-    return [Group.create({ keepTogether: true }, [])];
-  }
+  return Group.create(
+    { keepTogether: true },
+    groups.map((group) => Group.create({ keepTogether: true }, group))
+  );
 }

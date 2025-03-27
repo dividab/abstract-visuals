@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [14.0.1] - 2025-03-27
+
+- Changed Markdown.create so it always returns a Group since downstream functions assume no arrays.
+- Added default format for unordered lists
+
 ## [14.0.0] - 2024-11-29
 
 - ~~Switch to ES Modules from CommonJS~~ Libraries should be in commonjs, for now...

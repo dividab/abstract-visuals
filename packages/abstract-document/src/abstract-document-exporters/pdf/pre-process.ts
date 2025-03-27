@@ -80,7 +80,6 @@ function preProcessParagraph(
   resources: AD.Resources.Resources
 ): Array<AD.SectionElement.SectionElement> {
   const adjustedParagraphs = adjustParagraph(paragraph);
-
   if (paragraph.numbering === undefined || !resources.numberingDefinitions) {
     return adjustedParagraphs;
   }
@@ -88,28 +87,32 @@ function preProcessParagraph(
   const numbering = paragraph.numbering.numberingId;
   const level = paragraph.numbering.level;
   const key = numbering + "_" + level.toString();
-  const levelDefinitions = resources.numberingDefinitions[numbering].levels;
-  for (let levelDefinition of levelDefinitions.filter((l) => l.level > level)) {
-    _numberingLevelItems.delete(numbering + "_" + levelDefinition.level.toString());
-  }
+  const levelDefinitions = resources.numberingDefinitions[numbering]?.levels ?? [];
+  let numberText = levelDefinitions[level]?.levelText ?? "";
+  if (numbering === "Unordered") {
+    numberText = "-";
+  } else {
+    for (let levelDefinition of levelDefinitions.filter((l) => l.level > level)) {
+      _numberingLevelItems.delete(numbering + "_" + levelDefinition.level.toString());
+    }
 
-  const numberOverride = paragraph.numbering.numberOverride;
-  const append = paragraph.numbering.append;
-  let numberText = levelDefinitions[level].levelText;
-  if (numberOverride !== undefined) {
-    _numberingLevelItems.set(key, numberOverride);
-  } else if (!_numberingLevelItems.has(key)) {
-    _numberingLevelItems.set(key, levelDefinitions[level].start);
-  } else if (append !== true) {
-    _numberingLevelItems.set(key, (_numberingLevelItems.get(key) || 0) + 1);
-  }
+    const numberOverride = paragraph.numbering.numberOverride;
+    const append = paragraph.numbering.append;
+    if (numberOverride !== undefined) {
+      _numberingLevelItems.set(key, numberOverride);
+    } else if (!_numberingLevelItems.has(key)) {
+      _numberingLevelItems.set(key, levelDefinitions[level].start);
+    } else if (append !== true) {
+      _numberingLevelItems.set(key, (_numberingLevelItems.get(key) || 0) + 1);
+    }
 
-  for (let levelDefinition of levelDefinitions.filter((l) => l.level <= level)) {
-    const numberingLevel = numbering + "_" + levelDefinition.level.toString();
-    const currentNumber = _numberingLevelItems.get(numberingLevel) || 0;
-    const levelText = generateLevelText(levelDefinition.format, currentNumber);
-    const levelKey = "%" + (levelDefinition.level + 1).toString();
-    numberText = numberText.replace(levelKey, levelText);
+    for (let levelDefinition of levelDefinitions.filter((l) => l.level <= level)) {
+      const numberingLevel = numbering + "_" + levelDefinition.level.toString();
+      const currentNumber = _numberingLevelItems.get(numberingLevel) || 0;
+      const levelText = generateLevelText(levelDefinition.format, currentNumber);
+      const levelKey = "%" + (levelDefinition.level + 1).toString();
+      numberText = numberText.replace(levelKey, levelText);
+    }
   }
 
   let rows: Array<AD.TableRow.TableRow> = [];
@@ -117,7 +120,7 @@ function preProcessParagraph(
 
   children.push(AD.TableCell.create());
 
-  const numberTextStyle = TextStyle.overrideWith(levelDefinitions[level].style, paragraph.style.textStyle);
+  const numberTextStyle = TextStyle.overrideWith(levelDefinitions[level]?.style, paragraph.style.textStyle);
 
   children.push(
     AD.TableCell.create({}, [
@@ -138,8 +141,8 @@ function preProcessParagraph(
   children.push(AD.TableCell.create({}, adjustedParagraphs));
   rows.push(AD.TableRow.create({}, children));
 
-  const indentationWidth = levelDefinitions[level].levelIndention;
-  const numberingWidth = levelDefinitions[level].numberingWidth;
+  const indentationWidth = levelDefinitions[level]?.levelIndention ?? 8;
+  const numberingWidth = levelDefinitions[level]?.numberingWidth ?? 8;
   return [
     AD.Table.create(
       {
