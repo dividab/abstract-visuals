@@ -1,4 +1,4 @@
-import { Vec2, vec2Add, vec2Scale } from "../../abstract-3d.js";
+import { vec2, Vec2, vec2Add, vec2Scale } from "../../abstract-3d.js";
 
 export const svg = (width: number, height: number, children: string): string => {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width.toFixed(0)} ${height.toFixed(
@@ -31,13 +31,14 @@ export type EmbededImage =
   | { readonly type: "svg"; readonly svg: string };
 
 export const svgImage = (p: Vec2, size: Vec2, rot: number, data: EmbededImage): string => {
-  const half = vec2Scale(size, 0.5);
+  const newSize = rotatedBoundingBox(size, rot);
+  const half = vec2Scale(newSize, 0.5);
   return data.type === "url"
     ? `<image x="${p.x.toFixed(0)}" y="${p.y.toFixed(0)}" transform="${rotate(rot)}" ${transformOrigin(
         p,
         half
-      )} width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}" />`
-    : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" transform="${translate(
+      )} width="${newSize.x.toFixed(0)}" height="${newSize.y.toFixed(0)}" href="${data.url}" />`
+    : `<svg width="${newSize.x.toFixed(0)}" height="${newSize.y.toFixed(0)}" transform="${translate(
         vec2Add(p, half)
       )} ${rotate(rot)} ${translate(vec2Scale(half, -1))}">${data.svg}</svg>
 
@@ -50,3 +51,10 @@ const transformOrigin = (p: Vec2, half: Vec2): string =>
 const rotate = (rot: number): string => `rotate(${rot.toFixed(0)})`;
 
 const translate = (p: Vec2): string => `translate(${p.x.toFixed(0)}, ${p.y.toFixed(0)})`;
+
+const rotatedBoundingBox = (size: Vec2, rotationDeg: number): Vec2 => {
+  const rad = (rotationDeg * Math.PI) / 180;
+  const cos = Math.abs(Math.cos(rad));
+  const sin = Math.abs(Math.sin(rad));
+  return vec2(size.x * cos + size.y * sin, size.x * sin + size.y * cos);
+};
