@@ -48,7 +48,9 @@ export function toSvg(
         ? scene.size_deprecated.z
         : scene.size_deprecated.y)
     : 1;
-  const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? vec3Zero);
+  const baseRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? vec3Zero);
+  const unitRot = rotation ? vec3RotCombine(vec3(0, 0, (rotation * Math.PI) / 180), baseRot) : baseRot;
+
   const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
   const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot, factor);
   const unitHalfSize = vec3Scale(size, 0.5);
@@ -95,8 +97,7 @@ export function toSvg(
   const image = svg(
     width,
     height,
-    elements.reduce((a, { element }) => `${a} ${element}`, ""),
-    rotation
+    elements.reduce((a, { element }) => `${a} ${element}`, "")
   );
   return { image, width, height };
 }

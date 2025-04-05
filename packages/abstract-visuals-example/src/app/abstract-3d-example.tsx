@@ -37,13 +37,16 @@ export function Abstract3DExample(): React.ReactNode {
       <div
         dangerouslySetInnerHTML={{
           __html: A3D.toSvg(
-            cylinderFilter,
-            "right",
+            systemair,
+            "front",
             1,
-            { size: 300, scaleByWidth: true },
-            true,
-            true,
-            "rgb(255,255,255,1)"
+            { size: 400, scaleByWidth: true },
+            false,
+            false,
+            undefined,
+            undefined,
+            undefined,
+            0
           ).image,
         }}
       />

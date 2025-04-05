@@ -1,11 +1,10 @@
 import { Vec2, vec2Add, vec2Scale } from "../../abstract-3d.js";
 
-export const svg = (width: number, height: number, children: string, rotation: number | undefined): string =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width.toFixed(0)} ${height.toFixed(
+export const svg = (width: number, height: number, children: string): string => {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width.toFixed(0)} ${height.toFixed(
     0
-  )}" width="${width.toFixed(0)}px" height="${height.toFixed(0)}px" ${
-    rotation ? `transform="rotate(${rotation} 50 50)"` : ""
-  } >${children} </svg>`;
+  )}" width="${width.toFixed(0)}px" height="${height.toFixed(0)}px">${children} </svg>`;
+};
 
 export const svgLine = (p1: Vec2, p2: Vec2, stroke: string, strokeWidth: number): string =>
   `<line x1="${p1.x.toFixed(0)}" y1="${p1.y.toFixed(0)}" x2="${p2.x.toFixed(0)}" y2="${p2.y.toFixed(
