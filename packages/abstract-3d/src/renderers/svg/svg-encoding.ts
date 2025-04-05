@@ -34,16 +34,14 @@ export type EmbededImage =
 export const svgImage = (p: Vec2, size: Vec2, rot: number, data: EmbededImage): string => {
   const newSize = rotatedBoundingBox(size, rot);
   const half = vec2Scale(newSize, 0.5);
+  const transform = `${rotate(rot)}" ${transformOrigin(p, half)}`;
   return data.type === "url"
-    ? `<image x="${p.x.toFixed(0)}" y="${p.y.toFixed(0)}" transform="${rotate(rot)}" ${transformOrigin(
-        p,
-        half
-      )} width="${newSize.x.toFixed(0)}" height="${newSize.y.toFixed(0)}" href="${data.url}" />`
-    : `<svg width="${newSize.x.toFixed(0)}" height="${newSize.y.toFixed(0)}" transform="${translate(
-        vec2Add(p, half)
-      )} ${rotate(rot)} ${translate(vec2Scale(half, -1))}">${data.svg}</svg>
-
-  `;
+    ? `<image x="${p.x.toFixed(0)}" y="${p.y.toFixed(0)}" transform="${transform}" width="${newSize.x.toFixed(
+        0
+      )}" height="${newSize.y.toFixed(0)}" href="${data.url}" />`
+    : `<svg x="${p.x.toFixed(0)}" y="${p.y.toFixed(0)}" transform="${transform}" width="${newSize.x.toFixed(
+        0
+      )}" height="${newSize.y.toFixed(0)}">${data.svg}</svg>`;
 };
 
 const transformOrigin = (p: Vec2, half: Vec2): string =>

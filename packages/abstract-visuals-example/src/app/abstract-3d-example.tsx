@@ -46,7 +46,7 @@ export function Abstract3DExample(): React.ReactNode {
             undefined,
             undefined,
             undefined,
-            0
+            270
           ).image,
         }}
       />
