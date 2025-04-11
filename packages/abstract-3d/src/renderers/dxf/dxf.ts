@@ -12,7 +12,7 @@ export const toDxf = (scene: Scene, view: View): string => {
   const rotatedCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
   const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, rotatedCenter, vec3Zero, 1);
   const id = "D171D";
-  const handleRef = {handle: 46};
+  const handleRef = {handle: 0x1000}; //make sure we start with a value higher than any other handle id's used in the header
   return dxfHeader(size, center, id) + scene.groups.reduce((a, c) => a + dxfGroup(c, center, unitRot, handleRef), "") + dxfFooter(id);
 };
 

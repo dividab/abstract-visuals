@@ -5,8 +5,9 @@ import { Vec3 } from "../../abstract-3d.js";
 //the only requirement is that all of them are unique. So handling
 //it like this makes the format more deterministic and less prone to
 //errors
-export const dxfHandle = (handleRef: {handle: number}): string =>
-  `${(++handleRef.handle).toString(16).toUpperCase()}`;
+function dxfHandle(handleRef: {handle: number}): string {
+  return (++handleRef.handle).toString(16).toUpperCase();
+}
 
 export const dxf3DFACE = (vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: number, handleRef: {handle: number}): string => `  0
 3DFACE
