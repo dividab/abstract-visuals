@@ -11,7 +11,7 @@ import {
 import { color } from "../color.js";
 import { dxf3DFACE } from "../dxf-encoding.js";
 
-export function dxfPlane(p: Plane, m: Material, parentPos: Vec3, parentRot: Vec3): string {
+export function dxfPlane(p: Plane, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: {handle: number}): string {
   const half = vec2Scale(p.size, 0.5);
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
@@ -21,6 +21,7 @@ export function dxfPlane(p: Plane, m: Material, parentPos: Vec3, parentRot: Vec3
     vec3tr(half.x, -half.y),
     vec3tr(half.x, half.y),
     vec3tr(-half.x, half.y),
-    color(m.normal)
+    color(m.normal), 
+    handleRef
   );
 }

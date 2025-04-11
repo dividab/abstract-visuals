@@ -2,7 +2,7 @@ import { Cylinder, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 
 import { color } from "../color.js";
 import { dxf3DFACE } from "../dxf-encoding.js";
 
-export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3): string {
+export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3, handleRef: {handle: number}): string {
   let dxfString = "";
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
@@ -30,9 +30,9 @@ export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
       const prevTop = topVec3Array[i - 1]!;
       if (!c.open) {
         dxfString +=
-          dxf3DFACE(botPos, prevBot, currBot, currBot, mat) + dxf3DFACE(topPos, prevTop, currTop, currTop, mat);
+          dxf3DFACE(botPos, prevBot, currBot, currBot, mat, handleRef) + dxf3DFACE(topPos, prevTop, currTop, currTop, mat, handleRef);
       }
-      dxfString += dxf3DFACE(currBot, prevBot, prevTop, currTop, mat);
+      dxfString += dxf3DFACE(currBot, prevBot, prevTop, currTop, mat, handleRef);
     }
     currentAngle += angleStep;
   }
