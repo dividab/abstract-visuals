@@ -11,7 +11,8 @@ export const toDxf = (scene: Scene, view: View): string => {
   const unitRot = vec3RotCombine(rotationForCameraPos(view), scene.rotation_deprecated ?? vec3Zero);
   const rotatedCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
   const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, rotatedCenter, vec3Zero, 1);
-  return dxfHeader(size, center) + scene.groups.reduce((a, c) => a + dxfGroup(c, center, unitRot), "") + dxfFooter;
+  const id = "abcdef1234567890";
+  return dxfHeader(size, center, id) + scene.groups.reduce((a, c) => a + dxfGroup(c, center, unitRot), "") + dxfFooter(id);
 };
 
 function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3): string {
@@ -20,18 +21,24 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3): string {
   return (
     (g.meshes?.reduce((a, c) => {
       switch (c.geometry.type) {
-        case "Plane":
+        case "Plane": {
           return a + dxfPlane(c.geometry, c.material, pos, rot);
-        case "Box":
+        }
+        case "Box": {
           return a + dxfBox(c.geometry, c.material, pos, rot);
-        case "Cylinder":
+        }
+        case "Cylinder": {
           return a + dxfCylinder(c.geometry, c.material, 18, pos, rot);
-        case "Cone":
+        }
+        case "Cone": {
           return a + dxfCone(c.geometry, c.material, 18, pos, rot);
-        case "Polygon":
+        }
+        case "Polygon": {
           return a + dxfPolygon(c.geometry, c.material, pos, rot);
-        default:
+        }
+        default: {
           return a;
+        }
       }
     }, "") ?? "") + g.groups?.reduce((a, c) => a + dxfGroup(c, pos, rot), "")
   );

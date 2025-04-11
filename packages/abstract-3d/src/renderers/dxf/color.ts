@@ -1,9 +1,9 @@
 import { Vec3, vec3, vec3DistSquared } from "../../abstract-3d.js";
 
-export function color(colorNormal: string): number {
+export function color(colorNormal: string | undefined): number {
     const ERROR_COLOR = 5; //magenta
     const ACI_COLOR_COUNT = 256;
-    if(ACI_COLOR_TABLE.length !== ACI_COLOR_COUNT) {
+    if(ACI_COLOR_TABLE.length !== ACI_COLOR_COUNT  || colorNormal === undefined) {
       return ERROR_COLOR; //magenta 
     }
   
@@ -21,7 +21,7 @@ export function color(colorNormal: string): number {
       }
     }
     return closestColor;
-  }
+}
   
   function colorNormalToVec3Color(colorNormal: string): Vec3 {
     const errorColor = vec3(255, 0, 255); // #ff00ff, magenta
