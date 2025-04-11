@@ -1,4 +1,4 @@
-import { Vec3, vec3 } from "../../abstract-3d.js";
+import { Vec3, vec3, vec3DistSquared } from "../../abstract-3d.js";
 
 export function color(colorNormal: string): number {
     const ERROR_COLOR = 5; //magenta
