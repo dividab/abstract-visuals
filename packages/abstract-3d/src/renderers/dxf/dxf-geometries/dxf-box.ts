@@ -2,7 +2,7 @@ import { Box, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3Scale,
 import { color } from "../color.js";
 import { dxf3DFACE } from "../dxf-encoding.js";
 
-export function dxfBox(b: Box, m: Material, parentPos: Vec3, parentRot: Vec3): string {
+export function dxfBox(b: Box, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: {handle: number}): string {
   const pos = vec3TransRot(b.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
   const half = vec3Scale(b.size, 0.5);
@@ -18,11 +18,11 @@ export function dxfBox(b: Box, m: Material, parentPos: Vec3, parentRot: Vec3): s
   const v8 = vec3tr3(-half.x, half.y, -half.z);
   const mat = color(m.normal);
   return (
-    dxf3DFACE(v1, v2, v3, v4, mat) + // front
-    dxf3DFACE(v5, v6, v7, v8, mat) + // Back
-    dxf3DFACE(v5, v1, v4, v8, mat) + // Left
-    dxf3DFACE(v6, v2, v3, v7, mat) + // Right
-    dxf3DFACE(v8, v7, v3, v4, mat) + // Top
-    dxf3DFACE(v5, v6, v2, v1, mat) // Bottom
+    dxf3DFACE(v1, v2, v3, v4, mat, handleRef) + // front
+    dxf3DFACE(v5, v6, v7, v8, mat, handleRef) + // Back
+    dxf3DFACE(v5, v1, v4, v8, mat, handleRef) + // Left
+    dxf3DFACE(v6, v2, v3, v7, mat, handleRef) + // Right
+    dxf3DFACE(v8, v7, v3, v4, mat, handleRef) + // Top
+    dxf3DFACE(v5, v6, v2, v1, mat, handleRef) // Bottom
   );
 }

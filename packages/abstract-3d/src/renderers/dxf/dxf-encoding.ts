@@ -1,15 +1,11 @@
 /* eslint-disable max-lines */
 import { Vec3 } from "../../abstract-3d.js";
 
-function random(): number {
-  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-}
-
-export const dxf3DFACE = (vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: number): string =>
-  `  0
+export function dxf3DFACE(vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: number, handleRef: {handle: number}): string {
+  return `  0
 3DFACE
  5
-${random()}
+${++handleRef.handle}
 100
 AcDbEntity
   62
@@ -41,9 +37,12 @@ ${vec4.y}
 33
 ${vec4.z}
 `;
+}
 
 export const dxfHeader = (size: Vec3, center: Vec3, groupId: string): string =>
-  `  0
+  ` 999
+DXF Generated from Divid Abstract 3D
+0
 SECTION
   2
 HEADER

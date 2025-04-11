@@ -2,7 +2,7 @@ import { Cone, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } fr
 import { color } from "../color.js";
 import { dxf3DFACE } from "../dxf-encoding.js";
 
-export function dxfCone(c: Cone, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3): string {
+export function dxfCone(c: Cone, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3, handleRef: {handle: number}): string {
   let dxfString = "";
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
@@ -22,7 +22,7 @@ export function dxfCone(c: Cone, m: Material, sides: number, parentPos: Vec3, pa
 
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
-      dxfString += dxf3DFACE(botPos, prevBot, currBot, currBot, mat) + dxf3DFACE(currBot, prevBot, topPos, topPos, mat);
+      dxfString += dxf3DFACE(botPos, prevBot, currBot, currBot, mat, handleRef) + dxf3DFACE(currBot, prevBot, topPos, topPos, mat, handleRef);
     }
     currentAngle += angleStep;
   }

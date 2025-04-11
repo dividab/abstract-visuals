@@ -1,7 +1,7 @@
 import { Vec3, vec3, vec3DistSquared } from "../../abstract-3d.js";
 
 export function color(colorNormal: string | undefined): number {
-    const ERROR_COLOR = 5; //magenta
+    const ERROR_COLOR = 6; //magenta
     const ACI_COLOR_COUNT = 256;
     if(ACI_COLOR_TABLE.length !== ACI_COLOR_COUNT  || colorNormal === undefined) {
       return ERROR_COLOR; //magenta 
