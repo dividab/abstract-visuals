@@ -1,11 +1,17 @@
 /* eslint-disable max-lines */
 import { Vec3 } from "../../abstract-3d.js";
 
-export function dxf3DFACE(vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: number, handleRef: {handle: number}): string {
-  return `  0
+//this doesn't have to be ordered, it can be completely random. 
+//the only requirement is that all of them are unique. So handling
+//it like this makes the format more deterministic and less prone to
+//errors
+export const dxfHandle = (handleRef: {handle: number}): string =>
+  `${(++handleRef.handle).toString(16).toUpperCase()}`;
+
+export const dxf3DFACE = (vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: number, handleRef: {handle: number}): string => `  0
 3DFACE
  5
-${++handleRef.handle}
+${dxfHandle(handleRef)}
 100
 AcDbEntity
   62
@@ -37,7 +43,119 @@ ${vec4.y}
 33
 ${vec4.z}
 `;
-}
+
+export const dxfPOLYLINE = (vertices: readonly Vec3[], color: string): string =>
+  `  0
+POLYLINE
+  8
+A3D
+  62
+${color}
+  66
+1${vertices.map(
+    (v) =>
+      `
+  0
+VERTEX
+  8
+A3D
+  10
+${v.x}
+  20
+${v.y}
+  30
+${v.z}`
+  )}
+  0
+SEQEND
+`;
+
+export const dxfText = (pos: Vec3, fontSize: number, text: string, color: string): string =>
+  `  0
+Text
+  8
+A3D
+  62
+${color}
+  10
+${pos.x}
+  20
+${pos.y}
+  30
+${pos.z}
+  11
+${pos.x}
+  21
+${pos.y}
+  31
+${pos.z}
+  40
+${fontSize}
+  1
+${text}
+`;
+
+export const dxf3DLine = (start: Vec3, end: Vec3, color: string, handleRef: {handle: number}): string =>
+  `  0
+LINE
+ 5
+${dxfHandle(handleRef)}
+100
+AcDbEntity
+  8
+A3D
+100
+AcDbLine
+  10
+${start.x}
+  20
+${start.y}
+  30
+${start.z}
+  11
+${end.x}
+  21
+${end.y}
+  31
+${end.z}
+`;
+
+export const dxf3DEllipse = (center: Vec3, major: Vec3, minor: Vec3, color: string, handleRef: {handle: number}): string =>
+  `  0
+ELLIPSE
+ 5
+${dxfHandle(handleRef)}
+100
+AcDbEntity
+  8
+A3D
+100
+AcDbEllipse
+  10
+${center.x}
+  20
+${center.y}
+  30
+${center.z}
+  11
+${major.x - center.x}
+  21
+${major.y - center.y}
+  31
+${major.z - center.z}
+  40
+1
+  41
+0.0
+  42
+6.2831
+  210
+0
+  220
+1
+  230
+0
+`;
 
 export const dxfHeader = (size: Vec3, center: Vec3, groupId: string): string =>
   ` 999
