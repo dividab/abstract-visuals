@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [15.0.0] - 2025-04-29
 
-- Replaced Mustache with Handlebars
+- Replaced Mustache with Handlebars  
 
 ## [14.0.1] - 2025-03-27
 

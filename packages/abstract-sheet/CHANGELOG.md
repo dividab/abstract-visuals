@@ -4,4 +4,4 @@ All notable changes to this project will be documented in this file. The format 
 
 ## v0.1.0 - 2024-11-22
 
-- Start of changelog.
+- Start of changelog. 
