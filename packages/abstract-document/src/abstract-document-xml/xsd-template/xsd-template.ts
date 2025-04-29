@@ -1,7 +1,7 @@
 import * as Elements from "./elements.js";
 import * as Styles from "./styles.js";
 import * as CustomElements from "./custom-elements.js";
-import { parseXsd } from "../mustache-xml/index.js";
+import { parseXsd } from "../handlebars-xml/index.js";
 
 const commonParts = `${Styles.layoutFoundation}
 ${Elements.section}

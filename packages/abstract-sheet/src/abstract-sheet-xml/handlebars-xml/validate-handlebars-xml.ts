@@ -1,5 +1,5 @@
 import { XMLValidator, ValidationError } from "fast-xml-parser";
-import { XmlElement, parseXml, findElement } from "./parse-mustache-xml.js";
+import { XmlElement, parseXml, findElement } from "./parse-handlebars-xml.js";
 
 enum ErrorType {
   warning = 0,
@@ -40,13 +40,13 @@ type XmlError = {
 export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement>): Array<ErrorObject> {
   const errors: Array<XmlError> = [];
 
-  // ignore all mustache brackets
-  const matchMustacheBrackets = /{{.*}}(?!([\S]))/g;
+  // ignore all handlebars brackets
+  const matchHandlebarsBrackets = /{{.*}}(?!([\S]))/g;
   // Ignore xml comments
   const xmlComments = /<!--[^>]*-->/g;
 
   // Replace matches with spaces of same length
-  let cleanedXml = fullXml.replace(matchMustacheBrackets, (m) => " ".repeat(m.length));
+  let cleanedXml = fullXml.replace(matchHandlebarsBrackets, (m) => " ".repeat(m.length));
   cleanedXml = cleanedXml.replace(xmlComments, (m) => {
     const x = (m.match(/^.*$/gm) || []).map((m2) => " ".repeat(m2.length));
     return x.join("\n");

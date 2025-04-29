@@ -1,5 +1,5 @@
 import { ADCreatorFn, propsCreators } from "./creator.js";
-import { XmlElement } from "../mustache-xml/index.js";
+import { XmlElement } from "../handlebars-xml/index.js";
 
 export function abstractDocOfXml(
   creators: Record<string, ADCreatorFn>,

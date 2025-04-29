@@ -12,10 +12,10 @@ import {
   AbstractSheet,
 } from "../abstract-sheet/abstract-sheet.js";
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
-import { parseMustacheXml, parseXsd, XmlElement } from "./mustache-xml/index.js";
+import { parseHandlebarsXml, parseXsd, XmlElement } from "./handlebars-xml/index.js";
 
 export const abstractSheetXml = (template: string, data: any, partials: Record<string, string>): AbstractSheet =>
-  abstractSheetOfXml(parseMustacheXml(template, data, partials)[0]!) as AbstractSheet;
+  abstractSheetOfXml(parseHandlebarsXml(template, data, partials)[0]!) as AbstractSheet;
 
 export function abstractSheetOfXml(el: XmlElement): unknown {
   const children = Array<unknown>();

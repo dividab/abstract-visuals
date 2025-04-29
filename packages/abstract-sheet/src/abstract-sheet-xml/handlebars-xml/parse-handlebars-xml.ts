@@ -1,5 +1,5 @@
 import { X2jOptions, XMLParser } from "fast-xml-parser";
-import Mustache from "mustache";
+import Handlebars from "handlebars";
 
 export type XmlElement = {
   readonly tagName: string;
@@ -8,13 +8,18 @@ export type XmlElement = {
   readonly textContent?: string;
 };
 
-export const parseMustacheXml = (
+export const parseHandlebarsXml = (
   template: string,
   data: any,
   partials: Record<string, string>
-): ReadonlyArray<XmlElement> => parseXml(Mustache.render(template, data, partials));
+): ReadonlyArray<XmlElement> => {
+  return parseXml(render(template, data, partials));
+};
 
-export const render = Mustache.render;
+export const render = (template: string, data: any, partials: Record<string, string>): string => {
+  Object.entries(partials).map(([name, partial]) => Handlebars.registerPartial(name, partial));
+  return Handlebars.compile(template)(data);
+};
 
 export function parseXmlCustom(text: string, options: Partial<X2jOptions>): ReadonlyArray<XmlElement> {
   const parser = new XMLParser(options);
@@ -134,7 +139,6 @@ const xsdParser = new XMLParser({
   allowBooleanAttributes: true,
   trimValues: false,
   ignoreDeclaration: true,
-  stopNodes: ["*.documentation"],
 });
 xsdParser.addEntity("#x2F", "/");
 xsdParser.addEntity("#x3D", "=");

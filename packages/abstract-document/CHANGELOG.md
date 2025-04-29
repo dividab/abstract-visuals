@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [15.0.0] - 2025-04-29
+
+- Replaced Mustache with Handlebars
+
 ## [14.0.1] - 2025-03-27
 
 - Changed Markdown.create so it always returns a Group since downstream functions assume no arrays.

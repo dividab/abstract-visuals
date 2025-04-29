@@ -157,13 +157,13 @@ function createSheet(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const mustacheRendered = AS.render(template, dataObject, {});
-  const validationErrors = AS.validateXml(mustacheRendered, AS.parsedXsd);
+  const handlebarsRendered = AS.render(template, dataObject, {});
+  const validationErrors = AS.validateXml(handlebarsRendered, AS.parsedXsd);
   if (validationErrors.length > 0) {
     return { type: "Err", error: AS.errorToReadableText(validationErrors, "template") };
   }
   try {
-    return { type: "Ok", sheet: AS.abstractSheetOfXml(AS.parseXml(mustacheRendered)[0]!) as AS.AbstractSheet };
+    return { type: "Ok", sheet: AS.abstractSheetOfXml(AS.parseXml(handlebarsRendered)[0]!) as AS.AbstractSheet };
   } catch (e) {
     return { type: "Err", error: e.message };
   }

@@ -12,6 +12,9 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
   );
   const [data, setData] = React.useState('{ "test": "Hello world", "truthy": true, "falsy": false }');
   const [template, setTemplate] = React.useState(`<AbstractDoc>
+    {{#*inline "inlinePartial"}}
+        <TextCell text="Testing inline partial" />
+    {{/inline}}
     <StyleNames>
         <StyleName name="footerResultText" type="TextStyle" fontSize="8" color="#353535" bold="true"/>
         <StyleName name="footerResultCell" type="TableCellStyle" padding="4 4 3 0" borders="1 0 0 0" borderColor="#123151" verticalAlignment="Bottom"/>
@@ -30,9 +33,17 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
                 <TextCell text="Price3 €" styleNames="footerResultText, footerResultCell"/>
                 {{/falsy}}
             </TableRow>
+            <TableRow>
+                {{> inlinePartial}}
+            </TableRow>
+          {{>partial}}
         </Table>
     </Section>
   </AbstractDoc>`);
+
+  const [partial, setPartial] = React.useState(`<TableRow>
+    <TextCell text="{{test}}!" />
+</TableRow>`);
 
   return (
     <div style={{ display: "flex", margin: "10px 0 0 10px", gap: "10px", width: "100%", height: "calc(100% - 40px)" }}>
@@ -46,11 +57,22 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
       </div>
       <div style={{ display: "flex", flexDirection: "column", width: "43%", height: "100%", gap: "10px" }}>
         <span>Template</span>
-        <textarea
-          style={{ width: "100%", height: "calc(100% - 30px)" }}
-          value={template}
-          onChange={(e) => setTemplate(e.currentTarget.value)}
-        />
+        <div style={{ display: "flex", flexDirection: "row", width: "100%", height: "100%", gap: "10px" }}>
+          <textarea
+            style={{ width: "100%", height: "calc(100% - 30px)" }}
+            value={template}
+            onChange={(e) => setTemplate(e.currentTarget.value)}
+          />
+        </div>
+
+        <span>Partial ("partial")</span>
+        <div style={{ display: "flex", flexDirection: "row", width: "100%", height: "100%", gap: "10px" }}>
+          <textarea
+            style={{ width: "100%", height: "calc(100% - 30px)" }}
+            value={partial}
+            onChange={(e) => setPartial(e.currentTarget.value)}
+          />
+        </div>
       </div>
       <div
         style={{
@@ -61,7 +83,9 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
           height: "100%",
         }}
       >
-        <button onClick={async () => setPdf(await generatePDF(data, template))}>Generate PDF</button>
+        <button onClick={async () => setPdf(await generatePDF(data, template, { partial: partial }))}>
+          Generate PDF
+        </button>
         {pdf?.type === "Err" ? (
           <h3>{pdf.error}</h3>
         ) : (
@@ -78,7 +102,8 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
 
 async function generatePDF(
   data: string,
-  template: string
+  template: string,
+  partial: Record<string, string>
 ): Promise<{ type: "Ok"; url: string } | { type: "Err"; error: string }> {
   let dataObject = {};
   try {
@@ -86,12 +111,12 @@ async function generatePDF(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const mustacheRendered = ADXml.render(template, dataObject, {});
-  const validationErrors = ADXml.validateXml(mustacheRendered, ADXml.parsedXsd);
+  const handlebarsRendered = ADXml.render(template, dataObject, partial);
+  const validationErrors = ADXml.validateXml(handlebarsRendered, ADXml.parsedXsd);
   if (validationErrors.length > 0) {
     return { type: "Err", error: ADXml.errorToReadableText(validationErrors, "template") };
   }
-  const xml = ADXml.parseXml(mustacheRendered);
+  const xml = ADXml.parseXml(handlebarsRendered);
 
   const doc = ADXml.abstractDocOfXml(
     ADXml.creators({}, {}, ADXml.extractImageFontsStyleNames(xml)[2]),
