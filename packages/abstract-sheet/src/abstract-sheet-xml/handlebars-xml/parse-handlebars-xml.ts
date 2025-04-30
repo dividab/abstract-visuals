@@ -17,7 +17,7 @@ export const parseHandlebarsXml = (
 };
 
 export const render = (template: string, data: any, partials: Record<string, string>): string => {
-  Object.entries(partials).map(([name, partial]) => Handlebars.registerPartial(name, partial));
+  Object.entries(partials).forEach(([name, partial]) => Handlebars.registerPartial(name, partial));
   return Handlebars.compile(template)(data);
 };
 

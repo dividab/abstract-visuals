@@ -141,7 +141,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^11.0.7
+        specifier: ^11.0.9
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -150,7 +150,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^11.0.7
+        specifier: ^11.0.9
         version: link:../abstract-image
       base64-js:
         specifier: ^1.5.1
@@ -273,17 +273,17 @@ importers:
         specifier: ^0.5.13
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^10.0.15
+        specifier: ^10.0.16
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.17
-        version: link:../abstract-document
+        version: 14.0.17(react@19.0.0)
       abstract-image:
-        specifier: ^11.0.7
+        specifier: ^11.0.9
         version: link:../abstract-image
       abstract-sheet:
         specifier: ^0.0.30
-        version: link:../abstract-sheet
+        version: 0.0.30(react@19.0.0)
       base64-js:
         specifier: ^1.5.1
         version: 1.5.1
@@ -1648,6 +1648,21 @@ packages:
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
+
+  abstract-document@14.0.17:
+    resolution: {integrity: sha512-pq7cOX1GnYT0p9Rb61uKHtIO1t4G7C4uCUtZKwwMq1DW8CvTFvaiGvS2A+Y+A3czrun/p12M3UvTgDU/SO0IDg==}
+    peerDependencies:
+      react: '>=17.0.0 <^19.0.0'
+
+  abstract-image@11.0.7:
+    resolution: {integrity: sha512-eX6r9uqeStmYrrxIbQ15k5YE5XdmRYX9wDliUg8aCmXx7Nd8JVAEpTxieuK2v3ZvrtSJqMvPGYKEeLjMh71vjA==}
+    peerDependencies:
+      react: '>=17.0.0 <^19.0.0'
+
+  abstract-sheet@0.0.30:
+    resolution: {integrity: sha512-U3GMA7/iBSny5NHFCzk8fI8HevkRHceYnylpnuDZPDBrCuLblCvH+yzjfilVy+sTUQbNixKJjf4nRW3rKxEgzg==}
+    peerDependencies:
+      react: '>=17.0.0 <^19.0.0'
 
   acorn-globals@7.0.1:
     resolution: {integrity: sha512-umOSDSDrfHbTNPuNpC2NSnnA3LUrqpevPb4T9jRx4MagXNS0rs+gwiTcAvqCRmsD6utzsrzNt+ebm00SNWiC3Q==}
@@ -4203,6 +4218,10 @@ packages:
   multimatch@3.0.0:
     resolution: {integrity: sha512-22foS/gqQfANZ3o+W7ST2x25ueHDVNWl/b9OlGcLpy/iKxjCpvcNCM51YCenUi7Mt/jAjjqv8JwZRs8YP5sRjA==}
     engines: {node: '>=6'}
+
+  mustache@4.2.0:
+    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
+    hasBin: true
 
   mute-stream@0.0.7:
     resolution: {integrity: sha512-r65nCZhrbXXb6dXOACihYApHw2Q6pV0M3V0PSxd74N0+D8nzAdEAITq2oAjA1jVnKI+tGvEBUpqiMh0+rW6zDQ==}
@@ -8057,6 +8076,34 @@ snapshots:
 
   abbrev@1.1.1: {}
 
+  abstract-document@14.0.17(react@19.0.0):
+    dependencies:
+      abstract-image: 11.0.7(react@19.0.0)
+      base64-js: 1.5.1
+      docx: 6.0.3
+      fast-xml-parser: 4.5.0
+      mustache: 4.2.0
+      pdfkit: 0.15.1
+      react: 19.0.0
+      remark-parse: 6.0.3
+      remark-sub-super: 1.0.21
+      svg-to-pdfkit: 0.1.8
+      ts-exhaustive-check: 1.0.0
+      unified: 6.2.0
+
+  abstract-image@11.0.7(react@19.0.0):
+    dependencies:
+      base64-js: 1.5.1
+      react: 19.0.0
+
+  abstract-sheet@0.0.30(react@19.0.0):
+    dependencies:
+      fast-xml-parser: 4.5.0
+      mustache: 4.2.0
+      react: 19.0.0
+      ts-exhaustive-check: 1.0.0
+      xlsx-js-style: 1.2.0
+
   acorn-globals@7.0.1:
     dependencies:
       acorn: 8.14.0
@@ -11095,6 +11142,8 @@ snapshots:
       array-union: 1.0.2
       arrify: 1.0.1
       minimatch: 3.1.2
+
+  mustache@4.2.0: {}
 
   mute-stream@0.0.7: {}
 
