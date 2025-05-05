@@ -141,7 +141,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^11.0.10
+        specifier: ^11.0.12
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -150,7 +150,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^11.0.10
+        specifier: ^11.0.12
         version: link:../abstract-image
       base64-js:
         specifier: ^1.5.1
@@ -285,13 +285,13 @@ importers:
         specifier: ^0.5.13
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^10.0.17
+        specifier: ^10.0.19
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.17
         version: 14.0.17(react@19.0.0)
       abstract-image:
-        specifier: ^11.0.10
+        specifier: ^11.0.12
         version: link:../abstract-image
       abstract-sheet:
         specifier: ^0.0.30
