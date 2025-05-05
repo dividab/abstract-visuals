@@ -14,7 +14,7 @@ When dynamically creating complex documents, traditional reporting packages with
 
 `npm install --save abstract-document`
 
-The library is compiled to ES5 and no polyfills are required.
+The library is compiled to ES5 and no polyfills are required. 
 
 ## Usage
 
