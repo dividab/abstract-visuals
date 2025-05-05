@@ -157,7 +157,7 @@ function createSheet(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const handlebarsRendered = AS.render(template, dataObject, {});
+  const handlebarsRendered = AS.renderHandlebars(template, dataObject, {});
   const validationErrors = AS.validateXml(handlebarsRendered, AS.parsedXsd);
   if (validationErrors.length > 0) {
     return { type: "Err", error: AS.errorToReadableText(validationErrors, "template") };

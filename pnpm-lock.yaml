@@ -164,6 +164,9 @@ importers:
       handlebars:
         specifier: 4.7.8
         version: 4.7.8
+      mustache:
+        specifier: ^4.2.0
+        version: 4.2.0
       pdfkit:
         specifier: ^0.15.1
         version: 0.15.1
@@ -189,6 +192,9 @@ importers:
       '@types/isomorphic-fetch':
         specifier: ^0.0.34
         version: 0.0.34
+      '@types/mustache':
+        specifier: ^4.2.5
+        version: 4.2.5
       '@types/pdfkit':
         specifier: ^0.13.4
         version: 0.13.6
@@ -247,6 +253,9 @@ importers:
       handlebars:
         specifier: 4.7.8
         version: 4.7.8
+      mustache:
+        specifier: ^4.2.0
+        version: 4.2.0
       react:
         specifier: '>=17.0.0 <^19.0.0'
         version: 19.0.0
@@ -257,6 +266,9 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
     devDependencies:
+      '@types/mustache':
+        specifier: ^4.2.5
+        version: 4.2.5
       '@types/node':
         specifier: ^22.10.1
         version: 22.10.1
@@ -1415,6 +1427,9 @@ packages:
 
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
+
+  '@types/mustache@4.2.5':
+    resolution: {integrity: sha512-PLwiVvTBg59tGFL/8VpcGvqOu3L4OuveNvPi0EYbWchRdEVP++yRUXJPFl+CApKEq13017/4Nf7aQ5lTtHUNsA==}
 
   '@types/node@14.18.63':
     resolution: {integrity: sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==}
@@ -7747,6 +7762,8 @@ snapshots:
   '@types/minimatch@5.1.2': {}
 
   '@types/minimist@1.2.5': {}
+
+  '@types/mustache@4.2.5': {}
 
   '@types/node@14.18.63': {}
 

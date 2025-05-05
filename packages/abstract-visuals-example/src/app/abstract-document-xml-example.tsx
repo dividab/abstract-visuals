@@ -111,7 +111,7 @@ async function generatePDF(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const handlebarsRendered = ADXml.render(template, dataObject, partial);
+  const handlebarsRendered = ADXml.renderHandlebars(template, dataObject, partial);
   const validationErrors = ADXml.validateXml(handlebarsRendered, ADXml.parsedXsd);
   if (validationErrors.length > 0) {
     return { type: "Err", error: ADXml.errorToReadableText(validationErrors, "template") };

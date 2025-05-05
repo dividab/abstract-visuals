@@ -1,5 +1,6 @@
 import { X2jOptions, XMLParser } from "fast-xml-parser";
 import Handlebars from "handlebars";
+import Mustache from "mustache";
 
 export type XmlElement = {
   readonly tagName: string;
@@ -8,15 +9,30 @@ export type XmlElement = {
   readonly textContent?: string;
 };
 
+export enum TemplateMethod {
+  Mustache = 0,
+  Handlebars = 1,
+};
+
 export const parseMustacheXml = (
   template: string,
   data: any,
-  partials: Record<string, string>
+  partials: Record<string, string>,
+  method: TemplateMethod,
 ): ReadonlyArray<XmlElement> => {
-  return parseXml(render(template, data, partials));
+  switch(method) {
+    case TemplateMethod.Handlebars: {
+      return parseXml(renderHandlebars(template, data, partials));
+    }
+    case TemplateMethod.Mustache:
+    default: {
+      return parseXml(renderMustache(template, data, partials));
+    }
+  }
 };
 
-export const render = (template: string, data: any, partials: Record<string, string>): string => {
+export const renderMustache = Mustache.render;
+export const renderHandlebars = (template: string, data: any, partials: Record<string, string>): string => {
   Object.entries(partials).forEach(([name, partial]) => Handlebars.registerPartial(name, partial));
   return Handlebars.compile(template)(data);
 };
