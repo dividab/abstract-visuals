@@ -504,7 +504,9 @@ export function AbstractChartExample(): React.JSX.Element {
       width: 0.4,
       radius: { x: 2, y: 2 },
       xAxis: "bottom",
+      xAxisIx: 0,
       yAxis: "left",
+      yAxisIx: 0,
       position: 0,
       bars: [],
     };

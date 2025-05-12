@@ -110,7 +110,9 @@ export interface ChartPoint {
   readonly strokeThickness: number;
   readonly label: string;
   readonly xAxis: XAxis;
+  readonly xAxisIx: number;
   readonly yAxis: YAxis;
+  readonly yAxisIx: number;
   readonly fontSize?: number;
   readonly textColor?: AI.Color;
   readonly textOutlineColor?: AI.Color;
@@ -121,7 +123,9 @@ export interface ChartBars {
   readonly direction: "x" | "y";
   readonly position: number;
   readonly xAxis: XAxis;
+  readonly xAxisIx: number;
   readonly yAxis: YAxis;
+  readonly yAxisIx: number;
   readonly width: number;
   readonly radius?: AI.Point;
   readonly spacing?: number;
@@ -153,7 +157,9 @@ export function createChartPoint(props?: ChartPointProps): ChartPoint {
     size = AI.createSize(6, 6),
     label = "",
     xAxis = "bottom",
+    xAxisIx = 0,
     yAxis = "left",
+    yAxisIx = 0,
     fontSize,
     textColor,
     textOutlineColor,
@@ -168,7 +174,9 @@ export function createChartPoint(props?: ChartPointProps): ChartPoint {
     size,
     label,
     xAxis,
+    xAxisIx,
     yAxis,
+    yAxisIx,
     fontSize,
     textColor,
     textOutlineColor,
@@ -182,7 +190,9 @@ export interface ChartLine {
   readonly thickness: number;
   readonly label: string;
   readonly xAxis: XAxis;
+  readonly xAxisIx: number;
   readonly yAxis: YAxis;
+  readonly yAxisIx: number;
   readonly fontSize?: number;
   readonly textColor?: AI.Color;
   readonly textOutlineColor?: AI.Color;
@@ -198,13 +208,15 @@ export function createChartLine(props: ChartLineProps): ChartLine {
     thickness = 1,
     label = "",
     xAxis = "bottom",
+    xAxisIx = 0,
     yAxis = "left",
+    yAxisIx = 0,
     fontSize,
     textColor,
     textOutlineColor,
     id,
   } = props || {};
-  return { points, color, thickness, label, xAxis, yAxis, fontSize, textColor, textOutlineColor, id };
+  return { points, color, thickness, label, xAxis, xAxisIx, yAxis, yAxisIx, fontSize, textColor, textOutlineColor, id };
 }
 
 export interface ChartStackConfig {
@@ -228,15 +240,24 @@ export interface StackPoints {
 export interface ChartStack {
   readonly points: Array<StackPoints>;
   readonly xAxis: XAxis;
+  readonly xAxisIx: number;
   readonly yAxis: YAxis;
+  readonly yAxisIx: number;
   readonly config: ReadonlyArray<ChartStackConfig>;
 }
 
 export type ChartStackProps = Partial<ChartStack>;
 
 export function createChartStack(props: ChartStackProps): ChartStack {
-  const { points = [], xAxis = "bottom", yAxis = "left", config = [createChartStackConfig({})] } = props || {};
-  return { points, xAxis, yAxis, config };
+  const {
+    points = [],
+    xAxis = "bottom",
+    xAxisIx = 0,
+    yAxis = "left",
+    yAxisIx = 0,
+    config = [createChartStackConfig({})],
+  } = props || {};
+  return { points, xAxis, xAxisIx, yAxis, yAxisIx, config };
 }
 
 export type ChartDataAxis = AxisBase & {
@@ -271,18 +292,30 @@ export function createChartDataAxis(
   };
 }
 
-export function inverseTransformPoint(point: AI.Point, chart: Chart, xAxis: XAxis, yAxis: YAxis): AI.Point | undefined {
+export function inverseTransformPoint(
+  point: AI.Point,
+  chart: Chart,
+  xAxis: XAxis,
+  xAxisIx: number,
+  yAxis: YAxis,
+  yAxisIx: number
+): AI.Point | undefined {
   const padding = finalPadding(chart);
   const xMin = padding.left;
   const xMax = chart.width - padding.right;
   const yMin = chart.height - padding.bottom;
   const yMax = padding.top;
-  const x = inverseTransformValue(point.x, xMin, xMax, xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0]);
+  const x = inverseTransformValue(
+    point.x,
+    xMin,
+    xMax,
+    xAxis === "top" ? chart.xAxisesTop[xAxisIx] : chart.xAxisesBottom[xAxisIx]
+  );
   const y = inverseTransformValue(
     point.y,
     yMin,
     yMax,
-    yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0]
+    yAxis === "right" ? chart.yAxisesRight[yAxisIx] : chart.yAxisesLeft[yAxisIx]
   );
   if (x === undefined || y === undefined) {
     return undefined;
@@ -1022,8 +1055,8 @@ function lineLine(a0: AI.Point, a1: AI.Point, b0: AI.Point, b1: AI.Point): AI.Po
 
 export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): AI.Component {
   const points = chart.chartPoints.map((p) => {
-    const xAxis = p.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
-    const yAxis = p.yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0];
+    const xAxis = p.xAxis === "top" ? chart.xAxisesTop[p.xAxisIx] : chart.xAxisesBottom[p.xAxisIx];
+    const yAxis = p.yAxis === "right" ? chart.yAxisesRight[p.yAxisIx] : chart.yAxisesLeft[p.yAxisIx];
     const position = transformPoint(p.position, xMin, xMax, yMin, yMax, xAxis, yAxis);
     const outlineColor = p.textOutlineColor ?? chart.textOutlineColor;
     const components = [
@@ -1068,8 +1101,8 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
   const components = Array<AI.Component>();
 
   for (const bars of chart.chartBars) {
-    const xAxis = bars.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
-    const yAxis = bars.yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0];
+    const xAxis = bars.xAxis === "top" ? chart.xAxisesTop[bars.xAxisIx] : chart.xAxisesBottom[bars.xAxisIx];
+    const yAxis = bars.yAxis === "right" ? chart.yAxisesRight[bars.yAxisIx] : chart.yAxisesLeft[bars.yAxisIx];
     const yMinValue =
       yAxis?.type === "linear" || yAxis?.type === "logarithmic" ? yAxis.min : yAxis?.points[0]?.value ?? 0;
     const xMinValue =

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.0.0] - 2025-05-12
+
+### Added
+
+- Since it is allowed to have multiple axises per side, you can now indicate which axis a certain point/line refers to using xAxisIx and yAxisIx.
+
 ## [10.0.0] - 2024-11-29
 
 - ~~Switch to ES Modules from CommonJS~~ Libraries should be in commonjs, for now...
