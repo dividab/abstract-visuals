@@ -894,8 +894,14 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
     return AI.createGroup("stack", []);
   }
 
-  const xAxis = chart.chartStack.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
-  const yAxis = chart.chartStack.yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0];
+  const xAxis =
+    chart.chartStack.xAxis === "top"
+      ? chart.xAxisesTop[chart.chartStack.xAxisIx]
+      : chart.xAxisesBottom[chart.chartStack.xAxisIx];
+  const yAxis =
+    chart.chartStack.yAxis === "right"
+      ? chart.yAxisesRight[chart.chartStack.yAxisIx]
+      : chart.yAxisesLeft[chart.chartStack.yAxisIx];
 
   const xPoints = chart.chartStack.points.map((stackPoints) => {
     let sumY = 0;
@@ -938,8 +944,8 @@ export function generateLines(xMin: number, xMax: number, yMin: number, yMax: nu
     if (l.points.length < 2) {
       return AI.createGroup(l.label.split("<")[0] ?? "UNKNOWN", []);
     }
-    const xAxis = l.xAxis === "top" ? chart.xAxisesTop[0] : chart.xAxisesBottom[0];
-    const yAxis = l.yAxis === "right" ? chart.yAxisesRight[0] : chart.yAxisesLeft[0];
+    const xAxis = l.xAxis === "top" ? chart.xAxisesTop[l.xAxisIx] : chart.xAxisesBottom[l.xAxisIx];
+    const yAxis = l.yAxis === "right" ? chart.yAxisesRight[l.yAxisIx] : chart.yAxisesLeft[l.yAxisIx];
     const points = l.points.map((p) => transformPoint(p, xMin, xMax, yMin, yMax, xAxis, yAxis));
     const segments = getLineSegmentsInsideChart(xMin, xMax, yMin, yMax, points);
     const components = [];
