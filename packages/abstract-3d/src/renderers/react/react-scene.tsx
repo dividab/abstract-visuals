@@ -64,7 +64,7 @@ export function ReactScene({
         const id = createGroupId ? createGroupId(g) : "";
         return (
           <ReactGroup
-            key={createGroupKey ? createGroupKey(g, 0, g.data, id) : i}
+            key={createGroupKey ? createGroupKey(g, i, g.data, id) : i}
             g={g}
             selectedId={selectedId}
             hotSpotsActive={activeHotSpots !== undefined}
