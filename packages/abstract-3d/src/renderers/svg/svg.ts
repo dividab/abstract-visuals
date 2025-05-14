@@ -26,6 +26,8 @@ import { cone } from "./svg-geometries/svg-cone.js";
 import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
 import { EmbededImage, svg } from "./svg-encoding.js";
 
+// dummy
+
 export function toSvg(
   scene: Scene,
   view: View,
