@@ -12,15 +12,15 @@ export type XmlElement = {
 export enum TemplateMethod {
   Mustache = 0,
   Handlebars = 1,
-};
+}
 
 export const parseMustacheXml = (
   template: string,
   data: any,
   partials: Record<string, string>,
-  method: TemplateMethod,
+  method: TemplateMethod = TemplateMethod.Handlebars
 ): ReadonlyArray<XmlElement> => {
-  switch(method) {
+  switch (method) {
     case TemplateMethod.Handlebars: {
       return parseXml(renderHandlebars(template, data, partials));
     }
