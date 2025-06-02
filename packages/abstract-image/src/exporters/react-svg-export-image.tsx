@@ -152,6 +152,7 @@ function JsxComponent({ component }: { readonly component: Component }): React.J
                 strokeWidth: component.strokeThickness,
               }}
               transform={transform}
+              id={makeIdAttr(component.id)}
             >
               {tSpans}
             </text>

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.0.2] - 2025-06-02
+
+### Added
+
+- Text outline now also have `id` attribute to improve mouse events.
+
 ## [11.0.0] - 2024-11-29
 
 - createReactSvg -> ReactSvg (jsx-syntax), make it React 19 compatible

@@ -973,7 +973,8 @@ export function generateLines(xMin: number, xMax: number, yMin: number, yMax: nu
           textVerticalGrowth(last.y, yMin, yMax),
           outlineColor !== AI.transparent ? 3 : 0,
           outlineColor,
-          false
+          false,
+          l.id
         )
       );
     }
