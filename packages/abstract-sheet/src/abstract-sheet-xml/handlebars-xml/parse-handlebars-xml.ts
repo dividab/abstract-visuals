@@ -34,7 +34,7 @@ export const parseHandlebarsXml = (
 export const renderMustache = Mustache.render;
 export const renderHandlebars = (template: string, data: any, partials: Record<string, string>): string => {
   Object.entries(partials).forEach(([name, partial]) => Handlebars.registerPartial(name, partial));
-  return Handlebars.compile(template, { compat: true })(data);
+  return Handlebars.compile(template, { compat: true, preventIndent: true })(data);
 };
 
 export function parseXmlCustom(text: string, options: Partial<X2jOptions>): ReadonlyArray<XmlElement> {
