@@ -285,7 +285,7 @@ importers:
         specifier: ^0.6.2
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^11.0.2
+        specifier: ^11.1.0
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.17

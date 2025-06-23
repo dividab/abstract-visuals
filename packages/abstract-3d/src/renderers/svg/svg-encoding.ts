@@ -38,10 +38,19 @@ export const svgImage = (p: Vec2, size: Vec2, rot: number, data: EmbededImage): 
   const half = vec2Scale(size, 0.5);
   const originalCenter = vec2(size.x / 2, size.y / 2);
   const rotatedCenter = vec2(newSize.x / 2, newSize.y / 2);
-  const rotatatedTranslationDelta = vec2(originalCenter.x - rotatedCenter.x, originalCenter.y - rotatedCenter.y);
+  const delta = vec2(originalCenter.x - rotatedCenter.x, originalCenter.y - rotatedCenter.y);
+  if (newSize.x === 0 || newSize.y === 0) {
+    return "";
+  }
+
   return data.type === "url"
-        ? `<image x="${p.x.toFixed(0)}" y="${p.y.toFixed(0)}" transform="${rotate(rot)}" ${transformOrigin(p, half)} width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}" />`
-        : `<svg width="${newSize.x.toFixed(0)}" height="${newSize.y.toFixed(0)}" transform="${translate(p)} ${rotateAtPos(rot, half)} ${translate(rotatatedTranslationDelta)}">${data.svg}</svg>
+    ? `<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" x="${p.x.toFixed(0)}" y="${p.y.toFixed(
+        0
+      )}" transform="${rotate(rot)}" ${transformOrigin(p, half)}  href="${data.url}" />`
+    : `<svg width="${newSize.x.toFixed(0)}" height="${newSize.y.toFixed(0)}" transform="${translate(p)} ${rotateAtPos(
+        rot,
+        half
+      )} ${translate(delta)}">${data.svg}</svg>
   `;
 };
 
