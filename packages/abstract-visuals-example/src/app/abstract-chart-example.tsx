@@ -511,6 +511,11 @@ export function AbstractChartExample(): React.JSX.Element {
       bars: [],
     };
     const chart = AC.createChart({
+      chartAreas: [
+        AC.createChartArea({
+          points: [AI.createPoint(3, 7), AI.createPoint(6, 7), AI.createPoint(6, 14), AI.createPoint(3, 14)],
+        }),
+      ],
       chartLines: [],
       chartBars: [
         {

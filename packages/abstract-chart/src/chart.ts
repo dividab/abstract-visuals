@@ -23,6 +23,7 @@ const axisLabelPosFactor = 0.65;
 export interface Chart {
   readonly width: number;
   readonly height: number;
+  readonly chartAreas: Array<ChartArea>;
   readonly chartPoints: Array<ChartPoint>;
   readonly chartLines: Array<ChartLine>;
   readonly chartStack: ChartStack;
@@ -57,6 +58,7 @@ export function createChart(props: ChartProps): Chart {
   return {
     width: props.width ?? 600,
     height: props.height ?? 600,
+    chartAreas: props.chartAreas ?? [],
     chartPoints: props.chartPoints ?? [],
     chartLines: props.chartLines ?? [],
     chartStack: props.chartStack ?? createChartStack({}),
@@ -98,6 +100,18 @@ type Padding = { readonly top: number; readonly right: number; readonly bottom: 
 
 export type XAxis = "bottom" | "top";
 export type YAxis = "left" | "right";
+
+export interface ChartArea {
+  readonly points: ReadonlyArray<AI.Point>;
+  readonly color: AI.Color;
+  readonly strokeColor: AI.Color;
+  readonly strokeThickness: number;
+  readonly xAxis: XAxis;
+  readonly xAxisIx: number;
+  readonly yAxis: YAxis;
+  readonly yAxisIx: number;
+  readonly id?: string;
+}
 
 export type ChartPointShape = "circle" | "triangle" | "square";
 
@@ -143,6 +157,33 @@ export interface ChartBar {
   readonly textColor?: AI.Color;
   readonly textOutlineColor?: AI.Color;
   readonly id?: string;
+}
+
+export type ChartAreaProps = Partial<ChartArea>;
+
+export function createChartArea(props?: ChartAreaProps): ChartArea {
+  const {
+    points = [],
+    color = AI.lightGray,
+    strokeColor = AI.transparent,
+    strokeThickness = 0,
+    xAxis = "bottom",
+    xAxisIx = 0,
+    yAxis = "left",
+    yAxisIx = 0,
+    id,
+  } = props || {};
+  return {
+    points,
+    color,
+    strokeColor,
+    strokeThickness,
+    xAxis,
+    xAxisIx,
+    yAxis,
+    yAxisIx,
+    id,
+  };
 }
 
 export type ChartPointProps = Partial<ChartPoint>;
@@ -413,6 +454,7 @@ export function renderChart(chart: Chart): AI.AbstractImage {
     chart
   );
 
+  const renderedAreas = generateAreas(xMin, xMax, yMin, yMax, chart);
   const renderedPoints = generatePoints(xMin, xMax, yMin, yMax, chart);
   const renderedLines = generateLines(xMin, xMax, yMin, yMax, chart);
   const renderedStack = generateStack(xMin, xMax, yMin, yMax, chart);
@@ -463,6 +505,7 @@ export function renderChart(chart: Chart): AI.AbstractImage {
 
   const components = [
     renderedBackground,
+    renderedAreas,
     xAxisGridLeft,
     xAxisGridRight,
     yAxisGridBottom,
@@ -1058,6 +1101,17 @@ function lineLine(a0: AI.Point, a1: AI.Point, b0: AI.Point, b1: AI.Point): AI.Po
     return AI.createPoint(a0.x + uA * da.x, a0.y + uA * da.y);
   }
   return undefined;
+}
+
+export function generateAreas(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): AI.Component {
+  const areas = chart.chartAreas.map((a) => {
+    const xAxis = a.xAxis === "top" ? chart.xAxisesTop[a.xAxisIx] : chart.xAxisesBottom[a.xAxisIx];
+    const yAxis = a.yAxis === "right" ? chart.yAxisesRight[a.yAxisIx] : chart.yAxisesLeft[a.yAxisIx];
+    const points = a.points.map((p) => transformPoint(p, xMin, xMax, yMin, yMax, xAxis, yAxis));
+    const components = [AI.createPolygon(points, a.strokeColor, a.strokeThickness, a.color, a.id)];
+    return AI.createGroup("UNKNOWN", components);
+  });
+  return AI.createGroup("Areas", areas);
 }
 
 export function generatePoints(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): AI.Component {
