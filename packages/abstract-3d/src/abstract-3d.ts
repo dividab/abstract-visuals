@@ -256,11 +256,9 @@ export const vec3Normalize = (v: Vec3): Vec3 => vec3Scale(v, 1 / vec3Length(v));
 
 export const vec2Greater = (a: Vec2, b: Vec2): Vec2 => vec2(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
 
-export const vec2DistSquared = (a: Vec2, b: Vec2): number =>
-  (Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
+export const vec2DistSquared = (a: Vec2, b: Vec2): number => Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2);
 
-export const vec2Dist = (a: Vec2, b: Vec2): number =>
-  vec2DistSquared(a, b);
+export const vec2Dist = (a: Vec2, b: Vec2): number => vec2DistSquared(a, b);
 
 export const vec2Mult = (a: Vec2, b: Vec2): Vec2 => vec2(a.x * b.x, a.y * b.y);
 export const vec3Mult = (a: Vec3, b: Vec3): Vec3 => vec3(a.x * b.x, a.y * b.y, a.z * b.z);
@@ -279,18 +277,17 @@ export const vec3Greater = (a: Vec3, b: Vec3): Vec3 =>
   vec3(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z);
 
 export const vec3DistSquared = (a: Vec3, b: Vec3): number =>
-  (Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
+  Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2);
 
-export const vec3Dist = (a: Vec3, b: Vec3): number =>
-  vec3DistSquared(a, b);
+export const vec3Dist = (a: Vec3, b: Vec3): number => vec3DistSquared(a, b);
 
-export const equals = (num1: number, num2: number, equailty = Number.EPSILON): boolean =>
-  Math.abs(num1 - num2) <= equailty;
-export const isZero = (num: number, equailty = Number.EPSILON): boolean => Math.abs(num) <= equailty;
-export const geq = (num1: number, num2: number, equailty = Number.EPSILON): boolean => num1 >= num2 - equailty;
-export const greater = (num1: number, num2: number, equailty = Number.EPSILON): boolean => num1 > num2 + equailty;
-export const leq = (num1: number, num2: number, equailty = Number.EPSILON): boolean => num1 <= num2 + equailty;
-export const less = (num1: number, num2: number, equailty = Number.EPSILON): boolean => num1 < num2 - equailty;
+export const equals = (num1: number, num2: number, equality = Number.EPSILON): boolean =>
+  Math.abs(num1 - num2) <= equality;
+export const isZero = (num: number, equality = Number.EPSILON): boolean => Math.abs(num) <= equality;
+export const geq = (num1: number, num2: number, equality = Number.EPSILON): boolean => num1 >= num2 - equality;
+export const greater = (num1: number, num2: number, equality = Number.EPSILON): boolean => num1 > num2 + equality;
+export const leq = (num1: number, num2: number, equality = Number.EPSILON): boolean => num1 <= num2 + equality;
+export const less = (num1: number, num2: number, equality = Number.EPSILON): boolean => num1 < num2 - equality;
 
 // -- Bounds
 
@@ -305,13 +302,15 @@ export const bounds3Zero: Bounds3 = bounds3(vec3Zero, vec3Zero);
 export const bounds3ToSize = (bounds: Bounds3): Vec3 =>
   vec3(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y, bounds.max.z - bounds.min.z);
 
-export const bounds3Overlap = (a: Bounds3, b: Bounds3, equailty = Number.EPSILON): boolean =>
-  !leq(a.max.x, b.min.x, equailty) &&
-  !geq(a.min.x, b.max.x, equailty) &&
-  !leq(a.max.y, b.min.y, equailty) &&
-  !geq(a.min.y, b.max.y, equailty) &&
-  !leq(a.max.z, b.min.z, equailty) &&
-  !geq(a.min.z, b.max.z, equailty);
+export const bounds3Overlap = (a: Bounds3, b: Bounds3, equality = Number.EPSILON): boolean =>
+  !(
+    leq(a.max.x, b.min.x, equality) ||
+    geq(a.min.x, b.max.x, equality) ||
+    leq(a.max.y, b.min.y, equality) ||
+    geq(a.min.y, b.max.y, equality) ||
+    leq(a.max.z, b.min.z, equality) ||
+    geq(a.min.z, b.max.z, equality)
+  );
 
 export const boundsOverlap = (a: Bounds, b: Bounds): boolean =>
   (greater(a.max, b.min) && less(a.min, b.max)) || (greater(b.max, a.min) && less(b.min, a.max));
