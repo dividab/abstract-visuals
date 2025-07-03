@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { Canvas, CanvasProps } from "@react-three/fiber";
 import { OrbitControlsProps } from "@react-three/drei";
-import { ReactScene } from "./react-scene.js";
+import { ReactPopover, ReactScene } from "./react-scene.js";
 import { Scene, View, Group } from "../../abstract-3d.js";
 import { ReactCamera, ControlsHelper, Camera } from "./react-camera.js";
 import { HotSpotInfo } from "./react-hotspot.js";
@@ -16,6 +16,7 @@ type ToReactProps = {
   readonly showHotSpotTexts?: boolean;
   readonly showDimensions?: boolean;
   readonly hotSpotTexts?: Record<string, string>;
+  readonly reactPopovers?: ReadonlyArray<ReactPopover>;
   readonly useAnimations?: boolean;
   readonly camera?: Camera;
   readonly view?: View;
@@ -53,6 +54,7 @@ export const toReact = memo(
     activeComponents,
     hoveredIdExternal,
     hotSpotTexts,
+    reactPopovers,
     showHotSpotTexts = false,
     showDimensions = true,
     useAnimations = false,
@@ -131,6 +133,7 @@ export const toReact = memo(
             showHotSpotTexts={showHotSpotTexts}
             hoveredIdExternal={hoveredIdExternal}
             hotSpotTexts={hotSpotTexts}
+            reactPopovers={reactPopovers}
             materialStateImages={materialStateImages}
             onClickGroup={onClickGroup}
             onHoverGroup={onHoverGroup}

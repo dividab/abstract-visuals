@@ -7,6 +7,12 @@ import { cylinderFilter } from "./cylinder-filter.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
+  const [hovered, setHovered] = React.useState<string | undefined>(undefined);
+  const group = systemair.groups.find((g) => g.data?.id === hovered);
+  const popover: A3D.ReactPopover | undefined = group
+    ? { id: "popover", pos: { ...group.pos, y: group.pos.y - 300 }, content: "Hej" }
+    : undefined;
+  console.log(hovered, group, popover);
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
@@ -59,6 +65,8 @@ export function Abstract3DExample(): React.ReactNode {
             scene={systemair}
             orbitContolsProps={{ enableDamping: false }}
             camera={camera}
+            onHoverGroup={(id) => setHovered(id)}
+            reactPopovers={popover ? [popover] : undefined}
           />
         </div>
         <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>

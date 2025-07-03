@@ -1,9 +1,16 @@
 import React from "react";
-import { Scene, Group } from "../../abstract-3d.js";
+import { Scene, Group, Vec3 } from "../../abstract-3d.js";
 import { HotSpotInfo, ReactHotSpots } from "./react-hotspot.js";
 import { ReactDimensions } from "./react-dimension.js";
 import { ReactGroup } from "./react-group.js";
 import { MaterialState } from "./react-material.js";
+import { Html } from "@react-three/drei";
+
+export interface ReactPopover {
+  readonly id: string;
+  readonly pos: Vec3;
+  readonly content: React.ReactNode;
+}
 
 export function ReactScene({
   scene,
@@ -15,6 +22,7 @@ export function ReactScene({
   showHotSpotTexts,
   showDimensions,
   materialStateImages,
+  reactPopovers,
   onClickGroup,
   onHoverGroup,
   onContextMenuGroup,
@@ -31,6 +39,7 @@ export function ReactScene({
   readonly showDimensions: boolean;
   readonly hotSpotTexts?: Record<string, string>;
   readonly materialStateImages?: Record<string, string>;
+  readonly reactPopovers?: ReadonlyArray<ReactPopover>;
   readonly onClickGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
@@ -108,6 +117,11 @@ export function ReactScene({
         setHoveredId={setHoveredId}
         showHotSpotTexts={showHotSpotTexts}
       />
+      {reactPopovers?.map((p) => (
+        <Html key={p.id} position={[p.pos.x, p.pos.y, p.pos.z]} center pointerEvents="none">
+          {p.content}
+        </Html>
+      ))}
     </group>
   );
 }
