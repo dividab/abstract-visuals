@@ -28,6 +28,11 @@ type ToReactProps = {
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined
   ) => void;
+  readonly onHoverGroup?: (
+    id: string | undefined,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined
+  ) => void;
   readonly onContextMenuGroup?: (
     id: string,
     rootData: Record<string, string> | undefined,
@@ -58,6 +63,7 @@ export const toReact = memo(
     orbitContolsProps,
     materialStateImages,
     onClickGroup,
+    onHoverGroup,
     onContextMenuGroup,
     onClickHotSpot,
     createGroupKey,
@@ -127,6 +133,7 @@ export const toReact = memo(
             hotSpotTexts={hotSpotTexts}
             materialStateImages={materialStateImages}
             onClickGroup={onClickGroup}
+            onHoverGroup={onHoverGroup}
             onContextMenuGroup={onContextMenuGroup}
             onClickHotSpot={onClickHotSpot}
             createGroupKey={createGroupKey}

@@ -16,6 +16,7 @@ export function ReactScene({
   showDimensions,
   materialStateImages,
   onClickGroup,
+  onHoverGroup,
   onContextMenuGroup,
   onClickHotSpot,
   createGroupKey,
@@ -31,6 +32,11 @@ export function ReactScene({
   readonly hotSpotTexts?: Record<string, string>;
   readonly materialStateImages?: Record<string, string>;
   readonly onClickGroup?: (
+    id: string | undefined,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined
+  ) => void;
+  readonly onHoverGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined
@@ -73,8 +79,13 @@ export function ReactScene({
             hoveredId={hoveredId}
             hoveredIdExternal={hoveredIdExternal}
             onClickGroup={onClickGroup}
+            onHoverGroup={(id, rootData, data) => {
+              setHoveredId(id);
+              if (onHoverGroup) {
+                onHoverGroup(id, rootData, data);
+              }
+            }}
             onContextMenuGroup={onContextMenuGroup}
-            setHoveredId={setHoveredId}
             createGroupKey={createGroupKey}
             id={id}
             rootData={g.data}

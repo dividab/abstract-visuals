@@ -18,8 +18,8 @@ export function ReactGroup({
   id,
   rootData,
   onClickGroup,
+  onHoverGroup,
   onContextMenuGroup,
-  setHoveredId,
   createGroupKey,
 }: {
   readonly g: Group_1;
@@ -36,6 +36,11 @@ export function ReactGroup({
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined
   ) => void;
+  readonly onHoverGroup: (
+    id: string | undefined,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined
+  ) => void;
   readonly onContextMenuGroup?: (
     id: string,
     rootData: Record<string, string> | undefined,
@@ -43,7 +48,6 @@ export function ReactGroup({
     left: number,
     top: number
   ) => void;
-  readonly setHoveredId: (id: string | undefined) => void;
   readonly createGroupKey?: (
     g: Group_1,
     idx: number,
@@ -85,11 +89,11 @@ export function ReactGroup({
           onPointerOver: (e) => {
             e.stopPropagation();
             document.body.style.cursor = "pointer";
-            setHoveredId(id);
+            onHoverGroup(id, rootData, g.data);
           },
           onPointerOut: (_e) => {
             document.body.style.cursor = "auto";
-            setHoveredId(undefined);
+            onHoverGroup(undefined, undefined, undefined);
           },
           onContextMenu: (e) => {
             if (onContextMenuGroup) {
@@ -110,8 +114,8 @@ export function ReactGroup({
           hoveredId={hoveredId}
           hoveredIdExternal={hoveredIdExternal}
           onClickGroup={onClickGroup}
+          onHoverGroup={onHoverGroup}
           onContextMenuGroup={onContextMenuGroup}
-          setHoveredId={setHoveredId}
           id={id}
           rootData={rootData}
           createGroupKey={createGroupKey}
