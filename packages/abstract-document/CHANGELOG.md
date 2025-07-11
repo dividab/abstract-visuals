@@ -2,9 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [15.0.12] - 2025-04-29
+
+- Handlebars fixes
+- Handlebars helpers
+
 ## [15.0.0] - 2025-04-29
 
-- Replaced Mustache with Handlebars  
+- Replaced Mustache with Handlebars
 
 ## [14.0.1] - 2025-03-27
 

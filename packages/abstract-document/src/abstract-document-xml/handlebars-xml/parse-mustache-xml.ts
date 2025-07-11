@@ -1,6 +1,7 @@
 import { X2jOptions, XMLParser } from "fast-xml-parser";
 import Handlebars from "handlebars";
 import Mustache from "mustache";
+import { registerHelpers } from "./helpers";
 
 export type XmlElement = {
   readonly tagName: string;
@@ -33,6 +34,7 @@ export const parseMustacheXml = (
 
 export const renderMustache = Mustache.render;
 export const renderHandlebars = (template: string, data: any, partials: Record<string, string>): string => {
+  registerHelpers();
   Object.entries(partials).forEach(([name, partial]) => Handlebars.registerPartial(name, partial));
   return Handlebars.compile(template, { compat: true, preventIndent: true })(data);
 };
