@@ -308,6 +308,9 @@ importers:
       file-saver:
         specifier: ^2.0.5
         version: 2.0.5
+      handlebars:
+        specifier: 4.7.8
+        version: 4.7.8
       react:
         specifier: ^19.0.0
         version: 19.0.0

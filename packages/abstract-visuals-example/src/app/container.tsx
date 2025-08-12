@@ -8,6 +8,7 @@ import { AbstractDocumentExample } from "./abstract-document-example.js";
 import { AbstractDocumentXMLExample } from "./abstract-document-xml-example.js";
 import { AbstractSheetExample } from "./abstract-sheet-example.js";
 import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
+import { TemplateSVG } from "./template-svg.js";
 
 type Example = (typeof examples)[number];
 
@@ -21,6 +22,7 @@ const examples = [
   "Abstract3D",
   "AbstractSheet",
   "AbstractSheetXML",
+  "TemplateSVG",
 ] as const;
 
 export function Container(): React.JSX.Element {
@@ -64,6 +66,8 @@ export function Container(): React.JSX.Element {
             return <AbstractSheetExample />;
           case "AbstractSheetXML":
             return <AbstractSheetXMLExample />;
+          case "TemplateSVG":
+            return <TemplateSVG />;
           default:
             return <></>;
         }
