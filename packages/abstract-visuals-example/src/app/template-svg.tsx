@@ -1,13 +1,13 @@
 import React from "react";
 import Handlebars from "handlebars";
-import wiringPng from "../../assets/wiring.png";
+// import wiringPng from "../../assets/wiring.png";
 import FileSaver from "file-saver";
 
 export function TemplateSVG({}: {}): React.JSX.Element {
   const [data, setData] = React.useState(
     JSON.stringify(
       {
-        imageUrl: wiringPng,
+        imageUrl: "", //wiringPng,
         property1: 23.4,
         design_spec2: 12,
       },
