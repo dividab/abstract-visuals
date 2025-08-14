@@ -16,7 +16,7 @@
     "@types/node": "^20.12.12",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^5.0.0",
     "@xsd-tools/typescript": "^0.2.0",
     "confusing-browser-globals": "^1.0.11",
     "enzyme": "^3.11.0",
@@ -32,13 +32,13 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "typescript": "^5.8.2",
-    "vite": "^6.0.3",
+    "vite": "^7.1.2",
     "vite-plugin-node-polyfills": "^0.22.0",
     "xmldom": "^0.6.0",
     "xsd-tools": "^0.2.0",
-    "vitest": "^2.1.6",
-    "vite-bundle-visualizer": "^1.2.1",
-    "@vitest/coverage-v8": "^2.1.6"
+    "vitest": "^3.2.4",
+    "@vitest/coverage-v8": "^2.1.6",
+    "rollup-plugin-visualizer": "^6.0.3"
   },
   "scripts": {
     "precommit": "lint-staged",
@@ -58,7 +58,8 @@
     "storybook": "start-storybook -p 6006 --ci",
     "build-storybook": "build-storybook",
     "gen": "xsd-ts ./packages/abstract-document/src/abstract-document-xml/xsd.xml ./packages/abstract-document/src/abstract-document-xml/abstract-document.ts",
-    "clean-node-modules": "rm -rf node_modules && rm -rf ./packages/*/node_modules"
+    "clean-node-modules": "rm -rf node_modules && rm -rf ./packages/*/node_modules",
+    "analyze": "ANALYZE=1 vite build packages/abstract-visuals-example --config packages/abstract-visuals-example/vite.config.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --ext .ts,.tsx -f visualstudio",

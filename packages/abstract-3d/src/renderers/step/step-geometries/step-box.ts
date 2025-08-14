@@ -1,4 +1,3 @@
-import { Euler, Matrix4, Vector3 } from "three";
 import {
   Box,
   Material,
@@ -197,7 +196,11 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
     ),
     m
   );
-  const absp = ADVANCED_BREP_SHAPE_REPRESENTATION(AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m), msb, m);
+  const absp = ADVANCED_BREP_SHAPE_REPRESENTATION(
+    AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m),
+    msb,
+    m
+  );
   MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(
     STYLED_ITEM(
       PRESENTATION_STYLE_ASSIGNMENT(
@@ -211,28 +214,15 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
     m
   );
   SHAPE_DEFINITION_REPRESENTATION(
-      PRODUCT_DEFINITION_SHAPE(
-        PRODUCT_DEFINITION(
-          PRODUCT_DEFINITION_FORMATION(
-            PRODUCT(
-              PRODUCT_CONTEXT(
-                applicationContext,
-                m
-              ),
-              "Cube",
-              m
-            ),
-            m
-          ),
-          PRODUCT_DEFINITION_CONTEXT(
-            applicationContext,
-            m
-          ),
-          m
-        ),
+    PRODUCT_DEFINITION_SHAPE(
+      PRODUCT_DEFINITION(
+        PRODUCT_DEFINITION_FORMATION(PRODUCT(PRODUCT_CONTEXT(applicationContext, m), "Cube", m), m),
+        PRODUCT_DEFINITION_CONTEXT(applicationContext, m),
         m
       ),
-      absp,
       m
-    );
+    ),
+    absp,
+    m
+  );
 }
