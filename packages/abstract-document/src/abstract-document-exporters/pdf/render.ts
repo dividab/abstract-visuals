@@ -536,6 +536,7 @@ function drawHyperLink(
       indent: textStyle.indent || 0,
       continued: alignment !== "left" ? false : !isLastAtom,
       baseline: textStyle.baseline || "top",
+      ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
     if (textStyle.underline === undefined ? true : textStyle.underline) {
@@ -547,6 +548,7 @@ function drawHyperLink(
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
       indent: textStyle.indent || 0,
       continued: !isLastAtom,
+      ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
     if (textStyle.underline === undefined ? true : textStyle.underline) {
@@ -596,6 +598,7 @@ function drawText(
       continued: alignment !== "left" ? false : !isLastAtom,
       baseline: textStyle.baseline || "top",
       strike: textStyle.strike,
+      ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
   } else {
@@ -605,6 +608,7 @@ function drawText(
       indent: textStyle.indent || 0,
       continued: !isLastAtom,
       strike: textStyle.strike || false,
+      ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
   }

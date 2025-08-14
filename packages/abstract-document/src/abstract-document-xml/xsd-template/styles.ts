@@ -47,6 +47,7 @@ export const StyleName = `<xs:complexType name="StyleName">
 	<xs:attribute name="fontScale" type="xs:decimal" />
 	<xs:attribute name="fontSize" type="xs:decimal" />
 	<xs:attribute name="lineGap" type="xs:decimal" />
+	<xs:attribute name="characterSpacing" type="xs:decimal" />
 	<xs:attribute name="verticalPosition" type="xs:decimal" />
 	<xs:attribute name="indent" type="xs:decimal" />
 	<xs:attribute name="color" type="xs:string" />
@@ -211,6 +212,7 @@ export const textStyle = `<xs:complexType name="TextStyle">
 	<xs:attribute name="fontScale" type="xs:decimal" />
 	<xs:attribute name="fontSize" type="xs:decimal" />
 	<xs:attribute name="lineGap" type="xs:decimal" />
+	<xs:attribute name="characterSpacing" type="xs:decimal" />
 	<xs:attribute name="verticalPosition" type="xs:decimal" />
 	<xs:attribute name="indent" type="xs:decimal" />
 	<xs:attribute name="color" type="xs:string" />

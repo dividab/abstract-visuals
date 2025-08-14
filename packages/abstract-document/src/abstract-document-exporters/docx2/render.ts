@@ -151,6 +151,7 @@ function renderHyperLink(
     size: fontSize,
     color: style.color || "blue",
     bold: style.bold || style.fontWeight === "bold",
+    characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
           color: style.color || "blue",
@@ -442,6 +443,7 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
     size: fontSize,
     color: style.color || "black",
     bold: style.bold || style.fontWeight === "bold",
+    characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
           color: style.color,
@@ -459,6 +461,7 @@ function renderTotalPages(style: AD.TextStyle.TextStyle): TextRun {
     size: fontSize,
     color: style.color || "black",
     bold: style.bold || style.fontWeight === "bold",
+    characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
           color: style.color,
@@ -478,6 +481,7 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
     size: fontSize,
     color: style.color || "black",
     bold: style.bold || style.fontWeight === "bold",
+    characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
           color: style.color,

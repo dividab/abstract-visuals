@@ -447,6 +447,7 @@ function measureText(
     underline: textStyle.underline || false,
     indent: textStyle.indent || 0,
     lineBreak: textStyle.lineBreak ?? true,
+    ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
     ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
   };
   const width = Math.min(availableSize.width, pdf.widthOfString(text, textOptions));
