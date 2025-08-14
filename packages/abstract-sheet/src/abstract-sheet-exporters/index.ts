@@ -1,3 +1,4 @@
-export * from "./csv.js";
-export * from "./xlsx.js";
-export * from "./react.js";
+export type { CsvFile, CsvOptions } from "./csv.js";
+export  { toCsv } from "./csv.js";
+export { toXlsx } from "./xlsx.js";
+export {toReact} from "./react.js";
