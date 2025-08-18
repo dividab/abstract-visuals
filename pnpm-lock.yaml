@@ -288,7 +288,7 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^0.8.0
+        specifier: ^0.8.1
         version: link:../abstract-3d
       abstract-chart:
         specifier: ^11.1.0

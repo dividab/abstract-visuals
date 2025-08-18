@@ -73,7 +73,7 @@ export function ReactMaterial({
       metalness={mat.metalness}
       side={DoubleSide}
       {...((opacity < 1 || disabled) && !isHotSpot
-        ? { transparent: true, opacity: disabled ? opacity * decreasedOpacity : opacity }
+        ? { transparent: true, depthWrite: false, opacity: disabled ? opacity * decreasedOpacity : opacity }
         : materialDefaults)}
     />
   );
