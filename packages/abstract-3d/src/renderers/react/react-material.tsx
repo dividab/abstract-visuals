@@ -46,6 +46,14 @@ export function ReactMaterial({
       : hoveredId === id
       ? shade(-0.4, mat.normal)
       : mat.normal;
+  const colorText =
+    selectedId === id
+      ? hoveredId === id
+        ? shade(-0.4, textSelectMat.normal)
+        : textSelectMat.normal
+      : hoveredId === id
+      ? shade(-0.4, mat.normal)
+      : mat.normal;
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
   if (material.image?.type === "UrlImage") {
     return (
@@ -59,7 +67,7 @@ export function ReactMaterial({
   if (isText) {
     return (
       <meshBasicMaterial
-        color={color}
+        color={colorText}
         side={DoubleSide}
         transparent
         {...(opacity < 1 ? { opacity } : materialDefaults)}
@@ -129,5 +137,6 @@ const materialDefaults: MaterialParameters = { transparent: false, opacity: 1.0,
 
 const acceptMat: Material = { normal: "rgb(0,148,91)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 const selectMat: Material = { normal: "rgb(14,82,184)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+const textSelectMat: Material = { normal: "rgb(0, 26, 65)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 const errorMar: Material = { normal: "#b82f3a", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 const warningMat: Material = { normal: "rgb(240, 197, 48)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
