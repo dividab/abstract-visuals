@@ -34,6 +34,34 @@ export function fromString(s: string): Color | undefined {
   return fromArgb(a, r, g, b);
 }
 
+export function fromString2(s: string, def?: Color): Color {
+  if (s.startsWith("#")) {
+    if (s.length === 9) {
+      return fromArgb(
+        parseInt(s.slice(1, 3), 16),
+        parseInt(s.slice(3, 5), 16),
+        parseInt(s.slice(5, 7), 16),
+        parseInt(s.slice(7, 9), 16)
+      );
+    }
+    return fromArgb(255, parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16));
+  }
+  if (s.startsWith("rgb")) {
+    const [r, g, b, a] = s.split("(")[1]?.split(")")[0]?.split(",") ?? [];
+    return fromArgb(Number(a ?? 255), Number(r ?? 0), Number(g ?? 0), Number(b ?? 0));
+  }
+  if (s === "white") {
+    return white;
+  }
+  if (s === "black") {
+    return black;
+  }
+  if (s === "transparent") {
+    return transparent;
+  }
+  return def ?? transparent;
+}
+
 export const black: Color = fromArgb(0xff, 0, 0, 0);
 export const blue: Color = fromArgb(0xff, 0x00, 0x00, 0xff);
 export const brown: Color = fromArgb(0xff, 0xa5, 0x2a, 0x2a);

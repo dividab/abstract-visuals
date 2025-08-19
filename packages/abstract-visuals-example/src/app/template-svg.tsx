@@ -1,7 +1,8 @@
 import React from "react";
-import Handlebars from "handlebars";
 import wiringPng from "../../assets/wiring.png";
 import FileSaver from "file-saver";
+import { abstractImageXml } from "../../../abstract-image/src/abstract-image-xml/abstract-image-xml.js";
+import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
 
 export function TemplateSVG({}: {}): React.JSX.Element {
   const [data, setData] = React.useState(
@@ -16,11 +17,11 @@ export function TemplateSVG({}: {}): React.JSX.Element {
     )
   );
 
-  const [template, setTemplate] = React.useState(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600">
-  <image href="{{imageUrl}}" x="0" y="0" width="400" height="600" />
-  <text x="240" y="171" text-anchor="middle" font-family="Inter, Arial" fill="blue" font-size="8">{{property1}}</text>
-  <text x="187" y="368" text-anchor="middle" font-family="Inter, Arial" font-size="14">{{design_spec2}}</text>
-</svg>`);
+  const [template, setTemplate] = React.useState(`<AbstractImage size="400 600">
+  <Image url="{{imageUrl}}" topLeft="0 0" bottomRight="400 600" />
+  <Text position="235 165" textColor="rgb(0,0,255)" fontSize="8" text="{{property1}}" />
+  <Text position="181 358" fontSize="14" textColor="rgb(255,0,0)" text="{{design_spec2}}"/>
+</AbstractImage>`);
 
   let dataParsed = {};
   try {
@@ -28,7 +29,10 @@ export function TemplateSVG({}: {}): React.JSX.Element {
   } catch (e) {
     console.log(e);
   }
-  const svg = Handlebars.compile(template, { compat: true, preventIndent: true })(dataParsed);
+  const ai = abstractImageXml(template, dataParsed);
+  console.log("ai", ai);
+  const svg = createSVG(ai);
+
   return (
     <div style={{ display: "flex", margin: "10px 0 0 10px", gap: "10px", width: "100%", height: "calc(100% - 40px)" }}>
       <div style={{ display: "flex", flexDirection: "column", width: "20%", height: "100%", gap: "10px" }}>
@@ -63,7 +67,8 @@ export function TemplateSVG({}: {}): React.JSX.Element {
             Download Svg
           </button>
         </div>
-        <div dangerouslySetInnerHTML={{ __html: svg }} />;
+        <ReactSvg image={ai} />
+        {/* <div dangerouslySetInnerHTML={{ __html: svg }} /> */}
       </div>
     </div>
   );

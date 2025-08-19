@@ -78,7 +78,7 @@ export function abstractSheetOfXml(el: XmlElement): unknown {
       const styles = el.attributes.styles?.split(",");
       if (el.attributes.number !== undefined) {
         return { ...el.attributes, type: "number", value: el.attributes.number, styles } as Cell;
-      } else if (el.attributes.bool !== undefined) {
+      } else if (el.attributes.boolean !== undefined) {
         return { ...el.attributes, type: "boolean", value: el.attributes.boolean, styles } as Cell;
       } else if (el.attributes.date !== undefined) {
         return { ...el.attributes, type: "date", value: el.attributes.date, styles } as Cell;
