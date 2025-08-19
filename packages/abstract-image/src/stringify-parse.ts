@@ -1,5 +1,5 @@
-import { AbstractImage } from "./abstract-image";
-import { BinaryImage, Component, Group, SubImage } from "./component";
+import { AbstractImage } from "./model/abstract-image";
+import { BinaryImage, Component, Group, SubImage } from "./model/component";
 
 export function stringify(abstractImage: AbstractImage): string {
   const safe = { ...abstractImage, components: abstractImage.components.map(componentToJsonSafe) };
