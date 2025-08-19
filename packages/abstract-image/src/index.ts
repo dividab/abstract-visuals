@@ -9,4 +9,5 @@ export * from "./exporters/png-export-image.js";
 export * from "./exporters/dxf2d-export-image.js";
 export * from "./exporters/react-svg-export-image.js";
 export * from "./exporters/eps-export-image.js";
+export * from "./abstract-image-xml/index.js"
 // dummy
