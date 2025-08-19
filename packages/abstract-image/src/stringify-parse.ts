@@ -1,14 +1,22 @@
 import { AbstractImage } from "./model/abstract-image";
 import { BinaryImage, Component, Group, SubImage } from "./model/component";
 
-export function stringify(abstractImage: AbstractImage): string {
+export function stringifyBase64(abstractImage: AbstractImage): string {
   const safe = { ...abstractImage, components: abstractImage.components.map(componentToJsonSafe) };
   return JSON.stringify(safe);
 }
 
-export function parse(stringifiedImage: string): AbstractImage {
+export function encodeBase64(abstractImage: AbstractImage): AbstractImage {
+  return { ...abstractImage, components: abstractImage.components.map(componentToJsonSafe) };
+}
+
+export function parseBase64(stringifiedImage: string): AbstractImage {
   const obj = JSON.parse(stringifiedImage);
   return { ...obj, components: (obj.components ?? []).map(componentFromJsonSafe) } as AbstractImage;
+}
+
+export function decodeBase64(safeAbstractImage: AbstractImage): AbstractImage {
+  return { ...safeAbstractImage, components: (safeAbstractImage.components ?? []).map(componentFromJsonSafe) } as AbstractImage;
 }
 
 function componentToJsonSafe(c: Component): any {
