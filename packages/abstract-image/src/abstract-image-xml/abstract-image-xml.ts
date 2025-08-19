@@ -60,10 +60,13 @@ export function abstractImageOfXml(el: XmlElement): unknown {
         type: "ellipse",
         topLeft: parsePoint(el.attributes.topLeft),
         bottomRight: parsePoint(el.attributes.bottomRight),
-        fillColor: fromString2(el.attributes.fillColor?? "", white),
+        fillColor: fromString2(el.attributes.fillColor ?? "", white),
         strokeColor: fromString2(el.attributes.strokeColor ?? "", black),
         id: el.attributes.id,
-        strokeDashStyle: { dashes: parseNumberArrayString(el.attributes.strokeDashArray), offset: 0 },
+        strokeDashStyle: {
+          dashes: parseNumberArrayString(el.attributes.strokeDashArray),
+          offset: el.attributes.strokeDashOffset ? Number(el.attributes.strokeDashOffset) : 0,
+        },
         strokeThickness: Number(el.attributes.strokeThickness ?? 1),
       } satisfies Ellipse;
     case "Line":
@@ -73,7 +76,10 @@ export function abstractImageOfXml(el: XmlElement): unknown {
         end: parsePoint(el.attributes.end),
         strokeColor: fromString2(el.attributes.strokeColor ?? "", black),
         id: el.attributes.id,
-        strokeDashStyle: { dashes: parseNumberArrayString(el.attributes.strokeDashArray), offset: 0 },
+        strokeDashStyle: {
+          dashes: parseNumberArrayString(el.attributes.strokeDashArray),
+          offset: el.attributes.strokeDashOffset ? Number(el.attributes.strokeDashOffset) : 0,
+        },
         strokeThickness: Number(el.attributes.strokeThickness ?? 1),
       } satisfies Line;
     case "PolyLine":
@@ -82,7 +88,10 @@ export function abstractImageOfXml(el: XmlElement): unknown {
         points: parsePointsString(el.attributes.points),
         strokeColor: fromString2(el.attributes.strokeColor ?? "", black),
         id: el.attributes.id,
-        strokeDashStyle: { dashes: parseNumberArrayString(el.attributes.strokeDashArray), offset: 0 },
+        strokeDashStyle: {
+          dashes: parseNumberArrayString(el.attributes.strokeDashArray),
+          offset: el.attributes.strokeDashOffset ? Number(el.attributes.strokeDashOffset) : 0,
+        },
         strokeThickness: Number(el.attributes.strokeThickness ?? 1),
       } satisfies PolyLine;
     case "Polygon":
@@ -92,7 +101,10 @@ export function abstractImageOfXml(el: XmlElement): unknown {
         fillColor: fromString2(el.attributes.fillColor ?? "", white),
         strokeColor: fromString2(el.attributes.strokeColor ?? "", black),
         id: el.attributes.id,
-        strokeDashStyle: { dashes: parseNumberArrayString(el.attributes.strokeDashArray), offset: 0 },
+        strokeDashStyle: {
+          dashes: parseNumberArrayString(el.attributes.strokeDashArray),
+          offset: el.attributes.strokeDashOffset ? Number(el.attributes.strokeDashOffset) : 0,
+        },
         strokeThickness: Number(el.attributes.strokeThickness ?? 1),
       } satisfies Polygon;
     case "Rectangle":
@@ -104,7 +116,10 @@ export function abstractImageOfXml(el: XmlElement): unknown {
         radius: el.attributes.radius ? parsePoint(el.attributes.radius) : undefined,
         strokeColor: fromString2(el.attributes.strokeColor ?? "", black),
         id: el.attributes.id,
-        strokeDashStyle: { dashes: parseNumberArrayString(el.attributes.strokeDashArray), offset: 0 },
+        strokeDashStyle: {
+          dashes: parseNumberArrayString(el.attributes.strokeDashArray),
+          offset: el.attributes.strokeDashOffset ? Number(el.attributes.strokeDashOffset) : 0,
+        },
         strokeThickness: Number(el.attributes.strokeThickness ?? 1),
       } satisfies Rectangle;
     case "Text":
@@ -136,8 +151,8 @@ export function abstractImageOfXml(el: XmlElement): unknown {
 export const parsedXsd = parseXsd(xsd);
 
 function parsePoint(pointString: string | undefined): Point {
-  const [xString, yString] = pointString?.split(" ") ?? ["0", "0"];
-  const [x, y] = [Number(xString), Number(yString)];
+  const [xString, yString] = pointString?.split(" ") ?? [0, 0];
+  const [x, y] = [Number(xString ?? 0), Number(yString ?? 0)];
   return { x: Number.isFinite(x) ? x : 0, y: Number.isFinite(y) ? y : 0 };
 }
 
@@ -145,7 +160,7 @@ function parsePointsString(numberArrayString: string | undefined): Array<Point> 
   return (
     numberArrayString?.split(" ").map((tuple): Point => {
       const [xString, yString] = tuple.split(",");
-      return { x: Number(xString), y: Number(yString) };
+      return { x: Number(xString ?? 0), y: Number(yString ?? 0) };
     }) ?? []
   );
 }
