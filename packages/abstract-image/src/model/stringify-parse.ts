@@ -29,10 +29,25 @@ function componentToJsonSafe(c: Component): any {
   }
 }
 
+type BufferFromUint8ArrayStringified = { data: Uint8Array; type: "Buffer" };
+
 function componentFromJsonSafe(c: any): Component {
   if (c?.type === "binaryimage") {
-    if (c.data?.type === "bytes" && typeof c.data.bytes === "string") {
-      return { ...c, data: { type: "bytes", bytes: fromBase64(c.data.bytes) } } as BinaryImage;
+    if (c.data?.type === "bytes") {
+      if (typeof c.data.bytes === "string") {
+        return { ...c, data: { type: "bytes", bytes: fromBase64(c.data.bytes) } } as BinaryImage;
+      }
+      // legacy fallback, will remove
+      if ((c.data.bytes as unknown as BufferFromUint8ArrayStringified)?.data) {
+        return {
+          ...c,
+          data: { ...c.data, bytes: new Uint8Array((c.data.bytes as unknown as BufferFromUint8ArrayStringified).data) },
+        };
+      }
+      if (!Array.isArray(c.data?.bytes)) {
+        return { ...c, data: { ...c.data, bytes: new Uint8Array(Object.values(c.data.bytes)) } }; // Somtimes Uint8Array is an object instead of an array
+      }
+      return { ...c, data: { ...c.data, bytes: new Uint8Array(c.data.bytes) } };
     }
     return c as BinaryImage;
   }
