@@ -23,3 +23,4 @@ export function createAbstractImage(
     components: components,
   };
 }
+

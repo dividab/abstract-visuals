@@ -1,0 +1,73 @@
+import { AbstractImage } from "./abstract-image";
+import { BinaryImage, Component, Group, SubImage } from "./component";
+
+export function stringify(abstractImage: AbstractImage): string {
+  const safe = { ...abstractImage, components: abstractImage.components.map(componentToJsonSafe) };
+  return JSON.stringify(safe);
+}
+
+export function parse(stringifiedImage: string): AbstractImage {
+  const obj = JSON.parse(stringifiedImage);
+  return { ...obj, components: (obj.components ?? []).map(componentFromJsonSafe) } as AbstractImage;
+}
+
+function componentToJsonSafe(c: Component): any {
+  switch (c.type) {
+    case "binaryimage": {
+      const bi = c as BinaryImage;
+      if (bi.data.type === "bytes") {
+        return { ...bi, data: { type: "bytes", bytes: toBase64(bi.data.bytes) } };
+      }
+      return bi;
+    }
+    case "group":
+      return { ...c, children: c.children.map(componentToJsonSafe) };
+    case "subimage":
+      return { ...c, image: componentToJsonSafe(c.image) };
+    default:
+      return c;
+  }
+}
+
+function componentFromJsonSafe(c: any): Component {
+  if (c?.type === "binaryimage") {
+    if (c.data?.type === "bytes" && typeof c.data.bytes === "string") {
+      return { ...c, data: { type: "bytes", bytes: fromBase64(c.data.bytes) } } as BinaryImage;
+    }
+    return c as BinaryImage;
+  }
+  if (c?.type === "group") {
+    return { ...c, children: Array.isArray(c.children) ? c.children.map(componentFromJsonSafe) : [] } as Group;
+  }
+  if (c?.type === "subimage") {
+    return { ...c, image: componentFromJsonSafe(c.image) } as SubImage;
+  }
+  return c as Component;
+}
+
+function toBase64(u8: Uint8Array): string {
+  // Node
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(u8).toString("base64");
+  }
+  // Browser
+  let bin = "";
+  for (const e of u8) {
+    bin += String.fromCharCode(e);
+  }
+  return btoa(bin);
+}
+
+function fromBase64(b64: string): Uint8Array {
+  // Node
+  if (typeof Buffer !== "undefined") {
+    return new Uint8Array(Buffer.from(b64, "base64"));
+  }
+  // Browser
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) {
+    out[i] = bin.charCodeAt(i);
+  }
+  return out;
+}
