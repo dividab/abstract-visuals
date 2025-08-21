@@ -54,19 +54,19 @@ function add(): void {
 }
 
 function subtract(): void {
-  Handlebars.registerHelper("add", function (a, b) {
+  Handlebars.registerHelper("subtract", function (a, b) {
     return a - b;
   });
 }
 
 function multiply(): void {
-  Handlebars.registerHelper("add", function (a, b) {
+  Handlebars.registerHelper("multiply", function (a, b) {
     return a * b;
   });
 }
 
 function divide(): void {
-  Handlebars.registerHelper("add", function (a, b) {
+  Handlebars.registerHelper("divide", function (a, b) {
     return a / b;
   });
 }
