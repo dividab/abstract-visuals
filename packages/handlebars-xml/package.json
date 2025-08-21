@@ -1,6 +1,6 @@
 {
   "name": "handlebars-xml",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "handlebars-xml",
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/handlebars-xml",
@@ -20,15 +20,15 @@
   "dependencies": {
     "fast-xml-parser": "^4.5.0",
     "handlebars": "4.7.8",
+    "json-schema": "^0.4.0",
     "mustache": "^4.2.0",
-    "ts-exhaustive-check": "^1.0.0",
-    "json-schema": "^0.4.0"
+    "ts-exhaustive-check": "^1.0.0"
   },
   "devDependencies": {
+    "@types/json-schema": "^7.0.15",
     "@types/mustache": "^4.2.5",
     "@types/node": "^22.10.1",
-    "@types/xml": "^1.0.11",
-    "@types/json-schema": "^7.0.15"
+    "@types/xml": "^1.0.11"
   },
   "gitHead": "e9e6fb8cfb989f8d1080157139ec2d72ad72a123"
 }
