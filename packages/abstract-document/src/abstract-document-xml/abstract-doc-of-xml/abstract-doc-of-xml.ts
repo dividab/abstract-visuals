@@ -1,7 +1,7 @@
 import { XmlElement } from "handlebars-xml";
 import { ADCreatorFn, propsCreators } from "./creator.js";
 
-export { parseHandlebarsXml, parseMustacheXml } from "handlebars-xml";
+export { parseHandlebarsXml, parseMustacheXml, type XmlElement } from "handlebars-xml";
 
 export function abstractDocOfXml(
   creators: Record<string, ADCreatorFn>,
