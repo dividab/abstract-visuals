@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
 import * as AS from "../../../abstract-sheet/src/index.js";
+import * as HSXML from "../../../handlebars-xml/src/index.js";
 import FileSaver from "file-saver";
 
 export function AbstractSheetXMLExample(): React.JSX.Element {
@@ -157,13 +158,13 @@ function createSheet(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const handlebarsRendered = AS.renderHandlebars(template, dataObject, {});
-  const validationErrors = AS.validateXml(handlebarsRendered, AS.parsedXsd);
+  const handlebarsRendered = HSXML.renderHandlebars(template, dataObject, {});
+  const validationErrors = HSXML.validateXml(handlebarsRendered, AS.parsedXsd);
   if (validationErrors.length > 0) {
-    return { type: "Err", error: AS.errorToReadableText(validationErrors, "template") };
+    return { type: "Err", error: HSXML.errorToReadableText(validationErrors, "template") };
   }
   try {
-    return { type: "Ok", sheet: AS.abstractSheetOfXml(AS.parseXml(handlebarsRendered)[0]!) as AS.AbstractSheet };
+    return { type: "Ok", sheet: AS.abstractSheetOfXml(HSXML.parseXml(handlebarsRendered)[0]!) as AS.AbstractSheet };
   } catch (e) {
     return { type: "Err", error: e.message };
   }

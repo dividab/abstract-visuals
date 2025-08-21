@@ -7,5 +7,5 @@
     "rootDir": "src",
     "noUncheckedIndexedAccess": false
   },
-  "references": [{ "path": "../abstract-image" }]
+  "references": [{ "path": "../abstract-image" }, { "path": "../handlebars-xml" }]
 }

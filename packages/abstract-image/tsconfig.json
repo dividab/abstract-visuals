@@ -7,5 +7,5 @@
     "rootDir": "src",
     "noUncheckedIndexedAccess": false
   },
-  "references": []
+  "references": [{ "path": "../handlebars-xml" }]
 }

@@ -4,7 +4,7 @@ import FileSaver from "file-saver";
 import { abstractImageXml } from "../../../abstract-image/src/abstract-image-xml/abstract-image-xml.js";
 import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
 
-export function TemplateSVG({}: {}): React.JSX.Element {
+export function AbstractImageXml({}: {}): React.JSX.Element {
   const [data, setData] = React.useState(
     JSON.stringify(
       {
