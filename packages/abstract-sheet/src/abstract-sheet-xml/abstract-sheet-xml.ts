@@ -1,3 +1,4 @@
+import { parseHandlebarsXml, XmlElement, parseXsd } from "handlebars-xml";
 import {
   borderStyleRecord,
   Cell,
@@ -12,14 +13,9 @@ import {
   AbstractSheet,
 } from "../abstract-sheet/abstract-sheet.js";
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
-import { parseHandlebarsXml, parseXsd, TemplateMethod, XmlElement } from "./handlebars-xml/index.js";
 
-export const abstractSheetXml = (
-  template: string,
-  data: any,
-  partials: Record<string, string>,
-  method: TemplateMethod = TemplateMethod.Handlebars
-): AbstractSheet => abstractSheetOfXml(parseHandlebarsXml(template, data, partials, method)[0]!) as AbstractSheet;
+export const abstractSheetXml = (template: string, data: any, partials: Record<string, string>): AbstractSheet =>
+  abstractSheetOfXml(parseHandlebarsXml(template, data, partials)[0]!) as AbstractSheet;
 
 export function abstractSheetOfXml(el: XmlElement): unknown {
   const children = Array<unknown>();

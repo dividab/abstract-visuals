@@ -1,4 +1,5 @@
 import { AbstractImage } from "../model/abstract-image.js";
+import { parseHandlebarsXml, parseXsd, XmlElement } from "handlebars-xml";
 import { black, fromString2, transparent, white } from "../model/color.js";
 import {
   AbstractFontWeight,
@@ -16,10 +17,9 @@ import {
 } from "../model/component.js";
 import { Point } from "../model/point.js";
 import { xsd } from "./abstract-image-xsd.js";
-import { parseHandlebarsXml, parseXsd, XmlElement } from "./handlebars-xml/index.js";
 
 export const abstractImageXml = (template: string, data: any): AbstractImage =>
-  abstractImageOfXml(parseHandlebarsXml(template, data)[0]!) as AbstractImage;
+  abstractImageOfXml(parseHandlebarsXml(template, data, {})[0]!) as AbstractImage;
 
 export function abstractImageOfXml(el: XmlElement): unknown {
   const children = Array<Component>();

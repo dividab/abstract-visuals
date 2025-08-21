@@ -6,5 +6,5 @@
     "outDir": "lib",
     "rootDir": "src"
   },
-  "references": [{ "path": "../handlebars-xml" }]
+  "references": []
 }

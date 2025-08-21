@@ -141,7 +141,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^11.0.14
+        specifier: ^11.0.20
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -150,7 +150,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^11.0.14
+        specifier: ^11.0.20
         version: link:../abstract-image
       base64-js:
         specifier: ^1.5.1
@@ -164,6 +164,9 @@ importers:
       handlebars:
         specifier: 4.7.8
         version: 4.7.8
+      handlebars-xml:
+        specifier: ^0.0.0
+        version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
         version: 2.30.1
@@ -234,6 +237,9 @@ importers:
       handlebars:
         specifier: 4.7.8
         version: 4.7.8
+      handlebars-xml:
+        specifier: ^0.0.0
+        version: link:../handlebars-xml
     devDependencies:
       '@types/base64-js':
         specifier: ^1.3.2
@@ -259,6 +265,9 @@ importers:
       handlebars:
         specifier: 4.7.8
         version: 4.7.8
+      handlebars-xml:
+        specifier: ^0.0.0
+        version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
         version: 2.30.1
@@ -294,13 +303,13 @@ importers:
         specifier: ^0.8.3
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^11.1.0
+        specifier: ^11.1.6
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.17
         version: 14.0.17(react@19.0.0)
       abstract-image:
-        specifier: ^11.0.14
+        specifier: ^11.0.20
         version: link:../abstract-image
       abstract-sheet:
         specifier: ^0.0.30
@@ -314,6 +323,9 @@ importers:
       handlebars:
         specifier: 4.7.8
         version: 4.7.8
+      handlebars-xml:
+        specifier: ^0.0.0
+        version: link:../handlebars-xml
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -342,6 +354,37 @@ importers:
       vite-plugin-node-polyfills:
         specifier: ^0.23.0
         version: 0.23.0(rollup@4.46.2)(vite@6.0.1(@types/node@22.10.1)(terser@5.36.0)(tsx@4.19.2))
+
+  packages/handlebars-xml:
+    dependencies:
+      fast-xml-parser:
+        specifier: ^4.5.0
+        version: 4.5.0
+      handlebars:
+        specifier: 4.7.8
+        version: 4.7.8
+      json-schema:
+        specifier: ^0.4.0
+        version: 0.4.0
+      mustache:
+        specifier: ^4.2.0
+        version: 4.2.0
+      ts-exhaustive-check:
+        specifier: ^1.0.0
+        version: 1.0.0
+    devDependencies:
+      '@types/json-schema':
+        specifier: ^7.0.15
+        version: 7.0.15
+      '@types/mustache':
+        specifier: ^4.2.5
+        version: 4.2.5
+      '@types/node':
+        specifier: ^22.10.1
+        version: 22.10.1
+      '@types/xml':
+        specifier: ^1.0.11
+        version: 1.0.11
 
 packages:
 
@@ -8275,7 +8318,7 @@ snapshots:
 
   '@octokit/types@2.16.2':
     dependencies:
-      '@types/node': 20.17.9
+      '@types/node': 22.10.1
 
   '@octokit/types@6.41.0':
     dependencies:
@@ -8614,7 +8657,7 @@ snapshots:
 
   '@types/cheerio@0.22.35':
     dependencies:
-      '@types/node': 20.17.9
+      '@types/node': 22.10.1
 
   '@types/deep-eql@4.0.2': {}
 
@@ -8634,7 +8677,7 @@ snapshots:
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 20.17.9
+      '@types/node': 22.10.1
 
   '@types/isomorphic-fetch@0.0.34': {}
 

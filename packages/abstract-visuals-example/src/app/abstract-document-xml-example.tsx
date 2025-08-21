@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
+import * as HSXML from "../../../handlebars-xml/src/index.js";
 import {
   AbstractDoc as AD,
   AbstractDocExporters,
@@ -111,12 +112,12 @@ async function generatePDF(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." + e };
   }
-  const handlebarsRendered = ADXml.renderHandlebars(template, dataObject, partial);
-  const validationErrors = ADXml.validateXml(handlebarsRendered, ADXml.parsedXsd);
+  const handlebarsRendered = HSXML.renderHandlebars(template, dataObject, partial);
+  const validationErrors = HSXML.validateXml(handlebarsRendered, ADXml.parsedXsd);
   if (validationErrors.length > 0) {
-    return { type: "Err", error: ADXml.errorToReadableText(validationErrors, "template") };
+    return { type: "Err", error: HSXML.errorToReadableText(validationErrors, "template") };
   }
-  const xml = ADXml.parseXml(handlebarsRendered);
+  const xml = HSXML.parseXml(handlebarsRendered);
 
   const doc = ADXml.abstractDocOfXml(
     ADXml.creators({}, {}, ADXml.extractImageFontsStyleNames(xml)[2]),

@@ -1,5 +1,5 @@
 import { XMLValidator, ValidationError } from "fast-xml-parser";
-import { XmlElement, parseXml, findElement } from "./parse-handlebars-xml.js";
+import { XmlElement, parseXml, findElement } from "./parse.js";
 
 enum ErrorType {
   warning = 0,
