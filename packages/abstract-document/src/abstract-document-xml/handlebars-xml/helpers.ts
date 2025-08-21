@@ -1,32 +1,73 @@
 import Handlebars from "handlebars";
-import moment from "moment";
+// import moment from "moment";
 
 export function registerHelpers(): void {
-  sortOnPathHelper();
+  // sortOnPathHelper();
   equalHelper();
   lessThanHelper();
   greaterThanHelper();
   lessThanOrEqualHelper();
   greaterThanEqualHelper();
-  formatDateHelper();
-  currentDateHelper();
+  add();
+  subtract();
+  multiply();
+  divide();
+  // formatDateHelper();
+  // currentDateHelper();
 }
 
-function sortOnPathHelper(): void {
-  Handlebars.registerHelper("sortOnPath", function (array, key) {
-    const path = key.split(".");
+type Func = {
+  readonly name: string;
+  readonly description: string;
+  readonly args: ReadonlyArray<Arg>;
+  readonly returnType: string; // JSONSchema;
+};
 
-    const extractPath = (obj: Record<string, any>, path: ReadonlyArray<string>): any => {
-      const [first, ...rest] = path;
-      if (first === undefined) {
-        return obj;
-      }
-      return extractPath(obj[first], rest);
-    };
+type Arg = {
+  readonly name: string;
+  readonly description: string;
+  readonly type: string; // JSONSchema;
+};
 
-    return array.toSorted(
-      (a: Record<string, any>, b: Record<string, any>) => extractPath(a, path) - extractPath(b, path)
-    );
+// function sortOnPathHelper(): void {
+//   Handlebars.registerHelper("sortOnPath", function (array, key) {
+//     const path = key.split(".");
+
+//     const extractPath = (obj: Record<string, any>, path: ReadonlyArray<string>): any => {
+//       const [first, ...rest] = path;
+//       if (first === undefined) {
+//         return obj;
+//       }
+//       return extractPath(obj[first], rest);
+//     };
+
+//     return array.toSorted(
+//       (a: Record<string, any>, b: Record<string, any>) => extractPath(a, path) - extractPath(b, path)
+//     );
+//   });
+// }
+
+function add(): void {
+  Handlebars.registerHelper("add", function (a, b) {
+    return a + b;
+  });
+}
+
+function subtract(): void {
+  Handlebars.registerHelper("add", function (a, b) {
+    return a - b;
+  });
+}
+
+function multiply(): void {
+  Handlebars.registerHelper("add", function (a, b) {
+    return a * b;
+  });
+}
+
+function divide(): void {
+  Handlebars.registerHelper("add", function (a, b) {
+    return a / b;
   });
 }
 
@@ -60,14 +101,14 @@ function greaterThanEqualHelper(): void {
   });
 }
 
-function formatDateHelper(): void {
-  Handlebars.registerHelper("formatDate", function (date, format) {
-    return moment(date).format(format);
-  });
-}
+// function formatDateHelper(): void {
+//   Handlebars.registerHelper("formatDate", function (date, format) {
+//     return moment(date).format(format);
+//   });
+// }
 
-function currentDateHelper(): void {
-  Handlebars.registerHelper("currentDate", function (format) {
-    return moment().format(format);
-  });
-}
+// function currentDateHelper(): void {
+//   Handlebars.registerHelper("currentDate", function (format) {
+//     return moment().format(format);
+//   });
+// }
