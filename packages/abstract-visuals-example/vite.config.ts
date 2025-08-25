@@ -9,5 +9,5 @@ const analyze = process.env.ANALYZE === "1";
 export default defineConfig({
   plugins: [react(), nodePolyfills(), ...(analyze ? [visualizer({ open: true }) as PluginOption] : [])],
   // abstract-image is a depency of abstract-chart and abstract-document.
-  optimizeDeps: { include: ["abstract-image"] },
+  optimizeDeps: { include: ["abstract-image", "handlebars-xml"] },
 });
