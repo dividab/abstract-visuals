@@ -6,6 +6,7 @@ import { helpers } from "./_helpers.js";
 export type XmlElement = {
   readonly tagName: string;
   readonly attributes: Record<string, string>;
+  // readonly attributes: Record<string, string | number | undefined>;
   readonly children: ReadonlyArray<XmlElement>;
   readonly textContent?: string;
 };
