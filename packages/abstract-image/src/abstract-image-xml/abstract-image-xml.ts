@@ -150,21 +150,29 @@ export function abstractImageOfXml(el: XmlElement): unknown {
 
 export const parsedXsd = parseXsd(xsd);
 
-function parsePoint(pointString: string | undefined): Point {
-  const [xString, yString] = pointString?.split(" ") ?? [0, 0];
+function parsePoint(pointString: string | number | undefined): Point {
+  const [xString, yString] = (typeof pointString === "number" ? pointString.toString() : pointString)?.split(" ") ?? [
+    0, 0,
+  ];
   const [x, y] = [Number(xString ?? 0), Number(yString ?? 0)];
   return { x: Number.isFinite(x) ? x : 0, y: Number.isFinite(y) ? y : 0 };
 }
 
-function parsePointsString(numberArrayString: string | undefined): Array<Point> {
+function parsePointsString(numberArrayString: string | number | undefined): Array<Point> {
   return (
-    numberArrayString?.split(" ").map((tuple): Point => {
-      const [xString, yString] = tuple.split(",");
-      return { x: Number(xString ?? 0), y: Number(yString ?? 0) };
-    }) ?? []
+    (typeof numberArrayString === "number" ? numberArrayString.toString() : numberArrayString)
+      ?.split(" ")
+      .map((tuple): Point => {
+        const [xString, yString] = tuple.split(",");
+        return { x: Number(xString ?? 0), y: Number(yString ?? 0) };
+      }) ?? []
   );
 }
 
-function parseNumberArrayString(numberArrayString: string | undefined): ReadonlyArray<number> {
-  return numberArrayString?.split(",").map(Number) ?? [];
+function parseNumberArrayString(numberArrayString: string | number | undefined): ReadonlyArray<number> {
+  return (
+    (typeof numberArrayString === "number" ? numberArrayString.toString() : numberArrayString)
+      ?.split(",")
+      .map(Number) ?? []
+  );
 }
