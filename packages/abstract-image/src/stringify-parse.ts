@@ -16,17 +16,19 @@ export function parseBase64(stringifiedImage: string): AbstractImage {
 }
 
 export function decodeBase64(safeAbstractImage: AbstractImage): AbstractImage {
-  return { ...safeAbstractImage, components: (safeAbstractImage.components ?? []).map(componentFromJsonSafe) } as AbstractImage;
+  return {
+    ...safeAbstractImage,
+    components: (safeAbstractImage.components ?? []).map(componentFromJsonSafe),
+  } as AbstractImage;
 }
 
 function componentToJsonSafe(c: Component): any {
   switch (c.type) {
     case "binaryimage": {
-      const bi = c as BinaryImage;
-      if (bi.data.type === "bytes") {
-        return { ...bi, data: { type: "bytes", bytes: toBase64(bi.data.bytes) } };
+      if (c.data.type === "bytes") {
+        return { ...c, data: { type: "bytes", bytes: toBase64(c.data.bytes) } };
       }
-      return bi;
+      return c;
     }
     case "group":
       return { ...c, children: c.children.map(componentToJsonSafe) };
