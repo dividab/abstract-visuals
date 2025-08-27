@@ -29,13 +29,28 @@ export function AbstractImageXml({}: {}): React.JSX.Element {
   } catch (e) {
     console.log(e);
   }
-  const ai = abstractImageXml(template, dataParsed);
-  console.log("ai", ai);
-  const svg = createSVG(ai);
+  const result = abstractImageXml(template, dataParsed);
+  console.log("ai", result);
 
   return (
-    <div style={{ display: "flex", margin: "10px 0 0 10px", gap: "10px", width: "100%", height: "calc(100% - 40px)" }}>
-      <div style={{ display: "flex", flexDirection: "column", width: "20%", height: "100%", gap: "10px" }}>
+    <div
+      style={{
+        display: "flex",
+        margin: "10px 0 0 10px",
+        gap: "10px",
+        width: "100%",
+        height: "calc(100% - 40px)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "20%",
+          height: "100%",
+          gap: "10px",
+        }}
+      >
         <span>Data</span>
         <textarea
           style={{ width: "100%", height: "calc(100% - 30px)" }}
@@ -43,7 +58,15 @@ export function AbstractImageXml({}: {}): React.JSX.Element {
           onChange={(e) => setData(e.currentTarget.value)}
         />
       </div>
-      <div style={{ display: "flex", flexDirection: "column", width: "39%", height: "100%", gap: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "39%",
+          height: "100%",
+          gap: "10px",
+        }}
+      >
         <span>Template</span>
         <textarea
           style={{ width: "100%", height: "calc(100% - 30px)" }}
@@ -63,11 +86,18 @@ export function AbstractImageXml({}: {}): React.JSX.Element {
         }}
       >
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={() => FileSaver.saveAs(new Blob([svg], { type: "text/plain" }), `template-svg.svg`)}>
+          <button
+            disabled={result.type !== "Ok"}
+            onClick={() => {
+              if (result.type === "Ok") {
+                FileSaver.saveAs(new Blob([createSVG(result.value)], { type: "image/svg+xml" }), "template-svg.svg");
+              }
+            }}
+          >
             Download Svg
           </button>
         </div>
-        <ReactSvg image={ai} />
+        {result.type === "Ok" ? <ReactSvg image={result.value} /> : result.error.message}
         {/* <div dangerouslySetInnerHTML={{ __html: svg }} /> */}
       </div>
     </div>
