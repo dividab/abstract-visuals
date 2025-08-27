@@ -141,7 +141,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^11.0.21
+        specifier: ^11.2.0
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -150,7 +150,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^11.0.21
+        specifier: ^11.2.0
         version: link:../abstract-image
       base64-js:
         specifier: ^1.5.1
@@ -165,7 +165,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.0.1
+        specifier: ^0.1.0
         version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
@@ -238,7 +238,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.0.1
+        specifier: ^0.1.0
         version: link:../handlebars-xml
     devDependencies:
       '@types/base64-js':
@@ -266,7 +266,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.0.1
+        specifier: ^0.1.0
         version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
@@ -303,13 +303,13 @@ importers:
         specifier: ^0.8.3
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^11.1.7
+        specifier: ^11.3.0
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.17
         version: 14.0.17(react@19.0.0)
       abstract-image:
-        specifier: ^11.0.21
+        specifier: ^11.2.0
         version: link:../abstract-image
       abstract-sheet:
         specifier: ^0.0.30
@@ -324,7 +324,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.0.1
+        specifier: ^0.1.0
         version: link:../handlebars-xml
       react:
         specifier: ^19.0.0
