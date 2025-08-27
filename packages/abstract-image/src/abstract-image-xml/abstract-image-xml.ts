@@ -18,8 +18,47 @@ import {
 import { Point } from "../model/point.js";
 import { xsd } from "./abstract-image-xsd.js";
 
-export const abstractImageXml = (template: string, data: any): AbstractImage =>
-  abstractImageOfXml(parseHandlebarsXml(template, data, {})[0]!) as AbstractImage;
+type Result<TError, TValue> = Ok<TValue> | Err<TError>;
+type Ok<TValue> = { readonly type: "Ok"; readonly value: TValue };
+type Err<TError> = { readonly type: "Err"; readonly error: TError };
+
+export type AbstractImageXmlError =
+  | { type: "HANDLEBARS_PARSE_ERROR"; message: string; cause?: unknown }
+  | { type: "XML_PARSE_ERROR"; message: string; cause?: unknown }
+  | { type: "UNKNOWN_ERROR"; message: string; cause?: unknown };
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+export function abstractImageXml(template: string, data: unknown): Result<AbstractImageXmlError, AbstractImage> {
+  try {
+    const [parsedXml] = parseHandlebarsXml(template, data, {});
+
+    try {
+      const abstractImage = abstractImageOfXml(parsedXml) as AbstractImage;
+      return { type: "Ok", value: abstractImage };
+    } catch (error) {
+      return {
+        type: "Err",
+        error: {
+          type: "XML_PARSE_ERROR",
+          message: errorMessage(error),
+          cause: error,
+        },
+      };
+    }
+  } catch (error) {
+    return {
+      type: "Err",
+      error: {
+        type: "HANDLEBARS_PARSE_ERROR",
+        message: errorMessage(error),
+        cause: error,
+      },
+    };
+  }
+}
 
 export function abstractImageOfXml(el: XmlElement): unknown {
   const children = Array<Component>();
