@@ -9,6 +9,6 @@ export * from "./exporters/png-export-image.js";
 export * from "./exporters/dxf2d-export-image.js";
 export * from "./exporters/react-svg-export-image.js";
 export * from "./exporters/eps-export-image.js";
-export * from "./abstract-image-xml/index.js";
+export * from "./dynamic-image/index.js";
 export * from "./stringify-parse.js";
 export * from "./replace-extract-urls.js";

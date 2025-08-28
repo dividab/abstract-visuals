@@ -181,4 +181,4 @@ export const xsd = `<?xml version="1.0" encoding="UTF-8"?>
   </xs:complexType>
 
 </xs:schema>
-`
+`;

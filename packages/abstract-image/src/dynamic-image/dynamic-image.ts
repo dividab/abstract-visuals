@@ -16,28 +16,26 @@ import {
   TextAlignment,
 } from "../model/component.js";
 import { Point } from "../model/point.js";
-import { xsd } from "./abstract-image-xsd.js";
+import { xsd } from "./dynamic-image-xsd.js";
 
-type Result<TError, TValue> = Ok<TValue> | Err<TError>;
-type Ok<TValue> = { readonly type: "Ok"; readonly value: TValue };
-type Err<TError> = { readonly type: "Err"; readonly error: TError };
-
-export type AbstractImageXmlError =
+export type DynamicImageError =
   | { type: "HANDLEBARS_PARSE_ERROR"; message: string; cause?: unknown }
   | { type: "XML_PARSE_ERROR"; message: string; cause?: unknown }
   | { type: "UNKNOWN_ERROR"; message: string; cause?: unknown };
 
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
-
-export function abstractImageXml(template: string, data: unknown): Result<AbstractImageXmlError, AbstractImage> {
+export function dynamicImage(
+  template: string,
+  data: unknown
+):
+  | { readonly type: "Ok"; readonly image: AbstractImage; readonly imageUrls: ReadonlyArray<string> }
+  | { readonly type: "Err"; readonly error: DynamicImageError } {
   try {
     const [parsedXml] = parseHandlebarsXml(template, data, {});
 
     try {
-      const abstractImage = abstractImageOfXml(parsedXml) as AbstractImage;
-      return { type: "Ok", value: abstractImage };
+      const mutableImageUrls = Array<string>();
+      const abstractImage = dynamicImageInternal(parsedXml, mutableImageUrls) as AbstractImage;
+      return { type: "Ok", image: abstractImage, imageUrls: mutableImageUrls };
     } catch (error) {
       return {
         type: "Err",
@@ -60,12 +58,16 @@ export function abstractImageXml(template: string, data: unknown): Result<Abstra
   }
 }
 
-export function abstractImageOfXml(el: XmlElement): unknown {
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function dynamicImageInternal(el: XmlElement, mutableImageUrls: Array<string>): unknown {
   const children = Array<Component>();
   const childElements = Array<XmlElement>();
   for (const child of el.children ?? []) {
     if (child.tagName !== undefined) {
-      children.push(abstractImageOfXml(child) as Component);
+      children.push(dynamicImageInternal(child, mutableImageUrls) as Component);
       childElements.push(child);
     }
   }
@@ -86,6 +88,9 @@ export function abstractImageOfXml(el: XmlElement): unknown {
         children: children,
       } satisfies Group;
     case "Image":
+      if (typeof el.attributes.url === "string") {
+        mutableImageUrls.push(el.attributes.url);
+      }
       return {
         type: "binaryimage",
         topLeft: parsePoint(el.attributes.topLeft),

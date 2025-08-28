@@ -8,7 +8,7 @@ import { AbstractDocumentExample } from "./abstract-document-example.js";
 import { AbstractDocumentXMLExample } from "./abstract-document-xml-example.js";
 import { AbstractSheetExample } from "./abstract-sheet-example.js";
 import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
-import { AbstractImageXml } from "./abstract-image-xml.js";
+import { AbstractImageXml } from "./dynamic-image.js";
 
 type Example = (typeof examples)[number];
 

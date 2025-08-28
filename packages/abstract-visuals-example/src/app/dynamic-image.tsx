@@ -1,7 +1,7 @@
 import React from "react";
 import wiringPng from "../../assets/wiring.png";
 import FileSaver from "file-saver";
-import { abstractImageXml } from "../../../abstract-image/src/abstract-image-xml/abstract-image-xml.js";
+import { dynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
 
 export function AbstractImageXml({}: {}): React.JSX.Element {
@@ -29,7 +29,7 @@ export function AbstractImageXml({}: {}): React.JSX.Element {
   } catch (e) {
     console.log(e);
   }
-  const result = abstractImageXml(template, dataParsed);
+  const result = dynamicImage(template, dataParsed);
   console.log("ai", result);
 
   return (
@@ -90,14 +90,14 @@ export function AbstractImageXml({}: {}): React.JSX.Element {
             disabled={result.type !== "Ok"}
             onClick={() => {
               if (result.type === "Ok") {
-                FileSaver.saveAs(new Blob([createSVG(result.value)], { type: "image/svg+xml" }), "template-svg.svg");
+                FileSaver.saveAs(new Blob([createSVG(result.image)], { type: "image/svg+xml" }), "template-svg.svg");
               }
             }}
           >
             Download Svg
           </button>
         </div>
-        {result.type === "Ok" ? <ReactSvg image={result.value} /> : result.error.message}
+        {result.type === "Ok" ? <ReactSvg image={result.image} /> : result.error.message}
         {/* <div dangerouslySetInnerHTML={{ __html: svg }} /> */}
       </div>
     </div>
