@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "abstract-visuals-example",
-  "version": "15.2.2",
+  "version": "15.2.3",
   "description": "abstract-visuals-example",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib/index.js",
@@ -9,7 +9,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "abstract-3d": "^0.8.3",
+    "abstract-3d": "^0.8.4",
     "abstract-chart": "^11.3.2",
     "abstract-document": "^14.0.17",
     "abstract-image": "^11.2.2",
@@ -18,18 +18,18 @@
     "file-saver": "^2.0.5",
     "handlebars": "4.7.8",
     "handlebars-xml": "^0.1.0",
-    "react": "^19.0.0",
     "pdfkit": "^0.17.1",
+    "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/base64-js": "^1.3.2",
     "@types/file-saver": "^2.0.7",
+    "@types/pdfkit": "^0.17.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.1",
     "@vitejs/plugin-react": "^4.3.4",
     "vite": "^6.0.1",
-    "@types/pdfkit": "^0.17.2",
     "vite-plugin-node-polyfills": "^0.23.0"
   },
   "scripts": {
