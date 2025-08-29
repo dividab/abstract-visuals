@@ -8,8 +8,7 @@ export function renderImage(
   pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  image: AD.Image.Image,
-  imageDataByUrl: Record<string, Uint8Array | string>
+  image: AD.Image.Image
 ): void {
   const aImage = image.imageResource.abstractImage;
   const position = AD.Point.create(finalRect.x, finalRect.y);
@@ -17,10 +16,9 @@ export function renderImage(
   const scaleY = finalRect.height / aImage.size.height;
   const scale = Math.min(scaleX, scaleY);
   pdf.save();
+
   pdf.translate(position.x, position.y).scale(scale);
-  aImage.components.forEach((c: AbstractImage.Component) =>
-    abstractComponentToPdf(resources, pdf, c, textStyle, imageDataByUrl)
-  );
+  aImage.components.forEach((c: AbstractImage.Component) => abstractComponentToPdf(resources, pdf, c, textStyle));
   pdf.restore();
 }
 
@@ -28,19 +26,18 @@ function abstractComponentToPdf(
   resources: AD.Resources.Resources,
   pdf: PDFKit.PDFDocument,
   component: AbstractImage.Component,
-  textStyle: AD.TextStyle.TextStyle,
-  imageDataByUrl: Record<string, Uint8Array | string>
+  textStyle: AD.TextStyle.TextStyle
 ): void {
   switch (component.type) {
     case "group":
-      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, imageDataByUrl));
+      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle));
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
       const imageWidth = component.bottomRight.x - component.topLeft.x;
       const imageHeight = component.bottomRight.y - component.topLeft.y;
       if (component.data.type === "url") {
-        const imageData = imageDataByUrl[component.data.url];
+        const imageData = resources.imageDataByUrl?.[component.data.url];
         if (typeof imageData === "string" && /^\s*<svg[\s>]/i.test(imageData)) {
           addWithSvgToPdfKit(imageData, component, pdf, resources, textStyle);
         } else {

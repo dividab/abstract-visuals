@@ -38,10 +38,11 @@ export function preProcess(doc: AD.AbstractDoc.AbstractDoc): AD.AbstractDoc.Abst
   return AD.AbstractDoc.create(
     {
       fonts: doc.fonts,
-      imageResources: doc.imageResources,
       styles: doc.styles,
-      numberings: doc.numberings,
-      numberingDefinitions: doc.numberingDefinitions,
+      imageDataByUrl: doc.imageDataByUrl,
+      // imageResources: doc.imageResources,
+      // numberings: doc.numberings,
+      // numberingDefinitions: doc.numberingDefinitions,
     },
     children
   );

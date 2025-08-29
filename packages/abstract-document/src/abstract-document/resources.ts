@@ -1,6 +1,6 @@
-import { ImageResource } from "./primitives/image-resource.js";
+// import { ImageResource } from "./primitives/image-resource.js";
+// import { Numbering } from "./numberings/numbering.js";
 import { NumberingDefinition } from "./numberings/numbering-definition.js";
-import { Numbering } from "./numberings/numbering.js";
 import { create } from "./styles/style-key.js";
 import { Style, overrideWith } from "./styles/style.js";
 import { Font } from "./primitives/font.js";
@@ -9,45 +9,58 @@ import { defaultAndStandardStyles } from "./default-styles.js";
 
 export interface Resources {
   readonly fonts?: Indexer<Font>;
-  readonly imageResources?: Indexer<ImageResource>;
   readonly styles?: Indexer<Style>;
-  readonly numberings?: Indexer<Numbering>;
+  readonly imageDataByUrl?: Record<string, Uint8Array | string>;
   readonly numberingDefinitions?: Indexer<NumberingDefinition>;
+  // These are not used???
+
+  // readonly imageResources?: Indexer<ImageResource>;
+  // readonly numberings?: Indexer<Numbering>;
 }
 
 export function mergeResources(resources: Array<Resources>): Resources {
   let styles: Indexer<Style> = {};
-  let numberings: Indexer<Numbering> = {};
-  let imageResources: Indexer<ImageResource> = {};
   let fonts: Indexer<Font> = {};
+  let imageDataByUrl: Record<string, Uint8Array | string> = {};
   let numberingDefinitions: Indexer<NumberingDefinition> = {};
+
+  // let numberings: Indexer<Numbering> = {};
+  // let imageResources: Indexer<ImageResource> = {};
   for (const r of resources) {
     styles = { ...styles, ...r.styles };
-    numberings = { ...numberings, ...r.numberings };
-    imageResources = { ...imageResources, ...r.imageResources };
+    imageDataByUrl = { ...imageDataByUrl, ...r.imageDataByUrl };
     fonts = { ...fonts, ...r.fonts };
     numberingDefinitions = { ...numberingDefinitions, ...r.numberingDefinitions };
+
+    // numberings = { ...numberings, ...r.numberings };
+    // imageResources = { ...imageResources, ...r.imageResources };
   }
-  return { fonts, imageResources, numberingDefinitions, numberings, styles };
+  return {
+    fonts,
+    imageDataByUrl,
+    styles,
+    // imageResources,
+    // numberingDefinitions,
+    // numberings,
+  };
 }
 
 export function hasResources(resources: Resources): boolean {
   return (
-    !!resources.fonts ||
-    !!resources.imageResources ||
-    !!resources.styles ||
-    !!resources.numberings ||
-    !!resources.numberingDefinitions
+    !!resources.fonts || !!resources.styles || !!resources.imageDataByUrl || !!resources.numberingDefinitions
+    // || !!resources.imageResources ||
+    // !!resources.numberings ||
   );
 }
 
 export function extractResources(resources: Resources): Resources {
   return {
     ...(resources.fonts ? { fonts: resources.fonts } : {}),
-    ...(resources.imageResources ? { imageResources: resources.imageResources } : {}),
+    ...(resources.imageDataByUrl ? { imageDataByUrl: resources.imageDataByUrl } : {}),
     ...(resources.styles ? { styles: resources.styles } : {}),
-    ...(resources.numberings ? { numberings: resources.numberings } : {}),
     ...(resources.numberingDefinitions ? { numberingDefinitions: resources.numberingDefinitions } : {}),
+    // ...(resources.imageResources ? { imageResources: resources.imageResources } : {}),
+    // ...(resources.numberings ? { numberings: resources.numberings } : {}),
   };
 }
 

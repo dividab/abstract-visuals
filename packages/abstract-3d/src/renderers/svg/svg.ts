@@ -25,7 +25,7 @@ import { polygon } from "./svg-geometries/svg-polygon.js";
 import { text } from "./svg-geometries/svg-text.js";
 import { cone } from "./svg-geometries/svg-cone.js";
 import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
-import { EmbededImage, svg } from "./svg-encoding.js";
+import { svg } from "./svg-encoding.js";
 
 // dummy
 

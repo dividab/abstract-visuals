@@ -1,8 +1,8 @@
 import { Section } from "./page/section.js";
 import { Resources } from "./resources.js";
 import { NumberingDefinition } from "./numberings/numbering-definition.js";
-import { Numbering } from "./numberings/numbering.js";
-import { ImageResource } from "./primitives/image-resource.js";
+// import { Numbering } from "./numberings/numbering.js";
+// import { ImageResource } from "./primitives/image-resource.js";
 import { Indexer } from "./types.js";
 import { Font } from "./primitives/font.js";
 import { Style } from "./styles/style.js";
@@ -26,17 +26,30 @@ export function create(props?: AbstractDocProps, children?: ReadonlyArray<Sectio
 export function merge(...docs: ReadonlyArray<AbstractDoc>): AbstractDoc {
   const children = Array<Section>();
   let styles: Indexer<Style> = {};
-  let numberings: Indexer<Numbering> = {};
-  let imageResources: Indexer<ImageResource> = {};
   let fonts: Indexer<Font> = {};
   let numberingDefinitions: Indexer<NumberingDefinition> = {};
+  let imageDataByUrl: Record<string, Uint8Array | string> = {};
+
+  // let numberings: Indexer<Numbering> = {};
+  // let imageResources: Indexer<ImageResource> = {};
   for (const d of docs) {
     children.push(...d.children);
     styles = { ...styles, ...d.styles };
-    numberings = { ...numberings, ...d.numberings };
-    imageResources = { ...imageResources, ...d.imageResources };
     fonts = { ...fonts, ...d.fonts };
+    imageDataByUrl = { ...imageDataByUrl, ...d.imageDataByUrl };
     numberingDefinitions = { ...numberingDefinitions, ...d.numberingDefinitions };
+    // numberings = { ...numberings, ...d.numberings };
+    // imageResources = { ...imageResources, ...d.imageResources };
   }
-  return create({ fonts, imageResources, styles, numberings, numberingDefinitions }, children);
+  return create(
+    {
+      fonts,
+      styles,
+      numberingDefinitions,
+      imageDataByUrl,
+      // imageResources,
+      // numberings,
+    },
+    children
+  );
 }

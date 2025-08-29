@@ -2,15 +2,12 @@ import * as AbstractImage from "abstract-image";
 import { ImageRun } from "docx";
 import { TextStyle } from "../../abstract-document/styles/text-style.js";
 import { Image } from "../../abstract-document/atoms/image.js";
+import { Resources } from "../../abstract-document/index.js";
 
-export function renderImage(
-  image: Image,
-  textStyle: TextStyle,
-  imageDataByUrl: Record<string, Uint8Array | string>
-): ImageRun {
+export function renderImage(image: Image, textStyle: TextStyle, resources: Resources.Resources): ImageRun {
   const aImage = image.imageResource.abstractImage;
   const images = aImage.components.map((c: AbstractImage.Component) =>
-    abstractComponentToDocX(c, image.width, image.height, textStyle, imageDataByUrl)
+    abstractComponentToDocX(c, image.width, image.height, textStyle, resources)
   );
   return images[0]!;
 }
@@ -20,7 +17,7 @@ function abstractComponentToDocX(
   width: number,
   height: number,
   _textStyle: TextStyle,
-  imageDataByUrl: Record<string, Uint8Array | string>
+  resources: Resources.Resources
 ): ImageRun | undefined {
   switch (component.type) {
     // case "group":
@@ -50,7 +47,7 @@ function abstractComponentToDocX(
         // );
       }
       if (component.data.type === "url") {
-        const imageData = imageDataByUrl[component.data.url];
+        const imageData = resources.imageDataByUrl?.[component.data.url];
         if (imageData instanceof Uint8Array) {
           return new ImageRun({
             data: Buffer.from(imageData.buffer, imageData.byteOffset, imageData.byteLength),
