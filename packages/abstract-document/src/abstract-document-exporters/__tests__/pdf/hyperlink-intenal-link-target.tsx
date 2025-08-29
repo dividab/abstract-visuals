@@ -154,7 +154,7 @@ export const testHyperLinkInternalLinkTarget: ExportTestDef = {
             ],
           },
           {
-            x: 5.933,
+            x: 5.932,
             y: -0.301,
             w: 28.35,
             sw: 0.32553125,
@@ -270,7 +270,7 @@ export const testHyperLinkInternalLinkTarget: ExportTestDef = {
             ],
           },
           {
-            x: 5.933,
+            x: 5.932,
             y: -0.301,
             w: 28.35,
             sw: 0.32553125,
@@ -386,7 +386,7 @@ export const testHyperLinkInternalLinkTarget: ExportTestDef = {
             ],
           },
           {
-            x: 5.933,
+            x: 5.932,
             y: -0.301,
             w: 28.35,
             sw: 0.32553125,
@@ -502,7 +502,7 @@ export const testHyperLinkInternalLinkTarget: ExportTestDef = {
             ],
           },
           {
-            x: 5.933,
+            x: 5.932,
             y: -0.301,
             w: 28.35,
             sw: 0.32553125,
@@ -618,7 +618,7 @@ export const testHyperLinkInternalLinkTarget: ExportTestDef = {
             ],
           },
           {
-            x: 5.933,
+            x: 5.932,
             y: -0.301,
             w: 28.35,
             sw: 0.32553125,
@@ -734,7 +734,7 @@ export const testHyperLinkInternalLinkTarget: ExportTestDef = {
             ],
           },
           {
-            x: 5.933,
+            x: 5.932,
             y: -0.301,
             w: 28.35,
             sw: 0.32553125,

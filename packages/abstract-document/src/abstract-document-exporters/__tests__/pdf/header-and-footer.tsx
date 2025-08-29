@@ -112,7 +112,7 @@ export const testHeaderAndFooter: ExportTestDef = {
             oc: undefined,
             sw: 0.32553125,
             w: 5.56,
-            x: 4.128,
+            x: 4.127,
             y: -0.301,
           },
           {
