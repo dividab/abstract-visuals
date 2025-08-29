@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [16.0.0] - 2025-08-21
+## [16.0.0] - 2025-08-29
 
 - Added just in time record imageDataByUrl for exporters. Removed base64 encoding in favour of Buffer when mapping image data into pdfkit.
 
