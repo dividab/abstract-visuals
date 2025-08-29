@@ -2,6 +2,7 @@ import * as AbstractImage from "abstract-image";
 import svgToPdfKit from "svg-to-pdfkit";
 import * as AD from "../../abstract-document/index.js";
 import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
+import { toBase64String } from "../shared/to-base-64.js";
 
 export function renderImage(
   resources: AD.Resources.Resources,
@@ -37,37 +38,27 @@ function abstractComponentToPdf(
       const imageWidth = component.bottomRight.x - component.topLeft.x;
       const imageHeight = component.bottomRight.y - component.topLeft.y;
       if (component.data.type === "url") {
-        const imageData = resources.imageDataByUrl?.[component.data.url];
+        const imageData = resources.imageResources?.[component.data.url];
         if (typeof imageData === "string" && imageData.includes("<svg")) {
           addWithSvgToPdfKit(imageData, component, pdf, resources, textStyle);
         } else {
           pdf.image(
-            imageData instanceof Uint8Array
-              ? Buffer.from(imageData.buffer, imageData.byteOffset, imageData.byteLength)
-              : component.data.url,
+            imageData instanceof Uint8Array ? toBase64String(imageData) : component.data.url,
             component.topLeft.x,
             component.topLeft.y,
             { fit: [imageWidth, imageHeight] }
           );
         }
       } else if (format === "png") {
-        pdf.image(
-          Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength),
-          component.topLeft.x,
-          component.topLeft.y,
-          {
-            fit: [imageWidth, imageHeight],
-          }
-        );
+        // pdfkit uses cache if using datauri, if buffer is used its not cached
+        pdf.image(toBase64String(component.data.bytes), component.topLeft.x, component.topLeft.y, {
+          fit: [imageWidth, imageHeight],
+        });
       } else if (format === "jpg") {
-        pdf.image(
-          Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength),
-          component.topLeft.x,
-          component.topLeft.y,
-          {
-            fit: [imageWidth, imageHeight],
-          }
-        );
+        // pdfkit uses cache if using datauri, if buffer is used its not cached
+        pdf.image(toBase64String(component.data.bytes), component.topLeft.x, component.topLeft.y, {
+          fit: [imageWidth, imageHeight],
+        });
       } else if (format === "svg") {
         addWithSvgToPdfKit(new TextDecoder().decode(component.data.bytes), component, pdf, resources, textStyle);
       }

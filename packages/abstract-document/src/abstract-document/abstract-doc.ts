@@ -13,8 +13,6 @@ export type AbstractDoc = Resources & {
 
 export type AbstractDocProps = Resources & {};
 
-//dummy2
-
 export function create(props?: AbstractDocProps, children?: ReadonlyArray<Section>): AbstractDoc {
   const { ...rest } = props || {};
   return {
@@ -28,27 +26,21 @@ export function merge(...docs: ReadonlyArray<AbstractDoc>): AbstractDoc {
   let styles: Indexer<Style> = {};
   let fonts: Indexer<Font> = {};
   let numberingDefinitions: Indexer<NumberingDefinition> = {};
-  let imageDataByUrl: Record<string, Uint8Array | string> = {};
+  let imageResources: Record<string, Uint8Array | string> = {};
 
-  // let numberings: Indexer<Numbering> = {};
-  // let imageResources: Indexer<ImageResource> = {};
   for (const d of docs) {
     children.push(...d.children);
     styles = { ...styles, ...d.styles };
     fonts = { ...fonts, ...d.fonts };
-    imageDataByUrl = { ...imageDataByUrl, ...d.imageDataByUrl };
+    imageResources = { ...imageResources, ...d.imageResources };
     numberingDefinitions = { ...numberingDefinitions, ...d.numberingDefinitions };
-    // numberings = { ...numberings, ...d.numberings };
-    // imageResources = { ...imageResources, ...d.imageResources };
   }
   return create(
     {
       fonts,
       styles,
       numberingDefinitions,
-      imageDataByUrl,
-      // imageResources,
-      // numberings,
+      imageResources,
     },
     children
   );

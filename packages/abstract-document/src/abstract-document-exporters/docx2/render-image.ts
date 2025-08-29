@@ -47,7 +47,7 @@ function abstractComponentToDocX(
         // );
       }
       if (component.data.type === "url") {
-        const imageData = resources.imageDataByUrl?.[component.data.url];
+        const imageData = resources.imageResources?.[component.data.url];
         if (imageData instanceof Uint8Array) {
           return new ImageRun({
             data: Buffer.from(imageData.buffer, imageData.byteOffset, imageData.byteLength),

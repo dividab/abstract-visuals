@@ -39,7 +39,7 @@ export function preProcess(doc: AD.AbstractDoc.AbstractDoc): AD.AbstractDoc.Abst
     {
       fonts: doc.fonts,
       styles: doc.styles,
-      imageDataByUrl: doc.imageDataByUrl,
+      imageResources: doc.imageResources,
       // imageResources: doc.imageResources,
       // numberings: doc.numberings,
       // numberingDefinitions: doc.numberingDefinitions,
