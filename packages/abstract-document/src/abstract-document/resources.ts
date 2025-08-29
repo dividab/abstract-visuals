@@ -10,14 +10,19 @@ import { defaultAndStandardStyles } from "./default-styles.js";
 export interface Resources {
   readonly fonts?: Indexer<Font>;
   readonly styles?: Indexer<Style>;
-  readonly imageResources?: Record<string, Uint8Array | string>;
+  readonly imageResources?: Record<string, ImageDataUri>;
   readonly numberingDefinitions?: Indexer<NumberingDefinition>;
 }
+
+export type ImageDataUri =
+  | `data:image/png;base64,${string}`
+  | `data:image/jpeg;base64,${string}`
+  | `data:image/svg+xml,${string}`;
 
 export function mergeResources(resources: Array<Resources>): Resources {
   let styles: Indexer<Style> = {};
   let fonts: Indexer<Font> = {};
-  let imageResources: Record<string, Uint8Array | string> = {};
+  let imageResources: Record<string, ImageDataUri> = {};
   let numberingDefinitions: Indexer<NumberingDefinition> = {};
 
   for (const r of resources) {

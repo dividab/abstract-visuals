@@ -12,3 +12,5 @@ export function toBase64String(u8: Uint8Array): string {
 
   return `data:${imageFormat};base64,${btoa(bin)}`;
 }
+
+export const rawSvgPrefix = "data:image/svg+xml,";

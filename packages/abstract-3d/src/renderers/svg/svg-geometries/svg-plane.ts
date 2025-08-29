@@ -13,7 +13,7 @@ import {
   vec3ZMean,
   Material,
 } from "../../../abstract-3d.js";
-import { gray, black, zElem, zOrderElement } from "./shared.js";
+import { gray, black, zElem, zOrderElement, ImageDataUri } from "./shared.js";
 import { EmbededImage, svgImage, svgPolygon } from "../svg-encoding.js";
 import { rgbGrayScale } from "../../shared.js";
 
@@ -28,7 +28,7 @@ export function plane(
   parentPos: Vec3,
   parentRot: Vec3,
   view: View,
-  imageDataByUrl: Record<string, Uint8Array | string> | undefined
+  imageDataByUrl: Record<string, ImageDataUri> | undefined
 ): ReadonlyArray<zOrderElement> {
   const half = vec2Scale(p.size, 0.5);
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
@@ -41,12 +41,11 @@ export function plane(
   const v4 = vec3tr(-half.x, half.y);
 
   const imageData = material.imageUrl ? imageDataByUrl?.[material.imageUrl] : undefined;
-  const image: EmbededImage | undefined =
-    material.imageUrl && typeof imageData === "string"
-      ? { type: "svg", svg: imageData }
-      : material.imageUrl
-      ? { type: "url", url: imageData instanceof Uint8Array ? toBase64String(imageData) : material.imageUrl }
-      : undefined;
+  const image: EmbededImage | undefined = imageData?.startsWith(rawSvgPrefix)
+    ? { type: "svg", svg: imageData.slice(rawSvgPrefix.length) }
+    : material.imageUrl
+    ? { type: "url", url: imageData ?? material.imageUrl }
+    : undefined;
 
   if (view === "front" && image) {
     const [leftX, rightX] = v4.x > v2.x ? [v2.x, v4.x] : [v4.x, v2.x];
@@ -66,17 +65,4 @@ export function plane(
   return [zElem(svgPolygon(points, fill, strokeColor, strokeThickness), vec3ZMean(v1, v2, v3, v4))];
 }
 
-function toBase64String(u8: Uint8Array): string {
-  const imageFormat = u8[0] === 0xff && u8[1] === 0xd8 ? "image/jpeg" : "image/png";
-  // Node
-  if (typeof Buffer !== "undefined") {
-    return `data:${imageFormat};base64,${Buffer.from(u8).toString("base64")}`;
-  }
-  // Browser
-  let bin = "";
-  for (const e of u8) {
-    bin += String.fromCharCode(e);
-  }
-
-  return `data:${imageFormat};base64,${btoa(bin)}`;
-}
+const rawSvgPrefix = "data:image/svg+xml,";

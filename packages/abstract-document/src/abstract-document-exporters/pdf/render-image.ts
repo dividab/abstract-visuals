@@ -2,7 +2,7 @@ import * as AbstractImage from "abstract-image";
 import svgToPdfKit from "svg-to-pdfkit";
 import * as AD from "../../abstract-document/index.js";
 import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
-import { toBase64String } from "../shared/to-base-64.js";
+import { rawSvgPrefix, toBase64String } from "../shared/to-base-64.js";
 
 export function renderImage(
   resources: AD.Resources.Resources,
@@ -38,16 +38,11 @@ function abstractComponentToPdf(
       const imageWidth = component.bottomRight.x - component.topLeft.x;
       const imageHeight = component.bottomRight.y - component.topLeft.y;
       if (component.data.type === "url") {
-        const imageData = resources.imageResources?.[component.data.url];
-        if (typeof imageData === "string" && imageData.includes("<svg")) {
-          addWithSvgToPdfKit(imageData, component, pdf, resources, textStyle);
+        const urlOrUri = resources.imageResources?.[component.data.url] ?? component.data.url;
+        if (urlOrUri?.startsWith(rawSvgPrefix)) {
+          addWithSvgToPdfKit(urlOrUri.slice(rawSvgPrefix.length), component, pdf, resources, textStyle);
         } else {
-          pdf.image(
-            imageData instanceof Uint8Array ? toBase64String(imageData) : component.data.url,
-            component.topLeft.x,
-            component.topLeft.y,
-            { fit: [imageWidth, imageHeight] }
-          );
+          pdf.image(urlOrUri, component.topLeft.x, component.topLeft.y, { fit: [imageWidth, imageHeight] });
         }
       } else if (format === "png") {
         // pdfkit uses cache if using datauri, if buffer is used its not cached

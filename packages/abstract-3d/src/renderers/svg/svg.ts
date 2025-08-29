@@ -15,7 +15,7 @@ import {
   vec3TransRot,
   Material,
 } from "../../abstract-3d.js";
-import { zOrderElement } from "./svg-geometries/shared.js";
+import { ImageDataUri, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
 import { cylinder } from "./svg-geometries/svg-cylinder.js";
 import { line } from "./svg-geometries/svg-line.js";
@@ -27,8 +27,6 @@ import { cone } from "./svg-geometries/svg-cone.js";
 import { rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
 import { svg } from "./svg-encoding.js";
 
-// dummy
-
 export function toSvg(
   scene: Scene,
   view: View,
@@ -38,7 +36,7 @@ export function toSvg(
   grayScale?: boolean,
   onlyStrokeFill: string = "rgba(255,255,255,0)",
   font: string = "",
-  imageDataByUrl?: Record<string, Uint8Array | string>,
+  imageDataByUrl?: Record<string, ImageDataUri>,
   rotation?: number
 ): { readonly image: string; readonly width: number; readonly height: number } {
   const factor = scale
@@ -118,7 +116,7 @@ function svgGroup(
   onlyStrokeFill: string,
   font: string,
   stroke: number,
-  imageDataByUrl?: Record<string, Uint8Array | string>
+  imageDataByUrl: Record<string, ImageDataUri> | undefined
 ): ReadonlyArray<zOrderElement> {
   const elements = Array<zOrderElement>();
 
@@ -177,7 +175,7 @@ function svgMesh(
   background: string,
   font: string,
   stroke: number,
-  imageDataByUrl: Record<string, Uint8Array | string> | undefined
+  imageDataByUrl: Record<string, ImageDataUri> | undefined
 ): ReadonlyArray<zOrderElement> {
   const color = material.normal;
   switch (mesh.geometry.type) {

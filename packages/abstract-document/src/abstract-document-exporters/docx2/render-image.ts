@@ -3,6 +3,7 @@ import { ImageRun } from "docx";
 import { TextStyle } from "../../abstract-document/styles/text-style.js";
 import { Image } from "../../abstract-document/atoms/image.js";
 import { Resources } from "../../abstract-document/index.js";
+import { rawSvgPrefix } from "../shared/to-base-64.js";
 
 export function renderImage(image: Image, textStyle: TextStyle, resources: Resources.Resources): ImageRun {
   const aImage = image.imageResource.abstractImage;
@@ -47,12 +48,9 @@ function abstractComponentToDocX(
         // );
       }
       if (component.data.type === "url") {
-        const imageData = resources.imageResources?.[component.data.url];
-        if (imageData instanceof Uint8Array) {
-          return new ImageRun({
-            data: Buffer.from(imageData.buffer, imageData.byteOffset, imageData.byteLength),
-            transformation: { width: width, height: height },
-          });
+        const urlOrUri = resources.imageResources?.[component.data.url] ?? component.data.url;
+        if (!urlOrUri.startsWith(rawSvgPrefix)) {
+          return new ImageRun({ data: urlOrUri, transformation: { width: width, height: height } });
         }
       }
       break;
