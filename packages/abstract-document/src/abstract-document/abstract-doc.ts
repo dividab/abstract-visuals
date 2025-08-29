@@ -1,8 +1,6 @@
 import { Section } from "./page/section.js";
-import { Resources } from "./resources.js";
+import { ImageDataUri, Resources } from "./resources.js";
 import { NumberingDefinition } from "./numberings/numbering-definition.js";
-// import { Numbering } from "./numberings/numbering.js";
-// import { ImageResource } from "./primitives/image-resource.js";
 import { Indexer } from "./types.js";
 import { Font } from "./primitives/font.js";
 import { Style } from "./styles/style.js";
@@ -26,7 +24,7 @@ export function merge(...docs: ReadonlyArray<AbstractDoc>): AbstractDoc {
   let styles: Indexer<Style> = {};
   let fonts: Indexer<Font> = {};
   let numberingDefinitions: Indexer<NumberingDefinition> = {};
-  let imageResources: Record<string, Uint8Array | string> = {};
+  let imageResources: Record<string, ImageDataUri> = {};
 
   for (const d of docs) {
     children.push(...d.children);
