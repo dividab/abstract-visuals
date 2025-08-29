@@ -38,7 +38,7 @@ function abstractComponentToPdf(
       const imageHeight = component.bottomRight.y - component.topLeft.y;
       if (component.data.type === "url") {
         const imageData = resources.imageDataByUrl?.[component.data.url];
-        if (typeof imageData === "string" && /^\s*<svg[\s>]/i.test(imageData)) {
+        if (typeof imageData === "string" && imageData.includes("<svg")) {
           addWithSvgToPdfKit(imageData, component, pdf, resources, textStyle);
         } else {
           pdf.image(
