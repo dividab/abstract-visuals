@@ -13,6 +13,7 @@ import {
   Vec2,
   Group,
   vec3TransRot,
+  Material,
 } from "../../abstract-3d.js";
 import { zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -37,7 +38,7 @@ export function toSvg(
   grayScale?: boolean,
   onlyStrokeFill: string = "rgba(255,255,255,0)",
   font: string = "",
-  buffers?: Record<string, string>,
+  imageDataByUrl?: Record<string, Uint8Array | string>,
   rotation?: number
 ): { readonly image: string; readonly width: number; readonly height: number } {
   const factor = scale
@@ -66,7 +67,7 @@ export function toSvg(
     const pos = vec3Rot(g.pos, unitPos, unitRot);
     const rot = vec3RotCombine(unitRot, g.rot ?? vec3Zero);
     elements.push(
-      ...svgGroup(g, pos, rot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
+      ...svgGroup(g, pos, rot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, imageDataByUrl)
     );
   }
   elements.sort((a, b) => a.zOrder - b.zOrder);
@@ -84,12 +85,13 @@ export function toSvg(
             point,
             view,
             factor,
-            scene.dimensions_deprecated?.material.normal ?? "",
+            scene.dimensions_deprecated?.material ?? { normal: "" },
             false,
             false,
             onlyStrokeFill,
             font,
-            stroke
+            stroke,
+            imageDataByUrl
           )
         );
       }
@@ -116,7 +118,7 @@ function svgGroup(
   onlyStrokeFill: string,
   font: string,
   stroke: number,
-  buffers?: Record<string, string>
+  imageDataByUrl?: Record<string, Uint8Array | string>
 ): ReadonlyArray<zOrderElement> {
   const elements = Array<zOrderElement>();
 
@@ -129,17 +131,13 @@ function svgGroup(
         point,
         view,
         factor,
-        m.material.normal,
+        m.material,
         onlyStroke,
         grayScale,
         onlyStrokeFill,
         font,
         stroke,
-        m.material.image?.type === "HashImage" && buffers?.[m.material.image.hash]
-          ? { type: "svg", svg: buffers[m.material.image.hash]! }
-          : m.material.image?.type === "UrlImage"
-          ? { type: "url", url: m.material.image.url }
-          : undefined
+        imageDataByUrl
       )
     );
   }
@@ -147,7 +145,20 @@ function svgGroup(
     const sPos = vec3TransRot(sg.pos, pos, rot);
     const sRot = vec3RotCombine(rot, sg.rot ?? vec3Zero);
     elements.push(
-      ...svgGroup(sg, sPos, sRot, point, view, factor, onlyStroke, grayScale, onlyStrokeFill, font, stroke, buffers)
+      ...svgGroup(
+        sg,
+        sPos,
+        sRot,
+        point,
+        view,
+        factor,
+        onlyStroke,
+        grayScale,
+        onlyStrokeFill,
+        font,
+        stroke,
+        imageDataByUrl
+      )
     );
   }
   return elements;
@@ -160,14 +171,15 @@ function svgMesh(
   point: (x: number, y: number) => Vec2,
   view: View,
   factor: number,
-  color: string,
+  material: Material,
   onlyStroke: boolean | undefined,
   grayScale: boolean | undefined,
   background: string,
   font: string,
   stroke: number,
-  image?: EmbededImage | undefined
+  imageDataByUrl: Record<string, Uint8Array | string> | undefined
 ): ReadonlyArray<zOrderElement> {
+  const color = material.normal;
   switch (mesh.geometry.type) {
     case "Box":
       return box(mesh.geometry, point, color, onlyStroke, grayScale, stroke, background, parentPos, parentRot);
@@ -175,7 +187,7 @@ function svgMesh(
       return plane(
         mesh.geometry,
         point,
-        color,
+        material,
         onlyStroke,
         grayScale,
         stroke,
@@ -183,7 +195,7 @@ function svgMesh(
         parentPos,
         parentRot,
         view,
-        image
+        imageDataByUrl
       );
     case "Cylinder":
       return cylinder(

@@ -61,9 +61,7 @@ export type Material = {
   readonly opacity?: number;
   readonly metalness?: number;
   readonly roughness?: number;
-  readonly image?:
-    | { readonly type: "HashImage"; readonly hash: string; readonly imageType?: string }
-    | { readonly type: "UrlImage"; readonly url: string; readonly imageType?: string };
+  readonly imageUrl?: string;
 };
 
 export type Cylinder = {

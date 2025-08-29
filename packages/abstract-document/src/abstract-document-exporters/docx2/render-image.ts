@@ -3,10 +3,14 @@ import { ImageRun } from "docx";
 import { TextStyle } from "../../abstract-document/styles/text-style.js";
 import { Image } from "../../abstract-document/atoms/image.js";
 
-export function renderImage(image: Image, textStyle: TextStyle): ImageRun {
+export function renderImage(
+  image: Image,
+  textStyle: TextStyle,
+  imageDataByUrl: Record<string, Uint8Array | string>
+): ImageRun {
   const aImage = image.imageResource.abstractImage;
   const images = aImage.components.map((c: AbstractImage.Component) =>
-    abstractComponentToDocX(c, image.width, image.height, textStyle)
+    abstractComponentToDocX(c, image.width, image.height, textStyle, imageDataByUrl)
   );
   return images[0]!;
 }
@@ -15,7 +19,8 @@ function abstractComponentToDocX(
   component: AbstractImage.Component,
   width: number,
   height: number,
-  _textStyle: TextStyle
+  _textStyle: TextStyle,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): ImageRun | undefined {
   switch (component.type) {
     // case "group":
@@ -25,7 +30,11 @@ function abstractComponentToDocX(
       const format = component.format.toLowerCase();
       if (component.data.type === "bytes" && (format === "png" || format === "jpg")) {
         return new ImageRun({
-          data: Buffer.from(component.data.bytes),
+          data: Buffer.from(
+            component.data.bytes.buffer,
+            component.data.bytes.byteOffset,
+            component.data.bytes.byteLength
+          ),
           transformation: {
             width: width,
             height: height,
@@ -39,6 +48,15 @@ function abstractComponentToDocX(
         //   imageHeight,
         //   {}
         // );
+      }
+      if (component.data.type === "url") {
+        const imageData = imageDataByUrl[component.data.url];
+        if (imageData instanceof Uint8Array) {
+          return new ImageRun({
+            data: Buffer.from(imageData.buffer, imageData.byteOffset, imageData.byteLength),
+            transformation: { width: width, height: height },
+          });
+        }
       }
       break;
     //else if (format === "svg") {

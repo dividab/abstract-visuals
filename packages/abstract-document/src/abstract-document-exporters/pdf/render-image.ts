@@ -1,5 +1,4 @@
 import * as AbstractImage from "abstract-image";
-import { fromByteArray } from "base64-js";
 import svgToPdfKit from "svg-to-pdfkit";
 import * as AD from "../../abstract-document/index.js";
 import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
@@ -9,7 +8,8 @@ export function renderImage(
   pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  image: AD.Image.Image
+  image: AD.Image.Image,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   const aImage = image.imageResource.abstractImage;
   const position = AD.Point.create(finalRect.x, finalRect.y);
@@ -18,7 +18,9 @@ export function renderImage(
   const scale = Math.min(scaleX, scaleY);
   pdf.save();
   pdf.translate(position.x, position.y).scale(scale);
-  aImage.components.forEach((c: AbstractImage.Component) => abstractComponentToPdf(resources, pdf, c, textStyle));
+  aImage.components.forEach((c: AbstractImage.Component) =>
+    abstractComponentToPdf(resources, pdf, c, textStyle, imageDataByUrl)
+  );
   pdf.restore();
 }
 
@@ -26,93 +28,51 @@ function abstractComponentToPdf(
   resources: AD.Resources.Resources,
   pdf: PDFKit.PDFDocument,
   component: AbstractImage.Component,
-  textStyle: AD.TextStyle.TextStyle
+  textStyle: AD.TextStyle.TextStyle,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   switch (component.type) {
     case "group":
-      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle));
+      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, imageDataByUrl));
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
       const imageWidth = component.bottomRight.x - component.topLeft.x;
       const imageHeight = component.bottomRight.y - component.topLeft.y;
       if (component.data.type === "url") {
-        pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, {
-          fit: [imageWidth, imageHeight],
-        });
+        const imageData = imageDataByUrl[component.data.url];
+        if (typeof imageData === "string" && /^\s*<svg[\s>]/i.test(imageData)) {
+          addWithSvgToPdfKit(imageData, component, pdf, resources, textStyle);
+        } else {
+          pdf.image(
+            imageData instanceof Uint8Array
+              ? Buffer.from(imageData.buffer, imageData.byteOffset, imageData.byteLength)
+              : component.data.url,
+            component.topLeft.x,
+            component.topLeft.y,
+            { fit: [imageWidth, imageHeight] }
+          );
+        }
       } else if (format === "png") {
-        const data = "data:image/png;base64," + fromByteArray(component.data.bytes);
-        pdf.image(data, component.topLeft.x, component.topLeft.y, {
-          fit: [imageWidth, imageHeight],
-        });
+        pdf.image(
+          Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength),
+          component.topLeft.x,
+          component.topLeft.y,
+          {
+            fit: [imageWidth, imageHeight],
+          }
+        );
       } else if (format === "jpg") {
-        const data = "data:image/jpeg;base64," + fromByteArray(component.data.bytes);
-        pdf.image(data, component.topLeft.x, component.topLeft.y, {
-          fit: [imageWidth, imageHeight],
-        });
+        pdf.image(
+          Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength),
+          component.topLeft.x,
+          component.topLeft.y,
+          {
+            fit: [imageWidth, imageHeight],
+          }
+        );
       } else if (format === "svg") {
-        const svg = new TextDecoder().decode(component.data.bytes);
-
-        // Special to compensate for pdfKit demanding lower case
-        // Remove when Svg-To-PdfKit has fixed "toLowerCase"
-        // https://github.com/alafr/SVG-to-PDFKit/issues/152
-        let svgUpdated = svg;
-        ["fill=", "stroke=", "color="].forEach((t) => {
-          let index = 0;
-          // eslint-disable-next-line no-constant-condition
-          while (true) {
-            index = svgUpdated.indexOf(t, index);
-            if (index === -1) break;
-            let indexStart = svgUpdated.indexOf('"', index);
-            let indexEnd = svgUpdated.indexOf('"', indexStart + 1);
-            index = indexEnd;
-
-            const color = svgUpdated.substring(indexStart, indexEnd);
-            if (color !== color.toLowerCase() && color.toLowerCase().indexOf("url(") === -1)
-              svgUpdated =
-                svgUpdated.substring(0, indexStart) +
-                color.toLowerCase() +
-                svgUpdated.substring(indexEnd, svgUpdated.length);
-          }
-        });
-
-        ["stroke-dasharray="].forEach((t) => {
-          let index = 0;
-          // eslint-disable-next-line no-constant-condition
-          while (true) {
-            index = svgUpdated.indexOf(t, index);
-            if (index === -1) break;
-            let indexStart = svgUpdated.indexOf('"', index) + 1;
-            let indexEnd = svgUpdated.indexOf('"', indexStart);
-            index = indexEnd;
-
-            let dasharray = svgUpdated.substring(indexStart, indexEnd);
-
-            dasharray = dasharray
-              .split(" ")
-              .map((x) => parseFloat(x))
-              .filter((x) => x !== 0)
-              .join(" ");
-
-            svgUpdated =
-              svgUpdated.substring(0, indexStart) + dasharray + svgUpdated.substring(indexEnd, svgUpdated.length);
-          }
-        });
-
-        const imageWidth = component.bottomRight.x - component.topLeft.x;
-        const imageHeight = component.bottomRight.y - component.topLeft.y;
-        svgToPdfKit(pdf, svgUpdated, component.topLeft.x, component.topLeft.y, {
-          width: imageWidth,
-          height: imageHeight,
-          preserveAspectRatio: "xMinYMin",
-          fontCallback: (family: string, _bold: boolean, _italic: boolean) => {
-            if (isFontAvailable(family, resources)) {
-              return family;
-            } else {
-              return getFontNameStyle(textStyle);
-            }
-          },
-        });
+        addWithSvgToPdfKit(new TextDecoder().decode(component.data.bytes), component, pdf, resources, textStyle);
       }
       break;
     case "subimage":
@@ -207,6 +167,72 @@ function abstractComponentToPdf(
     default:
       break;
   }
+}
+
+function addWithSvgToPdfKit(
+  svg: string,
+  component: AbstractImage.BinaryImage,
+  pdf: PDFKit.PDFDocument,
+  resources: AD.Resources.Resources,
+  textStyle: AD.TextStyle.TextStyle
+): void {
+  // Special to compensate for pdfKit demanding lower case
+  // Remove when Svg-To-PdfKit has fixed "toLowerCase"
+  // https://github.com/alafr/SVG-to-PDFKit/issues/152
+  let svgUpdated = svg;
+  ["fill=", "stroke=", "color="].forEach((t) => {
+    let index = 0;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      index = svgUpdated.indexOf(t, index);
+      if (index === -1) break;
+      let indexStart = svgUpdated.indexOf('"', index);
+      let indexEnd = svgUpdated.indexOf('"', indexStart + 1);
+      index = indexEnd;
+
+      const color = svgUpdated.substring(indexStart, indexEnd);
+      if (color !== color.toLowerCase() && color.toLowerCase().indexOf("url(") === -1)
+        svgUpdated =
+          svgUpdated.substring(0, indexStart) + color.toLowerCase() + svgUpdated.substring(indexEnd, svgUpdated.length);
+    }
+  });
+
+  ["stroke-dasharray="].forEach((t) => {
+    let index = 0;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      index = svgUpdated.indexOf(t, index);
+      if (index === -1) break;
+      let indexStart = svgUpdated.indexOf('"', index) + 1;
+      let indexEnd = svgUpdated.indexOf('"', indexStart);
+      index = indexEnd;
+
+      let dasharray = svgUpdated.substring(indexStart, indexEnd);
+
+      dasharray = dasharray
+        .split(" ")
+        .map((x) => parseFloat(x))
+        .filter((x) => x !== 0)
+        .join(" ");
+
+      svgUpdated = svgUpdated.substring(0, indexStart) + dasharray + svgUpdated.substring(indexEnd, svgUpdated.length);
+    }
+  });
+
+  const imageWidth = component.bottomRight.x - component.topLeft.x;
+  const imageHeight = component.bottomRight.y - component.topLeft.y;
+  svgToPdfKit(pdf, svgUpdated, component.topLeft.x, component.topLeft.y, {
+    width: imageWidth,
+    height: imageHeight,
+    preserveAspectRatio: "xMinYMin",
+    fontCallback: (family: string, _bold: boolean, _italic: boolean) => {
+      if (isFontAvailable(family, resources)) {
+        return family;
+      } else {
+        return getFontNameStyle(textStyle);
+      }
+    },
+  });
 }
 
 function colorToOpacity(color: AbstractImage.Color): number {

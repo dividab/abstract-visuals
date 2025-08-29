@@ -31,7 +31,7 @@ export function ReactMaterial({
   readonly isHotSpot?: boolean;
 }): React.JSX.Element {
   const mat =
-    !state || material.image?.type === "UrlImage"
+    !state || material.imageUrl === "UrlImage"
       ? material
       : state === "Accept"
       ? acceptMat
@@ -55,10 +55,10 @@ export function ReactMaterial({
       ? shade(-0.4, mat.normal)
       : mat.normal;
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
-  if (material.image?.type === "UrlImage") {
+  if (material.imageUrl) {
     return (
       <TextureMaterial
-        url={state === "Error" ? materialStateImages?.[ERROR_IMG_KEY] ?? material.image.url : material.image.url}
+        url={state === "Error" ? materialStateImages?.[ERROR_IMG_KEY] ?? material.imageUrl : material.imageUrl}
         color={color}
         material={mat}
       />

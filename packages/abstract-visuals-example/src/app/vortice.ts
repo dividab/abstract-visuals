@@ -8103,11 +8103,8 @@ export const vortice: Scene = {
             shininess: 50,
             metalness: 0.4,
             roughness: 0.4,
-            image: {
-              type: "UrlImage",
-              url: "/promaster-blobs/bd146d50aa33cef078add39f89cbd6b96184448a?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
-              imageType: "jpeg",
-            },
+            imageUrl:
+              "/promaster-blobs/bd146d50aa33cef078add39f89cbd6b96184448a?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
           },
         },
       ],
@@ -10207,11 +10204,8 @@ export const vortice: Scene = {
             shininess: 50,
             metalness: 0.4,
             roughness: 0.4,
-            image: {
-              type: "UrlImage",
-              url: "/promaster-blobs/5af4bc8be4376efdaec4aff76680fbec403bc280?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
-              imageType: "jpeg",
-            },
+            imageUrl:
+              "/promaster-blobs/5af4bc8be4376efdaec4aff76680fbec403bc280?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
           },
         },
       ],
@@ -10610,11 +10604,8 @@ export const vortice: Scene = {
             shininess: 50,
             metalness: 0.4,
             roughness: 0.4,
-            image: {
-              type: "UrlImage",
-              url: "/promaster-blobs/bd146d50aa33cef078add39f89cbd6b96184448a?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
-              imageType: "jpeg",
-            },
+            imageUrl:
+              "/promaster-blobs/bd146d50aa33cef078add39f89cbd6b96184448a?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
           },
         },
       ],
@@ -12663,11 +12654,8 @@ export const vortice: Scene = {
             shininess: 50,
             metalness: 0.4,
             roughness: 0.4,
-            image: {
-              type: "UrlImage",
-              url: "/promaster-blobs/b2e7eec358198b07819182915e6e9d3b1276f1ed?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
-              imageType: "jpeg",
-            },
+            imageUrl:
+              "/promaster-blobs/b2e7eec358198b07819182915e6e9d3b1276f1ed?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
           },
         },
         {
@@ -12831,11 +12819,8 @@ export const vortice: Scene = {
             shininess: 50,
             metalness: 0.4,
             roughness: 0.4,
-            image: {
-              type: "UrlImage",
-              url: "/promaster-blobs/4b89d06f6aee7921c6623d80eeb1b6bade31579d?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
-              imageType: "jpeg",
-            },
+            imageUrl:
+              "/promaster-blobs/4b89d06f6aee7921c6623d80eeb1b6bade31579d?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
           },
         },
       ],
@@ -14013,11 +13998,8 @@ export const vortice: Scene = {
             shininess: 50,
             metalness: 0.4,
             roughness: 0.4,
-            image: {
-              type: "UrlImage",
-              url: "/promaster-blobs/4b89d06f6aee7921c6623d80eeb1b6bade31579d?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
-              imageType: "jpeg",
-            },
+            imageUrl:
+              "/promaster-blobs/4b89d06f6aee7921c6623d80eeb1b6bade31579d?database_id=dc3fafd0-349f-4282-9ccd-2e98381db9c2",
           },
         },
       ],

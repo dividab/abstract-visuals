@@ -13,10 +13,11 @@ export type PdfExportOptions = {
 export function exportToHTML5Blob(
   pdfKit: PDFKit.PDFDocument,
   doc: AD.AbstractDoc.AbstractDoc,
-  options: PdfExportOptions = { compress: false }
+  options: PdfExportOptions = { compress: false },
+  imageDataByUrl: Record<string, Uint8Array | string> = {}
 ): Promise<Blob> {
   return new Promise((resolve) => {
-    let pdf = createDocument(pdfKit, options, doc);
+    let pdf = createDocument(pdfKit, options, doc, imageDataByUrl);
     const buffers = Array<BlobPart>();
     pdf.on("data", buffers.push.bind(buffers));
     pdf.on("end", () => resolve(new Blob(buffers, { type: "application/pdf" })));
@@ -35,16 +36,18 @@ export function exportToStream(
   pdfKit: PDFKit.PDFDocument,
   blobStream: any,
   doc: AD.AbstractDoc.AbstractDoc,
-  options: PdfExportOptions = { compress: false }
+  options: PdfExportOptions = { compress: false },
+  imageDataByUrl: Record<string, Uint8Array | string> = {}
 ): void {
-  let pdf = createDocument(pdfKit, options, doc);
+  let pdf = createDocument(pdfKit, options, doc, imageDataByUrl);
   pdf.pipe(blobStream);
 }
 
 function createDocument(
   pdfKit: PDFKit.PDFDocument,
   options: PdfExportOptions,
-  ad: AD.AbstractDoc.AbstractDoc
+  ad: AD.AbstractDoc.AbstractDoc,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): PDFKit.PDFDocument {
   const pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true });
 
@@ -56,7 +59,7 @@ function createDocument(
   const pageDesiredSizes = measurePages(pdfKit, document, updatedPages);
 
   for (let page of updatedPages) {
-    renderPage(document, pdf, pageDesiredSizes, page);
+    renderPage(document, pdf, pageDesiredSizes, page, imageDataByUrl);
   }
   pdf.end();
   return pdf;
@@ -66,7 +69,8 @@ function renderPage(
   parentResources: AD.Resources.Resources,
   pdfKit: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
-  page: Page
+  page: Page,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   const section = page.section;
   const style = section.page.style;
@@ -91,7 +95,8 @@ function renderPage(
       pdfKit,
       desiredSizes,
       AD.Rect.create(headerX, isAbsolute ? headerStart : headerY, elementSize.width, elementSize.height),
-      element
+      element,
+      imageDataByUrl
     );
     if (!isAbsolute) {
       headerY += elementSize.height;
@@ -114,7 +119,8 @@ function renderPage(
       pdfKit,
       desiredSizes,
       AD.Rect.create(footerX, isAbsolute ? footerStart : footerY, elementSize.width, elementSize.height),
-      element
+      element,
+      imageDataByUrl
     );
     if (!isAbsolute) {
       footerY += elementSize.height;
@@ -131,7 +137,8 @@ function renderPage(
       pdfKit,
       desiredSizes,
       AD.Rect.create(contentRect.x, isAbsolute ? elementStart : y, elementSize.width, elementSize.height),
-      element
+      element,
+      imageDataByUrl
     );
     if (!isAbsolute) {
       y += elementSize.height;
@@ -160,18 +167,19 @@ function renderSectionElement(
   pdf: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
-  element: AD.SectionElement.SectionElement
+  element: AD.SectionElement.SectionElement,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
-      renderParagraph(resources, pdf, desiredSizes, finalRect, element);
+      renderParagraph(resources, pdf, desiredSizes, finalRect, element, imageDataByUrl);
       return;
     case "Table":
-      renderTable(resources, pdf, desiredSizes, finalRect, element);
+      renderTable(resources, pdf, desiredSizes, finalRect, element, imageDataByUrl);
       return;
     case "Group":
-      renderGroup(resources, pdf, desiredSizes, finalRect, element);
+      renderGroup(resources, pdf, desiredSizes, finalRect, element, imageDataByUrl);
       return;
   }
 }
@@ -181,7 +189,8 @@ function renderGroup(
   pdfKit: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
-  group: AD.Group.Group
+  group: AD.Group.Group,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   const finalX = finalRect.x + group.style.margins.left;
   const startY = finalRect.y + group.style.margins.top;
@@ -194,7 +203,8 @@ function renderGroup(
       pdfKit,
       desiredSizes,
       AD.Rect.create(finalX, isAbsolute ? startY : y, elementSize.width, elementSize.height),
-      element
+      element,
+      imageDataByUrl
     );
     if (!isAbsolute) {
       y += elementSize.height;
@@ -207,7 +217,8 @@ function renderParagraph(
   pdfKit: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
-  paragraph: AD.Paragraph.Paragraph
+  paragraph: AD.Paragraph.Paragraph,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   const style = AD.Resources.getStyle(
     undefined,
@@ -321,7 +332,8 @@ function renderParagraph(
         parseAlignment(style.alignment),
         availableWidth,
         i === 0,
-        i === lastIndex
+        i === lastIndex,
+        imageDataByUrl
       );
 
       x += atomSize.width;
@@ -356,7 +368,8 @@ function renderAtom(
   alignment: AD.TextStyle.TextAlignment,
   availableWidth: number,
   isFirstAtom: boolean,
-  isLastAtom: boolean
+  isLastAtom: boolean,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   switch (atom.type) {
     case "TextField":
@@ -376,7 +389,7 @@ function renderAtom(
       renderTextRun(resources, pdfKit, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
       return;
     case "Image":
-      renderImage(resources, pdfKit, finalRect, textStyle, atom);
+      renderImage(resources, pdfKit, finalRect, textStyle, atom, imageDataByUrl);
       return;
     case "HyperLink":
       renderHyperLink(
@@ -669,7 +682,8 @@ function renderTable(
   pdf: PDFKit.PDFDocument,
   desiredSizes: Map<{}, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
-  table: AD.Table.Table
+  table: AD.Table.Table,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   const style = AD.Resources.getStyle(
     undefined,
@@ -689,7 +703,19 @@ function renderTable(
     const rowRect = AD.Rect.create(x, y, rowSize.width, rowSize.height);
     const isTop = index === 0;
     const isBottom = index === rows.length - 1;
-    renderRow(resources, pdf, desiredSizes, rowRect, style.cellStyle, table, row, index, isTop, isBottom);
+    renderRow(
+      resources,
+      pdf,
+      desiredSizes,
+      rowRect,
+      style.cellStyle,
+      table,
+      row,
+      index,
+      isTop,
+      isBottom,
+      imageDataByUrl
+    );
     y += rowSize.height;
   }
 }
@@ -704,7 +730,8 @@ function renderRow(
   row: AD.TableRow.TableRow,
   rowIndex: number,
   isTop: boolean,
-  isBottom: boolean
+  isBottom: boolean,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   let x = finalRect.x;
   const rowSize = getDesiredSize(row, desiredSizes);
@@ -725,7 +752,19 @@ function renderRow(
     const cellRect = AD.Rect.create(x, finalRect.y, cellSize.width, height);
     const isFirst = cellIndex === 0;
     const isLast = cellIndex === row.children.length - 1;
-    renderCell(resources, pdf, desiredSizes, cellRect, tableCellStyle, cell, isFirst, isLast, isTop, isBottom);
+    renderCell(
+      resources,
+      pdf,
+      desiredSizes,
+      cellRect,
+      tableCellStyle,
+      cell,
+      isFirst,
+      isLast,
+      isTop,
+      isBottom,
+      imageDataByUrl
+    );
     x += cellSize.width;
   }
 }
@@ -740,7 +779,8 @@ function renderCell(
   isFirst: boolean,
   isLast: boolean,
   isTop: boolean,
-  isBottom: boolean
+  isBottom: boolean,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): void {
   const style = AD.Resources.getStyle(
     tableCellStyle,
@@ -769,7 +809,7 @@ function renderCell(
     const elementSize = getDesiredSize(element, desiredSizes);
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     const elementRect = AD.Rect.create(x, isAbsolute ? startY : y, elementSize.width, elementSize.height);
-    renderSectionElement(resources, pdf, desiredSizes, elementRect, element);
+    renderSectionElement(resources, pdf, desiredSizes, elementRect, element, imageDataByUrl);
     if (!isAbsolute) {
       y += elementSize.height;
     }

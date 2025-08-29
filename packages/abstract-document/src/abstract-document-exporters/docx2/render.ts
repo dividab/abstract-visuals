@@ -35,17 +35,24 @@ import { Readable } from "stream";
 const abstractDocToDocxFontRatio = 2;
 const abstractDocPixelToDocxDXARatio = 20;
 
-export function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc): Promise<Blob> {
+export function exportToHTML5Blob(
+  doc: AD.AbstractDoc.AbstractDoc,
+  imageDataByUrl: Record<string, Uint8Array | string> = {}
+): Promise<Blob> {
   return new Promise((resolve) => {
-    const docx = createDocument(doc);
+    const docx = createDocument(doc, imageDataByUrl);
     Packer.toBlob(docx).then((blob) => {
       resolve(blob);
     });
   });
 }
 
-export function exportToStream(blobStream: NodeJS.WritableStream, doc: AD.AbstractDoc.AbstractDoc): void {
-  const docx = createDocument(doc);
+export function exportToStream(
+  blobStream: NodeJS.WritableStream,
+  doc: AD.AbstractDoc.AbstractDoc,
+  imageDataByUrl: Record<string, Uint8Array | string> = {}
+): void {
+  const docx = createDocument(doc, imageDataByUrl);
 
   Packer.toBuffer(docx).then((buffer) => {
     const readableStream = new Readable();
@@ -62,14 +69,21 @@ export function exportToStream(blobStream: NodeJS.WritableStream, doc: AD.Abstra
  * @param doc
  */
 
-function createDocument(doc: AD.AbstractDoc.AbstractDoc): Document {
+function createDocument(
+  doc: AD.AbstractDoc.AbstractDoc,
+  imageDataByUrl: Record<string, Uint8Array | string>
+): Document {
   const docx = new Document({
-    sections: doc.children.map((s) => renderSection(s, doc)),
+    sections: doc.children.map((s) => renderSection(s, doc, imageDataByUrl)),
   });
   return docx;
 }
 
-function renderSection(section: AD.Section.Section, parentResources: AD.Resources.Resources): ISectionOptions {
+function renderSection(
+  section: AD.Section.Section,
+  parentResources: AD.Resources.Resources,
+  imageDataByUrl: Record<string, Uint8Array | string>
+): ISectionOptions {
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
 
@@ -79,13 +93,13 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
   const resources = AD.Resources.mergeResources([parentResources, section]);
 
   const headerChildren = section.page.header.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth, false, imageDataByUrl));
     return sofar;
   }, [] as Array<Paragraph | Table>);
 
   const footerChildren = [
     ...section.page.footer.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth, false, imageDataByUrl));
       return sofar;
     }, [] as Array<Paragraph | Table>),
   ];
@@ -101,7 +115,7 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
       ],
     }),
     ...section.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth, false, imageDataByUrl));
       return sofar;
     }, [] as Array<Paragraph | Table>),
   ];
@@ -177,16 +191,17 @@ function renderSectionElement(
   element: AD.SectionElement.SectionElement,
   parentResources: AD.Resources.Resources,
   contentAvailableWidth: number,
-  keepNext: boolean = false
+  keepNext: boolean,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): ReadonlyArray<Paragraph | Table> /*| DOCXJS.TableOfContents | DOCXJS.HyperlinkRef */ {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
-      return [renderParagraph(element, resources, keepNext)];
+      return [renderParagraph(element, resources, keepNext, imageDataByUrl)];
     case "Group":
-      return [...renderGroup(element, parentResources, contentAvailableWidth)];
+      return [...renderGroup(element, parentResources, contentAvailableWidth, imageDataByUrl)];
     case "Table":
-      const table = renderTable(element, resources, contentAvailableWidth, keepNext);
+      const table = renderTable(element, resources, contentAvailableWidth, keepNext, imageDataByUrl);
       return table
         ? [table, new Paragraph({ keepNext: keepNext, children: [new TextRun({ text: ".", size: 0.000001 })] })]
         : [];
@@ -205,7 +220,8 @@ function renderTable(
   table: AD.Table.Table,
   resources: AD.Resources.Resources,
   contentAvailableWidth: number,
-  keepNext: boolean
+  keepNext: boolean,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): Table | undefined {
   const style = AD.Resources.getStyle(
     undefined,
@@ -278,7 +294,7 @@ function renderTable(
         style: BorderStyle.NONE,
       },
     },
-    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
+    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext, imageDataByUrl)),
   });
 }
 
@@ -287,11 +303,14 @@ function renderRow(
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   columnWidths: ReadonlyArray<number>,
-  keepNext: boolean
+  keepNext: boolean,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): TableRow {
   return new TableRow({
     cantSplit: true,
-    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix], keepNext)),
+    children: row.children.map((c, ix) =>
+      renderCell(c, resources, tableCellStyle, columnWidths[ix], keepNext, imageDataByUrl)
+    ),
   });
 }
 
@@ -300,7 +319,8 @@ function renderCell(
   resources: AD.Resources.Resources,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   width: number,
-  keepNext: boolean
+  keepNext: boolean,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): TableCell {
   const style = AD.Resources.getStyle(
     tableCellStyle,
@@ -356,7 +376,7 @@ function renderCell(
     },
 
     children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, width, keepNext));
+      sofar.push(...renderSectionElement(c, resources, width, keepNext, imageDataByUrl));
       return sofar;
     }, [] as Array<Paragraph | Table>),
   });
@@ -365,7 +385,8 @@ function renderCell(
 function renderAtom(
   resources: AD.Resources.Resources,
   textStyle: AD.TextStyle.TextStyle,
-  atom: AD.Atom.Atom
+  atom: AD.Atom.Atom,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ):
   | TextRun
   | ImageRun
@@ -385,7 +406,7 @@ function renderAtom(
     case "TextRun":
       return renderTextRun(resources, textStyle, atom);
     case "Image":
-      return renderImage(atom, textStyle);
+      return renderImage(atom, textStyle, imageDataByUrl);
     case "HyperLink":
       return renderHyperLink(atom, textStyle);
     case "TocSeparator":
@@ -494,7 +515,8 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
 function renderGroup(
   group: AD.Group.Group,
   resources: AD.Resources.Resources,
-  availabelWidth: number
+  availabelWidth: number,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): Array<Paragraph | Table> {
   let sofar = Array<Paragraph | Table>();
   let keepNext = true;
@@ -502,7 +524,7 @@ function renderGroup(
     if (index == group.children.length - 1) {
       keepNext = false;
     }
-    sofar.push(...renderSectionElement(group.children[index], resources, availabelWidth, keepNext));
+    sofar.push(...renderSectionElement(group.children[index], resources, availabelWidth, keepNext, imageDataByUrl));
   }
   return sofar;
 }
@@ -510,7 +532,8 @@ function renderGroup(
 function renderParagraph(
   paragraph: AD.Paragraph.Paragraph,
   resources: AD.Resources.Resources,
-  keepNext: boolean
+  keepNext: boolean,
+  imageDataByUrl: Record<string, Uint8Array | string>
 ): Paragraph {
   const style = AD.Resources.getStyle(
     undefined,
@@ -539,6 +562,6 @@ function renderParagraph(
       left: Math.max(style.margins.left, 0) * abstractDocPixelToDocxDXARatio,
       right: Math.max(style.margins.right, 0) * abstractDocPixelToDocxDXARatio,
     },
-    children: paragraph.children.map((atom) => renderAtom(resources, style.textStyle, atom)),
+    children: paragraph.children.map((atom) => renderAtom(resources, style.textStyle, atom, imageDataByUrl)),
   });
 }

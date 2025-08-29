@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
+import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import * as HSXML from "../../../handlebars-xml/src/index.js";
 import {
   AbstractDoc as AD,
@@ -123,7 +124,7 @@ async function generatePDF(
     ADXml.creators({}, {}, ADXml.extractImageFontsStyleNames(xml)[2]),
     xml[0]!
   ) as unknown as AD.AbstractDoc.AbstractDoc;
-  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob((window as any).PDFDocument, doc);
+  const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob(PDFDocument, doc);
   const objectURL = URL.createObjectURL(blob);
   return { type: "Ok", url: objectURL };
 }

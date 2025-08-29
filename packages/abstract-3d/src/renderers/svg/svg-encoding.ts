@@ -47,7 +47,7 @@ export const svgImage = (p: Vec2, size: Vec2, rot: number, data: EmbededImage): 
   return data.type === "url"
     ? `<image width="${newSizeX}" height="${newSizeY}" x="${p.x.toFixed(0)}" y="${p.y.toFixed(0)}" transform="${rotate(
         rot
-      )}" ${transformOrigin(p, half)}  href="${data.url}" />`
+      )}" ${transformOrigin(p, half)} href="${data.url}" />`
     : `<svg width="${newSize.x.toFixed(0)}" height="${newSize.y.toFixed(0)}" transform="${translate(p)} ${rotateAtPos(
         rot,
         half
