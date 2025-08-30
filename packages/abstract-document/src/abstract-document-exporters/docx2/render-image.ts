@@ -8,7 +8,7 @@ import { rawSvgPrefix } from "../shared/to-base-64.js";
 export function renderImage(image: Image, textStyle: TextStyle, resources: Resources.Resources): ImageRun {
   const aImage = image.imageResource.abstractImage;
   const images = aImage.components.map((c: AbstractImage.Component) =>
-    abstractComponentToDocX(c, image.width, image.height, textStyle, resources)
+    abstractComponentToDocX(c, image.width, image.height, textStyle, resources, 0)
   );
   return images[0]!;
 }
@@ -18,8 +18,12 @@ function abstractComponentToDocX(
   width: number,
   height: number,
   _textStyle: TextStyle,
-  resources: Resources.Resources
+  resources: Resources.Resources,
+  circuitBreaker: number
 ): ImageRun | undefined {
+  if (++circuitBreaker > 20) {
+    return undefined;
+  }
   switch (component.type) {
     // case "group":
     //   component.children.forEach((c) => abstractComponentToPdf(c, textStyle));
@@ -47,12 +51,12 @@ function abstractComponentToDocX(
         //   {}
         // );
       }
-      if (component.data.type === "url") {
-        const urlOrUri = resources.imageResources?.[component.data.url] ?? component.data.url;
-        if (!urlOrUri.startsWith(rawSvgPrefix)) {
-          return new ImageRun({ data: urlOrUri, transformation: { width: width, height: height } });
-        }
-      }
+      // if (component.data.type === "url") {
+      //   const urlOrUri = resources.imageResources?.[component.data.url] ?? component.data.url;
+      //   if (!urlOrUri.startsWith(rawSvgPrefix)) {
+      //     return new ImageRun({ data: urlOrUri, transformation: { width: width, height: height } });
+      //   }
+      // }
       break;
     //else if (format === "svg") {
     //   const svg = new TextDecoder().decode(component.data);
