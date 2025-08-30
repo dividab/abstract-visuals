@@ -6,23 +6,22 @@ import { Style, overrideWith } from "./styles/style.js";
 import { Font } from "./primitives/font.js";
 import { Indexer } from "./types.js";
 import { defaultAndStandardStyles } from "./default-styles.js";
+import { ImageResource } from "./primitives/image-resource.js";
 
 export interface Resources {
   readonly fonts?: Indexer<Font>;
   readonly styles?: Indexer<Style>;
-  readonly imageResources?: Record<string, ImageDataUri>;
+  /**
+   * Embedded image data uri are expected to have to shape: data:image/png;base64,${string}, data:image/jpeg;base64,${string} or data:image/svg+xml,${string}
+   */
+  readonly imageResources?: Record<string, ImageResource>;
   readonly numberingDefinitions?: Indexer<NumberingDefinition>;
 }
-
-export type ImageDataUri =
-  | `data:image/png;base64,${string}`
-  | `data:image/jpeg;base64,${string}`
-  | `data:image/svg+xml,${string}`;
 
 export function mergeResources(resources: Array<Resources>): Resources {
   let styles: Indexer<Style> = {};
   let fonts: Indexer<Font> = {};
-  let imageResources: Record<string, ImageDataUri> = {};
+  let imageResources: Record<string, ImageResource> = {};
   let numberingDefinitions: Indexer<NumberingDefinition> = {};
 
   for (const r of resources) {

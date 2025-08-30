@@ -7,7 +7,7 @@ import {
   TableCell,
   TableRow,
   Image,
-  ImageResource as ADImageResource,
+  ImageResource,
 } from "../../abstract-document/index.js";
 import { ParagraphProps } from "../../abstract-document/section-elements/paragraph.js";
 //dummy2
@@ -96,8 +96,6 @@ export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<
   return Paragraph.create({ style, styleName: styleNames.ParagraphStyle }, [textRun]);
 }
 
-export type ImageResource = ADImageResource.ImageResource & { readonly width?: number; readonly height?: number };
-
 export type ImageRowProps = Omit<ImageCellProps, "style"> & { readonly cellStyle?: TableCellStyle.TableCellStyle };
 
 export function ImageRow(props: ImageRowProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
@@ -126,7 +124,7 @@ export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, 
 }
 
 export type ImageParagraphProps = {
-  readonly imageResource: ImageResource;
+  readonly imageResource: ImageResource.ImageResource;
   readonly width: number;
   readonly height: number;
   readonly style?: ParagraphStyle.ParagraphStyle;

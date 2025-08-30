@@ -17,6 +17,7 @@ import {
   TextRun,
   TocSeparator,
   Types,
+  ImageResource,
 } from "../../abstract-document/index.js";
 import {
   TextRowProps,
@@ -31,13 +32,12 @@ import {
   ImageRowProps,
   ImageParagraph,
   ImageRow,
-  ImageResource,
 } from "./custom-elements.js";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
 
 export const creators: (
-  images: Record<string, ImageResource>,
+  images: Record<string, ImageResource.ImageResource>,
   fonts: Types.Indexer<Font.Font>,
   styleNames: Record<string, string>
 ) => Record<string, ADCreatorFn> = (images, fonts, styleNames) => {
@@ -251,7 +251,10 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
 };
 
-function imageProps(images: Record<string, ImageResource>, props: Record<string, unknown>): Record<string, unknown> {
+function imageProps(
+  images: Record<string, ImageResource.ImageResource>,
+  props: Record<string, unknown>
+): Record<string, unknown> {
   const newProps = { ...props };
   const image = images[(newProps.src as string) ?? ""];
   if (image) {

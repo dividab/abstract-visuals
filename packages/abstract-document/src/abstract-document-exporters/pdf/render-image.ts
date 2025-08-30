@@ -19,7 +19,7 @@ export function renderImage(
   pdf.save();
 
   pdf.translate(position.x, position.y).scale(scale);
-  aImage.components.forEach((c: AbstractImage.Component) => abstractComponentToPdf(resources, pdf, c, textStyle));
+  aImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0));
   pdf.restore();
 }
 
@@ -27,22 +27,30 @@ function abstractComponentToPdf(
   resources: AD.Resources.Resources,
   pdf: PDFKit.PDFDocument,
   component: AbstractImage.Component,
-  textStyle: AD.TextStyle.TextStyle
+  textStyle: AD.TextStyle.TextStyle,
+  circuitBreaker: number
 ): void {
+  if (++circuitBreaker > 20) {
+    return;
+  }
   switch (component.type) {
     case "group":
-      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle));
+      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker));
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
       const imageWidth = component.bottomRight.x - component.topLeft.x;
       const imageHeight = component.bottomRight.y - component.topLeft.y;
       if (component.data.type === "url") {
-        const urlOrUri = resources.imageResources?.[component.data.url] ?? component.data.url;
-        if (urlOrUri?.startsWith(rawSvgPrefix)) {
-          addWithSvgToPdfKit(urlOrUri.slice(rawSvgPrefix.length), component, pdf, resources, textStyle);
+        const imageData = resources.imageResources?.[component.data.url];
+        if (imageData) {
+          imageData.abstractImage.components.forEach((c) =>
+            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
+          );
+        } else if (component.data.url.startsWith(rawSvgPrefix)) {
+          addWithSvgToPdfKit(component.data.url.slice(rawSvgPrefix.length), component, pdf, resources, textStyle);
         } else {
-          pdf.image(urlOrUri, component.topLeft.x, component.topLeft.y, { fit: [imageWidth, imageHeight] });
+          pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [imageWidth, imageHeight] });
         }
       } else if (format === "png") {
         // pdfkit uses cache if using datauri, if buffer is used its not cached
