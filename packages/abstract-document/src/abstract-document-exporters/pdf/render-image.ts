@@ -14,12 +14,7 @@ export function renderImage(
   const ai = image.imageResource.abstractImage;
   const position = AD.Point.create(finalRect.x, finalRect.y);
   const hasIntrinsicSize = ai.size.width && ai.size.height;
-  const [factorX, factorY] = [
-    finalRect.width / (image.imageResource.scaleMaxWidth ?? finalRect.width),
-    finalRect.height / (image.imageResource.scaleMaxHeight ?? finalRect.height),
-  ];
-  const factor = factorX < factorY ? factorX : factorY;
-  const rect: AbstractImage.Size = { width: finalRect.width * factor, height: finalRect.height * factor };
+  const rect = resourceRect(image.imageResource, finalRect);
   const outerScale = hasIntrinsicSize ? Math.min(rect.width / ai.size.width, rect.height / ai.size.height) : 1;
 
   pdf.save();
@@ -54,19 +49,13 @@ function abstractComponentToPdf(
       if (component.data.type === "url") {
         const imageResource = resources.imageResources?.[component.data.url];
         if (imageResource) {
-          const ai = imageResource.abstractImage;
-          const [factorX, factorY] = [
-            (outerSize?.width || 1) / (imageResource.scaleMaxWidth ?? (outerSize?.width || 1)),
-            (outerSize?.height || 1) / (imageResource.scaleMaxHeight ?? (outerSize?.height || 1)),
-          ];
-          const factor = factorX < factorY ? factorX : factorY;
-          const rect: AbstractImage.Size = {
-            width: (outerSize?.width || 1) * factor,
-            height: (outerSize?.height || 1) * factor,
-          };
+          const rect = resourceRect(imageResource, {
+            width: (outerSize?.width || 1) * (w || 1),
+            height: (outerSize?.height || 1) * (h || 1),
+          });
           const scale = Math.min(
-            (rect.width * (w || 1)) / (ai.size.width || 1),
-            (rect.height * (h || 1)) / (ai.size.height || 1)
+            (rect.width * (w || 1)) / (imageResource.abstractImage.size.width || 1),
+            (rect.height * (h || 1)) / (imageResource.abstractImage.size.height || 1)
           );
           pdf.save();
           pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
@@ -247,6 +236,19 @@ function addWithSvgToPdfKit(
       }
     },
   });
+}
+
+function resourceRect(imageResource: AD.ImageResource.ImageResource, rect: AbstractImage.Size): AbstractImage.Size {
+  const ai = imageResource.abstractImage;
+  if (!imageResource.scaleMaxHeight || !imageResource.scaleMaxWidth) {
+    return rect;
+  }
+  const [factorX, factorY] = [
+    rect.width / (imageResource.scaleMaxWidth || 1),
+    rect.height / (imageResource.scaleMaxHeight || 1),
+  ];
+  const factor = factorX < factorY ? factorX : factorY;
+  return { width: ai.size.width * factor, height: ai.size.height * factor };
 }
 
 function colorToOpacity(color: AbstractImage.Color): number {
