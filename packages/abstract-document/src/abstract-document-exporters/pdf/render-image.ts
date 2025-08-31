@@ -45,8 +45,10 @@ function abstractComponentToPdf(
       if (component.data.type === "url") {
         const imageData = resources.imageResources?.[component.data.url];
         if (imageData) {
+          const scaleX = imageWidth / imageData.abstractImage.size.width;
+          const scaleY = imageHeight / imageData.abstractImage.size.height;
           pdf.save();
-          pdf.translate(component.topLeft.x, component.topLeft.y).scale(Math.min(imageWidth, imageHeight));
+          pdf.translate(component.topLeft.x, component.topLeft.y).scale(Math.min(scaleX, scaleY));
           imageData.abstractImage.components.forEach((c) =>
             abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
           );

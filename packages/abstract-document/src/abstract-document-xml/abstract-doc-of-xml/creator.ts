@@ -252,6 +252,9 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
 };
 
+const tl = AI.createPoint(0, 0);
+const br = AI.createPoint(1, 1);
+const size = AI.createSize(1, 1);
 function imageProps(
   images: Record<string, ImageResource.ImageResource>,
   props: Record<string, unknown>
@@ -261,12 +264,10 @@ function imageProps(
   if (image) {
     newProps.imageResource = images[newProps.src as string];
   } else {
-    const topLeft = AI.createPoint(0, 0);
-    const bottomRight = AI.createPoint(0, 0);
     newProps.imageResource = ImageResource.create({
       id: newProps.src as string,
-      abstractImage: AI.createAbstractImage(topLeft, AI.createSize(0, 0), AI.white, [
-        AI.createBinaryImage(topLeft, bottomRight, "png", { type: "url", url: newProps.src as string }),
+      abstractImage: AI.createAbstractImage(tl, size, AI.white, [
+        AI.createBinaryImage(tl, br, "png", { type: "url", url: newProps.src as string }),
       ]),
       renderScale: 1,
     });
