@@ -46,15 +46,9 @@ function abstractComponentToPdf(
       if (component.data.type === "url") {
         const imageData = resources.imageResources?.[component.data.url];
         if (imageData) {
-          const srcW = imageData.abstractImage.size.width || imageWidth || 1;
-          const srcH = imageData.abstractImage.size.height || imageHeight || 1;
-          const scale = Math.min(imageWidth / srcW, imageHeight / srcH);
-          pdf.save();
-          pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
           imageData.abstractImage.components.forEach((c) =>
             abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
           );
-          pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
           addWithSvgToPdfKit(component.data.url.slice(rawSvgPrefix.length), component, pdf, resources, textStyle);
         } else {
