@@ -201,8 +201,8 @@ export const textField = `<xs:complexType name="TextField">
 
 export const image = `<xs:complexType name="Image">
         <xs:attribute name="src" type="xs:string" use="required" />
-        <xs:attribute name="width" type="xs:decimal" />
-        <xs:attribute name="height" type="xs:decimal" />
+        <xs:attribute name="width" type="xs:decimal" use="required" />
+        <xs:attribute name="height" type="xs:decimal" use="required" />
 </xs:complexType>`;
 
 export const pageBreak = `<xs:complexType name="PageBreak" />`;

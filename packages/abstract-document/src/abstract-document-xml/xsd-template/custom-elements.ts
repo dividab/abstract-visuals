@@ -77,8 +77,8 @@ export const imageRow = `<xs:complexType name="ImageRow">
 	<xs:attribute name="columnSpan" type="xs:string" />
 	<xs:attribute name="rowSpan" type="xs:string" />
 	<xs:attribute name="src" type="xs:string" use="required" />
-	<xs:attribute name="width" type="xs:decimal" />
-	<xs:attribute name="height" type="xs:decimal" />
+	<xs:attribute name="width" type="xs:decimal" use="required" />
+	<xs:attribute name="height" type="xs:decimal" use="required" />
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="cellStyle" type="TableCellStyle" />
 	</xs:choice>
@@ -96,8 +96,8 @@ export const imageCell = `<xs:complexType name="ImageCell">
 	<xs:attribute name="columnSpan" type="xs:string" />
 	<xs:attribute name="rowSpan" type="xs:string" />
 	<xs:attribute name="src" type="xs:string" use="required" />
-	<xs:attribute name="width" type="xs:decimal" />
-	<xs:attribute name="height" type="xs:decimal" />
+	<xs:attribute name="width" type="xs:decimal" use="required" />
+	<xs:attribute name="height" type="xs:decimal" use="required" />
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="style" type="TableCellStyle" />
 	</xs:choice>
@@ -113,8 +113,8 @@ export const imageParagraph = `<xs:complexType name="ImageParagraph">
 	</xs:annotation>
 	<xs:attribute name="styleNames" type="xs:string" />
 	<xs:attribute name="src" type="xs:string" use="required" />
-	<xs:attribute name="width" type="xs:decimal" />
-	<xs:attribute name="height" type="xs:decimal" />
+	<xs:attribute name="width" type="xs:decimal" use="required" />
+	<xs:attribute name="height" type="xs:decimal" use="required" />
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="style" type="ParagraphStyle" />
 	</xs:choice>

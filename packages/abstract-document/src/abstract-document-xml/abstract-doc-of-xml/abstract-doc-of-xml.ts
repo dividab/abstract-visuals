@@ -7,7 +7,7 @@ export function abstractDocXml(
   data: any,
   partials: Record<string, string>,
   rendered: "Mustache" | "Handlebars" = "Handlebars"
-): readonly [AbstractDoc.AbstractDoc, images: Record<string, ImageProps>, fonts: Record<string, true>] {
+): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, true>] {
   const xml =
     rendered === "Mustache" ? parseMustacheXml(template, data, partials) : parseHandlebarsXml(template, data, partials);
   const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
@@ -104,25 +104,15 @@ function abstractDocXmlRecursive(
   return obj;
 }
 
-export type ImageProps = {
-  readonly src: string;
-  readonly width: number | undefined;
-  readonly height: number | undefined;
-};
-
 function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
   styleNames: Record<string, string> = {},
-  images: Record<string, ImageProps> = {},
+  images: Record<string, true> = {},
   fonts: Record<string, true> = {}
-): readonly [images: Record<string, ImageProps>, fonts: Record<string, true>, styleNames: Record<string, string>] {
+): readonly [imageUrls: Record<string, true>, fontFamilies: Record<string, true>, styleNames: Record<string, string>] {
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
-      images[item.attributes.src as string] = {
-        src: item.attributes.src as string,
-        height: item.attributes.height ? Number(item.attributes.height) : undefined,
-        width: item.attributes.width ? Number(item.attributes.width) : undefined,
-      };
+      images[item.attributes.src as string] = true;
     } else if (item.attributes?.fontFamily) {
       fonts[item.attributes.fontFamily as string] = true;
       if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
