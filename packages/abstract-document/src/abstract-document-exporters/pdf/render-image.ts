@@ -19,7 +19,7 @@ export function renderImage(
     finalRect.height / (image.imageResource.scaleMaxHeight ?? finalRect.height),
   ];
   const factor = factorX < factorY ? factorX : factorY;
-  const rect: AbstractImage.Size = { width: ai.size.width * factor, height: ai.size.height * factor };
+  const rect: AbstractImage.Size = { width: finalRect.width * factor, height: finalRect.height * factor };
   const outerScale = hasIntrinsicSize ? Math.min(rect.width / ai.size.width, rect.height / ai.size.height) : 1;
 
   pdf.save();
@@ -60,7 +60,10 @@ function abstractComponentToPdf(
             (outerSize?.height || 1) / (imageResource.scaleMaxHeight ?? (outerSize?.height || 1)),
           ];
           const factor = factorX < factorY ? factorX : factorY;
-          const rect: AbstractImage.Size = { width: ai.size.width * factor, height: ai.size.height * factor };
+          const rect: AbstractImage.Size = {
+            width: (outerSize?.width || 1) * factor,
+            height: (outerSize?.height || 1) * factor,
+          };
           const scale = Math.min(
             (rect.width * (w || 1)) / (ai.size.width || 1),
             (rect.height * (h || 1)) / (ai.size.height || 1)
