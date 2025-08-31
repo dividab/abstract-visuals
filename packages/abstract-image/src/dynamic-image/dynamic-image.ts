@@ -34,7 +34,7 @@ export function dynamicImage(
 
     try {
       const mutableImageUrls = Array<string>();
-      const abstractImage = dynamicImageInternal(parsedXml, mutableImageUrls) as AbstractImage;
+      const abstractImage = dynamicImageRecursive(parsedXml, mutableImageUrls) as AbstractImage;
       return { type: "Ok", image: abstractImage, imageUrls: mutableImageUrls };
     } catch (error) {
       return {
@@ -62,11 +62,11 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-function dynamicImageInternal(el: XmlElement, mutableImageUrls: Array<string>): unknown {
+function dynamicImageRecursive(el: XmlElement, mutableImageUrls: Array<string>): Component | AbstractImage {
   const children = Array<Component>();
   for (const child of el.children ?? []) {
     if (child.tagName !== undefined) {
-      children.push(dynamicImageInternal(child, mutableImageUrls) as Component);
+      children.push(dynamicImageRecursive(child, mutableImageUrls) as Component);
     }
   }
 

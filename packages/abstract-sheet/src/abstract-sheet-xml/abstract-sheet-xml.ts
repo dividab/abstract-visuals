@@ -15,14 +15,14 @@ import {
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
 
 export const abstractSheetXml = (template: string, data: any, partials: Record<string, string>): AbstractSheet =>
-  abstractSheetOfXml(parseHandlebarsXml(template, data, partials)[0]!) as AbstractSheet;
+  abstractSheetXmlRecursive(parseHandlebarsXml(template, data, partials)[0]!) as AbstractSheet;
 
-export function abstractSheetOfXml(el: XmlElement): unknown {
+function abstractSheetXmlRecursive(el: XmlElement): unknown {
   const children = Array<unknown>();
   const childElements = Array<XmlElement>();
   for (const child of el.children ?? []) {
     if (child.tagName !== undefined) {
-      children.push(abstractSheetOfXml(child));
+      children.push(abstractSheetXmlRecursive(child));
       childElements.push(child);
     }
   }

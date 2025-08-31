@@ -20,6 +20,14 @@ export function create(props?: AbstractDocProps, children?: ReadonlyArray<Sectio
   };
 }
 
+export const addResources = (abstractDoc: AbstractDoc, resources: Resources): AbstractDoc => ({
+  ...abstractDoc,
+  fonts: { ...abstractDoc.fonts, ...resources.fonts },
+  styles: { ...abstractDoc.styles, ...resources.styles },
+  numberingDefinitions: { ...abstractDoc.numberingDefinitions, ...resources.numberingDefinitions },
+  imageResources: { ...abstractDoc.imageResources, ...resources.imageResources },
+});
+
 export function merge(...docs: ReadonlyArray<AbstractDoc>): AbstractDoc {
   const children = Array<Section>();
   let styles: Indexer<Style> = {};

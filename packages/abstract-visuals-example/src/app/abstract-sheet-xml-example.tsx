@@ -164,7 +164,7 @@ function createSheet(
     return { type: "Err", error: HSXML.errorToReadableText(validationErrors, "template") };
   }
   try {
-    return { type: "Ok", sheet: AS.abstractSheetOfXml(HSXML.parseXml(handlebarsRendered)[0]!) as AS.AbstractSheet };
+    return { type: "Ok", sheet: AS.abstractSheetXml(template, dataObject, {}) };
   } catch (e) {
     return { type: "Err", error: e.message };
   }

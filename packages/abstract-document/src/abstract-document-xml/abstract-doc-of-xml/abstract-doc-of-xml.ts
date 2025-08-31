@@ -2,8 +2,6 @@ import { AbstractDoc } from "../../abstract-document/index.js";
 import { ADCreatorFn, creators, propsCreators } from "./creator.js";
 import { parseHandlebarsXml, parseMustacheXml, type XmlElement } from "handlebars-xml";
 
-export { parseHandlebarsXml, parseMustacheXml, type XmlElement };
-
 export function abstractDocXml(
   template: string,
   data: any,
@@ -12,11 +10,11 @@ export function abstractDocXml(
 ): readonly [AbstractDoc.AbstractDoc, images: Record<string, ImageProps>, fonts: Record<string, string>] {
   const xml =
     rendered === "Mustache" ? parseMustacheXml(template, data, partials) : parseHandlebarsXml(template, data, partials);
-  const [imageUrls, fontUrls, styleNames] = extractImageFontsStyleNames2(xml);
-  return [abstractDocOfXml(creators({}, {}, styleNames), xml[0]!), imageUrls, fontUrls];
+  const [imageUrls, fontUrls, styleNames] = extractImageFontsStyleNames(xml);
+  return [abstractDocXmlRecursive(creators(styleNames), xml[0]!), imageUrls, fontUrls];
 }
 
-export function abstractDocOfXml(
+function abstractDocXmlRecursive(
   creators: Record<string, ADCreatorFn>,
   xmlElement: XmlElement,
   onlyChildren: boolean = false
@@ -27,19 +25,19 @@ export function abstractDocOfXml(
     const childName = childElement.tagName;
     if (childName !== undefined) {
       if (childName === "StyleNames") {
-        props.styles = abstractDocOfXml(creators, childElement);
+        props.styles = abstractDocXmlRecursive(creators, childElement);
       } else if (childName === "StyleName" && childElement.attributes && childElement.attributes.name) {
         const styleName = childElement.attributes.name;
-        const style = abstractDocOfXml(creators, childElement);
+        const style = abstractDocXmlRecursive(creators, childElement);
         props[styleName] = style;
       } else if (childName.startsWith(childName.charAt(0).toUpperCase())) {
         // For uppercase elements we add them to the children key
-        children.push(abstractDocOfXml(creators, childElement));
+        children.push(abstractDocXmlRecursive(creators, childElement));
       } else {
         // For lowercase elements we add them as keys using their name
         // Some special keys should directly have an array of children as value instead of an object with children key
         const childrenOnly = childName === "header" || childName === "footer" || childName === "headerRows";
-        props[childName] = abstractDocOfXml(creators, childElement, childrenOnly);
+        props[childName] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
       }
     }
   }
@@ -112,34 +110,7 @@ export type ImageProps = {
   readonly height: number | undefined;
 };
 
-export function extractImageFontsStyleNames(
-  xmlElement: ReadonlyArray<XmlElement>,
-  styleNames: Record<string, string> = {},
-  images: Array<{ readonly src: string; readonly width: number | undefined; readonly height: number | undefined }> = [],
-  fonts: Array<string> = []
-): readonly [images: ReadonlyArray<ImageProps>, fonts: ReadonlyArray<string>, styleNames: Record<string, string>] {
-  xmlElement.forEach((item) => {
-    if (item.tagName.startsWith("Image") && item.attributes?.src) {
-      images.push({
-        src: item.attributes.src as string,
-        height: item.attributes.height ? Number(item.attributes.height) : undefined,
-        width: item.attributes.width ? Number(item.attributes.width) : undefined,
-      });
-    } else if (item.attributes?.fontFamily) {
-      fonts.push(item.attributes.fontFamily as string);
-      if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
-        styleNames[item.attributes.name as string] = item.attributes.type;
-      }
-    } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
-      styleNames[item.attributes.name as string] = item.attributes.type;
-    } else {
-      extractImageFontsStyleNames(item.children, styleNames, images, fonts);
-    }
-  });
-  return [images, fonts, styleNames];
-}
-
-function extractImageFontsStyleNames2(
+function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
   styleNames: Record<string, string> = {},
   images: Record<string, ImageProps> = {},
@@ -160,7 +131,7 @@ function extractImageFontsStyleNames2(
     } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
       styleNames[item.attributes.name as string] = item.attributes.type;
     } else {
-      extractImageFontsStyleNames2(item.children, styleNames, images, fonts);
+      extractImageFontsStyleNames(item.children, styleNames, images, fonts);
     }
   });
   return [images, fonts, styleNames];

@@ -37,29 +37,20 @@ import {
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
 
-export const creators: (
-  images: Record<string, ImageResource.ImageResource>,
-  fonts: Types.Indexer<Font.Font>,
-  styleNames: Record<string, string>
-) => Record<string, ADCreatorFn> = (images, fonts, styleNames) => {
+export const creators: (styleNames: Record<string, string>) => Record<string, ADCreatorFn> = (styleNames) => {
   return {
-    AbstractDoc: (props, children: ReadonlyArray<Section.Section>) => {
-      if (props) {
-        props.fonts = fonts ?? undefined;
-      }
-      return AbstractDoc.create(props, children);
-    },
+    AbstractDoc: (props, children: ReadonlyArray<Section.Section>) => AbstractDoc.create(props, children),
     Section: (props, children: ReadonlyArray<SectionElement.SectionElement>) => Section.create(props, children),
     Paragraph: (props, children: ReadonlyArray<Atom.Atom>) => Paragraph.create(props, children),
     TextRow: (props: TextRowProps) => TextRow(props, styleNames),
     TextCell: (props: TextCellProps) => TextCell(props, styleNames),
     TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
     TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
-    ImageRow: (props: ImageRowProps) => ImageRow(imageProps(images, props) as unknown as ImageRowProps, styleNames),
-    ImageCell: (props: ImageCellProps) => ImageCell(imageProps(images, props) as unknown as ImageCellProps, styleNames),
+    ImageRow: (props: ImageRowProps) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames),
+    ImageCell: (props: ImageCellProps) => ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames),
     ImageParagraph: (props: ImageParagraphProps) =>
-      ImageParagraph(imageProps(images, props) as unknown as ImageParagraphProps, styleNames),
-    Image: (props: Record<string, unknown>) => Image.create(imageProps(images, props) as unknown as Image.ImageProps),
+      ImageParagraph(imageProps(props) as unknown as ImageParagraphProps, styleNames),
+    Image: (props: Record<string, unknown>) => Image.create(imageProps(props) as unknown as Image.ImageProps),
     Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
       Table.create(props as unknown as Table.TableProps, children),
     TableRow: (props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children),
@@ -254,22 +245,15 @@ export const propsCreators: Record<string, ADCreatorFn> = {
 
 const zero = AI.createPoint(0, 0);
 const size = AI.createSize(0, 0);
-function imageProps(
-  images: Record<string, ImageResource.ImageResource>,
-  props: Record<string, unknown>
-): Record<string, unknown> {
-  const newProps = { ...props };
-  const image = images[(newProps.src as string) ?? ""];
-  if (image) {
-    newProps.imageResource = images[newProps.src as string];
-  } else {
-    newProps.imageResource = ImageResource.create({
-      id: newProps.src as string,
+function imageProps(props: Record<string, unknown>): Record<string, unknown> {
+  return {
+    ...props,
+    imageResource: ImageResource.create({
+      id: props.src as string,
       abstractImage: AI.createAbstractImage(zero, size, AI.white, [
-        AI.createBinaryImage(zero, zero, "png", { type: "url", url: newProps.src as string }),
+        AI.createBinaryImage(zero, zero, "png", { type: "url", url: props.src as string }),
       ]),
       renderScale: 1,
-    });
-  }
-  return newProps;
+    }),
+  };
 }
