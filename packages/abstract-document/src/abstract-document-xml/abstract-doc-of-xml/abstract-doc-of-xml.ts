@@ -7,11 +7,11 @@ export function abstractDocXml(
   data: any,
   partials: Record<string, string>,
   rendered: "Mustache" | "Handlebars" = "Handlebars"
-): readonly [AbstractDoc.AbstractDoc, images: Record<string, ImageProps>, fonts: Record<string, string>] {
+): readonly [AbstractDoc.AbstractDoc, images: Record<string, ImageProps>, fonts: Record<string, true>] {
   const xml =
     rendered === "Mustache" ? parseMustacheXml(template, data, partials) : parseHandlebarsXml(template, data, partials);
-  const [imageUrls, fontUrls, styleNames] = extractImageFontsStyleNames(xml);
-  return [abstractDocXmlRecursive(creators(styleNames), xml[0]!), imageUrls, fontUrls];
+  const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
+  return [abstractDocXmlRecursive(creators(styleNames), xml[0]!), imageUrls, fontFamilies];
 }
 
 function abstractDocXmlRecursive(
@@ -114,8 +114,8 @@ function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
   styleNames: Record<string, string> = {},
   images: Record<string, ImageProps> = {},
-  fonts: Record<string, string> = {}
-): readonly [images: Record<string, ImageProps>, fonts: Record<string, string>, styleNames: Record<string, string>] {
+  fonts: Record<string, true> = {}
+): readonly [images: Record<string, ImageProps>, fonts: Record<string, true>, styleNames: Record<string, string>] {
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
       images[item.attributes.src as string] = {
@@ -124,7 +124,7 @@ function extractImageFontsStyleNames(
         width: item.attributes.width ? Number(item.attributes.width) : undefined,
       };
     } else if (item.attributes?.fontFamily) {
-      fonts[item.attributes.name as string] = item.attributes.fontFamily as string;
+      fonts[item.attributes.fontFamily as string] = true;
       if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
         styleNames[item.attributes.name as string] = item.attributes.type;
       }

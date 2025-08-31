@@ -120,7 +120,7 @@ async function generatePDF(
   }
 
   // Fetch image and fonts once the ADXml has been parsed
-  const [doc, _ignored_imageUrls, _ignored_fontUrls] = ADXml.abstractDocXml(template, dataObject, partials);
+  const [doc, _ignored_imageUrls, _ignored_fontFamilies] = ADXml.abstractDocXml(template, dataObject, partials);
   const docWithResources = AD.AbstractDoc.addResources(doc, { imageResources });
   const blob: Blob = await AbstractDocExporters.Pdf.exportToHTML5Blob(PDFDocument, docWithResources);
   const objectURL = URL.createObjectURL(blob);
