@@ -41,29 +41,32 @@ function abstractComponentToPdf(
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
-      const imageWidth = component.bottomRight.x - component.topLeft.x;
-      const imageHeight = component.bottomRight.y - component.topLeft.y;
+      const w = component.bottomRight.x - component.topLeft.x;
+      const h = component.bottomRight.y - component.topLeft.y;
       if (component.data.type === "url") {
         const imageData = resources.imageResources?.[component.data.url];
         if (imageData) {
+          const scale = Math.min(
+            (w || 1) / (imageData.abstractImage.size.width || 1),
+            (h || 1) / (imageData.abstractImage.size.height || 1)
+          );
+          pdf.save();
+          pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
           imageData.abstractImage.components.forEach((c) =>
             abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
           );
+          pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
           addWithSvgToPdfKit(component.data.url.slice(rawSvgPrefix.length), component, pdf, resources, textStyle);
         } else {
-          pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [imageWidth, imageHeight] });
+          pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [w, h] });
         }
       } else if (format === "png") {
         // pdfkit uses cache if using datauri, if buffer is used its not cached
-        pdf.image(toBase64String(component.data.bytes), component.topLeft.x, component.topLeft.y, {
-          fit: [imageWidth, imageHeight],
-        });
+        pdf.image(toBase64String(component.data.bytes), component.topLeft.x, component.topLeft.y, { fit: [w, h] });
       } else if (format === "jpg") {
         // pdfkit uses cache if using datauri, if buffer is used its not cached
-        pdf.image(toBase64String(component.data.bytes), component.topLeft.x, component.topLeft.y, {
-          fit: [imageWidth, imageHeight],
-        });
+        pdf.image(toBase64String(component.data.bytes), component.topLeft.x, component.topLeft.y, { fit: [w, h] });
       } else if (format === "svg") {
         addWithSvgToPdfKit(new TextDecoder().decode(component.data.bytes), component, pdf, resources, textStyle);
       }
