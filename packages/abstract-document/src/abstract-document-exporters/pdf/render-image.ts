@@ -54,8 +54,8 @@ function abstractComponentToPdf(
             height: (outerSize?.height || 1) * (h || 1),
           });
           const scale = Math.min(
-            (rect.width * (w || 1)) / (imageResource.abstractImage.size.width || 1),
-            (rect.height * (h || 1)) / (imageResource.abstractImage.size.height || 1)
+            rect.width / (imageResource.abstractImage.size.width || 1),
+            rect.height / (imageResource.abstractImage.size.height || 1)
           );
           pdf.save();
           pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
