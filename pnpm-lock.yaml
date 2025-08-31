@@ -141,7 +141,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^11.2.2
+        specifier: ^11.2.4
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -150,7 +150,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^11.2.2
+        specifier: ^11.2.4
         version: link:../abstract-image
       docx:
         specifier: ^6.0.3
@@ -171,8 +171,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
       pdfkit:
-        specifier: ^0.17.1
-        version: 0.17.1
+        specifier: ^0.17.2
+        version: 0.17.2
       remark-parse:
         specifier: ^6.0.3
         version: 6.0.3
@@ -294,16 +294,16 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^0.8.3
+        specifier: ^0.8.6
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^11.3.2
+        specifier: ^11.3.4
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.17
         version: 14.0.17(react@19.0.0)
       abstract-image:
-        specifier: ^11.2.2
+        specifier: ^11.2.4
         version: link:../abstract-image
       abstract-sheet:
         specifier: ^0.0.30
@@ -321,8 +321,8 @@ importers:
         specifier: ^0.1.0
         version: link:../handlebars-xml
       pdfkit:
-        specifier: ^0.17.1
-        version: 0.17.1
+        specifier: ^0.17.2
+        version: 0.17.2
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -5214,8 +5214,8 @@ packages:
   pdfkit@0.15.1:
     resolution: {integrity: sha512-sleaMQXbQ/Dk+38HlxdiMT6Lmw5+HoNc4vkJR1Tb9XGALuB1xrfdWYbDFta70F3jCrVkhA2DiQ52D7jbysGZrw==}
 
-  pdfkit@0.17.1:
-    resolution: {integrity: sha512-Kkf1I9no14O/uo593DYph5u3QwiMfby7JsBSErN1WqeyTgCBNJE3K4pXBn3TgkdKUIVu+buSl4bYUNC+8Up4xg==}
+  pdfkit@0.17.2:
+    resolution: {integrity: sha512-UnwF5fXy08f0dnp4jchFYAROKMNTaPqb/xgR8GtCzIcqoTnbOqtp3bwKvO4688oHI6vzEEs8Q6vqqEnC5IUELw==}
 
   performance-now@2.1.0:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
@@ -12715,7 +12715,7 @@ snapshots:
       linebreak: 1.1.0
       png-js: 1.0.0
 
-  pdfkit@0.17.1:
+  pdfkit@0.17.2:
     dependencies:
       crypto-js: 4.2.0
       fontkit: 2.0.4
@@ -13696,7 +13696,7 @@ snapshots:
 
   svg-to-pdfkit@0.1.8:
     dependencies:
-      pdfkit: 0.17.1
+      pdfkit: 0.17.2
 
   symbol-tree@3.2.4:
     optional: true

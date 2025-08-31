@@ -11,15 +11,18 @@ export function renderImage(
   textStyle: AD.TextStyle.TextStyle,
   image: AD.Image.Image
 ): void {
-  const aImage = image.imageResource.abstractImage;
+  const ai = image.imageResource.abstractImage;
   const position = AD.Point.create(finalRect.x, finalRect.y);
-  const scale =
+  const hasIntrinsicSize = ai.size.width && ai.size.height;
+  const outerScale =
     image.imageResource.scale ||
-    Math.min(finalRect.width / (aImage.size.width || 1), finalRect.height / (aImage.size.height || 1));
+    (hasIntrinsicSize ? Math.min(finalRect.width / ai.size.width, finalRect.height / ai.size.height) : 1);
 
   pdf.save();
-  pdf.translate(position.x, position.y).scale(scale);
-  aImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0));
+  pdf.translate(position.x, position.y).scale(outerScale);
+  ai.components.forEach((c) =>
+    abstractComponentToPdf(resources, pdf, c, textStyle, 0, hasIntrinsicSize ? undefined : finalRect)
+  );
   pdf.restore();
 }
 
@@ -28,14 +31,17 @@ function abstractComponentToPdf(
   pdf: PDFKit.PDFDocument,
   component: AbstractImage.Component,
   textStyle: AD.TextStyle.TextStyle,
-  circuitBreaker: number
+  circuitBreaker: number,
+  outerSize: AbstractImage.Size | undefined
 ): void {
   if (++circuitBreaker > 20) {
     return;
   }
   switch (component.type) {
     case "group":
-      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker));
+      component.children.forEach((c) =>
+        abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, outerSize)
+      );
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
@@ -44,14 +50,17 @@ function abstractComponentToPdf(
       if (component.data.type === "url") {
         const imageData = resources.imageResources?.[component.data.url];
         if (imageData) {
-          const scale = Math.min(
-            (w || 1) / (imageData.abstractImage.size.width || 1),
-            (h || 1) / (imageData.abstractImage.size.height || 1)
-          );
           pdf.save();
-          pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
+          pdf
+            .translate(component.topLeft.x, component.topLeft.y)
+            .scale(
+              Math.min(
+                ((outerSize?.width || 1) * (w || 1)) / (imageData.abstractImage.size.width || 1),
+                ((outerSize?.height || 1) * (h || 1)) / (imageData.abstractImage.size.height || 1)
+              )
+            );
           imageData.abstractImage.components.forEach((c) =>
-            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
+            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, undefined)
           );
           pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
