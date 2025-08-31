@@ -15,9 +15,7 @@ export function renderImage(
   const position = AD.Point.create(finalRect.x, finalRect.y);
   const scale =
     image.imageResource.scale ||
-    (aImage.size.width && aImage.size.height
-      ? Math.min(finalRect.width / aImage.size.width, finalRect.height / aImage.size.height)
-      : 1);
+    Math.min(finalRect.width / (aImage.size.width || 1), finalRect.height / (aImage.size.height || 1));
 
   pdf.save();
   pdf.translate(position.x, position.y).scale(scale);
