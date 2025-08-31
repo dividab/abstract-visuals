@@ -13,13 +13,14 @@ export function renderImage(
 ): void {
   const aImage = image.imageResource.abstractImage;
   const position = AD.Point.create(finalRect.x, finalRect.y);
-  const scaleX = finalRect.width / aImage.size.width;
-  const scaleY = finalRect.height / aImage.size.height;
-  const scale = Math.min(scaleX, scaleY);
-  const explicitScale = image.imageResource.scale || scale; //
+  const scale =
+    image.imageResource.scale ||
+    (aImage.size.width && aImage.size.height
+      ? Math.min(finalRect.width / aImage.size.width, finalRect.height / aImage.size.height)
+      : 1);
 
   pdf.save();
-  pdf.translate(position.x, position.y).scale(explicitScale);
+  pdf.translate(position.x, position.y).scale(scale);
   aImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0));
   pdf.restore();
 }
@@ -45,10 +46,11 @@ function abstractComponentToPdf(
       if (component.data.type === "url") {
         const imageData = resources.imageResources?.[component.data.url];
         if (imageData) {
-          const scaleX = imageWidth / imageData.abstractImage.size.width;
-          const scaleY = imageHeight / imageData.abstractImage.size.height;
+          const srcW = imageData.abstractImage.size.width || imageWidth || 1;
+          const srcH = imageData.abstractImage.size.height || imageHeight || 1;
+          const scale = Math.min(imageWidth / srcW, imageHeight / srcH);
           pdf.save();
-          pdf.translate(component.topLeft.x, component.topLeft.y).scale(Math.min(scaleX, scaleY));
+          pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
           imageData.abstractImage.components.forEach((c) =>
             abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
           );

@@ -252,9 +252,8 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
 };
 
-const tl = AI.createPoint(0, 0);
-const br = AI.createPoint(1, 1);
-const size = AI.createSize(1, 1);
+const zero = AI.createPoint(0, 0);
+const size = AI.createSize(0, 0);
 function imageProps(
   images: Record<string, ImageResource.ImageResource>,
   props: Record<string, unknown>
@@ -266,8 +265,8 @@ function imageProps(
   } else {
     newProps.imageResource = ImageResource.create({
       id: newProps.src as string,
-      abstractImage: AI.createAbstractImage(tl, size, AI.white, [
-        AI.createBinaryImage(tl, br, "png", { type: "url", url: newProps.src as string }),
+      abstractImage: AI.createAbstractImage(zero, size, AI.white, [
+        AI.createBinaryImage(zero, zero, "png", { type: "url", url: newProps.src as string }),
       ]),
       renderScale: 1,
     });
