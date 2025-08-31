@@ -6,7 +6,8 @@ export type ImageResource = {
   readonly id: Guid;
   readonly abstractImage: AbstractImage;
   readonly renderScale: number; // Unused
-  readonly scale?: number; // Explicitly scale image
+  readonly scaleMaxWidth?: number; // Scale resources together in a group
+  readonly scaleMaxHeight?: number;
 };
 
 export type ImageResourceProps = {

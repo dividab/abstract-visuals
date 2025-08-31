@@ -95,8 +95,8 @@ importers:
         specifier: ^7.1.2
         version: 7.1.2(@types/node@20.17.9)(terser@5.36.0)(tsx@4.19.2)
       vite-plugin-node-polyfills:
-        specifier: ^0.22.0
-        version: 0.22.0(rollup@4.46.2)(vite@7.1.2(@types/node@20.17.9)(terser@5.36.0)(tsx@4.19.2))
+        specifier: ^0.24.0
+        version: 0.24.0(rollup@4.46.2)(vite@7.1.2(@types/node@20.17.9)(terser@5.36.0)(tsx@4.19.2))
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@20.17.9)(jsdom@20.0.3)(terser@5.36.0)(tsx@4.19.2)
@@ -141,7 +141,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^11.2.4
+        specifier: ^11.2.5
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -150,7 +150,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^11.2.4
+        specifier: ^11.2.5
         version: link:../abstract-image
       docx:
         specifier: ^6.0.3
@@ -297,13 +297,13 @@ importers:
         specifier: ^0.8.6
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^11.3.4
+        specifier: ^11.3.5
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.17
         version: 14.0.17(react@19.0.0)
       abstract-image:
-        specifier: ^11.2.4
+        specifier: ^11.2.5
         version: link:../abstract-image
       abstract-sheet:
         specifier: ^0.0.30
@@ -352,8 +352,8 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1(@types/node@22.10.1)(terser@5.36.0)(tsx@4.19.2)
       vite-plugin-node-polyfills:
-        specifier: ^0.23.0
-        version: 0.23.0(rollup@4.46.2)(vite@6.0.1(@types/node@22.10.1)(terser@5.36.0)(tsx@4.19.2))
+        specifier: ^0.24.0
+        version: 0.24.0(rollup@4.46.2)(vite@6.0.1(@types/node@22.10.1)(terser@5.36.0)(tsx@4.19.2))
 
   packages/handlebars-xml:
     dependencies:
@@ -6578,15 +6578,10 @@ packages:
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
 
-  vite-plugin-node-polyfills@0.22.0:
-    resolution: {integrity: sha512-F+G3LjiGbG8QpbH9bZ//GSBr9i1InSTkaulfUHFa9jkLqVGORFBoqc2A/Yu5Mmh1kNAbiAeKeK+6aaQUf3x0JA==}
+  vite-plugin-node-polyfills@0.24.0:
+    resolution: {integrity: sha512-GA9QKLH+vIM8NPaGA+o2t8PDfFUl32J8rUp1zQfMKVJQiNkOX4unE51tR6ppl6iKw5yOrDAdSH7r/UIFLCVhLw==}
     peerDependencies:
-      vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
-
-  vite-plugin-node-polyfills@0.23.0:
-    resolution: {integrity: sha512-4n+Ys+2bKHQohPBKigFlndwWQ5fFKwaGY6muNDMTb0fSQLyBzS+jjUNRZG9sKF0S/Go4ApG6LFnUGopjkILg3w==}
-    peerDependencies:
-      vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
+      vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
 
   vite@6.0.1:
     resolution: {integrity: sha512-Ldn6gorLGr4mCdFnmeAOLweJxZ34HjKnDm4HGo6P66IEqTxQb36VEdFJQENKxWjupNfoIjvRUnswjn1hpYEpjQ==}
@@ -8400,15 +8395,15 @@ snapshots:
     dependencies:
       '@rollup/pluginutils': 5.1.3(rollup@4.46.2)
       estree-walker: 2.0.2
-      magic-string: 0.30.14
+      magic-string: 0.30.17
     optionalDependencies:
       rollup: 4.46.2
 
   '@rollup/pluginutils@5.1.3(rollup@4.46.2)':
     dependencies:
-      '@types/estree': 1.0.6
+      '@types/estree': 1.0.8
       estree-walker: 2.0.2
-      picomatch: 4.0.2
+      picomatch: 4.0.3
     optionalDependencies:
       rollup: 4.46.2
 
@@ -14224,19 +14219,19 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-node-polyfills@0.22.0(rollup@4.46.2)(vite@7.1.2(@types/node@20.17.9)(terser@5.36.0)(tsx@4.19.2)):
-    dependencies:
-      '@rollup/plugin-inject': 5.0.5(rollup@4.46.2)
-      node-stdlib-browser: 1.3.0
-      vite: 7.1.2(@types/node@20.17.9)(terser@5.36.0)(tsx@4.19.2)
-    transitivePeerDependencies:
-      - rollup
-
-  vite-plugin-node-polyfills@0.23.0(rollup@4.46.2)(vite@6.0.1(@types/node@22.10.1)(terser@5.36.0)(tsx@4.19.2)):
+  vite-plugin-node-polyfills@0.24.0(rollup@4.46.2)(vite@6.0.1(@types/node@22.10.1)(terser@5.36.0)(tsx@4.19.2)):
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@4.46.2)
       node-stdlib-browser: 1.3.0
       vite: 6.0.1(@types/node@22.10.1)(terser@5.36.0)(tsx@4.19.2)
+    transitivePeerDependencies:
+      - rollup
+
+  vite-plugin-node-polyfills@0.24.0(rollup@4.46.2)(vite@7.1.2(@types/node@20.17.9)(terser@5.36.0)(tsx@4.19.2)):
+    dependencies:
+      '@rollup/plugin-inject': 5.0.5(rollup@4.46.2)
+      node-stdlib-browser: 1.3.0
+      vite: 7.1.2(@types/node@20.17.9)(terser@5.36.0)(tsx@4.19.2)
     transitivePeerDependencies:
       - rollup
 

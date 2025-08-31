@@ -14,14 +14,18 @@ export function renderImage(
   const ai = image.imageResource.abstractImage;
   const position = AD.Point.create(finalRect.x, finalRect.y);
   const hasIntrinsicSize = ai.size.width && ai.size.height;
-  const outerScale =
-    image.imageResource.scale ||
-    (hasIntrinsicSize ? Math.min(finalRect.width / ai.size.width, finalRect.height / ai.size.height) : 1);
+  const [factorX, factorY] = [
+    finalRect.width / (image.imageResource.scaleMaxWidth ?? finalRect.width),
+    finalRect.height / (image.imageResource.scaleMaxHeight ?? finalRect.height),
+  ];
+  const factor = factorX < factorY ? factorX : factorY;
+  const rect: AbstractImage.Size = { width: ai.size.width * factor, height: ai.size.height * factor };
+  const outerScale = hasIntrinsicSize ? Math.min(rect.width / ai.size.width, rect.height / ai.size.height) : 1;
 
   pdf.save();
   pdf.translate(position.x, position.y).scale(outerScale);
   ai.components.forEach((c) =>
-    abstractComponentToPdf(resources, pdf, c, textStyle, 0, hasIntrinsicSize ? undefined : finalRect)
+    abstractComponentToPdf(resources, pdf, c, textStyle, 0, hasIntrinsicSize ? undefined : rect)
   );
   pdf.restore();
 }
@@ -48,18 +52,22 @@ function abstractComponentToPdf(
       const w = component.bottomRight.x - component.topLeft.x;
       const h = component.bottomRight.y - component.topLeft.y;
       if (component.data.type === "url") {
-        const imageData = resources.imageResources?.[component.data.url];
-        if (imageData) {
+        const imageResource = resources.imageResources?.[component.data.url];
+        if (imageResource) {
+          const ai = imageResource.abstractImage;
+          const [factorX, factorY] = [
+            (outerSize?.width || 1) / (imageResource.scaleMaxWidth ?? (outerSize?.width || 1)),
+            (outerSize?.height || 1) / (imageResource.scaleMaxHeight ?? (outerSize?.height || 1)),
+          ];
+          const factor = factorX < factorY ? factorX : factorY;
+          const rect: AbstractImage.Size = { width: ai.size.width * factor, height: ai.size.height * factor };
+          const scale = Math.min(
+            (rect.width * (w || 1)) / (ai.size.width || 1),
+            (rect.height * (h || 1)) / (ai.size.height || 1)
+          );
           pdf.save();
-          pdf
-            .translate(component.topLeft.x, component.topLeft.y)
-            .scale(
-              Math.min(
-                ((outerSize?.width || 1) * (w || 1)) / (imageData.abstractImage.size.width || 1),
-                ((outerSize?.height || 1) * (h || 1)) / (imageData.abstractImage.size.height || 1)
-              )
-            );
-          imageData.abstractImage.components.forEach((c) =>
+          pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
+          imageResource.abstractImage.components.forEach((c) =>
             abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, undefined)
           );
           pdf.restore();
