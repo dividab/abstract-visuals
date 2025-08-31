@@ -1,3 +1,4 @@
+import * as AI from "abstract-image";
 import {
   AbstractDoc,
   Atom,
@@ -258,20 +259,17 @@ function imageProps(
   const newProps = { ...props };
   const image = images[(newProps.src as string) ?? ""];
   if (image) {
-    if (image.width && image.height) {
-      newProps.width = image.width;
-      newProps.height = image.height;
-    } else {
-      const scaleX = (newProps.width as number) / image.abstractImage.size.width;
-      const scaleY = (newProps.height as number) / image.abstractImage.size.height;
-      if (scaleX < scaleY) {
-        newProps.height = (newProps.height as number) * (scaleX / scaleY);
-      } else {
-        newProps.width = (newProps.width as number) * (scaleY / scaleX);
-      }
-    }
-
     newProps.imageResource = images[newProps.src as string];
+  } else {
+    const topLeft = AI.createPoint(0, 0);
+    const bottomRight = AI.createPoint(0, 0);
+    newProps.imageResource = ImageResource.create({
+      id: newProps.src as string,
+      abstractImage: AI.createAbstractImage(topLeft, AI.createSize(0, 0), AI.white, [
+        AI.createBinaryImage(topLeft, bottomRight, "png", { type: "url", url: newProps.src as string }),
+      ]),
+      renderScale: 1,
+    });
   }
   return newProps;
 }

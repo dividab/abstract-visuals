@@ -5,9 +5,8 @@ export type Guid = string;
 export type ImageResource = {
   readonly id: Guid;
   readonly abstractImage: AbstractImage;
-  readonly renderScale: number;
-  readonly width?: number;
-  readonly height?: number;
+  readonly renderScale: number; // Unused
+  readonly scale?: number; // Explicitly scale image
 };
 
 export type ImageResourceProps = {

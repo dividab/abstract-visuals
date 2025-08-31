@@ -1,13 +1,26 @@
-import { XmlElement } from "handlebars-xml";
-import { ADCreatorFn, propsCreators } from "./creator.js";
+import { AbstractDoc } from "../../abstract-document/index.js";
+import { ADCreatorFn, creators, propsCreators } from "./creator.js";
+import { parseHandlebarsXml, parseMustacheXml, type XmlElement } from "handlebars-xml";
 
-export { parseHandlebarsXml, parseMustacheXml, type XmlElement } from "handlebars-xml";
+export { parseHandlebarsXml, parseMustacheXml, type XmlElement };
+
+export function abstractDocXml(
+  template: string,
+  data: any,
+  partials: Record<string, string>,
+  rendered: "Mustache" | "Handlebars" = "Handlebars"
+): readonly [AbstractDoc.AbstractDoc, images: Record<string, ImageProps>, fonts: Record<string, string>] {
+  const xml =
+    rendered === "Mustache" ? parseMustacheXml(template, data, partials) : parseHandlebarsXml(template, data, partials);
+  const [imageUrls, fontUrls, styleNames] = extractImageFontsStyleNames2(xml);
+  return [abstractDocOfXml(creators({}, {}, styleNames), xml[0]!), imageUrls, fontUrls];
+}
 
 export function abstractDocOfXml(
   creators: Record<string, ADCreatorFn>,
   xmlElement: XmlElement,
   onlyChildren: boolean = false
-): unknown {
+): any {
   const children = [];
   const props: Record<string, unknown> = {};
   for (const childElement of xmlElement.children ?? []) {
@@ -93,20 +106,18 @@ export function abstractDocOfXml(
   return obj;
 }
 
+export type ImageProps = {
+  readonly src: string;
+  readonly width: number | undefined;
+  readonly height: number | undefined;
+};
+
 export function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
   styleNames: Record<string, string> = {},
   images: Array<{ readonly src: string; readonly width: number | undefined; readonly height: number | undefined }> = [],
   fonts: Array<string> = []
-): readonly [
-  images: ReadonlyArray<{
-    readonly src: string;
-    readonly width: number | undefined;
-    readonly height: number | undefined;
-  }>,
-  fonts: ReadonlyArray<string>,
-  styleNames: Record<string, string>
-] {
+): readonly [images: ReadonlyArray<ImageProps>, fonts: ReadonlyArray<string>, styleNames: Record<string, string>] {
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
       images.push({
@@ -123,6 +134,33 @@ export function extractImageFontsStyleNames(
       styleNames[item.attributes.name as string] = item.attributes.type;
     } else {
       extractImageFontsStyleNames(item.children, styleNames, images, fonts);
+    }
+  });
+  return [images, fonts, styleNames];
+}
+
+function extractImageFontsStyleNames2(
+  xmlElement: ReadonlyArray<XmlElement>,
+  styleNames: Record<string, string> = {},
+  images: Record<string, ImageProps> = {},
+  fonts: Record<string, string> = {}
+): readonly [images: Record<string, ImageProps>, fonts: Record<string, string>, styleNames: Record<string, string>] {
+  xmlElement.forEach((item) => {
+    if (item.tagName.startsWith("Image") && item.attributes?.src) {
+      images[item.attributes.src as string] = {
+        src: item.attributes.src as string,
+        height: item.attributes.height ? Number(item.attributes.height) : undefined,
+        width: item.attributes.width ? Number(item.attributes.width) : undefined,
+      };
+    } else if (item.attributes?.fontFamily) {
+      fonts[item.attributes.name as string] = item.attributes.fontFamily as string;
+      if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
+        styleNames[item.attributes.name as string] = item.attributes.type;
+      }
+    } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
+      styleNames[item.attributes.name as string] = item.attributes.type;
+    } else {
+      extractImageFontsStyleNames2(item.children, styleNames, images, fonts);
     }
   });
   return [images, fonts, styleNames];

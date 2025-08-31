@@ -16,8 +16,10 @@ export function renderImage(
   const scaleX = finalRect.width / aImage.size.width;
   const scaleY = finalRect.height / aImage.size.height;
   const scale = Math.min(scaleX, scaleY);
+  const explicitScale = image.imageResource.scale || scale; //
+
   pdf.save();
-  pdf.translate(position.x, position.y).scale(scale);
+  pdf.translate(position.x, position.y).scale(explicitScale);
   aImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0));
   pdf.restore();
 }
@@ -43,11 +45,8 @@ function abstractComponentToPdf(
       if (component.data.type === "url") {
         const imageData = resources.imageResources?.[component.data.url];
         if (imageData) {
-          const scaleX = imageWidth / imageData.abstractImage.size.width;
-          const scaleY = imageHeight / imageData.abstractImage.size.height;
-          const scale = Math.min(scaleX, scaleY);
           pdf.save();
-          pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
+          pdf.translate(component.topLeft.x, component.topLeft.y).scale(Math.min(imageWidth, imageHeight));
           imageData.abstractImage.components.forEach((c) =>
             abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
           );

@@ -64,11 +64,9 @@ function errorMessage(error: unknown): string {
 
 function dynamicImageInternal(el: XmlElement, mutableImageUrls: Array<string>): unknown {
   const children = Array<Component>();
-  const childElements = Array<XmlElement>();
   for (const child of el.children ?? []) {
     if (child.tagName !== undefined) {
       children.push(dynamicImageInternal(child, mutableImageUrls) as Component);
-      childElements.push(child);
     }
   }
 
