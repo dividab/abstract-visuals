@@ -1,9 +1,9 @@
 import * as AbstractImage from "abstract-image";
-import { ImageRun } from "docx";
+import { ImageRun, IMediaTransformation } from "docx";
 import { TextStyle } from "../../abstract-document/styles/text-style.js";
 import { Image } from "../../abstract-document/atoms/image.js";
 import { Resources } from "../../abstract-document/index.js";
-import { rawSvgPrefix } from "../shared/to-base-64.js";
+import { fromBase64 } from "../shared/base-64.js";
 
 export function renderImage(image: Image, textStyle: TextStyle, resources: Resources.Resources): ImageRun {
   const aImage = image.imageResource.abstractImage;
@@ -15,8 +15,8 @@ export function renderImage(image: Image, textStyle: TextStyle, resources: Resou
 
 function abstractComponentToDocX(
   component: AbstractImage.Component,
-  width: number,
-  height: number,
+  rectWidth: number,
+  rectHeight: number,
   _textStyle: TextStyle,
   resources: Resources.Resources,
   circuitBreaker: number
@@ -30,6 +30,10 @@ function abstractComponentToDocX(
     //   break;
     case "binaryimage":
       const format = component.format.toLowerCase();
+      const w = component.bottomRight.x - component.topLeft.x;
+      const h = component.bottomRight.y - component.topLeft.y;
+      const scale = Math.min(rectWidth / (w || 1), rectHeight / (h || 1));
+      const transformation: IMediaTransformation = { width: w * scale, height: h * scale };
       if (component.data.type === "bytes" && (format === "png" || format === "jpg")) {
         return new ImageRun({
           data: Buffer.from(
@@ -37,26 +41,26 @@ function abstractComponentToDocX(
             component.data.bytes.byteOffset,
             component.data.bytes.byteLength
           ),
-          transformation: {
-            width: width,
-            height: height,
-          },
+          transformation,
         });
-        // return DOCXJS.Media.addImage(
-        //   doc,
-        //   // tslint:disable-next-line:no-any
-        //   (component as any).data,
-        //   imageWidth,
-        //   imageHeight,
-        //   {}
-        // );
       }
-      // if (component.data.type === "url") {
-      //   const urlOrUri = resources.imageResources?.[component.data.url] ?? component.data.url;
-      //   if (!urlOrUri.startsWith(rawSvgPrefix)) {
-      //     return new ImageRun({ data: urlOrUri, transformation: { width: width, height: height } });
-      //   }
-      // }
+      if (component.data.type === "url") {
+        const imageResource = resources.imageResources?.[component.data.url];
+        if (imageResource) {
+          return abstractComponentToDocX(
+            imageResource.abstractImage.components[0],
+            rectWidth,
+            rectHeight,
+            _textStyle,
+            resources,
+            circuitBreaker
+          );
+        }
+        const match = /^data:.+?;base64,(.*)$/.exec(component.data.url);
+        if (match) {
+          return new ImageRun({ data: fromBase64(match[1]), transformation });
+        }
+      }
       break;
     //else if (format === "svg") {
     //   const svg = new TextDecoder().decode(component.data);

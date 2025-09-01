@@ -2,7 +2,7 @@ import * as AbstractImage from "abstract-image";
 import svgToPdfKit from "svg-to-pdfkit";
 import * as AD from "../../abstract-document/index.js";
 import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
-import { rawSvgPrefix, toBase64String } from "../shared/to-base-64.js";
+import { rawSvgPrefix, toBase64 } from "../shared/base-64.js";
 
 export function renderImage(
   resources: AD.Resources.Resources,
@@ -70,10 +70,10 @@ function abstractComponentToPdf(
         }
       } else if (format === "png") {
         // pdfkit uses cache if using datauri, if buffer is used its not cached
-        pdf.image(toBase64String(component.data.bytes), component.topLeft.x, component.topLeft.y, { fit: [w, h] });
+        pdf.image(toBase64(component.data.bytes), component.topLeft.x, component.topLeft.y, { fit: [w, h] });
       } else if (format === "jpg") {
         // pdfkit uses cache if using datauri, if buffer is used its not cached
-        pdf.image(toBase64String(component.data.bytes), component.topLeft.x, component.topLeft.y, { fit: [w, h] });
+        pdf.image(toBase64(component.data.bytes), component.topLeft.x, component.topLeft.y, { fit: [w, h] });
       } else if (format === "svg") {
         addWithSvgToPdfKit(new TextDecoder().decode(component.data.bytes), component, pdf, resources, textStyle);
       }
