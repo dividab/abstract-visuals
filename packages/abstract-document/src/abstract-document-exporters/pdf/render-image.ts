@@ -12,16 +12,23 @@ export function renderImage(
   image: AD.Image.Image
 ): void {
   const ai = image.imageResource.abstractImage;
-  const position = AD.Point.create(finalRect.x, finalRect.y);
-  const hasIntrinsicSize = ai.size.width && ai.size.height;
-  const rect = resourceRect(image.imageResource, finalRect);
-  const outerScale = hasIntrinsicSize ? Math.min(rect.width / ai.size.width, rect.height / ai.size.height) : 1;
 
-  pdf.save();
-  pdf.translate(position.x, position.y).scale(outerScale);
-  ai.components.forEach((c) =>
-    abstractComponentToPdf(resources, pdf, c, textStyle, 0, hasIntrinsicSize ? undefined : rect)
+  // If ai is an empty shell containing a refernece to another resource, instantly jump one step in depth to the referenced image.
+  const firstComp = ai.components[0];
+  const resource =
+    !ai.size.width && !ai.size.height && firstComp?.type === "binaryimage" && firstComp.data.type === "url"
+      ? resources.imageResources?.[firstComp.data.url] ?? image.imageResource
+      : image.imageResource;
+
+  const position = AD.Point.create(finalRect.x, finalRect.y);
+  const rect = resourceRect(resource, finalRect);
+  const factor = Math.min(
+    rect.width / resource.abstractImage.size.width,
+    rect.height / resource.abstractImage.size.height
   );
+  pdf.save();
+  pdf.translate(position.x, position.y).scale(factor);
+  resource.abstractImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0));
   pdf.restore();
 }
 
@@ -30,17 +37,14 @@ function abstractComponentToPdf(
   pdf: PDFKit.PDFDocument,
   component: AbstractImage.Component,
   textStyle: AD.TextStyle.TextStyle,
-  circuitBreaker: number,
-  outerSize: AbstractImage.Size | undefined
+  circuitBreaker: number
 ): void {
   if (++circuitBreaker > 20) {
     return;
   }
   switch (component.type) {
     case "group":
-      component.children.forEach((c) =>
-        abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, outerSize)
-      );
+      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker));
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
@@ -49,18 +53,14 @@ function abstractComponentToPdf(
       if (component.data.type === "url") {
         const imageResource = resources.imageResources?.[component.data.url];
         if (imageResource) {
-          const rect = resourceRect(imageResource, {
-            width: (outerSize?.width || 1) * (w || 1),
-            height: (outerSize?.height || 1) * (h || 1),
-          });
           const scale = Math.min(
-            rect.width / (imageResource.abstractImage.size.width || 1),
-            rect.height / (imageResource.abstractImage.size.height || 1)
+            w / (imageResource.abstractImage.size.width || 1),
+            h / (imageResource.abstractImage.size.height || 1)
           );
           pdf.save();
           pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
           imageResource.abstractImage.components.forEach((c) =>
-            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, undefined)
+            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
           );
           pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
@@ -238,16 +238,14 @@ function addWithSvgToPdfKit(
   });
 }
 
-function resourceRect(imageResource: AD.ImageResource.ImageResource, rect: AbstractImage.Size): AbstractImage.Size {
-  const ai = imageResource.abstractImage;
-  if (!imageResource.scaleMaxHeight || !imageResource.scaleMaxWidth) {
-    return rect;
+function resourceRect(resource: AD.ImageResource.ImageResource, rect: AbstractImage.Size): AbstractImage.Size {
+  const ai = resource.abstractImage;
+  const rectWidth = rect.width || ai.size.width * (rect.height / ai.size.height);
+  const rectHeight = rect.height || ai.size.height * (rect.width / ai.size.width);
+  if (!resource.scaleMaxHeight || !resource.scaleMaxWidth) {
+    return { width: rectWidth, height: rectHeight };
   }
-  const [factorX, factorY] = [
-    rect.width / (imageResource.scaleMaxWidth || 1),
-    rect.height / (imageResource.scaleMaxHeight || 1),
-  ];
-  const factor = factorX < factorY ? factorX : factorY;
+  const factor = Math.min(rectWidth / resource.scaleMaxWidth, rectHeight / resource.scaleMaxHeight);
   return { width: ai.size.width * factor, height: ai.size.height * factor };
 }
 

@@ -11,7 +11,7 @@ import {
 } from "../../../abstract-document/src/index.js";
 
 export function AbstractDocumentXMLExample(): React.JSX.Element {
-  const [pdf, setPdf] = React.useState<{ type: "Ok"; blob: Blob } | { type: "Err"; error: string } | undefined>(
+  const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
     undefined
   );
   const [data, setData] = React.useState('{ "test": "Hello world", "truthy": true, "falsy": false }');
@@ -89,7 +89,16 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
         }}
       >
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={async () => setPdf(await genereteDoc(data, template, { partial }, "PDF"))}>
+          <button
+            onClick={async () => {
+              const res = await genereteDoc(data, template, { partial }, "PDF");
+              if (res.type === "Ok") {
+                setPdf({ type: "Ok", url: URL.createObjectURL(res.blob) });
+              } else {
+                setPdf(res);
+              }
+            }}
+          >
             Preview PDF
           </button>
           <button
@@ -109,7 +118,7 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
           <h3>{pdf.error}</h3>
         ) : (
           <embed
-            src={pdf?.type === "Ok" ? URL.createObjectURL(pdf.blob) : undefined}
+            src={pdf?.type === "Ok" ? pdf.url : undefined}
             type="application/pdf"
             style={{ width: "100%", height: "calc(100% - 30px)" }}
           />
@@ -159,10 +168,7 @@ const imageResources: Record<string, AD.ImageResource.ImageResource> = {
   [wiringDiagramUrl]: AD.ImageResource.create({
     id: wiringDiagramUrl,
     abstractImage: AI.createAbstractImage(AI.createPoint(0, 0), AI.createSize(200, 100), AI.white, [
-      AI.createBinaryImage(AI.createPoint(0, 0), AI.createPoint(200, 100), "png", {
-        type: "url",
-        url: pngBase64,
-      }),
+      AI.createBinaryImage(AI.createPoint(0, 0), AI.createPoint(200, 100), "png", { type: "url", url: pngBase64 }),
     ]),
   }),
 };

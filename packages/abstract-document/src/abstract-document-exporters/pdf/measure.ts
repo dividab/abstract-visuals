@@ -320,7 +320,7 @@ function measureAtom(
     case "TextField":
       return measureTextField(pdfKit, resources, textStyle, atom, availableSize);
     case "Image":
-      return measureImage(availableSize, atom);
+      return measureImage(resources, availableSize, atom);
     case "HyperLink":
       return measureHyperLink(pdfKit, resources, textStyle, atom, availableSize);
     case "TocSeparator":
@@ -424,10 +424,41 @@ function measureTocSeparator(
   };
 }
 
-function measureImage(availableSize: AD.Size.Size, image: AD.Image.Image): AD.Size.Size {
-  const desiredWidth = isFinite(image.width) ? image.width : availableSize.width;
-  const desiredHeight = isFinite(image.height) ? image.height : availableSize.height;
-  return AD.Size.create(desiredWidth, desiredHeight);
+function measureImage(
+  resources: AD.Resources.Resources,
+  availableSize: AD.Size.Size,
+  image: AD.Image.Image
+): AD.Size.Size {
+  const ai = image.imageResource.abstractImage;
+  const firstComp = ai.components[0];
+  const resource =
+    !ai.size.width && !ai.size.height && firstComp?.type === "binaryimage" && firstComp.data.type === "url"
+      ? resources.imageResources?.[firstComp.data.url] ?? image.imageResource
+      : image.imageResource;
+
+  let desiredWidth = availableSize.width;
+  if (!isFinite(image.width)) {
+    desiredWidth = availableSize.width;
+  } else if (image.width) {
+    desiredWidth = image.width;
+  } else if (resource?.abstractImage.size.width) {
+    desiredWidth = resource.abstractImage.size.width * (image.height / resource.abstractImage.size.height);
+  }
+
+  let desiredHeight = availableSize.height;
+  if (!isFinite(image.height)) {
+    desiredHeight = availableSize.height;
+  } else if (image.height) {
+    desiredHeight = image.height;
+  } else if (resource?.abstractImage.size.height) {
+    desiredHeight = resource.abstractImage.size.height * (image.width / resource.abstractImage.size.width);
+  }
+
+  if (!resource.scaleMaxHeight || !resource.scaleMaxWidth || (image.height && image.width)) {
+    return AD.Size.create(desiredWidth, desiredHeight);
+  }
+  const factor = Math.min(desiredWidth / resource.scaleMaxWidth, desiredHeight / resource.scaleMaxHeight);
+  return AD.Size.create(ai.size.width * factor, ai.size.height * factor);
 }
 
 function measureText(
