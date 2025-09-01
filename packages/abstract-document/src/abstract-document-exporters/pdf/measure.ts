@@ -453,12 +453,11 @@ function measureImage(
   } else if (resource?.abstractImage.size.height) {
     desiredHeight = resource.abstractImage.size.height * (image.width / resource.abstractImage.size.width);
   }
-  return AD.Size.create(desiredWidth, desiredHeight);
-  // if (!resource.scaleMaxHeight || !resource.scaleMaxWidth || (image.height && image.width)) {
-  //   return AD.Size.create(desiredWidth, desiredHeight);
-  // }
-  // const factor = Math.min(desiredWidth / resource.scaleMaxWidth, desiredHeight / resource.scaleMaxHeight);
-  // return AD.Size.create(resource.abstractImage.size.width * factor, resource.abstractImage.size.height * factor);
+  if (!resource.scaleMaxHeight || !resource.scaleMaxWidth) {
+    return AD.Size.create(desiredWidth, desiredHeight);
+  }
+  const factor = Math.min(desiredWidth / resource.scaleMaxWidth, desiredHeight / resource.scaleMaxHeight);
+  return AD.Size.create(resource.abstractImage.size.width * factor, resource.abstractImage.size.height * factor);
 }
 
 function measureText(
