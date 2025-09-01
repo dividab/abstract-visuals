@@ -30,10 +30,11 @@ function abstractComponentToDocX(
     //   break;
     case "binaryimage":
       const format = component.format.toLowerCase();
-      const w = component.bottomRight.x - component.topLeft.x;
-      const h = component.bottomRight.y - component.topLeft.y;
-      const scale = Math.min(rectWidth / (w || 1), rectHeight / (h || 1));
-      const transformation: IMediaTransformation = { width: w * scale, height: h * scale };
+      // const w = component.bottomRight.x - component.topLeft.x;
+      // const h = component.bottomRight.y - component.topLeft.y;
+      // const scale = Math.min(rectWidth / (w || 1), rectHeight / (h || 1));
+      // const transformation: IMediaTransformation = { width: w * scale, height: h * scale };
+      const transformation: IMediaTransformation = { width: rectWidth, height: rectHeight };
       if (component.data.type === "bytes" && (format === "png" || format === "jpg")) {
         return new ImageRun({
           data: Buffer.from(
