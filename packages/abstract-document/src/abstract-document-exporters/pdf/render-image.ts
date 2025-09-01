@@ -242,11 +242,13 @@ function resourceRect(resource: AD.ImageResource.ImageResource, rect: AbstractIm
   const ai = resource.abstractImage;
   const rectWidth = rect.width || ai.size.width * (rect.height / ai.size.height);
   const rectHeight = rect.height || ai.size.height * (rect.width / ai.size.width);
-  if (!resource.scaleMaxHeight || !resource.scaleMaxWidth) {
-    return { width: rectWidth, height: rectHeight };
-  }
-  const factor = Math.min(rectWidth / resource.scaleMaxWidth, rectHeight / resource.scaleMaxHeight);
-  return { width: ai.size.width * factor, height: ai.size.height * factor };
+
+  return { width: rectWidth, height: rectHeight };
+  // if (!resource.scaleMaxHeight || !resource.scaleMaxWidth) {
+  //   return { width: rectWidth, height: rectHeight };
+  // }
+  // const factor = Math.min(rectWidth / resource.scaleMaxWidth, rectHeight / resource.scaleMaxHeight);
+  // return { width: ai.size.width * factor, height: ai.size.height * factor };
 }
 
 function colorToOpacity(color: AbstractImage.Color): number {
