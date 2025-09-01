@@ -458,7 +458,7 @@ function measureImage(
     return AD.Size.create(desiredWidth, desiredHeight);
   }
   const factor = Math.min(desiredWidth / resource.scaleMaxWidth, desiredHeight / resource.scaleMaxHeight);
-  return AD.Size.create(ai.size.width * factor, ai.size.height * factor);
+  return AD.Size.create(resource.abstractImage.size.width * factor, resource.abstractImage.size.height * factor);
 }
 
 function measureText(
