@@ -28,7 +28,7 @@ export function renderImage(
   );
   pdf.save();
   pdf.translate(position.x, position.y).scale(factor);
-  resource.abstractImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0));
+  resource.abstractImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0, factor));
   pdf.restore();
 }
 
@@ -37,14 +37,15 @@ function abstractComponentToPdf(
   pdf: PDFKit.PDFDocument,
   component: AbstractImage.Component,
   textStyle: AD.TextStyle.TextStyle,
-  circuitBreaker: number
+  circuitBreaker: number,
+  accScale: number
 ): void {
   if (++circuitBreaker > 20) {
     return;
   }
   switch (component.type) {
     case "group":
-      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker));
+      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale));
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
@@ -60,7 +61,7 @@ function abstractComponentToPdf(
           pdf.save();
           pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
           imageResource.abstractImage.components.forEach((c) =>
-            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker)
+            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale *scale)
           );
           pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
@@ -70,8 +71,8 @@ function abstractComponentToPdf(
           if (match) {
             pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [w, h] });
           } else {
-            pdf.fontSize(11).fillColor("red");
-            pdf.text(`Image missing: ${component.data.url}`, w, h);
+            pdf.fontSize(11 / (accScale || 1)).fillColor("red");
+            pdf.text(`Image missing: ${component.data.url}`, w / 100, h/ 100);
           }
         }
       } else if (format === "png") {
