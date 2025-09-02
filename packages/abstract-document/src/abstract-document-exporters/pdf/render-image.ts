@@ -70,7 +70,8 @@ function abstractComponentToPdf(
           if (match) {
             pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [w, h] });
           } else {
-            pdf.text(`Image missing: ${component.data.url}`, w, h)
+            pdf.fontSize(11).fillColor("red");
+            pdf.text(`Image missing: ${component.data.url}`, w, h);
           }
         }
       } else if (format === "png") {
