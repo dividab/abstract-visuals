@@ -23,8 +23,8 @@ export function renderImage(
   const position = AD.Point.create(finalRect.x, finalRect.y);
   const rect = resourceRect(resource, finalRect);
   const factor = Math.min(
-    rect.width / resource.abstractImage.size.width,
-    rect.height / resource.abstractImage.size.height
+    rect.width / (resource.abstractImage.size.width || 1),
+    rect.height / (resource.abstractImage.size.height || 1)
   );
   pdf.save();
   pdf.translate(position.x, position.y).scale(factor);
@@ -240,8 +240,8 @@ function addWithSvgToPdfKit(
 
 function resourceRect(resource: AD.ImageResource.ImageResource, rect: AbstractImage.Size): AbstractImage.Size {
   const ai = resource.abstractImage;
-  const rectWidth = rect.width || ai.size.width * (rect.height / ai.size.height);
-  const rectHeight = rect.height || ai.size.height * (rect.width / ai.size.width);
+  const rectWidth = rect.width || ai.size.width * (rect.height / (ai.size.height || 1));
+  const rectHeight = rect.height || ai.size.height * (rect.width / (ai.size.width || 1));
 
   return { width: rectWidth, height: rectHeight };
   // if (!resource.scaleMaxHeight || !resource.scaleMaxWidth) {
