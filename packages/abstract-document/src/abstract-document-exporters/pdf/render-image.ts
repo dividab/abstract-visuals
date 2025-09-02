@@ -66,7 +66,12 @@ function abstractComponentToPdf(
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
           addWithSvgToPdfKit(component.data.url.slice(rawSvgPrefix.length), component, pdf, resources, textStyle);
         } else {
-          pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [w, h] });
+          const match = /^data:.+?;base64,(.*)$/.exec(component.data.url);
+          if (match) {
+            pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [w, h] });
+          } else {
+            pdf.text(`Image missing: ${component.data.url}`, w, h)
+          }
         }
       } else if (format === "png") {
         // pdfkit uses cache if using datauri, if buffer is used its not cached
