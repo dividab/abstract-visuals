@@ -1,7 +1,7 @@
 import { X2jOptions, XMLParser } from "fast-xml-parser";
 import Handlebars from "handlebars";
 import Mustache from "mustache";
-import { helpers } from "./_helpers.js";
+import { helpers } from "./helpers.js";
 
 export type XmlElement = {
   readonly tagName: string;

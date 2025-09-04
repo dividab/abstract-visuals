@@ -1,14 +1,14 @@
 import type { JSONSchema7 } from "json-schema";
 
-type Func = {
+export type HelperFunc = {
   readonly name: string;
   readonly description: string;
-  readonly args: ReadonlyArray<Arg>;
+  readonly args: ReadonlyArray<HelperArg>;
   readonly returnType: JSONSchema7;
   readonly function: Function;
 };
 
-type Arg = {
+type HelperArg = {
   readonly name: string;
   readonly description: string;
   readonly type: JSONSchema7;
@@ -19,7 +19,7 @@ const num: JSONSchema7 = { type: "number" };
 const bool: JSONSchema7 = { type: "boolean" };
 const anySchema: JSONSchema7 = {}; // accepts any JSON value
 
-const add: Func = {
+const add: HelperFunc = {
   name: "add",
   description: "Adds two numbers",
   args: [
@@ -30,7 +30,7 @@ const add: Func = {
   function: (a: number, b: number) => a + b,
 };
 
-const subtract: Func = {
+const subtract: HelperFunc = {
   name: "subtract",
   description: "Subtracts b from a",
   args: [
@@ -41,7 +41,7 @@ const subtract: Func = {
   function: (a: number, b: number) => a - b,
 };
 
-const multiply: Func = {
+const multiply: HelperFunc = {
   name: "multiply",
   description: "Multiplies two numbers",
   args: [
@@ -52,7 +52,7 @@ const multiply: Func = {
   function: (a: number, b: number) => a * b,
 };
 
-const divide: Func = {
+const divide: HelperFunc = {
   name: "divide",
   description: "Divides a by b",
   args: [
@@ -63,7 +63,7 @@ const divide: Func = {
   function: (a: number, b: number) => a / b,
 };
 
-const equal: Func = {
+const equal: HelperFunc = {
   name: "equal",
   description: "Checks if two values are strictly equal",
   args: [
@@ -74,7 +74,7 @@ const equal: Func = {
   function: (a: unknown, b: unknown) => a === b,
 };
 
-const lessThan: Func = {
+const lessThan: HelperFunc = {
   name: "lessThan",
   description: "Checks if a < b",
   args: [
@@ -85,7 +85,7 @@ const lessThan: Func = {
   function: (a: number, b: number) => a < b,
 };
 
-const greaterThan: Func = {
+const greaterThan: HelperFunc = {
   name: "greaterThan",
   description: "Checks if a > b",
   args: [
@@ -96,7 +96,7 @@ const greaterThan: Func = {
   function: (a: number, b: number) => a > b,
 };
 
-const lessThanEqual: Func = {
+const lessThanEqual: HelperFunc = {
   name: "lessThanEqual",
   description: "Checks if a <= b",
   args: [
@@ -107,7 +107,7 @@ const lessThanEqual: Func = {
   function: (a: number, b: number) => a <= b,
 };
 
-const greaterThanEqual: Func = {
+const greaterThanEqual: HelperFunc = {
   name: "greaterThanEqual",
   description: "Checks if a >= b",
   args: [
@@ -118,7 +118,7 @@ const greaterThanEqual: Func = {
   function: (a: number, b: number) => a >= b,
 };
 
-export const helpers: ReadonlyArray<Func> = [
+export const helpers: ReadonlyArray<HelperFunc> = [
   add,
   subtract,
   multiply,
