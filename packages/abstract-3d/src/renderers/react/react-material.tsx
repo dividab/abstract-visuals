@@ -80,12 +80,17 @@ export function ReactMaterial({
       roughness={mat.roughness}
       metalness={mat.metalness}
       side={DoubleSide}
-      {...((opacity < 1 || disabled) && !isHotSpot
+      {...(isHotSpot
+        ? hotSpotParams
+        : opacity < 1 || disabled
         ? { transparent: true, depthWrite: false, opacity: disabled ? opacity * decreasedOpacity : opacity }
         : materialDefaults)}
     />
   );
 }
+const hotSpotParams: MaterialParameters = { transparent: false, depthWrite: true, opacity: 1, depthTest: false };
+
+const materialDefaults: MaterialParameters = { transparent: false, opacity: 1.0, depthWrite: true, depthTest: true };
 
 function TextureMaterial({
   url,
@@ -132,8 +137,6 @@ function TextureMaterial({
 }
 
 const textureLoader = new TextureLoader();
-
-const materialDefaults: MaterialParameters = { transparent: false, opacity: 1.0, depthWrite: true, depthTest: true };
 
 const acceptMat: Material = { normal: "rgb(0,148,91)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 const selectMat: Material = { normal: "rgb(14,82,184)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
