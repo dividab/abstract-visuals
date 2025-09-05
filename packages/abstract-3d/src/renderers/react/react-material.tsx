@@ -74,23 +74,22 @@ export function ReactMaterial({
       />
     );
   }
+  if (isHotSpot) {
+    return <meshBasicMaterial color={color} side={DoubleSide} depthTest={true} depthWrite={true} />;
+  }
   return (
     <meshStandardMaterial
       color={color}
       roughness={mat.roughness}
       metalness={mat.metalness}
       side={DoubleSide}
-      {...(isHotSpot
-        ? hotSpotParams
-        : opacity < 1 || disabled
+      {...(opacity < 1 || disabled
         ? { transparent: true, depthWrite: false, opacity: disabled ? opacity * decreasedOpacity : opacity }
         : materialDefaults)}
     />
   );
 }
-const hotSpotParams: MaterialParameters = { transparent: false, depthWrite: true, opacity: 1, depthTest: false };
-
-const materialDefaults: MaterialParameters = { transparent: false, opacity: 1.0, depthWrite: true, depthTest: true };
+const materialDefaults: MaterialParameters = { transparent: false, depthWrite: true, depthTest: true, opacity: 1.0 };
 
 function TextureMaterial({
   url,
