@@ -18,17 +18,16 @@ import {
 import { Point } from "../model/point.js";
 import { xsd } from "./dynamic-image-xsd.js";
 
+export type DynamicImageResult =
+  | { readonly type: "Ok"; readonly image: AbstractImage; readonly imageUrls: ReadonlyArray<string> }
+  | { readonly type: "Err"; readonly error: DynamicImageError };
+
 export type DynamicImageError =
   | { type: "HANDLEBARS_PARSE_ERROR"; message: string; cause?: unknown }
   | { type: "XML_PARSE_ERROR"; message: string; cause?: unknown }
   | { type: "UNKNOWN_ERROR"; message: string; cause?: unknown };
 
-export function dynamicImage(
-  template: string,
-  data: unknown
-):
-  | { readonly type: "Ok"; readonly image: AbstractImage; readonly imageUrls: ReadonlyArray<string> }
-  | { readonly type: "Err"; readonly error: DynamicImageError } {
+export function dynamicImage(template: string, data: unknown): DynamicImageResult {
   try {
     const [parsedXml] = parseHandlebarsXml(template, data, {});
 
