@@ -114,8 +114,8 @@ function preProcessMarkdownAst(
 }
 
 export function create({ text, keepTogetherSections }: MarkdownProps): SectionElement {
-  //markdown require newlines to have two spaces before them (this fixex alignment issues)
-  const newlineReplacedText = text.replaceAll(/\n/g, "  \n\r").replaceAll(/<br>/g, "  \n\r");
+  //markdown require newlines to have two spaces before them (this fixex alignment issues when using linebreaks for rows with single text runs)
+  const newlineReplacedText = text.replaceAll(/ \n/g, "\n").replaceAll(/ {2}\n/g, "\n").replaceAll(/\n/g, "  \n\r");
 
   const ast = unified().use(remarkParse, { commonmark: true }).use(remarkSubSuper).parse(newlineReplacedText);
   const { paragraphs } = preProcessMarkdownAst(ast as AstRoot, [], [], [], 0);
