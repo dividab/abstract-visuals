@@ -115,7 +115,7 @@ function preProcessMarkdownAst(
 
 export function create({ text, keepTogetherSections }: MarkdownProps): SectionElement {
   //markdown require newlines to have two spaces before them (this fixex alignment issues)
-  const newlineReplacedText = text.replaceAll(/\n/g, "  \n").replaceAll(/<br>/g, "  \n");
+  const newlineReplacedText = text.replaceAll(/\n/g, "  \n\r").replaceAll(/<br>/g, "  \n\r");
 
   const ast = unified().use(remarkParse, { commonmark: true }).use(remarkSubSuper).parse(newlineReplacedText);
   const { paragraphs } = preProcessMarkdownAst(ast as AstRoot, [], [], [], 0);
