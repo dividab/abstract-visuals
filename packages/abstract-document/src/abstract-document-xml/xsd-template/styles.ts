@@ -244,6 +244,8 @@ export const masterPageStyle = `<xs:complexType name="MasterPageStyle">
 	<xs:all>
 		<xs:element name="headerMargins" type="LayoutFoundation" />
 		<xs:element name="footerMargins" type="LayoutFoundation" />
+		<xs:element name="firstPageHeaderMargins" type="LayoutFoundation" minOccurs="0" />
+		<xs:element name="firstPageFooterMargins" type="LayoutFoundation" minOccurs="0" />
 		<xs:element name="contentMargins" type="LayoutFoundation" />
 	</xs:all>
 	<xs:attribute name="paperSize" use="required">

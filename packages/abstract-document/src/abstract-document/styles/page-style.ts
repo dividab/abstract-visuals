@@ -6,6 +6,8 @@ export type PaperSize = "A4" | "Letter" | { readonly width: number; readonly hei
 export interface PageStyle {
   readonly headerMargins: LayoutFoundation.LayoutFoundation;
   readonly footerMargins: LayoutFoundation.LayoutFoundation;
+  readonly firstPageHeaderMargins?: LayoutFoundation.LayoutFoundation;
+  readonly firstPageFooterMargins?: LayoutFoundation.LayoutFoundation;
   readonly contentMargins: LayoutFoundation.LayoutFoundation;
   readonly orientation: PageOrientation;
   readonly paperSize: PaperSize;
@@ -15,6 +17,8 @@ export interface PageStyle {
 export interface PageStyleProps {
   readonly headerMargins?: LayoutFoundation.LayoutFoundation;
   readonly footerMargins?: LayoutFoundation.LayoutFoundation;
+  readonly firstPageHeaderMargins?: LayoutFoundation.LayoutFoundation;
+  readonly firstPageFooterMargins?: LayoutFoundation.LayoutFoundation;
   readonly contentMargins?: LayoutFoundation.LayoutFoundation;
   readonly orientation?: PageOrientation;
   readonly paperSize?: PaperSize;
@@ -26,6 +30,8 @@ export function create(props?: PageStyleProps): PageStyle {
     headerMargins = LayoutFoundation.create(),
     footerMargins = LayoutFoundation.create(),
     contentMargins = LayoutFoundation.create(),
+    firstPageFooterMargins,
+    firstPageHeaderMargins,
     orientation = "Portrait",
     paperSize = "A4",
     noTopBottomMargin = false,
@@ -34,6 +40,8 @@ export function create(props?: PageStyleProps): PageStyle {
     headerMargins,
     footerMargins,
     contentMargins,
+    firstPageFooterMargins,
+    firstPageHeaderMargins,
     orientation,
     paperSize,
     noTopBottomMargin,

@@ -1,10 +1,10 @@
 import * as Custom from "./custom-elements.js";
 
 export const abstractDoc = `<xs:element name="AbstractDoc">
-    <xs:complexType>
+  <xs:complexType>
 		<xs:sequence>
-				<xs:element name="StyleNames" type="StyleNames" minOccurs="0"></xs:element>
-				<xs:element name="Section" type="Section"></xs:element>
+			<xs:element name="StyleNames" type="StyleNames" minOccurs="0"></xs:element>
+			<xs:element name="Section" type="Section"></xs:element>
 		</xs:sequence>
 	</xs:complexType>
 </xs:element>`;
@@ -28,23 +28,30 @@ export const page = `<xs:complexType name="page">
 	</xs:annotation>
 	<xs:all>
 		<xs:element name="style" type="MasterPageStyle" />
-		<xs:element name="header" type="SectionElement" minOccurs="0" />
-		<xs:element name="footer" type="SectionElement" minOccurs="0" />
-		<xs:element name="frontHeader" type="SectionElement" minOccurs="0" />
-		<xs:element name="frontFooter" type="SectionElement" minOccurs="0" />
+		<xs:element name="header" type="HeaderFooter" minOccurs="0" />
+		<xs:element name="footer" type="HeaderFooter" minOccurs="0" />
 	</xs:all>
 </xs:complexType>`;
 
+const sectionElementBody = `<xs:element name="Table" type="Table" minOccurs="0" />
+	<xs:element name="Group" type="Group" minOccurs="0" />
+	<xs:element name="PageBreak" type="PageBreak" minOccurs="0" />
+	<xs:element name="Paragraph" type="Paragraph" minOccurs="0" />
+	${Custom.textParagraphElement}
+	${Custom.imageParagraphElement}
+<xs:element name="Markdown" type="Markdown" minOccurs="0" />`;
+
 export const sectionElement = `<xs:complexType name="SectionElement">
 	<xs:choice maxOccurs="unbounded">
-		<xs:element name="Table" type="Table" minOccurs="0" />
-		<xs:element name="Group" type="Group" minOccurs="0" />
-		<xs:element name="PageBreak" type="PageBreak" minOccurs="0" />
-		<xs:element name="Paragraph" type="Paragraph" minOccurs="0" />
-		${Custom.textParagraphElement}
-		${Custom.imageParagraphElement}
-		<xs:element name="Markdown" type="Markdown" minOccurs="0" />
+		${sectionElementBody}
 	</xs:choice>
+</xs:complexType>`;
+
+export const headerFooter = `<xs:complexType name="HeaderFooter">
+  <xs:choice maxOccurs="unbounded">
+		${sectionElementBody}
+	</xs:choice>
+	<xs:attribute name="differentFirstPage" type="xs:boolean" use="optional"/>
 </xs:complexType>`;
 
 export const group = `<xs:complexType name="Group">

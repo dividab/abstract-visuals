@@ -29,6 +29,8 @@ const pageStyle = {
   headerMargins: margins,
   footerMargins: margins,
   contentMargins: margins,
+  firstPageFooterMargins: margins,
+  firstPageHeaderMargins: margins,
   //paperSize: "A4",
   //orientation: "Portrait",
   noTopBottomMargin: false,

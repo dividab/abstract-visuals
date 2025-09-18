@@ -42,13 +42,13 @@ function splitSection(
 ): Array<Page> {
   const resources = AD.Resources.mergeResources([parentResources, section]);
   const pages = new Array<Page>();
-  const contentRect = getPageContentRect(desiredSizes, section);
 
   let children = section.children;
   let elements = new Array<AD.SectionElement.SectionElement>();
   let elementsHeight = 0;
   let currentPage = previousPage;
   for (let i = 0; i < children.length; ++i) {
+    const contentRect = getPageContentRect(desiredSizes, section, pages.length + 1);
     const element = children[i];
     if (element.type === "PageBreak") {
       currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
@@ -218,7 +218,7 @@ function createPage(
   const namedDestionations = [...sectionName, ...targetNames];
 
   // Ignore leading space by expanding the content rect upwards
-  const rect = getPageContentRect(desiredSizes, section);
+  const rect = getPageContentRect(desiredSizes, section, pageNo);
   const [leadingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
   const contentRect = AD.Rect.create(rect.x, rect.y - leadingSpace, rect.width, rect.height + leadingSpace);
 
@@ -236,32 +236,67 @@ function createPage(
   };
 }
 
-function getPageContentRect(desiredSizes: Map<{}, AD.Size.Size>, section: AD.Section.Section): AD.Rect.Rect {
+export function getHeaderAndFooter(section: AD.Section.Section, pageNo: number): {
+  readonly header: Array<AD.SectionElement.SectionElement>;
+  readonly footer: Array<AD.SectionElement.SectionElement>;
+  readonly headerMargins: AD.LayoutFoundation.LayoutFoundation;
+  readonly footerMargins: AD.LayoutFoundation.LayoutFoundation;
+} {
+  const FIRST_PAGE = 1;
+  const EVEN_PAGE = 0;
+  const ODD_PAGE = 1;
+  switch(true) {
+    //first page
+    case pageNo === FIRST_PAGE: {
+      const normalHeader = section.page.frontHeader === undefined || section.page.frontHeader.length === 0;
+      const normalFooter = section.page.frontFooter === undefined || section.page.frontFooter.length === 0;
+      return {
+        footer: normalFooter ? section.page.footer : section.page.frontFooter,
+        header: normalHeader ? section.page.header : section.page.frontHeader,
+        headerMargins: normalHeader ? section.page.style.headerMargins : (section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins),
+        footerMargins: normalFooter ? section.page.style.footerMargins : (section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins),
+      };
+    }
+    case pageNo === 0:
+    case pageNo % 2 === EVEN_PAGE:
+    case pageNo % 2 === ODD_PAGE:
+    default: {
+      return {
+        header: section.page.header,
+        footer: section.page.footer,
+        headerMargins: section.page.style.headerMargins,
+        footerMargins: section.page.style.footerMargins,
+      }
+    }
+  }
+}
+
+function getPageContentRect(desiredSizes: Map<{}, AD.Size.Size>, section: AD.Section.Section, pageNo: number): AD.Rect.Rect {
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getWidth(style);
   const pageHeight = AD.PageStyle.getHeight(style);
 
-  const headerHeight = section.page.header.reduce(
-    (a, b) => a + getDesiredSize(b, desiredSizes).height,
-    style.headerMargins.top + style.headerMargins.bottom
+  const { header, footer, headerMargins, footerMargins } = getHeaderAndFooter(section, pageNo);
+  const headerHeight = header.reduce(
+    (prev, curr) => prev + getDesiredSize(curr, desiredSizes).height,
+    headerMargins.top + headerMargins.bottom
   );
-  const footerHeight = section.page.footer.reduce(
-    (a, b) => a + getDesiredSize(b, desiredSizes).height,
-    style.footerMargins.top + style.footerMargins.bottom
+  const footerHeight = footer.reduce(
+    (prev, curr) => prev + getDesiredSize(curr, desiredSizes).height,
+    footerMargins.top + footerMargins.bottom
   );
 
-  let headerY = style.headerMargins.top;
-  for (let element of section.page.header) {
+  let headerY = headerMargins.top;
+  for (let element of header) {
     const elementSize = getDesiredSize(element, desiredSizes);
     headerY += elementSize.height;
   }
-  headerY += style.headerMargins.bottom;
+  headerY += headerMargins.bottom;
 
   const rectX = style.contentMargins.left;
   const rectY = headerY + style.contentMargins.top;
   const rectWidth = pageWidth - (style.contentMargins.left + style.contentMargins.right);
   const rectHeight = pageHeight - headerHeight - footerHeight - style.contentMargins.top - style.contentMargins.bottom;
-
   return AD.Rect.create(rectX, rectY, rectWidth, rectHeight);
 }
 

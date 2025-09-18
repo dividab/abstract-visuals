@@ -1,6 +1,6 @@
 import * as AD from "../../abstract-document/index.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import { Page } from "./paginate.js";
+import { getHeaderAndFooter, Page } from "./paginate.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 
 //tslint:disable:no-any variable-name
@@ -29,7 +29,7 @@ function measureSection(
   section: AD.Section.Section,
   separateHeader?: ReadonlyArray<AD.SectionElement.SectionElement>,
   separateFooter?: ReadonlyArray<AD.SectionElement.SectionElement>,
-  separateChildren?: ReadonlyArray<AD.SectionElement.SectionElement>
+  separateChildren?: ReadonlyArray<AD.SectionElement.SectionElement>,
 ): Map<any, AD.Size.Size> {
   const header = separateHeader || section.page.header;
   const footer = separateFooter || section.page.footer;
@@ -54,7 +54,19 @@ function measureSection(
   const footerAvailableSize = AD.Size.create(footerAvailableWidth, pageHeight);
   const footerSizes = footer.map((e) => measureSectionElement(pdfKit, resources, footerAvailableSize, e));
 
-  return mergeMaps([...sectionSizes, ...headerSizes, ...footerSizes]);
+  // header and footer sizes for the first page
+  const firstPageHeaderAndFooters = getHeaderAndFooter(section, 1);
+  const firstPageHeaderAndFootersExtracted: ReadonlyArray<[ReadonlyArray<AD.SectionElement.SectionElement>, AD.LayoutFoundation.LayoutFoundation]> = [
+    [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
+    [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins]
+  ];
+  const firstPageHeaderAndFooterSizes = firstPageHeaderAndFootersExtracted.reduce((prev, [sections, margins]) => {
+    const availabelWidth = pageWidth - (margins.left + margins.right);
+    const availableSizes = AD.Size.create(availabelWidth, pageHeight);
+    return [...prev, ...sections.map((e) => measureSectionElement(pdfKit, resources, availableSizes, e))];
+  }, []);
+  
+  return mergeMaps([...sectionSizes, ...headerSizes, ...footerSizes, ...firstPageHeaderAndFooterSizes]);
 }
 
 function measureSectionElement(

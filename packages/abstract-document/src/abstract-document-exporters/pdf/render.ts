@@ -1,7 +1,7 @@
 import * as AD from "../../abstract-document/index.js";
 import { preProcess } from "./pre-process.js";
 import { measure, measurePages } from "./measure.js";
-import { paginate, Page } from "./paginate.js";
+import { paginate, Page, getHeaderAndFooter } from "./paginate.js";
 import { updatePageRefs } from "./update-refs.js";
 import { renderImage } from "./render-image.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
@@ -80,8 +80,9 @@ function renderPage(
     }
   });
 
-  const headerX = style.headerMargins.left;
-  const headerStart = style.headerMargins.top;
+  const { headerMargins, footerMargins } = getHeaderAndFooter(section, page.pageNo);
+  const headerX = headerMargins.left;
+  const headerStart = headerMargins.top;
   let headerY = headerStart;
   for (let element of page.header) {
     const elementSize = getDesiredSize(element, desiredSizes);
@@ -97,14 +98,14 @@ function renderPage(
       headerY += elementSize.height;
     }
   }
-  headerY += style.headerMargins.bottom;
+  headerY += headerMargins.bottom;
 
   const footerHeight = page.footer.reduce(
     (a, b) => a + (AD.Position.isPositionAbsolute(b) ? 0 : getDesiredSize(b, desiredSizes).height),
-    style.footerMargins.top + style.footerMargins.bottom
+    footerMargins.top + footerMargins.bottom
   );
-  const footerX = style.footerMargins.left;
-  const footerStart = pageHeight - (footerHeight - style.footerMargins.top);
+  const footerX = footerMargins.left;
+  const footerStart = pageHeight - (footerHeight - footerMargins.top);
   let footerY = footerStart;
   for (let element of page.footer) {
     const elementSize = getDesiredSize(element, desiredSizes);

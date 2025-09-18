@@ -6,6 +6,7 @@ import { parseXsd } from "handlebars-xml";
 const commonParts = `${Styles.layoutFoundation}
 ${Elements.section}
 ${Elements.sectionElement}
+${Elements.headerFooter}
 ${Elements.page}
 ${Elements.pageBreak}
 ${Elements.image}
