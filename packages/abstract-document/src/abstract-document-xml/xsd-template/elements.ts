@@ -29,7 +29,9 @@ export const page = `<xs:complexType name="page">
 	<xs:all>
 		<xs:element name="style" type="MasterPageStyle" />
 		<xs:element name="header" type="SectionElement" minOccurs="0" />
-		<xs:element name="footer" type="SectionElement" minOccurs="0"/>
+		<xs:element name="footer" type="SectionElement" minOccurs="0" />
+		<xs:element name="frontHeader" type="SectionElement" minOccurs="0" />
+		<xs:element name="frontFooter" type="SectionElement" minOccurs="0" />
 	</xs:all>
 </xs:complexType>`;
 

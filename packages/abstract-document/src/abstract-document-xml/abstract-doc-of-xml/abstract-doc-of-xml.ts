@@ -36,7 +36,8 @@ function abstractDocXmlRecursive(
       } else {
         // For lowercase elements we add them as keys using their name
         // Some special keys should directly have an array of children as value instead of an object with children key
-        const childrenOnly = childName === "header" || childName === "footer" || childName === "headerRows";
+        const arrayedElements = ["frontHeader", "frontFooter", "header", "footer", "headerRows"];
+        const childrenOnly = arrayedElements.findIndex((e) => e === childName) !== -1;
         props[childName] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
       }
     }

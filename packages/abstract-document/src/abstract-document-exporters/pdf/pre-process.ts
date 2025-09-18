@@ -52,7 +52,9 @@ function preProcessSection(s: AD.Section.Section, parentResources: AD.Resources.
   const resources = AD.Resources.mergeResources([parentResources, s]);
   const header = s.page.header.flatMap((e) => preProcessSectionElement(e, resources));
   const footer = s.page.footer.flatMap((e) => preProcessSectionElement(e, resources));
-  const page = AD.MasterPage.create({ style: s.page.style, header: header, footer: footer });
+  const frontHeader = (s.page.frontHeader ?? []).flatMap((e) => preProcessSectionElement(e, resources));
+  const frontFooter = (s.page.frontFooter ?? []).flatMap((e) => preProcessSectionElement(e, resources));
+  const page = AD.MasterPage.create({ style: s.page.style, header: header, footer: footer, frontHeader: frontHeader, frontFooter: frontFooter });
   const children = s.children.flatMap((e) => preProcessSectionElement(e, resources));
   return AD.Section.create({ page: page, id: s.id }, children);
 }

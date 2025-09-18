@@ -222,6 +222,8 @@ function createPage(
   const [leadingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
   const contentRect = AD.Rect.create(rect.x, rect.y - leadingSpace, rect.width, rect.height + leadingSpace);
 
+  const frontHeader = (section.page.frontHeader === undefined || section.page.frontHeader.length === 0) ? section.page.header : section.page.frontHeader;
+  const frontFooter = (section.page.frontFooter === undefined || section.page.frontFooter.length === 0) ? section.page.footer : section.page.frontFooter;
   return {
     pageNo: pageNo,
     namedDestionations: namedDestionations,
@@ -229,8 +231,8 @@ function createPage(
     section: section,
     contentRect: contentRect,
     elements: elements,
-    header: section.page.header,
-    footer: section.page.footer,
+    header: isFirst ? frontHeader : section.page.header,
+    footer: isFirst ? frontFooter : section.page.footer,
   };
 }
 
