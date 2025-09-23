@@ -280,14 +280,21 @@ function renderParagraph(
     rows.push(currentRow);
   }
 
-  let y = finalRect.y + style.margins.top;
+  //if the paragraph is markdown, we need to render it separately
+  //since alignment is different for that
+  if(paragraph.isMarkdown !== undefined && paragraph.isMarkdown) {
+    renderMarkdownRows(rows, resources, pdfKit, desiredSizes, finalRect, style, availableWidth);
+    return;
+  }
 
+  let y = finalRect.y + style.margins.top;
   for (let row of rows) {
     if (row.length === 0) {
       continue;
     }
-
+    
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
+    const remainingWidth = availableWidth - rowWidth;
     let x = finalRect.x;
 
     if (style.alignment === "Start" || style.alignment === "Justify") {
@@ -302,14 +309,13 @@ function renderParagraph(
       // Therefore we have to position it ourself
       // NOTE: Texts with multiple atoms with width over the available width are not supported.
       if (style.alignment === "Center") {
-        x += 0.5 * (availableWidth - rowWidth);
+        x += 0.5 * remainingWidth;
       } else if (style.alignment === "End") {
-        x += availableWidth - rowWidth;
+        x += remainingWidth;
       }
     }
 
     let rowHeight = 0;
-
     const lastIndex = row[row.length - 1]?.type === "LineBreak" ? row.length - 2 : row.length - 1;
     for (const [i, atom] of row.entries()) {
       const atomSize = getDesiredSize(atom, desiredSizes);
@@ -324,13 +330,152 @@ function renderParagraph(
         i === 0,
         i === lastIndex
       );
-
       x += atomSize.width;
       rowHeight = Math.max(rowHeight, atomSize.height);
     }
 
     y += rowHeight;
   }
+}
+
+function renderMarkdownRows(
+  rawRows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>,
+  resources: AD.Resources.Resources,
+  pdfKit: PDFKit.PDFDocument,
+  desiredSizes: Map<{}, AD.Size.Size>,
+  finalRect: AD.Rect.Rect,
+  paragraphStyle: AD.ParagraphStyle.ParagraphStyle,
+  availableWidth: number,
+): void {
+  const rows = splitRows(rawRows, availableWidth, desiredSizes);
+  let y = finalRect.y + paragraphStyle.margins.top;
+  let markdownTextStyle: AD.TextStyle.TextStyle | undefined = undefined;
+  for(const row of rows) {
+    for(const atom of row) {
+      if(atom.type === "TextRun") {
+        markdownTextStyle = AD.Resources.getNestedStyle(
+          paragraphStyle.textStyle,
+          atom.style,
+          "TextStyle",
+          atom.styleName,
+          resources,
+          atom.nestedStyleNames || []
+        ) as AD.TextStyle.TextStyle;
+        break;
+      }
+    }
+  }
+
+  const defaultStyle = parseAlignment(paragraphStyle.alignment);
+  const alignment = markdownTextStyle?.alignment ?? defaultStyle;
+  for (let row of rows) {
+    if (row.length === 0) {
+      continue;
+    }
+    
+    const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
+    const remainingWidth = availableWidth - rowWidth;
+    const justificationWidth = row.length > 1 ? remainingWidth / (row.length - 1) : 0;
+    let x = finalRect.x;
+
+    if (alignment === "left" || alignment === "justify") {
+      x += paragraphStyle.margins.left;
+    } else if (alignment === "right") {
+      x -= paragraphStyle.margins.right;
+    }
+
+    if (row.length > 1 || row[0].type === "Image") {
+      if (alignment === "center") {
+        x += 0.5 * remainingWidth;
+      } else if (alignment === "right") {
+        x += remainingWidth;
+      }
+    }
+
+    let rowHeight = 0;
+    const lastIndex = row[row.length - 1]?.type === "LineBreak" ? row.length - 2 : row.length - 1;
+    for (const [i, atom] of row.entries()) {
+      const atomSize = getDesiredSize(atom, desiredSizes);
+      renderAtom(
+        resources,
+        pdfKit,
+        AD.Rect.create(x, y, atomSize.width, atomSize.height),
+        paragraphStyle.textStyle,
+        atom,
+        alignment,
+        availableWidth,
+        i === 0,
+        i === lastIndex
+      );
+      x += atomSize.width + (alignment === "justify" ? justificationWidth : 0);
+      rowHeight = Math.max(rowHeight, atomSize.height);
+    }
+    y += rowHeight;
+  }
+}
+
+function splitRows(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, availableWidth: number, desiredSizes: Map<{}, AD.Size.Size>): ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> {
+  const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
+
+  for(const row of rows) {
+    if(row.length <= 1) {
+      newRows.push(row);
+      continue;
+    }
+    
+    const width = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
+    if(width <= availableWidth) {
+      newRows.push(row);
+      continue;
+    }
+
+    //we need to split it, because it doesn't fit
+    let currentRow: Array<AD.Atom.Atom> = [];
+    let currentWidth = 0;
+    let lastWasSpace = false;
+
+    for(let i = 0; i < row.length; i++) {
+      const atom = row[i];
+      if(atom.type !== "TextRun") {
+        continue;
+      }
+
+      const width = getDesiredSize(atom, desiredSizes).width;
+      if(atom.type !== "TextRun") {
+        currentRow.push(atom);
+        currentWidth += width;
+        continue;
+      }
+
+      const isSpace = atom.text.replaceAll(/[\p{Zs}]/ug, "").length === 0;
+      const lastSpace = lastWasSpace;
+      lastWasSpace = isSpace;
+
+      if(isSpace && currentWidth === 0 && i !== 0) {
+        continue;
+      }
+
+      if(currentWidth + width <= availableWidth) {
+        currentRow.push(atom);
+        currentWidth += width;
+        continue;
+      }
+
+      //was it a space??
+      if(isSpace) {
+        newRows.push(currentRow);
+        currentRow = [];
+        currentWidth = 0;
+        continue;
+      }
+
+      newRows.push(lastSpace ? currentRow.slice(0, -1) : currentRow);
+      currentRow = [atom];
+      currentWidth = width;
+    }
+    newRows.push(lastWasSpace ? currentRow.slice(0, -1) : currentRow);
+  }
+  return newRows;
 }
 
 function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | undefined): AD.TextStyle.TextAlignment {
