@@ -2,42 +2,42 @@ import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import { Markdown } from "../../../abstract-document-jsx/index.js";
 
-export const testMarkdownBoldItalic: ExportTestDef = {
-  name: "Markdown bold italic",
-  abstractDocJsx: <Markdown text="***Italic and Bold***" />,
+export const testMarkdownNormalAndBold: ExportTestDef = {
+  name: "Markdown bold",
+  abstractDocJsx: <Markdown text="Normal and **Bold**" />,
   expectedMarkdown: {
     children: [
       {
-        nestedStyleNames: ["Strong", "Emphasis"],
-        styleName: "Emphasis",
-        text: "Italic",
+        nestedStyleNames: [],
+        styleName: undefined,
+        text: "Normal",
         textProperties: {},
         type: "TextRun",
       },
       {
-        nestedStyleNames: ["Strong", "Emphasis"],
-        styleName: "Emphasis",
+        nestedStyleNames: [],
+        styleName: undefined,
         text: " ",
         textProperties: {},
         type: "TextRun",
       },
       {
-        nestedStyleNames: ["Strong", "Emphasis"],
-        styleName: "Emphasis",
+        nestedStyleNames: [],
+        styleName: undefined,
         text: "and",
         textProperties: {},
         type: "TextRun",
       },
       {
-        nestedStyleNames: ["Strong", "Emphasis"],
-        styleName: "Emphasis",
+        nestedStyleNames: [],
+        styleName: undefined,
         text: " ",
         textProperties: {},
         type: "TextRun",
       },
       {
-        nestedStyleNames: ["Strong", "Emphasis"],
-        styleName: "Emphasis",
+        nestedStyleNames: ["Strong"],
+        styleName: "Strong",
         text: "Bold",
         textProperties: {},
         type: "TextRun",

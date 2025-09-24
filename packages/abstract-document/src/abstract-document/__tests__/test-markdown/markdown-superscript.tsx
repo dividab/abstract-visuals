@@ -22,6 +22,7 @@ export const testMarkdownSuperscript: ExportTestDef = {
         type: "TextRun",
       },
     ],
+    isMarkdown: true,
     numbering: undefined,
     style: {
       alignment: undefined,

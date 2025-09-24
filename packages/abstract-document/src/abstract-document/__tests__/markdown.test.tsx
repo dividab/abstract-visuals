@@ -9,6 +9,7 @@ import { testMarkdownHeader } from "./test-markdown/markdown-header.js";
 import { testMarkdownKeepTogether } from "./test-markdown/markdown-keepTogether.js";
 import { testMarkdownSubscript } from "./test-markdown/markdown-subscript.js";
 import { testMarkdownSuperscript } from "./test-markdown/markdown-superscript.js";
+import { testMarkdownNormalAndBold } from "./test-markdown/markdown-normal-and-bold.js";
 
 describe("markdown", () => {
   [
@@ -20,6 +21,7 @@ describe("markdown", () => {
     testMarkdownKeepTogether,
     testMarkdownSubscript,
     testMarkdownSuperscript,
+    testMarkdownNormalAndBold,
   ].forEach((item) => {
     test(item.name, async () => {
       const abstractDoc = render(item.abstractDocJsx);
