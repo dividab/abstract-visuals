@@ -3,6 +3,7 @@ import { Html } from "@react-three/drei";
 import { HotSpot, vec3Zero } from "../../abstract-3d.js";
 import { ReactMesh } from "./react-mesh.js";
 import { ReactMaterial } from "./react-material.js";
+import { ThreeEvent } from "@react-three/fiber";
 
 export interface HotSpotInfo {
   readonly replaceId: string;
@@ -29,7 +30,7 @@ export const ReactHotSpots = React.memo(
     readonly hotSpotTexts?: Record<string, string>;
     readonly activeHotSpots: Record<string, HotSpotInfo> | undefined;
     readonly hoveredId: string | undefined;
-    readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
+    readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
     readonly setHoveredId: (id: string | undefined) => void;
   }): React.JSX.Element => {
     return (
@@ -68,7 +69,7 @@ export function ReactHotSpot({
   readonly hotSpotTexts?: Record<string, string>;
   readonly activeHotSpots: Record<string, HotSpotInfo> | undefined;
   readonly hoveredId: string | undefined;
-  readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
+  readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
   readonly setHoveredId: (id: string | undefined) => void;
 }): React.JSX.Element {
   const hotSpot = activeHotSpots ? activeHotSpots[h.id] : undefined;
@@ -82,7 +83,7 @@ export function ReactHotSpot({
           onClick: (e) => {
             if (onClickHotSpot) {
               e.stopPropagation();
-              onClickHotSpot(hotSpot);
+              onClickHotSpot(hotSpot, e);
             }
           },
           onPointerOver: (e) => {

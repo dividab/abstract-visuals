@@ -1,5 +1,5 @@
 import React from "react";
-import { extend, useFrame } from "@react-three/fiber";
+import { extend, ThreeEvent, useFrame } from "@react-three/fiber";
 import { Group } from "three";
 import { Group as Group_1 } from "../../abstract-3d.js";
 import { MaterialState, ReactMaterial } from "./react-material.js";
@@ -34,19 +34,22 @@ export function ReactGroup({
   readonly onClickGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined
+    data: Record<string, string> | undefined,
+    e: ThreeEvent<MouseEvent>
   ) => void;
   readonly onHoverGroup: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined
+    data: Record<string, string> | undefined,
+    e: ThreeEvent<MouseEvent>
   ) => void;
   readonly onContextMenuGroup?: (
     id: string,
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined,
     left: number,
-    top: number
+    top: number,
+    e: ThreeEvent<MouseEvent>
   ) => void;
   readonly createGroupKey?: (
     g: Group_1,
@@ -83,22 +86,22 @@ export function ReactGroup({
           onClick: (e) => {
             if (onClickGroup) {
               e.stopPropagation();
-              onClickGroup(id, rootData, g.data);
+              onClickGroup(id, rootData, g.data, e);
             }
           },
           onPointerOver: (e) => {
             e.stopPropagation();
             document.body.style.cursor = "pointer";
-            onHoverGroup(id, rootData, g.data);
+            onHoverGroup(id, rootData, g.data, e);
           },
-          onPointerOut: (_e) => {
+          onPointerOut: (e) => {
             document.body.style.cursor = "auto";
-            onHoverGroup(undefined, undefined, undefined);
+            onHoverGroup(undefined, undefined, undefined, e);
           },
           onContextMenu: (e) => {
             if (onContextMenuGroup) {
               e.stopPropagation();
-              onContextMenuGroup(id, rootData, g.data, e.nativeEvent.x, e.nativeEvent.y);
+              onContextMenuGroup(id, rootData, g.data, e.nativeEvent.x, e.nativeEvent.y, e);
             }
           },
         })}

@@ -5,6 +5,7 @@ import { ReactDimensions } from "./react-dimension.js";
 import { ReactGroup } from "./react-group.js";
 import { MaterialState } from "./react-material.js";
 import { Html } from "@react-three/drei";
+import { ThreeEvent } from "@react-three/fiber";
 
 export interface ReactPopover {
   readonly id: string;
@@ -43,21 +44,24 @@ export function ReactScene({
   readonly onClickGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined
+    data: Record<string, string> | undefined,
+    e: ThreeEvent<MouseEvent>
   ) => void;
   readonly onHoverGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined
+    data: Record<string, string> | undefined,
+    e: ThreeEvent<MouseEvent>
   ) => void;
   readonly onContextMenuGroup?: (
     id: string,
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined,
     left: number,
-    top: number
+    top: number,
+    e: ThreeEvent<MouseEvent>
   ) => void;
-  readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
+  readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
   readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
   readonly createGroupId?: (g: Group) => string;
 }): React.JSX.Element {
@@ -88,10 +92,10 @@ export function ReactScene({
             hoveredId={hoveredId}
             hoveredIdExternal={hoveredIdExternal}
             onClickGroup={onClickGroup}
-            onHoverGroup={(id, rootData, data) => {
+            onHoverGroup={(id, rootData, data, e) => {
               setHoveredId(id);
               if (onHoverGroup) {
-                onHoverGroup(id, rootData, data);
+                onHoverGroup(id, rootData, data, e);
               }
             }}
             onContextMenuGroup={onContextMenuGroup}

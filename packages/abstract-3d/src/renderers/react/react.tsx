@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Canvas, CanvasProps } from "@react-three/fiber";
+import { Canvas, CanvasProps, ThreeEvent } from "@react-three/fiber";
 import { OrbitControlsProps } from "@react-three/drei";
 import { ReactPopover, ReactScene } from "./react-scene.js";
 import { Scene, View, Group } from "../../abstract-3d.js";
@@ -27,21 +27,24 @@ type ToReactProps = {
   readonly onClickGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined
+    data: Record<string, string> | undefined,
+    e: ThreeEvent<MouseEvent>
   ) => void;
   readonly onHoverGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined
+    data: Record<string, string> | undefined,
+    e: ThreeEvent<MouseEvent>
   ) => void;
   readonly onContextMenuGroup?: (
     id: string,
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined,
     left: number,
-    top: number
+    top: number,
+    e: ThreeEvent<MouseEvent>
   ) => void;
-  readonly onClickHotSpot?: (hotSpot: HotSpotInfo) => void;
+  readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
   readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
   readonly createGroupId?: (g: Group) => string;
 };
