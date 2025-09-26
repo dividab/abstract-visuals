@@ -17,7 +17,7 @@ export type AbstractDoxXmlsResult =
   | { readonly type: "Err"; readonly error: string };
 
 export async function abstractDocsXml(
-  docInputs: ReadonlyArray<TemplateInput>,
+  templateInputs: ReadonlyArray<TemplateInput>,
   format: "PDF" | "DOCX",
   pdfKit: PDFKit.PDFDocument,
   getResources: (imageUrls: Record<string, true>, fontFamilies: Record<string, true>) => Promise<Resources>
@@ -26,7 +26,7 @@ export async function abstractDocsXml(
     const abstractDocs = Array<AbstractDoc.AbstractDoc>();
     let imageUrls: Record<string, true> = {};
     let fontFamilies: Record<string, true> = {};
-    for (const r of docInputs) {
+    for (const r of templateInputs) {
       const [ad, newImageUrls, newFontFamilies] = abstractDocXml(r.template, r.data, r.partials, "Handlebars");
       abstractDocs.push(ad);
       imageUrls = { ...imageUrls, ...newImageUrls };
