@@ -16,9 +16,11 @@ export type AbstractDoxXmlsResult =
   | { readonly type: "Ok"; readonly value: Blob }
   | { readonly type: "Err"; readonly error: string };
 
+export type Format = "PDF" | "DOCX";
+
 export async function abstractDocsXml(
   templateInputs: ReadonlyArray<TemplateInput>,
-  format: "PDF" | "DOCX",
+  format: Format,
   pdfKit: PDFKit.PDFDocument,
   getResources: (imageUrls: Record<string, true>, fontFamilies: Record<string, true>) => Promise<Resources>
 ): Promise<AbstractDoxXmlsResult> {
