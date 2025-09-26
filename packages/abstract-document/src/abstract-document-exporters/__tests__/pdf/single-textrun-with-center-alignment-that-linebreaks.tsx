@@ -27,46 +27,56 @@ export const testSingleTextRunWithAlignmentThatLinebreaks: ExportTestDef = {
     },
     Pages: [
       {
-        Boxsets: [],
-        Fields: [],
-        Fills: [],
-        HLines: [],
-        Height: 52.625,
         Width: 37.188,
+        Height: 52.625,
+        HLines: [],
+        VLines: [],
+        Fills: [],
         Texts: [
           {
+            x: 0.16899999999999998,
+            y: -0.301,
+            w: 589.1,
+            sw: 0.32553125,
             A: "left",
             R: [
               {
-                S: -1,
                 T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20",
-                TS: [0, 13, 0, 0],
-              },
+                S: -1,
+                TS: [
+                  0,
+                  13,
+                  0,
+                  0
+                ]
+              }
             ],
-            oc: undefined,
-            sw: 0.32553125,
-            w: 589.1,
-            x: 0.028000000000000025,
-            y: -0.301,
+            oc: undefined
           },
           {
+            x: 12.793,
+            y: 0.42100000000000004,
+            w: 179.51,
+            sw: 0.32553125,
             A: "left",
             R: [
               {
-                S: -1,
                 T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20%20",
-                TS: [0, 13, 0, 0],
-              },
+                S: -1,
+                TS: [
+                  0,
+                  13,
+                  0,
+                  0
+                ]
+              }
             ],
-            oc: undefined,
-            sw: 0.32553125,
-            w: 179.51,
-            x: 12.762,
-            y: 0.42100000000000004,
-          },
+            oc: undefined
+          }
         ],
-        VLines: [],
-      },
+        Fields: [],
+        Boxsets: []
+      }
     ],
   },
 };

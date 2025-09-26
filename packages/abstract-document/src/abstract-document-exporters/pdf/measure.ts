@@ -377,7 +377,7 @@ function measureTextRun(
     resources,
     textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
-  return measureText(pdf, textRun.text, style, availableSize);
+  return measureText(pdf, textRun.text, style, availableSize, true);
 }
 
 function measureHyperLink(
@@ -476,7 +476,8 @@ function measureText(
   pdf: PDFKit.PDFDocument,
   text: string,
   textStyle: AD.TextStyle.TextStyle,
-  availableSize: AD.Size.Size
+  availableSize: AD.Size.Size,
+  measureWithSpaces?: boolean,
 ): AD.Size.Size {
   const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -492,7 +493,18 @@ function measureText(
     ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
     ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
   };
-  const width = Math.min(availableSize.width, pdf.widthOfString(text, textOptions));
+
+  let measuredWidth = 0;
+  if(measureWithSpaces !== undefined && measureWithSpaces) {
+    const spaceWidth = pdf.widthOfString(" ", textOptions);
+    const stringWidth = pdf.widthOfString(` ${text} `, textOptions) - (spaceWidth * 2);
+    const normalWidth = pdf.widthOfString(text, textOptions);
+    measuredWidth = stringWidth;
+  } else {
+    measuredWidth = pdf.widthOfString(text, textOptions);
+  }
+
+  const width = Math.min(availableSize.width, measuredWidth);
   const lineWidth = textStyle.lineBreak === false ? Infinity : availableSize.width;
   const height = pdf.heightOfString(text, {
     width: lineWidth,

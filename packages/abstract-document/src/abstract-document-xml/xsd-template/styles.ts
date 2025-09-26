@@ -55,10 +55,10 @@ export const StyleName = `<xs:complexType name="StyleName">
 	<xs:attribute name="alignment">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
-				<xs:enumeration value="left" />
-				<xs:enumeration value="center" />
-				<xs:enumeration value="right" />
-				<xs:enumeration value="justify" />
+				<xs:enumeration value="Start" />
+				<xs:enumeration value="Center" />
+				<xs:enumeration value="End" />
+				<xs:enumeration value="Justify" />
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:attribute>
@@ -217,16 +217,6 @@ export const textStyle = `<xs:complexType name="TextStyle">
 	<xs:attribute name="indent" type="xs:decimal" />
 	<xs:attribute name="color" type="xs:string" />
 	<xs:attribute name="fontFamily" type="xs:string" />
-	<xs:attribute name="alignment">
-		<xs:simpleType>
-			<xs:restriction base="xs:string">
-				<xs:enumeration value="left" />
-				<xs:enumeration value="center" />
-				<xs:enumeration value="right" />
-				<xs:enumeration value="justify" />
-			</xs:restriction>
-		</xs:simpleType>
-	</xs:attribute>
 	<xs:attribute name="baseline">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">

@@ -161,7 +161,28 @@ function preProcessParagraph(
 }
 
 function adjustParagraph(paragraph: AD.Paragraph.Paragraph): Array<AD.SectionElement.SectionElement> {
-  return [paragraph];
+  /*
+    Pdfkit does not like to render multiple text runs
+    that stretches across the width of a column, *if*
+    you are using an alinment other than "left".
+    Therefore we need to manually place the words
+    individually when rendering. So we need to split all
+    the text runs into their individual words so that we can
+    more easily know which string of words fit on one line
+  */
+  const spaceRegex = /([\p{Zs}])/u;
+  const newChildren: Array<AD.Atom.Atom> = [];
+  for(const child of paragraph.children) {
+    if(child.type === "TextRun") {
+      newChildren.push(...child.text.split(spaceRegex).filter((t) => t.length !== 0).map((t) => ({
+        ...child,
+        text: t,
+      })));
+    } else {
+      newChildren.push(child);
+    }
+  }
+  return [{ ...paragraph, children: newChildren }];
   // let adjustedParagraphs: Array<AD.SectionElement.SectionElement> = [];
   // paragraph.children.forEach((a) => {
   //   switch (a.type) {

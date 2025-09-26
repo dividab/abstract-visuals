@@ -1,4 +1,3 @@
-export type TextAlignment = "left" | "center" | "right" | "justify";
 export type TextBaseline = "top" | "bottom" | "middle" | "alphabetic" | "hanging";
 export type TextFontWeight = "light" | "normal" | "mediumBold" | "bold" | "extraBold";
 
@@ -22,7 +21,6 @@ export interface TextStyle {
   readonly indent?: number;
   readonly lineGap?: number;
   readonly lineBreak?: boolean;
-  readonly alignment?: TextAlignment;
   readonly baseline?: TextBaseline;
   readonly strike?: boolean;
   readonly opacity?: number;
@@ -48,7 +46,6 @@ export interface TextStyleProps {
   readonly indent?: number;
   readonly lineGap?: number;
   readonly lineBreak?: boolean;
-  readonly alignment?: TextAlignment;
   readonly baseline?: TextBaseline;
   readonly strike?: boolean;
   readonly opacity?: number;
@@ -101,7 +98,6 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
     indent: a.indent || b.indent,
     lineGap: a.lineGap || b.lineGap,
     lineBreak: a.lineBreak ?? b.lineBreak,
-    alignment: a.alignment ?? b.alignment,
     baseline: a.baseline ?? b.baseline,
     strike: a.strike ?? b.strike,
     opacity: a.opacity ?? b.opacity,

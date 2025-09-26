@@ -4,7 +4,7 @@ import * as AD from "../../../index.js";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../abstract-document-jsx/index.js";
 
 export const testMultipleTextRunWithEndAlignment: ExportTestDef = {
-  name: "Multiple textrun with End alignment",
+  name: "Multiple textrun with Start alignment",
   abstractDocJsx: (
     <AbstractDoc>
       <Section>

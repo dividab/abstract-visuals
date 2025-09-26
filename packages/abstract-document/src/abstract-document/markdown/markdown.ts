@@ -86,7 +86,6 @@ function preProcessMarkdownAst(
             {
               styleName: paragraphStyle,
               numbering: paragraphNumbering,
-              isMarkdown: true,
             },
             atoms
           )
@@ -95,17 +94,8 @@ function preProcessMarkdownAst(
       } else if (child.type === "break") {
         atoms.push({ type: "LineBreak" });
       } else if (child.type === "text") {
-
-        // Due to formatting with bold and italic etc,
-        // markdown will split the whole text into separate
-        // textruns. Doing this only for the special text
-        // will make the renderer unhappy when aligning the
-        // textruns. Thereofre we should split all of the
-        // words here, and let the renderer align them word
-        // for word
-        const spaceRegex = /([\p{Zs}])/u;
         atoms = atoms.concat(
-          child.value.split(spaceRegex).filter((v) => v.length !== 0).map(
+          child.value.split("\n").map(
             (v: string) =>
               ({
                 type: "TextRun",
