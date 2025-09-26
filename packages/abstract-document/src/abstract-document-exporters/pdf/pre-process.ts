@@ -174,10 +174,10 @@ function adjustParagraph(paragraph: AD.Paragraph.Paragraph): Array<AD.SectionEle
   const newChildren: Array<AD.Atom.Atom> = [];
   for(const child of paragraph.children) {
     if(child.type === "TextRun") {
-      newChildren.push(...child.text.split(spaceRegex).filter((t) => t.length !== 0).map((t) => ({
-        ...child,
-        text: t,
-      })));
+      newChildren.push(...(`${child.text}`).split(spaceRegex).filter((t) => t.length !== 0).map((t) => ({
+          ...child,
+          text: t,
+        })));
     } else {
       newChildren.push(child);
     }
