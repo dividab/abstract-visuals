@@ -8,7 +8,6 @@ export const testEmptyKeepTogether: ExportTestDef = {
   expectedMarkdown: {
     children: [
       {
-        isMarkdown: true,
         children: [
           {
             nestedStyleNames: [],

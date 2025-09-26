@@ -5,6 +5,7 @@ import { paginate, Page, getHeaderAndFooter } from "./paginate.js";
 import { updatePageRefs } from "./update-refs.js";
 import { renderImage } from "./render-image.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
+import { PdfKitAlignment, rowsCombineTextRuns, rowsSplit } from "./textRunRow.js";
 
 export type PdfExportOptions = {
   compress: boolean;
@@ -280,21 +281,20 @@ function renderParagraph(
     rows.push(currentRow);
   }
 
-  //if the paragraph is markdown, we need to render it separately
-  //since alignment is different for that
-  if(paragraph.isMarkdown !== undefined && paragraph.isMarkdown) {
-    renderMarkdownRows(rows, resources, pdfKit, desiredSizes, finalRect, style, availableWidth);
-    return;
-  }
-
   let y = finalRect.y + style.margins.top;
-  for (let row of rows) {
+  const alignment = parseAlignment(style.alignment);
+  const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment);
+  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdfKit, newRows, desiredSizes, alignment, style.textStyle);
+  for (let r = 0; r < combinedRows.length; r++) {
+    const row = combinedRows[r];
+    const isLast = r === combinedRows.length - 1;
     if (row.length === 0) {
       continue;
     }
     
-    const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
+    const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, newDesiredSizes).width, 0);
     const remainingWidth = availableWidth - rowWidth;
+    const justificationWidth = !isLast && row.length > 1 ? remainingWidth / (row.length - 1) : 0;
     let x = finalRect.x;
 
     if (style.alignment === "Start" || style.alignment === "Justify") {
@@ -303,11 +303,13 @@ function renderParagraph(
       x -= style.margins.right;
     }
 
-    if (row.length > 1 || row[0].type === "Image") {
+    if (row.length > 1 || row[0].type === "Image" || row[0].type === "TextRun") {
       // Using continued with alignment "center" or "right" is broken:
       // https://github.com/foliojs/pdfkit/issues/240
       // Therefore we have to position it ourself
-      // NOTE: Texts with multiple atoms with width over the available width are not supported.
+      // NOTE:  Texts with multiple atoms with width over the available width are not supported.
+      // NOTE2: This should be fixed now since we split the text into an array of words instead
+      //        and place them manually here
       if (style.alignment === "Center") {
         x += 0.5 * remainingWidth;
       } else if (style.alignment === "End") {
@@ -318,167 +320,27 @@ function renderParagraph(
     let rowHeight = 0;
     const lastIndex = row[row.length - 1]?.type === "LineBreak" ? row.length - 2 : row.length - 1;
     for (const [i, atom] of row.entries()) {
-      const atomSize = getDesiredSize(atom, desiredSizes);
+      const atomSize = getDesiredSize(atom, newDesiredSizes);
       renderAtom(
         resources,
         pdfKit,
         AD.Rect.create(x, y, atomSize.width, atomSize.height),
         style.textStyle,
         atom,
-        parseAlignment(style.alignment),
-        availableWidth,
-        i === 0,
-        i === lastIndex
-      );
-      x += atomSize.width;
-      rowHeight = Math.max(rowHeight, atomSize.height);
-    }
-
-    y += rowHeight;
-  }
-}
-
-function renderMarkdownRows(
-  rawRows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>,
-  resources: AD.Resources.Resources,
-  pdfKit: PDFKit.PDFDocument,
-  desiredSizes: Map<{}, AD.Size.Size>,
-  finalRect: AD.Rect.Rect,
-  paragraphStyle: AD.ParagraphStyle.ParagraphStyle,
-  availableWidth: number,
-): void {
-  const rows = splitRows(rawRows, availableWidth, desiredSizes);
-  let y = finalRect.y + paragraphStyle.margins.top;
-  let markdownTextStyle: AD.TextStyle.TextStyle | undefined = undefined;
-  for(const row of rows) {
-    for(const atom of row) {
-      if(atom.type === "TextRun") {
-        markdownTextStyle = AD.Resources.getNestedStyle(
-          paragraphStyle.textStyle,
-          atom.style,
-          "TextStyle",
-          atom.styleName,
-          resources,
-          atom.nestedStyleNames || []
-        ) as AD.TextStyle.TextStyle;
-        break;
-      }
-    }
-  }
-
-  const defaultStyle = parseAlignment(paragraphStyle.alignment);
-  const alignment = markdownTextStyle?.alignment ?? defaultStyle;
-  for (let row of rows) {
-    if (row.length === 0) {
-      continue;
-    }
-    
-    const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
-    const remainingWidth = availableWidth - rowWidth;
-    const justificationWidth = row.length > 1 ? remainingWidth / (row.length - 1) : 0;
-    let x = finalRect.x;
-
-    if (alignment === "left" || alignment === "justify") {
-      x += paragraphStyle.margins.left;
-    } else if (alignment === "right") {
-      x -= paragraphStyle.margins.right;
-    }
-
-    if (row.length > 1 || row[0].type === "Image") {
-      if (alignment === "center") {
-        x += 0.5 * remainingWidth;
-      } else if (alignment === "right") {
-        x += remainingWidth;
-      }
-    }
-
-    let rowHeight = 0;
-    const lastIndex = row[row.length - 1]?.type === "LineBreak" ? row.length - 2 : row.length - 1;
-    for (const [i, atom] of row.entries()) {
-      const atomSize = getDesiredSize(atom, desiredSizes);
-      renderAtom(
-        resources,
-        pdfKit,
-        AD.Rect.create(x, y, atomSize.width, atomSize.height),
-        paragraphStyle.textStyle,
-        atom,
         alignment,
         availableWidth,
         i === 0,
         i === lastIndex
       );
-      x += atomSize.width + (alignment === "justify" ? justificationWidth : 0);
+      x += atomSize.width + (style.alignment === "Justify" ? justificationWidth : 0);
       rowHeight = Math.max(rowHeight, atomSize.height);
     }
+
     y += rowHeight;
   }
 }
 
-function splitRows(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, availableWidth: number, desiredSizes: Map<{}, AD.Size.Size>): ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> {
-  const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
-
-  for(const row of rows) {
-    if(row.length <= 1) {
-      newRows.push(row);
-      continue;
-    }
-    
-    const width = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
-    if(width <= availableWidth) {
-      newRows.push(row);
-      continue;
-    }
-
-    //we need to split it, because it doesn't fit
-    let currentRow: Array<AD.Atom.Atom> = [];
-    let currentWidth = 0;
-    let lastWasSpace = false;
-
-    for(let i = 0; i < row.length; i++) {
-      const atom = row[i];
-      if(atom.type !== "TextRun") {
-        continue;
-      }
-
-      const width = getDesiredSize(atom, desiredSizes).width;
-      if(atom.type !== "TextRun") {
-        currentRow.push(atom);
-        currentWidth += width;
-        continue;
-      }
-
-      const isSpace = atom.text.replaceAll(/[\p{Zs}]/ug, "").length === 0;
-      const lastSpace = lastWasSpace;
-      lastWasSpace = isSpace;
-
-      if(isSpace && currentWidth === 0 && i !== 0) {
-        continue;
-      }
-
-      if(currentWidth + width <= availableWidth) {
-        currentRow.push(atom);
-        currentWidth += width;
-        continue;
-      }
-
-      //was it a space??
-      if(isSpace) {
-        newRows.push(currentRow);
-        currentRow = [];
-        currentWidth = 0;
-        continue;
-      }
-
-      newRows.push(lastSpace ? currentRow.slice(0, -1) : currentRow);
-      currentRow = [atom];
-      currentWidth = width;
-    }
-    newRows.push(lastWasSpace ? currentRow.slice(0, -1) : currentRow);
-  }
-  return newRows;
-}
-
-function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | undefined): AD.TextStyle.TextAlignment {
+function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | undefined): PdfKitAlignment {
   switch (paragraphAlignment) {
     case "Start":
       return "left";
@@ -499,7 +361,7 @@ function renderAtom(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   atom: AD.Atom.Atom,
-  alignment: AD.TextStyle.TextAlignment,
+  alignment: PdfKitAlignment,
   availableWidth: number,
   isFirstAtom: boolean,
   isLastAtom: boolean
@@ -515,11 +377,10 @@ function renderAtom(
         alignment,
         isFirstAtom,
         isLastAtom,
-        availableWidth
       );
       return;
     case "TextRun":
-      renderTextRun(resources, pdfKit, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
+      renderTextRun(resources, pdfKit, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom);
       return;
     case "Image":
       renderImage(resources, pdfKit, finalRect, textStyle, atom);
@@ -553,10 +414,9 @@ function renderTextField(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textField: AD.TextField.TextField,
-  alignment: AD.TextStyle.TextAlignment,
+  alignment: PdfKitAlignment,
   isFirstAtom: boolean,
   isLastAtom: boolean,
-  availableWidth: number
 ): void {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -575,14 +435,13 @@ function renderTextField(
         alignment,
         isFirstAtom,
         isLastAtom,
-        availableWidth
       );
       return;
     case "PageNumber":
     case "TotalPages":
     case "PageNumberOf":
       if (textField.text) {
-        drawText(pdfKit, finalRect, style, textField.text, alignment, isFirstAtom, isLastAtom, availableWidth);
+        drawText(pdfKit, finalRect, style, textField.text, alignment, isFirstAtom, isLastAtom);
       }
       return;
   }
@@ -594,10 +453,9 @@ function renderTextRun(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   textRun: AD.TextRun.TextRun,
-  alignment: AD.TextStyle.TextAlignment,
+  alignment: PdfKitAlignment,
   isFirstAtom: boolean,
   isLastAtom: boolean,
-  availableWidth: number
 ): void {
   const style = AD.Resources.getNestedStyle(
     textStyle,
@@ -607,8 +465,7 @@ function renderTextRun(
     resources,
     textRun.nestedStyleNames || []
   ) as AD.TextStyle.TextStyle;
-  const textAlignment = style.alignment ? style.alignment : alignment;
-  drawText(pdf, finalRect, style, textRun.text, textAlignment, isFirstAtom, isLastAtom, availableWidth);
+  drawText(pdf, finalRect, style, textRun.text, alignment, isFirstAtom, isLastAtom);
 }
 
 function renderHyperLink(
@@ -617,7 +474,7 @@ function renderHyperLink(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
-  alignment: AD.TextStyle.TextAlignment,
+  alignment: PdfKitAlignment,
   isFirstAtom: boolean,
   isLastAtom: boolean,
   availableWidth: number
@@ -629,8 +486,7 @@ function renderHyperLink(
     hyperLink.styleName,
     resources
   ) as AD.TextStyle.TextStyle;
-  const textAlignment = style.alignment ? style.alignment : alignment;
-  drawHyperLink(pdf, finalRect, style, hyperLink, textAlignment, isFirstAtom, isLastAtom, availableWidth);
+  drawHyperLink(pdf, finalRect, style, hyperLink, alignment, isFirstAtom, isLastAtom, availableWidth);
 }
 
 function renderTocSeparator(
@@ -647,7 +503,7 @@ function drawHyperLink(
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   hyperLink: AD.HyperLink.HyperLink,
-  alignment: AD.TextStyle.TextAlignment,
+  alignment: PdfKitAlignment,
   isFirstAtom: boolean,
   isLastAtom: boolean,
   availableWidth: number
@@ -711,12 +567,12 @@ function drawHyperLink(
   }
 }
 
-function drawText(
+/*function drawText(
   pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
   text: string,
-  alignment: AD.TextStyle.TextAlignment,
+  alignment: PdfKitAlignment,
   isFirstAtom: boolean,
   isLastAtom: boolean,
   availableWidth: number
@@ -759,6 +615,71 @@ function drawText(
     });
   }
 
+  resetTextOffset(pdf, textStyle);
+}*/
+
+function drawText(
+  pdf: PDFKit.PDFDocument,
+  finalRect: AD.Rect.Rect,
+  textStyle: AD.TextStyle.TextStyle,
+  text: string,
+  alignment: PdfKitAlignment,
+  isFirst: boolean,
+  isEnd: boolean,
+): void {
+  const font = getFontNameStyle(textStyle);
+  const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
+  pdf
+    .font(font)
+    .fontSize(fontSize)
+    .fillColor(textStyle.color || "black", textStyle.opacity ?? 1.0);
+
+  applyTextOffset(pdf, textStyle);
+
+  switch(alignment) {
+    case "justify": {
+      pdf.text(text, finalRect.x, finalRect.y, {
+        width: Infinity,
+        underline: textStyle.underline || false,
+        continued: false,
+        indent: textStyle.indent || 0,
+        baseline: textStyle.baseline || "top",
+        strike: textStyle.strike,
+          ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
+          ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+      });
+      break;
+    }
+
+    
+
+    default: {
+      if(isFirst) {
+        pdf.text(text, finalRect.x, finalRect.y, {
+          width: Infinity,
+          underline: textStyle.underline || false,
+          continued: !isEnd,
+          indent: textStyle.indent || 0,
+          baseline: textStyle.baseline || "top",
+          strike: textStyle.strike,
+            ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
+            ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+        });
+      } else {
+        pdf.text(text, {
+          width: Infinity,
+          underline: textStyle.underline || false,
+          continued: !isEnd,
+          indent: textStyle.indent || 0,
+          baseline: textStyle.baseline || "top",
+          strike: textStyle.strike,
+            ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
+            ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+        });
+      }
+      break;
+    }
+  }
   resetTextOffset(pdf, textStyle);
 }
 

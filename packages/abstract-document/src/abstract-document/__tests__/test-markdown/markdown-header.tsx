@@ -10,26 +10,11 @@ export const testMarkdownHeader: ExportTestDef = {
       {
         nestedStyleNames: ["H3"],
         styleName: "H3",
-        text: "Heading",
-        textProperties: {},
-        type: "TextRun",
-      },
-      {
-        nestedStyleNames: ["H3"],
-        styleName: "H3",
-        text: " ",
-        textProperties: {},
-        type: "TextRun",
-      },
-      {
-        nestedStyleNames: ["H3"],
-        styleName: "H3",
-        text: "3",
+        text: "Heading 3",
         textProperties: {},
         type: "TextRun",
       },
     ],
-    isMarkdown: true,
     numbering: undefined,
     style: {
       alignment: undefined,

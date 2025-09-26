@@ -12,21 +12,7 @@ export const testMarkdownKeepTogether: ExportTestDef = {
           {
             nestedStyleNames: ["H3"],
             styleName: "H3",
-            text: "Test",
-            textProperties: {},
-            type: "TextRun",
-          },
-          {
-            nestedStyleNames: ["H3"],
-            styleName: "H3",
-            text: " ",
-            textProperties: {},
-            type: "TextRun",
-          },
-          {
-            nestedStyleNames: ["H3"],
-            styleName: "H3",
-            text: "2",
+            text: "Test 2",
             textProperties: {},
             type: "TextRun",
           },
@@ -38,7 +24,6 @@ export const testMarkdownKeepTogether: ExportTestDef = {
             type: "TextRun",
           },
         ],
-        isMarkdown: true,
         numbering: undefined,
         style: {
           alignment: undefined,

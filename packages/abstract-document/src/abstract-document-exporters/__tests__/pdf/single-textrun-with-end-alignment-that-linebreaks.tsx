@@ -27,46 +27,56 @@ export const testSingleTextRunWithEndAlignmentThatLinebreaks: ExportTestDef = {
     },
     Pages: [
       {
-        Boxsets: [],
-        Fields: [],
-        Fills: [],
-        HLines: [],
-        Height: 52.625,
         Width: 37.188,
+        Height: 52.625,
+        HLines: [],
+        VLines: [],
+        Fills: [],
         Texts: [
           {
-            A: "left",
-            R: [
-              {
-                S: -1,
-                T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20",
-                TS: [0, 13, 0, 0],
-              },
-            ],
-            oc: undefined,
-            sw: 0.32553125,
-            w: 589.1,
             x: 0.7609999999999999,
             y: -0.301,
-          },
-          {
+            w: 586.32,
+            sw: 0.32553125,
             A: "left",
             R: [
               {
+                T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text",
                 S: -1,
-                T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20%20",
-                TS: [0, 13, 0, 0],
-              },
+                TS: [
+                  0,
+                  13,
+                  0,
+                  0
+                ]
+              }
             ],
-            oc: undefined,
-            sw: 0.32553125,
-            w: 179.51,
+            oc: undefined
+          },
+          {
             x: 26.184,
             y: 0.42100000000000004,
-          },
+            w: 173.95,
+            sw: 0.32553125,
+            A: "left",
+            R: [
+              {
+                T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text",
+                S: -1,
+                TS: [
+                  0,
+                  13,
+                  0,
+                  0
+                ]
+              }
+            ],
+            oc: undefined
+          }
         ],
-        VLines: [],
-      },
+        Fields: [],
+        Boxsets: []
+      }
     ],
   },
 };

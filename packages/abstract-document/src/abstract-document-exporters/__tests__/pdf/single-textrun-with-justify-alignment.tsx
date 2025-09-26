@@ -27,8 +27,8 @@ export const testSingleTextRunWithJustifyAlignment: ExportTestDef = {
     },
     Pages: [
       {
-        Height: 52.625,
         Width: 37.188,
+        Height: 52.625,
         HLines: [],
         VLines: [],
         Fills: [],
@@ -36,22 +36,87 @@ export const testSingleTextRunWithJustifyAlignment: ExportTestDef = {
           {
             x: -0.25,
             y: -0.301,
-            w: 56.13,
+            w: 18.89,
             sw: 0.32553125,
-            oc: undefined,
             A: "left",
             R: [
               {
-                T: "This%20is%20a%20text",
+                T: "This",
                 S: -1,
-                TS: [0, 13, 0, 0],
-              },
+                TS: [
+                  0,
+                  13,
+                  0,
+                  0
+                ]
+              }
             ],
+            oc: undefined
           },
+          {
+            x: 1.073,
+            y: -0.301,
+            w: 7.22,
+            sw: 0.32553125,
+            A: "left",
+            R: [
+              {
+                T: "is",
+                S: -1,
+                TS: [
+                  0,
+                  13,
+                  0,
+                  0
+                ]
+              }
+            ],
+            oc: undefined
+          },
+          {
+            x: 1.698,
+            y: -0.301,
+            w: 5.56,
+            sw: 0.32553125,
+            A: "left",
+            R: [
+              {
+                T: "a",
+                S: -1,
+                TS: [
+                  0,
+                  13,
+                  0,
+                  0
+                ]
+              }
+            ],
+            oc: undefined
+          },
+          {
+            x: 2.219,
+            y: -0.301,
+            w: 16.12,
+            sw: 0.32553125,
+            A: "left",
+            R: [
+              {
+                T: "text",
+                S: -1,
+                TS: [
+                  0,
+                  13,
+                  0,
+                  0
+                ]
+              }
+            ],
+            oc: undefined
+          }
         ],
         Fields: [],
-        Boxsets: [],
-      },
+        Boxsets: []
+      }
     ],
   },
 };

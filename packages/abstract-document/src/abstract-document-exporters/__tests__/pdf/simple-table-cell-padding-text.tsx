@@ -10,8 +10,8 @@ import {
   TextRun,
 } from "../../../abstract-document-jsx/index.js";
 import * as TableStyle from "../../../abstract-document/styles/table-style.js";
-import * as TextStyle from "../../../abstract-document/styles/text-style.js";
 import * as TableCellStyle from "../../../abstract-document/styles/table-cell-style.js";
+import { ParagraphStyle } from "../../../abstract-document/index.js";
 
 const borders = { left: 2, bottom: 2, right: 2, top: 2 };
 
@@ -29,35 +29,35 @@ export const testSimpleTableCellPaddingText: ExportTestDef = {
         >
           <TableRow>
             <TableCell style={TableCellStyle.create({ padding: { left: 21, bottom: 0, right: 0, top: 0 } })}>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "left" })} text="LeftPadding" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
+                <TextRun text="LeftPadding" />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ padding: { left: 0, bottom: 21, right: 0, top: 21 } })}>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "center" })} text="TopBottomPadding" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })} >
+                <TextRun text="TopBottomPadding" />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ padding: { left: 0, bottom: 0, right: 21, top: 0 } })}>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "right" })} text="RightPadding" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "End" })} >
+                <TextRun text="RightPadding" />
               </Paragraph>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "left" })} text="NoPadding" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
+                <TextRun text="NoPadding" />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "center" })} text="NoPadding" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })} >
+                <TextRun text="NoPadding" />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "right" })} text="NoPadding" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "End" })} >
+                <TextRun text="NoPadding" />
               </Paragraph>
             </TableCell>
           </TableRow>

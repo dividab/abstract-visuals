@@ -10,28 +10,7 @@ export const testMarkdownNormalAndBold: ExportTestDef = {
       {
         nestedStyleNames: [],
         styleName: undefined,
-        text: "Normal",
-        textProperties: {},
-        type: "TextRun",
-      },
-      {
-        nestedStyleNames: [],
-        styleName: undefined,
-        text: " ",
-        textProperties: {},
-        type: "TextRun",
-      },
-      {
-        nestedStyleNames: [],
-        styleName: undefined,
-        text: "and",
-        textProperties: {},
-        type: "TextRun",
-      },
-      {
-        nestedStyleNames: [],
-        styleName: undefined,
-        text: " ",
+        text: "Normal and ",
         textProperties: {},
         type: "TextRun",
       },
@@ -43,7 +22,6 @@ export const testMarkdownNormalAndBold: ExportTestDef = {
         type: "TextRun",
       },
     ],
-    isMarkdown: true,
     numbering: undefined,
     style: {
       alignment: undefined,

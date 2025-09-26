@@ -10,8 +10,8 @@ import {
   TextRun,
 } from "../../../abstract-document-jsx/index.js";
 import * as TableStyle from "../../../abstract-document/styles/table-style.js";
-import * as TextStyle from "../../../abstract-document/styles/text-style.js";
 import * as TableCellStyle from "../../../abstract-document/styles/table-cell-style.js";
+import { ParagraphStyle } from "../../../abstract-document/index.js";
 
 const borders = { left: 2, bottom: 2, right: 2, top: 2 };
 // RowAlignment = "Top" | "Middle" | "Bottom";
@@ -30,26 +30,25 @@ export const testSimpleTableRowAlignment: ExportTestDef = {
         >
           <TableRow>
             <TableCell>
-              <Paragraph>
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
                 <TextRun
-                  style={TextStyle.create({ alignment: "left" })}
                   text="Multiple lines to visualize other cells."
                 />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ verticalAlignment: "Top" })}>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "left" })} text="Top" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
+                <TextRun text="Top" />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ verticalAlignment: "Middle" })}>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "center" })} text="Middle" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })} >
+                <TextRun text="Middle" />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ verticalAlignment: "Bottom" })}>
-              <Paragraph>
-                <TextRun style={TextStyle.create({ alignment: "right" })} text="Bottom" />
+              <Paragraph style={ParagraphStyle.create({ alignment: "End" })} >
+                <TextRun text="Bottom" />
               </Paragraph>
             </TableCell>
           </TableRow>

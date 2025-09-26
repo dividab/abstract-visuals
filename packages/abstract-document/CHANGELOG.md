@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [16.1.0] - 2025-09-23
 
-- Paragraphs that are marked as Markdown are now rendered separate and will align the text inside of it
+- TextStyle does not have alignment anymore
+- The Paragraph can now correctly align multiple atom texts that span across the available width
 
 ## [16.0.0] - 2025-08-29
 
