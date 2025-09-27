@@ -30,9 +30,12 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([A3D.toSvg(systemair, "front", 2, { size: 180, scaleByWidth: true }).image], {
-                type: "text/plain",
-              }),
+              new Blob(
+                [A3D.toSvg(systemair, { view: "front", stroke: 2, scale: { size: 180, scaleByWidth: true } }).image],
+                {
+                  type: "text/plain",
+                }
+              ),
               `a3d.svg`
             )
           }
@@ -42,18 +45,12 @@ export function Abstract3DExample(): React.ReactNode {
       </div>
       <div
         dangerouslySetInnerHTML={{
-          __html: A3D.toSvg(
-            systemair,
-            "front",
-            1,
-            { size: 400, scaleByWidth: true },
-            false,
-            false,
-            undefined,
-            undefined,
-            undefined,
-            270
-          ).image,
+          __html: A3D.toSvg(systemair, {
+            view: "front",
+            stroke: 1,
+            scale: { size: 400, scaleByWidth: true },
+            rotation: 270,
+          }).image,
         }}
       />
       <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
@@ -66,7 +63,7 @@ export function Abstract3DExample(): React.ReactNode {
             orbitContolsProps={{ enableDamping: false }}
             camera={camera}
             onHoverGroup={(id) => setHovered(id)}
-            reactPopovers={popover ? [popover] : undefined}
+            popovers={popover ? [popover] : undefined}
           />
         </div>
         <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>

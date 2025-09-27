@@ -9,7 +9,7 @@ import {
   vec3ZMean,
   equals,
 } from "../../../abstract-3d.js";
-import { gray, stBW, zElem, zOrderElement, transparent } from "./shared.js";
+import { gray, stBW, zElem, zOrderElement, transparent, SvgOptions } from "./shared.js";
 import { svgCircle, svgPolygon } from "../svg-encoding.js";
 import { rgbGrayScale } from "../../shared.js";
 
@@ -17,10 +17,7 @@ export function cone(
   c: Cone,
   point: (x: number, y: number) => Vec2,
   color: string,
-  onlyStroke: boolean | undefined,
-  grayScale: boolean | undefined,
-  _stroke: number,
-  onlyStrokeFill: string,
+  opts: SvgOptions,
   parentPos: Vec3,
   parentRot: Vec3,
   factor: number
@@ -30,9 +27,9 @@ export function cone(
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (p: Vec3): Vec3 => vec3TransRot(p, pos, rot);
 
-  const [stroke, fill] = onlyStroke
-    ? [grayScale ? gray : color, onlyStrokeFill]
-    : [transparent, grayScale ? rgbGrayScale(color) : color];
+  const [stroke, fill] = opts.onlyStroke
+    ? [opts.grayScale ? gray : color, opts.onlyStrokeFill]
+    : [transparent, opts.grayScale ? rgbGrayScale(color) : color];
   const zOrderComponents = Array<zOrderElement>();
 
   const sides = 8;

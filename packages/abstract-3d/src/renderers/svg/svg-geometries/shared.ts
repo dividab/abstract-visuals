@@ -1,3 +1,5 @@
+import { View } from "../../../abstract-3d.js";
+
 export type zOrderElement = { readonly element: string; readonly zOrder: number };
 export const zElem = (element: string, zOrder: number): zOrderElement => ({ element, zOrder });
 
@@ -13,3 +15,15 @@ export type ImageDataUri =
   | `data:image/png;base64,${string}`
   | `data:image/jpeg;base64,${string}`
   | `data:image/svg+xml,${string}`;
+
+export type SvgOptions = {
+  readonly view: View;
+  readonly stroke: number;
+  readonly scale: { readonly size: number; readonly scaleByWidth: boolean } | undefined;
+  readonly onlyStroke: boolean;
+  readonly grayScale: boolean;
+  readonly onlyStrokeFill: string;
+  readonly font: string;
+  readonly imageDataByUrl: Record<string, ImageDataUri>;
+  readonly rotation: number;
+};

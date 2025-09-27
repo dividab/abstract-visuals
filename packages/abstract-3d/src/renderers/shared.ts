@@ -198,3 +198,5 @@ export function shade(p: number, from: string, to?: string): string | undefined 
       .slice(1, f[3]! > -1 || t[3]! > -1 ? undefined : -2)
   );
 }
+
+export type Optional<T> = { readonly [K in keyof T]?: T[K] };

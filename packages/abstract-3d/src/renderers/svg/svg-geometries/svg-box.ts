@@ -9,7 +9,7 @@ import {
   vec3,
   vec3ZMean,
 } from "../../../abstract-3d.js";
-import { gray, black, zElem, zOrderElement } from "./shared.js";
+import { gray, black, zElem, zOrderElement, SvgOptions } from "./shared.js";
 import { svgPolygon } from "../svg-encoding.js";
 import { rgbGrayScale } from "../../shared.js";
 
@@ -17,10 +17,7 @@ export function box(
   b: Box,
   point: (x: number, y: number) => Vec2,
   color: string,
-  onlyStroke: boolean | undefined,
-  grayScale: boolean | undefined,
-  stroke: number,
-  onlyStrokeFill: string,
+  opts: SvgOptions,
   parentPos: Vec3,
   parentRot: Vec3
 ): ReadonlyArray<zOrderElement> {
@@ -59,9 +56,9 @@ export function box(
       ? [[point(v6.x, v6.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v7.x, v7.y)], rightMean]
       : [[point(v5.x, v5.y), point(v1.x, v1.y), point(v4.x, v4.y), point(v8.x, v8.y)], leftMean];
 
-  const [strokeColor, fill, strokeUse] = onlyStroke
-    ? [grayScale ? gray : color, onlyStrokeFill, stroke]
-    : [black, grayScale ? rgbGrayScale(color) : color, 0];
+  const [strokeColor, fill, strokeUse] = opts.onlyStroke
+    ? [opts.grayScale ? gray : color, opts.onlyStrokeFill, opts.stroke]
+    : [black, opts.grayScale ? rgbGrayScale(color) : color, 0];
 
   return [
     zElem(svgPolygon(frontBackPoints, fill, strokeColor, strokeUse), frontBackMean),

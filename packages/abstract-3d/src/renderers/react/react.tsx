@@ -7,7 +7,7 @@ import { ReactCamera, ControlsHelper, Camera } from "./react-camera.js";
 import { HotSpotInfo } from "./react-hotspot.js";
 import { MaterialState } from "./react-material.js";
 
-type ToReactProps = {
+type ReactProps = {
   readonly scene: Scene;
   readonly selectedId?: string | undefined;
   readonly activeHotSpots?: Record<string, HotSpotInfo> | undefined;
@@ -16,7 +16,7 @@ type ToReactProps = {
   readonly showHotSpotTexts?: boolean;
   readonly showDimensions?: boolean;
   readonly hotSpotTexts?: Record<string, string>;
-  readonly reactPopovers?: ReadonlyArray<ReactPopover>;
+  readonly popovers?: ReadonlyArray<ReactPopover>;
   readonly useAnimations?: boolean;
   readonly camera?: Camera;
   readonly view?: View;
@@ -57,7 +57,7 @@ export const toReact = memo(
     activeComponents,
     hoveredIdExternal,
     hotSpotTexts,
-    reactPopovers,
+    popovers: reactPopovers,
     showHotSpotTexts = false,
     showDimensions = true,
     useAnimations = false,
@@ -73,7 +73,7 @@ export const toReact = memo(
     onClickHotSpot,
     createGroupKey,
     createGroupId,
-  }: ToReactProps): React.JSX.Element => {
+  }: ReactProps): React.JSX.Element => {
     return (
       <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
         {/* <Stats showPanel={0} className="stats" /> */}
