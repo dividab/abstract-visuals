@@ -12,6 +12,7 @@ export interface ReactPopover {
   readonly pos: Vec3;
   readonly content: React.ReactNode;
 }
+export type SceneMouseEvent = ThreeEvent<MouseEvent>;
 
 export function ReactScene({
   scene,
@@ -45,13 +46,13 @@ export function ReactScene({
     id: string | undefined,
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined,
-    e: ThreeEvent<MouseEvent>
+    e: SceneMouseEvent
   ) => void;
   readonly onHoverGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined,
-    e: ThreeEvent<MouseEvent>
+    e: SceneMouseEvent
   ) => void;
   readonly onContextMenuGroup?: (
     id: string,
@@ -59,9 +60,9 @@ export function ReactScene({
     data: Record<string, string> | undefined,
     left: number,
     top: number,
-    e: ThreeEvent<MouseEvent>
+    e: SceneMouseEvent
   ) => void;
-  readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
+  readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: SceneMouseEvent) => void;
   readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
   readonly createGroupId?: (g: Group) => string;
 }): React.JSX.Element {
