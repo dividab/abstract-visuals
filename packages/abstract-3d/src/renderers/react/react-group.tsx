@@ -12,7 +12,7 @@ export function ReactGroup({
   materialStateImages,
   hoveredId,
   hoveredIdExternal,
-  selectedId,
+  selectedIds,
   hotSpotsActive,
   activeComponents,
   id,
@@ -26,7 +26,7 @@ export function ReactGroup({
   readonly materialStateImages?: Record<string, string>;
   readonly hoveredId: string | undefined;
   readonly hoveredIdExternal: string | undefined;
-  readonly selectedId: string | undefined;
+  readonly selectedIds: Record<string, boolean> | undefined;
   readonly hotSpotsActive: boolean;
   readonly activeComponents: Record<string, MaterialState> | undefined;
   readonly id: string | undefined;
@@ -110,7 +110,7 @@ export function ReactGroup({
         <ReactGroup
           key={createGroupKey ? createGroupKey(g, i, rootData, id ?? "") : i}
           g={g}
-          selectedId={selectedId}
+          selectedIds={selectedIds}
           hotSpotsActive={hotSpotsActive}
           activeComponents={activeComponents}
           materialStateImages={materialStateImages}
@@ -129,7 +129,7 @@ export function ReactGroup({
           <ReactMaterial
             material={m.material}
             id={id}
-            selectedId={selectedId}
+            selectedIds={selectedIds}
             isText={m.geometry.type === "Text"}
             hoveredId={hoveredId || hoveredIdExternal}
             materialStateImages={materialStateImages}

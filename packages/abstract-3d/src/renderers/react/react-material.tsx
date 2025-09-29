@@ -12,7 +12,7 @@ export const ERROR_IMG_KEY = "error";
 export function ReactMaterial({
   material,
   id = "",
-  selectedId,
+  selectedIds,
   hoveredId,
   disabled,
   materialStateImages,
@@ -23,7 +23,7 @@ export function ReactMaterial({
   readonly material: Material;
   readonly id?: string;
   readonly hoveredId?: string | undefined;
-  readonly selectedId?: string | undefined;
+  readonly selectedIds?: Record<string, boolean> | undefined;
   readonly disabled?: boolean;
   readonly materialStateImages?: Record<string, string>;
   readonly state?: MaterialState | undefined;
@@ -38,22 +38,20 @@ export function ReactMaterial({
       : state === "Error"
       ? errorMar
       : warningMat;
-  const color =
-    selectedId === id
-      ? hoveredId === id
-        ? shade(-0.4, selectMat.normal)
-        : selectMat.normal
-      : hoveredId === id
-      ? shade(-0.4, mat.normal)
-      : mat.normal;
-  const colorText =
-    selectedId === id
-      ? hoveredId === id
-        ? shade(-0.4, textSelectMat.normal)
-        : textSelectMat.normal
-      : hoveredId === id
-      ? shade(-0.4, mat.normal)
-      : mat.normal;
+  const color = selectedIds?.[id]
+    ? hoveredId === id
+      ? shade(-0.4, selectMat.normal)
+      : selectMat.normal
+    : hoveredId === id
+    ? shade(-0.4, mat.normal)
+    : mat.normal;
+  const colorText = selectedIds?.[id]
+    ? hoveredId === id
+      ? shade(-0.4, textSelectMat.normal)
+      : textSelectMat.normal
+    : hoveredId === id
+    ? shade(-0.4, mat.normal)
+    : mat.normal;
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
   if (material.imageUrl) {
     return (

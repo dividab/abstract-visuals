@@ -129,7 +129,7 @@ export const toReact = memo(
         <React.Suspense fallback={<></>}>
           <ReactScene
             scene={scene}
-            selectedId={selectedId}
+            selectedIds={selectedId ? { [selectedId]: true } : undefined}
             activeHotSpots={activeHotSpots}
             activeComponents={activeComponents}
             showDimensions={showDimensions}

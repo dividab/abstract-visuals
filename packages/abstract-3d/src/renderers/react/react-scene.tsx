@@ -16,7 +16,7 @@ export type SceneMouseEvent = ThreeEvent<MouseEvent>;
 
 export function ReactScene({
   scene,
-  selectedId,
+  selectedIds,
   hoveredIdExternal,
   activeHotSpots,
   activeComponents,
@@ -33,7 +33,7 @@ export function ReactScene({
   createGroupId,
 }: {
   readonly scene: Scene;
-  readonly selectedId: string | undefined;
+  readonly selectedIds: Record<string, boolean> | undefined;
   readonly hoveredIdExternal: string | undefined;
   readonly activeHotSpots: Record<string, HotSpotInfo> | undefined;
   readonly activeComponents: Record<string, MaterialState> | undefined;
@@ -86,7 +86,7 @@ export function ReactScene({
           <ReactGroup
             key={createGroupKey ? createGroupKey(g, 0, g.data, id) : i}
             g={g}
-            selectedId={selectedId}
+            selectedIds={selectedIds}
             hotSpotsActive={activeHotSpots !== undefined}
             activeComponents={activeComponents}
             materialStateImages={materialStateImages}
