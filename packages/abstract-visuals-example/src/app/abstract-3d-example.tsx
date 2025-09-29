@@ -58,7 +58,7 @@ export function Abstract3DExample(): React.ReactNode {
       <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
         <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
           <A3D.toReact
-            selectedId={selected}
+            selectedIds={selected ? { [selected]: true } : undefined}
             onClickGroup={(id) => setSelected(id)}
             createGroupId={(g) => g.data?.id ?? ""}
             scene={systemair}
@@ -70,7 +70,7 @@ export function Abstract3DExample(): React.ReactNode {
         </div>
         <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
           <A3D.toReact
-            selectedId={selected}
+            selectedIds={selected ? { [selected]: true } : undefined}
             onClickGroup={(id) => setSelected(id)}
             createGroupId={(g) => g.data?.id ?? ""}
             scene={vortice}

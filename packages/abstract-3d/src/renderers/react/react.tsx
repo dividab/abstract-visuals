@@ -9,7 +9,7 @@ import { MaterialState } from "./react-material.js";
 
 type ReactProps = {
   readonly scene: Scene;
-  readonly selectedId?: string | undefined;
+  readonly selectedIds: Record<string, boolean> | undefined;
   readonly activeHotSpots?: Record<string, HotSpotInfo> | undefined;
   readonly activeComponents?: Record<string, MaterialState> | undefined;
   readonly hoveredIdExternal?: string | undefined;
@@ -52,7 +52,7 @@ type ReactProps = {
 export const toReact = memo(
   ({
     scene,
-    selectedId,
+    selectedIds,
     activeHotSpots,
     activeComponents,
     hoveredIdExternal,
@@ -129,7 +129,7 @@ export const toReact = memo(
         <React.Suspense fallback={<></>}>
           <ReactScene
             scene={scene}
-            selectedIds={selectedId ? { [selectedId]: true } : undefined}
+            selectedIds={selectedIds}
             activeHotSpots={activeHotSpots}
             activeComponents={activeComponents}
             showDimensions={showDimensions}
