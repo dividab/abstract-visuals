@@ -4,7 +4,7 @@ export type HelperFunc = {
   readonly name: string;
   readonly description: string;
   readonly args: ReadonlyArray<HelperArg>;
-  readonly returnType: JSONSchema7;
+  readonly returnType: JSONSchema7 | ((...args: ReadonlyArray<HelperArg>) => JSONSchema7);
   readonly function: Function;
 };
 
@@ -17,6 +17,7 @@ type HelperArg = {
 // Reusable schemas
 const num: JSONSchema7 = { type: "number" };
 const bool: JSONSchema7 = { type: "boolean" };
+const string: JSONSchema7 = { type: "string" };
 const anySchema: JSONSchema7 = {}; // accepts any JSON value
 
 const add: HelperFunc = {
@@ -118,6 +119,20 @@ const greaterThanEqual: HelperFunc = {
   function: (a: number, b: number) => a >= b,
 };
 
+const lookup: HelperFunc = {
+  name: "lookup",
+  description: "Picks out a value from a map",
+  args: [
+    { name: "map", description: "Map", type: { type: "object", additionalProperties: {} } },
+    { name: "key", description: "Key", type: string },
+  ],
+  returnType: (...argSchemas) => {
+    const map = argSchemas[0] as any;
+    return map?.additionalProperties ?? { type: "null" };
+  },
+  function: (obj: Record<string, JSONSchema7>, key: string) => obj[key],
+};
+
 export const helpers: ReadonlyArray<HelperFunc> = [
   add,
   subtract,
@@ -128,6 +143,7 @@ export const helpers: ReadonlyArray<HelperFunc> = [
   greaterThan,
   lessThanEqual,
   greaterThanEqual,
+  lookup,
 ];
 
 // -- Diffucult to validate and give completion
