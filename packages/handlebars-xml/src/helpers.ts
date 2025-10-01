@@ -4,7 +4,7 @@ export type HelperFunc = {
   readonly name: string;
   readonly description: string;
   readonly args: ReadonlyArray<HelperArg>;
-  readonly returnType: JSONSchema7 | ((...args: ReadonlyArray<HelperArg>) => JSONSchema7);
+  readonly returnType: JSONSchema7 | ((...args: ReadonlyArray<JSONSchema7>) => JSONSchema7);
   readonly function: Function;
 };
 
@@ -18,6 +18,7 @@ type HelperArg = {
 const num: JSONSchema7 = { type: "number" };
 const bool: JSONSchema7 = { type: "boolean" };
 const string: JSONSchema7 = { type: "string" };
+const nullSchema: JSONSchema7 = { type: "null" };
 const anySchema: JSONSchema7 = {}; // accepts any JSON value
 
 const add: HelperFunc = {
@@ -127,8 +128,9 @@ const lookup: HelperFunc = {
     { name: "key", description: "Key", type: string },
   ],
   returnType: (...argSchemas) => {
-    const map = argSchemas[0] as any;
-    return map?.additionalProperties ?? { type: "null" };
+    const map = argSchemas[0];
+    const additionalProperties = map?.additionalProperties ?? nullSchema;
+    return typeof additionalProperties === "object" ? additionalProperties : nullSchema;
   },
   function: (obj: Record<string, JSONSchema7>, key: string) => obj[key],
 };
