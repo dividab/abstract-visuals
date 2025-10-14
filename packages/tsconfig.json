@@ -12,6 +12,7 @@
     { "path": "abstract-3d" },
     { "path": "abstract-sheet" },
     { "path": "abstract-visuals-example" },
-    { "path": "handlebars-xml" }
+    { "path": "handlebars-xml" },
+    { "path": "jsxpression" }
   ]
 }
