@@ -5,7 +5,6 @@ import { type Schema } from "../schema";
 import { getBuiltins } from "../builtins";
 
 describe("analyze - consolidated tests", () => {
-  // Base schema som används i de flesta tester
   const baseSchema = {
     data: {
       user: {
@@ -123,6 +122,27 @@ describe("analyze - consolidated tests", () => {
 
       it("should allow nested array access with indices", () => {
         const ast = parse("<Text>{data.products[0].tags[1]}</Text>");
+        const result = analyze(ast, baseSchema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should require array indices for nested object access", () => {
+        const ast = parse("<Text>{data.products.tags}</Text>");
+        const result = analyze(ast, baseSchema);
+        expect(result.hasErrors).toBe(true);
+        expect(result.errors[0].message).toContain("data.products.tags");
+      });
+
+      it("should detect typos on array properties", () => {
+        const ast = parse("<Text>{data.departments.lengdth}</Text>");
+        const result = analyze(ast, baseSchema);
+        expect(result.hasErrors).toBe(true);
+        expect(result.errors[0].code).toBe("INVALID_DATA_ACCESS");
+        expect(result.errors[0].suggestions).toContain("length");
+      });
+
+      it("should allow string members on array elements", () => {
+        const ast = parse("<Text>{data.items[0].length}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(false);
       });

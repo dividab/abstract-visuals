@@ -1,5 +1,10 @@
 import type { MemberExpression, Program } from "acorn";
-import { isAllowedOnArray, isAllowedOnString } from "../../builtins";
+import {
+  isAllowedOnArray,
+  isAllowedOnString,
+  getAvailableArrayMembers,
+  getAvailableStringMembers,
+} from "../../builtins";
 import { Schema, ArrayPropertySchema, PropertySchema } from "../../schema";
 import { AnalysisReport } from "../analysis-report";
 import { getNodeRange } from "../utils";
@@ -151,14 +156,101 @@ export function validateSchemaPath(
     return;
   }
 
+  const elementAccessFlags = getElementAccessFlags(node, path.length);
+
   for (let i = 1; i < path.length; i++) {
     const prop = path[i];
+    const isElementAccess = elementAccessFlags[i];
 
     if (current.type === "array") {
-      if (isAllowedOnArray(prop)) {
+      if (!isElementAccess) {
+        if (isAllowedOnArray(prop)) {
+          return;
+        }
+
+        const accessedPath = ["data", ...path.slice(0, i), prop].join(".");
+        analysisReport.addIssue(
+          "INVALID_DATA_ACCESS",
+          `Property '${accessedPath}' does not exist on array type`,
+          getNodeRange(node),
+          validationContext.getSnapshot(),
+          getAvailableArrayMembers()
+        );
         return;
       }
 
+      const elementType = current.shape || null;
+
+      if (!elementType) {
+        analysisReport.addIssue(
+          "INVALID_DATA_ACCESS",
+          `Cannot access property '${prop}' on unknown array element type`,
+          getNodeRange(node),
+          validationContext.getSnapshot(),
+          getAvailableArrayMembers()
+        );
+        return;
+      }
+
+      if (elementType.type === "object" && elementType.shape) {
+        const next = elementType.shape[prop];
+
+        if (!next) {
+          const paths = path.slice(0, i + 1);
+          const suggestions = Object.keys(elementType.shape);
+
+          analysisReport.addIssue(
+            "INVALID_DATA_ACCESS",
+            `Property 'data.${paths.join(".")}' does not exist in schema`,
+            getNodeRange(node),
+            validationContext.getSnapshot(),
+            suggestions
+          );
+          return;
+        }
+
+        current = next;
+        continue;
+      }
+
+      if (elementType.type === "array") {
+        if (isAllowedOnArray(prop)) {
+          return;
+        }
+
+        const accessedPath = ["data", ...path.slice(0, i), prop].join(".");
+        analysisReport.addIssue(
+          "INVALID_DATA_ACCESS",
+          `Property '${accessedPath}' does not exist on array type`,
+          getNodeRange(node),
+          validationContext.getSnapshot(),
+          getAvailableArrayMembers()
+        );
+        return;
+      }
+
+      if (elementType.type === "string") {
+        if (isAllowedOnString(prop)) {
+          return;
+        }
+
+        const accessedPath = ["data", ...path.slice(0, i), prop].join(".");
+        analysisReport.addIssue(
+          "INVALID_DATA_ACCESS",
+          `Property '${accessedPath}' does not exist on string type`,
+          getNodeRange(node),
+          validationContext.getSnapshot(),
+          getAvailableStringMembers()
+        );
+        return;
+      }
+
+      analysisReport.addIssue(
+        "INVALID_DATA_ACCESS",
+        `Cannot access property '${prop}' on ${elementType.type || "undefined"} type array element`,
+        getNodeRange(node),
+        validationContext.getSnapshot()
+      );
       return;
     }
 
@@ -167,6 +259,14 @@ export function validateSchemaPath(
         return;
       }
 
+      const accessedPath = ["data", ...path.slice(0, i), prop].join(".");
+      analysisReport.addIssue(
+        "INVALID_DATA_ACCESS",
+        `Property '${accessedPath}' does not exist on string type`,
+        getNodeRange(node),
+        validationContext.getSnapshot(),
+        getAvailableStringMembers()
+      );
       return;
     }
 
@@ -195,4 +295,35 @@ export function validateSchemaPath(
       );
     }
   }
+}
+
+function getElementAccessFlags(node: MemberExpression, pathLength: number): boolean[] {
+  const flags = Array(pathLength).fill(false);
+  const segments: Array<{ property: any; computed: boolean }> = [];
+
+  let current: any = node;
+  while (current && current.type === "MemberExpression") {
+    segments.unshift({ property: current.property, computed: current.computed });
+    current = current.object;
+  }
+
+  let schemaIndex = -1;
+  let lastWasComputedNumeric = false;
+
+  for (const segment of segments) {
+    if (segment.property?.type === "Identifier") {
+      schemaIndex += 1;
+      if (schemaIndex < pathLength) {
+        flags[schemaIndex] = lastWasComputedNumeric;
+      }
+    }
+
+    if (segment.computed && segment.property?.type === "Literal" && typeof segment.property.value === "number") {
+      lastWasComputedNumeric = true;
+    } else {
+      lastWasComputedNumeric = false;
+    }
+  }
+
+  return flags;
 }
