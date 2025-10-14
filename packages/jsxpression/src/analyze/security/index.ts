@@ -1,0 +1,1 @@
+export { analyzeSecurity } from "./analyze";
