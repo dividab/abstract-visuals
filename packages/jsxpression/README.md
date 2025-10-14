@@ -200,7 +200,7 @@ const schema = {
 
 Renders a JSX expression with data and components.
 
-### `validate(expression, schema)`
+### `validate(expression, schema, options)`
 
 Validates an expression against a schema without rendering.
 
