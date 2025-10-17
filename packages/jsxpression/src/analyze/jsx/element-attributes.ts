@@ -78,16 +78,25 @@ export function analyzeElementAttributes(
           const literalValue = getAttributeLiteralValue(attribute);
 
           if (isEnumComparableValue(literalValue) && !enumValues.includes(literalValue)) {
+            const stringEnumValues = enumValues.map((value) => String(value));
+            const suggestionMatch = getBestSimilarityMatcherSuggestion(String(literalValue), stringEnumValues);
+
+            let message = `Value ${JSON.stringify(
+              literalValue
+            )} is not allowed for attribute "${attributeName}" on <${tagName}>`;
+
+            if (suggestionMatch) {
+              message += `. Did you mean "${suggestionMatch}"?`;
+            } else {
+              message += `. Allowed values: ${enumValues.map((value) => JSON.stringify(value)).join(", ")}`;
+            }
+
             analysisReport.addIssue(
               "INVALID_ATTRIBUTE_VALUE",
-              `Value ${JSON.stringify(
-                literalValue
-              )} is not allowed for attribute "${attributeName}" on <${tagName}>. Allowed values: ${enumValues
-                .map((value) => JSON.stringify(value))
-                .join(", ")}`,
+              message,
               range,
               currentContext,
-              enumValues.map((value) => String(value))
+              suggestionMatch ? [suggestionMatch] : stringEnumValues
             );
           }
         }
