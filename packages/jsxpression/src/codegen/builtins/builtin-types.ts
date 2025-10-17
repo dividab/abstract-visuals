@@ -34,9 +34,13 @@ function generateParam(param: BuiltinParamSchema): string {
     typeStr = generateCallbackSignature(param.signature);
   } else {
     typeStr = param.types.join(" | ");
+    // The type should be an array for variadic parameters
+    if (param.variadic) {
+      typeStr = `${typeStr}[]`;
+    }
   }
 
-  const optional = !param.required ? "?" : "";
+  const optional = param.required || param.variadic ? "" : "?";
   const variadic = param.variadic ? "..." : "";
   return `${variadic}${param.name}${optional}: ${typeStr}`;
 }

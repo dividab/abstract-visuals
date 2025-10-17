@@ -34,6 +34,18 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("String");
       expect(result).toContain("Array");
     });
+
+    it("should generate variadic parameters with array types", () => {
+      const schema: Schema = {
+        data: {},
+        elements: {},
+      };
+
+      const result = generateTypeScriptDefinitions(schema);
+
+      expect(result).toContain("max(...values: number[]): number");
+      expect(result).toContain("min(...values: number[]): number");
+    });
   });
 
   describe("element types generation", () => {
