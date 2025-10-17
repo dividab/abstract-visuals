@@ -198,10 +198,6 @@ export class AnalysisReport {
     return this.infos.length > 0;
   }
 
-  get runtimeOnlyIssues(): Issue[] {
-    return this.#issues.filter((issue) => issue.runtimeOnly);
-  }
-
   addIssue(
     code: IssueCode,
     message: string,
