@@ -121,26 +121,11 @@ JSXpression supports different expression patterns:
 
 JSXpression includes built-in support for safe JavaScript methods:
 
-### Array Methods
+**Array:** `map`, `filter`, `reduce`, `find`, `some`, `every`, `slice`, `includes`, `indexOf`, `join`, `at`, `length`
 
-- **Transform:** `map`, `filter`, `reduce`, `slice`
-- **Search:** `find`, `includes`, `indexOf`, `at`
-- **Test:** `some`, `every`
-- **Utility:** `join`
-- **Property:** `length`
+**String:** `charAt`, `charCodeAt`, `concat`, `endsWith`, `includes`, `indexOf`, `lastIndexOf`, `slice`, `split`, `startsWith`, `substring`, `toLowerCase`, `toUpperCase`, `trim`, `trimStart`, `trimEnd`, `replace`, `length`
 
-### String Methods
-
-- **Case:** `toLowerCase`, `toUpperCase`
-- **Search:** `includes`, `indexOf`, `startsWith`, `endsWith`
-- **Extract:** `charAt`, `slice`, `substring`, `split`
-- **Clean:** `trim`, `trimStart`, `trimEnd`
-- **Combine:** `concat`
-
-### Math Methods
-
-- **Basic:** `abs`, `floor`, `ceil`, `round`
-- **Compare:** `max`, `min`
+**Math:** `max`, `min`, `floor`, `ceil`, `round`, `abs`, `PI`, `E`
 
 ### Examples
 
@@ -204,18 +189,26 @@ Renders a JSX expression with data and components.
 
 Validates an expression against a schema without rendering.
 
-## TypeScript Support
+### `generateTypeScriptDefinitions(schema)`
 
-The API is fully TypeScript-typed, but expressions themselves are strings validated at runtime:
+Generates TypeScript type definitions from a schema. Use this to enable autocomplete and type checking in code editors like Monaco Editor or VS Code.
+
+## Editor Support: TypeScript DX Without TypeScript
+
+JSXpression provides the full TypeScript developer experience - autocomplete, type checking, and inline documentation - without requiring TypeScript syntax in your expressions.
 
 ```typescript
-// ✅ API is typed
+// ✅ API is fully typed
 const result = render(expression, schema, options);
 
-// ✅ Schema validation catches errors
+// ✅ Schema validation catches errors at runtime
 validate("{data.user.invalid}", schema); // Error: Property doesn't exist
 
-// 💡 No TypeScript compilation needed for expressions
+// ✅ Generated type definitions enable full IntelliSense
+const definitions = generateTypeScriptDefinitions(schema);
+// Use in Monaco Editor or VS Code for autocomplete and error highlighting
 ```
 
-This provides equivalent safety to TypeScript with better flexibility for dynamic templates.
+**How it works:** Expressions use standard JavaScript, but `generateTypeScriptDefinitions()` generates `.d.ts` files from your schema. This gives editors complete type information for autocomplete, error highlighting, and inline documentation. Since we only allow simple expressions and the schema defines all available types, we can validate everything at runtime without needing a TypeScript compiler.
+
+**The result:** Same developer experience as TypeScript, zero compilation overhead, full type safety at runtime. The schema becomes the single source of truth for both validation and editor tooling.
