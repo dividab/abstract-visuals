@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 export interface BuiltinCallbackParamSchema {
   name: string;
   type: string;
