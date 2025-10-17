@@ -46,6 +46,9 @@ export interface BuiltinSchema {
 }
 
 const MATH = "Math";
+const NUMBER = "Number";
+const NUMBER_PROTOTYPE = "Number.prototype";
+const ARRAY = "Array";
 const ARRAY_PROTOTYPE = "Array.prototype";
 const STRING_PROTOTYPE = "String.prototype";
 
@@ -143,6 +146,231 @@ const BUILTINS: Record<string, BuiltinSchema> = {
           },
         ],
         returnType: "number",
+      },
+      sqrt: {
+        description: "Returns the square root of a number",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "value",
+            types: ["number"],
+            description: "A numeric expression",
+            required: true,
+          },
+        ],
+        returnType: "number",
+      },
+      pow: {
+        description: "Returns the value of a base expression taken to a specified power",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "base",
+            types: ["number"],
+            description: "The base value of the expression",
+            required: true,
+          },
+          {
+            kind: "primitive" as const,
+            name: "exponent",
+            types: ["number"],
+            description: "The exponent value of the expression",
+            required: true,
+          },
+        ],
+        returnType: "number",
+      },
+      sign: {
+        description: "Returns the sign of a number, indicating whether the number is positive, negative, or zero",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "value",
+            types: ["number"],
+            description: "A numeric expression",
+            required: true,
+          },
+        ],
+        returnType: "number",
+      },
+      sin: {
+        description: "Returns the sine of a number",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "value",
+            types: ["number"],
+            description: "A numeric expression that contains an angle measured in radians",
+            required: true,
+          },
+        ],
+        returnType: "number",
+      },
+      cos: {
+        description: "Returns the cosine of a number",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "value",
+            types: ["number"],
+            description: "A numeric expression that contains an angle measured in radians",
+            required: true,
+          },
+        ],
+        returnType: "number",
+      },
+      atan2: {
+        description: "Returns the angle in radians between the positive x-axis and the point (x, y)",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "y",
+            types: ["number"],
+            description: "The y coordinate of the point",
+            required: true,
+          },
+          {
+            kind: "primitive" as const,
+            name: "x",
+            types: ["number"],
+            description: "The x coordinate of the point",
+            required: true,
+          },
+        ],
+        returnType: "number",
+      },
+    },
+  },
+
+  [NUMBER]: {
+    global: true,
+    intrinsic: false,
+    methods: {
+      isNaN: {
+        description: "Determines whether the passed value is NaN (Not-A-Number)",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "value",
+            types: ["any"],
+            description: "The value to be tested for NaN",
+            required: true,
+          },
+        ],
+        returnType: "boolean",
+      },
+      isFinite: {
+        description: "Determines whether the passed value is a finite number",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "value",
+            types: ["any"],
+            description: "The value to be tested for finiteness",
+            required: true,
+          },
+        ],
+        returnType: "boolean",
+      },
+      parseInt: {
+        description: "Parses a string argument and returns an integer of the specified radix",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "string",
+            types: ["string"],
+            description: "The value to parse",
+            required: true,
+          },
+          {
+            kind: "primitive" as const,
+            name: "radix",
+            types: ["number"],
+            description: "An integer between 2 and 36 that represents the radix of the string. Defaults to 10",
+            required: false,
+          },
+        ],
+        returnType: "number",
+      },
+      parseFloat: {
+        description: "Parses a string argument and returns a floating point number",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "string",
+            types: ["string"],
+            description: "The value to parse",
+            required: true,
+          },
+        ],
+        returnType: "number",
+      },
+    },
+  },
+
+  [NUMBER_PROTOTYPE]: {
+    global: false,
+    intrinsic: true,
+    methods: {
+      toFixed: {
+        description: "Returns a string representation of a number in fixed-point notation",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "fractionDigits",
+            types: ["number"],
+            description: "Number of digits after the decimal point. Must be in the range 0 - 20",
+            required: false,
+          },
+        ],
+        returnType: "string",
+      },
+      toPrecision: {
+        description:
+          "Returns a string representation of a number in fixed-point or exponential notation with a specified number of significant digits",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "precision",
+            types: ["number"],
+            description: "Number of significant digits. Must be in the range 1 - 21",
+            required: false,
+          },
+        ],
+        returnType: "string",
+      },
+      toExponential: {
+        description: "Returns a string representation of a number in exponential notation",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "fractionDigits",
+            types: ["number"],
+            description: "Number of digits after the decimal point. Must be in the range 0 - 20",
+            required: false,
+          },
+        ],
+        returnType: "string",
+      },
+    },
+  },
+
+  [ARRAY]: {
+    global: true,
+    intrinsic: false,
+    methods: {
+      isArray: {
+        description: "Determines whether the passed value is an Array",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "value",
+            types: ["any"],
+            description: "The value to be checked",
+            required: true,
+          },
+        ],
+        returnType: "boolean",
       },
     },
   },
@@ -416,6 +644,90 @@ const BUILTINS: Record<string, BuiltinSchema> = {
         ],
         returnType: "T | undefined",
       },
+      concat: {
+        description: "Combines two or more arrays into a single array",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "arrays",
+            types: ["T[]"],
+            description: "Additional arrays to add to the end of the array",
+            variadic: true,
+          },
+        ],
+        returnType: "T[]",
+      },
+      findIndex: {
+        description: "Returns the index of the first element in the array where predicate is true, and -1 otherwise",
+        params: [
+          {
+            kind: "function" as const,
+            name: "callback",
+            description:
+              "A function that accepts up to three arguments. The findIndex method calls the callback function one time for each element in the array until it finds one where callback returns true",
+            required: true,
+            signature: {
+              params: [
+                { name: "value", type: "T" },
+                { name: "index", type: "number" },
+                { name: "array", type: "T[]" },
+              ],
+              returnType: "boolean",
+            },
+          },
+          {
+            kind: "primitive" as const,
+            name: "thisArg",
+            types: ["any"],
+            description: "An object to which the this keyword can refer in the callback function",
+            required: false,
+          },
+        ],
+        returnType: "number",
+      },
+      flat: {
+        description:
+          "Returns a new array with all sub-array elements concatenated into it recursively up to the specified depth",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "depth",
+            types: ["number"],
+            description: "The maximum recursion depth. Defaults to 1",
+            required: false,
+          },
+        ],
+        returnType: "T[]",
+      },
+      flatMap: {
+        description:
+          "Calls a defined callback function on each element of an array, then flattens the result into a new array",
+        params: [
+          {
+            kind: "function" as const,
+            name: "callback",
+            description:
+              "A function that accepts up to three arguments. The flatMap method calls the callback function one time for each element in the array",
+            required: true,
+            signature: {
+              params: [
+                { name: "value", type: "T" },
+                { name: "index", type: "number" },
+                { name: "array", type: "T[]" },
+              ],
+              returnType: "U",
+            },
+          },
+          {
+            kind: "primitive" as const,
+            name: "thisArg",
+            types: ["any"],
+            description: "An object to which the this keyword can refer in the callback function",
+            required: false,
+          },
+        ],
+        returnType: "U[]",
+      },
     },
     properties: {
       length: {
@@ -679,6 +991,81 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             types: ["string"],
             description:
               "A string containing the text to replace for every successful match of searchValue in this string",
+            required: true,
+          },
+        ],
+        returnType: "string",
+      },
+      repeat: {
+        description: "Returns a string value that is made from count copies concatenated together",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "count",
+            types: ["number"],
+            description: "The number of times to repeat the string",
+            required: true,
+          },
+        ],
+        returnType: "string",
+      },
+      padStart: {
+        description:
+          "Pads the current string with another string until the resulting string reaches the given length, applied from the start of the current string",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "targetLength",
+            types: ["number"],
+            description: "The length of the resulting string once the current string has been padded",
+            required: true,
+          },
+          {
+            kind: "primitive" as const,
+            name: "padString",
+            types: ["string"],
+            description: "The string to pad the current string with. Defaults to space",
+            required: false,
+          },
+        ],
+        returnType: "string",
+      },
+      padEnd: {
+        description:
+          "Pads the current string with another string until the resulting string reaches the given length, applied from the end of the current string",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "targetLength",
+            types: ["number"],
+            description: "The length of the resulting string once the current string has been padded",
+            required: true,
+          },
+          {
+            kind: "primitive" as const,
+            name: "padString",
+            types: ["string"],
+            description: "The string to pad the current string with. Defaults to space",
+            required: false,
+          },
+        ],
+        returnType: "string",
+      },
+      replaceAll: {
+        description: "Replaces all occurrences of a search string with a replacement string",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "searchValue",
+            types: ["string"],
+            description: "The string to search for",
+            required: true,
+          },
+          {
+            kind: "primitive" as const,
+            name: "replaceValue",
+            types: ["string"],
+            description: "The string to replace all occurrences of searchValue with",
             required: true,
           },
         ],

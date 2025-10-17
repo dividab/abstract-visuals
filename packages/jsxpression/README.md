@@ -143,11 +143,17 @@ JSXpression gives you access to common JavaScript methods for working with data 
 
 **Why?** When users write templates, they should be able to format dates, filter lists, and do basic math - but not delete files or make API calls. By exposing only pure, read-only methods, templates stay predictable and safe while covering 99% of real-world needs.
 
-**Array:** `map`, `filter`, `reduce`, `find`, `some`, `every`, `slice`, `includes`, `indexOf`, `join`, `at`, `length`
+**Array (static):** `isArray`
 
-**String:** `charAt`, `charCodeAt`, `concat`, `endsWith`, `includes`, `indexOf`, `lastIndexOf`, `slice`, `split`, `startsWith`, `substring`, `toLowerCase`, `toUpperCase`, `trim`, `trimStart`, `trimEnd`, `replace`, `length`
+**Array (prototype):** `map`, `filter`, `reduce`, `find`, `findIndex`, `some`, `every`, `slice`, `includes`, `indexOf`, `join`, `at`, `concat`, `flat`, `flatMap`, `length`
 
-**Math:** `max`, `min`, `floor`, `ceil`, `round`, `abs`, `PI`, `E`
+**String (prototype):** `charAt`, `charCodeAt`, `concat`, `endsWith`, `includes`, `indexOf`, `lastIndexOf`, `slice`, `split`, `startsWith`, `substring`, `toLowerCase`, `toUpperCase`, `trim`, `trimStart`, `trimEnd`, `replace`, `repeat`, `padStart`, `padEnd`, `replaceAll`, `length`
+
+**Number (static):** `isNaN`, `isFinite`, `parseInt`, `parseFloat`
+
+**Number (prototype):** `toFixed`, `toPrecision`, `toExponential`
+
+**Math:** `max`, `min`, `floor`, `ceil`, `round`, `abs`, `sqrt`, `pow`, `sign`, `sin`, `cos`, `atan2`, `PI`, `E`
 
 ### Examples
 
@@ -156,14 +162,30 @@ JSXpression gives you access to common JavaScript methods for working with data 
 "{data.items.map(item => item.toUpperCase())}";
 "{data.numbers.filter(n => n > 10).length}";
 "{data.items.at(-1)}"; // Last item
+"{data.arrays.flat()}"; // Flatten nested arrays
+"{data.items.findIndex(item => item.id === 5)}"; // Find index
+"{Array.isArray(data.value) ? data.value.length : 0}"; // Type check
 
 // String operations
 "{data.text.toUpperCase().trim()}";
 "{data.name.slice(0, 3)}";
+"{data.label.padStart(10, '0')}"; // "00000label"
+"{data.text.repeat(3)}"; // Repeat string
+"{data.str.replaceAll('old', 'new')}"; // Replace all occurrences
 
 // Math operations
 "{Math.max(...data.scores)}";
 "{Math.round(data.price * 1.2)}";
+"{Math.sqrt(data.area)}"; // Square root
+"{Math.pow(2, 8)}"; // 2^8 = 256
+"{Math.sin(data.angle)}"; // Trigonometry
+
+// Number operations
+"{Number.isNaN(data.value)}";
+"{Number.parseInt(data.stringNumber, 10)}";
+"{data.temperature.toFixed(1)}°C"; // 23.5°C
+"{data.price.toFixed(2)}"; // 19.99
+"{data.airflow.toPrecision(4)} m³/h"; // Technical measurements
 ```
 
 ## Schema Definition
