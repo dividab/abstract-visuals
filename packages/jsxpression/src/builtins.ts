@@ -1,28 +1,48 @@
-interface BuiltinMethod {
-  params: BuiltinParam[];
-  returns: string;
-  callback?: {
-    params: string[];
-    returns: string;
-  };
-}
-
-interface BuiltinParam {
+export interface BuiltinCallbackParamSchema {
   name: string;
   type: string;
+}
+
+interface BuiltinParamBaseSchema {
+  name: string;
+  description?: string;
   required?: boolean;
   variadic?: boolean;
 }
 
-interface BuiltinProperty {
+export interface BuiltinPrimitiveParamSchema extends BuiltinParamBaseSchema {
+  kind: "primitive";
+  types: string[];
+}
+
+export interface BuiltinFunctionParamSchema extends BuiltinParamBaseSchema {
+  kind: "function";
+  signature: {
+    params: BuiltinCallbackParamSchema[];
+    returnType: string;
+  };
+}
+
+export type BuiltinParamSchema = BuiltinPrimitiveParamSchema | BuiltinFunctionParamSchema;
+
+export interface BuiltinMethodSchema {
+  params: BuiltinParamSchema[];
+  returnType: string;
+  description?: string;
+}
+
+export interface BuiltinPropertySchema {
   type: string;
+  description?: string;
   readonly?: boolean;
 }
 
-interface BuiltinSchema {
-  methods?: Record<string, BuiltinMethod>;
-  properties?: Record<string, BuiltinProperty>;
+export interface BuiltinSchema {
+  methods?: Record<string, BuiltinMethodSchema>;
+  properties?: Record<string, BuiltinPropertySchema>;
   global: boolean;
+  intrinsic?: boolean;
+  generic?: string; // Generic type parameters, e.g., "<T>" or "<K, V>"
 }
 
 const MATH = "Math";
@@ -32,446 +52,650 @@ const STRING_PROTOTYPE = "String.prototype";
 const BUILTINS: Record<string, BuiltinSchema> = {
   [MATH]: {
     global: true,
+    intrinsic: false,
+    properties: {
+      PI: {
+        type: "number",
+        readonly: true,
+        description: "The mathematical constant π (pi), approximately 3.14159",
+      },
+      E: {
+        type: "number",
+        readonly: true,
+        description: "Euler's number, the base of natural logarithms, approximately 2.71828",
+      },
+    },
     methods: {
       max: {
+        description: "Returns the larger of a set of supplied numeric expressions",
         params: [
           {
+            kind: "primitive" as const,
             name: "values",
-            type: "number",
+            types: ["number"],
+            description: "Numeric expressions to be evaluated",
             variadic: true,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       min: {
+        description: "Returns the smaller of a set of supplied numeric expressions",
         params: [
           {
+            kind: "primitive" as const,
             name: "values",
-            type: "number",
+            types: ["number"],
+            description: "Numeric expressions to be evaluated",
             variadic: true,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       floor: {
+        description: "Returns the largest integer less than or equal to a number",
         params: [
           {
+            kind: "primitive" as const,
             name: "value",
-            type: "number",
+            types: ["number"],
+            description: "A numeric expression",
             required: true,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       ceil: {
+        description: "Returns the smallest integer greater than or equal to a number",
         params: [
           {
+            kind: "primitive" as const,
             name: "value",
-            type: "number",
+            types: ["number"],
+            description: "A numeric expression",
             required: true,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       round: {
+        description: "Returns a supplied numeric expression rounded to the nearest integer",
         params: [
           {
+            kind: "primitive" as const,
             name: "value",
-            type: "number",
+            types: ["number"],
+            description: "The value to be rounded to the nearest integer",
             required: true,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       abs: {
+        description: "Returns the absolute value of a number",
         params: [
           {
+            kind: "primitive" as const,
             name: "value",
-            type: "number",
+            types: ["number"],
+            description: "A numeric expression for which the absolute value is needed",
             required: true,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
     },
   },
 
   [ARRAY_PROTOTYPE]: {
     global: false,
+    intrinsic: true,
+    generic: "<T>",
     methods: {
       map: {
+        description:
+          "Calls a defined callback function on each element of an array, and returns an array that contains the results",
         params: [
           {
+            kind: "function" as const,
             name: "callback",
-            type: "function",
+            description:
+              "A function that accepts up to three arguments. The map method calls the callback function one time for each element in the array",
             required: true,
+            signature: {
+              params: [
+                { name: "value", type: "T" },
+                { name: "index", type: "number" },
+                { name: "array", type: "T[]" },
+              ],
+              returnType: "U",
+            },
           },
           {
+            kind: "primitive" as const,
             name: "thisArg",
-            type: "any",
+            types: ["any"],
+            description: "An object to which the this keyword can refer in the callback function",
             required: false,
           },
         ],
-        callback: {
-          params: ["T", "number", "T[]"],
-          returns: "U",
-        },
-        returns: "U[]",
+        returnType: "U[]",
       },
       filter: {
+        description: "Returns the elements of an array that meet the condition specified in a callback function",
         params: [
           {
+            kind: "function" as const,
             name: "callback",
-            type: "function",
+            description:
+              "A function that accepts up to three arguments. The filter method calls the callback function one time for each element in the array",
             required: true,
+            signature: {
+              params: [
+                { name: "value", type: "T" },
+                { name: "index", type: "number" },
+                { name: "array", type: "T[]" },
+              ],
+              returnType: "boolean",
+            },
           },
           {
+            kind: "primitive" as const,
             name: "thisArg",
-            type: "any",
+            types: ["any"],
+            description: "An object to which the this keyword can refer in the callback function",
             required: false,
           },
         ],
-        callback: {
-          params: ["T", "number", "T[]"],
-          returns: "boolean",
-        },
-        returns: "T[]",
+        returnType: "T[]",
       },
       reduce: {
+        description:
+          "Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function",
         params: [
           {
+            kind: "function" as const,
             name: "callback",
-            type: "function",
+            description:
+              "A function that accepts up to four arguments. The reduce method calls the callback function one time for each element in the array",
             required: true,
+            signature: {
+              params: [
+                { name: "previousValue", type: "U" },
+                { name: "currentValue", type: "T" },
+                { name: "currentIndex", type: "number" },
+                { name: "array", type: "T[]" },
+              ],
+              returnType: "U",
+            },
           },
           {
+            kind: "primitive" as const,
             name: "initialValue",
-            type: "any",
+            types: ["any"],
+            description: "If initialValue is specified, it is used as the initial value to start the accumulation",
             required: false,
           },
         ],
-        callback: {
-          params: ["U", "T", "number", "T[]"],
-          returns: "U",
-        },
-        returns: "U",
+        returnType: "U",
       },
       find: {
+        description:
+          "Returns the value of the first element in the array where predicate is true, and undefined otherwise",
         params: [
           {
+            kind: "function" as const,
             name: "callback",
-            type: "function",
+            description:
+              "A function that accepts up to three arguments. The find method calls the callback function one time for each element in the array, in ascending order, until it finds one where callback returns true",
             required: true,
+            signature: {
+              params: [
+                { name: "value", type: "T" },
+                { name: "index", type: "number" },
+                { name: "array", type: "T[]" },
+              ],
+              returnType: "boolean",
+            },
           },
           {
+            kind: "primitive" as const,
             name: "thisArg",
-            type: "any",
+            types: ["any"],
+            description: "An object to which the this keyword can refer in the callback function",
             required: false,
           },
         ],
-        callback: {
-          params: ["T", "number", "T[]"],
-          returns: "boolean",
-        },
-        returns: "T | undefined",
+        returnType: "T | undefined",
       },
       some: {
+        description: "Determines whether the specified callback function returns true for any element of an array",
         params: [
           {
+            kind: "function" as const,
             name: "callback",
-            type: "function",
+            description:
+              "A function that accepts up to three arguments. The some method calls the callback function for each element in the array until the callback returns true, or until the end of the array",
             required: true,
+            signature: {
+              params: [
+                { name: "value", type: "T" },
+                { name: "index", type: "number" },
+                { name: "array", type: "T[]" },
+              ],
+              returnType: "boolean",
+            },
           },
           {
+            kind: "primitive" as const,
             name: "thisArg",
-            type: "any",
+            types: ["any"],
+            description: "An object to which the this keyword can refer in the callback function",
             required: false,
           },
         ],
-        callback: {
-          params: ["T", "number", "T[]"],
-          returns: "boolean",
-        },
-        returns: "boolean",
+        returnType: "boolean",
       },
       every: {
+        description: "Determines whether all the members of an array satisfy the specified test",
         params: [
           {
+            kind: "function" as const,
             name: "callback",
-            type: "function",
+            description:
+              "A function that accepts up to three arguments. The every method calls the callback function for each element in the array until the callback returns false, or until the end of the array",
             required: true,
+            signature: {
+              params: [
+                { name: "value", type: "T" },
+                { name: "index", type: "number" },
+                { name: "array", type: "T[]" },
+              ],
+              returnType: "boolean",
+            },
           },
           {
+            kind: "primitive" as const,
             name: "thisArg",
-            type: "any",
+            types: ["any"],
+            description: "An object to which the this keyword can refer in the callback function",
             required: false,
           },
         ],
-        callback: {
-          params: ["T", "number", "T[]"],
-          returns: "boolean",
-        },
-        returns: "boolean",
+        returnType: "boolean",
       },
       slice: {
+        description:
+          "Returns a copy of a section of an array. For both start and end, a negative index can be used to indicate an offset from the end of the array",
         params: [
           {
+            kind: "primitive" as const,
             name: "start",
-            type: "number",
+            types: ["number"],
+            description: "The beginning index of the specified portion of the array",
             required: false,
           },
           {
+            kind: "primitive" as const,
             name: "end",
-            type: "number",
+            types: ["number"],
+            description:
+              "The end index of the specified portion of the array. This is exclusive of the element at the index 'end'",
             required: false,
           },
         ],
-        returns: "T[]",
+        returnType: "T[]",
       },
       includes: {
+        description: "Determines whether an array includes a certain element, returning true or false as appropriate",
         params: [
           {
+            kind: "primitive" as const,
             name: "searchElement",
-            type: "T",
+            types: ["T"],
+            description: "The value to locate in the array",
             required: true,
           },
           {
+            kind: "primitive" as const,
             name: "fromIndex",
-            type: "number",
+            types: ["number"],
+            description:
+              "The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0",
             required: false,
           },
         ],
-        returns: "boolean",
+        returnType: "boolean",
       },
       indexOf: {
+        description: "Returns the index of the first occurrence of a value in an array, or -1 if it is not present",
         params: [
           {
+            kind: "primitive" as const,
             name: "searchElement",
-            type: "T",
+            types: ["T"],
+            description: "The value to locate in the array",
             required: true,
           },
           {
+            kind: "primitive" as const,
             name: "fromIndex",
-            type: "number",
+            types: ["number"],
+            description:
+              "The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0",
             required: false,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       join: {
+        description: "Adds all the elements of an array into a string, separated by the specified separator string",
         params: [
           {
+            kind: "primitive" as const,
             name: "separator",
-            type: "string",
+            types: ["string"],
+            description:
+              "A string used to separate one element of the array from the next in the resulting string. If omitted, the array elements are separated with a comma",
             required: false,
           },
         ],
-        returns: "string",
+        returnType: "string",
       },
       at: {
+        description: "Returns the item located at the specified index",
         params: [
           {
+            kind: "primitive" as const,
             name: "index",
-            type: "number",
+            types: ["number"],
+            description:
+              "The zero-based index of the desired code unit. A negative index will count back from the last item",
             required: true,
           },
         ],
-        returns: "T | undefined",
+        returnType: "T | undefined",
       },
     },
     properties: {
       length: {
         type: "number",
         readonly: true,
+        description: "Gets the length of the array. This is a number one higher than the highest index in the array",
       },
     },
   },
 
   [STRING_PROTOTYPE]: {
     global: false,
+    intrinsic: true,
     methods: {
       charAt: {
+        description: "Returns the character at the specified index",
         params: [
           {
+            kind: "primitive" as const,
             name: "index",
-            type: "number",
+            types: ["number"],
+            description: "The zero-based index of the desired character",
             required: true,
           },
         ],
-        returns: "string",
+        returnType: "string",
       },
       charCodeAt: {
+        description: "Returns the Unicode value of the character at the specified location",
         params: [
           {
+            kind: "primitive" as const,
             name: "index",
-            type: "number",
+            types: ["number"],
+            description:
+              "The zero-based index of the desired character. If there is no character at the specified index, NaN is returned",
             required: true,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       concat: {
+        description: "Returns a string that contains the concatenation of two or more strings",
         params: [
           {
+            kind: "primitive" as const,
             name: "strings",
-            type: "string",
+            types: ["string"],
+            description: "The strings to append to the end of the string",
             variadic: true,
           },
         ],
-        returns: "string",
+        returnType: "string",
       },
       endsWith: {
+        description:
+          "Returns true if the sequence of elements of searchString converted to a String is the same as the corresponding elements of this object (converted to a String) starting at endPosition – length(this). Otherwise returns false",
         params: [
           {
+            kind: "primitive" as const,
             name: "searchString",
-            type: "string",
+            types: ["string"],
+            description: "The characters to be searched for at the end of this string",
             required: true,
           },
           {
+            kind: "primitive" as const,
             name: "length",
-            type: "number",
+            types: ["number"],
+            description: "If provided, it is used as the length of this string. Defaults to this string's length",
             required: false,
           },
         ],
-        returns: "boolean",
+        returnType: "boolean",
       },
       includes: {
+        description:
+          "Returns true if searchString appears as a substring of the result of converting this object to a String, at one or more positions that are greater than or equal to position; otherwise, returns false",
         params: [
           {
+            kind: "primitive" as const,
             name: "searchString",
-            type: "string",
+            types: ["string"],
+            description: "The string to search for",
             required: true,
           },
           {
+            kind: "primitive" as const,
             name: "position",
-            type: "number",
+            types: ["number"],
+            description: "The position in this string at which to begin searching for searchString. Defaults to 0",
             required: false,
           },
         ],
-        returns: "boolean",
+        returnType: "boolean",
       },
       indexOf: {
+        description: "Returns the position of the first occurrence of a substring",
         params: [
           {
+            kind: "primitive" as const,
             name: "searchString",
-            type: "string",
+            types: ["string"],
+            description: "The substring to search for in the string",
             required: true,
           },
           {
+            kind: "primitive" as const,
             name: "position",
-            type: "number",
+            types: ["number"],
+            description:
+              "The index at which to begin searching the String object. If omitted, search starts at the beginning of the string",
             required: false,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       lastIndexOf: {
+        description: "Returns the last occurrence of a substring in the string",
         params: [
           {
+            kind: "primitive" as const,
             name: "searchString",
-            type: "string",
+            types: ["string"],
+            description: "The substring to search for",
             required: true,
           },
           {
+            kind: "primitive" as const,
             name: "position",
-            type: "number",
+            types: ["number"],
+            description:
+              "The index at which to begin searching. If omitted, the search begins at the end of the string",
             required: false,
           },
         ],
-        returns: "number",
+        returnType: "number",
       },
       slice: {
+        description: "Returns a section of a string",
         params: [
           {
+            kind: "primitive" as const,
             name: "start",
-            type: "number",
+            types: ["number"],
+            description: "The index to the beginning of the specified portion of stringObj",
             required: false,
           },
           {
+            kind: "primitive" as const,
             name: "end",
-            type: "number",
+            types: ["number"],
+            description:
+              "The index to the end of the specified portion of stringObj. The substring includes the characters up to, but not including, the character indicated by end",
             required: false,
           },
         ],
-        returns: "string",
+        returnType: "string",
       },
       split: {
+        description: "Split a string into substrings using the specified separator and return them as an array",
         params: [
           {
+            kind: "primitive" as const,
             name: "separator",
-            type: "string | RegExp",
+            types: ["string", "RegExp"],
+            description:
+              "A string or Regular Expression that identifies character or characters to use in separating the string. If omitted, a single-element array containing the entire string is returned",
             required: false,
           },
           {
+            kind: "primitive" as const,
             name: "limit",
-            type: "number",
+            types: ["number"],
+            description: "A value used to limit the number of elements returned in the array",
             required: false,
           },
         ],
-        returns: "string[]",
+        returnType: "string[]",
       },
       startsWith: {
+        description:
+          "Returns true if the sequence of elements of searchString converted to a String is the same as the corresponding elements of this object (converted to a String) starting at position. Otherwise returns false",
         params: [
           {
+            kind: "primitive" as const,
             name: "searchString",
-            type: "string",
+            types: ["string"],
+            description: "The characters to be searched for at the start of this string",
             required: true,
           },
           {
+            kind: "primitive" as const,
             name: "position",
-            type: "number",
+            types: ["number"],
+            description: "The position in this string at which to begin searching for searchString. Defaults to 0",
             required: false,
           },
         ],
-        returns: "boolean",
+        returnType: "boolean",
       },
       substring: {
+        description: "Returns the substring at the specified location within a String object",
         params: [
           {
+            kind: "primitive" as const,
             name: "start",
-            type: "number",
+            types: ["number"],
+            description: "The zero-based index number indicating the beginning of the substring",
             required: true,
           },
           {
+            kind: "primitive" as const,
             name: "end",
-            type: "number",
+            types: ["number"],
+            description:
+              "Zero-based index number indicating the end of the substring. The substring includes the characters up to, but not including, the character indicated by end",
             required: false,
           },
         ],
-        returns: "string",
+        returnType: "string",
       },
       toLowerCase: {
+        description: "Converts all the alphabetic characters in a string to lowercase",
         params: [],
-        returns: "string",
+        returnType: "string",
       },
       toUpperCase: {
+        description: "Converts all the alphabetic characters in a string to uppercase",
         params: [],
-        returns: "string",
+        returnType: "string",
       },
       trim: {
+        description: "Removes the leading and trailing white space and line terminator characters from a string",
         params: [],
-        returns: "string",
+        returnType: "string",
       },
       trimStart: {
+        description: "Removes the leading white space and line terminator characters from a string",
         params: [],
-        returns: "string",
+        returnType: "string",
       },
       trimEnd: {
+        description: "Removes the trailing white space and line terminator characters from a string",
         params: [],
-        returns: "string",
+        returnType: "string",
+      },
+      replace: {
+        description: "Replaces text in a string, using a search string",
+        params: [
+          {
+            kind: "primitive" as const,
+            name: "searchValue",
+            types: ["string"],
+            description: "A string to search for",
+            required: true,
+          },
+          {
+            kind: "primitive" as const,
+            name: "replaceValue",
+            types: ["string"],
+            description:
+              "A string containing the text to replace for every successful match of searchValue in this string",
+            required: true,
+          },
+        ],
+        returnType: "string",
       },
     },
     properties: {
       length: {
         type: "number",
         readonly: true,
+        description: "Returns the length of a String object",
       },
     },
   },
 } as const;
 
 export function getBuiltins(): Record<string, BuiltinSchema> {
-  // *Very* important to return a clone here to avoid mutations to the original object.
   return structuredClone(BUILTINS);
 }
 
@@ -500,7 +724,7 @@ export function isMethodAllowed(methodName: string): boolean {
   return false;
 }
 
-export function getMethodDefinition(methodName: string): BuiltinMethod | null {
+export function getMethodDefinition(methodName: string): BuiltinMethodSchema | null {
   for (const schema of Object.values(BUILTINS)) {
     if (schema.methods?.[methodName]) {
       return schema.methods[methodName];
