@@ -113,6 +113,64 @@ describe("compile", () => {
     });
   });
 
+  describe("spread elements", () => {
+    it("should compile spread in arrays", () => {
+      const ast = parse("<div>{[...data.items]}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", null, [...data.items]);');
+    });
+
+    it("should compile spread in objects", () => {
+      const ast = parse("<div style={{ ...data.styles }}>Text</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", { style: { ...data.styles } }, "Text");');
+    });
+
+    it("should compile mixed spread and regular elements in arrays", () => {
+      const ast = parse("<div>{[1, ...data.items, 2]}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", null, [1, ...data.items, 2]);');
+    });
+
+    it("should compile mixed spread and regular properties in objects", () => {
+      const ast = parse("<div style={{ color: 'red', ...data.styles, width: 100 }}>Text</div>");
+      const result = compile(ast);
+      expect(result).toBe(
+        '"use strict";return h("div", { style: { color: "red", ...data.styles, width: 100 } }, "Text");'
+      );
+    });
+
+    it("should compile multiple spreads in arrays", () => {
+      const ast = parse("<div>{[...data.first, ...data.second]}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", null, [...data.first, ...data.second]);');
+    });
+
+    it("should compile multiple spreads in objects", () => {
+      const ast = parse("<div style={{ ...data.base, ...data.override }}>Text</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", { style: { ...data.base, ...data.override } }, "Text");');
+    });
+
+    it("should compile spread in function call arguments", () => {
+      const ast = parse("<div>{Math.max(...data.numbers)}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", null, Math.max(...data.numbers));');
+    });
+
+    it("should compile spread with map in function call", () => {
+      const ast = parse("<div>{Math.min(...data.items.map(x => x.price))}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", null, Math.min(...data.items.map((x) => x.price)));');
+    });
+
+    it("should compile mixed spread and regular arguments", () => {
+      const ast = parse("<div>{Math.max(0, ...data.numbers, 100)}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", null, Math.max(0, ...data.numbers, 100));');
+    });
+  });
+
   // TODO: Add ChainExpression support for optional chaining (?.)
   // it("should compile nested object access with conditionals", () => {
   //   const ast = parse("<div>{props.user?.profile?.name || 'Anonymous'}</div>");
