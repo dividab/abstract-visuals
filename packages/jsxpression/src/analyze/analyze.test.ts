@@ -541,9 +541,9 @@ describe("analyze - consolidated tests", () => {
 
         const ast = parse('<Badge variant="danger" />');
         const result = analyze(ast, schema);
-        expect(result.hasWarnings).toBe(true);
-        expect(result.warnings[0].code).toBe("INVALID_ATTRIBUTE_VALUE");
-        expect(result.warnings[0].suggestions).toEqual(["primary", "secondary"]);
+        expect(result.hasErrors).toBe(true);
+        expect(result.errors[0].code).toBe("INVALID_ATTRIBUTE_VALUE");
+        expect(result.errors[0].suggestions).toEqual(["primary", "secondary"]);
       });
 
       it("should block invalid elements", () => {
