@@ -565,6 +565,191 @@ describe("analyze - consolidated tests", () => {
       });
     });
 
+    describe("spread attributes", () => {
+      it("should allow spread with data object", () => {
+        const schema: Schema = {
+          data: {
+            props: {
+              type: "object",
+              shape: {
+                title: { type: "string" },
+                count: { type: "number" },
+              },
+            },
+          },
+          elements: {
+            Card: {
+              props: {
+                title: { type: "string" },
+                count: { type: "number" },
+              },
+            },
+          },
+        };
+
+        const ast = parse("<Card {...data.props} />");
+        const result = analyze(ast, schema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should allow spread with nested data object", () => {
+        const schema: Schema = {
+          data: {
+            user: {
+              type: "object",
+              shape: {
+                attributes: {
+                  type: "object",
+                  shape: {
+                    style: { type: "string" },
+                    className: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          elements: {
+            Text: {
+              props: {
+                style: { type: "string" },
+                className: { type: "string" },
+              },
+            },
+          },
+        };
+
+        const ast = parse("<Text {...data.user.attributes} />");
+        const result = analyze(ast, schema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should allow spread with arrow function parameter", () => {
+        const schema: Schema = {
+          data: {
+            items: {
+              type: "array",
+              shape: {
+                type: "object",
+                shape: {
+                  name: { type: "string" },
+                  props: {
+                    type: "object",
+                    shape: {
+                      color: { type: "string" },
+                      size: { type: "number" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          elements: {
+            Item: {
+              props: {
+                color: { type: "string" },
+                size: { type: "number" },
+              },
+            },
+            div: {
+              props: {},
+            },
+          },
+        };
+
+        const ast = parse("<div>{data.items.map(item => <Item {...item.props} />)}</div>");
+        const result = analyze(ast, schema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should allow spread with the parameter itself", () => {
+        const schema: Schema = {
+          data: {
+            items: {
+              type: "array",
+              shape: {
+                type: "object",
+                shape: {
+                  name: { type: "string" },
+                  value: { type: "number" },
+                },
+              },
+            },
+          },
+          elements: {
+            Item: {
+              props: {
+                name: { type: "string" },
+                value: { type: "number" },
+              },
+            },
+            div: {
+              props: {},
+            },
+          },
+        };
+
+        const ast = parse("<div>{data.items.map(item => <Item {...item} />)}</div>");
+        const result = analyze(ast, schema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should allow spread combined with regular attributes", () => {
+        const schema: Schema = {
+          data: {
+            props: {
+              type: "object",
+              shape: {
+                title: { type: "string" },
+              },
+            },
+          },
+          elements: {
+            Card: {
+              props: {
+                title: { type: "string" },
+                highlighted: { type: "boolean" },
+              },
+            },
+          },
+        };
+
+        const ast = parse("<Card {...data.props} highlighted={true} />");
+        const result = analyze(ast, schema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should allow multiple spreads", () => {
+        const schema: Schema = {
+          data: {
+            baseProps: {
+              type: "object",
+              shape: {
+                title: { type: "string" },
+              },
+            },
+            extraProps: {
+              type: "object",
+              shape: {
+                count: { type: "number" },
+              },
+            },
+          },
+          elements: {
+            Card: {
+              props: {
+                title: { type: "string" },
+                count: { type: "number" },
+              },
+            },
+          },
+        };
+
+        const ast = parse("<Card {...data.baseProps} {...data.extraProps} />");
+        const result = analyze(ast, schema);
+        expect(result.hasErrors).toBe(false);
+      });
+    });
+
     describe("empty expressions", () => {
       it("should allow empty JSX expressions {} in children", () => {
         const ast = parse("<Text>{}</Text>");

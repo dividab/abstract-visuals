@@ -111,10 +111,6 @@ const ISSUES_DEFINITIONS: Record<string, IssueDefinition> = {
     severity: 3,
     runtimeOnly: true,
   },
-  JSX_SPREAD_NOT_ALLOWED: {
-    severity: 3,
-    runtimeOnly: true,
-  },
   METHOD_NOT_ALLOWED: {
     severity: 3,
     runtimeOnly: false,

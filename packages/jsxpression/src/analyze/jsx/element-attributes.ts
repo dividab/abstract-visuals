@@ -33,12 +33,6 @@ export function analyzeElementAttributes(
 
       for (const attribute of node.openingElement.attributes) {
         if (!isJsxAttribute(attribute)) {
-          analysisReport.addIssue(
-            "JSX_SPREAD_NOT_ALLOWED",
-            "JSX spread attributes not allowed",
-            getNodeRange(attribute),
-            currentContext
-          );
           continue;
         }
 
