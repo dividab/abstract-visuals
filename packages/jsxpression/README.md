@@ -2,14 +2,34 @@
 
 **Safe JSX expressions with schema validation**
 
-JSXpression lets you render dynamic JSX templates with security and type safety. Perfect for user-configurable components, and other dynamic content.
+JSXpression lets you render dynamic JSX templates in a controlled, type-safe sandbox. Perfect for user-configurable components, low-code environments, and other places where you want flexibility without giving up control.
+
+Under the hood it parses your JSX into an AST, validates it against a schema, compiles it to safe JavaScript, and runs it in isolation – with only your data and components available.
+
+## What's it for?
+
+Let users write JSX – safely. You define a schema describing which components and data are available, and JSXpression takes care of the rest: parsing, validation, and execution. No risk, no globals, no surprises.
+
+**Bonus:** You can generate `.d.ts` files straight from your schema for full editor support – autocomplete, error highlighting, inline docs – all the TypeScript DX, none of the compilation overhead. Your schema stays the single source of truth.
 
 ## Features
 
-- 🛡️ **Security** - Static analysis prevents dangerous operations
-- 📋 **Schema validation** - Define exactly what data and components are available
-- ⚡ **Performance** - No runtime compilation needed
-- 🎯 **Familiar** - Standard JSX syntax
+- 🛡️ **Secure by design** – Static analysis blocks everything unsafe. No `eval`, no `window`, no `document`, only pure, allowed operations
+- 📋 **Schema-driven** – Explicitly define what data and components exist. Anything not in the schema simply doesn't exist
+- ⚡ **Fast** – Parse and validate once, then run freely. No runtime compilation required
+- 🎯 **Familiar** – It's just JSX. The same syntax developers already know, now with guardrails
+
+## Installation
+
+```bash
+npm install jsxpression
+```
+
+or
+
+```bash
+pnpm add jsxpression
+```
 
 ## Quick Start
 
@@ -119,7 +139,9 @@ JSXpression supports different expression patterns:
 
 ## Supported Methods
 
-JSXpression includes built-in support for safe JavaScript methods:
+JSXpression gives you access to common JavaScript methods for working with data - but only the safe ones. No methods that modify arrays in place, no DOM access, no network calls. Just the everyday operations you need for formatting and transforming data in templates.
+
+**Why?** When users write templates, they should be able to format dates, filter lists, and do basic math - but not delete files or make API calls. By exposing only pure, read-only methods, templates stay predictable and safe while covering 99% of real-world needs.
 
 **Array:** `map`, `filter`, `reduce`, `find`, `some`, `every`, `slice`, `includes`, `indexOf`, `join`, `at`, `length`
 
@@ -171,44 +193,81 @@ const schema = {
 };
 ```
 
-## Safety Features
-
-- **No eval** - Expressions are parsed and validated, never executed as strings
-- **Access control** - Only schema-defined data and components are accessible
-- **Method filtering** - Only safe, pure methods are allowed (no `push`, `pop`, etc.)
-- **No globals** - No access to `window`, `document`, or other dangerous objects
-- **Static data only** - Meant for rendering data, not handling interactions or side effects
-
 ## API
 
-### `render(expression, schema, options)`
+### `render(source, schema, options?)`
 
 Renders a JSX expression with data and components.
 
-### `validate(expression, schema, options)`
+**Arguments:**
 
-Validates an expression against a schema without rendering.
+- `source: string` - The JSX expression to render (e.g., `"<Text>{data.name}</Text>"`)
+- `schema: Schema` - Schema defining available data properties and components
+- `options?: RenderOptions` - Optional rendering settings:
+  - `data?: Record<string, any>` - The actual data available as `data.*` in expressions
+  - `components?: Record<string, Component>` - Component implementations
+  - `createElement?: Function` - Optional createElement function (e.g., React's `createElement`)
+  - `minSeverity?: 1 | 2 | 3` - Minimum severity to abort (1=info, 2=warning, 3=error). Default: 3
+
+**Returns:** The rendered result (type depends on the provided createElement function)
+
+**Throws:** `AnalysisError` if validation fails
+
+**Example:**
+
+```typescript
+const result = render("<Card title={data.title}>{data.content}</Card>", schema, {
+  data: { title: "Hello", content: "World" },
+  components: { Card: MyCardComponent },
+  createElement: React.createElement,
+});
+```
+
+### `validate(source, schema, options?)`
+
+Validates an expression against a schema without rendering. Useful for checking user input before execution.
+
+**Arguments:**
+
+- `source: string` - The JSX expression to validate
+- `schema: Schema` - Schema to validate against
+- `options?: ValidateOptions` - Optional validation settings:
+  - `minSeverity?: 1 | 2 | 3` - Minimum severity to count as failure. Default: 3
+
+**Returns:** `ValidateResult` - Either `{ ok: true }` or `{ ok: false, error: AnalysisError | ParseError }`
+
+**Example:**
+
+```typescript
+const result = validate("{data.user.invalidProperty}", schema);
+
+if (!result.ok) {
+  console.error("Validation failed:", result.error.message);
+
+  // Analysis errors give you the full breakdown
+  if (result.error instanceof AnalysisError) {
+    result.error.report.issues.forEach((issue) => {
+      console.error(`${issue.message} at line ${issue.range.start.line}`);
+    });
+    // Also available: .errors (severity 3), .warnings (severity 2), .infos (severity 1)
+  }
+}
+```
 
 ### `generateTypeScriptDefinitions(schema)`
 
 Generates TypeScript type definitions from a schema. Use this to enable autocomplete and type checking in code editors like Monaco Editor or VS Code.
 
-## Editor Support: TypeScript DX Without TypeScript
+**Arguments:**
 
-JSXpression provides the full TypeScript developer experience - autocomplete, type checking, and inline documentation - without requiring TypeScript syntax in your expressions.
+- `schema: Schema` - The schema to generate types from
+
+**Returns:** `string` - Complete TypeScript `.d.ts` file content
+
+**Example:**
 
 ```typescript
-// ✅ API is fully typed
-const result = render(expression, schema, options);
-
-// ✅ Schema validation catches errors at runtime
-validate("{data.user.invalid}", schema); // Error: Property doesn't exist
-
-// ✅ Generated type definitions enable full IntelliSense
 const definitions = generateTypeScriptDefinitions(schema);
-// Use in Monaco Editor or VS Code for autocomplete and error highlighting
+// Add to Monaco Editor:
+monaco.languages.typescript.javascriptDefaults.addExtraLib(definitions, "jsxpression-types.d.ts");
 ```
-
-**How it works:** Expressions use standard JavaScript, but `generateTypeScriptDefinitions()` generates `.d.ts` files from your schema. This gives editors complete type information for autocomplete, error highlighting, and inline documentation. Since we only allow simple expressions and the schema defines all available types, we can validate everything at runtime without needing a TypeScript compiler.
-
-**The result:** Same developer experience as TypeScript, zero compilation overhead, full type safety at runtime. The schema becomes the single source of truth for both validation and editor tooling.
