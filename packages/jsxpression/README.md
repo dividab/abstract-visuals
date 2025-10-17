@@ -171,26 +171,99 @@ JSXpression gives you access to common JavaScript methods for working with data 
 Define what data and components are available:
 
 ```typescript
+import type { Schema } from "jsxpression";
+
 const schema = {
+  //
+  // Data schema – everything under `data.*` is available in expressions
+  //
   data: {
     user: {
       type: "object",
+      description: "User info shown in templates",
       shape: {
-        name: { type: "string" },
+        name: { type: "string", required: true },
         age: { type: "number" },
+        isAdmin: { type: "boolean" },
+        role: { type: "string", enum: ["user", "admin", "guest"] },
+        address: {
+          type: "object",
+          shape: {
+            city: { type: "string" },
+            zip: { type: "number" },
+          },
+        },
+        tags: {
+          type: "array",
+          description: "User tags (array of strings)",
+          shape: { type: "string" },
+        },
       },
     },
-    items: { type: "array", shape: { type: "string" } },
+
+    stats: {
+      type: "object",
+      shape: {
+        scores: { type: "array", shape: { type: "number" } },
+      },
+    },
+
+    onClick: {
+      type: "function",
+      description: "A safe callback (pure, no side effects)",
+    },
   },
+
+  //
+  // Element schema – defines which JSX elements can be used
+  //
   elements: {
-    Card: {
+    Text: {
+      description: "Simple text element",
       props: {
-        title: { type: "string" },
+        size: { type: "number" },
+        weight: { type: "string", enum: ["regular", "bold"] },
+        color: { type: "string" },
+      },
+      // no allowedChildren = can contain anything
+    },
+
+    Image: {
+      description: "Self-closing image element",
+      props: {
+        src: { type: "string", required: true },
+        alt: { type: "string" },
+        width: { type: "number" },
+        height: { type: "number" },
+      },
+      allowedChildren: [], // means <Image src="..." /> only
+    },
+
+    Button: {
+      description: "Button with event handler and label",
+      props: {
+        label: { type: "string", required: true },
+        onClick: { type: "function" },
+        variant: { type: "string", enum: ["primary", "secondary"] },
+      },
+      allowedChildren: ["Text"], // can only contain <Text>
+    },
+
+    Card: {
+      description: "Wrapper element for grouping content",
+      props: {
+        title: { type: "string", required: true },
         highlighted: { type: "boolean" },
       },
+      allowedChildren: ["Text", "Image", "Button"], // allowed inside <Card>...</Card>
     },
   },
-};
+} satisfies Schema;
+
+// <Text size={16} color="blue">{data.user.name}</Text>
+// <Image src={data.user.avatar} />
+// <Button label="Click" onClick={data.onClick}><Text>OK</Text></Button>
+// <Card title="Profile"><Text>{data.user.role}</Text><Button label="Edit" /></Card>
 ```
 
 ## API
@@ -225,7 +298,7 @@ const result = render("<Card title={data.title}>{data.content}</Card>", schema, 
 
 ### `validate(source, schema, options?)`
 
-Validates an expression against a schema without rendering. Useful for checking user input before execution.
+Validatesa JSX expression against a schema without rendering. Great for checking templates before persisting or execution.
 
 **Arguments:**
 
