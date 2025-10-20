@@ -200,11 +200,22 @@ function emitExpression(node: CompilableExpression): string {
       return `(${emitExpression(node.test)}?${emitExpression(node.consequent)}:${emitExpression(node.alternate)})`;
     case "ArrayExpression":
       return `[${node.elements
-        .map((element) => (element ? emitExpression(element as CompilableExpression) : "undefined"))
+        .map((element) => {
+          if (!element) {
+            return "undefined";
+          }
+          if (element.type === "SpreadElement") {
+            return `...${emitExpression(element.argument as CompilableExpression)}`;
+          }
+          return emitExpression(element as CompilableExpression);
+        })
         .join(", ")}]`;
     case "ObjectExpression": {
       const keyValuePairs = node.properties
         .map((property) => {
+          if (property.type === "SpreadElement") {
+            return `...${emitExpression(property.argument as CompilableExpression)}`;
+          }
           // analyze() ensures these are simple properties
           const prop = property as any; // analyze() guarantees Property type
           const key = getAstKeyString(prop.key as Identifier | Literal);
@@ -225,7 +236,14 @@ function emitExpression(node: CompilableExpression): string {
     }
     case "CallExpression": {
       const callee = emitExpression(node.callee);
-      const args = node.arguments.map((argument) => emitExpression(argument as CompilableExpression)).join(", ");
+      const args = node.arguments
+        .map((argument) => {
+          if (argument.type === "SpreadElement") {
+            return `...${emitExpression(argument.argument as CompilableExpression)}`;
+          }
+          return emitExpression(argument as CompilableExpression);
+        })
+        .join(", ");
       return `${callee}(${args})`;
     }
     case "ArrowFunctionExpression": {

@@ -7,56 +7,161 @@ interface Issue {
   code: IssueCode;
   message: string;
   severity: IssueSeverity;
+  runtimeOnly: boolean;
   range: Range;
   suggestions: string[];
   snapshot: ValidationContextSnapshot;
 }
 
-const ISSUE_CODE_TO_ISSUE_SEVERITY_MAPPING = {
-  // Errors
-  VARIABLE_NOT_ALLOWED: 3,
-  IDENTIFIER_NOT_ALLOWED: 3,
-  IMPORT_NOT_ALLOWED: 3,
-  EXPORT_NOT_ALLOWED: 3,
-  ASSIGNMENT_NOT_ALLOWED: 3,
-  UPDATE_NOT_ALLOWED: 3,
-  DELETE_NOT_ALLOWED: 3,
-  NEW_NOT_ALLOWED: 3,
-  THIS_NOT_ALLOWED: 3,
-  SUPER_NOT_ALLOWED: 3,
-  YIELD_NOT_ALLOWED: 3,
-  AWAIT_NOT_ALLOWED: 3,
-  ARROW_FUNCTION_BLOCK_BODY_NOT_ALLOWED: 3,
-  FUNCTION_NOT_ALLOWED: 3,
-  CLASS_NOT_ALLOWED: 3,
-  TRY_NOT_ALLOWED: 3,
-  THROW_NOT_ALLOWED: 3,
-  WITH_NOT_ALLOWED: 3,
-  DEBUGGER_NOT_ALLOWED: 3,
-  COMPUTED_ACCESS_NOT_ALLOWED: 3,
-  COMPUTED_PROPERTY_NOT_ALLOWED: 3,
-  DIRECT_CALL_NOT_ALLOWED: 3,
-  DYNAMIC_METHOD_NOT_ALLOWED: 3,
-  METHOD_NOT_ALLOWED: 3,
-  INVALID_DATA_ACCESS: 3,
-  INVALID_PARAMETER_ACCESS: 3,
-  INVALID_ELEMENT: 3,
-  JSX_SPREAD_NOT_ALLOWED: 3,
-  INVALID_ATTRIBUTE: 3,
-  MISSING_REQUIRED_ATTRIBUTE: 3,
-  INVALID_CHILD_ELEMENT: 3,
+interface IssueDefinition {
+  severity: IssueSeverity;
+  runtimeOnly: boolean;
+}
 
-  // Warnings
-  MEMBER_CHAIN_TOO_DEEP: 2,
-  TOO_MANY_PARAMETERS: 2,
-  INSUFFICIENT_PARAMETERS: 2,
-  INVALID_ATTRIBUTE_VALUE: 2,
-
-  // Infos
-  SELF_CLOSING_WITH_CHILDREN: 1,
+const ISSUES_DEFINITIONS: Record<string, IssueDefinition> = {
+  VARIABLE_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  IDENTIFIER_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  IMPORT_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  EXPORT_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  ASSIGNMENT_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  UPDATE_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  DELETE_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  NEW_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  THIS_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  SUPER_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  YIELD_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  AWAIT_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  ARROW_FUNCTION_BLOCK_BODY_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  FUNCTION_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  CLASS_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  TRY_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  THROW_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  WITH_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  DEBUGGER_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  COMPUTED_ACCESS_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  COMPUTED_PROPERTY_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  DIRECT_CALL_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  DYNAMIC_METHOD_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  METHOD_NOT_ALLOWED: {
+    severity: 3,
+    runtimeOnly: false,
+  },
+  INVALID_DATA_ACCESS: {
+    severity: 3,
+    runtimeOnly: false,
+  },
+  INVALID_PARAMETER_ACCESS: {
+    severity: 3,
+    runtimeOnly: false,
+  },
+  INVALID_ELEMENT: {
+    severity: 3,
+    runtimeOnly: false,
+  },
+  INVALID_ATTRIBUTE: {
+    severity: 3,
+    runtimeOnly: false,
+  },
+  MISSING_REQUIRED_ATTRIBUTE: {
+    severity: 3,
+    runtimeOnly: false,
+  },
+  INVALID_CHILD_ELEMENT: {
+    severity: 3,
+    runtimeOnly: true,
+  },
+  MEMBER_CHAIN_TOO_DEEP: {
+    severity: 2,
+    runtimeOnly: true,
+  },
+  TOO_MANY_PARAMETERS: {
+    severity: 2,
+    runtimeOnly: false,
+  },
+  INSUFFICIENT_PARAMETERS: {
+    severity: 2,
+    runtimeOnly: false,
+  },
+  INVALID_ATTRIBUTE_VALUE: {
+    severity: 3,
+    runtimeOnly: false,
+  },
+  SELF_CLOSING_WITH_CHILDREN: {
+    severity: 1,
+    runtimeOnly: true,
+  },
 } as const;
 
-export type IssueCode = keyof typeof ISSUE_CODE_TO_ISSUE_SEVERITY_MAPPING;
+export type IssueCode = keyof typeof ISSUES_DEFINITIONS;
 
 export class AnalysisReport {
   readonly #issues: Issue[] = [];
@@ -96,13 +201,15 @@ export class AnalysisReport {
     snapshot: ValidationContextSnapshot,
     suggestions: string[] = []
   ): void {
+    const { severity, runtimeOnly } = ISSUES_DEFINITIONS[code];
     this.#issues.push({
       code,
       message,
       range,
       snapshot,
       suggestions,
-      severity: ISSUE_CODE_TO_ISSUE_SEVERITY_MAPPING[code] ?? 3,
+      severity,
+      runtimeOnly,
     });
   }
 
