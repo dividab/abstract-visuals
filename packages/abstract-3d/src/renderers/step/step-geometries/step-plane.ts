@@ -12,14 +12,24 @@ import {
   vec3PosY,
   vec3RotNormal,
   vec3NegZ,
+  vec3Add,
+  vec3Cross,
+  vec3Dot,
+  vec3Normalize,
+  vec3Scale,
+  vec3Sub,
+  vec3NegY,
+  vec3NegX,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../shared.js";
 import {
+  ADVANCED_BREP_SHAPE_REPRESENTATION,
   ADVANCED_FACE,
   APPLICATION_CONTEXT,
   APPLICATION_PROTOCOL_DEFINITION,
   AXIS2_PLACEMENT_3D,
   CARTESIAN_POINT,
+  CLOSED_SHELL,
   COLOUR_RGB,
   CURVE_STYLE,
   DIRECTION,
@@ -29,6 +39,7 @@ import {
   FACE_BOUND,
   FILL_AREA_STYLE_COLOUR,
   LINE,
+  MANIFOLD_SOLID_BREP,
   MANIFOLD_SURFACE_SHAPE_REPRESENTATION,
   MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION,
   MutableStep,
@@ -59,10 +70,14 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
   const cart3tr = (x: number, y: number): number => CARTESIAN_POINT(vec3TransRot(vec3(x, y, 0), pos, rot), m);
   const v0 = VECTOR(DIRECTION(vec3PosX, m), m);
   const c0 = CARTESIAN_POINT(vec3Zero, m);
+
   const [c1, c2] = [cart3tr(-half.x, -half.y), cart3tr(half.x, -half.y)];
   const [c3, c4] = [cart3tr(half.x, half.y), cart3tr(-half.x, half.y)];
+
   const [v1, v2, v3, v4] = [VERTEX_POINT(c1, m), VERTEX_POINT(c2, m), VERTEX_POINT(c3, m), VERTEX_POINT(c4, m)];
+
   const [l1, l2, l3, l4] = [LINE(c1, v0, m), LINE(c2, v0, m), LINE(c3, v0, m), LINE(c4, v0, m)];
+
   const [oe1, oe2, oe3, oe4] = [
     ORIENTED_EDGE(EDGE_CURVE(v1, v2, l1, m), m),
     ORIENTED_EDGE(EDGE_CURVE(v2, v3, l2, m), m),
@@ -70,20 +85,22 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
     ORIENTED_EDGE(EDGE_CURVE(v4, v1, l4, m), m),
   ];
 
-  APPLICATION_PROTOCOL_DEFINITION(m);
   const applicationContext = APPLICATION_CONTEXT(m);
+  APPLICATION_PROTOCOL_DEFINITION(applicationContext, m);
 
   const normal = DIRECTION(vec3RotNormal(vec3PosZ, rot), m);
   const up = DIRECTION(vec3PosZ, m);
 
   const color = COLOUR_RGB(parseRgb(mat.normal), m);
-  const sbsm = SHELL_BASED_SURFACE_MODEL(
-    OPEN_SHELL(
-      ADVANCED_FACE(
-        FACE_BOUND(EDGE_LOOP([oe1, oe2, oe3, oe4], m), "T", m),
-        PLANE(AXIS2_PLACEMENT_3D(c0, normal, up, m), m),
-        m
-      ),
+  const sbsm = MANIFOLD_SOLID_BREP(
+    CLOSED_SHELL([
+        ADVANCED_FACE(
+          FACE_BOUND(EDGE_LOOP([oe1, oe2, oe3, oe4], m), "T", m),
+          PLANE(AXIS2_PLACEMENT_3D(c0, normal, up, m), m),
+          m,
+          "T"
+        )
+      ],
       m
     ),
     m
@@ -92,6 +109,7 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
   const mssr = MANIFOLD_SURFACE_SHAPE_REPRESENTATION(
     AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m),
     sbsm,
+    m.geoContext3d,
     m
   );
 
@@ -105,6 +123,7 @@ export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: V
       sbsm,
       m
     ),
+    m.geoContext3d,
     m
   );
 
