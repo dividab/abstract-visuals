@@ -1,3 +1,4 @@
+import { Euler, Matrix4, Vector3 } from "three";
 import {
   Box,
   Material,
@@ -7,13 +8,9 @@ import {
   vec3RotCombine,
   vec3Zero,
   vec3,
-  vec3PosX,
-  vec3PosY,
-  vec3PosZ,
-  vec3NegX,
-  vec3NegY,
-  vec3NegZ,
-  vec3RotNormal,
+  vec3Normalize,
+  vec3Sub,
+  vec3Add,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../shared.js";
 import {
@@ -31,6 +28,7 @@ import {
   EDGE_CURVE,
   EDGE_LOOP,
   FACE_BOUND,
+  FILL_AREA_STYLE,
   FILL_AREA_STYLE_COLOUR,
   LINE,
   MANIFOLD_SOLID_BREP,
@@ -55,174 +53,132 @@ import {
 } from "../step-encoding.js";
 
 export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
-  const half = vec3Scale(b.size, 0.5);
+  const size = b.size;
+  const half = vec3Scale(size, 0.5);
   const pos = vec3TransRot(b.pos, parentPos, parentRot);
-  const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
-  const cart3tr = (x: number, y: number, z: number): number =>
-    CARTESIAN_POINT(vec3TransRot(vec3(x, y, z), pos, rot), m);
-  const v0 = VECTOR(DIRECTION(vec3PosX, m), m);
-  const negNormal = DIRECTION(vec3NegZ, m);
-  const posNormal = DIRECTION(vec3PosZ, m);
-  const c0 = CARTESIAN_POINT(vec3Zero, m);
-  const [c1, c2] = [cart3tr(-half.x, -half.y, -half.z), cart3tr(half.x, -half.y, -half.z)];
-  const [c3, c4] = [cart3tr(half.x, half.y, -half.z), cart3tr(-half.x, half.y, -half.z)];
-  const [c5, c6] = [cart3tr(-half.x, -half.y, half.z), cart3tr(half.x, -half.y, half.z)];
-  const [c7, c8] = [cart3tr(half.x, half.y, half.z), cart3tr(-half.x, half.y, half.z)];
-  const [v1, v2, v3, v4] = [VERTEX_POINT(c1, m), VERTEX_POINT(c2, m), VERTEX_POINT(c3, m), VERTEX_POINT(c4, m)];
-  const [v5, v6, v7, v8] = [VERTEX_POINT(c5, m), VERTEX_POINT(c6, m), VERTEX_POINT(c7, m), VERTEX_POINT(c8, m)];
-  const [l1, l2, l3, l4] = [LINE(c1, v0, m), LINE(c2, v0, m), LINE(c3, v0, m), LINE(c4, v0, m)];
-  const [l5, l6, l7, l8] = [LINE(c5, v0, m), LINE(c6, v0, m), LINE(c7, v0, m), LINE(c8, v0, m)];
-  const [d1, d2] = [DIRECTION(vec3RotNormal(vec3NegX, rot), m), DIRECTION(vec3RotNormal(vec3NegY, rot), m)];
-  const [d3, d4] = [DIRECTION(vec3RotNormal(vec3NegZ, rot), m), DIRECTION(vec3RotNormal(vec3PosX, rot), m)];
-  const [d5, d6] = [DIRECTION(vec3RotNormal(vec3PosY, rot), m), DIRECTION(vec3RotNormal(vec3PosZ, rot), m)];
-  const color = COLOUR_RGB(parseRgb(mat.normal), m);
+  const rotation = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
+  const color = parseRgb(mat.normal);
+  const rotationMatrix = new Matrix4();
+  const euler = new Euler();
+  euler.set(rotation.x, rotation.y, rotation.z);
+  rotationMatrix.makeRotationFromEuler(euler);
 
-  APPLICATION_PROTOCOL_DEFINITION(m);
+  const corners = [
+    vec3(0, 0, 0),
+    vec3(0, 0, size.z),
+    vec3(0, size.y, 0),
+    vec3(0, size.y, size.z),
+    vec3(size.x, 0, 0),
+    vec3(size.x, 0, size.z),
+    vec3(size.x, size.y, 0),
+    vec3(size.x, size.y, size.z),
+  ].map((v) => {
+    const localCorner = vec3Sub(v, half);
+    const vec = new Vector3();
+    vec.set(localCorner.x, localCorner.y, localCorner.z);
+    vec.applyMatrix4(rotationMatrix);
+    const corner = vec3Add(vec3(vec.x, vec.y, vec.z), pos);
+    return corner;
+  });
+
+  const rotate = (original: Vec3): Vec3 => {
+    const vec = new Vector3();
+    vec.set(original.x, original.y, original.z);
+    vec.applyMatrix4(rotationMatrix);
+    return vec3(vec.x, vec.y, vec.z);
+  };
+
+  const normFrontGlobal = vec3(0, 0, 1);
+  const normRightGlobal = vec3(1, 0, 0);
+
+  const normFront = rotate(normFrontGlobal);
+  const normBack = rotate(vec3(0, 0, -1));
+  const normRight = rotate(normRightGlobal);
+  const normLeft = rotate(vec3(-1, 0, 0));
+  const normUp = rotate(vec3(0, 1, 0));
+  const normDown = rotate(vec3(0, -1, 0));
+
+  const makePlane = (origin: Vec3, norm: Vec3, dir: Vec3): number =>
+    PLANE(AXIS2_PLACEMENT_3D(CARTESIAN_POINT(origin, m), DIRECTION(norm, m), DIRECTION(dir, m), m), m);
+
+  const makeEdge = (a: Vec3, b: Vec3): number => {
+    const p1 = CARTESIAN_POINT(a, m);
+    const p2 = CARTESIAN_POINT(b, m);
+    const v1 = VERTEX_POINT(p1, m);
+    const v2 = VERTEX_POINT(p2, m);
+    const dir = vec3Normalize(vec3Sub(b, a));
+    const d = DIRECTION(dir, m);
+    const vec = VECTOR(d, m);
+    const line = LINE(p1, vec, m);
+    const edge = EDGE_CURVE(v1, v2, line, m, "T");
+    return edge;
+  };
+
+  const makeFace = (
+    idxs: [number, number, number, number],
+    norm: Vec3,
+    planeDir: Vec3,
+    flip: boolean
+  ): number => {
+    const edges = [
+      makeEdge(corners[idxs[0]]!, corners[idxs[1]]!),
+      makeEdge(corners[idxs[1]]!, corners[idxs[2]]!),
+      makeEdge(corners[idxs[2]]!, corners[idxs[3]]!),
+      makeEdge(corners[idxs[3]]!, corners[idxs[0]]!),
+    ];
+
+    const oriented = [
+      ORIENTED_EDGE(edges[0]!, m, "T"),
+      ORIENTED_EDGE(edges[1]!, m, "T"),
+      ORIENTED_EDGE(edges[2]!, m, "T"),
+      ORIENTED_EDGE(edges[3]!, m, "T"),
+    ];
+
+    const loop = EDGE_LOOP(oriented, m);
+    const faceBound = FACE_BOUND(loop, "F", m);
+    const plane = makePlane(corners[idxs[0]]!, norm, planeDir);
+    return ADVANCED_FACE(faceBound, plane, m, flip ? "F" : "T");
+  };
+
+  const faces = [
+    makeFace([1, 5, 7, 3], normFront, normUp, false),  // front (+Z)
+    makeFace([0, 2, 6, 4], normBack, normUp, true),    // back (-Z)
+    makeFace([4, 6, 7, 5], normRight, normUp, false),  // right (+X)
+    makeFace([0, 1, 3, 2], normLeft, normUp, true),    // left (-X)
+    makeFace([2, 3, 7, 6], normUp, normFront, false),  // top (+Y)
+    makeFace([0, 4, 5, 1], normDown, normFront, true), // bottom (-Y)
+  ];
+
+  const closedShell = CLOSED_SHELL(faces, m);
+  const manifoldSolidBrep = MANIFOLD_SOLID_BREP(closedShell, m);
+
+  const axisPlacement = AXIS2_PLACEMENT_3D(
+    CARTESIAN_POINT(vec3Zero, m),
+    DIRECTION(normFrontGlobal, m),
+    DIRECTION(normRightGlobal, m),
+    m
+  );
+
+  const advBrepShapeRepr = ADVANCED_BREP_SHAPE_REPRESENTATION(axisPlacement, manifoldSolidBrep, m.geoContext3d, m);
+
   const applicationContext = APPLICATION_CONTEXT(m);
+  const productDefContext = PRODUCT_DEFINITION_CONTEXT(applicationContext, m);
+  const productContext = PRODUCT_CONTEXT(applicationContext, m);
+  const product = PRODUCT(productContext, "Cube", m);
+  const productDefForm = PRODUCT_DEFINITION_FORMATION(product, m);
+  const productDefinition = PRODUCT_DEFINITION(productDefForm, productDefContext, m);
+  const productDefShape = PRODUCT_DEFINITION_SHAPE(productDefinition, m);
+  SHAPE_DEFINITION_REPRESENTATION(productDefShape, advBrepShapeRepr, m);
 
-  const msb = MANIFOLD_SOLID_BREP(
-    CLOSED_SHELL(
-      [
-        // Front
-        ADVANCED_FACE(
-          FACE_BOUND(
-            EDGE_LOOP(
-              [
-                ORIENTED_EDGE(EDGE_CURVE(v1, v2, l1, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v2, v3, l2, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v3, v4, l3, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v4, v1, l4, m), m),
-              ],
-              m
-            ),
-            "T",
-            m
-          ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d3, posNormal, m), m),
-          m
-        ),
-        // Back
-        ADVANCED_FACE(
-          FACE_BOUND(
-            EDGE_LOOP(
-              [
-                ORIENTED_EDGE(EDGE_CURVE(v8, v7, l8, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v7, v6, l7, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v6, v5, l6, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v5, v8, l5, m), m),
-              ],
-              m
-            ),
-            "T",
-            m
-          ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d6, negNormal, m), m),
-          m
-        ),
-        // Left
-        ADVANCED_FACE(
-          FACE_BOUND(
-            EDGE_LOOP(
-              [
-                ORIENTED_EDGE(EDGE_CURVE(v1, v5, l1, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v5, v8, l5, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v8, v4, l8, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v4, v1, l4, m), m),
-              ],
-              m
-            ),
-            "T",
-            m
-          ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d4, negNormal, m), m),
-          m
-        ),
-        // Right ??? <<-----
-        ADVANCED_FACE(
-          FACE_BOUND(
-            EDGE_LOOP(
-              [
-                ORIENTED_EDGE(EDGE_CURVE(v2, v6, l2, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v6, v7, l6, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v7, v3, l7, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v3, v2, l3, m), m),
-              ],
-              m
-            ),
-            "T",
-            m
-          ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d1, posNormal, m), m),
-          m
-        ),
-        // Top
-        ADVANCED_FACE(
-          FACE_BOUND(
-            EDGE_LOOP(
-              [
-                ORIENTED_EDGE(EDGE_CURVE(v4, v8, l4, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v8, v7, l8, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v7, v3, l7, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v3, v4, l3, m), m),
-              ],
-              m
-            ),
-            "T",
-            m
-          ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d2, posNormal, m), m),
-          m
-        ),
-        // Bottom
-        ADVANCED_FACE(
-          FACE_BOUND(
-            EDGE_LOOP(
-              [
-                ORIENTED_EDGE(EDGE_CURVE(v1, v2, l1, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v2, v6, l2, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v6, v5, l6, m), m),
-                ORIENTED_EDGE(EDGE_CURVE(v5, v1, l5, m), m),
-              ],
-              m
-            ),
-            "T",
-            m
-          ),
-          PLANE(AXIS2_PLACEMENT_3D(c0, d5, negNormal, m), m),
-          m
-        ),
-      ],
-      m
-    ),
-    m
-  );
-  const absp = ADVANCED_BREP_SHAPE_REPRESENTATION(
-    AXIS2_PLACEMENT_3D(c0, DIRECTION(vec3PosZ, m), DIRECTION(vec3PosX, m), m),
-    msb,
-    m
-  );
-  MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(
-    STYLED_ITEM(
-      PRESENTATION_STYLE_ASSIGNMENT(
-        SURFACE_STYLE_USAGE(SURFACE_SIDE_STYLE(SURFACE_STYLE_FILL_AREA(FILL_AREA_STYLE_COLOUR(color, m), m), m), m),
-        CURVE_STYLE(DRAUGHTING_PRE_DEFINED_CURVE_FONT("continuous", m), color, m),
-        m
-      ),
-      msb,
-      m
-    ),
-    m
-  );
-  SHAPE_DEFINITION_REPRESENTATION(
-    PRODUCT_DEFINITION_SHAPE(
-      PRODUCT_DEFINITION(
-        PRODUCT_DEFINITION_FORMATION(PRODUCT(PRODUCT_CONTEXT(applicationContext, m), "Cube", m), m),
-        PRODUCT_DEFINITION_CONTEXT(applicationContext, m),
-        m
-      ),
-      m
-    ),
-    absp,
-    m
-  );
+  const colorRgb = COLOUR_RGB(color, m);
+  const fillAreaColour = FILL_AREA_STYLE_COLOUR(colorRgb, m);
+  const fillAreaStyle = FILL_AREA_STYLE(fillAreaColour, m);
+  const surfaceStyleFill = SURFACE_STYLE_FILL_AREA(fillAreaStyle, m);
+  const surfaceSideStyle = SURFACE_SIDE_STYLE(surfaceStyleFill, m);
+  const surfaceStyleUsage = SURFACE_STYLE_USAGE(surfaceSideStyle, m);
+  const draughtFont = DRAUGHTING_PRE_DEFINED_CURVE_FONT("continuous", m);
+  const curveStyle = CURVE_STYLE(draughtFont, colorRgb, m);
+  const presentationStyle = PRESENTATION_STYLE_ASSIGNMENT(surfaceStyleUsage, curveStyle, m);
+  const styledItem = STYLED_ITEM(presentationStyle, manifoldSolidBrep, m);
+  MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(styledItem, m.geoContext3d, m);
 }

@@ -1,6 +1,6 @@
 import { Vec2, Vec3 } from "../../abstract-3d.js";
 
-export type MutableStep = { refs: Map<string, number>; step: string };
+export type MutableStep = { refs: Map<string, number>; step: string; geoContext3d: number; };
 
 const mutate = (step: string, m: MutableStep): number => {
   const prevRef = m.refs.get(step);
@@ -15,13 +15,13 @@ const mutate = (step: string, m: MutableStep): number => {
   }
 };
 
-export const HEADER = (): string =>
+export const HEADER = (date: string): string =>
   `ISO-10303-21;
 HEADER;
-FILE_DESCRIPTION(('FreeCAD Model'),'2;1');
-FILE_NAME('Open CASCADE Shape Model','2024-09-10T08:42:01',('Author'),(
-    ''),'Open CASCADE STEP processor 7.6','FreeCAD','Unknown');
-FILE_SCHEMA(('AUTOMOTIVE_DESIGN'));
+FILE_DESCRIPTION(('Step file converted from Abstract 3D'),'2;1');
+FILE_NAME('Abstract 3D Model','${date}',('Divid AB'),(
+    ''),'Abstract 3D to Step Exporter','Abstract 3D','Automatic Export');
+FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));
 ENDSEC;
 DATA;`;
 
@@ -32,16 +32,16 @@ END-ISO-10303-21;`;
 
 export const CARTESIAN_POINT = (p: Vec3 | Vec2, m: MutableStep): number =>
   mutate(
-    `CARTESIAN_POINT('', (${p.x.toFixed(1)}, ${p.y.toFixed(1)}${
-      (p as Vec3)?.z !== undefined ? `, ${(p as Vec3).z.toFixed(1)}` : ""
+    `CARTESIAN_POINT('',(${p.x},${p.y}${
+      (p as Vec3)?.z !== undefined ? `,${(p as Vec3).z}` : ""
     }))`,
     m
   );
 
 export const DIRECTION = (d: Vec3 | Vec2, m: MutableStep): number =>
   mutate(
-    `DIRECTION('',(${d.x.toFixed(1)}, ${d.y.toFixed(1)}${
-      (d as Vec3)?.z !== undefined ? `, ${(d as Vec3).z.toFixed(1)}` : ""
+    `DIRECTION('',(${d.x},${d.y}${
+      (d as Vec3)?.z !== undefined ? `,${(d as Vec3).z}` : ""
     }))`,
     m
   );
@@ -57,8 +57,13 @@ export const CIRCLE = (AXIS2_PLACEMENT_3D: number, radius: number, m: MutableSte
 
 export const VECTOR = (DIRECTION: number, m: MutableStep): number => mutate(`VECTOR('',#${DIRECTION},1.)`, m);
 
-export const EDGE_CURVE = (VERTEX_POINT_FROM: number, VERTEX_POINT_TO: number, LINE: number, m: MutableStep, type: "T" | "F" = "F"): number =>
-  mutate(`EDGE_CURVE('',#${VERTEX_POINT_TO},#${VERTEX_POINT_FROM},#${LINE},.${type}.)`, m);
+export const EDGE_CURVE = (
+  startVertex: number,
+  endVertex: number,
+  line: number,
+  m: MutableStep,
+  type: "T" | "F" = "F"
+): number => mutate(`EDGE_CURVE('',#${startVertex},#${endVertex},#${line},.${type}.)`, m);
 
 export const ORIENTED_EDGE = (EDGE_CURVE: number, m: MutableStep, type: "T" | "F" = "F"): number =>
   mutate(`ORIENTED_EDGE('',*,*,#${EDGE_CURVE},.${type}.)`, m);
@@ -69,18 +74,14 @@ export const SURFACE_CURVE = (CIRCLE: number, PCURVE1: number, PCURVE2: number, 
 export const SEAM_CURVE = (LINE: number, PCURVE1: number, PCURVE2: number, m: MutableStep): number =>
   mutate(`SEAM_CURVE('',#${LINE},(#${PCURVE1},#${PCURVE2}),.PCURVE_S1.)`, m);
 
-export const ADVANCED_FACE = (
-  faceRef: number,
-  planeOrPcurveRef: number,
-  m: MutableStep,
-  type: "T" | "F" = "T"
-): number => mutate(`ADVANCED_FACE('',(#${faceRef}),#${planeOrPcurveRef},.${type}.)`, m);
+export const ADVANCED_FACE = (faceBound: number, planeOrSurface: number, m: MutableStep, type: "T" | "F"): number =>
+  mutate(`ADVANCED_FACE('',(#${faceBound}),#${planeOrSurface},.${type}.)`, m);
 
 export const OPEN_SHELL = (ADVANCED_FACE: number, m: MutableStep): number =>
   mutate(`OPEN_SHELL('',(#${ADVANCED_FACE}))`, m);
 
-export const FACE_BOUND = (EDGE_CURVE: number, type: "T" | "F", m: MutableStep): number =>
-  mutate(`FACE_BOUND('',#${EDGE_CURVE},.${type}.)`, m);
+export const FACE_BOUND = (EDGE_LOOP: number, type: "T" | "F", m: MutableStep): number =>
+  mutate(`FACE_BOUND('',#${EDGE_LOOP},.${type}.)`, m);
 
 export const EDGE_LOOP = (ORIENTED_EDGE: ReadonlyArray<number>, m: MutableStep): number =>
   mutate(`EDGE_LOOP('',(${ORIENTED_EDGE.map((af) => `#${af}`).join(",")}))`, m);
@@ -106,23 +107,25 @@ export const SHELL_BASED_SURFACE_MODEL = (OPEN_SHELL: number, m: MutableStep): n
 export const MANIFOLD_SURFACE_SHAPE_REPRESENTATION = (
   AXIS2_PLACEMENT_3D: number,
   CLOSED_SHELL: number,
+  GEOMETRY_CONTEXT: number, 
   m: MutableStep
-): number => mutate(`MANIFOLD_SURFACE_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${CLOSED_SHELL}),#4)`, m);
+): number => mutate(`MANIFOLD_SURFACE_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${CLOSED_SHELL}),#${GEOMETRY_CONTEXT})`, m);
 
 export const ADVANCED_BREP_SHAPE_REPRESENTATION = (
   AXIS2_PLACEMENT_3D: number,
   MANIFOLD_SOLID_BREP: number,
+  GEOMETRY_CONTEXT: number,
   m: MutableStep
-): number => mutate(`ADVANCED_BREP_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${MANIFOLD_SOLID_BREP}),#4)`, m);
+): number => mutate(`ADVANCED_BREP_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${MANIFOLD_SOLID_BREP}),#${GEOMETRY_CONTEXT})`, m);
 
 export const CLOSED_SHELL = (ADVANCED_FACE: ReadonlyArray<number>, m: MutableStep): number =>
-  mutate(`CLOSED_SHELL('', (${ADVANCED_FACE.map((af) => `#${af}`).join(",")}))`, m);
+  mutate(`CLOSED_SHELL('',(${ADVANCED_FACE.map((af) => `#${af}`).join(",")}))`, m);
 
 export const CLOSED_SHELL2 = (ADVANCED_FACE: number, m: MutableStep): number =>
-  mutate(`CLOSED_SHELL('', (#${ADVANCED_FACE}))`, m);
+  mutate(`CLOSED_SHELL('',(#${ADVANCED_FACE}))`, m);
 
 export const MANIFOLD_SOLID_BREP = (closedRef: number, m: MutableStep): number =>
-  mutate(`MANIFOLD_SOLID_BREP('', #${closedRef})`, m);
+  mutate(`MANIFOLD_SOLID_BREP('',#${closedRef})`, m);
 
 export const AXIS2_PLACEMENT_3D = (
   CARTESIAN_POINT: number,
@@ -131,8 +134,8 @@ export const AXIS2_PLACEMENT_3D = (
   m: MutableStep
 ): number => mutate(`AXIS2_PLACEMENT_3D('',#${CARTESIAN_POINT},#${DIRECTION_NORMAL},#${DIRECTION_PLANE_DIRECITON})`, m);
 
-export const MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION = (STYLED_ITEM: number, m: MutableStep): number =>
-  mutate(`MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(#${STYLED_ITEM}),#4)`, m);
+export const MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION = (STYLED_ITEM: number, GEOMETRY_CONTEXT: number, m: MutableStep): number =>
+  mutate(`MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(#${STYLED_ITEM}),#${GEOMETRY_CONTEXT})`, m);
 
 export const STYLED_ITEM = (
   PRESENTATION_STYLE_ASSIGNMENT: number,
@@ -168,18 +171,19 @@ export const COLOUR_RGB = (color: { r: number; g: number; b: number }, m: Mutabl
   mutate(`COLOUR_RGB('',${(color.r / 255).toFixed(3)},${(color.g / 255).toFixed(3)},${(color.b / 255).toFixed(3)})`, m);
 
 export const DRAUGHTING_PRE_DEFINED_CURVE_FONT = (curve: "continuous", m: MutableStep): number =>
-  mutate(`DRAUGHTING_PRE_DEFINED_CURVE_FONT(${curve})`, m);
+  mutate(`DRAUGHTING_PRE_DEFINED_CURVE_FONT('${curve}')`, m);
 
 export const GEOMETRIC_REPRESENTATION_CONTEXT_3D = (
   LENGTH_UNIT: number,
   NAMED_UNIT_PLANE_ANGLE_UNIT: number,
   NAMED_UNIT_SOLID_ANGLE: number,
+  UNCERTAINTY: number,
   m: MutableStep
 ): number =>
   mutate(
     `( GEOMETRIC_REPRESENTATION_CONTEXT(3)
-GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#6)) GLOBAL_UNIT_ASSIGNED_CONTEXT(
-(#${LENGTH_UNIT},#${NAMED_UNIT_PLANE_ANGLE_UNIT},#${NAMED_UNIT_SOLID_ANGLE})) REPRESENTATION_CONTEXT('Context #4',
+GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT((#${UNCERTAINTY})) GLOBAL_UNIT_ASSIGNED_CONTEXT(
+(#${LENGTH_UNIT},#${NAMED_UNIT_PLANE_ANGLE_UNIT},#${NAMED_UNIT_SOLID_ANGLE})) REPRESENTATION_CONTEXT('Context',
   '3D Context with UNIT and UNCERTAINTY') )`,
     m
   );
@@ -207,16 +211,16 @@ export const UNCERTAINTY_MEASURE_WITH_UNIT = (LENGTH_UNIT: number, m: MutableSte
     m
   );
 
-export const APPLICATION_PROTOCOL_DEFINITION = (m: MutableStep): number =>
-  mutate(`APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000,#q2);`, m);
+export const APPLICATION_PROTOCOL_DEFINITION = (APPLICATION_CONTEXT: number, m: MutableStep): number =>
+  mutate(`APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000,#${APPLICATION_CONTEXT})`, m);
 
 export const APPLICATION_CONTEXT = (m: MutableStep): number =>
-  mutate(`APPLICATION_CONTEXT('core data for automotive mechanical design processes');`, m);
+  mutate(`APPLICATION_CONTEXT('core data for automotive mechanical design processes')`, m);
 
 
 export const SHAPE_DEFINITION_REPRESENTATION = (productDefinitionShape: number, manifoldSurfaceShapeRepr: number, m: MutableStep): number =>
   mutate(
-    `SHAPE_DEFINITION_REPRESENTATION(#${productDefinitionShape}, #${manifoldSurfaceShapeRepr})`,
+    `SHAPE_DEFINITION_REPRESENTATION(#${productDefinitionShape},#${manifoldSurfaceShapeRepr})`,
     m
   );
 
@@ -228,7 +232,7 @@ export const PRODUCT_DEFINITION_SHAPE = (productDefinition: number, m: MutableSt
 
 export const PRODUCT_DEFINITION = (productDefinitionFormation: number, productDefinitionContext: number, m: MutableStep): number =>
   mutate(
-    `PRODUCT_DEFINITION('design', #${productDefinitionFormation},#${productDefinitionContext})`,
+    `PRODUCT_DEFINITION('design',#${productDefinitionFormation},#${productDefinitionContext})`,
     m
   )
 
@@ -246,7 +250,7 @@ export const PRODUCT = (productContext: number, name: string, m: MutableStep): n
 
 export const PRODUCT_CONTEXT = (applicationContext: number, m: MutableStep): number =>
   mutate(
-    `PRODUCT_CONTEXT('',#${applicationContext}, 'mechanical')`,
+    `PRODUCT_CONTEXT('',#${applicationContext},'mechanical')`,
     m
   )
 

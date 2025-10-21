@@ -85,8 +85,8 @@ export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parent
   v1.applyMatrix4(rotationMatrix);
   v2.applyMatrix4(rotationMatrix);
 
-  APPLICATION_PROTOCOL_DEFINITION(m);
   const applicationContext = APPLICATION_CONTEXT(m);
+  APPLICATION_PROTOCOL_DEFINITION(applicationContext, m);
 
   const ecurve0 = EDGE_CURVE(
     VERTEX_POINT(CARTESIAN_POINT(vec3Add(pos, v2), m), m),
@@ -156,7 +156,8 @@ export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parent
             r,
             m
           ),
-          m
+          m,
+          "T"
         ),
 
         ADVANCED_FACE(
@@ -185,7 +186,8 @@ export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parent
             ),
             m
           ),
-          m
+          m,
+          "T"
         ),
       ],
       m
@@ -196,6 +198,7 @@ export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parent
   const absp = ADVANCED_BREP_SHAPE_REPRESENTATION(
     AXIS2_PLACEMENT_3D(CARTESIAN_POINT(vec3Zero, m), DIRECTION(vec3(0, 0, 1), m), DIRECTION(vec3(1, 0, 0), m), m),
     msb,
+    m.geoContext3d,
     m
   );
 
@@ -221,6 +224,7 @@ export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parent
       msb,
       m
     ),
+    m.geoContext3d,
     m
   );
 }

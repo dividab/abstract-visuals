@@ -279,6 +279,9 @@ export const vec3DistSquared = (a: Vec3, b: Vec3): number =>
 
 export const vec3Dist = (a: Vec3, b: Vec3): number => vec3DistSquared(a, b);
 
+export const vec3Cross = (a: Vec3, b: Vec3): Vec3 =>
+    vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+
 export const equals = (num1: number, num2: number, equality = Number.EPSILON): boolean =>
   Math.abs(num1 - num2) <= equality;
 export const isZero = (num: number, equality = Number.EPSILON): boolean => Math.abs(num) <= equality;
@@ -423,6 +426,14 @@ export function vec3RotNormal(referenceNormal: Vec3, eulerRot: Vec3): Vec3 {
   vector.applyMatrix4(matrix);
   const normalized = vector.normalize();
   return vec3(normalized.x, normalized.y, normalized.z);
+}
+
+export function vec3Rot2(vec: Vec3, eulerRot: Vec3): Vec3 {
+  euler1.set(eulerRot.x, eulerRot.y, eulerRot.z);
+  matrix.makeRotationFromEuler(euler1);
+  vector.set(vec.x, vec.y, vec.z);
+  vector.applyMatrix4(matrix);
+  return vec3(vector.x, vector.y, vector.z);
 }
 
 export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
