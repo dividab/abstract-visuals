@@ -14,7 +14,11 @@ import { stepBox } from "./step-geometries/step-box.js";
 import { stepCylinder } from "./step-geometries/step-cylinder.js";
 import { stepPlane } from "./step-geometries/step-plane.js";
 
+const DEFAULT_DATE_UNIX = '1970-01-01T00:00:00';
+
 export const toStep = (scene: Scene): string => {
+  const date = new Date().toISOString().split('.')[0];
+
   const m: MutableStep = { refs: new Map<string, number>([]), step: "", geoContext3d: 7 };
   const applicationContext = APPLICATION_CONTEXT(m);
   APPLICATION_PROTOCOL_DEFINITION(applicationContext, m);
@@ -37,7 +41,7 @@ export const toStep = (scene: Scene): string => {
     stepGroup(g, scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero, m);
   }
   
-  return `${HEADER()}${m.step}${ENDSEC()}`;
+  return `${HEADER(date ?? DEFAULT_DATE_UNIX)}${m.step}${ENDSEC()}`;
 };
 
 function stepGroup(g: Group, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {

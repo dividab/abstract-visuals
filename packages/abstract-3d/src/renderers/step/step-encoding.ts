@@ -15,12 +15,12 @@ const mutate = (step: string, m: MutableStep): number => {
   }
 };
 
-export const HEADER = (): string =>
+export const HEADER = (date: string): string =>
   `ISO-10303-21;
 HEADER;
-FILE_DESCRIPTION(('FreeCAD Model'),'2;1');
-FILE_NAME('Open CASCADE Shape Model','2025-02-21T14:11:54',('Author'),(
-    ''),'Open CASCADE STEP processor 7.8','FreeCAD','Unknown');
+FILE_DESCRIPTION(('Step file converted from Abstract 3D'),'2;1');
+FILE_NAME('Abstract 3D Model','${date}',('Divid AB'),(
+    ''),'Abstract 3D to Step Exporter','Abstract 3D','Automatic Export');
 FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));
 ENDSEC;
 DATA;`;
