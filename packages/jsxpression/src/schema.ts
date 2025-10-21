@@ -1,5 +1,6 @@
 export type StringPropertySchema = {
   type: "string";
+  format?: "color";
   description?: string;
   required?: boolean;
   default?: string;
