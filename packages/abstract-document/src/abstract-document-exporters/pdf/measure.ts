@@ -54,7 +54,7 @@ function measureSection(
   const footerAvailableSize = AD.Size.create(footerAvailableWidth, pageHeight);
   const footerSizes = footer.map((e) => measureSectionElement(pdfKit, resources, footerAvailableSize, e));
 
-  // header and footer sizes for the first page
+  //header and footer sizes for the first page
   const firstPageHeaderAndFooters = getHeaderAndFooter(section, 1);
   const firstPageHeaderAndFootersExtracted: ReadonlyArray<[ReadonlyArray<AD.SectionElement.SectionElement>, AD.LayoutFoundation.LayoutFoundation]> = [
     [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
