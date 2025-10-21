@@ -1,10 +1,10 @@
 import type { Program } from "acorn";
-import { traverse } from "../../traverse";
-import { type Schema, getAllowedChildren, isSelfClosing } from "../../schema";
-import { isJsxElement, isJsxFragment, isJsxText, isJsxLeafNode } from "../../jsx";
-import { ValidationContext } from "../validation-context";
-import { AnalysisReport } from "../analysis-report";
-import { getNodeRange, getElementSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils";
+import { traverse } from "../../traverse.js";
+import { type Schema, getAllowedChildren, isSelfClosing } from "../../schema.js";
+import { isJsxElement, isJsxFragment, isJsxText, isJsxLeafNode } from "../../jsx.js";
+import { ValidationContext } from "../validation-context.js";
+import { AnalysisReport } from "../analysis-report.js";
+import { getNodeRange, getElementSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils.js";
 
 export function analyzeElementChildren(
   ast: Program,

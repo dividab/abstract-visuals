@@ -1,9 +1,9 @@
 import type { Program } from "acorn";
-import { traverse } from "../../traverse";
-import { type Schema, isElementAllowed, getAllElements } from "../../schema";
-import { ValidationContext } from "../validation-context";
-import { AnalysisReport } from "../analysis-report";
-import { getNodeRange, getElementSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils";
+import { traverse } from "../../traverse.js";
+import { type Schema, isElementAllowed, getAllElements } from "../../schema.js";
+import { ValidationContext } from "../validation-context.js";
+import { AnalysisReport } from "../analysis-report.js";
+import { getNodeRange, getElementSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils.js";
 
 export function analyzeElementTags(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();

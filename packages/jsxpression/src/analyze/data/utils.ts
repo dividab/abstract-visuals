@@ -4,11 +4,11 @@ import {
   isAllowedOnString,
   getAvailableArrayMembers,
   getAvailableStringMembers,
-} from "../../builtins";
-import { Schema, ArrayPropertySchema, PropertySchema } from "../../schema";
-import { AnalysisReport } from "../analysis-report";
-import { getNodeRange } from "../utils";
-import { ValidationContext } from "../validation-context";
+} from "../../builtins.js";
+import { Schema, ArrayPropertySchema, PropertySchema } from "../../schema.js";
+import { AnalysisReport } from "../analysis-report.js";
+import { getNodeRange } from "../utils.js";
+import { ValidationContext } from "../validation-context.js";
 
 export function isSimpleDataAccess(node: MemberExpression): boolean {
   if (node.computed) {

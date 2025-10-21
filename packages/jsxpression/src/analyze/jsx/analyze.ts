@@ -1,10 +1,10 @@
 import { Program } from "acorn";
-import { Schema } from "../../schema";
-import { AnalysisReport } from "../analysis-report";
-import { ValidationContext } from "../validation-context";
-import { analyzeElementAttributes } from "./element-attributes";
-import { analyzeElementChildren } from "./element-children";
-import { analyzeElementTags } from "./element-tags";
+import { Schema } from "../../schema.js";
+import { AnalysisReport } from "../analysis-report.js";
+import { ValidationContext } from "../validation-context.js";
+import { analyzeElementAttributes } from "./element-attributes.js";
+import { analyzeElementChildren } from "./element-children.js";
+import { analyzeElementTags } from "./element-tags.js";
 
 export function analyzeJsx(ast: Program, schema: Schema): AnalysisReport {
   const validationContext = new ValidationContext();

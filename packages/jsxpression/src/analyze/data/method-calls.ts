@@ -1,11 +1,11 @@
 import type { Program } from "acorn";
-import { traverse } from "../../traverse";
-import type { Schema } from "../../schema";
-import { isMethodAllowed, getMethodDefinition, getMethodDisplayName } from "../../builtins";
-import { ValidationContext } from "../validation-context";
-import { AnalysisReport } from "../analysis-report";
-import { isSimpleDataAccess, extractPath, validateSchemaPath } from "./utils";
-import { getNodeRange } from "../utils";
+import { traverse } from "../../traverse.js";
+import type { Schema } from "../../schema.js";
+import { isMethodAllowed, getMethodDefinition, getMethodDisplayName } from "../../builtins.js";
+import { ValidationContext } from "../validation-context.js";
+import { AnalysisReport } from "../analysis-report.js";
+import { isSimpleDataAccess, extractPath, validateSchemaPath } from "./utils.js";
+import { getNodeRange } from "../utils.js";
 
 export function analyzeMethodCalls(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();

@@ -15,8 +15,8 @@ import {
   type JSXAttribute,
   type JSXSpreadAttribute,
   type JSXNameNode,
-} from "../jsx";
-import { CompilationError } from "./compilation-error";
+} from "../jsx.js";
+import { CompilationError } from "./compilation-error.js";
 
 type CompilableExpression = Expression | PrivateIdentifier | Super | JSXElement | JSXFragment | JSXEmptyExpression;
 
@@ -216,10 +216,9 @@ function emitExpression(node: CompilableExpression): string {
           if (property.type === "SpreadElement") {
             return `...${emitExpression(property.argument as CompilableExpression)}`;
           }
-          // analyze() ensures these are simple properties
-          const prop = property as any; // analyze() guarantees Property type
-          const key = getAstKeyString(prop.key as Identifier | Literal);
-          return `${key}: ${emitExpression(prop.value)}`;
+
+          const key = getAstKeyString(property.key as Identifier | Literal);
+          return `${key}: ${emitExpression(property.value)}`;
         })
         .join(", ");
       return `{ ${keyValuePairs} }`;

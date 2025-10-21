@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { generateTypeScriptDefinitions } from "./generate-typescript-definitions";
-import type { Schema } from "../schema";
+import { generateTypeScriptDefinitions } from "./generate-typescript-definitions.js";
+import type { Schema } from "../schema.js";
 
 describe("generateTypeScriptDefinitions", () => {
   describe("basic structure", () => {

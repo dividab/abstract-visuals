@@ -1,1 +1,1 @@
-export { analyzeJsx } from "./analyze";
+export { analyzeJsx } from "./analyze.js";

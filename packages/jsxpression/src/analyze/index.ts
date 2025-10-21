@@ -1,3 +1,3 @@
-export { analyze } from "./analyze";
-export { AnalysisError } from "./analysis-error";
-export { AnalysisReport } from "./analysis-report";
+export { analyze } from "./analyze.js";
+export { AnalysisError } from "./analysis-error.js";
+export { AnalysisReport } from "./analysis-report.js";

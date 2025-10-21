@@ -1,5 +1,5 @@
-import { Range } from "./utils";
-import { ValidationContextSnapshot } from "./validation-context";
+import { Range } from "./utils.js";
+import { ValidationContextSnapshot } from "./validation-context.js";
 
 type IssueSeverity = 1 | 2 | 3;
 
@@ -7,7 +7,7 @@ interface Issue {
   code: IssueCode;
   message: string;
   severity: IssueSeverity;
-  runtimeOnly: boolean;
+  custom: boolean;
   range: Range;
   suggestions: string[];
   snapshot: ValidationContextSnapshot;
@@ -15,149 +15,149 @@ interface Issue {
 
 interface IssueDefinition {
   severity: IssueSeverity;
-  runtimeOnly: boolean;
+  custom: boolean;
 }
 
 const ISSUES_DEFINITIONS: Record<string, IssueDefinition> = {
   VARIABLE_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   IDENTIFIER_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   IMPORT_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   EXPORT_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   ASSIGNMENT_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   UPDATE_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   DELETE_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   NEW_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   THIS_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   SUPER_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   YIELD_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   AWAIT_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   ARROW_FUNCTION_BLOCK_BODY_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   FUNCTION_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   CLASS_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   TRY_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   THROW_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   WITH_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   DEBUGGER_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   COMPUTED_ACCESS_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   COMPUTED_PROPERTY_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   DIRECT_CALL_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   DYNAMIC_METHOD_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   METHOD_NOT_ALLOWED: {
     severity: 3,
-    runtimeOnly: false,
+    custom: false,
   },
   INVALID_DATA_ACCESS: {
     severity: 3,
-    runtimeOnly: false,
+    custom: false,
   },
   INVALID_PARAMETER_ACCESS: {
     severity: 3,
-    runtimeOnly: false,
+    custom: false,
   },
   INVALID_ELEMENT: {
     severity: 3,
-    runtimeOnly: false,
+    custom: false,
   },
   INVALID_ATTRIBUTE: {
     severity: 3,
-    runtimeOnly: false,
+    custom: false,
   },
   MISSING_REQUIRED_ATTRIBUTE: {
     severity: 3,
-    runtimeOnly: false,
+    custom: false,
   },
   INVALID_CHILD_ELEMENT: {
     severity: 3,
-    runtimeOnly: true,
+    custom: true,
   },
   MEMBER_CHAIN_TOO_DEEP: {
     severity: 2,
-    runtimeOnly: true,
+    custom: true,
   },
   TOO_MANY_PARAMETERS: {
     severity: 2,
-    runtimeOnly: false,
+    custom: false,
   },
   INSUFFICIENT_PARAMETERS: {
     severity: 2,
-    runtimeOnly: false,
+    custom: false,
   },
   INVALID_ATTRIBUTE_VALUE: {
     severity: 3,
-    runtimeOnly: false,
+    custom: false,
   },
   SELF_CLOSING_WITH_CHILDREN: {
     severity: 1,
-    runtimeOnly: true,
+    custom: true,
   },
 } as const;
 
@@ -201,7 +201,7 @@ export class AnalysisReport {
     snapshot: ValidationContextSnapshot,
     suggestions: string[] = []
   ): void {
-    const { severity, runtimeOnly } = ISSUES_DEFINITIONS[code];
+    const { severity, custom } = ISSUES_DEFINITIONS[code];
     this.#issues.push({
       code,
       message,
@@ -209,7 +209,7 @@ export class AnalysisReport {
       snapshot,
       suggestions,
       severity,
-      runtimeOnly,
+      custom,
     });
   }
 

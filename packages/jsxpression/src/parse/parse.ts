@@ -1,6 +1,6 @@
 import { Parser, type Program } from "acorn";
 import jsx from "acorn-jsx";
-import { ParseError } from "./parse-error";
+import { ParseError } from "./parse-error.js";
 
 const JSXParser = Parser.extend(jsx());
 
