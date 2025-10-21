@@ -1,6 +1,6 @@
 {
   "name": "jsxpression",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Validate and safely render JSX expressions",
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/jsxpression",
