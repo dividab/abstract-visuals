@@ -633,7 +633,6 @@ function drawText(
     .font(font)
     .fontSize(fontSize)
     .fillColor(textStyle.color || "black", textStyle.opacity ?? 1.0);
-
   applyTextOffset(pdf, textStyle);
 
   switch(alignment) {
@@ -650,8 +649,6 @@ function drawText(
       });
       break;
     }
-
-    
 
     default: {
       if(isFirst) {

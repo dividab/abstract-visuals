@@ -110,7 +110,7 @@ export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFK
             isFirst = false;
           }
           newRow.push(newTextRun);
-          desiredSizes.set(newTextRun, { width: stringWidth(pdf, currentString, current.style ?? defaultStyle), height: currentHeight });
+          desiredSizes.set(newTextRun, { width: stringWidth(current, pdf, currentString, resources, defaultStyle), height: currentHeight });
           currentString = "";
           currentStyle = "";
           currentHeight = 0;
@@ -148,7 +148,7 @@ export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFK
           isFirst = false;
         }
         newRow.push(newTextRun);
-        desiredSizes.set(newTextRun, { width: stringWidth(pdf, currentString, current.style ?? defaultStyle), height: currentHeight });
+        desiredSizes.set(newTextRun, { width: stringWidth(current, pdf, currentString, resources, defaultStyle), height: currentHeight });
         currentString = atom.text;
         currentHeight = Math.max(measurement.height, currentHeight);
         current = atom;
@@ -178,7 +178,7 @@ export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFK
             text: currentString,
           }
           newRow.push(newTextRun);
-          desiredSizes.set(newTextRun, { width: stringWidth(pdf, currentString, current.style ?? defaultStyle), height: currentHeight });
+          desiredSizes.set(newTextRun, { width: stringWidth(current, pdf, currentString, resources, defaultStyle), height: currentHeight });
         }
       }
     }
@@ -192,23 +192,34 @@ export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFK
 }
 
 function stringWidth(
+  textRun: AD.TextRun.TextRun,
   pdf: PDFKit.PDFDocument,
   text: string,
-  textStyle: AD.TextStyle.TextStyle,
+  resources: AD.Resources.Resources,
+  defaultStyle: AD.TextStyle.TextStyle
 ): number {
-  const font = getFontNameStyle(textStyle);
-  const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
+  const style = AD.Resources.getNestedStyle(
+    defaultStyle,
+    textRun.style,
+    "TextStyle",
+    textRun.styleName,
+    resources,
+    textRun.nestedStyleNames || []
+  ) as AD.TextStyle.TextStyle ?? defaultStyle;
+
+  const font = getFontNameStyle(style);
+  const fontSize = AD.TextStyle.calculateFontSize(style, 10);
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black");
+    .fillColor(style.color || "black");
 
   const textOptions = {
-    underline: textStyle.underline || false,
-    indent: textStyle.indent || 0,
+    underline: style.underline || false,
+    indent: style.indent || 0,
     lineBreak: false,
-    ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
-    ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+    ...(style.characterSpacing !== undefined ? { characterSpacing: style.characterSpacing } : {}),
+    ...(style.lineGap !== undefined ? { lineGap: style.lineGap } : {}),
   };
   return pdf.widthOfString(text, textOptions);
 }
