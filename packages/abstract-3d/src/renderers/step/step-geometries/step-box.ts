@@ -67,9 +67,14 @@ export function stepBox2(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3
   const size = b.size;
   const half = vec3Scale(size, 0.5);
   const pos = vec3TransRot(b.pos, parentPos, parentRot);
-  const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
+  const rotation = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
 
   const color = parseRgb(mat.normal);
+
+  const rotationMatrix = new Matrix4();
+  const euler = new Euler();
+  euler.set(rotation.x, rotation.y, rotation.z);
+  rotationMatrix.makeRotationFromEuler(euler);
 
   // Compute 8 cube corners in world coordinates
   const corners = [
@@ -83,18 +88,33 @@ export function stepBox2(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3
     vec3(size.x, size.y, size.z),
   ].map((v) => {
     const localCorner = vec3Sub(v, half);
-    const rotatedLocal = vec3Rot(localCorner, vec3Zero, rot);
-    const corner = vec3Add(rotatedLocal, pos);
+
+    const vec = new Vector3();
+    vec.set(localCorner.x, localCorner.y, localCorner.z);
+    vec.applyMatrix4(rotationMatrix);
+
+    //const rotatedLocal = vec3Rot(localCorner, vec3Zero, rot);
+    const corner = vec3Add(vec3(vec.x, vec.y, vec.z), pos);
     return corner;
   });
 
+  const rotate = (original: Vec3): Vec3 => {
+    const vec = new Vector3();
+    vec.set(original.x, original.y, original.z);
+    vec.applyMatrix4(rotationMatrix);
+    return vec3(vec.x, vec.y, vec.z);
+  };
+
+  const normFrontGlobal = vec3(0, 0, 1);
+  const normRightGlobal = vec3(1, 0, 0);
+
   // Normals of faces in world orientation
-  const normFront = vec3RotNormal(vec3(0, 0, 1), rot);
-  const normBack = vec3RotNormal(vec3(0, 0, -1), rot);
-  const normRight = vec3RotNormal(vec3(1, 0, 0), rot);
-  const normLeft = vec3RotNormal(vec3(-1, 0, 0), rot);
-  const normUp = vec3RotNormal(vec3(0, 1, 0), rot);
-  const normDown = vec3RotNormal(vec3(0, -1, 0), rot);
+  const normFront = rotate(normFrontGlobal);
+  const normBack = rotate(vec3(0, 0, -1));
+  const normRight = rotate(normRightGlobal);
+  const normLeft = rotate(vec3(-1, 0, 0));
+  const normUp = rotate(vec3(0, 1, 0));
+  const normDown = rotate(vec3(0, -1, 0));
 
   const makePlane = (origin: Vec3, norm: Vec3, dir: Vec3): number =>
     PLANE(AXIS2_PLACEMENT_3D(CARTESIAN_POINT(origin, m), DIRECTION(norm, m), DIRECTION(dir, m), m), m);
@@ -153,9 +173,9 @@ export function stepBox2(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3
   const manifoldSolidBrep = MANIFOLD_SOLID_BREP(closedShell, m);
 
   const axisPlacement = AXIS2_PLACEMENT_3D(
-    CARTESIAN_POINT(corners[0]!, m),
-    DIRECTION(normFront, m),
-    DIRECTION(normRight, m),
+    CARTESIAN_POINT(vec3Zero, m),
+    DIRECTION(normFrontGlobal, m),
+    DIRECTION(normRightGlobal, m),
     m
   );
 
