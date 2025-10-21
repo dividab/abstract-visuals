@@ -1,5 +1,5 @@
-import { Range } from "./utils";
-import { ValidationContextSnapshot } from "./validation-context";
+import { Range } from "./utils.js";
+import { ValidationContextSnapshot } from "./validation-context.js";
 
 type IssueSeverity = 1 | 2 | 3;
 

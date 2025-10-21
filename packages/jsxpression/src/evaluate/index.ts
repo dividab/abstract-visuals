@@ -1,2 +1,2 @@
-export { evaluate, type EvaluateOptions } from "./evaluate";
-export { EvaluationError } from "./evaluation-error";
+export { evaluate, type EvaluateOptions } from "./evaluate.js";
+export { EvaluationError } from "./evaluation-error.js";

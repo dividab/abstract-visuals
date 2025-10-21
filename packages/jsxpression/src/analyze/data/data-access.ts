@@ -1,10 +1,10 @@
 import type { Program } from "acorn";
-import { traverse } from "../../traverse";
-import type { ArrayPropertySchema, PropertySchema, Schema } from "../../schema";
-import { ValidationContext } from "../validation-context";
-import { AnalysisReport } from "../analysis-report";
-import { isSimpleDataAccess, extractPath, getParentNode, validateSchemaPath } from "./utils";
-import { getNodeRange } from "../utils";
+import { traverse } from "../../traverse.js";
+import type { ArrayPropertySchema, PropertySchema, Schema } from "../../schema.js";
+import { ValidationContext } from "../validation-context.js";
+import { AnalysisReport } from "../analysis-report.js";
+import { isSimpleDataAccess, extractPath, getParentNode, validateSchemaPath } from "./utils.js";
+import { getNodeRange } from "../utils.js";
 
 export function analyzeDataAccess(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();

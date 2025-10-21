@@ -1,1 +1,1 @@
-export { analyzeData } from "./analyze";
+export { analyzeData } from "./analyze.js";

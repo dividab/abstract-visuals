@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { render } from "./render";
-import { ParseError } from "./parse";
-import { AnalysisError } from "./analyze";
-import { EvaluationError } from "./evaluate";
+import { render } from "./render.js";
+import { ParseError } from "./parse/index.js";
+import { AnalysisError } from "./analyze/index.js";
+import { EvaluationError } from "./evaluate/index.js";
 
 type TestNode = {
   type: string;

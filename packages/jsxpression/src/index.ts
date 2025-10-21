@@ -1,10 +1,10 @@
-export type { Schema, PropertySchema } from "./schema";
+export type { Schema, PropertySchema } from "./schema.js";
 
-export { ParseError } from "./parse";
-export { CompilationError } from "./compile";
-export { AnalysisError } from "./analyze";
+export { ParseError } from "./parse/index.js";
+export { CompilationError } from "./compile/index.js";
+export { AnalysisError } from "./analyze/index.js";
 
-export { render, type RenderOptions } from "./render";
-export { validate, type ValidateOptions, type ValidateResult } from "./validate";
+export { render, type RenderOptions } from "./render.js";
+export { validate, type ValidateOptions, type ValidateResult } from "./validate.js";
 
-export { generateTypeScriptDefinitions } from "./codegen";
+export { generateTypeScriptDefinitions } from "./codegen/index.js";

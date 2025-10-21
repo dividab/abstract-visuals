@@ -1,4 +1,4 @@
-import { EvaluationError } from "./evaluation-error";
+import { EvaluationError } from "./evaluation-error.js";
 
 export type ComponentDict = Record<string, Component>;
 

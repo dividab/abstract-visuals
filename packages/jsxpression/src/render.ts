@@ -1,8 +1,8 @@
-import { compile } from "./compile";
-import { evaluate, EvaluateOptions } from "./evaluate/evaluate";
-import { parse } from "./parse";
-import { Schema } from "./schema";
-import { analyze, AnalysisError } from "./analyze";
+import { compile } from "./compile/index.js";
+import { evaluate, EvaluateOptions } from "./evaluate/evaluate.js";
+import { parse } from "./parse/index.js";
+import { Schema } from "./schema.js";
+import { analyze, AnalysisError } from "./analyze/index.js";
 
 /**
  * Configuration options for rendering JSX expressions.

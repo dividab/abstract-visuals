@@ -15,8 +15,8 @@ import {
   type JSXAttribute,
   type JSXSpreadAttribute,
   type JSXNameNode,
-} from "../jsx";
-import { CompilationError } from "./compilation-error";
+} from "../jsx.js";
+import { CompilationError } from "./compilation-error.js";
 
 type CompilableExpression = Expression | PrivateIdentifier | Super | JSXElement | JSXFragment | JSXEmptyExpression;
 

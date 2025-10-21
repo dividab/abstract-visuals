@@ -1,4 +1,4 @@
-import { AnalysisReport } from "./analysis-report";
+import { AnalysisReport } from "./analysis-report.js";
 
 export class AnalysisError extends Error {
   static fromReport(report: AnalysisReport): AnalysisError {

@@ -1,2 +1,2 @@
-export { parse } from "./parse";
-export { ParseError } from "./parse-error";
+export { parse } from "./parse.js";
+export { ParseError } from "./parse-error.js";

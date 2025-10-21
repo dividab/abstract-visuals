@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { analyze } from "./analyze";
-import { parse } from "../parse";
-import { type Schema } from "../schema";
-import { getBuiltins } from "../builtins";
+import { analyze } from "./analyze.js";
+import { parse } from "../parse/index.js";
+import { type Schema } from "../schema.js";
+import { getBuiltins } from "../builtins.js";
 
 describe("analyze - consolidated tests", () => {
   const baseSchema = {

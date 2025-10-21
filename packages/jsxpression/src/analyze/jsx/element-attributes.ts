@@ -1,5 +1,5 @@
 import type { Program } from "acorn";
-import { traverse } from "../../traverse";
+import { traverse } from "../../traverse.js";
 import {
   type Schema,
   isAttributeAllowed,
@@ -7,12 +7,12 @@ import {
   getRequiredAttributes,
   getAttributeSchema,
   getEnumValues,
-} from "../../schema";
-import { isJsxAttribute, isJsxExpressionContainer, type JSXAttribute } from "../../jsx";
-import { ValidationContext } from "../validation-context";
-import { AnalysisReport } from "../analysis-report";
+} from "../../schema.js";
+import { isJsxAttribute, isJsxExpressionContainer, type JSXAttribute } from "../../jsx.js";
+import { ValidationContext } from "../validation-context.js";
+import { AnalysisReport } from "../analysis-report.js";
 
-import { getNodeRange, getAttributeSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils";
+import { getNodeRange, getAttributeSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils.js";
 
 export function analyzeElementAttributes(
   ast: Program,

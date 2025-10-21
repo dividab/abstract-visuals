@@ -1,12 +1,12 @@
 import { Program } from "acorn";
-import { Schema } from "../../schema";
-import { AnalysisReport } from "../analysis-report";
-import { ValidationContext } from "../validation-context";
-import { analyzeCallExpressions } from "./call-expressions";
-import { analyzeDeclarations } from "./declarations";
-import { analyzeExpressions } from "./expressions";
-import { analyzeIdentifiers } from "./identifiers";
-import { analyzeMemberAccess } from "./member-access";
+import { Schema } from "../../schema.js";
+import { AnalysisReport } from "../analysis-report.js";
+import { ValidationContext } from "../validation-context.js";
+import { analyzeCallExpressions } from "./call-expressions.js";
+import { analyzeDeclarations } from "./declarations.js";
+import { analyzeExpressions } from "./expressions.js";
+import { analyzeIdentifiers } from "./identifiers.js";
+import { analyzeMemberAccess } from "./member-access.js";
 
 export function analyzeSecurity(ast: Program, schema: Schema): AnalysisReport {
   const validationContext = new ValidationContext();

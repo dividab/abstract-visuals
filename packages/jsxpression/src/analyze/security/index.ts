@@ -1,1 +1,1 @@
-export { analyzeSecurity } from "./analyze";
+export { analyzeSecurity } from "./analyze.js";

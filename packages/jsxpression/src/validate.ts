@@ -1,6 +1,6 @@
-import { analyze, AnalysisError } from "./analyze";
-import { parse, ParseError } from "./parse";
-import { Schema } from "./schema";
+import { analyze, AnalysisError } from "./analyze/index.js";
+import { parse, ParseError } from "./parse/index.js";
+import { Schema } from "./schema.js";
 
 export type ValidateResult = { ok: true } | { ok: false; error: AnalysisError | ParseError };
 

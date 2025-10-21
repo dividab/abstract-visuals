@@ -9,7 +9,7 @@ import {
   JSXSpreadAttribute,
   isJsxText,
   isJsxEmptyExpression,
-} from "./jsx";
+} from "./jsx.js";
 
 type Visit = (node: unknown, state: unknown) => void;
 type RecursiveVisitor<T> = (node: T, state: unknown, visit: Visit) => void;
