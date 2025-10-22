@@ -17,10 +17,10 @@ describe("evaluate", () => {
   };
 
   it("should evaluate JSX with props", () => {
-    const TestComponent = (props: any, ...children: any[]): Node => ({
+    const TestComponent = (props: any): Node => ({
       type: "TestComponent",
-      props,
-      children,
+      props: { x: props.x, y: props.y },
+      children: props.children,
     });
 
     const result = compileAndEvaluate("<Test x={data.x} y={data.y}>Hello</Test>", {
@@ -80,16 +80,16 @@ describe("evaluate", () => {
   });
 
   it("should evaluate nested elements", () => {
-    const OuterComponent = (props: any, ...children: any[]): Node => ({
+    const OuterComponent = (props: any): Node => ({
       type: "Outer",
-      props,
-      children,
+      props: { x: props.x },
+      children: props.children,
     });
 
-    const InnerComponent = (props: any, ...children: any[]): Node => ({
+    const InnerComponent = (props: any): Node => ({
       type: "Inner",
-      props,
-      children,
+      props: { y: props.y },
+      children: props.children,
     });
 
     const result = compileAndEvaluate("<Outer x={data.x}><Inner y={data.y}>Text</Inner></Outer>", {
@@ -100,11 +100,11 @@ describe("evaluate", () => {
       },
     });
 
-    expect(result.type).toBe("OuterComponent");
+    expect(result.type).toBe("Outer");
     expect(result.props).toEqual({ x: 10 });
     expect(result.children).toHaveLength(1);
     const innerNode = result.children[0] as Node;
-    expect(innerNode.type).toBe("InnerComponent");
+    expect(innerNode.type).toBe("Inner");
     expect(innerNode.props).toEqual({ y: 20 });
     expect(innerNode.children).toEqual(["Text"]);
   });
@@ -198,10 +198,10 @@ describe("evaluate", () => {
   });
 
   it("should flatten and filter children correctly", () => {
-    const TestComponent = (props: any, ...children: any[]): Node => ({
+    const TestComponent = (props: any): Node => ({
       type: "Test",
-      props,
-      children,
+      props: {},
+      children: props.children,
     });
 
     const result = compileAndEvaluate("<Test>{data.show && 'Visible'}{false}{'Always'}</Test>", {
@@ -226,10 +226,10 @@ describe("evaluate", () => {
   });
 
   it("should handle empty JSX expressions", () => {
-    const TestComponent = (props: any, ...children: any[]): Node => ({
+    const TestComponent = (props: any): Node => ({
       type: "Test",
-      props,
-      children,
+      props: {},
+      children: props.children,
     });
 
     const result = compileAndEvaluate("<Test>{}{data.value}{}</Test>", {
@@ -300,10 +300,10 @@ describe("evaluate", () => {
   });
 
   it("should handle data access in children", () => {
-    const TestComponent = (props: any, ...children: any[]): Node => ({
+    const TestComponent = (props: any): Node => ({
       type: "Test",
-      props,
-      children,
+      props: {},
+      children: props.children,
     });
 
     const result = compileAndEvaluate("<Test>Hello {data.name}!</Test>", {

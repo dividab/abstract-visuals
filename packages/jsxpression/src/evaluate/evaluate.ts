@@ -73,9 +73,5 @@ function isDataDict(value: any): value is DataDict {
 }
 
 function defaultCreateElement(Component: Component, props: PropsDict = {}, ...children: any[]): Node {
-  return {
-    type: Component.name,
-    props,
-    children,
-  };
+  return Component({ ...props, children });
 }
