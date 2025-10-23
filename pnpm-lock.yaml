@@ -235,7 +235,7 @@ importers:
         specifier: ^0.1.3
         version: link:../handlebars-xml
       jsxpression:
-        specifier: workspace:*
+        specifier: ^0.1.8
         version: link:../jsxpression
     devDependencies:
       '@types/base64-js':

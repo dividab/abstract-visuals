@@ -24,7 +24,7 @@
     "fast-xml-parser": "^4.5.0",
     "handlebars": "4.7.8",
     "handlebars-xml": "^0.1.3",
-    "jsxpression": "workspace:*"
+    "jsxpression": "^0.1.8"
   },
   "peerDependencies": {
     "react": ">=17.0.0 <20.0.0"
