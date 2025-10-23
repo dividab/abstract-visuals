@@ -6,6 +6,7 @@
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-sheet",
   "license": "MIT",
   "main": "lib/index.js",
+  "sideEffects": false,
   "types": "lib/index",
   "type": "module",
   "exports": {

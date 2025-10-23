@@ -7,5 +7,5 @@
     "rootDir": "src",
     "noUncheckedIndexedAccess": false
   },
-  "references": [{ "path": "../handlebars-xml" }]
+  "references": [{ "path": "../handlebars-xml" }, { "path": "../jsxpression" }]
 }

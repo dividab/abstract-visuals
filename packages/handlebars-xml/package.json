@@ -5,6 +5,7 @@
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/handlebars-xml",
   "license": "MIT",
+  "sideEffects": false,
   "main": "lib/index.js",
   "types": "lib/index",
   "exports": {
