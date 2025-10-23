@@ -71,5 +71,5 @@ export function render<T = any>(
     throw AnalysisError.fromReport(report);
   }
 
-  return evaluate(compile(ast), options) as T;
+  return evaluate(compile(ast), schema, options) as T;
 }

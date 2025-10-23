@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { evaluate, type EvaluateOptions } from "./evaluate.js";
 import { compile } from "../compile/index.js";
 import { parse } from "../parse/index.js";
+import { Schema } from "../schema.js";
 
 import { EvaluationError } from "./evaluation-error.js";
 
@@ -11,9 +12,17 @@ type Node = {
   children: Node[];
 };
 
+function createPermissiveSchema(componentNames: string[]): Schema {
+  return {
+    elements: Object.fromEntries(componentNames.map((name) => [name, {}])),
+  };
+}
+
 describe("evaluate", () => {
   const compileAndEvaluate = (source: string, options: EvaluateOptions = {}): Node => {
-    return evaluate(compile(parse(source)), options);
+    const componentNames = Object.keys(options.components || {});
+    const schema = createPermissiveSchema(componentNames);
+    return evaluate(compile(parse(source)), schema, options);
   };
 
   it("should evaluate JSX with props", () => {
@@ -56,9 +65,12 @@ describe("evaluate", () => {
 
   it("should throw EvaluationError for unknown component", () => {
     const compiled = compile(parse("<UnknownComponent>Hello</UnknownComponent>"));
+    const emptySchema = createPermissiveSchema([]);
 
-    expect(() => evaluate(compiled, { components: {} })).toThrow(EvaluationError);
-    expect(() => evaluate(compiled, { components: {} })).toThrow('component "UnknownComponent" is not allowed');
+    expect(() => evaluate(compiled, emptySchema, { components: {} })).toThrow(EvaluationError);
+    expect(() => evaluate(compiled, emptySchema, { components: {} })).toThrow(
+      'component "UnknownComponent" is not allowed'
+    );
   });
 
   it("should deep-freeze props to prevent mutations", () => {
@@ -70,8 +82,9 @@ describe("evaluate", () => {
     };
 
     const compiled = compile(parse("<Test>Hello</Test>"));
+    const schema = createPermissiveSchema(["Test"]);
 
-    evaluate(compiled, {
+    evaluate(compiled, schema, {
       data: { nested: { value: 42 } },
       components: {
         Test: TestComponent,
@@ -169,9 +182,10 @@ describe("evaluate", () => {
   it("should handle runtime errors gracefully", () => {
     const compiled = compile(parse("<Test value={data.missing.nested}>Text</Test>"));
     const TestComponent = (): Node => ({ type: "Test", props: {}, children: [] });
+    const schema = createPermissiveSchema(["Test"]);
 
     expect(() =>
-      evaluate(compiled, {
+      evaluate(compiled, schema, {
         data: {},
         components: {
           Test: TestComponent,

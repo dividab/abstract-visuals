@@ -1,4 +1,5 @@
 import { EvaluationError } from "./evaluation-error.js";
+import { Schema, isElementAllowed, canHaveChildren } from "../schema.js";
 
 export type ComponentDict = Record<string, Component>;
 
@@ -32,10 +33,10 @@ export interface EvaluateOptions<T = any> {
   createElement?: CreateElement<T>;
 }
 
-export function evaluate<T = any>(source: string, options: EvaluateOptions<T>): T {
+export function evaluate<T = any>(source: string, schema: Schema, options: EvaluateOptions<T>): T {
   const { data = {}, components = {}, createElement } = options;
 
-  const h = createH(components, createElement || defaultCreateElement);
+  const h = createH(components, createElement || defaultCreateElement, schema);
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
@@ -50,11 +51,17 @@ export function evaluate<T = any>(source: string, options: EvaluateOptions<T>): 
   }
 }
 
-function createH(components: ComponentDict, createElement: CreateElement): H {
+function createH(components: ComponentDict, createElement: CreateElement, schema: Schema): H {
   return function h(type, props, ...children) {
     const Component = components[type];
 
     if (!Component) {
+      if (isElementAllowed(schema, type)) {
+        const defaultComponent = (props: PropsDict): any => (canHaveChildren(schema, type) ? props.children : null);
+        return createElement(defaultComponent, props, ...children.flat().filter(Boolean));
+      }
+
+      // Component not in schema - throw error
       throw new EvaluationError(`component "${type}" is not allowed`);
     }
 
