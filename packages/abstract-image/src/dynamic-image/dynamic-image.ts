@@ -18,7 +18,6 @@ export type DynamicImageError = {
 export function dynamicImage(source: string, data: Record<string, unknown>): DynamicImageResult {
   try {
     const imageUrls = Array<string>();
-    const components = createComponents(imageUrls);
 
     const schema: Schema = {
       ...baseSchema,
@@ -27,7 +26,7 @@ export function dynamicImage(source: string, data: Record<string, unknown>): Dyn
 
     const image = render<AbstractImage>(source, schema, {
       data,
-      components,
+      components: createComponents(imageUrls),
     });
 
     return { type: "Ok", image, imageUrls };
