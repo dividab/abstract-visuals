@@ -17,10 +17,9 @@ export function AbstractImageXml({}: {}): React.JSX.Element {
     )
   );
 
-  const [template, setTemplate] = React.useState(`<AbstractImage size="400 600">
-  <Image url="{{imageUrl}}" topLeft="0 0" bottomRight="400 600" />
-  <Text position="235 165" textColor="rgb(0,0,255)" fontSize="8" text="{{property1}}" />
-  <Text position="181 358" fontSize="14" textColor="rgb(255,0,0)" text="{{design_spec2}}"/>
+  const [template, setTemplate] = React.useState(`<AbstractImage width={600} height={200}>
+  <Text x={20} y={20} fontSize="32">{data.property1}</Text>
+  <Image src={data.imageUrl} x={0} y={0} width={200} height={400}/>
 </AbstractImage>`);
 
   let dataParsed = {};
