@@ -11,6 +11,7 @@ import {
   APPLICATION_PROTOCOL_DEFINITION,
 } from "./step-encoding.js";
 import { stepBox } from "./step-geometries/step-box.js";
+import { stepCone } from "./step-geometries/step-cone.js";
 import { stepCylinder } from "./step-geometries/step-cylinder.js";
 import { stepPlane } from "./step-geometries/step-plane.js";
 
@@ -59,6 +60,9 @@ function stepGroup(g: Group, parentPos: Vec3, parentRot: Vec3, m: MutableStep): 
       }
       case "Cylinder":
         stepCylinder(mesh.geometry, mesh.material, pos, rot, m);
+        break;
+      case "Cone":
+        stepCone(mesh.geometry, mesh.material, pos, rot, m);
         break;
       default:
         break;

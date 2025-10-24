@@ -50,10 +50,12 @@ import {
   VERTEX_POINT,
 } from "../step-encoding.js";
 
-export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
+const SMALLEST_RADIUS = 1e-4;
+
+export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep, rSmall?: number): void {
   const r = c.radius;
+  const r2 = Math.max(rSmall ?? c.radius, SMALLEST_RADIUS);
   const h = c.length;
-  const rgb = parseRgb(mat.normal);
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rotation = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
 
@@ -80,7 +82,7 @@ export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parent
 
   const v1 = new Vector3();
   const v2 = new Vector3();
-  v1.set(r, h / 2, 0);
+  v1.set(r2, h / 2, 0);
   v2.set(r, -h / 2, 0);
   v1.applyMatrix4(rotationMatrix);
   v2.applyMatrix4(rotationMatrix);
@@ -123,7 +125,7 @@ export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parent
         DIRECTION(vec3(0, 1, 0), m),
         m
       ),
-      r,
+      r2,
       m
     ),
     m
