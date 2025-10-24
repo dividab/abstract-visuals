@@ -141,7 +141,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^11.2.15
+        specifier: ^11.2.17
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -150,7 +150,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^11.2.15
+        specifier: ^11.2.17
         version: link:../abstract-image
       docx:
         specifier: ^6.0.3
@@ -162,7 +162,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.1.4
+        specifier: ^0.1.6
         version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
@@ -232,10 +232,10 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.1.4
+        specifier: ^0.1.6
         version: link:../handlebars-xml
       jsxpression:
-        specifier: ^0.1.9
+        specifier: ^0.1.11
         version: link:../jsxpression
     devDependencies:
       '@types/base64-js':
@@ -263,7 +263,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.1.4
+        specifier: ^0.1.6
         version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
@@ -297,16 +297,16 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^0.9.10
+        specifier: ^0.9.12
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^11.3.14
+        specifier: ^11.3.16
         version: link:../abstract-chart
       abstract-document:
         specifier: ^14.0.17
         version: 14.0.17(react@19.0.0)
       abstract-image:
-        specifier: ^11.2.15
+        specifier: ^11.2.17
         version: link:../abstract-image
       abstract-sheet:
         specifier: ^0.0.30
@@ -321,7 +321,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.1.4
+        specifier: ^0.1.6
         version: link:../handlebars-xml
       pdfkit:
         specifier: ^0.17.2
