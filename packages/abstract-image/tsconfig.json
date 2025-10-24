@@ -1,4 +1,5 @@
 {
+  //dummy
   "extends": "../tsconfig.settings.json",
   "include": ["src/**/*"],
   "exclude": ["./vite.config.ts"],
