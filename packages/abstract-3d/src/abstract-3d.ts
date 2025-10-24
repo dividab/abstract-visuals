@@ -72,6 +72,8 @@ export type Cylinder = {
   readonly radius: number;
   readonly holes?: ReadonlyArray<Hole>;
   readonly open?: boolean;
+  readonly angleStart?: number;
+  readonly angleLength?: number;
 };
 
 export type Sphere = {
@@ -554,8 +556,10 @@ export const cylinder = (
   material: Material,
   rot = vec3Zero,
   open = false,
-  holes: ReadonlyArray<Hole> = []
-): CylinderMesh => ({ geometry: { type: "Cylinder", pos, radius, length, rot, holes, open }, material });
+  holes: ReadonlyArray<Hole> = [],
+  angleStart?: number,
+  angleLength?: number,
+): CylinderMesh => ({ geometry: { type: "Cylinder", pos, radius, length, rot, holes, open, angleStart: angleStart ?? 0, angleLength: angleLength ?? (Math.PI * 2) }, material });
 
 export const sphere = (radius: number, material: Material, pos = vec3Zero): SphereMesh => ({
   geometry: { type: "Sphere", pos, radius },

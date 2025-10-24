@@ -34,6 +34,10 @@ import {
   Tube as A3dTube,
   CircleCurve as A3dCircleCurve,
   Hole,
+  isZero,
+  vec3Scale,
+  vec3,
+  vec3Add,
 } from "../../abstract-3d.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 
@@ -54,9 +58,10 @@ extend({
   CylinderGeometry,
 });
 
+const CYLINDER_SEGMENTS = 40;
 const boxGeometry = new BoxGeometry();
-const cylinderGeometry = new CylinderGeometry(1, 1, 1, 40, 1);
-const cylinderGeometryOpen = new CylinderGeometry(1, 1, 1, 40, 1, true);
+const cylinderGeometry = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1);
+const cylinderGeometryOpen = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1, true);
 const coneGeometry = new ConeGeometry(1, 1, 16, 1);
 const planeGeometry = new PlaneGeometry();
 const sphereGeometry = new SphereGeometry(1, 12, 12);
@@ -103,19 +108,57 @@ export function ReactMesh({
       );
     }
     case "Cylinder": {
-      const { pos, radius, rot, length, holes, open } = mesh.geometry;
-      return !holes || holes.length === 0 ? (
-        <mesh
-          geometry={open ? cylinderGeometryOpen : cylinderGeometry}
-          scale={[radius, length, radius]}
-          position={[pos.x, pos.y, pos.z]}
-          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
-        >
-          {children}
-        </mesh>
-      ) : (
-        <ExcrudeCylinder cyl={mesh.geometry}>{children}</ExcrudeCylinder>
-      );
+      const { pos, radius, rot, length, holes, open, angleStart, angleLength } = mesh.geometry;
+      const hasAngles = angleStart !== undefined && angleLength !== undefined;
+      const isWhole = !hasAngles || (isZero((Math.PI * 2) - angleLength) && isZero(angleStart));
+      if(isWhole) {
+        return !holes || holes.length === 0 ? (
+          <mesh
+            geometry={open ? cylinderGeometryOpen : cylinderGeometry}
+            scale={[radius, length, radius]}
+            position={[pos.x, pos.y, pos.z]}
+            rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+          >
+            {children}
+          </mesh>
+        ) : (
+          <ExcrudeCylinder cyl={mesh.geometry}>{children}</ExcrudeCylinder>
+        );
+      } else {
+        const angledCylinder = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1, false, angleStart, angleLength);
+        const angleEnd = angleStart + angleLength;
+        const halfRadius = radius / 2;
+        const plane1Pos = vec3Scale(vec3(0, -Math.sin(-angleStart + Math.PI / 2), Math.cos(-angleStart + Math.PI / 2)), halfRadius);
+        const plane2Pos = vec3Scale(vec3(0, -Math.sin(-angleEnd + Math.PI / 2), Math.cos(-angleEnd + Math.PI / 2)), halfRadius);
+        return (
+          <mesh>
+            <mesh
+              geometry={angledCylinder}
+              scale={[radius, length, radius]}
+              position={[pos.x, pos.y, pos.z]}
+              rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+            >
+              {children}
+            </mesh>
+            <mesh
+              geometry={planeGeometry}
+              scale={[radius, length, 1]}
+              position={[plane1Pos.x, plane1Pos.y, plane1Pos.z]}
+              rotation={[-angleStart, Math.PI, Math.PI / 2]}
+            >
+              {children}
+            </mesh>
+            <mesh
+              geometry={planeGeometry}
+              scale={[radius, length, 1]}
+              position={[plane2Pos.x, plane2Pos.y, plane2Pos.z]}
+              rotation={[-angleEnd, 0, Math.PI / 2]}
+            >
+              {children}
+            </mesh>
+          </mesh>
+        );
+      }
     }
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;
