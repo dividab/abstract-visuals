@@ -38,6 +38,9 @@ import {
   vec3Scale,
   vec3,
   vec3Add,
+  vec3RotCombine,
+  vec3Zero,
+  vec3Rot,
 } from "../../abstract-3d.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 
@@ -128,8 +131,12 @@ export function ReactMesh({
         const angledCylinder = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1, false, angleStart, angleLength);
         const angleEnd = angleStart + angleLength;
         const halfRadius = radius / 2;
-        const plane1Pos = vec3Scale(vec3(0, -Math.sin(-angleStart + Math.PI / 2), Math.cos(-angleStart + Math.PI / 2)), halfRadius);
-        const plane2Pos = vec3Scale(vec3(0, -Math.sin(-angleEnd + Math.PI / 2), Math.cos(-angleEnd + Math.PI / 2)), halfRadius);
+        const aStart = angleStart - Math.PI / 2;
+        const aEnd = angleEnd - Math.PI / 2;
+        const plane1Rot = vec3RotCombine(rot ?? vec3Zero, vec3(0, aStart, 0));
+        const plane2Rot = vec3RotCombine(rot ?? vec3Zero, vec3(0, aEnd, 0));
+        const plane1Pos = vec3Add(vec3Rot(vec3Scale(vec3(Math.cos(aStart), 0, -Math.sin(aStart)), halfRadius), vec3Zero, rot ?? vec3Zero), pos);
+        const plane2Pos = vec3Add(vec3Rot(vec3Scale(vec3(Math.cos(aEnd), 0, -Math.sin(aEnd)), halfRadius), vec3Zero, rot ?? vec3Zero), pos);
         return (
           <mesh>
             <mesh
@@ -144,7 +151,7 @@ export function ReactMesh({
               geometry={planeGeometry}
               scale={[radius, length, 1]}
               position={[plane1Pos.x, plane1Pos.y, plane1Pos.z]}
-              rotation={[-angleStart, Math.PI, Math.PI / 2]}
+              rotation={[plane1Rot.x, plane1Rot.y, plane1Rot.z]}
             >
               {children}
             </mesh>
@@ -152,7 +159,7 @@ export function ReactMesh({
               geometry={planeGeometry}
               scale={[radius, length, 1]}
               position={[plane2Pos.x, plane2Pos.y, plane2Pos.z]}
-              rotation={[-angleEnd, 0, Math.PI / 2]}
+              rotation={[plane2Rot.x, plane2Rot.y, plane2Rot.z]}
             >
               {children}
             </mesh>
