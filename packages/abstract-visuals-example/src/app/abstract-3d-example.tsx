@@ -18,7 +18,7 @@ export function Abstract3DExample(): React.ReactNode {
       <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
         <button
           onClick={() =>
-            FileSaver.saveAs(new Blob([A3D.toDxf(systemair, { view: "front" })], { type: "text/plain" }), `a3d.dxf`)
+            FileSaver.saveAs(new Blob([A3D.toDxf(systemair, { view: "top" })], { type: "text/plain" }), `a3d.dxf`)
           }
         >
           DXF
