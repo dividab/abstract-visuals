@@ -4,16 +4,16 @@ import { dxf3DFACE } from "../dxf-encoding.js";
 import { dxfPlane } from "./dxf-plane.js";
 
 export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3, handleRef: { handle: number }): string {
-  const angleStartRad = c.angleStart ?? 0.0;
-  const angleLengthRad = c.angleLength ?? (Math.PI * 2);
-  const angleEndRad = angleStartRad + angleLengthRad;
+  const angleStart = c.angleStart ?? 0.0;
+  const angleLength = c.angleLength ?? (Math.PI * 2);
+  const angleEnd = angleStart + angleLength;
   let dxfString = "";
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (x: number, y: number, z: number): Vec3 => vec3TransRot(vec3(x, y, z), pos, rot);
   const mat = color(m.normal);
-  const angleStep = angleLengthRad / sides;
-  let currentAngle = angleStartRad;
+  const angleStep = angleLength / sides;
+  let currentAngle = angleStart;
 
   const half = c.length / 2;
   const topPos = vec3tr(0, half, 0);
@@ -41,9 +41,9 @@ export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
     currentAngle += angleStep;
   }
 
-  if (!equals(angleStartRad, angleEndRad - Math.PI * 2) && angleLengthRad > 0.0) {
-    const aStart = angleStartRad - Math.PI / 2;
-    const aEnd = angleEndRad - Math.PI / 2;
+  if (!equals(angleStart, angleEnd - Math.PI * 2) && angleLength > 0.0) {
+    const aStart = angleStart - Math.PI / 2;
+    const aEnd = angleEnd - Math.PI / 2;
     const halfRadius = c.radius / 2;
     const plane1Rot = vec3(0, aStart, 0);
     const plane2Rot = vec3(0, aEnd, 0);
