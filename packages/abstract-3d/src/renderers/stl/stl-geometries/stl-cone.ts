@@ -2,7 +2,7 @@ import { Cone, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } fr
 import { stlPlaneOfVertices } from "../stl-encoding.js";
 
 export function stlCone(c: Cone, _m: Material, sides: number, parentPos: Vec3, parentRot: Vec3): string {
-  let dxfString = "";
+  let stlString = "";
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (x: number, y: number, z: number): Vec3 => vec3TransRot(vec3(x, y, z), pos, rot);
@@ -21,11 +21,11 @@ export function stlCone(c: Cone, _m: Material, sides: number, parentPos: Vec3, p
 
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
-      dxfString +=
+      stlString +=
         stlPlaneOfVertices(botPos, prevBot, currBot, currBot) + stlPlaneOfVertices(currBot, prevBot, topPos, topPos);
     }
     currentAngle += angleStep;
   }
 
-  return dxfString;
+  return stlString;
 }
