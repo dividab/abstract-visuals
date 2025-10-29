@@ -3,7 +3,7 @@ import { AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
 import { xlsxWorkSheet } from "./_xlsx-sheet.js";
 import { createStyle } from "./_style.js";
 
-export function toXlsx(as: AbstractSheet): Buffer {
+export function toXlsx(as: AbstractSheet): Uint8Array<ArrayBuffer> {
   const sheets: Record<string, XLSX.WorkSheet> = {};
   const sheetNames = Array<string>();
 
