@@ -1,5 +1,3 @@
-import { exportToHTML5Blob as docxBlob } from "../../abstract-document-exporters/docx2/render.js";
-import { exportToHTML5Blob as pdfBlob } from "../../abstract-document-exporters/pdf/render.js";
 import { addResources, merge } from "../../abstract-document/abstract-doc.js";
 import { AbstractDoc } from "../../abstract-document/index.js";
 import { Resources } from "../../abstract-document/resources.js";
@@ -13,7 +11,7 @@ export type TemplateInput = {
 };
 
 export type AbstractDoxXmlsResult =
-  | { readonly type: "Ok"; readonly value: Blob }
+  | { readonly type: "Ok"; readonly value: AbstractDoc.AbstractDoc }
   | { readonly type: "Err"; readonly error: string };
 
 export type Format = "PDF" | "DOCX";
@@ -21,7 +19,6 @@ export type Format = "PDF" | "DOCX";
 export async function abstractDocsXml(
   templateInputs: ReadonlyArray<TemplateInput>,
   format: Format,
-  pdfKit: PDFKit.PDFDocument,
   getResources: (imageUrls: Record<string, true>, fontFamilies: Record<string, true>) => Promise<Resources>
 ): Promise<AbstractDoxXmlsResult> {
   try {
@@ -38,7 +35,7 @@ export async function abstractDocsXml(
     const combinedReport = addResources(merge(...abstractDocs), resources);
     return {
       type: "Ok",
-      value: format === "PDF" ? await pdfBlob(pdfKit, combinedReport) : await docxBlob(combinedReport),
+      value: combinedReport,
     };
   } catch (e) {
     return { type: "Err", error: typeof e === "string" ? e : e.message };
