@@ -10,7 +10,7 @@ import {
   createBinaryImage,
 } from "../../../abstract-image/src/index.js";
 import { renderHandlebars, validateXml, errorToReadableText } from "../../../handlebars-xml/src/index.js";
-import { AbstractDoc, AbstractDocPdf, AbstractDocXml } from "../../../abstract-document/src/index.js";
+import { AbstractDoc, AbstractDocDocx, AbstractDocPdf, AbstractDocXml } from "../../../abstract-document/src/index.js";
 
 export function AbstractDocumentXMLExample(): React.JSX.Element {
   const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
@@ -151,7 +151,12 @@ async function genereteDoc(
   // Fetch image and fonts once the ADXml has been parsed
   const [doc, _ignored_imageUrls, _ignored_fontFamilies] = AbstractDocXml.abstractDocXml(template, data, partials);
   const docWithResources = AbstractDoc.AbstractDoc.addResources(doc, { imageResources });
-  const blob: Blob = await AbstractDocPdf.exportToHTML5Blob(PDFDocument, docWithResources);
+  const blob: Blob =
+    format === "PDF"
+      ? await AbstractDocPdf.exportToHTML5Blob(PDFDocument, docWithResources)
+      : new Blob([await AbstractDocDocx.exportToHTML5Blob(docWithResources)], {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
 
   return { type: "Ok", blob };
 }
