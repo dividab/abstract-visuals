@@ -18,7 +18,6 @@ export type Format = "PDF" | "DOCX";
 
 export async function abstractDocsXml(
   templateInputs: ReadonlyArray<TemplateInput>,
-  format: Format,
   getResources: (imageUrls: Record<string, true>, fontFamilies: Record<string, true>) => Promise<Resources>
 ): Promise<AbstractDoxXmlsResult> {
   try {
@@ -33,10 +32,7 @@ export async function abstractDocsXml(
     }
     const resources = await getResources(imageUrls, fontFamilies);
     const combinedReport = addResources(merge(...abstractDocs), resources);
-    return {
-      type: "Ok",
-      value: combinedReport,
-    };
+    return { type: "Ok", value: combinedReport };
   } catch (e) {
     return { type: "Err", error: typeof e === "string" ? e : e.message };
   }
