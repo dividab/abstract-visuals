@@ -13,7 +13,7 @@
     "@storybook/react": "^8.1.1",
     "@testing-library/react": "^15.0.7",
     "@types/enzyme": "^3.10.18",
-    "@types/node": "^",
+    "@types/node": "^24.9.2",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vitejs/plugin-react": "^5.0.0",
