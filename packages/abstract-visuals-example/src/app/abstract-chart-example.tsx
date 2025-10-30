@@ -1,7 +1,32 @@
 import React, { useState } from "react";
 import FileSaver from "file-saver";
-import * as AC from "../../../abstract-chart/src/index.js";
-import * as AI from "../../../abstract-image/src/index.js";
+import {
+  Chart as Chart_1,
+  renderChart,
+  createChartLine,
+  createChart,
+  createChartPoint,
+  createChartDataAxis,
+  createLinearAxis,
+  StackPoints,
+  createChartStack,
+  createChartStackConfig,
+  Axis,
+  ChartBars,
+  createChartArea,
+  ChartLine,
+} from "../../../abstract-chart/src/index.js";
+import {
+  ReactSvgCallbacks,
+  createSVG,
+  ReactSvg,
+  red,
+  blue,
+  white,
+  fromArgb,
+  createPoint,
+  Point,
+} from "../../../abstract-image/src/index.js";
 
 export function AbstractChartExample(): React.JSX.Element {
   const [hovered, setHovered] = useState("");
@@ -40,15 +65,15 @@ export function AbstractChartExample(): React.JSX.Element {
     width = "600",
     height = "600",
   }: {
-    readonly chart: AC.Chart;
+    readonly chart: Chart_1;
     readonly name: string;
-    readonly callbacks?: AI.ReactSvgCallbacks;
+    readonly callbacks?: ReactSvgCallbacks;
     readonly children?: React.JSX.Element;
     readonly width?: string;
     readonly height?: string;
   }): React.JSX.Element {
-    const ac = AC.renderChart(chart);
-    const svg = AI.createSVG(ac);
+    const ac = renderChart(chart);
+    const svg = createSVG(ac);
     return (
       <>
         <h1 style={{ display: "flex", gap: "6px", alignItems: "center" }}>{name}</h1>
@@ -56,7 +81,7 @@ export function AbstractChartExample(): React.JSX.Element {
         <div style={{ display: "flex", gap: "10px" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h4>React</h4>
-            <AI.ReactSvg image={ac} callbacks={callbacks} />
+            <ReactSvg image={ac} callbacks={callbacks} />
           </div>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h4 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -72,9 +97,9 @@ export function AbstractChartExample(): React.JSX.Element {
     );
   }
 
-  function generateLineChart(hovered: string): AC.Chart {
+  function generateLineChart(hovered: string): Chart_1 {
     const series = [
-      AC.createChartLine({
+      createChartLine({
         points: [
           { x: 0, y: 0 },
           { x: 1, y: 2 },
@@ -86,14 +111,14 @@ export function AbstractChartExample(): React.JSX.Element {
           { x: 7, y: 0 },
           { x: 8, y: 0 },
         ],
-        color: AI.red,
+        color: red,
         label: "How bad you feel",
         xAxis: "bottom",
         yAxis: "left",
         thickness: hovered === "line one" ? 4 : 1,
         id: "line one",
       }),
-      AC.createChartLine({
+      createChartLine({
         points: [
           { x: 0, y: 0 },
           { x: 1, y: 0 },
@@ -105,7 +130,7 @@ export function AbstractChartExample(): React.JSX.Element {
           { x: 7, y: 2 },
           { x: 8, y: 1.5 },
         ],
-        color: AI.blue,
+        color: blue,
         label: "How bad you sound<sub>Feel good!</sub>",
         xAxis: "bottom",
         yAxis: "left",
@@ -130,30 +155,30 @@ export function AbstractChartExample(): React.JSX.Element {
       dataAxisPointsCubedY.push({ x: i, y: i * i * i });
     }
 
-    const chart = AC.createChart({
+    const chart = createChart({
       width: 1000,
       height: 800,
       chartLines: series,
       chartPoints: [
-        AC.createChartPoint({
+        createChartPoint({
           position: { x: 7, y: 4 },
           id: "point1",
           size: hovered === "point1" ? { width: 8, height: 8 } : { width: 5, height: 5 },
           label: "Point",
         }),
-        AC.createChartPoint({
+        createChartPoint({
           position: { x: 1, y: 1 },
           id: "point2",
           size: hovered === "point2" ? { width: 8, height: 8 } : { width: 5, height: 5 },
           label: "Point<sub>Feel good!</sub>",
         }),
       ],
-      chartDataAxisesBottom: [AC.createChartDataAxis(dataAxisPointsSquaredX, "X^2")],
-      chartDataAxisesTop: [AC.createChartDataAxis(dataAxisPointsCubedX, "X^3")],
-      chartDataAxisesLeft: [AC.createChartDataAxis(dataAxisPointsSquaredY, "Y^2")],
-      chartDataAxisesRight: [AC.createChartDataAxis(dataAxisPointsCubedY, "Y^3")],
+      chartDataAxisesBottom: [createChartDataAxis(dataAxisPointsSquaredX, "X^2")],
+      chartDataAxisesTop: [createChartDataAxis(dataAxisPointsCubedX, "X^3")],
+      chartDataAxisesLeft: [createChartDataAxis(dataAxisPointsSquaredY, "Y^2")],
+      chartDataAxisesRight: [createChartDataAxis(dataAxisPointsCubedY, "Y^3")],
       xAxisesBottom: [
-        AC.createLinearAxis(
+        createLinearAxis(
           xMin,
           xMax,
           "Days with cold bottom 1",
@@ -164,7 +189,7 @@ export function AbstractChartExample(): React.JSX.Element {
           undefined,
           "x-bottom-1"
         ),
-        AC.createLinearAxis(
+        createLinearAxis(
           xMin,
           xMax,
           "Days with cold bottom 2",
@@ -177,87 +202,27 @@ export function AbstractChartExample(): React.JSX.Element {
         ),
       ],
       xAxisesTop: [
-        AC.createLinearAxis(
-          xMin,
-          xMax,
-          "Days with cold top 1",
-          undefined,
-          undefined,
-          undefined,
-          2,
-          undefined,
-          "x-top-1"
-        ),
-        AC.createLinearAxis(
-          xMin,
-          xMax,
-          "Days with cold top 2",
-          undefined,
-          undefined,
-          undefined,
-          2,
-          undefined,
-          "x-top-2"
-        ),
+        createLinearAxis(xMin, xMax, "Days with cold top 1", undefined, undefined, undefined, 2, undefined, "x-top-1"),
+        createLinearAxis(xMin, xMax, "Days with cold top 2", undefined, undefined, undefined, 2, undefined, "x-top-2"),
       ],
       yAxisesLeft: [
-        AC.createLinearAxis(
-          yMin,
-          yMax + 1,
-          "Badness left 1",
-          undefined,
-          undefined,
-          undefined,
-          2,
-          undefined,
-          "y-left-1"
-        ),
-        AC.createLinearAxis(
-          yMin,
-          yMax + 1,
-          "Badness left 2",
-          undefined,
-          undefined,
-          undefined,
-          2,
-          undefined,
-          "y-left-2"
-        ),
+        createLinearAxis(yMin, yMax + 1, "Badness left 1", undefined, undefined, undefined, 2, undefined, "y-left-1"),
+        createLinearAxis(yMin, yMax + 1, "Badness left 2", undefined, undefined, undefined, 2, undefined, "y-left-2"),
       ],
       yAxisesRight: [
-        AC.createLinearAxis(
-          yMin,
-          yMax + 1,
-          "Badness right 1",
-          undefined,
-          undefined,
-          undefined,
-          2,
-          undefined,
-          "y-right-1"
-        ),
-        AC.createLinearAxis(
-          yMin,
-          yMax + 1,
-          "Badness right 2",
-          undefined,
-          undefined,
-          undefined,
-          2,
-          undefined,
-          "y-right-2"
-        ),
+        createLinearAxis(yMin, yMax + 1, "Badness right 1", undefined, undefined, undefined, 2, undefined, "y-right-1"),
+        createLinearAxis(yMin, yMax + 1, "Badness right 2", undefined, undefined, undefined, 2, undefined, "y-right-2"),
       ],
       labelLayout: "center",
-      textOutlineColor: AI.white,
+      textOutlineColor: white,
     });
 
     return chart;
   }
 
   function getStackRange(
-    points: ReadonlyArray<AC.StackPoints>,
-    axisSelector: (point: AC.StackPoints) => ReadonlyArray<number>
+    points: ReadonlyArray<StackPoints>,
+    axisSelector: (point: StackPoints) => ReadonlyArray<number>
   ): [number, number] {
     const axisValues = points
       .map(axisSelector)
@@ -279,8 +244,8 @@ export function AbstractChartExample(): React.JSX.Element {
     return [Math.min(...axisValues), Math.max(...axisValues)];
   }
 
-  function generateStackedChart(): AC.Chart {
-    const stack = AC.createChartStack({
+  function generateStackedChart(): Chart_1 {
+    const stack = createChartStack({
       points: [
         { x: 0, ys: [0, 0] },
         { x: 1, ys: [2, 0] },
@@ -295,12 +260,12 @@ export function AbstractChartExample(): React.JSX.Element {
       xAxis: "bottom",
       yAxis: "left",
       config: [
-        AC.createChartStackConfig({
+        createChartStackConfig({
           color: { r: 255, b: 0, g: 0, a: 120 },
           label: "How bad you feel",
         }),
-        AC.createChartStackConfig({
-          color: AI.blue,
+        createChartStackConfig({
+          color: blue,
           label: "How bad you sound \n How bad you soundn \n How bad you soundn \n How bad you soundn",
         }),
       ],
@@ -309,20 +274,20 @@ export function AbstractChartExample(): React.JSX.Element {
     const [xMin, xMax] = getStackRange(stack.points, (point) => [point.x]);
     const [yMin, yMax] = getStackRange(stack.points, (point) => point.ys);
 
-    const chart = AC.createChart({
+    const chart = createChart({
       chartStack: stack,
-      xAxisesBottom: [AC.createLinearAxis(xMin, xMax, "Days with cold")],
-      yAxisesLeft: [AC.createLinearAxis(yMin, yMax + 1, "Badness")],
+      xAxisesBottom: [createLinearAxis(xMin, xMax, "Days with cold")],
+      yAxisesLeft: [createLinearAxis(yMin, yMax + 1, "Badness")],
       labelLayout: "center",
     });
 
     return chart;
   }
 
-  function generateSignedStackedChart(): AC.Chart {
+  function generateSignedStackedChart(): Chart_1 {
     const numPoints = 100;
     const numYs = 5;
-    const points: Array<AC.StackPoints> = [];
+    const points: Array<StackPoints> = [];
     let lastYs: Array<number> = [];
     for (let yi = 0; yi < numYs; ++yi) {
       lastYs[yi] = 0;
@@ -336,25 +301,25 @@ export function AbstractChartExample(): React.JSX.Element {
       lastYs = ys;
     }
 
-    const stack = AC.createChartStack({
+    const stack = createChartStack({
       points,
       xAxis: "bottom",
       yAxis: "left",
       config: [
-        AC.createChartStackConfig({
-          color: AI.fromArgb(255, 94, 91, 59),
+        createChartStackConfig({
+          color: fromArgb(255, 94, 91, 59),
         }),
-        AC.createChartStackConfig({
-          color: AI.fromArgb(255, 125, 188, 169),
+        createChartStackConfig({
+          color: fromArgb(255, 125, 188, 169),
         }),
-        AC.createChartStackConfig({
-          color: AI.fromArgb(255, 234, 253, 137),
+        createChartStackConfig({
+          color: fromArgb(255, 234, 253, 137),
         }),
-        AC.createChartStackConfig({
-          color: AI.fromArgb(255, 255, 211, 124),
+        createChartStackConfig({
+          color: fromArgb(255, 255, 211, 124),
         }),
-        AC.createChartStackConfig({
-          color: AI.fromArgb(255, 255, 155, 109),
+        createChartStackConfig({
+          color: fromArgb(255, 255, 155, 109),
         }),
       ],
     });
@@ -362,19 +327,19 @@ export function AbstractChartExample(): React.JSX.Element {
     const [xMin, xMax] = getStackRange(stack.points, (point) => [point.x]);
     const [yMin, yMax] = getStackRange(stack.points, (point) => point.ys);
 
-    const chart = AC.createChart({
+    const chart = createChart({
       chartStack: stack,
-      xAxisesBottom: [AC.createLinearAxis(xMin, xMax, "Time")],
-      yAxisesLeft: [AC.createLinearAxis(yMin * 1.1, yMax * 1.1, "Sineness")],
+      xAxisesBottom: [createLinearAxis(xMin, xMax, "Time")],
+      yAxisesLeft: [createLinearAxis(yMin * 1.1, yMax * 1.1, "Sineness")],
       labelLayout: "center",
     });
 
     return chart;
   }
 
-  function generateLineChartDiscreteXAxis(): AC.Chart {
+  function generateLineChartDiscreteXAxis(): Chart_1 {
     const series = [
-      AC.createChartLine({
+      createChartLine({
         points: [
           { x: 0, y: 0 },
           { x: 1, y: 2 },
@@ -386,12 +351,12 @@ export function AbstractChartExample(): React.JSX.Element {
           { x: 7, y: 0 },
           { x: 8, y: 0 },
         ],
-        color: AI.red,
+        color: red,
         label: "How bad you feel",
         xAxis: "bottom",
         yAxis: "left",
       }),
-      AC.createChartLine({
+      createChartLine({
         points: [
           { x: 0, y: 0 },
           { x: 1, y: 0 },
@@ -403,7 +368,7 @@ export function AbstractChartExample(): React.JSX.Element {
           { x: 7, y: 2 },
           { x: 8, y: 1.5 },
         ],
-        color: AI.blue,
+        color: blue,
         label: "How bad you sound",
         xAxis: "bottom",
         yAxis: "left",
@@ -412,7 +377,7 @@ export function AbstractChartExample(): React.JSX.Element {
 
     const [yMin, yMax] = getLineRange(series, (point) => point.y);
 
-    const xAxis: AC.Axis = {
+    const xAxis: Axis = {
       type: "discrete",
       points: [
         { value: 0, label: "2023-02" },
@@ -433,7 +398,7 @@ export function AbstractChartExample(): React.JSX.Element {
       thickness: 2,
       axisColor: { r: 0, b: 0, g: 0, a: 255 },
     };
-    const yAxis: AC.Axis = {
+    const yAxis: Axis = {
       type: "linear",
       min: yMin,
       max: yMax + 1,
@@ -443,7 +408,7 @@ export function AbstractChartExample(): React.JSX.Element {
       thickness: 7,
       axisColor: { r: 0, b: 0, g: 0, a: 255 },
     };
-    const chart = AC.createChart({
+    const chart = createChart({
       chartLines: [],
       xAxisesBottom: [xAxis],
       xAxisesTop: [
@@ -477,8 +442,8 @@ export function AbstractChartExample(): React.JSX.Element {
     return chart;
   }
   //dummy
-  function generateBarChart(): AC.Chart {
-    const xAxis: AC.Axis = {
+  function generateBarChart(): Chart_1 {
+    const xAxis: Axis = {
       type: "linear",
       min: 0,
       max: 10,
@@ -489,7 +454,7 @@ export function AbstractChartExample(): React.JSX.Element {
       thickness: 1,
       axisColor: { r: 0, b: 0, g: 0, a: 255 },
     };
-    const yAxis: AC.Axis = {
+    const yAxis: Axis = {
       type: "linear",
       min: 0,
       max: 30,
@@ -499,7 +464,7 @@ export function AbstractChartExample(): React.JSX.Element {
       thickness: 1,
       axisColor: { r: 0, b: 0, g: 0, a: 255 },
     };
-    const chartBase: AC.ChartBars = {
+    const chartBase: ChartBars = {
       direction: "y",
       width: 0.4,
       radius: { x: 2, y: 2 },
@@ -510,10 +475,10 @@ export function AbstractChartExample(): React.JSX.Element {
       position: 0,
       bars: [],
     };
-    const chart = AC.createChart({
+    const chart = createChart({
       chartAreas: [
-        AC.createChartArea({
-          points: [AI.createPoint(3, 7), AI.createPoint(6, 7), AI.createPoint(6, 14), AI.createPoint(3, 14)],
+        createChartArea({
+          points: [createPoint(3, 7), createPoint(6, 7), createPoint(6, 14), createPoint(3, 14)],
         }),
       ],
       chartLines: [],
@@ -522,16 +487,16 @@ export function AbstractChartExample(): React.JSX.Element {
           ...chartBase,
           position: 1,
           bars: [
-            { max: 10, min: 0, color: AI.fromArgb(255, 255, 0, 0) },
-            { max: 5, min: 0, color: AI.fromArgb(255, 0, 0, 255) },
-            { max: 7, min: 0, color: AI.fromArgb(255, 0, 255, 0) },
+            { max: 10, min: 0, color: fromArgb(255, 255, 0, 0) },
+            { max: 5, min: 0, color: fromArgb(255, 0, 0, 255) },
+            { max: 7, min: 0, color: fromArgb(255, 0, 255, 0) },
           ],
         },
-        { ...chartBase, position: 3, bars: [{ max: 4, color: AI.fromArgb(255, 255, 0, 0) }] },
-        { ...chartBase, position: 4, bars: [{ max: 2, color: AI.fromArgb(255, 255, 0, 0) }] },
-        { ...chartBase, position: 6, bars: [{ max: 4, color: AI.fromArgb(255, 255, 0, 0) }] },
-        { ...chartBase, position: 7, bars: [{ max: 5, color: AI.fromArgb(255, 255, 0, 0) }] },
-        { ...chartBase, position: 10, bars: [{ max: 8, color: AI.fromArgb(255, 255, 0, 0) }] },
+        { ...chartBase, position: 3, bars: [{ max: 4, color: fromArgb(255, 255, 0, 0) }] },
+        { ...chartBase, position: 4, bars: [{ max: 2, color: fromArgb(255, 255, 0, 0) }] },
+        { ...chartBase, position: 6, bars: [{ max: 4, color: fromArgb(255, 255, 0, 0) }] },
+        { ...chartBase, position: 7, bars: [{ max: 5, color: fromArgb(255, 255, 0, 0) }] },
+        { ...chartBase, position: 10, bars: [{ max: 8, color: fromArgb(255, 255, 0, 0) }] },
       ],
       xAxisesBottom: [xAxis],
       xAxisesTop: [
@@ -551,7 +516,7 @@ export function AbstractChartExample(): React.JSX.Element {
   }
 }
 
-function getLineRange(series: AC.ChartLine[], axisSelector: (point: AI.Point) => number): [number, number] {
+function getLineRange(series: ChartLine[], axisSelector: (point: Point) => number): [number, number] {
   const axisValues = series
     .map((serie) => serie.points.map(axisSelector))
     .reduce((soFar, current) => {

@@ -1,43 +1,59 @@
 import React from "react";
-import * as AI from "../../../abstract-image/src/index.js";
+import {
+  createLine,
+  createPoint,
+  green,
+  createRectangle,
+  blue,
+  red,
+  createText,
+  black,
+  createEllipse,
+  createPolyLine,
+  brown,
+  createPolygon,
+  yellow,
+  gray,
+  createAbstractImage,
+  createSize,
+  white,
+  createSVG,
+  dxf2dExportImage,
+  epsExportImage,
+} from "../../../abstract-image/src/index.js";
 
 export function AbstractImageExampleDxf(): React.JSX.Element {
   const components = [
-    AI.createLine(AI.createPoint(200, 0), AI.createPoint(200, 400), AI.green, 1),
-    AI.createLine(AI.createPoint(0, 200), AI.createPoint(400, 200), AI.green, 1),
-    AI.createRectangle(AI.createPoint(10, 50), AI.createPoint(40, 80), AI.blue, 2, AI.red),
-    AI.createText(
-      AI.createPoint(200, 200),
+    createLine(createPoint(200, 0), createPoint(200, 400), green, 1),
+    createLine(createPoint(0, 200), createPoint(400, 200), green, 1),
+    createRectangle(createPoint(10, 50), createPoint(40, 80), blue, 2, red),
+    createText(
+      createPoint(200, 200),
       "Test",
       "Helvetica",
       12,
-      AI.black,
+      black,
       "normal",
       0,
       "center",
       "uniform",
       "uniform",
       0,
-      AI.black,
+      black,
       false
     ),
-    AI.createEllipse(AI.createPoint(80, 40), AI.createPoint(100, 60), AI.black, 1, AI.blue),
-    AI.createPolyLine([AI.createPoint(10, 10), AI.createPoint(390, 390), AI.createPoint(390, 10)], AI.brown, 2),
-    AI.createPolygon(
-      [AI.createPoint(200, 250), AI.createPoint(250, 250), AI.createPoint(200, 200)],
-      AI.yellow,
-      2,
-      AI.gray
-    ),
+    createEllipse(createPoint(80, 40), createPoint(100, 60), black, 1, blue),
+    createPolyLine([createPoint(10, 10), createPoint(390, 390), createPoint(390, 10)], brown, 2),
+    createPolygon([createPoint(200, 250), createPoint(250, 250), createPoint(200, 200)], yellow, 2, gray),
   ];
-  const image = AI.createAbstractImage(AI.createPoint(0, 0), AI.createSize(400, 400), AI.white, components);
-  const svg = AI.createSVG(image);
+  const image = createAbstractImage(createPoint(0, 0), createSize(400, 400), white, components);
+  const svg = createSVG(image);
   const base64 = btoa(svg);
 
-  const dxf = AI.dxf2dExportImage(image);
+  const dxf = dxf2dExportImage(image);
   const dxfUrl = toDataUrl("text/plain", dxf);
 
-  const eps = AI.epsExportImage(image);
+  const eps = epsExportImage(image);
   const epsUrl = toDataUrl("text/plain", eps);
 
   return (

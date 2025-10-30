@@ -59,6 +59,7 @@
     "build-storybook": "build-storybook",
     "gen": "xsd-ts ./packages/abstract-document/src/abstract-document-xml/xsd.xml ./packages/abstract-document/src/abstract-document-xml/abstract-document.ts",
     "clean-node-modules": "rm -rf node_modules && rm -rf ./packages/*/node_modules",
+    "prod": "vite build packages/abstract-visuals-example --config packages/abstract-visuals-example/vite.config.ts",
     "analyze": "ANALYZE=1 vite build packages/abstract-visuals-example --config packages/abstract-visuals-example/vite.config.ts"
   },
   "lint-staged": {

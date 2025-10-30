@@ -23,7 +23,7 @@ import {
   Text,
   transparent,
   white,
-} from "../model";
+} from "../model/index.js";
 
 export const createComponents = (mutableImageUrls: Array<string>): Record<string, (...args: any[]) => any> => ({
   AbstractImage: (props): AbstractImage => ({

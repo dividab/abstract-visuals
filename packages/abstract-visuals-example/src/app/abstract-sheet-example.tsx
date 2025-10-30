@@ -1,9 +1,9 @@
 import React from "react";
 import FileSaver from "file-saver";
-import * as AS from "../../../abstract-sheet/src/index.js";
+import { AbstractSheet, toCsv, toXlsx, toReact as ToReact } from "../../../abstract-sheet/src/index.js";
 
 export function AbstractSheetExample(): React.JSX.Element {
-  const as: AS.AbstractSheet = {
+  const as: AbstractSheet = {
     sheets: [
       {
         name: "sheet1",
@@ -38,7 +38,7 @@ export function AbstractSheetExample(): React.JSX.Element {
         <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
           <button
             onClick={() => {
-              for (const f of AS.toCsv(as)) {
+              for (const f of toCsv(as)) {
                 FileSaver.saveAs(new Blob([f.csv], { type: "text/plain" }), `${f.name}.txt`);
               }
             }}
@@ -46,13 +46,13 @@ export function AbstractSheetExample(): React.JSX.Element {
             csv
           </button>
           <button
-            onClick={() => FileSaver.saveAs(new Blob([AS.toXlsx(as)], { type: "text/plain" }), `abstract-visuals.xlsx`)}
+            onClick={() => FileSaver.saveAs(new Blob([toXlsx(as)], { type: "text/plain" }), `abstract-visuals.xlsx`)}
           >
             xlsx
           </button>
         </div>
       </div>
-      <AS.toReact abstractSheet={as} />
+      <ToReact abstractSheet={as} />
     </div>
   );
 }

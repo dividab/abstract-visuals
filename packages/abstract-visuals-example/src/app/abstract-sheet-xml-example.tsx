@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
-import * as AS from "../../../abstract-sheet/src/index.js";
-import * as HSXML from "../../../handlebars-xml/src/index.js";
+import {
+  AbstractSheet,
+  toXlsx,
+  toCsv,
+  toReact as ToReact,
+  parsedXsd,
+  abstractSheetXml,
+} from "../../../abstract-sheet/src/index.js";
+import { renderHandlebars, validateXml, errorToReadableText } from "../../../handlebars-xml/src/index.js";
 import FileSaver from "file-saver";
 
 export function AbstractSheetXMLExample(): React.JSX.Element {
@@ -67,7 +74,7 @@ export function AbstractSheetXMLExample(): React.JSX.Element {
 </AbstractSheet>`);
 
   const [sheet, setSheet] = React.useState<
-    { type: "Ok"; sheet: AS.AbstractSheet } | { type: "Err"; error: string } | undefined
+    { type: "Ok"; sheet: AbstractSheet } | { type: "Err"; error: string } | undefined
   >(createSheet(data, template));
 
   return (
@@ -108,7 +115,7 @@ export function AbstractSheetXMLExample(): React.JSX.Element {
             disabled={sheet?.type !== "Ok"}
             onClick={() => {
               if (sheet?.type === "Ok") {
-                FileSaver.saveAs(new Blob([AS.toXlsx(sheet.sheet)], { type: "text/plain" }), `abstract-visuals.xlsx`);
+                FileSaver.saveAs(new Blob([toXlsx(sheet.sheet)], { type: "text/plain" }), `abstract-visuals.xlsx`);
               }
             }}
           >
@@ -121,7 +128,7 @@ export function AbstractSheetXMLExample(): React.JSX.Element {
                 FileSaver.saveAs(
                   new Blob(
                     [
-                      AS.toCsv(sheet.sheet)
+                      toCsv(sheet.sheet)
                         .map((s) => s.csv)
                         .join("\n\n"),
                     ],
@@ -140,7 +147,7 @@ export function AbstractSheetXMLExample(): React.JSX.Element {
           <h3>{sheet.error}</h3>
         ) : (
           <div style={{ width: "100%", height: "calc(100% - 30px)" }}>
-            {sheet?.type === "Ok" ? <AS.toReact abstractSheet={sheet.sheet} /> : ""}
+            {sheet?.type === "Ok" ? <ToReact abstractSheet={sheet.sheet} /> : ""}
           </div>
         )}
       </div>
@@ -151,20 +158,20 @@ export function AbstractSheetXMLExample(): React.JSX.Element {
 function createSheet(
   data: string,
   template: string
-): { type: "Ok"; sheet: AS.AbstractSheet } | { type: "Err"; error: string } {
+): { type: "Ok"; sheet: AbstractSheet } | { type: "Err"; error: string } {
   let dataObject = {};
   try {
     dataObject = JSON.parse(data);
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." };
   }
-  const handlebarsRendered = HSXML.renderHandlebars(template, dataObject, {});
-  const validationErrors = HSXML.validateXml(handlebarsRendered, AS.parsedXsd);
+  const handlebarsRendered = renderHandlebars(template, dataObject, {});
+  const validationErrors = validateXml(handlebarsRendered, parsedXsd);
   if (validationErrors.length > 0) {
-    return { type: "Err", error: HSXML.errorToReadableText(validationErrors, "template") };
+    return { type: "Err", error: errorToReadableText(validationErrors, "template") };
   }
   try {
-    return { type: "Ok", sheet: AS.abstractSheetXml(template, dataObject, {}) };
+    return { type: "Ok", sheet: abstractSheetXml(template, dataObject, {}) };
   } catch (e) {
     return { type: "Err", error: e.message };
   }

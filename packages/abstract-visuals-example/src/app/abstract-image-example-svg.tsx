@@ -1,38 +1,46 @@
 import React from "react";
-import * as AI from "../../../abstract-image/src/index.js";
+import {
+  createLine,
+  createPoint,
+  red,
+  createDashStyle,
+  black,
+  createRectangle,
+  blue,
+  fromArgb,
+  transparent,
+  createText,
+  createAbstractImage,
+  createSize,
+  white,
+  createSVG,
+} from "../../../abstract-image/src/index.js";
 
 export function AbstractImageExampleSvg(): React.JSX.Element {
   const components = [
-    AI.createLine(AI.createPoint(25, 125), AI.createPoint(280, 125), AI.red, 2, undefined, AI.createDashStyle([10, 5])),
-    AI.createLine(
-      AI.createPoint(25, 100),
-      AI.createPoint(280, 100),
-      AI.red,
-      2,
-      undefined,
-      AI.createDashStyle([10, 5], 5)
-    ),
-    AI.createLine(AI.createPoint(25, 25), AI.createPoint(80, 60), AI.black, 2),
-    AI.createRectangle(AI.createPoint(10, 50), AI.createPoint(40, 80), AI.blue, 2, AI.fromArgb(100, 0, 0, 0)),
-    AI.createRectangle(AI.createPoint(60, 50), AI.createPoint(90, 80), AI.blue, 2, AI.transparent),
-    AI.createText(
-      AI.createPoint(60, 50),
+    createLine(createPoint(25, 125), createPoint(280, 125), red, 2, undefined, createDashStyle([10, 5])),
+    createLine(createPoint(25, 100), createPoint(280, 100), red, 2, undefined, createDashStyle([10, 5], 5)),
+    createLine(createPoint(25, 25), createPoint(80, 60), black, 2),
+    createRectangle(createPoint(10, 50), createPoint(40, 80), blue, 2, fromArgb(100, 0, 0, 0)),
+    createRectangle(createPoint(60, 50), createPoint(90, 80), blue, 2, transparent),
+    createText(
+      createPoint(60, 50),
       "Hej<sub>12</sub>",
       "Helvetica",
       12,
-      AI.black,
+      black,
       "normal",
       0,
       "center",
       "uniform",
       "uniform",
       0,
-      AI.black,
+      black,
       false
     ),
   ];
-  const image = AI.createAbstractImage(AI.createPoint(0, 0), AI.createSize(400, 400), AI.white, components);
-  const svg = AI.createSVG(image);
+  const image = createAbstractImage(createPoint(0, 0), createSize(400, 400), white, components);
+  const svg = createSVG(image);
   return (
     <div>
       <h1>Svg</h1>

@@ -7,6 +7,7 @@
   "license": "MIT",
   "sideEffects": false,
   "main": "lib/index.js",
+  "type": "module",
   "types": "lib/index",
   "exports": {
     ".": "./lib/index.js"
@@ -28,7 +29,7 @@
   "devDependencies": {
     "@types/json-schema": "^7.0.15",
     "@types/mustache": "^4.2.5",
-    "@types/node": "^22.10.1",
+    "@types/node": "^24.9.2",
     "@types/xml": "^1.0.11"
   },
   "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2"

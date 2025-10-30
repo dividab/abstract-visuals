@@ -1,6 +1,14 @@
 import React from "react";
 import FileSaver from "file-saver";
-import * as A3D from "../../../abstract-3d/src/index.js";
+import {
+  ReactPopover,
+  toDxf,
+  toStl,
+  toStep,
+  toSvg,
+  toReact as ToReact,
+  Camera,
+} from "../../../abstract-3d/src/index.js";
 import { systemair } from "./systemair.js";
 import { vortice } from "./vortice.js";
 import { cylinderFilter } from "./cylinder-filter.js";
@@ -9,7 +17,7 @@ export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
   const [hovered, setHovered] = React.useState<string | undefined>(undefined);
   const group = systemair.groups.find((g) => g.data?.id === hovered);
-  const popover: A3D.ReactPopover | undefined = group
+  const popover: ReactPopover | undefined = group
     ? { id: "popover", pos: { ...group.pos, y: group.pos.y - 300 }, content: "Hej" }
     : undefined;
   console.log(hovered, group, popover);
@@ -18,22 +26,22 @@ export function Abstract3DExample(): React.ReactNode {
       <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
         <button
           onClick={() =>
-            FileSaver.saveAs(new Blob([A3D.toDxf(systemair, { view: "top" })], { type: "text/plain" }), `a3d.dxf`)
+            FileSaver.saveAs(new Blob([toDxf(systemair, { view: "top" })], { type: "text/plain" }), `a3d.dxf`)
           }
         >
           DXF
         </button>
-        <button onClick={() => FileSaver.saveAs(new Blob([A3D.toStl(systemair)], { type: "text/plain" }), `a3d.stl`)}>
+        <button onClick={() => FileSaver.saveAs(new Blob([toStl(systemair)], { type: "text/plain" }), `a3d.stl`)}>
           STL
         </button>
-        <button onClick={() => FileSaver.saveAs(new Blob([A3D.toStep(systemair)], { type: "text/plain" }), `a3d.stp`)}>
+        <button onClick={() => FileSaver.saveAs(new Blob([toStep(systemair)], { type: "text/plain" }), `a3d.stp`)}>
           STEP
         </button>
         <button
           onClick={() =>
             FileSaver.saveAs(
               new Blob(
-                [A3D.toSvg(systemair, { view: "front", stroke: 2, scale: { size: 180, scaleByWidth: true } }).image],
+                [toSvg(systemair, { view: "front", stroke: 2, scale: { size: 180, scaleByWidth: true } }).image],
                 {
                   type: "text/plain",
                 }
@@ -47,7 +55,7 @@ export function Abstract3DExample(): React.ReactNode {
       </div>
       <div
         dangerouslySetInnerHTML={{
-          __html: A3D.toSvg(systemair, {
+          __html: toSvg(systemair, {
             view: "front",
             stroke: 1,
             scale: { size: 400, scaleByWidth: true },
@@ -57,7 +65,7 @@ export function Abstract3DExample(): React.ReactNode {
       />
       <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
         <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-          <A3D.toReact
+          <ToReact
             selectedIds={selected ? { [selected]: true } : undefined}
             onClickGroup={(id) => setSelected(id)}
             createGroupId={(g) => g.data?.id ?? ""}
@@ -69,7 +77,7 @@ export function Abstract3DExample(): React.ReactNode {
           />
         </div>
         <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-          <A3D.toReact
+          <ToReact
             selectedIds={selected ? { [selected]: true } : undefined}
             onClickGroup={(id) => setSelected(id)}
             createGroupId={(g) => g.data?.id ?? ""}
@@ -83,4 +91,4 @@ export function Abstract3DExample(): React.ReactNode {
   );
 }
 
-const camera: A3D.Camera = { type: "Perspective", near: 100, far: 19000, fov: 60 };
+const camera: Camera = { type: "Perspective", near: 100, far: 19000, fov: 60 };
