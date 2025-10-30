@@ -282,7 +282,7 @@ export const vec3DistSquared = (a: Vec3, b: Vec3): number =>
 export const vec3Dist = (a: Vec3, b: Vec3): number => vec3DistSquared(a, b);
 
 export const vec3Cross = (a: Vec3, b: Vec3): Vec3 =>
-    vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+  vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 
 export const equals = (num1: number, num2: number, equality = Number.EPSILON): boolean =>
   Math.abs(num1 - num2) <= equality;
@@ -501,7 +501,7 @@ export const group = (
   meshes: ReadonlyArray<Mesh>,
   pos = vec3Zero,
   rot = vec3Zero,
-  groups = Array<Group>(),
+  groups: ReadonlyArray<Group> = Array<Group>(),
   data = {},
   animation: Animation | undefined = undefined
 ): Group => ({ meshes, pos, rot, data, groups, animation: animation! });
