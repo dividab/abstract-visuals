@@ -13,7 +13,7 @@ import {
 } from "@react-three/drei";
 import { ThreeEvent, useThree } from "@react-three/fiber";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import { Vector3 } from "three/src/math/Vector3.js";
+import type { Vector3 } from "three/src/math/Vector3.js";
 import { View, Scene, Vec3, vec3 } from "../../abstract-3d.js";
 
 export type Camera = A3dPerspectiveCamera | A3dOrthographicCamera;

@@ -1,4 +1,21 @@
-import { Scene, vec3Zero, Group, Vec3, vec3TransRot, vec3RotCombine, Cylinder, Material, Plane, Box, Vec2, vec3, vec3Scale, vec3Add, vec3Sub, vec3Rot } from "../../abstract-3d.js";
+import {
+  Scene,
+  vec3Zero,
+  Group,
+  Vec3,
+  vec3TransRot,
+  vec3RotCombine,
+  Cylinder,
+  Material,
+  Plane,
+  Box,
+  Vec2,
+  vec3,
+  vec3Scale,
+  vec3Add,
+  vec3Sub,
+  vec3Rot,
+} from "../../abstract-3d.js";
 import {
   MutableStep,
   GEOMETRIC_REPRESENTATION_CONTEXT_3D,
@@ -15,10 +32,10 @@ import { stepCone } from "./step-geometries/step-cone.js";
 import { stepCylinder } from "./step-geometries/step-cylinder.js";
 import { stepPlane } from "./step-geometries/step-plane.js";
 
-const DEFAULT_DATE_UNIX = '1970-01-01T00:00:00';
+const DEFAULT_DATE_UNIX = "1970-01-01T00:00:00";
 
-export const toStep = (scene: Scene): string => {
-  const date = new Date().toISOString().split('.')[0];
+export const render = (scene: Scene): string => {
+  const date = new Date().toISOString().split(".")[0];
 
   const m: MutableStep = { refs: new Map<string, number>([]), step: "", geoContext3d: 7 };
   const applicationContext = APPLICATION_CONTEXT(m);
@@ -34,19 +51,18 @@ export const toStep = (scene: Scene): string => {
     uncertainty,
     m
   );
-  if(context3D !== m.geoContext3d) {
+  if (context3D !== m.geoContext3d) {
     throw Error("Context 3d is not correct");
   }
 
   for (const g of scene.groups) {
     stepGroup(g, scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero, m);
   }
-  
+
   return `${HEADER(date ?? DEFAULT_DATE_UNIX)}${m.step}${ENDSEC()}`;
 };
 
 function stepGroup(g: Group, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
-
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
   for (const mesh of g.meshes ?? []) {

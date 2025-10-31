@@ -1,4 +1,7 @@
-import { Euler, Matrix4, Quaternion, Vector3 } from "three";
+import { Vector3 } from "three/src/math/Vector3.js";
+import { Matrix4 } from "three/src/math/Matrix4.js";
+import { Euler } from "three/src/math/Euler.js";
+import { Quaternion } from "three/src/math/Quaternion.js";
 
 export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??
@@ -558,8 +561,21 @@ export const cylinder = (
   open = false,
   holes: ReadonlyArray<Hole> = [],
   angleStart?: number,
-  angleLength?: number,
-): CylinderMesh => ({ geometry: { type: "Cylinder", pos, radius, length, rot, holes, open, angleStart: angleStart ?? 0, angleLength: angleLength ?? (Math.PI * 2) }, material });
+  angleLength?: number
+): CylinderMesh => ({
+  geometry: {
+    type: "Cylinder",
+    pos,
+    radius,
+    length,
+    rot,
+    holes,
+    open,
+    angleStart: angleStart ?? 0,
+    angleLength: angleLength ?? Math.PI * 2,
+  },
+  material,
+});
 
 export const sphere = (radius: number, material: Material, pos = vec3Zero): SphereMesh => ({
   geometry: { type: "Sphere", pos, radius },

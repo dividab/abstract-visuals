@@ -1,4 +1,4 @@
-import { Scene } from "../../../abstract-3d/src/index.js";
+import type { A3D } from "../../../abstract-3d/src/index.js";
 
 /* eslint-disable max-lines */
 export const systemair = {
@@ -19175,4 +19175,4 @@ export const systemair = {
     z: 0,
   },
   data: {},
-} as unknown as Scene;
+} as unknown as A3D.Scene;

@@ -1,4 +1,16 @@
-import { Scene, View, vec3RotCombine, vec3Zero, vec3Rot, Group, Vec3, vec3TransRot, group, bounds3ToSize, vec3 } from "../../abstract-3d.js";
+import {
+  Scene,
+  View,
+  vec3RotCombine,
+  vec3Zero,
+  vec3Rot,
+  Group,
+  Vec3,
+  vec3TransRot,
+  group,
+  bounds3ToSize,
+  vec3,
+} from "../../abstract-3d.js";
 import { dxfFooter, dxfHeader } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
@@ -8,15 +20,18 @@ import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { boundsScene, Optional, rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
-export type DxfOptions = { readonly view: View, readonly origin: DxfOrigin };
+export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin };
 
-export const toDxf = (scene: Scene, options: Optional<DxfOptions>): string => {
+export const render = (scene: Scene, options: Optional<DxfOptions>): string => {
   const opts: DxfOptions = { view: options.view ?? "front", origin: options.origin ?? "BottomLeftFront" };
   const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
   const boundingBox = boundsScene(scene);
   const boundingBoxSize = bounds3ToSize(boundingBox);
   const center = vec3Zero;
-  const offset = opts.origin === "Center" ? vec3Zero : vec3(Math.abs(boundingBox.min.x), Math.abs(boundingBox.min.y), -boundingBox.max.z);
+  const offset =
+    opts.origin === "Center"
+      ? vec3Zero
+      : vec3(Math.abs(boundingBox.min.x), Math.abs(boundingBox.min.y), -boundingBox.max.z);
   const groupRoot = group([], offset, vec3Zero, scene.groups);
   const id = "D171D";
   const handleRef = { handle: 0x1000 }; //make sure we start with a value higher than any other handle id's used in the header

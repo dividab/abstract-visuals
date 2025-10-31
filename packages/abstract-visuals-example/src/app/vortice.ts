@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
-import { Scene } from "../../../abstract-3d/src/index.js";
+import type { A3D } from "../../../abstract-3d/src/index.js";
 
-export const vortice: Scene = {
+export const vortice: A3D.Scene = {
   center_deprecated: {
     x: 30,
     y: -3.67394039744206e-15,
@@ -15477,4 +15477,4 @@ export const vortice: Scene = {
     z: -3.141592653589793,
   },
   data: {},
-} as unknown as Scene;
+} as unknown as A3D.Scene;

@@ -49,7 +49,7 @@ type ReactProps = {
   readonly createGroupId?: (g: Group) => string;
 };
 
-export const toReact = memo(
+export const render = memo(
   ({
     scene,
     selectedIds,

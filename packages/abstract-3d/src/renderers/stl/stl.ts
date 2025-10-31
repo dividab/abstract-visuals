@@ -5,7 +5,7 @@ import { stlCylinder } from "./stl-geometries/stl-cylinder.js";
 import { stlCone } from "./stl-geometries/stl-cone.js";
 import { stlPolygon } from "./stl-geometries/stl-polygon.js";
 
-export const toStl = (scene: Scene): string =>
+export const render = (scene: Scene): string =>
   `solid
 ` +
   scene.groups.reduce(

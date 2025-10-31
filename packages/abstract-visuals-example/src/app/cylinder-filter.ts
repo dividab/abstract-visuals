@@ -1,4 +1,4 @@
-import { Scene } from "../../../abstract-3d/src/index.js";
+import { A3D } from "../../../abstract-3d/src/index.js";
 
 export const cylinderFilter = {
   center_deprecated: {
@@ -637,4 +637,4 @@ export const cylinderFilter = {
       },
     },
   },
-} as unknown as Scene;
+} as unknown as A3D.Scene;
