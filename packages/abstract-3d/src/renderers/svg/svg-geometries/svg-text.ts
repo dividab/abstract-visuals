@@ -1,7 +1,6 @@
-import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, isZero, vec3, vec3Dot, View, vec3Rot } from "../../../abstract-3d.js";
+import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d.js";
 import { SvgOptions, zElem, zOrderElement } from "./shared.js";
 import { svgText } from "../svg-encoding.js";
-import { rotationForCameraPos } from "../../shared.js";
 
 // dummy
 export function text(
@@ -32,7 +31,7 @@ function eulerToSvgMatrix(rot: Vec3, pos: Vec2): string {
   const rx = rot.x;
   const ry = rot.y;
   const rz = rot.z;
-  
+
   const cx = Math.cos(rx);
   const cy = Math.cos(ry);
   const cz = Math.cos(rz);
@@ -42,7 +41,7 @@ function eulerToSvgMatrix(rot: Vec3, pos: Vec2): string {
 
   const rotate3D = (v: Vec3): Vec3 => {
     return {
-      x: v.x * (cy * cz) + v.y * (-cy * sz) + v.z * (sy),
+      x: v.x * (cy * cz) + v.y * (-cy * sz) + v.z * sy,
       y: v.x * (sx * sy * cz + cx * sz) + v.y * (-sx * sy * sz + cx * cz) + v.z * (-sx * cy),
       z: v.x * (-cx * sy * cz + sx * sz) + v.y * (cx * sy * sz + sx * cz) + v.z * (cx * cy),
     };

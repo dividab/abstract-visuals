@@ -1,11 +1,28 @@
-import { Cylinder, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3Add, vec3Rot, vec3Scale, leq, less, equals } from "../../../abstract-3d.js";
+import {
+  Cylinder,
+  Material,
+  Vec3,
+  vec3TransRot,
+  vec3RotCombine,
+  vec3Zero,
+  vec3,
+  vec3Scale,
+  equals,
+} from "../../../abstract-3d.js";
 import { color } from "../color.js";
 import { dxf3DFACE } from "../dxf-encoding.js";
 import { dxfPlane } from "./dxf-plane.js";
 
-export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3, handleRef: { handle: number }): string {
+export function dxfCylinder(
+  c: Cylinder,
+  m: Material,
+  sides: number,
+  parentPos: Vec3,
+  parentRot: Vec3,
+  handleRef: { handle: number }
+): string {
   const angleStart = c.angleStart ?? 0.0;
-  const angleLength = c.angleLength ?? (Math.PI * 2);
+  const angleLength = c.angleLength ?? Math.PI * 2;
   const angleEnd = angleStart + angleLength;
   let dxfString = "";
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
@@ -34,7 +51,8 @@ export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
       const prevTop = topVec3Array[i - 1]!;
       if (!c.open) {
         dxfString +=
-          dxf3DFACE(botPos, prevBot, currBot, currBot, mat, handleRef) + dxf3DFACE(topPos, prevTop, currTop, currTop, mat, handleRef);
+          dxf3DFACE(botPos, prevBot, currBot, currBot, mat, handleRef) +
+          dxf3DFACE(topPos, prevTop, currTop, currTop, mat, handleRef);
       }
       dxfString += dxf3DFACE(currBot, prevBot, prevTop, currTop, mat, handleRef);
     }

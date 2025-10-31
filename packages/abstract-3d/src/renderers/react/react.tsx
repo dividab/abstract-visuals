@@ -1,6 +1,6 @@
 import React, { memo } from "react";
-import { Canvas, CanvasProps, ThreeEvent } from "@react-three/fiber";
-import { OrbitControlsProps } from "@react-three/drei";
+import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
+import { type OrbitControlsProps } from "@react-three/drei";
 import { ReactPopover, ReactScene } from "./react-scene.js";
 import { Scene, View, Group } from "../../abstract-3d.js";
 import { ReactCamera, ControlsHelper, Camera } from "./react-camera.js";

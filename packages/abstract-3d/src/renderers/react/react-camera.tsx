@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import {
-  GizmoHelperProps,
+  type GizmoHelperProps,
   PerspectiveCamera,
   OrthographicCamera,
-  OrbitControlsProps,
+  type OrbitControlsProps,
   OrbitControls,
   GizmoHelper,
   GizmoViewcube,
   GizmoViewport,
 } from "@react-three/drei";
-import { ThreeEvent, useThree } from "@react-three/fiber";
+import { type ThreeEvent, useThree } from "@react-three/fiber";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import type { Vector3 } from "three/src/math/Vector3.js";
+import type { Vector3 } from "three";
 import { View, Scene, Vec3, vec3 } from "../../abstract-3d.js";
 
 export type Camera = A3dPerspectiveCamera | A3dOrthographicCamera;

@@ -1,9 +1,8 @@
 import React from "react";
 import FileSaver from "file-saver";
-import { type React3Js, Dxf, Stl, Step, Svg } from "../../../abstract-3d/src/index.js";
+import { React3Js, Dxf, Stl, Step, Svg } from "../../../abstract-3d/src/index.js";
 import { systemair } from "./systemair.js";
 import { vortice } from "./vortice.js";
-import { cylinderFilter } from "./cylinder-filter.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
@@ -56,7 +55,7 @@ export function Abstract3DExample(): React.ReactNode {
         }}
       />
       <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
-        {/* <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
+        <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
           <React3Js.render
             selectedIds={selected ? { [selected]: true } : undefined}
             onClickGroup={(id) => setSelected(id)}
@@ -77,7 +76,7 @@ export function Abstract3DExample(): React.ReactNode {
             orbitContolsProps={{ enableDamping: false }}
             camera={camera}
           />
-        </div> */}
+        </div>
       </div>
     </div>
   );

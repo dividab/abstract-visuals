@@ -1,11 +1,9 @@
-import { extend, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import React from "react";
-import { Group } from "three";
+import type { Group } from "three";
 import { Dimensions, Vec3, Dimension, vec3TransRot, vec3Flip, Mesh } from "../../abstract-3d.js";
 import { ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
-
-extend({ Group });
 
 export const ReactDimensions = React.memo(
   ({

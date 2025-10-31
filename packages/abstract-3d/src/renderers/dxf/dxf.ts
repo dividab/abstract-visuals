@@ -3,7 +3,6 @@ import {
   View,
   vec3RotCombine,
   vec3Zero,
-  vec3Rot,
   Group,
   Vec3,
   vec3TransRot,
@@ -17,7 +16,7 @@ import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
-import { boundsScene, Optional, rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
+import { boundsScene, Optional, rotationForCameraPos } from "../shared.js";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
 export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin };

@@ -2,7 +2,6 @@ import {
   Plane,
   Vec2,
   Vec3,
-  View,
   vec2Scale,
   vec3TransRot,
   vec3RotCombine,
@@ -13,7 +12,7 @@ import {
   vec3ZMean,
   Material,
 } from "../../../abstract-3d.js";
-import { gray, black, zElem, zOrderElement, ImageDataUri, SvgOptions } from "./shared.js";
+import { gray, black, zElem, zOrderElement, SvgOptions } from "./shared.js";
 import { EmbededImage, svgImage, svgPolygon } from "../svg-encoding.js";
 import { rgbGrayScale } from "../../shared.js";
 

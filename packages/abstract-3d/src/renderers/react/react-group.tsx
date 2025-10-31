@@ -1,11 +1,9 @@
 import React from "react";
-import { extend, ThreeEvent, useFrame } from "@react-three/fiber";
-import { Group } from "three";
+import { ThreeEvent, useFrame } from "@react-three/fiber";
+import type { Group } from "three";
 import { Group as Group_1 } from "../../abstract-3d.js";
 import { MaterialState, ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
-
-extend({ Group });
 
 export function ReactGroup({
   g,

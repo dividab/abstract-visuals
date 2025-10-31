@@ -1,4 +1,4 @@
-import { vec2, Vec2, vec2Add, vec2Scale } from "../../abstract-3d.js";
+import { vec2, Vec2, vec2Scale } from "../../abstract-3d.js";
 
 export const svg = (width: number, height: number, children: string): string => {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width.toFixed(0)} ${height.toFixed(

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { suspend } from "suspend-react";
-import { Color, DoubleSide, MaterialParameters, SRGBColorSpace, Texture, TextureLoader } from "three";
+import { type Color, DoubleSide, type MaterialParameters, SRGBColorSpace, type Texture, TextureLoader } from "three";
 import { Material } from "../../abstract-3d.js";
 import { shade } from "../shared.js";
 
