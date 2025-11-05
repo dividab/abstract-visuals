@@ -303,7 +303,7 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^0.9.17
+        specifier: ^1.0.1
         version: link:../abstract-3d
       abstract-chart:
         specifier: ^12.0.1

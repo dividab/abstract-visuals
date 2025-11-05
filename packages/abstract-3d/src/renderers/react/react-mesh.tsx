@@ -41,6 +41,7 @@ import {
   vec3RotCombine,
   vec3Zero,
   vec3Rot,
+  equals,
 } from "../../abstract-3d.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 
@@ -82,7 +83,8 @@ export function ReactMesh({
   switch (mesh.geometry.type) {
     case "Box": {
       const { pos, size, rot, holes } = mesh.geometry;
-      return !holes || holes.length === 0 ? (
+      const filteredHoles = holes?.filter((h) => !holeIsZero(h));
+      return !filteredHoles || filteredHoles.length === 0 ? (
         <mesh
           geometry={boxGeometry}
           scale={[size.x, size.y, size.z]}
@@ -112,10 +114,11 @@ export function ReactMesh({
     }
     case "Cylinder": {
       const { pos, radius, rot, length, holes, open, angleStart, angleLength } = mesh.geometry;
+      const filteredHoles = holes?.filter((h) => !holeIsZero(h));
       const hasAngles = angleStart !== undefined && angleLength !== undefined;
       const isWhole = !hasAngles || (isZero((Math.PI * 2) - angleLength) && isZero(angleStart));
       if(isWhole) {
-        return !holes || holes.length === 0 ? (
+        return !filteredHoles || filteredHoles.length === 0 ? (
           <mesh
             geometry={open ? cylinderGeometryOpen : cylinderGeometry}
             scale={[radius, length, radius]}
@@ -169,7 +172,8 @@ export function ReactMesh({
     }
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;
-      return !holes || holes.length === 0 ? (
+      const filteredHoles = holes?.filter((h) => !holeIsZero(h));
+      return !filteredHoles || filteredHoles.length === 0 ? (
         <mesh
           geometry={planeGeometry}
           scale={[size.x, size.y, 1]}
@@ -323,7 +327,7 @@ function ExcrudeCylinder({
 }
 
 function holes(holes: ReadonlyArray<Hole> | undefined, shape: Shape): void {
-  holes?.forEach((h) => {
+  holes?.filter((h) => !holeIsZero(h)).forEach((h) => {
     switch (h.type) {
       case "RoundHole":
         shape.holes.push(new Path().absarc(h.pos.x, h.pos.y, h.radius, 0, Math.PI * 2, true));
@@ -450,6 +454,19 @@ function Tube({
       {children}
     </mesh>
   );
+}
+
+function holeIsZero(hole: Hole): boolean {
+  switch(hole.type) {
+    case "RoundHole": {
+      return equals(hole.radius, 0.0);
+    }
+    case "SquareHole": {
+      return equals(hole.size.x, 0.0) || equals(hole.size.y, 0.0);
+    }
+    default:
+      return false;
+  }
 }
 
 class CircleCurve extends Curve<Vector3> {
