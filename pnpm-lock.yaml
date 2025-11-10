@@ -303,7 +303,7 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^1.0.1
+        specifier: ^1.0.2
         version: link:../abstract-3d
       abstract-chart:
         specifier: ^12.0.1
@@ -329,6 +329,9 @@ importers:
       handlebars-xml:
         specifier: ^0.1.7
         version: link:../handlebars-xml
+      jsxpression:
+        specifier: 0.1.12
+        version: link:../jsxpression
       pdfkit:
         specifier: ^0.17.2
         version: 0.17.2
