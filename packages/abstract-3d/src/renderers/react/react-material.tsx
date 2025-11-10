@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { suspend } from "suspend-react";
-import { type Color, DoubleSide, type MaterialParameters, SRGBColorSpace, type Texture, TextureLoader } from "three";
+import { BackSide, type Color, DoubleSide, type MaterialParameters, SRGBColorSpace, type Texture, TextureLoader } from "three";
 import { Material } from "../../abstract-3d.js";
 import { shade } from "../shared.js";
 
-const decreasedOpacity = 0.2;
+const decreasedOpacity = 0.125;
 
 export type MaterialState = "Accept" | "Error" | "Warning";
 export const ERROR_IMG_KEY = "error";
@@ -19,6 +19,7 @@ export function ReactMaterial({
   state,
   isText,
   isHotSpot,
+  drawBackOnly,
 }: {
   readonly material: Material;
   readonly id?: string;
@@ -29,6 +30,7 @@ export function ReactMaterial({
   readonly state?: MaterialState | undefined;
   readonly isText: boolean;
   readonly isHotSpot?: boolean;
+  readonly drawBackOnly?: boolean;
 }): React.JSX.Element {
   const mat =
     !state || material.imageUrl === "UrlImage"
@@ -74,7 +76,7 @@ export function ReactMaterial({
     );
   }
   if (isHotSpot) {
-    return <meshBasicMaterial key="mesh_material_hotspot" color={color} side={DoubleSide} depthTest={true} depthWrite={true} transparent={false} opacity={1.0} />;
+    return <meshBasicMaterial key="mesh_material_hotspot" color={color} side={drawBackOnly === true ? BackSide : DoubleSide} depthTest={true} depthWrite={true} transparent={false} opacity={1.0} />;
   }
   return (
     <meshStandardMaterial
@@ -84,7 +86,7 @@ export function ReactMaterial({
       metalness={mat.metalness}
       side={DoubleSide}
       {...(opacity < 1 || disabled
-        ? { transparent: true, depthWrite: false, opacity: disabled ? opacity * decreasedOpacity : opacity }
+        ? { transparent: true, depthWrite: false, opacity: disabled ? opacity * decreasedOpacity : opacity, depthTest: true }
         : materialDefaults)}
     />
   );

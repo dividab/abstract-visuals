@@ -1,6 +1,6 @@
 import React from "react";
 import { Html } from "@react-three/drei";
-import { HotSpot, vec3Zero } from "../../abstract-3d.js";
+import { Box, HotSpot, vec3Scale, vec3Zero } from "../../abstract-3d.js";
 import { ReactMesh } from "./react-mesh.js";
 import { ReactMaterial } from "./react-material.js";
 import { ThreeEvent } from "@react-three/fiber";
@@ -75,6 +75,7 @@ export function ReactHotSpot({
   const hotSpot = activeHotSpots ? activeHotSpots[h.id] : undefined;
   const hsPos = h.mesh.geometry.type === "Box" ? h.mesh.geometry.pos : vec3Zero;
   const text = hotSpotTexts?.[h.id];
+  const geo = h.mesh.geometry as Box;
   return (
     <>
       <group
@@ -102,6 +103,9 @@ export function ReactHotSpot({
       >
         <ReactMesh mesh={h.mesh}>
           <ReactMaterial id={h.id} isText={false} isHotSpot={true} material={h.mesh.material} hoveredId={hoveredId} />
+        </ReactMesh>
+        <ReactMesh mesh={{ ...h.mesh, geometry: { ...geo, size: vec3Scale(geo.size, 1.0125) } }}>
+          <ReactMaterial id={h.id} isText={false} isHotSpot={true} drawBackOnly={true} material={{ normal: "rgb(0, 0, 0)", opacity: 1.0 }} hoveredId={hoveredId} />
         </ReactMesh>
       </group>
       {hotSpotTexts && text && (
