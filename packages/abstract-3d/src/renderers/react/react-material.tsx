@@ -34,24 +34,24 @@ export function ReactMaterial({
     !state || material.imageUrl === "UrlImage"
       ? material
       : state === "Accept"
-      ? acceptMat
-      : state === "Error"
-      ? errorMar
-      : warningMat;
+        ? acceptMat
+        : state === "Error"
+          ? errorMar
+          : warningMat;
   const color = selectedIds?.[id]
     ? hoveredId === id
       ? shade(-0.4, selectMat.normal)
       : selectMat.normal
     : hoveredId === id
-    ? shade(-0.4, mat.normal)
-    : mat.normal;
+      ? shade(-0.4, mat.normal)
+      : mat.normal;
   const colorText = selectedIds?.[id]
     ? hoveredId === id
       ? shade(-0.4, textSelectMat.normal)
       : textSelectMat.normal
     : hoveredId === id
-    ? shade(-0.4, mat.normal)
-    : mat.normal;
+      ? shade(-0.4, mat.normal)
+      : mat.normal;
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
   if (material.imageUrl) {
     return (
@@ -65,6 +65,7 @@ export function ReactMaterial({
   if (isText) {
     return (
       <meshBasicMaterial
+        key={`mesh_material_text}`}
         color={colorText}
         side={DoubleSide}
         transparent
@@ -73,10 +74,11 @@ export function ReactMaterial({
     );
   }
   if (isHotSpot) {
-    return <meshBasicMaterial color={color} side={DoubleSide} depthTest={true} depthWrite={true} />;
+    return <meshBasicMaterial key="mesh_material_hotspot" color={color} side={DoubleSide} depthTest={true} depthWrite={true} transparent={false} opacity={1.0} />;
   }
   return (
     <meshStandardMaterial
+      key={`mesh_material_standard_${mat.normal}_${mat.metalness}_${mat.opacity}_${mat.roughness}`}
       color={color}
       roughness={mat.roughness}
       metalness={mat.metalness}
