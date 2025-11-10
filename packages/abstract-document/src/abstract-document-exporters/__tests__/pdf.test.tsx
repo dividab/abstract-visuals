@@ -93,6 +93,8 @@ import { testSingleTextRunWithStartAlignment } from "./pdf/single-textrun-with-s
 import { testSingleTextRun } from "./pdf/single-textrun.js";
 import { testTableOfContentSeparator } from "./pdf/table-of-content-separator.js";
 import { testWorld } from "./pdf/world.js";
+import { testNewLineShouldBreak } from "./pdf/new-line-should-line-break.js";
+import { testNewLineShouldBreakLong } from "./pdf/new-line-should-line-break-long.js";
 
 describe("export pdf", () => {
   [
@@ -125,6 +127,8 @@ describe("export pdf", () => {
     testMultipleTextRunWithEndAlignment,
     testMultipleTextRunWithStartAlignmentThatLineBreaks,
     textMultipleTextRunWithStartAlignment,
+    testNewLineShouldBreak,
+    testNewLineShouldBreakLong,
     testPageBreakTableRowThatDoesntFitPage,
     testPageBreakTableSingleRow,
     testPageBreakTableWithGroup,

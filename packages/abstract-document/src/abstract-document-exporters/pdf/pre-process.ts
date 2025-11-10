@@ -54,7 +54,13 @@ function preProcessSection(s: AD.Section.Section, parentResources: AD.Resources.
   const footer = s.page.footer.flatMap((e) => preProcessSectionElement(e, resources));
   const frontHeader = (s.page.frontHeader ?? []).flatMap((e) => preProcessSectionElement(e, resources));
   const frontFooter = (s.page.frontFooter ?? []).flatMap((e) => preProcessSectionElement(e, resources));
-  const page = AD.MasterPage.create({ style: s.page.style, header: header, footer: footer, frontHeader: frontHeader, frontFooter: frontFooter });
+  const page = AD.MasterPage.create({
+    style: s.page.style,
+    header: header,
+    footer: footer,
+    frontHeader: frontHeader,
+    frontFooter: frontFooter,
+  });
   const children = s.children.flatMap((e) => preProcessSectionElement(e, resources));
   return AD.Section.create({ page: page, id: s.id }, children);
 }
@@ -172,12 +178,26 @@ function adjustParagraph(paragraph: AD.Paragraph.Paragraph): Array<AD.SectionEle
   */
   const spaceRegex = /([\p{Zs}])/u;
   const newChildren: Array<AD.Atom.Atom> = [];
-  for(const child of paragraph.children) {
-    if(child.type === "TextRun") {
-      newChildren.push(...(`${child.text}`).split(spaceRegex).filter((t) => t.length !== 0).map((t) => ({
-          ...child,
-          text: t,
-        })));
+
+  for (const child of paragraph.children) {
+    if (child.type === "TextRun") {
+      // Pdfkit will automatically split texts on "\n", which would not match with out measuring.
+      // Fix this by replacing "\n" with a LineBreak
+      const lines = child.text.split("\n");
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const tokens = line.split(spaceRegex).filter((t) => t.length !== 0);
+        for (const token of tokens) {
+          newChildren.push({
+            ...child,
+            text: token,
+          });
+        }
+        if (i < lines.length - 1) {
+          newChildren.push({ type: "LineBreak" as const });
+        }
+      }
     } else {
       newChildren.push(child);
     }
