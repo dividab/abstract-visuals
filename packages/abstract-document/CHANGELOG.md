@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [12.0.0] - 2025-10-30
+## [17.0.2] - 2025-11-10
 
-### Changed
+- AbstractDocument Pdf handle texts with newlines
 
-Make esm module for better tree shaking. Split AbstractDocExporters into AbstractDocPdf and AbstractDocDocx to make it possible to tree shake heave deps.
+## [17.0.1] - 2025-10-30
+
+- AbstractDocument XML import fix
+
+## [17.0.0] - 2025-10-30
+
+- Make esm module for better tree shaking. Split AbstractDocExporters into AbstractDocPdf and AbstractDocDocx to make it possible to tree shake heave deps.
 
 ## [16.1.0] - 2025-09-23
 
