@@ -144,6 +144,9 @@ function measureParagraph(
     let concatenatedText = "";
     let hasAtomImage = false;
     let textOptions;
+    let font = getFontNameStyle(style.textStyle);
+    let fontSize = AD.TextStyle.calculateFontSize(style.textStyle, 10);
+
     for (const atom of row) {
       if (atom.type === "Image") {
         hasAtomImage = true;
@@ -158,6 +161,8 @@ function measureParagraph(
       );
       if (atom.type === "TextRun" || atom.type === "TextField" || atom.type === "HyperLink") {
         concatenatedText += atom.text;
+        font = atom.style ? getFontNameStyle(atom.style) : font;
+        fontSize = atom.style ? Math.max(fontSize, AD.TextStyle.calculateFontSize(style.textStyle, 10)) : fontSize;
         textOptions = getBiggestStyle(atom, style, resources, textOptions);
       }
       desiredSizes.set(atom, atomSize);
@@ -174,8 +179,6 @@ function measureParagraph(
     } else if (hasAtomImage) {
       paragraphHeight += desiredHeight + currentRowHeight;
     } else {
-      const font = getFontNameStyle(style.textStyle);
-      const fontSize = AD.TextStyle.calculateFontSize(style.textStyle, 10);
       paragraphHeight += heightOfString(pdfKit, font, fontSize, concatenatedText, {
         width: textOptions && textOptions.lineBreak === false ? Infinity : availableSize.width,
         ...textOptions,
@@ -515,10 +518,11 @@ function measureText(
 
   const width = Math.min(availableSize.width, measuredWidth);
   const lineWidth = textStyle.lineBreak === false ? Infinity : availableSize.width;
-  const height = heightOfString(pdf, font, fontSize, text, {
+  const options = {
     width: lineWidth,
     ...textOptions,
-  });
+  };
+  const height = heightOfString(pdf, font, fontSize, text, options);
   return AD.Size.create(width, height, availableSize.width);
 }
 
