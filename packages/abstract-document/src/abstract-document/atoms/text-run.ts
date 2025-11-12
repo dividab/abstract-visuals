@@ -19,7 +19,7 @@ export function create(props: TextRunProps): TextRun {
   return {
     type: "TextRun",
     styleName,
-    text,
+    text: (text ?? "").toString(),
     style,
   };
 }

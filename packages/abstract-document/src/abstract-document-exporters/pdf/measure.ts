@@ -5,10 +5,16 @@ import { registerFonts, getFontNameStyle } from "./font.js";
 
 //tslint:disable:no-any variable-name
 
+const widthOfStringCache = new Map<string, number>();
+const heightOfStringCache = new Map<string, number>();
+
 export function measure(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc): Map<any, AD.Size.Size> {
   let pdf = new pdfKit();
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
-  return mergeMaps(document.children.map((s) => measureSection(pdf, document, s)));
+  const result = mergeMaps(document.children.map((s) => measureSection(pdf, document, s)));
+  widthOfStringCache.clear();
+  heightOfStringCache.clear();
+  return result;
 }
 
 export function measurePages(
@@ -29,7 +35,7 @@ function measureSection(
   section: AD.Section.Section,
   separateHeader?: ReadonlyArray<AD.SectionElement.SectionElement>,
   separateFooter?: ReadonlyArray<AD.SectionElement.SectionElement>,
-  separateChildren?: ReadonlyArray<AD.SectionElement.SectionElement>,
+  separateChildren?: ReadonlyArray<AD.SectionElement.SectionElement>
 ): Map<any, AD.Size.Size> {
   const header = separateHeader || section.page.header;
   const footer = separateFooter || section.page.footer;
@@ -56,16 +62,18 @@ function measureSection(
 
   //header and footer sizes for the first page
   const firstPageHeaderAndFooters = getHeaderAndFooter(section, 1);
-  const firstPageHeaderAndFootersExtracted: ReadonlyArray<[ReadonlyArray<AD.SectionElement.SectionElement>, AD.LayoutFoundation.LayoutFoundation]> = [
+  const firstPageHeaderAndFootersExtracted: ReadonlyArray<
+    [ReadonlyArray<AD.SectionElement.SectionElement>, AD.LayoutFoundation.LayoutFoundation]
+  > = [
     [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
-    [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins]
+    [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins],
   ];
   const firstPageHeaderAndFooterSizes = firstPageHeaderAndFootersExtracted.reduce((prev, [sections, margins]) => {
     const availabelWidth = pageWidth - (margins.left + margins.right);
     const availableSizes = AD.Size.create(availabelWidth, pageHeight);
     return [...prev, ...sections.map((e) => measureSectionElement(pdfKit, resources, availableSizes, e))];
   }, []);
-  
+
   return mergeMaps([...sectionSizes, ...headerSizes, ...footerSizes, ...firstPageHeaderAndFooterSizes]);
 }
 
@@ -166,7 +174,9 @@ function measureParagraph(
     } else if (hasAtomImage) {
       paragraphHeight += desiredHeight + currentRowHeight;
     } else {
-      paragraphHeight += pdfKit.heightOfString(concatenatedText, {
+      const font = getFontNameStyle(style.textStyle);
+      const fontSize = AD.TextStyle.calculateFontSize(style.textStyle, 10);
+      paragraphHeight += heightOfString(pdfKit, font, fontSize, concatenatedText, {
         width: textOptions && textOptions.lineBreak === false ? Infinity : availableSize.width,
         ...textOptions,
       });
@@ -477,7 +487,7 @@ function measureText(
   text: string,
   textStyle: AD.TextStyle.TextStyle,
   availableSize: AD.Size.Size,
-  measureWithSpaces?: boolean,
+  measureWithSpaces?: boolean
 ): AD.Size.Size {
   const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -495,22 +505,59 @@ function measureText(
   };
 
   let measuredWidth = 0;
-  if(measureWithSpaces !== undefined && measureWithSpaces) {
-    const spaceWidth = pdf.widthOfString(" ", textOptions);
-    const stringWidth = pdf.widthOfString(` ${text} `, textOptions) - (spaceWidth * 2);
-    const normalWidth = pdf.widthOfString(text, textOptions);
+  if (measureWithSpaces !== undefined && measureWithSpaces) {
+    const spaceWidth = widthOfString(pdf, font, fontSize, " ", textOptions);
+    const stringWidth = widthOfString(pdf, font, fontSize, ` ${text} `, textOptions) - spaceWidth * 2;
     measuredWidth = stringWidth;
   } else {
-    measuredWidth = pdf.widthOfString(text, textOptions);
+    measuredWidth = widthOfString(pdf, font, fontSize, text, textOptions);
   }
 
   const width = Math.min(availableSize.width, measuredWidth);
   const lineWidth = textStyle.lineBreak === false ? Infinity : availableSize.width;
-  const height = pdf.heightOfString(text, {
+  const height = heightOfString(pdf, font, fontSize, text, {
     width: lineWidth,
     ...textOptions,
   });
   return AD.Size.create(width, height, availableSize.width);
+}
+
+function widthOfString(
+  pdf: PDFKit.PDFDocument,
+  font: string,
+  fontSize: number,
+  text: string,
+  options: PDFKit.Mixins.TextOptions
+): number {
+  const key = JSON.stringify({ font, fontSize, text, options });
+  const cached = widthOfStringCache.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+  pdf.font(font).fontSize(fontSize);
+
+  const width = pdf.widthOfString(text, options);
+  widthOfStringCache.set(key, width);
+  return width;
+}
+
+function heightOfString(
+  pdf: PDFKit.PDFDocument,
+  font: string,
+  fontSize: number,
+  text: string,
+  options: PDFKit.Mixins.TextOptions
+): number {
+  const key = JSON.stringify({ font, fontSize, text, options });
+  const cached = heightOfStringCache.get(key);
+  if (cached !== undefined) {
+    return cached;
+  }
+  pdf.font(font).fontSize(fontSize);
+
+  const height = pdf.heightOfString(text, options);
+  heightOfStringCache.set(key, height);
+  return height;
 }
 
 function mergeMaps(maps: Array<Map<any, AD.Size.Size>>): Map<any, AD.Size.Size> {
