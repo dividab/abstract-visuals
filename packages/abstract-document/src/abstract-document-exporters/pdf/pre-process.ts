@@ -183,7 +183,8 @@ function adjustParagraph(paragraph: AD.Paragraph.Paragraph): Array<AD.SectionEle
     if (child.type === "TextRun") {
       // Pdfkit will automatically split texts on "\n", which would not match with out measuring.
       // Fix this by replacing "\n" with a LineBreak
-      const lines = child.text.split("\n");
+      const text = `${child.text}`; //for some reason the text is not always a string(when the textrun just contain a number for example).. so we need to make it into one. TODO: make sure it is always a string?
+      const lines = text.split("\n");
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
