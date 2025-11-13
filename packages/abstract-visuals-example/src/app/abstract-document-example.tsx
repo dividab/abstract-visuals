@@ -130,14 +130,14 @@ export function AbstractDocumentExample(): React.JSX.Element {
   const page = AbstractDoc.MasterPage.create({
     header: header,
     footer: footer,
-    style: {
+    style: AbstractDoc.PageStyle.create({
       paperSize: "A4",
       headerMargins: AbstractDoc.LayoutFoundation.create(),
       footerMargins: AbstractDoc.LayoutFoundation.create(),
       contentMargins: AbstractDoc.LayoutFoundation.create(),
       orientation: "Portrait",
       noTopBottomMargin: false,
-    },
+    }),
   });
 
   const image = createAbstractImage();

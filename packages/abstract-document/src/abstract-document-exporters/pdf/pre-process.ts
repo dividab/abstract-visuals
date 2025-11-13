@@ -55,7 +55,7 @@ function preProcessSection(s: AD.Section.Section, parentResources: AD.Resources.
   const frontHeader = (s.page.frontHeader ?? []).flatMap((e) => preProcessSectionElement(e, resources));
   const frontFooter = (s.page.frontFooter ?? []).flatMap((e) => preProcessSectionElement(e, resources));
   const page = AD.MasterPage.create({
-    style: s.page.style,
+    style: AD.PageStyle.create(s.page.style),
     header: header,
     footer: footer,
     frontHeader: frontHeader,

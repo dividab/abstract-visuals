@@ -6,12 +6,12 @@ export function updatePageRefs(pages: ReadonlyArray<Page>): Array<Page> {
 }
 
 export function updateRefsOnPage(page: Page, pages: ReadonlyArray<Page>): Page {
-  const updatedElements = updateRefsInElements(page.elements, page, pages);
+  const updatedColumns = page.columns.map((c) => ({ ...c, elements: updateRefsInElements(c.elements, page, pages) }));
   const updatedHeader = updateRefsInElements(page.header, page, pages);
   const updatedFooter = updateRefsInElements(page.footer, page, pages);
   return {
     ...page,
-    elements: updatedElements,
+    columns: updatedColumns,
     header: updatedHeader,
     footer: updatedFooter,
   };

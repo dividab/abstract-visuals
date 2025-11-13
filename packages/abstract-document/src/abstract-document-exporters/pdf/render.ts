@@ -124,19 +124,24 @@ function renderPage(
   }
 
   const elementStart = contentRect.y;
-  let y = elementStart;
-  for (const element of page.elements) {
-    const elementSize = getDesiredSize(element, desiredSizes);
-    const isAbsolute = AD.Position.isPositionAbsolute(element);
-    renderSectionElement(
-      resources,
-      pdfKit,
-      desiredSizes,
-      AD.Rect.create(contentRect.x, isAbsolute ? elementStart : y, elementSize.width, elementSize.height),
-      element
-    );
-    if (!isAbsolute) {
-      y += elementSize.height;
+  const columnStep =
+    contentRect.width / section.page.style.columnLayout.columnCount + section.page.style.columnLayout.columnGap;
+  for (let columnIndex = 0; columnIndex < page.columns.length; columnIndex++) {
+    const x = contentRect.x + columnStep * columnIndex;
+    let y = elementStart;
+    for (const element of page.columns[columnIndex].elements) {
+      const elementSize = getDesiredSize(element, desiredSizes);
+      const isAbsolute = AD.Position.isPositionAbsolute(element);
+      renderSectionElement(
+        resources,
+        pdfKit,
+        desiredSizes,
+        AD.Rect.create(x, isAbsolute ? elementStart : y, elementSize.width, elementSize.height),
+        element
+      );
+      if (!isAbsolute) {
+        y += elementSize.height;
+      }
     }
   }
 }
@@ -284,14 +289,21 @@ function renderParagraph(
   let y = finalRect.y + style.margins.top;
   const alignment = parseAlignment(style.alignment);
   const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment);
-  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdfKit, newRows, desiredSizes, alignment, style.textStyle);
+  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(
+    resources,
+    pdfKit,
+    newRows,
+    desiredSizes,
+    alignment,
+    style.textStyle
+  );
   for (let r = 0; r < combinedRows.length; r++) {
     const row = combinedRows[r];
     const isLast = r === combinedRows.length - 1;
     if (row.length === 0) {
       continue;
     }
-    
+
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, newDesiredSizes).width, 0);
     const remainingWidth = availableWidth - rowWidth;
     const justificationWidth = !isLast && row.length > 1 ? remainingWidth / (row.length - 1) : 0;
@@ -368,16 +380,7 @@ function renderAtom(
 ): void {
   switch (atom.type) {
     case "TextField":
-      renderTextField(
-        resources,
-        pdfKit,
-        finalRect,
-        textStyle,
-        atom,
-        alignment,
-        isFirstAtom,
-        isLastAtom,
-      );
+      renderTextField(resources, pdfKit, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom);
       return;
     case "TextRun":
       renderTextRun(resources, pdfKit, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom);
@@ -416,7 +419,7 @@ function renderTextField(
   textField: AD.TextField.TextField,
   alignment: PdfKitAlignment,
   isFirstAtom: boolean,
-  isLastAtom: boolean,
+  isLastAtom: boolean
 ): void {
   const style = AD.Resources.getStyle(
     textStyle,
@@ -427,15 +430,7 @@ function renderTextField(
   ) as AD.TextStyle.TextStyle;
   switch (textField.fieldType) {
     case "Date":
-      drawText(
-        pdfKit,
-        finalRect,
-        style,
-        new Date(Date.now()).toDateString(),
-        alignment,
-        isFirstAtom,
-        isLastAtom,
-      );
+      drawText(pdfKit, finalRect, style, new Date(Date.now()).toDateString(), alignment, isFirstAtom, isLastAtom);
       return;
     case "PageNumber":
     case "TotalPages":
@@ -455,7 +450,7 @@ function renderTextRun(
   textRun: AD.TextRun.TextRun,
   alignment: PdfKitAlignment,
   isFirstAtom: boolean,
-  isLastAtom: boolean,
+  isLastAtom: boolean
 ): void {
   const style = AD.Resources.getNestedStyle(
     textStyle,
@@ -625,7 +620,7 @@ function drawText(
   text: string,
   alignment: PdfKitAlignment,
   isFirst: boolean,
-  isEnd: boolean,
+  isEnd: boolean
 ): void {
   const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -635,7 +630,7 @@ function drawText(
     .fillColor(textStyle.color || "black", textStyle.opacity ?? 1.0);
   applyTextOffset(pdf, textStyle);
 
-  switch(alignment) {
+  switch (alignment) {
     case "justify": {
       pdf.text(text, finalRect.x, finalRect.y, {
         width: Infinity,
@@ -644,14 +639,14 @@ function drawText(
         indent: textStyle.indent || 0,
         baseline: textStyle.baseline || "top",
         strike: textStyle.strike,
-          ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
-          ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+        ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
+        ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
       });
       break;
     }
 
     default: {
-      if(isFirst) {
+      if (isFirst) {
         pdf.text(text, finalRect.x, finalRect.y, {
           width: Infinity,
           underline: textStyle.underline || false,
@@ -659,8 +654,8 @@ function drawText(
           indent: textStyle.indent || 0,
           baseline: textStyle.baseline || "top",
           strike: textStyle.strike,
-            ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
-            ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+          ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
+          ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
         });
       } else {
         pdf.text(text, {
@@ -670,8 +665,8 @@ function drawText(
           indent: textStyle.indent || 0,
           baseline: textStyle.baseline || "top",
           strike: textStyle.strike,
-            ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
-            ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
+          ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
+          ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
         });
       }
       break;

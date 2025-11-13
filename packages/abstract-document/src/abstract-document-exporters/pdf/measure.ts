@@ -25,7 +25,11 @@ export function measurePages(
   const pdf = new pdfKit();
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   return mergeMaps(
-    pages.map((page) => measureSection(pdf, document, page.section, page.header, page.footer, page.elements))
+    pages.flatMap((page) =>
+      page.columns.map(({ elements }) =>
+        measureSection(pdf, document, page.section, page.header, page.footer, elements)
+      )
+    )
   );
 }
 
@@ -45,8 +49,11 @@ function measureSection(
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
   const resources = AD.Resources.mergeResources([section, parentResources]);
 
-  const contentAvailableWidth =
+  const totalContentAvailableWidth =
     pageWidth - (section.page.style.contentMargins.left + section.page.style.contentMargins.right);
+  const contentAvailableWidth =
+    totalContentAvailableWidth / section.page.style.columnLayout.columnCount -
+    section.page.style.columnLayout.columnGap * (section.page.style.columnLayout.columnCount - 1);
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, pageHeight);
   const sectionSizes = children.map((e) => measureSectionElement(pdfKit, resources, contentAvailableSize, e));
 

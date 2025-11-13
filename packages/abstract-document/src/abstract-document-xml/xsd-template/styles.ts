@@ -237,6 +237,7 @@ export const masterPageStyle = `<xs:complexType name="MasterPageStyle">
 		<xs:element name="firstPageHeaderMargins" type="LayoutFoundation" minOccurs="0" />
 		<xs:element name="firstPageFooterMargins" type="LayoutFoundation" minOccurs="0" />
 		<xs:element name="contentMargins" type="LayoutFoundation" />
+		<xs:element name="columnLayout" type="PageColumnLayout" minOccurs="0" maxOccurs="1" />
 	</xs:all>
 	<xs:attribute name="paperSize" use="required">
 		<xs:simpleType>
@@ -275,4 +276,9 @@ export const layoutFoundation = `<xs:complexType name="LayoutFoundation">
 	<xs:attribute name="bottom" type="xs:decimal" />
 	<xs:attribute name="left" type="xs:decimal" />
 	<xs:attribute name="right" type="xs:decimal" />
+</xs:complexType>`;
+
+export const pageColumnLayout = `<xs:complexType name="PageColumnLayout">
+	<xs:attribute name="columnCount" type="xs:decimal" />
+	<xs:attribute name="columnGap" type="xs:decimal" />
 </xs:complexType>`;

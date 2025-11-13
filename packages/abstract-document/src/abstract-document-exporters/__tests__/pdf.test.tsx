@@ -95,6 +95,7 @@ import { testTableOfContentSeparator } from "./pdf/table-of-content-separator.js
 import { testWorld } from "./pdf/world.js";
 import { testNewLineShouldBreak } from "./pdf/new-line-should-line-break.js";
 import { testNewLineShouldBreakLong } from "./pdf/new-line-should-line-break-long.js";
+import { testPageColumnLayout } from "./pdf/page-column-layout.js";
 
 describe("export pdf", () => {
   [
@@ -187,26 +188,35 @@ describe("export pdf", () => {
     testSingleTextRun,
     testTableOfContentSeparator,
     testWorld,
-  ].forEach((item) => {
-    test(item.name, async () => {
-      const abstractDoc = render(item.abstractDocJsx);
-      const pdfStream = new S.PassThrough();
-      exportToStream(PdfKit, pdfStream, abstractDoc);
-      const pdfBuffer1 = await streamToBuffer(pdfStream);
-      saveBufferInTmpDir(path.join(__dirname, "tmp"), item.name + ".pdf", pdfBuffer1);
-      // Need to copy to new buffer to workaround this issue:
-      // https://github.com/modesty/pdf2json/issues/163
-      let pdfBuffer2 = Buffer.alloc(pdfBuffer1.length);
-      pdfBuffer1.copy(pdfBuffer2);
-      const parsed = await getJsonFromPdf(pdfBuffer2);
-      // console.log("parsed", JSON.stringify(parsed));
-      // console.log(diffJson(item.expectedPdfJson, parsed));
-      // expect(parsed).toEqual(item.expectedPdfJson);
+    testPageColumnLayout,
+  ]
+    //.filter((i) => i === testPageColumnLayout)
+    .forEach((item) => {
+      test(item.name, async () => {
+        const abstractDoc = render(item.abstractDocJsx);
+        // console.log("----------");
+        // console.log(JSON.stringify(abstractDoc));
+        // console.log("----------");
 
-      const result = diffJson(item.expectedPdfJson, parsed);
-      expect(result).toEqual("");
+        const pdfStream = new S.PassThrough();
+        exportToStream(PdfKit, pdfStream, abstractDoc);
+        const pdfBuffer1 = await streamToBuffer(pdfStream);
+        saveBufferInTmpDir(path.join(__dirname, "tmp"), item.name + ".pdf", pdfBuffer1);
+        // Need to copy to new buffer to workaround this issue:
+        // https://github.com/modesty/pdf2json/issues/163
+        let pdfBuffer2 = Buffer.alloc(pdfBuffer1.length);
+        pdfBuffer1.copy(pdfBuffer2);
+        const parsed = await getJsonFromPdf(pdfBuffer2);
+        // console.log("----------");
+        // console.log("parsed", JSON.stringify(parsed));
+        // console.log("----------");
+        // console.log(diffJson(item.expectedPdfJson, parsed));
+        // expect(parsed).toEqual(item.expectedPdfJson);
+
+        const result = diffJson(item.expectedPdfJson, parsed);
+        expect(result).toEqual("");
+      });
     });
-  });
 });
 
 function getJsonFromPdf(pdfBuffer: Buffer): Promise<unknown> {

@@ -4,6 +4,7 @@ import * as CustomElements from "./custom-elements.js";
 import { parseXsd } from "handlebars-xml";
 
 const commonParts = `${Styles.layoutFoundation}
+${Styles.pageColumnLayout}
 ${Elements.section}
 ${Elements.sectionElement}
 ${Elements.headerFooter}

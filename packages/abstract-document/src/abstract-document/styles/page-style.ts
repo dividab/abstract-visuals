@@ -3,6 +3,15 @@ import * as LayoutFoundation from "../primitives/layout-foundation.js";
 export type PageOrientation = "Portrait" | "Landscape";
 export type PaperSize = "A4" | "Letter" | { readonly width: number; readonly height: number };
 
+export interface PageColumn {
+  readonly width: number;
+}
+
+export interface PageColumnLayout {
+  readonly columnCount: number;
+  readonly columnGap: number;
+}
+
 export interface PageStyle {
   readonly headerMargins: LayoutFoundation.LayoutFoundation;
   readonly footerMargins: LayoutFoundation.LayoutFoundation;
@@ -12,6 +21,7 @@ export interface PageStyle {
   readonly orientation: PageOrientation;
   readonly paperSize: PaperSize;
   readonly noTopBottomMargin: boolean;
+  readonly columnLayout: PageColumnLayout;
 }
 
 export interface PageStyleProps {
@@ -23,6 +33,7 @@ export interface PageStyleProps {
   readonly orientation?: PageOrientation;
   readonly paperSize?: PaperSize;
   readonly noTopBottomMargin?: boolean;
+  readonly columnLayout?: PageColumnLayout;
 }
 
 export function create(props?: PageStyleProps): PageStyle {
@@ -35,6 +46,10 @@ export function create(props?: PageStyleProps): PageStyle {
     orientation = "Portrait",
     paperSize = "A4",
     noTopBottomMargin = false,
+    columnLayout = {
+      columnCount: 1,
+      columnGap: 0,
+    },
   } = props || {};
   return {
     headerMargins,
@@ -45,6 +60,7 @@ export function create(props?: PageStyleProps): PageStyle {
     orientation,
     paperSize,
     noTopBottomMargin,
+    columnLayout,
   };
 }
 

@@ -3,13 +3,17 @@ import { getResources } from "../shared/get_resources.js";
 import { registerFonts } from "./font.js";
 import { measureTable } from "./measure.js";
 
+export interface PageColumn {
+  readonly elements: ReadonlyArray<AD.SectionElement.SectionElement>;
+}
+
 export interface Page {
   readonly pageNo: number;
   readonly namedDestionations: ReadonlyArray<string>;
   readonly pageOptions: any;
   readonly section: AD.Section.Section;
   readonly contentRect: AD.Rect.Rect;
-  readonly elements: ReadonlyArray<AD.SectionElement.SectionElement>;
+  readonly columns: ReadonlyArray<PageColumn>;
   readonly header: ReadonlyArray<AD.SectionElement.SectionElement>;
   readonly footer: ReadonlyArray<AD.SectionElement.SectionElement>;
 }
@@ -26,13 +30,13 @@ export function paginate(
   const pages = new Array<Page>();
   for (let section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
-    pages.push(...splitSection(pdfKit, document, resources, desiredSizes, previousPage, section));
+    pages.push(...paginateSection(pdfKit, document, resources, desiredSizes, previousPage, section));
   }
 
   return pages;
 }
 
-function splitSection(
+function paginateSection(
   pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
   parentResources: AD.Resources.Resources,
@@ -44,6 +48,7 @@ function splitSection(
   const pages = new Array<Page>();
 
   let children = section.children;
+  let columns = new Array<PageColumn>();
   let elements = new Array<AD.SectionElement.SectionElement>();
   let elementsHeight = 0;
   let currentPage = previousPage;
@@ -51,8 +56,10 @@ function splitSection(
     const contentRect = getPageContentRect(desiredSizes, section, pages.length + 1);
     const element = children[i];
     if (element.type === "PageBreak") {
-      currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
+      columns.push({ elements });
+      currentPage = createPage(resources, desiredSizes, currentPage, section, columns, pages.length === 0);
       pages.push(currentPage);
+      columns = [];
       elements = [];
       elementsHeight = 0;
       continue;
@@ -103,28 +110,26 @@ function splitSection(
 
         //Add split table to children to process tableTail in next iteration
         children = [...children.slice(0, i), ...tableSplit, ...children.slice(i + 1)];
-
-        currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
-        pages.push(currentPage);
-        elements = [];
-        elementsHeight = 0;
-
-        continue;
-      }
-
-      if (elements.length > 1) {
+      } else if (elements.length > 1) {
         elements.pop();
         i--;
       }
-      currentPage = createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0);
-      pages.push(currentPage);
+
+      columns.push({ elements });
       elements = [];
       elementsHeight = 0;
+
+      if (columns.length === section.page.style.columnLayout.columnCount) {
+        currentPage = createPage(resources, desiredSizes, currentPage, section, columns, pages.length === 0);
+        pages.push(currentPage);
+        columns = [];
+      }
     }
   }
 
   if (elements.length > 0) {
-    pages.push(createPage(resources, desiredSizes, currentPage, section, elements, pages.length === 0));
+    columns.push({ elements });
+    pages.push(createPage(resources, desiredSizes, currentPage, section, columns, pages.length === 0));
   }
 
   return pages;
@@ -191,7 +196,7 @@ function createPage(
   desiredSizes: Map<{}, AD.Size.Size>,
   previousPage: Page | undefined,
   section: AD.Section.Section,
-  elements: ReadonlyArray<AD.SectionElement.SectionElement>,
+  columns: ReadonlyArray<PageColumn>,
   isFirst: boolean
 ): Page {
   const style = section.page.style;
@@ -210,33 +215,55 @@ function createPage(
   };
   const pageNo = previousPage ? previousPage.pageNo + 1 : 1;
 
+  const namedDestionations = [];
+
   const sectionName = isFirst && section.id !== "" ? [section.id] : [];
+  namedDestionations.push(...sectionName);
+
   // For now, only support link targets at base level. Tree search would be needed to find all targets.
-  const targetNames = elements
-    .flatMap((e) => (e.type === "Paragraph" ? e.children.map((c) => (c.type === "LinkTarget" ? c.name : "")) : []))
-    .filter((t) => t !== "");
-  const namedDestionations = [...sectionName, ...targetNames];
+  for (const { elements } of columns) {
+    const targetNames = elements
+      .flatMap((e) => (e.type === "Paragraph" ? e.children.map((c) => (c.type === "LinkTarget" ? c.name : "")) : []))
+      .filter((t) => t !== "");
+    namedDestionations.push(...targetNames);
+  }
 
   // Ignore leading space by expanding the content rect upwards
   const rect = getPageContentRect(desiredSizes, section, pageNo);
-  const [leadingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
+  let leadingSpace = undefined;
+  for (const { elements } of columns) {
+    const [columnLeadingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
+    leadingSpace = Math.min(leadingSpace ?? columnLeadingSpace, columnLeadingSpace);
+  }
+  leadingSpace ||= 0;
   const contentRect = AD.Rect.create(rect.x, rect.y - leadingSpace, rect.width, rect.height + leadingSpace);
 
-  const frontHeader = (section.page.frontHeader === undefined || section.page.frontHeader.length === 0) ? section.page.header : section.page.frontHeader;
-  const frontFooter = (section.page.frontFooter === undefined || section.page.frontFooter.length === 0) ? section.page.footer : section.page.frontFooter;
+  const frontHeader =
+    section.page.frontHeader === undefined || section.page.frontHeader.length === 0
+      ? section.page.header
+      : section.page.frontHeader;
+
+  const frontFooter =
+    section.page.frontFooter === undefined || section.page.frontFooter.length === 0
+      ? section.page.footer
+      : section.page.frontFooter;
+
   return {
     pageNo: pageNo,
     namedDestionations: namedDestionations,
     pageOptions: pageOptions,
     section: section,
     contentRect: contentRect,
-    elements: elements,
+    columns: columns,
     header: isFirst ? frontHeader : section.page.header,
     footer: isFirst ? frontFooter : section.page.footer,
   };
 }
 
-export function getHeaderAndFooter(section: AD.Section.Section, pageNo: number): {
+export function getHeaderAndFooter(
+  section: AD.Section.Section,
+  pageNo: number
+): {
   readonly header: Array<AD.SectionElement.SectionElement>;
   readonly footer: Array<AD.SectionElement.SectionElement>;
   readonly headerMargins: AD.LayoutFoundation.LayoutFoundation;
@@ -245,7 +272,7 @@ export function getHeaderAndFooter(section: AD.Section.Section, pageNo: number):
   const FIRST_PAGE = 1;
   const EVEN_PAGE = 0;
   const ODD_PAGE = 1;
-  switch(true) {
+  switch (true) {
     //first page
     case pageNo === FIRST_PAGE: {
       const normalHeader = section.page.frontHeader === undefined || section.page.frontHeader.length === 0;
@@ -253,8 +280,12 @@ export function getHeaderAndFooter(section: AD.Section.Section, pageNo: number):
       return {
         footer: normalFooter ? section.page.footer : section.page.frontFooter,
         header: normalHeader ? section.page.header : section.page.frontHeader,
-        headerMargins: normalHeader ? section.page.style.headerMargins : (section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins),
-        footerMargins: normalFooter ? section.page.style.footerMargins : (section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins),
+        headerMargins: normalHeader
+          ? section.page.style.headerMargins
+          : section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins,
+        footerMargins: normalFooter
+          ? section.page.style.footerMargins
+          : section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins,
       };
     }
     case pageNo === 0:
@@ -266,12 +297,16 @@ export function getHeaderAndFooter(section: AD.Section.Section, pageNo: number):
         footer: section.page.footer,
         headerMargins: section.page.style.headerMargins,
         footerMargins: section.page.style.footerMargins,
-      }
+      };
     }
   }
 }
 
-function getPageContentRect(desiredSizes: Map<{}, AD.Size.Size>, section: AD.Section.Section, pageNo: number): AD.Rect.Rect {
+function getPageContentRect(
+  desiredSizes: Map<{}, AD.Size.Size>,
+  section: AD.Section.Section,
+  pageNo: number
+): AD.Rect.Rect {
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getWidth(style);
   const pageHeight = AD.PageStyle.getHeight(style);

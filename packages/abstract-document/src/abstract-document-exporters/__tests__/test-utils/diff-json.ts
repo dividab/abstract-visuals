@@ -28,7 +28,7 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
   }
 
   for (const [key, newValue] of Object.entries(newObject)) {
-    if (!(key in oldObject)) {
+    if (!(key in oldObject) && newValue !== undefined) {
       message += `\n+ ${key}: ${stringify(newValue)}`;
     }
   }
