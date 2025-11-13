@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [17.1.0] - 2025-11-13
+
+- AbstractDocument Added support for page column layout.
+
 ## [17.0.4] - 2025-11-12
 
 - AbstractDocument Bugfix non-string text in TextRun, memoize widthOfString() and heightOfString()
