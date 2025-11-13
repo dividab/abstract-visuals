@@ -20,6 +20,11 @@ export default defineConfig({
         ]
       : []),
   ],
-  // abstract-image is a depency of abstract-chart and abstract-document.
-  optimizeDeps: { include: ["abstract-image", "handlebars-xml", "jsxpression"] },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: { global: "globalThis" },
+    },
+    // abstract-image is a depency of abstract-chart and abstract-document.
+    include: ["abstract-image", "handlebars-xml", "jsxpression"],
+  },
 });

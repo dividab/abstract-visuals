@@ -3,6 +3,7 @@
     "target": "ES2023",
     "module": "NodeNext",
     "moduleResolution": "nodenext",
+    "moduleDetection": "force",
     "declaration": true,
     "isolatedModules": true,
     "declarationMap": true,
