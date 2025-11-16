@@ -1,7 +1,6 @@
 import { Point, createPoint } from "./point.js";
 import { Color } from "./color.js";
 import { DashStyle, solidLine } from "./dash-style.js";
-import { AbstractImage } from "./abstract-image.js";
 
 export type Component = BinaryImage | Ellipse | Line | PolyLine | Polygon | Rectangle | Text | SubImage | Group;
 
@@ -290,8 +289,4 @@ export interface SubImage {
 
 export function createSubImage(topLeft: Point, image: Component): SubImage {
   return { type: "subimage", topLeft, image };
-}
-
-export function embedAbstractImage(topLeft: Point, name: string, image: AbstractImage): Component {
-  return createSubImage(topLeft, createGroup(name, image.components));
 }

@@ -8,7 +8,7 @@ import { HotSpotInfo } from "./react-hotspot.js";
 import { MaterialState } from "./react-material.js";
 
 type ReactProps = {
-  readonly scene: Scene;
+  readonly scene: Scene | undefined; // undefined to allow for simple early loadign the js when lazy loading the React3Js renderer
   readonly selectedIds: Record<string, boolean> | undefined;
   readonly activeHotSpots?: Record<string, HotSpotInfo> | undefined;
   readonly activeComponents?: Record<string, MaterialState> | undefined;
@@ -76,76 +76,81 @@ export const render = memo(
   }: ReactProps): React.JSX.Element => {
     return (
       <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
-        {/* <Stats showPanel={0} className="stats" /> */}
-        <ReactCamera
-          scene={scene}
-          useAnimations={useAnimations}
-          camera={camera}
-          view={view}
-          controlsHelper={controlsHelper}
-          orbitContolsProps={orbitContolsProps}
-        />
-        <ambientLight intensity={3.5} />
-        <directionalLight
-          position={[
-            -(scene.center_deprecated?.x ?? 0),
-            -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
-            -(scene.center_deprecated?.z ?? 0),
-          ]}
-          intensity={0.4}
-        />
-        <directionalLight
-          position={[
-            -(scene.center_deprecated?.x ?? 0),
-            -(scene.center_deprecated?.y ?? 0),
-            -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
-          ]}
-          intensity={0.4}
-        />
-        <directionalLight
-          position={[
-            -(scene.center_deprecated?.x ?? 0),
-            -(scene.center_deprecated?.y ?? 0),
-            -(scene.center_deprecated?.z ?? 0) - 1.5 * scene.size_deprecated.z,
-          ]}
-          intensity={0.4}
-        />
-        <directionalLight
-          position={[
-            -(scene.center_deprecated?.x ?? 0) - 1.5 * scene.size_deprecated.x,
-            -(scene.center_deprecated?.y ?? 0),
-            -(scene.center_deprecated?.z ?? 0),
-          ]}
-          intensity={0.4}
-        />
-        <directionalLight
-          position={[
-            -(scene.center_deprecated?.x ?? 0) + 1.5 * scene.size_deprecated.x,
-            -(scene.center_deprecated?.y ?? 0),
-            -(scene.center_deprecated?.z ?? 0),
-          ]}
-          intensity={0.4}
-        />
-        <React.Suspense fallback={<></>}>
-          <ReactScene
-            scene={scene}
-            selectedIds={selectedIds}
-            activeHotSpots={activeHotSpots}
-            activeComponents={activeComponents}
-            showDimensions={showDimensions}
-            showHotSpotTexts={showHotSpotTexts}
-            hoveredIdExternal={hoveredIdExternal}
-            hotSpotTexts={hotSpotTexts}
-            reactPopovers={reactPopovers}
-            materialStateImages={materialStateImages}
-            onClickGroup={onClickGroup}
-            onHoverGroup={onHoverGroup}
-            onContextMenuGroup={onContextMenuGroup}
-            onClickHotSpot={onClickHotSpot}
-            createGroupKey={createGroupKey}
-            createGroupId={createGroupId}
-          />
-        </React.Suspense>
+        {scene && (
+          <>
+            <ReactCamera
+              scene={scene}
+              useAnimations={useAnimations}
+              camera={camera}
+              view={view}
+              controlsHelper={controlsHelper}
+              orbitContolsProps={orbitContolsProps}
+            />
+            <ambientLight intensity={3.5} />
+            <directionalLight
+              position={[
+                -(scene.center_deprecated?.x ?? 0),
+                -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
+                -(scene.center_deprecated?.z ?? 0),
+              ]}
+              intensity={0.4}
+            />
+            <directionalLight
+              position={[
+                -(scene.center_deprecated?.x ?? 0),
+                -(scene.center_deprecated?.y ?? 0),
+                -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
+              ]}
+              intensity={0.4}
+            />
+            <directionalLight
+              position={[
+                -(scene.center_deprecated?.x ?? 0),
+                -(scene.center_deprecated?.y ?? 0),
+                -(scene.center_deprecated?.z ?? 0) - 1.5 * scene.size_deprecated.z,
+              ]}
+              intensity={0.4}
+            />
+            <directionalLight
+              position={[
+                -(scene.center_deprecated?.x ?? 0) - 1.5 * scene.size_deprecated.x,
+                -(scene.center_deprecated?.y ?? 0),
+                -(scene.center_deprecated?.z ?? 0),
+              ]}
+              intensity={0.4}
+            />
+            <directionalLight
+              position={[
+                -(scene.center_deprecated?.x ?? 0) + 1.5 * scene.size_deprecated.x,
+                -(scene.center_deprecated?.y ?? 0),
+                -(scene.center_deprecated?.z ?? 0),
+              ]}
+              intensity={0.4}
+            />
+            <React.Suspense fallback={<></>}>
+              {
+                <ReactScene
+                  scene={scene}
+                  selectedIds={selectedIds}
+                  activeHotSpots={activeHotSpots}
+                  activeComponents={activeComponents}
+                  showDimensions={showDimensions}
+                  showHotSpotTexts={showHotSpotTexts}
+                  hoveredIdExternal={hoveredIdExternal}
+                  hotSpotTexts={hotSpotTexts}
+                  reactPopovers={reactPopovers}
+                  materialStateImages={materialStateImages}
+                  onClickGroup={onClickGroup}
+                  onHoverGroup={onHoverGroup}
+                  onContextMenuGroup={onContextMenuGroup}
+                  onClickHotSpot={onClickHotSpot}
+                  createGroupKey={createGroupKey}
+                  createGroupId={createGroupId}
+                />
+              }
+            </React.Suspense>
+          </>
+        )}
       </Canvas>
     );
   }

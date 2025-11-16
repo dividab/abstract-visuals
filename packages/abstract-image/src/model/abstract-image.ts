@@ -1,6 +1,6 @@
 import { Size } from "./size.js";
 import { Color } from "./color.js";
-import { Component } from "./component.js";
+import { Component, createGroup, createSubImage } from "./component.js";
 import { Point } from "./point.js";
 
 export interface AbstractImage {
@@ -24,3 +24,6 @@ export function createAbstractImage(
   };
 }
 
+export function embedAbstractImage(topLeft: Point, name: string, image: AbstractImage): Component {
+  return createSubImage(topLeft, createGroup(name, image.components));
+}
