@@ -24,7 +24,7 @@ type ReactProps = {
   readonly canvasProps?: Omit<CanvasProps & React.RefAttributes<HTMLCanvasElement>, "children">;
   readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
   readonly materialStateImages?: Record<string, string>;
-  readonly sceneFallback: React.JSX.Element;
+  readonly sceneFallback?: React.JSX.Element;
   readonly onClickGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
