@@ -24,6 +24,7 @@ type ReactProps = {
   readonly canvasProps?: Omit<CanvasProps & React.RefAttributes<HTMLCanvasElement>, "children">;
   readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
   readonly materialStateImages?: Record<string, string>;
+  readonly sceneFallback: React.JSX.Element;
   readonly onClickGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
@@ -67,6 +68,7 @@ export const render = memo(
     canvasProps,
     orbitContolsProps,
     materialStateImages,
+    sceneFallback,
     onClickGroup,
     onHoverGroup,
     onContextMenuGroup,
@@ -74,9 +76,9 @@ export const render = memo(
     createGroupKey,
     createGroupId,
   }: ReactProps): React.JSX.Element => {
-    return (
+    return scene ? (
       <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
-        {scene && (
+        {
           <>
             <ReactCamera
               scene={scene}
@@ -150,8 +152,10 @@ export const render = memo(
               }
             </React.Suspense>
           </>
-        )}
+        }
       </Canvas>
+    ) : (
+      sceneFallback ?? <></>
     );
   }
 );
