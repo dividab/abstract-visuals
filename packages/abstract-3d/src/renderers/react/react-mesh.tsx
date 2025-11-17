@@ -107,6 +107,8 @@ export function ReactMesh({
           scale={[radius, length, radius]}
           position={[pos.x, pos.y, pos.z]}
           rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+          castShadow
+          receiveShadow
         >
           {children}
         </mesh>
@@ -116,14 +118,16 @@ export function ReactMesh({
       const { pos, radius, rot, length, holes, open, angleStart, angleLength } = mesh.geometry;
       const filteredHoles = holes?.filter((h) => !holeIsZero(h));
       const hasAngles = angleStart !== undefined && angleLength !== undefined;
-      const isWhole = !hasAngles || (isZero((Math.PI * 2) - angleLength) && isZero(angleStart));
-      if(isWhole) {
+      const isWhole = !hasAngles || (isZero(Math.PI * 2 - angleLength) && isZero(angleStart));
+      if (isWhole) {
         return !filteredHoles || filteredHoles.length === 0 ? (
           <mesh
             geometry={open ? cylinderGeometryOpen : cylinderGeometry}
             scale={[radius, length, radius]}
             position={[pos.x, pos.y, pos.z]}
             rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+            castShadow
+            receiveShadow
           >
             {children}
           </mesh>
@@ -138,8 +142,14 @@ export function ReactMesh({
         const aEnd = angleEnd - Math.PI / 2;
         const plane1Rot = vec3RotCombine(rot ?? vec3Zero, vec3(0, aStart, 0));
         const plane2Rot = vec3RotCombine(rot ?? vec3Zero, vec3(0, aEnd, 0));
-        const plane1Pos = vec3Add(vec3Rot(vec3Scale(vec3(Math.cos(aStart), 0, -Math.sin(aStart)), halfRadius), vec3Zero, rot ?? vec3Zero), pos);
-        const plane2Pos = vec3Add(vec3Rot(vec3Scale(vec3(Math.cos(aEnd), 0, -Math.sin(aEnd)), halfRadius), vec3Zero, rot ?? vec3Zero), pos);
+        const plane1Pos = vec3Add(
+          vec3Rot(vec3Scale(vec3(Math.cos(aStart), 0, -Math.sin(aStart)), halfRadius), vec3Zero, rot ?? vec3Zero),
+          pos
+        );
+        const plane2Pos = vec3Add(
+          vec3Rot(vec3Scale(vec3(Math.cos(aEnd), 0, -Math.sin(aEnd)), halfRadius), vec3Zero, rot ?? vec3Zero),
+          pos
+        );
         return (
           <mesh>
             <mesh
@@ -147,6 +157,8 @@ export function ReactMesh({
               scale={[radius, length, radius]}
               position={[pos.x, pos.y, pos.z]}
               rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+              castShadow
+              receiveShadow
             >
               {children}
             </mesh>
@@ -155,6 +167,8 @@ export function ReactMesh({
               scale={[radius, length, 1]}
               position={[plane1Pos.x, plane1Pos.y, plane1Pos.z]}
               rotation={[plane1Rot.x, plane1Rot.y, plane1Rot.z]}
+              castShadow
+              receiveShadow
             >
               {children}
             </mesh>
@@ -163,6 +177,8 @@ export function ReactMesh({
               scale={[radius, length, 1]}
               position={[plane2Pos.x, plane2Pos.y, plane2Pos.z]}
               rotation={[plane2Rot.x, plane2Rot.y, plane2Rot.z]}
+              castShadow
+              receiveShadow
             >
               {children}
             </mesh>
@@ -179,6 +195,8 @@ export function ReactMesh({
           scale={[size.x, size.y, 1]}
           position={[pos.x, pos.y, pos.z]}
           rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+          castShadow
+          receiveShadow
         >
           {children}
         </mesh>
@@ -191,7 +209,7 @@ export function ReactMesh({
     case "Sphere": {
       const { pos, radius } = mesh.geometry;
       return (
-        <mesh geometry={sphereGeometry} scale={radius} position={[pos.x, pos.y, pos.z]}>
+        <mesh geometry={sphereGeometry} scale={radius} position={[pos.x, pos.y, pos.z]} castShadow receiveShadow>
           {children}
         </mesh>
       );
@@ -263,7 +281,7 @@ function ExcrudeBoxPlane({
   return (
     // Doesn't seem to adjust for excrude z size directly???
     <mesh rotation={[geo.rot?.x ?? 0, geo.rot?.y ?? 0, geo.rot?.z ?? 0]} position={[geo.pos.x, geo.pos.y, geo.pos.z]}>
-      <mesh geometry={excrudeGeometry} position-z={-sizeZ / 2}>
+      <mesh geometry={excrudeGeometry} position-z={-sizeZ / 2} castShadow receiveShadow>
         {children}
       </mesh>
     </mesh>
@@ -295,7 +313,7 @@ function ExcrudeShape({
   return (
     // Doesn't seem to adjust for excrude z size directly???
     <mesh rotation={[s.rot?.x ?? 0, s.rot?.y ?? 0, s.rot?.z ?? 0]} position={[s.pos.x, s.pos.y, s.pos.z]}>
-      <mesh geometry={excrudeGeometry} position-z={-s.thickness / 2}>
+      <mesh geometry={excrudeGeometry} position-z={-s.thickness / 2} castShadow receiveShadow>
         {children}
       </mesh>
     </mesh>
@@ -319,7 +337,7 @@ function ExcrudeCylinder({
   return (
     // Doesn't seem to adjust for excrude z size directly???
     <mesh rotation={[cyl.rot?.x ?? 0, cyl.rot?.y ?? 0, cyl.rot?.z ?? 0]} position={[cyl.pos.x, cyl.pos.y, cyl.pos.z]}>
-      <mesh geometry={excrudeGeometry} rotation-x={Math.PI / 2} position-y={+cyl.length / 2}>
+      <mesh geometry={excrudeGeometry} rotation-x={Math.PI / 2} position-y={+cyl.length / 2} castShadow receiveShadow>
         {children}
       </mesh>
     </mesh>
@@ -327,24 +345,26 @@ function ExcrudeCylinder({
 }
 
 function holes(holes: ReadonlyArray<Hole> | undefined, shape: Shape): void {
-  holes?.filter((h) => !holeIsZero(h)).forEach((h) => {
-    switch (h.type) {
-      case "RoundHole":
-        shape.holes.push(new Path().absarc(h.pos.x, h.pos.y, h.radius, 0, Math.PI * 2, true));
-        break;
-      case "SquareHole": {
-        const path = new Path();
-        const halfHole = vec2Scale(h.size, 0.5);
-        const min = vec2Sub(h.pos, halfHole);
-        const max = vec2Add(h.pos, halfHole);
-        path.moveTo(min.x, min.y).lineTo(min.x, max.y).lineTo(max.x, max.y).lineTo(max.x, min.y).closePath();
-        shape.holes.push(path);
-        break;
+  holes
+    ?.filter((h) => !holeIsZero(h))
+    .forEach((h) => {
+      switch (h.type) {
+        case "RoundHole":
+          shape.holes.push(new Path().absarc(h.pos.x, h.pos.y, h.radius, 0, Math.PI * 2, true));
+          break;
+        case "SquareHole": {
+          const path = new Path();
+          const halfHole = vec2Scale(h.size, 0.5);
+          const min = vec2Sub(h.pos, halfHole);
+          const max = vec2Add(h.pos, halfHole);
+          path.moveTo(min.x, min.y).lineTo(min.x, max.y).lineTo(max.x, max.y).lineTo(max.x, min.y).closePath();
+          shape.holes.push(path);
+          break;
+        }
+        default:
+          exhaustiveCheck(h);
       }
-      default:
-        exhaustiveCheck(h);
-    }
-  });
+    });
 }
 
 function Polygon({
@@ -407,6 +427,8 @@ function Polygon({
     <mesh
       rotation={[polygon.rot?.x ?? 0, polygon.rot?.y ?? 0, polygon.rot?.z ?? 0]}
       position={[polygon.pos.x, polygon.pos.y, polygon.pos.z]}
+      castShadow
+      receiveShadow
     >
       <bufferGeometry attach="geometry" onUpdate={(self) => self.computeVertexNormals()}>
         <bufferAttribute
@@ -450,6 +472,8 @@ function Tube({
       rotation={[tube.rot?.x ?? 0, tube.rot?.y ?? 0, tube.rot?.z ?? 0]}
       position={[tube.pos.x, tube.pos.y, tube.pos.z]}
       geometry={tubeGeometry}
+      castShadow
+      receiveShadow
     >
       {children}
     </mesh>
@@ -457,7 +481,7 @@ function Tube({
 }
 
 function holeIsZero(hole: Hole): boolean {
-  switch(hole.type) {
+  switch (hole.type) {
     case "RoundHole": {
       return equals(hole.radius, 0.0);
     }

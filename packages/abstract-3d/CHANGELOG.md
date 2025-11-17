@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.1.4
+
+- Added screen space ambient occlusion
+
 ## v1.1.0
+
 - Added outlines to hotspots
 
 ## v0.9.0

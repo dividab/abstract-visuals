@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
 import { Html, type OrbitControlsProps } from "@react-three/drei";
+import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { ReactPopover, ReactScene } from "./react-scene.js";
 import { Scene, View, Group } from "../../abstract-3d.js";
 import { ReactCamera, ControlsHelper, Camera } from "./react-camera.js";
@@ -90,27 +91,27 @@ export const render = memo(
           <ambientLight intensity={3.5} />
           <directionalLight
             position={[
-              -(scene.center_deprecated?.x ?? 0),
+              -(scene.center_deprecated?.x ?? 0) - 1.5 * scene.size_deprecated.x,
               -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
               -(scene.center_deprecated?.z ?? 0),
             ]}
-            intensity={0.4}
+            intensity={2}
           />
           <directionalLight
             position={[
               -(scene.center_deprecated?.x ?? 0),
+              -(scene.center_deprecated?.y ?? 0) + 1 * scene.size_deprecated.y,
+              -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
+            ]}
+            intensity={2}
+          />
+          <directionalLight
+            position={[
+              -(scene.center_deprecated?.x ?? 0) + 2 * scene.size_deprecated.x,
               -(scene.center_deprecated?.y ?? 0),
               -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
             ]}
-            intensity={0.4}
-          />
-          <directionalLight
-            position={[
-              -(scene.center_deprecated?.x ?? 0),
-              -(scene.center_deprecated?.y ?? 0),
-              -(scene.center_deprecated?.z ?? 0) - 1.5 * scene.size_deprecated.z,
-            ]}
-            intensity={0.4}
+            intensity={2}
           />
           <directionalLight
             position={[
@@ -147,6 +148,9 @@ export const render = memo(
             createGroupKey={createGroupKey}
             createGroupId={createGroupId}
           />
+          <EffectComposer multisampling={8}>
+            <N8AO aoRadius={40} distanceFalloff={0.2} intensity={2} screenSpaceRadius />
+          </EffectComposer>
         </React.Suspense>
       </Canvas>
     ) : (

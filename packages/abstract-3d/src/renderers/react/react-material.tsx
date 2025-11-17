@@ -1,6 +1,14 @@
 import React, { useEffect } from "react";
 import { suspend } from "suspend-react";
-import { BackSide, type Color, DoubleSide, type MaterialParameters, SRGBColorSpace, type Texture, TextureLoader } from "three";
+import {
+  BackSide,
+  type Color,
+  DoubleSide,
+  type MaterialParameters,
+  SRGBColorSpace,
+  type Texture,
+  TextureLoader,
+} from "three";
 import { Material } from "../../abstract-3d.js";
 import { shade } from "../shared.js";
 
@@ -36,24 +44,24 @@ export function ReactMaterial({
     !state || material.imageUrl === "UrlImage"
       ? material
       : state === "Accept"
-        ? acceptMat
-        : state === "Error"
-          ? errorMar
-          : warningMat;
+      ? acceptMat
+      : state === "Error"
+      ? errorMar
+      : warningMat;
   const color = selectedIds?.[id]
     ? hoveredId === id
       ? shade(-0.4, selectMat.normal)
       : selectMat.normal
     : hoveredId === id
-      ? shade(-0.4, mat.normal)
-      : mat.normal;
+    ? shade(-0.4, mat.normal)
+    : mat.normal;
   const colorText = selectedIds?.[id]
     ? hoveredId === id
       ? shade(-0.4, textSelectMat.normal)
       : textSelectMat.normal
     : hoveredId === id
-      ? shade(-0.4, mat.normal)
-      : mat.normal;
+    ? shade(-0.4, mat.normal)
+    : mat.normal;
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
   if (material.imageUrl) {
     return (
@@ -76,7 +84,17 @@ export function ReactMaterial({
     );
   }
   if (isHotSpot) {
-    return <meshBasicMaterial key="mesh_material_hotspot" color={color} side={drawBackOnly === true ? BackSide : DoubleSide} depthTest={true} depthWrite={true} transparent={false} opacity={1.0} />;
+    return (
+      <meshBasicMaterial
+        key="mesh_material_hotspot"
+        color={color}
+        side={drawBackOnly === true ? BackSide : DoubleSide}
+        depthTest={true}
+        depthWrite={true}
+        transparent={false}
+        opacity={1.0}
+      />
+    );
   }
   return (
     <meshStandardMaterial
@@ -86,7 +104,12 @@ export function ReactMaterial({
       metalness={mat.metalness}
       side={DoubleSide}
       {...(opacity < 1 || disabled
-        ? { transparent: true, depthWrite: false, opacity: disabled ? opacity * decreasedOpacity : opacity, depthTest: true }
+        ? {
+            transparent: true,
+            depthWrite: false,
+            opacity: disabled ? opacity * decreasedOpacity : opacity,
+            depthTest: true,
+          }
         : materialDefaults)}
     />
   );
