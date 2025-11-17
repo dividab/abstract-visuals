@@ -95,7 +95,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
               -(scene.center_deprecated?.z ?? 0),
             ]}
-            intensity={2}
+            intensity={0.4}
           />
           <directionalLight
             position={[
@@ -103,7 +103,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0) + 1 * scene.size_deprecated.y,
               -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
             ]}
-            intensity={2}
+            intensity={0.4}
           />
           <directionalLight
             position={[
@@ -111,7 +111,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0),
               -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
             ]}
-            intensity={2}
+            intensity={0.4}
           />
           <directionalLight
             position={[
