@@ -26,6 +26,7 @@ type ReactProps = {
   readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
   readonly materialStateImages?: Record<string, string>;
   readonly sceneFallback?: React.JSX.Element;
+  readonly useOldMode?: boolean;
   readonly onClickGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
@@ -55,6 +56,7 @@ export const render = memo(
   ({
     scene,
     selectedIds,
+    useOldMode,
     activeHotSpots,
     activeComponents,
     hoveredIdExternal,
@@ -77,20 +79,9 @@ export const render = memo(
     createGroupKey,
     createGroupId,
   }: ReactProps): React.JSX.Element => {
+    const intensity = useOldMode ? 2 : 0.4;
     return scene ? (
-      <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" gl={{ antialias: false }} {...canvasProps}>
-        {/* <Stats showPanel={0} className="stats" /> */}
-        <EffectComposer multisampling={8} resolutionScale={0.5}>
-          <N8AO
-            aoRadius={40}
-            distanceFalloff={0.2}
-            intensity={2}
-            screenSpaceRadius
-            halfRes
-            denoiseSamples={4}
-            aoSamples={8}
-          />
-        </EffectComposer>
+      <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
         <React.Suspense fallback={<Html center>{sceneFallback ?? <></>}</Html>}>
           <ReactCamera
             scene={scene}
@@ -107,7 +98,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
               -(scene.center_deprecated?.z ?? 0),
             ]}
-            intensity={0.8}
+            intensity={intensity}
           />
           <directionalLight
             position={[
@@ -115,7 +106,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0) + 1 * scene.size_deprecated.y,
               -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
             ]}
-            intensity={0.8}
+            intensity={intensity}
           />
           <directionalLight
             position={[
@@ -123,7 +114,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0),
               -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
             ]}
-            intensity={0.8}
+            intensity={intensity}
           />
           <directionalLight
             position={[
@@ -160,6 +151,11 @@ export const render = memo(
             createGroupKey={createGroupKey}
             createGroupId={createGroupId}
           />
+          {!useOldMode && (
+            <EffectComposer multisampling={8}>
+              <N8AO aoRadius={40} distanceFalloff={0.2} intensity={2} screenSpaceRadius />
+            </EffectComposer>
+          )}
         </React.Suspense>
       </Canvas>
     ) : (
