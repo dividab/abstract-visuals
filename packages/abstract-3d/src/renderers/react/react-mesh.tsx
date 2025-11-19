@@ -90,6 +90,8 @@ export function ReactMesh({
           scale={[size.x, size.y, size.z]}
           position={[pos.x, pos.y, pos.z]}
           rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+          castShadow
+          receiveShadow
         >
           {children}
         </mesh>

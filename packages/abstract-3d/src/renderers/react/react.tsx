@@ -78,7 +78,19 @@ export const render = memo(
     createGroupId,
   }: ReactProps): React.JSX.Element => {
     return scene ? (
-      <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
+      <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" gl={{ antialias: false }} {...canvasProps}>
+        {/* <Stats showPanel={0} className="stats" /> */}
+        <EffectComposer multisampling={4} resolutionScale={0.5}>
+          <N8AO
+            aoRadius={40}
+            distanceFalloff={0.2}
+            intensity={2}
+            screenSpaceRadius
+            halfRes
+            denoiseSamples={4}
+            aoSamples={8}
+          />
+        </EffectComposer>
         <React.Suspense fallback={<Html center>{sceneFallback ?? <></>}</Html>}>
           <ReactCamera
             scene={scene}
@@ -148,9 +160,6 @@ export const render = memo(
             createGroupKey={createGroupKey}
             createGroupId={createGroupId}
           />
-          <EffectComposer multisampling={8}>
-            <N8AO aoRadius={40} distanceFalloff={0.2} intensity={2} screenSpaceRadius />
-          </EffectComposer>
         </React.Suspense>
       </Canvas>
     ) : (
