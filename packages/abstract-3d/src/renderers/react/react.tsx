@@ -80,7 +80,7 @@ export const render = memo(
     return scene ? (
       <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" gl={{ antialias: false }} {...canvasProps}>
         {/* <Stats showPanel={0} className="stats" /> */}
-        <EffectComposer multisampling={4} resolutionScale={0.5}>
+        <EffectComposer multisampling={8} resolutionScale={0.5}>
           <N8AO
             aoRadius={40}
             distanceFalloff={0.2}
@@ -107,7 +107,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
               -(scene.center_deprecated?.z ?? 0),
             ]}
-            intensity={0.4}
+            intensity={0.8}
           />
           <directionalLight
             position={[
@@ -115,7 +115,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0) + 1 * scene.size_deprecated.y,
               -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
             ]}
-            intensity={0.4}
+            intensity={0.8}
           />
           <directionalLight
             position={[
@@ -123,7 +123,7 @@ export const render = memo(
               -(scene.center_deprecated?.y ?? 0),
               -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
             ]}
-            intensity={0.4}
+            intensity={0.8}
           />
           <directionalLight
             position={[
