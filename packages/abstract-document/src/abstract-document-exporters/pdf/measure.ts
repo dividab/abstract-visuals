@@ -181,16 +181,21 @@ function measureParagraph(
     } else if (hasAtomImage) {
       paragraphHeight += desiredHeight + currentRowHeight;
     } else {
-      const height = heightOfString(
-        pdfKit,
-        textOptions?.fontFamily ?? "Helvetica",
-        textOptions?.fontSize ?? 10,
-        concatenatedText,
-        {
-          width: textOptions && textOptions.lineBreak === false ? Infinity : availableSize.width,
-          ...textOptions,
-        }
-      );
+      // const height = heightOfString(
+      //   pdfKit,
+      //   textOptions?.fontFamily ?? "Helvetica",
+      //   textOptions?.fontSize ?? 10,
+      //   concatenatedText,
+      //   {
+      //     width: textOptions && textOptions.lineBreak === false ? Infinity : availableSize.width,
+      //     ...textOptions,
+      //   }
+      // );
+
+      const height = pdfKit.heightOfString(concatenatedText, {
+        width: textOptions && textOptions.lineBreak === false ? Infinity : availableSize.width,
+        ...textOptions,
+      });
       paragraphHeight += height;
     }
   }

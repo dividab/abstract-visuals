@@ -6,6 +6,7 @@ import { AbstractImageExampleSvg } from "./abstract-image-example-svg.js";
 import { AbstractChartExample } from "./abstract-chart-example.js";
 import { AbstractDocumentExample } from "./abstract-document-example.js";
 import { AbstractDocumentXMLExample } from "./abstract-document-xml-example.js";
+import { AbstractDocumentXMLExample2 } from "./abstract-document-xml-example-2.js";
 import { AbstractSheetExample } from "./abstract-sheet-example.js";
 import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
 import { AbstractImageXml } from "./dynamic-image.js";
@@ -19,6 +20,7 @@ const examples = [
   "AbstractChart",
   "AbstractDocument",
   "AbstractDocumentXML",
+  "AbstractDocumentXML2",
   "Abstract3D",
   "AbstractSheet",
   "AbstractSheetXML",
@@ -60,6 +62,8 @@ export function Container(): React.JSX.Element {
             return <AbstractDocumentExample />;
           case "AbstractDocumentXML":
             return <AbstractDocumentXMLExample />;
+          case "AbstractDocumentXML2":
+            return <AbstractDocumentXMLExample2 />;
           case "Abstract3D":
             return <Abstract3DExample />;
           case "AbstractSheet":
