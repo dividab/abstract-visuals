@@ -44,38 +44,40 @@ export function Abstract3DExample(): React.ReactNode {
           SVG
         </button>
       </div>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: Svg.render(systemair, {
-            view: "front",
-            stroke: 1,
-            scale: { size: 400, scaleByWidth: true },
-            rotation: 270,
-          }).image,
-        }}
-      />
-      <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
-        <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-          <React3Js.render
-            selectedIds={selected ? { [selected]: true } : undefined}
-            onClickGroup={(id) => setSelected(id)}
-            createGroupId={(g) => g.data?.id ?? ""}
-            scene={systemair}
-            orbitContolsProps={{ enableDamping: false }}
-            camera={camera}
-            onHoverGroup={(id) => setHovered(id)}
-            popovers={popover ? [popover] : undefined}
-          />
-        </div>
-        <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-          <React3Js.render
-            selectedIds={selected ? { [selected]: true } : undefined}
-            onClickGroup={(id) => setSelected(id)}
-            createGroupId={(g) => g.data?.id ?? ""}
-            scene={vortice}
-            orbitContolsProps={{ enableDamping: false }}
-            camera={camera}
-          />
+      <div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: Svg.render(systemair, {
+              view: "front",
+              stroke: 1,
+              scale: { size: 400, scaleByWidth: true },
+              rotation: 270,
+            }).image,
+          }}
+        />
+        <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
+          <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
+            <React3Js.render
+              selectedIds={selected ? { [selected]: true } : undefined}
+              onClickGroup={(id) => setSelected(id)}
+              createGroupId={(g) => g.data?.id ?? ""}
+              scene={systemair}
+              orbitContolsProps={{ enableDamping: false }}
+              camera={camera}
+              onHoverGroup={(id) => setHovered(id)}
+              popovers={popover ? [popover] : undefined}
+            />
+          </div>
+          <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
+            <React3Js.render
+              selectedIds={selected ? { [selected]: true } : undefined}
+              onClickGroup={(id) => setSelected(id)}
+              createGroupId={(g) => g.data?.id ?? ""}
+              scene={vortice}
+              orbitContolsProps={{ enableDamping: false }}
+              camera={camera}
+            />
+          </div>
         </div>
       </div>
     </div>

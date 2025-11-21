@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
-import { Html, type OrbitControlsProps } from "@react-three/drei";
+import { Html, Stats, type OrbitControlsProps } from "@react-three/drei";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { ReactPopover, ReactScene } from "./react-scene.js";
 import { Scene, View, Group } from "../../abstract-3d.js";
@@ -153,7 +153,7 @@ export const render = memo(
           />
           {!useOldMode && (
             <EffectComposer multisampling={8}>
-              <N8AO aoRadius={40} distanceFalloff={0.2} intensity={2} screenSpaceRadius />
+              <N8AO aoRadius={40} denoiseSamples={4} distanceFalloff={0.2} intensity={2} screenSpaceRadius halfRes />
             </EffectComposer>
           )}
         </React.Suspense>
