@@ -379,6 +379,28 @@ export const bounds3Merge = (...bounds: ReadonlyArray<Bounds3>): Bounds3 => {
   return bounds3(min, max);
 };
 
+export function bounds2FromVec2Array(vec2Array: ReadonlyArray<Vec2>): Bounds2 {
+  let minX = Number.MAX_VALUE;
+  let minY = Number.MAX_VALUE;
+  let maxX = Number.MIN_VALUE;
+  let maxY = Number.MIN_VALUE;
+  for (const v of vec2Array) {
+    if (v.x < minX) {
+      minX = v.x;
+    }
+    if (v.y < minY) {
+      minY = v.y;
+    }
+    if (v.x > maxX) {
+      maxX = v.x;
+    }
+    if (v.y > maxY) {
+      maxY = v.y;
+    }
+  }
+  return bounds2(vec2(minX, minY), vec2(maxX, maxY));
+}
+
 export function bounds3FromVec3Array(vec3Array: ReadonlyArray<Vec3>): Bounds3 {
   const min = vec3Dupl(Number.MAX_VALUE) as { x: number; y: number; z: number };
   const max = vec3Dupl(-Number.MAX_VALUE) as { x: number; y: number; z: number };

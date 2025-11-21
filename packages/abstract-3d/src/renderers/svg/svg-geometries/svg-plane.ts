@@ -11,6 +11,7 @@ import {
   vec2,
   vec3ZMean,
   Material,
+  Hole,
 } from "../../../abstract-3d.js";
 import { gray, black, zElem, zOrderElement, SvgOptions } from "./shared.js";
 import { EmbededImage, svgImage, svgPolygon } from "../svg-encoding.js";
@@ -19,10 +20,12 @@ import { rgbGrayScale } from "../../shared.js";
 export function plane(
   p: Plane,
   point: (x: number, y: number) => Vec2,
+  factor: number,
   material: Material,
   opts: SvgOptions,
   parentPos: Vec3,
-  parentRot: Vec3
+  parentRot: Vec3,
+  holes?: ReadonlyArray<Hole>,
 ): ReadonlyArray<zOrderElement> {
   const half = vec2Scale(p.size, 0.5);
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
@@ -38,8 +41,8 @@ export function plane(
   const image: EmbededImage | undefined = imageData?.startsWith(rawSvgPrefix)
     ? { type: "svg", svg: imageData.slice(rawSvgPrefix.length) }
     : material.imageUrl
-    ? { type: "url", url: imageData ?? material.imageUrl }
-    : undefined;
+      ? { type: "url", url: imageData ?? material.imageUrl }
+      : undefined;
 
   if (opts.view === "front" && image) {
     const [leftX, rightX] = v4.x > v2.x ? [v2.x, v4.x] : [v4.x, v2.x];
@@ -56,7 +59,7 @@ export function plane(
   const [strokeColor, fill, strokeThickness] = opts.onlyStroke
     ? [opts.grayScale ? gray : material.normal, opts.onlyStrokeFill, opts.stroke]
     : [black, opts.grayScale ? rgbGrayScale(material.normal) : material.normal, 0];
-  return [zElem(svgPolygon(points, fill, strokeColor, strokeThickness), vec3ZMean(v1, v2, v3, v4))];
+  return [zElem(svgPolygon(factor, rot, points, fill, strokeColor, strokeThickness, holes), vec3ZMean(v1, v2, v3, v4))];
 }
 
 const rawSvgPrefix = "data:image/svg+xml,";

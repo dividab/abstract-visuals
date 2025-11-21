@@ -6,6 +6,7 @@ import { rgbGrayScale } from "../../shared.js";
 export function shape(
   s: Shape,
   point: (x: number, y: number) => Vec2,
+  factor: number,
   color: string,
   opts: SvgOptions,
   parentPos: Vec3,
@@ -18,5 +19,5 @@ export function shape(
   const [strokeColor, fill] = opts.onlyStroke
     ? [opts.grayScale ? gray : color, opts.onlyStrokeFill]
     : [transparent, opts.grayScale ? rgbGrayScale(color) : color];
-  return [zElem(svgPolygon(points, fill, strokeColor, 0), vec3ZMean(...rotatedPoints))];
+  return [zElem(svgPolygon(factor, rot, points, fill, strokeColor, 0), vec3ZMean(...rotatedPoints))];
 }

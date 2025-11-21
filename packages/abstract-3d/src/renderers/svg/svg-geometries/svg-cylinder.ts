@@ -56,7 +56,7 @@ export function cylinder(
         point(currTop.x, currTop.y),
       ];
       zOrderComponents.push(
-        zElem(svgPolygon(points, fill, stroke, stBW), vec3ZMean(currBot, prevBot, currTop, prevTop))
+        zElem(svgPolygon(factor, rot, points, fill, stroke, stBW), vec3ZMean(currBot, prevBot, currTop, prevTop))
       );
     }
     currentAngle += angleStep;
@@ -68,7 +68,7 @@ export function cylinder(
     if (equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1)) {
       const circlePos = circleTop.z > circleBottom.z ? circleTop : circleBottom;
       zOrderComponents.push(
-        zElem(svgCircle(factor * c.radius, point(circlePos.x, circlePos.y), fill, stroke, stBW), circlePos.z)
+        zElem(svgCircle(factor * c.radius, rot, point(circlePos.x, circlePos.y), fill, stroke, stBW, factor, c.holes), circlePos.z)
       );
     }
   }

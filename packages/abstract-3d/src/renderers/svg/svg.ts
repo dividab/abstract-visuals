@@ -45,11 +45,11 @@ export function render(
 
   const factor = opts.scale
     ? opts.scale.size /
-      (opts.scale.scaleByWidth
-        ? opts.view === "right" || opts.view === "left"
-          ? scene.size_deprecated.z
-          : scene.size_deprecated.x
-        : opts.view === "top" || opts.view === "bottom"
+    (opts.scale.scaleByWidth
+      ? opts.view === "right" || opts.view === "left"
+        ? scene.size_deprecated.z
+        : scene.size_deprecated.x
+      : opts.view === "top" || opts.view === "bottom"
         ? scene.size_deprecated.z
         : scene.size_deprecated.y)
     : 1;
@@ -65,6 +65,7 @@ export function render(
   const elements = Array<zOrderElement>();
   const point = (x: number, y: number): Vec2 =>
     vec2(-centerAdj.x + unitHalfSize.x + x * factor, centerAdj.y + unitHalfSize.y - y * factor);
+
   for (const g of scene.groups) {
     const pos = vec3Rot(g.pos, unitPos, unitRot);
     const rot = vec3RotCombine(unitRot, g.rot ?? vec3Zero);
@@ -90,6 +91,8 @@ export function render(
     height,
     elements.reduce((a, { element }) => `${a} ${element}`, "")
   );
+
+  console.log("DONE: ", image);
   return { image, width, height };
 }
 
@@ -125,9 +128,9 @@ function svgMesh(
   const color = material.normal;
   switch (mesh.geometry.type) {
     case "Box":
-      return box(mesh.geometry, point, color, opts, parentPos, parentRot);
+      return box(mesh.geometry, point, color, opts, parentPos, parentRot, factor);
     case "Plane":
-      return plane(mesh.geometry, point, material, opts, parentPos, parentRot);
+      return plane(mesh.geometry, point, factor, material, opts, parentPos, parentRot);
     case "Cylinder":
       return cylinder(mesh.geometry, point, color, opts, parentPos, parentRot, factor);
     case "Cone":
@@ -135,9 +138,9 @@ function svgMesh(
     case "Line":
       return line(mesh.geometry, point, color, opts, parentPos, parentRot);
     case "Polygon":
-      return polygon(mesh.geometry, point, color, opts, parentPos, parentRot);
+      return polygon(mesh.geometry, point, factor, color, opts, parentPos, parentRot);
     case "Shape":
-      return shape(mesh.geometry, point, color, opts, parentPos, parentRot);
+      return shape(mesh.geometry, point, factor, color, opts, parentPos, parentRot);
     case "Text":
       return text(mesh.geometry, point, color, opts, parentPos, parentRot, factor);
     case "Tube":

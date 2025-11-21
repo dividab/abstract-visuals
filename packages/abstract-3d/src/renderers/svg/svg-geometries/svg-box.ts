@@ -19,7 +19,8 @@ export function box(
   color: string,
   opts: SvgOptions,
   parentPos: Vec3,
-  parentRot: Vec3
+  parentRot: Vec3,
+  factor: number,
 ): ReadonlyArray<zOrderElement> {
   const half = vec3Scale(b.size, 0.5);
   const pos = vec3TransRot(b.pos, parentPos, parentRot);
@@ -61,8 +62,8 @@ export function box(
     : [black, opts.grayScale ? rgbGrayScale(color) : color, 0];
 
   return [
-    zElem(svgPolygon(frontBackPoints, fill, strokeColor, strokeUse), frontBackMean),
-    zElem(svgPolygon(topBotPoints, fill, strokeColor, strokeUse), topBotMean),
-    zElem(svgPolygon(rightLeftPoints, fill, strokeColor, strokeUse), rightLeftMean),
+    zElem(svgPolygon(factor, rot, frontBackPoints, fill, strokeColor, strokeUse, b.holes), frontBackMean),
+    zElem(svgPolygon(factor, rot, topBotPoints, fill, strokeColor, strokeUse), topBotMean),
+    zElem(svgPolygon(factor, rot, rightLeftPoints, fill, strokeColor, strokeUse), rightLeftMean),
   ];
 }
