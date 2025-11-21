@@ -91,8 +91,6 @@ export function render(
     height,
     elements.reduce((a, { element }) => `${a} ${element}`, "")
   );
-
-  console.log("DONE: ", image);
   return { image, width, height };
 }
 
