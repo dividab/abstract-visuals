@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [18.0.0] - 2025-11-24
+
+- AbstractDocument Fixed super/subscripts being flipped.
+
 ## [17.1.0] - 2025-11-24
 
 - AbstractDocument Added support for page column layout.

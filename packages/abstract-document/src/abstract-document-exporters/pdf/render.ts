@@ -914,7 +914,7 @@ function resetTextOffset(pdf: PDFKit.PDFDocument, textStyle: AD.TextStyle.TextSt
 }
 
 function calculateTextOffset(textStyle: AD.TextStyle.TextStyle): number {
-  const defaultPosition = textStyle.superScript ? -0.5 : textStyle.subScript ? 0.5 : 0;
+  const defaultPosition = textStyle.superScript ? 0.5 : textStyle.subScript ? -0.5 : 0;
   const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
   return position;
 }

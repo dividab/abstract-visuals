@@ -52,7 +52,7 @@ export const testSingleTextRunSuperScript: ExportTestDef = {
           },
           {
             x: 1.174,
-            y: 0.20499999999999996,
+            y: -0.518,
             w: 26.11,
             sw: 0.32553125,
             oc: undefined,
@@ -67,7 +67,7 @@ export const testSingleTextRunSuperScript: ExportTestDef = {
           },
           {
             x: 2.796,
-            y: -0.518,
+            y: 0.20499999999999996,
             w: 62.24,
             sw: 0.32553125,
             oc: undefined,

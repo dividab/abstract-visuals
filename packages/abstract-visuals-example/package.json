@@ -11,9 +11,9 @@
   "dependencies": {
     "abstract-3d": "^1.2.2",
     "abstract-chart": "^12.0.3",
-    "abstract-document": "^14.0.17",
+    "abstract-document": "^17.1.0",
     "abstract-image": "^12.0.3",
-    "abstract-sheet": "^0.0.30",
+    "abstract-sheet": "^1.1.13",
     "base64-js": "^1.5.1",
     "file-saver": "^2.0.5",
     "handlebars": "4.7.8",

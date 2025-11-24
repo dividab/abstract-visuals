@@ -463,6 +463,15 @@ export function AbstractDocumentExample(): React.JSX.Element {
           <AbstractDocJsx.Paragraph style={AbstractDoc.ParagraphStyle.create({ alignment: "Center" })}>
             <AbstractDocJsx.TextRun text=" " />
           </AbstractDocJsx.Paragraph>
+          <AbstractDocJsx.Paragraph
+            style={AbstractDoc.ParagraphStyle.create({
+              margins: AbstractDoc.LayoutFoundation.create({ top: 10, bottom: 10 }),
+            })}
+          >
+            <AbstractDocJsx.TextRun text="this is a" />
+            <AbstractDocJsx.TextRun style={AbstractDoc.TextStyle.create({ superScript: true })} text="superscript" />
+            <AbstractDocJsx.TextRun style={AbstractDoc.TextStyle.create({ subScript: true })} text="subscript" />
+          </AbstractDocJsx.Paragraph>
         </AbstractDocJsx.Group>
       </AbstractDocJsx.Section>
       <AbstractDocJsx.Section page={page} id="chapter1">
