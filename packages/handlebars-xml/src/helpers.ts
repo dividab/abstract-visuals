@@ -18,6 +18,7 @@ type HelperArg = {
 const num: JSONSchema7 = { type: "number" };
 const bool: JSONSchema7 = { type: "boolean" };
 const string: JSONSchema7 = { type: "string" };
+const stringOrNum: JSONSchema7 = { type: ["string", "number"] };
 const nullSchema: JSONSchema7 = { type: "null" };
 const anySchema: JSONSchema7 = {}; // accepts any JSON value
 
@@ -135,6 +136,109 @@ const lookup: HelperFunc = {
   function: (obj: Record<string, JSONSchema7>, key: string) => obj[key],
 };
 
+const groupByKey: HelperFunc = {
+  name: "groupByKey",
+  description: "Groups an array of objects or arrays by a specified key or index",
+  args: [
+    {
+      name: "items",
+      description: "Array of items to be grouped",
+      type: {
+        type: "array",
+        items: {},
+      },
+    },
+    { name: "key", description: "Key or index to group by", type: stringOrNum },
+  ],
+  returnType: (...argSchemas) => ({
+    type: "object",
+    additionalProperties: {
+      type: "array",
+      items: argSchemas[0]?.type === "array" ? argSchemas[0].items ?? {} : {},
+    },
+  }),
+  function: (items: ReadonlyArray<any>, key: string | number) =>
+    items.reduce((result: Record<string, Array<any>>, item) => {
+      const groupKey = item[key]?.toString();
+      if (groupKey === undefined) {
+        return result;
+      }
+      if (result[groupKey]) {
+        result[groupKey].push(item);
+      } else {
+        result[groupKey] = [item];
+      }
+      return result;
+    }, {}),
+};
+
+const sortBy: HelperFunc = {
+  name: "sortBy",
+  description: "Sorts an array of objects by the value at the specifed JSON path",
+  args: [
+    {
+      name: "items",
+      description: "Array of items to be sorted",
+      type: {
+        type: "array",
+        items: {},
+      },
+    },
+    {
+      name: "path",
+      description: 'JSON path where the value is located, example: "data.value.name"',
+      type: string,
+    },
+    {
+      name: "order",
+      description: "Sort order",
+      type: {
+        enum: ["asc", "desc"],
+      },
+    },
+  ],
+  returnType: (...argSchemas) =>
+    argSchemas[0]?.type === "array"
+      ? argSchemas[0]
+      : {
+          type: "array",
+          items: {},
+        },
+  function: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
+    const pathParts = path.split(".");
+    const extractPath = (obj: Record<string, any>, curParts?: ReadonlyArray<string>): any => {
+      const [first, ...rest] = curParts || pathParts;
+      if (first === undefined) {
+        return obj;
+      } else if (typeof obj !== "object" || obj == null) {
+        return undefined;
+      } else {
+        return extractPath(obj[first], rest);
+      }
+    };
+
+    const compare = (a: any, b: any): number => {
+      if (a === null || b === null || a === undefined || b === undefined) {
+        if ((a === null || a === undefined) && (b === null || b === undefined)) {
+          return 0;
+        } else {
+          return a === null || a === undefined ? -1 : 1;
+        }
+      } else if (typeof a === "number" && typeof b === "number") {
+        return a - b;
+      } else if (typeof a === "string" && typeof b === "string") {
+        return a.localeCompare(b);
+      } else {
+        return 0;
+      }
+    };
+
+    return [...items].sort((a, b) =>
+      order === "desc" ? compare(extractPath(b), extractPath(a)) : compare(extractPath(a), extractPath(b))
+    );
+  },
+};
+
 export const helpers: ReadonlyArray<HelperFunc> = [
   add,
   subtract,
@@ -146,6 +250,8 @@ export const helpers: ReadonlyArray<HelperFunc> = [
   lessThanEqual,
   greaterThanEqual,
   lookup,
+  groupByKey,
+  sortBy,
 ];
 
 // -- Diffucult to validate and give completion
