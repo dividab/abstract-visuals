@@ -8,6 +8,7 @@ import {
   vec3Zero,
   vec3ZMean,
   equals,
+  Material,
 } from "../../../abstract-3d.js";
 import { gray, stBW, zElem, zOrderElement, transparent, SvgOptions } from "./shared.js";
 import { svgCircle, svgPolygon } from "../svg-encoding.js";
@@ -16,7 +17,7 @@ import { rgbGrayScale } from "../../shared.js";
 export function cone(
   c: Cone,
   point: (x: number, y: number) => Vec2,
-  color: string,
+  material: Material,
   opts: SvgOptions,
   parentPos: Vec3,
   parentRot: Vec3,
@@ -27,6 +28,8 @@ export function cone(
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (p: Vec3): Vec3 => vec3TransRot(p, pos, rot);
 
+  const color = material.normal;
+  const opacity = material.opacity ?? 1.0;
   const [stroke, fill] = opts.onlyStroke
     ? [opts.grayScale ? gray : color, opts.onlyStrokeFill]
     : [transparent, opts.grayScale ? rgbGrayScale(color) : color];
@@ -49,7 +52,7 @@ export function cone(
         point(topPos.x, topPos.y),
         point(topPos.x, topPos.y),
       ];
-      zOrderComponents.push(zElem(svgPolygon(factor, rot, points, fill, stroke, stBW), vec3ZMean(currBot, prevBot, topPos)));
+      zOrderComponents.push(zElem(svgPolygon(factor, rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, topPos)));
     }
     currentAngle += angleStep;
   }
@@ -59,7 +62,7 @@ export function cone(
   const cylBottom = vec3tr(vec3(0, -half.y, 0));
   if (equals(cylTop.x, cylBottom.x, 0.1) && equals(cylTop.y, cylBottom.y, 0.1)) {
     zOrderComponents.push(
-      zElem(svgCircle(factor * c.radius, rot, point(cylBottom.x, cylBottom.y), fill, stroke, stBW, factor), cylBottom.z)
+      zElem(svgCircle(factor * c.radius, rot, point(cylBottom.x, cylBottom.y), fill, opacity, stroke, stBW, factor), cylBottom.z)
     );
   }
 

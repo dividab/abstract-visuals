@@ -8,6 +8,7 @@ import {
   vec3Zero,
   vec3ZMean,
   equals,
+  Material,
 } from "../../../abstract-3d.js";
 import { gray, stBW, SvgOptions, transparent, zElem, zOrderElement } from "./shared.js";
 import { svgCircle, svgPolygon } from "../svg-encoding.js";
@@ -16,7 +17,7 @@ import { rgbGrayScale } from "../../shared.js";
 export function cylinder(
   c: Cylinder,
   point: (x: number, y: number) => Vec2,
-  color: string,
+  material: Material,
   opts: SvgOptions,
   parentPos: Vec3,
   parentRot: Vec3,
@@ -27,6 +28,8 @@ export function cylinder(
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (p: Vec3): Vec3 => vec3TransRot(p, pos, rot);
 
+  const color = material.normal;
+  const opacity = material.opacity ?? 1.0;
   const [stroke, fill] = opts.onlyStroke
     ? [opts.grayScale ? gray : color, opts.onlyStrokeFill]
     : [transparent, opts.grayScale ? rgbGrayScale(color) : color];
@@ -56,7 +59,7 @@ export function cylinder(
         point(currTop.x, currTop.y),
       ];
       zOrderComponents.push(
-        zElem(svgPolygon(factor, rot, points, fill, stroke, stBW), vec3ZMean(currBot, prevBot, currTop, prevTop))
+        zElem(svgPolygon(factor, rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, currTop, prevTop))
       );
     }
     currentAngle += angleStep;
@@ -68,7 +71,7 @@ export function cylinder(
     if (equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1)) {
       const circlePos = circleTop.z > circleBottom.z ? circleTop : circleBottom;
       zOrderComponents.push(
-        zElem(svgCircle(factor * c.radius, rot, point(circlePos.x, circlePos.y), fill, stroke, stBW, factor, c.holes), circlePos.z)
+        zElem(svgCircle(factor * c.radius, rot, point(circlePos.x, circlePos.y), fill, opacity, stroke, stBW, factor, c.holes), circlePos.z)
       );
     }
   }

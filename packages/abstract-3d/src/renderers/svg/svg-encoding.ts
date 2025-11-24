@@ -11,20 +11,20 @@ export const svgLine = (p1: Vec2, p2: Vec2, stroke: string, strokeWidth: number)
     0
   )}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
 
-export function svgPolygon(factor: number, rot: Vec3, points: ReadonlyArray<Vec2>, fill: string, stroke: string, strokeWidth: number, holes?: ReadonlyArray<Hole>): string {
+export function svgPolygon(factor: number, rot: Vec3, points: ReadonlyArray<Vec2>, fill: string, opacity: number, stroke: string, strokeWidth: number, holes?: ReadonlyArray<Hole>): string {
   const bounds = bounds2FromVec2Array(points);
   const size = vec2Sub(bounds.max, bounds.min);
-  const [mask, maskID] = svgHoleMask(factor, rot, size, holes ?? []);
+  const [mask, maskAttribute] = svgHoleMask(factor, rot, size, holes ?? []);
   const pol = `<polygon points="${points
     .reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "")
-    .slice(0, -1)}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" mask="url(#${maskID})" />`;
+    .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + pol;
 }
 
-export function svgCircle(radius: number, rot: Vec3, pos: Vec2, fill: string, stroke: string, strokeWidth: number, factor: number, holes?: ReadonlyArray<Hole>): string {
+export function svgCircle(radius: number, rot: Vec3, pos: Vec2, fill: string, opacity: number, stroke: string, strokeWidth: number, factor: number, holes?: ReadonlyArray<Hole>): string {
   const size = vec2Scale(vec2(radius, radius), 2);
-  const [mask, maskID] = svgHoleMask(factor, rot, size, holes ?? []);
-  const cir = `<circle r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(0)}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" mask="url(#${maskID})" />`;
+  const [mask, maskAttribute] = svgHoleMask(factor, rot, size, holes ?? []);
+  const cir = `<circle r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(0)}" fill="${fill}" fill-opacity="${opacity.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + cir;
 }
 
@@ -35,11 +35,16 @@ export const svgCircle2 = (radius: number, pos: Vec2, fill: string, stroke: stri
 
 function svgHoleMask(factor: number, rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): [string, string] {
   const id = `mask_${counter()}`;
-  return [holes.length > 0 ? `
-    <mask id="${id}" mask-type="luminance" maskContentUnits="objectBoundingBox">
+  return holes.length > 0 ? [
+    `<mask id="${id}" mask-type="luminance" maskContentUnits="objectBoundingBox">
       <rect x="0" y="0" width="1" height="1" fill="white" />
       ${svgMaskHoles(factor, rot, size, holes ?? [])}
-    </mask>\n` : "", id];
+    </mask>\n`,
+    `mask="url(#${id}) "`
+  ] : [
+    "",
+    ""
+  ];
 }
 
 function svgMaskHoles(factor: number, rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string {
@@ -56,7 +61,7 @@ function svgMaskHoles(factor: number, rot: Vec3, size: Vec2, holes: ReadonlyArra
       case "SquareHole":
         const holeSizeRotated = vec3Rot(vec3(hole.size.x, hole.size.y, 0), vec3Zero, rot);
         const holeSizeAbs = vec2(Math.abs(holeSizeRotated.x), Math.abs(holeSizeRotated.y));
-        const holeSize = vec2Scale(holeSizeAbs, factor * 2);
+        const holeSize = vec2Scale(holeSizeAbs, factor);
         const halfSize = vec2Scale(holeSize, 0.5);
         holeMasks.push(`<rect x="${(holePos.x - halfSize.x) / size.x}" y="${(holePos.y - halfSize.y) / size.y}" width="${holeSize.x / size.x}" height="${holeSize.y / size.y}" fill="black" />`)
         break;

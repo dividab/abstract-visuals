@@ -123,24 +123,23 @@ function svgMesh(
   material: Material,
   opts: SvgOptions
 ): ReadonlyArray<zOrderElement> {
-  const color = material.normal;
   switch (mesh.geometry.type) {
     case "Box":
-      return box(mesh.geometry, point, color, opts, parentPos, parentRot, factor);
+      return box(mesh.geometry, point, material, opts, parentPos, parentRot, factor);
     case "Plane":
       return plane(mesh.geometry, point, factor, material, opts, parentPos, parentRot);
     case "Cylinder":
-      return cylinder(mesh.geometry, point, color, opts, parentPos, parentRot, factor);
+      return cylinder(mesh.geometry, point, material, opts, parentPos, parentRot, factor);
     case "Cone":
-      return cone(mesh.geometry, point, color, opts, parentPos, parentRot, factor);
+      return cone(mesh.geometry, point, material, opts, parentPos, parentRot, factor);
     case "Line":
-      return line(mesh.geometry, point, color, opts, parentPos, parentRot);
+      return line(mesh.geometry, point, material.normal, opts, parentPos, parentRot);
     case "Polygon":
-      return polygon(mesh.geometry, point, factor, color, opts, parentPos, parentRot);
+      return polygon(mesh.geometry, point, factor, material, opts, parentPos, parentRot);
     case "Shape":
-      return shape(mesh.geometry, point, factor, color, opts, parentPos, parentRot);
+      return shape(mesh.geometry, point, factor, material, opts, parentPos, parentRot);
     case "Text":
-      return text(mesh.geometry, point, color, opts, parentPos, parentRot, factor);
+      return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot, factor);
     case "Tube":
     case "Sphere":
       return [];

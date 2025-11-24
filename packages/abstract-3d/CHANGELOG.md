@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.2.2
+
+- Fixed the square holes to the SVG renderer
+- Added opacity to the SVG elements
+
 ## v1.2.0
 
 - Added holes rendering to the SVG renderer

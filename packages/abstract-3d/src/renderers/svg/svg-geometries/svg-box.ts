@@ -8,6 +8,7 @@ import {
   vec3Zero,
   vec3,
   vec3ZMean,
+  Material,
 } from "../../../abstract-3d.js";
 import { gray, black, zElem, zOrderElement, SvgOptions } from "./shared.js";
 import { svgPolygon } from "../svg-encoding.js";
@@ -16,7 +17,7 @@ import { rgbGrayScale } from "../../shared.js";
 export function box(
   b: Box,
   point: (x: number, y: number) => Vec2,
-  color: string,
+  material: Material,
   opts: SvgOptions,
   parentPos: Vec3,
   parentRot: Vec3,
@@ -57,13 +58,15 @@ export function box(
       ? [[point(v6.x, v6.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v7.x, v7.y)], rightMean]
       : [[point(v5.x, v5.y), point(v1.x, v1.y), point(v4.x, v4.y), point(v8.x, v8.y)], leftMean];
 
+  const color = material.normal;
+  const opacity = material.opacity ?? 1.0;
   const [strokeColor, fill, strokeUse] = opts.onlyStroke
     ? [opts.grayScale ? gray : color, opts.onlyStrokeFill, opts.stroke]
     : [black, opts.grayScale ? rgbGrayScale(color) : color, 0];
 
   return [
-    zElem(svgPolygon(factor, rot, frontBackPoints, fill, strokeColor, strokeUse, b.holes), frontBackMean),
-    zElem(svgPolygon(factor, rot, topBotPoints, fill, strokeColor, strokeUse), topBotMean),
-    zElem(svgPolygon(factor, rot, rightLeftPoints, fill, strokeColor, strokeUse), rightLeftMean),
+    zElem(svgPolygon(factor, rot, frontBackPoints, fill, opacity, strokeColor, strokeUse, b.holes), frontBackMean),
+    zElem(svgPolygon(factor, rot, topBotPoints, fill, opacity, strokeColor, strokeUse), topBotMean),
+    zElem(svgPolygon(factor, rot, rightLeftPoints, fill, opacity, strokeColor, strokeUse), rightLeftMean),
   ];
 }

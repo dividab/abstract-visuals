@@ -59,7 +59,7 @@ export function plane(
   const [strokeColor, fill, strokeThickness] = opts.onlyStroke
     ? [opts.grayScale ? gray : material.normal, opts.onlyStrokeFill, opts.stroke]
     : [black, opts.grayScale ? rgbGrayScale(material.normal) : material.normal, 0];
-  return [zElem(svgPolygon(factor, rot, points, fill, strokeColor, strokeThickness, holes), vec3ZMean(v1, v2, v3, v4))];
+  return [zElem(svgPolygon(factor, rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes), vec3ZMean(v1, v2, v3, v4))];
 }
 
 const rawSvgPrefix = "data:image/svg+xml,";
