@@ -427,6 +427,123 @@ export function bounds3FromVec3Array(vec3Array: ReadonlyArray<Vec3>): Bounds3 {
   return bounds3(min, max);
 }
 
+export function boundsScene(scene: Scene): Bounds3 {
+  const bounds: Array<Bounds3> = [];
+  for (const group of scene.groups) {
+    bounds.push(...boundsGroup(group, vec3Zero, vec3Zero))
+  }
+  return bounds3Merge(...bounds);
+}
+
+export function boundsGroup(group: Group, parentPos: Vec3, parentRot: Vec3): ReadonlyArray<Bounds3> {
+  const pos = vec3TransRot(group.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, group.rot ?? vec3Zero);
+  const bounds: Array<Bounds3> = [];
+
+  for (const childMesh of group.meshes ?? []) {
+    switch (childMesh.geometry.type) {
+      case "Sphere": {
+        bounds.push(boundsSphere(childMesh.geometry, pos, rot));
+        break;
+      }
+      case "Plane": {
+        bounds.push(boundsPlane(childMesh.geometry, pos, rot));
+        break;
+      }
+      case "Box": {
+        bounds.push(boundsBox(childMesh.geometry, pos, rot));
+        break;
+      }
+      case "Cylinder": {
+        bounds.push(boundsCylinder(childMesh.geometry, pos, rot));
+        break;
+      }
+      case "Cone": {
+        bounds.push(boundsCone(childMesh.geometry, pos, rot));
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  for (const childGroup of group.groups ?? []) {
+    bounds.push(...boundsGroup(childGroup, pos, rot));
+  }
+  return bounds;
+}
+
+export function boundsSphere(s: Sphere, parentPos: Vec3, parentRot: Vec3): Bounds3 {
+  const pos = vec3TransRot(s.pos, parentPos, parentRot);
+  const half = vec3(s.radius, s.radius, s.radius);
+  return bounds3(vec3Sub(pos, half), vec3Add(pos, half));
+}
+
+export function boundsPlane(p: Plane, parentPos: Vec3, parentRot: Vec3): Bounds3 {
+  const pos = vec3TransRot(p.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
+  const half = vec3(p.size.x / 2, p.size.y / 2, 0);
+  const points = [
+    vec3(-half.x, half.y, half.z),
+    vec3(half.x, half.y, half.z),
+    vec3(-half.x, half.y, -half.z),
+    vec3(half.x, half.y, -half.z),
+    vec3(-half.x, -half.y, half.z),
+    vec3(half.x, -half.y, half.z),
+    vec3(-half.x, -half.y, -half.z),
+    vec3(half.x, -half.y, -half.z),
+  ].map((p) => vec3Add(pos, vec3Rot(p, vec3Zero, rot)));
+  return bounds3FromVec3Array(points);
+}
+
+export function boundsBox(b: Box, parentPos: Vec3, parentRot: Vec3): Bounds3 {
+  const pos = vec3TransRot(b.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
+  const half = vec3Scale(b.size, 0.5);
+  const points = [
+    vec3(-half.x, half.y, half.z),
+    vec3(half.x, half.y, half.z),
+    vec3(-half.x, half.y, -half.z),
+    vec3(half.x, half.y, -half.z),
+    vec3(-half.x, -half.y, half.z),
+    vec3(half.x, -half.y, half.z),
+    vec3(-half.x, -half.y, -half.z),
+    vec3(half.x, -half.y, -half.z),
+  ].map((p) => vec3Add(pos, vec3Rot(p, vec3Zero, rot)));
+  return bounds3FromVec3Array(points);
+}
+
+export function boundsCylinder(c: Cylinder, parentPos: Vec3, parentRot: Vec3): Bounds3 {
+  const pos = vec3TransRot(c.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
+  const half = vec3(c.radius, c.length / 2, c.radius);
+  const points = [
+    vec3(-half.x, half.y, half.z),
+    vec3(half.x, half.y, half.z),
+    vec3(-half.x, half.y, -half.z),
+    vec3(half.x, half.y, -half.z),
+    vec3(-half.x, -half.y, half.z),
+    vec3(half.x, -half.y, half.z),
+    vec3(-half.x, -half.y, -half.z),
+    vec3(half.x, -half.y, -half.z),
+  ].map((p) => vec3Add(pos, vec3Rot(p, vec3Zero, rot)));
+  return bounds3FromVec3Array(points);
+}
+
+export function boundsCone(c: Cone, parentPos: Vec3, parentRot: Vec3): Bounds3 {
+  const pos = vec3TransRot(c.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
+  const half = vec3(c.radius, c.length / 2, c.radius);
+  const points = [
+    vec3(0, half.y, 0),
+    vec3(-half.x, -half.y, half.z),
+    vec3(half.x, -half.y, half.z),
+    vec3(-half.x, -half.y, -half.z),
+    vec3(half.x, -half.y, -half.z),
+  ].map((p) => vec3Add(pos, vec3Rot(p, vec3Zero, rot)));
+  return bounds3FromVec3Array(points);
+}
+
 // -- Transformations
 
 const quaternion1 = new Quaternion();

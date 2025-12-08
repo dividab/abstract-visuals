@@ -9,6 +9,7 @@ import {
   group,
   bounds3ToSize,
   vec3,
+  boundsScene,
 } from "../../abstract-3d.js";
 import { dxfFooter, dxfHeader } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
@@ -16,7 +17,7 @@ import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
-import { boundsScene, Optional, rotationForCameraPos } from "../shared.js";
+import { Optional, rotationForCameraPos } from "../shared.js";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
 export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin };
