@@ -549,7 +549,8 @@ export function boundsCone(c: Cone, parentPos: Vec3, parentRot: Vec3): Bounds3 {
 }
 
 export function boundsText(t: Text, parentPos: Vec3, parentRot: Vec3): Bounds3 {
-  const charWidth = t.fontSize * 0.5;
+  const characterRatio = (9.0 / 16.0);
+  const charWidth = t.fontSize * characterRatio;
   const rows = t.text.split("\n");
   const width = Math.max(...rows.map((v) => v.length)) * charWidth;
   const height = rows.length * t.fontSize * 1.2;
