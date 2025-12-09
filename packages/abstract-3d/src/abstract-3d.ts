@@ -462,6 +462,10 @@ export function boundsGroup(group: Group, parentPos: Vec3, parentRot: Vec3): Rea
         bounds.push(boundsCone(childMesh.geometry, pos, rot));
         break;
       }
+      case "Text": {
+        bounds.push(boundsText(childMesh.geometry, pos, rot));
+        break;
+      }
       default:
         break;
     }
@@ -542,6 +546,22 @@ export function boundsCone(c: Cone, parentPos: Vec3, parentRot: Vec3): Bounds3 {
     vec3(half.x, -half.y, -half.z),
   ].map((p) => vec3Add(pos, vec3Rot(p, vec3Zero, rot)));
   return bounds3FromVec3Array(points);
+}
+
+export function boundsText(t: Text, parentPos: Vec3, parentRot: Vec3): Bounds3 {
+  const charWidth = t.fontSize * 0.5;
+  const rows = t.text.split("\n");
+  const width = Math.max(...rows.map((v) => v.length)) * charWidth;
+  const height = rows.length * t.fontSize * 1.2;
+  return boundsPlane({
+    type: "Plane",
+    pos: t.pos,
+    size: vec2(width, height),
+    rot: t.rot,
+  },
+    parentPos,
+    parentRot
+  );
 }
 
 // -- Transformations
