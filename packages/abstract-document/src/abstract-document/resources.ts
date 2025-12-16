@@ -69,9 +69,9 @@ export function getNestedStyle(
   const namedStyle = resources.styles && resources.styles[create(type, name)];
   const nestedStyle = nestedStyleNames
     ? nestedStyleNames.reduce(
-        (sofar, name) => overrideWith(sofar, resources.styles && resources.styles[create(type, name)]),
-        namedStyle
-      )
+      (sofar, name) => overrideWith(sofar, resources.styles && resources.styles[create(type, name)]),
+      namedStyle
+    )
     : namedStyle;
   return overrideWith(
     elementStyle,

@@ -92,7 +92,7 @@ function defaultParagraphStyle(): ParagraphStyle.ParagraphStyle {
       left: 0,
       right: 0,
     }),
-    textStyle: defaultTextStyle(),
+    textStyle: undefined,
   });
 }
 

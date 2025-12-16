@@ -60,29 +60,29 @@ export function create(props?: TextStyleProps): TextStyle {
 }
 
 export function overrideWith(overrider: TextStyle | undefined, toOverride: TextStyle | undefined): TextStyle {
-  let overriddenFontWeight: Partial<TextStyle> =
+  const overriddenFontWeight: Partial<TextStyle> =
     overrider?.light ||
-    overrider?.normal ||
-    overrider?.mediumBold ||
-    overrider?.bold ||
-    overrider?.extraBold ||
-    overrider?.fontWeight
+      overrider?.normal ||
+      overrider?.mediumBold ||
+      overrider?.bold ||
+      overrider?.extraBold ||
+      overrider?.fontWeight
       ? {
-          light: overrider?.light,
-          normal: overrider?.normal,
-          mediumBold: overrider?.mediumBold,
-          bold: overrider?.bold,
-          extraBold: overrider?.extraBold,
-          fontWeight: overrider?.fontWeight,
-        }
+        light: overrider?.light,
+        normal: overrider?.normal,
+        mediumBold: overrider?.mediumBold,
+        bold: overrider?.bold,
+        extraBold: overrider?.extraBold,
+        fontWeight: overrider?.fontWeight,
+      }
       : {
-          light: toOverride?.light,
-          normal: toOverride?.normal,
-          mediumBold: toOverride?.mediumBold,
-          bold: toOverride?.bold,
-          extraBold: toOverride?.extraBold,
-          fontWeight: toOverride?.fontWeight,
-        };
+        light: toOverride?.light,
+        normal: toOverride?.normal,
+        mediumBold: toOverride?.mediumBold,
+        bold: toOverride?.bold,
+        extraBold: toOverride?.extraBold,
+        fontWeight: toOverride?.fontWeight,
+      };
   const a: TextStyleProps = overrider || {};
   const b: TextStyleProps = toOverride || {};
   return create({

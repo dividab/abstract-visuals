@@ -147,16 +147,16 @@ function renderHyperLink(
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * 2;
   const textRun = new TextRun({
     text: hyperLink.text,
-    font: style.fontFamily || "Arial",
+    font: style.fontFamily || "Helvetica",
     size: fontSize,
     color: style.color || "blue",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color || "blue",
-          type: UnderlineType.SINGLE,
-        }
+        color: style.color || "blue",
+        type: UnderlineType.SINGLE,
+      }
       : undefined,
   });
 
@@ -234,8 +234,8 @@ function renderTable(
       style.alignment === "Left"
         ? AlignmentType.LEFT
         : style.alignment === "Right"
-        ? AlignmentType.RIGHT
-        : AlignmentType.CENTER,
+          ? AlignmentType.RIGHT
+          : AlignmentType.CENTER,
     margins: {
       top: style.margins.top * abstractDocPixelToDocxDXARatio,
       bottom: style.margins.bottom * abstractDocPixelToDocxDXARatio,
@@ -310,13 +310,16 @@ function renderCell(
     resources
   ) as AD.TableCellStyle.TableCellStyle;
 
+  const stylePadding = style.padding ?? AD.LayoutFoundation.create();
+  const styleBorders = style.borders ?? AD.LayoutFoundation.create();
+
   return new TableCell({
     verticalAlign:
       (style.verticalAlignment && style.verticalAlignment === "Top"
         ? VerticalAlign.TOP
         : style.verticalAlignment === "Bottom"
-        ? VerticalAlign.BOTTOM
-        : VerticalAlign.CENTER) || undefined,
+          ? VerticalAlign.BOTTOM
+          : VerticalAlign.CENTER) || undefined,
     shading: {
       fill: style.background ? style.background : undefined,
     },
@@ -327,31 +330,31 @@ function renderCell(
       size: width,
     },
     margins: {
-      top: Math.max(style.padding.top, 0) * abstractDocPixelToDocxDXARatio,
-      bottom: Math.max(style.padding.bottom, 0) * abstractDocPixelToDocxDXARatio,
-      left: Math.max(style.padding.left, 0) * abstractDocPixelToDocxDXARatio,
-      right: Math.max(style.padding.right, 0) * abstractDocPixelToDocxDXARatio,
+      top: Math.max(stylePadding.top, 0) * abstractDocPixelToDocxDXARatio,
+      bottom: Math.max(stylePadding.bottom, 0) * abstractDocPixelToDocxDXARatio,
+      left: Math.max(stylePadding.left, 0) * abstractDocPixelToDocxDXARatio,
+      right: Math.max(stylePadding.right, 0) * abstractDocPixelToDocxDXARatio,
     },
     borders: {
       top: {
         color: style.borderColor ?? "",
-        size: style.borders.top,
-        style: style.borders.top ? BorderStyle.SINGLE : BorderStyle.NONE,
+        size: styleBorders.top,
+        style: styleBorders.top ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       right: {
         color: style.borderColor ?? "",
-        size: style.borders.right,
-        style: style.borders.right ? BorderStyle.SINGLE : BorderStyle.NONE,
+        size: styleBorders.right,
+        style: styleBorders.right ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       bottom: {
         color: style.borderColor ?? "",
-        size: style.borders.bottom,
-        style: style.borders.bottom ? BorderStyle.SINGLE : BorderStyle.NONE,
+        size: styleBorders.bottom,
+        style: styleBorders.bottom ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       left: {
         color: style.borderColor ?? "",
-        size: style.borders.left,
-        style: style.borders.left ? BorderStyle.SINGLE : BorderStyle.NONE,
+        size: styleBorders.left,
+        style: styleBorders.left ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
     },
 
@@ -439,16 +442,16 @@ function renderTextRun(
 function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * abstractDocToDocxFontRatio;
   return new TextRun({
-    font: style.fontFamily || "Arial",
+    font: style.fontFamily || "Helvetica",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color,
-          type: UnderlineType.SINGLE,
-        }
+        color: style.color,
+        type: UnderlineType.SINGLE,
+      }
       : undefined,
     children: [PageNumber.CURRENT],
   });
@@ -457,16 +460,16 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
 function renderTotalPages(style: AD.TextStyle.TextStyle): TextRun {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * abstractDocToDocxFontRatio;
   return new TextRun({
-    font: style.fontFamily || "Arial",
+    font: style.fontFamily || "Helvetica",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color,
-          type: UnderlineType.SINGLE,
-        }
+        color: style.color,
+        type: UnderlineType.SINGLE,
+      }
       : undefined,
     children: [PageNumber.TOTAL_PAGES],
   });
@@ -477,16 +480,16 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
 
   return new TextRun({
     text: text,
-    font: style.fontFamily || "Arial",
+    font: style.fontFamily || "Helvetica",
     size: fontSize,
     color: style.color || "black",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color,
-          type: UnderlineType.SINGLE,
-        }
+        color: style.color,
+        type: UnderlineType.SINGLE,
+      }
       : undefined,
   });
 }
@@ -527,8 +530,8 @@ function renderParagraph(
         (style.alignment === "Center"
           ? AlignmentType.CENTER
           : style.alignment === "End"
-          ? AlignmentType.END
-          : AlignmentType.START)) ||
+            ? AlignmentType.END
+            : AlignmentType.START)) ||
       undefined,
 
     spacing: {

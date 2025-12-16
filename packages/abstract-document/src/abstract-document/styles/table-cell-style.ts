@@ -6,10 +6,10 @@ export type RowAlignment = "Top" | "Middle" | "Bottom";
 export interface TableCellStyle {
   readonly type: "TableCellStyle";
   readonly background?: string;
-  readonly borders: LayoutFoundation.LayoutFoundation;
+  readonly borders?: LayoutFoundation.LayoutFoundation;
   readonly borderColor?: string;
   readonly borderColors?: LayoutFoundationColor.LayoutFoundationColor;
-  readonly padding: LayoutFoundation.LayoutFoundation;
+  readonly padding?: LayoutFoundation.LayoutFoundation;
   readonly verticalAlignment?: RowAlignment;
 }
 
@@ -25,10 +25,10 @@ export interface TableCellStyleProps {
 export function create(props?: TableCellStyleProps): TableCellStyle {
   const {
     background = undefined,
-    borders = LayoutFoundation.create(),
+    borders = undefined,
     borderColor = undefined,
-    borderColors = LayoutFoundationColor.create(),
-    padding = LayoutFoundation.create(),
+    borderColors = undefined,
+    padding = undefined,
     verticalAlignment = undefined,
   } = props || {};
   return {
@@ -50,10 +50,10 @@ export function overrideWith(
   const b: TableCellStyleProps = toOverride || {};
   return create({
     background: a.background || b.background,
-    borders: LayoutFoundation.overrideWith(a.borders, b.borders),
+    borders: a.borders || b.borders,
     borderColor: a.borderColor || b.borderColor,
-    borderColors: LayoutFoundationColor.overrideWith(a.borderColors, b.borderColors),
-    padding: LayoutFoundation.overrideWith(a.padding, b.padding),
+    borderColors: a.borderColors || b.borderColors,
+    padding: a.padding || b.padding,
     verticalAlignment: a.verticalAlignment || b.verticalAlignment,
   });
 }

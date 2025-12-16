@@ -812,17 +812,20 @@ function renderCell(
     pdf.rect(finalRect.x, finalRect.y, finalRect.width, finalRect.height).fill(style.background);
   }
 
-  let x = finalRect.x + style.padding.left;
+  const borders = style.borders ?? { top: 0, bottom: 0, left: 0, right: 0 };
+  const padding = style.padding ?? { top: 0, bottom: 0, left: 0, right: 0 };
+
+  let x = finalRect.x + padding.left;
   const availableHeight = finalRect.height;
   let contentHeight = cell.children
     .map((c) => (AD.Position.isPositionAbsolute(c) ? 0 : getDesiredSize(c, desiredSizes).height))
     .reduce((a, b) => a + b, 0);
-  const startY = finalRect.y + style.padding.top;
+  const startY = finalRect.y + padding.top;
   let y = startY;
   if (style.verticalAlignment === "Middle")
-    y += 0.5 * (availableHeight - contentHeight - style.padding.top - style.padding.bottom);
+    y += 0.5 * (availableHeight - contentHeight - padding.top - padding.bottom);
   else if (style.verticalAlignment === "Bottom")
-    y += availableHeight - contentHeight - style.padding.top - style.padding.bottom;
+    y += availableHeight - contentHeight - padding.top - padding.bottom;
 
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
@@ -837,40 +840,40 @@ function renderCell(
   //Needed to counter aliasing caused by the cells background fill
   const pixelFix = 0.3;
 
-  if (style.borders.bottom) {
-    const widthOffset = isBottom ? style.borders.bottom / 2 - pixelFix : 0;
+  if (borders.bottom) {
+    const widthOffset = isBottom ? borders.bottom / 2 - pixelFix : 0;
     pdf
-      .lineWidth(style.borders.bottom)
+      .lineWidth(borders.bottom)
       .moveTo(finalRect.x, finalRect.y + finalRect.height - widthOffset)
       .lineTo(finalRect.x + finalRect.width, finalRect.y + finalRect.height - widthOffset)
       .stroke(borderColor(style, "bottom"));
   }
-  if (style.borders.right) {
-    const hasBottomBorderOffset = style.borders.bottom ? pixelFix : 0;
-    const widthOffset = isLast ? style.borders.right / 2 - pixelFix : 0;
+  if (borders.right) {
+    const hasBottomBorderOffset = borders.bottom ? pixelFix : 0;
+    const widthOffset = isLast ? borders.right / 2 - pixelFix : 0;
     pdf
-      .lineWidth(style.borders.right)
+      .lineWidth(borders.right)
       .moveTo(finalRect.x + finalRect.width - widthOffset, finalRect.y)
       .lineTo(finalRect.x + finalRect.width - widthOffset, finalRect.y + finalRect.height + hasBottomBorderOffset)
       .stroke(borderColor(style, "right"));
   }
-  if (style.borders.left) {
-    const hasBottomBorderOffset = style.borders.bottom ? pixelFix : 0;
-    const widthOffset = isFirst ? style.borders.left / 2 - pixelFix : 0;
+  if (borders.left) {
+    const hasBottomBorderOffset = borders.bottom ? pixelFix : 0;
+    const widthOffset = isFirst ? borders.left / 2 - pixelFix : 0;
     pdf
-      .lineWidth(style.borders.left)
+      .lineWidth(borders.left)
       .moveTo(finalRect.x + widthOffset, finalRect.y)
       .lineTo(finalRect.x + widthOffset, finalRect.y + finalRect.height + hasBottomBorderOffset)
       .stroke(borderColor(style, "left"));
   }
-  if (style.borders.top) {
-    const hasRightBorderOffset = style.borders.right ? pixelFix : 0;
-    const hasLeftBorderOffset = style.borders.left ? pixelFix : 0;
-    const halfWidth = style.borders.top / 2 - pixelFix;
+  if (borders.top) {
+    const hasRightBorderOffset = borders.right ? pixelFix : 0;
+    const hasLeftBorderOffset = borders.left ? pixelFix : 0;
+    const halfWidth = borders.top / 2 - pixelFix;
     const widthOffset = isTop ? halfWidth : 0;
     const notFirstOffset = !isFirst ? halfWidth : 0;
     pdf
-      .lineWidth(style.borders.top)
+      .lineWidth(borders.top)
       .moveTo(finalRect.x - notFirstOffset - hasLeftBorderOffset, finalRect.y + widthOffset)
       .lineTo(finalRect.x + finalRect.width + hasRightBorderOffset, finalRect.y + widthOffset)
       .stroke(borderColor(style, "top"));

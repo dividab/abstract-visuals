@@ -72,9 +72,9 @@ function measureSection(
   const firstPageHeaderAndFootersExtracted: ReadonlyArray<
     [ReadonlyArray<AD.SectionElement.SectionElement>, AD.LayoutFoundation.LayoutFoundation]
   > = [
-    [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
-    [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins],
-  ];
+      [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
+      [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins],
+    ];
   const firstPageHeaderAndFooterSizes = firstPageHeaderAndFootersExtracted.reduce((prev, [sections, margins]) => {
     const availabelWidth = pageWidth - (margins.left + margins.right);
     const availableSizes = AD.Size.create(availabelWidth, pageHeight);
@@ -261,9 +261,10 @@ export function measureTable(
         resources
       ) as AD.TableCellStyle.TableCellStyle;
       const cellWidth = columnWidths.slice(column, column + cell.columnSpan).reduce((a, b) => a + b, 0);
+      const cellStylePadding = cellStyle.padding ?? AD.LayoutFoundation.create();
 
-      const contentAvailableWidth = cellWidth - (cellStyle.padding.left + cellStyle.padding.right);
-      let cellDesiredHeight = cellStyle.padding.top + cellStyle.padding.bottom;
+      const contentAvailableWidth = cellWidth - (cellStylePadding.left + cellStylePadding.right);
+      let cellDesiredHeight = cellStylePadding.top + cellStylePadding.bottom;
 
       for (let element of cell.children) {
         const elementAvailableSize = AD.Size.create(contentAvailableWidth, Infinity);
