@@ -201,9 +201,9 @@ const sortBy: HelperFunc = {
     argSchemas[0]?.type === "array"
       ? argSchemas[0]
       : {
-          type: "array",
-          items: {},
-        },
+        type: "array",
+        items: {},
+      },
   function: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
     const pathParts = path.split(".");
     const extractPath = (obj: Record<string, any>, curParts?: ReadonlyArray<string>): any => {
@@ -239,6 +239,22 @@ const sortBy: HelperFunc = {
   },
 };
 
+const length: HelperFunc = {
+  name: "length",
+  description: "Returns the item count of an array",
+  args: [
+    {
+      name: "array",
+      type: {
+        type: "array",
+      },
+      description: "the array to get the length from",
+    }
+  ],
+  returnType: num,
+  function: (arr: ReadonlyArray<unknown>) => arr.length,
+};
+
 export const helpers: ReadonlyArray<HelperFunc> = [
   add,
   subtract,
@@ -252,6 +268,7 @@ export const helpers: ReadonlyArray<HelperFunc> = [
   lookup,
   groupByKey,
   sortBy,
+  length,
 ];
 
 // -- Diffucult to validate and give completion
