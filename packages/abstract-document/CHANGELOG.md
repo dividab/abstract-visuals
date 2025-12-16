@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [18.0.1] - 2025.12.16
+## [18.0.2] - 2025.12.16
 
 - Disabled the default text style for paragraps because it was overriding the default text style.
 - Fixed overrides for the borders, borderColors, padding attributes in table cell styles.
