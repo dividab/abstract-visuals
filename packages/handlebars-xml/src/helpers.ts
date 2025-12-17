@@ -14,7 +14,7 @@ type HelperArg = {
   readonly type: JSONSchema7;
 };
 
-// Reusable schemas
+//reusable schemas
 const num: JSONSchema7 = { type: "number" };
 const bool: JSONSchema7 = { type: "boolean" };
 const string: JSONSchema7 = { type: "string" };
