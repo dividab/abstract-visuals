@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.3.1 - 2025.12.17
+
+- Renamed the helper `length` to `arrayLength`.
+
 ## v0.3.0 - 2025-12-16
 
 - Added the helper `length` to make it possible to get the item count of an array.

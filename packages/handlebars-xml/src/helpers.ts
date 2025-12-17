@@ -5,7 +5,7 @@ export type HelperFunc = {
   readonly description: string;
   readonly args: ReadonlyArray<HelperArg>;
   readonly returnType: JSONSchema7 | ((...args: ReadonlyArray<JSONSchema7>) => JSONSchema7);
-  readonly function: Function;
+  readonly func: Function;
 };
 
 type HelperArg = {
@@ -20,6 +20,7 @@ const bool: JSONSchema7 = { type: "boolean" };
 const string: JSONSchema7 = { type: "string" };
 const stringOrNum: JSONSchema7 = { type: ["string", "number"] };
 const nullSchema: JSONSchema7 = { type: "null" };
+const arraySchema: JSONSchema7 = { type: "array", items: {} };
 const anySchema: JSONSchema7 = {}; // accepts any JSON value
 
 const add: HelperFunc = {
@@ -30,7 +31,7 @@ const add: HelperFunc = {
     { name: "b", description: "Second number", type: num },
   ],
   returnType: num,
-  function: (a: number, b: number) => a + b,
+  func: (a: number, b: number) => a + b,
 };
 
 const subtract: HelperFunc = {
@@ -41,7 +42,7 @@ const subtract: HelperFunc = {
     { name: "b", description: "Second number", type: num },
   ],
   returnType: num,
-  function: (a: number, b: number) => a - b,
+  func: (a: number, b: number) => a - b,
 };
 
 const multiply: HelperFunc = {
@@ -52,7 +53,7 @@ const multiply: HelperFunc = {
     { name: "b", description: "Second number", type: num },
   ],
   returnType: num,
-  function: (a: number, b: number) => a * b,
+  func: (a: number, b: number) => a * b,
 };
 
 const divide: HelperFunc = {
@@ -63,7 +64,7 @@ const divide: HelperFunc = {
     { name: "b", description: "Divisor", type: num },
   ],
   returnType: num,
-  function: (a: number, b: number) => a / b,
+  func: (a: number, b: number) => a / b,
 };
 
 const equal: HelperFunc = {
@@ -74,7 +75,7 @@ const equal: HelperFunc = {
     { name: "b", description: "Second value", type: anySchema },
   ],
   returnType: bool,
-  function: (a: unknown, b: unknown) => a === b,
+  func: (a: unknown, b: unknown) => a === b,
 };
 
 const lessThan: HelperFunc = {
@@ -85,7 +86,7 @@ const lessThan: HelperFunc = {
     { name: "b", description: "Second number", type: num },
   ],
   returnType: bool,
-  function: (a: number, b: number) => a < b,
+  func: (a: number, b: number) => a < b,
 };
 
 const greaterThan: HelperFunc = {
@@ -96,7 +97,7 @@ const greaterThan: HelperFunc = {
     { name: "b", description: "Second number", type: num },
   ],
   returnType: bool,
-  function: (a: number, b: number) => a > b,
+  func: (a: number, b: number) => a > b,
 };
 
 const lessThanEqual: HelperFunc = {
@@ -107,7 +108,7 @@ const lessThanEqual: HelperFunc = {
     { name: "b", description: "Second number", type: num },
   ],
   returnType: bool,
-  function: (a: number, b: number) => a <= b,
+  func: (a: number, b: number) => a <= b,
 };
 
 const greaterThanEqual: HelperFunc = {
@@ -118,7 +119,7 @@ const greaterThanEqual: HelperFunc = {
     { name: "b", description: "Second number", type: num },
   ],
   returnType: bool,
-  function: (a: number, b: number) => a >= b,
+  func: (a: number, b: number) => a >= b,
 };
 
 const lookup: HelperFunc = {
@@ -133,7 +134,7 @@ const lookup: HelperFunc = {
     const additionalProperties = map?.additionalProperties ?? nullSchema;
     return typeof additionalProperties === "object" ? additionalProperties : nullSchema;
   },
-  function: (obj: Record<string, JSONSchema7>, key: string) => obj[key],
+  func: (obj: Record<string, JSONSchema7>, key: string) => obj[key],
 };
 
 const groupByKey: HelperFunc = {
@@ -143,10 +144,7 @@ const groupByKey: HelperFunc = {
     {
       name: "items",
       description: "Array of items to be grouped",
-      type: {
-        type: "array",
-        items: {},
-      },
+      type: arraySchema,
     },
     { name: "key", description: "Key or index to group by", type: stringOrNum },
   ],
@@ -157,7 +155,7 @@ const groupByKey: HelperFunc = {
       items: argSchemas[0]?.type === "array" ? argSchemas[0].items ?? {} : {},
     },
   }),
-  function: (items: ReadonlyArray<any>, key: string | number) =>
+  func: (items: ReadonlyArray<any>, key: string | number) =>
     items.reduce((result: Record<string, Array<any>>, item) => {
       const groupKey = item[key]?.toString();
       if (groupKey === undefined) {
@@ -179,10 +177,7 @@ const sortBy: HelperFunc = {
     {
       name: "items",
       description: "Array of items to be sorted",
-      type: {
-        type: "array",
-        items: {},
-      },
+      type: arraySchema,
     },
     {
       name: "path",
@@ -200,11 +195,8 @@ const sortBy: HelperFunc = {
   returnType: (...argSchemas) =>
     argSchemas[0]?.type === "array"
       ? argSchemas[0]
-      : {
-        type: "array",
-        items: {},
-      },
-  function: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
+      : arraySchema,
+  func: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
     const pathParts = path.split(".");
     const extractPath = (obj: Record<string, any>, curParts?: ReadonlyArray<string>): any => {
       const [first, ...rest] = curParts || pathParts;
@@ -239,20 +231,18 @@ const sortBy: HelperFunc = {
   },
 };
 
-const length: HelperFunc = {
-  name: "length",
+const arrayLength: HelperFunc = {
+  name: "arrayLength",
   description: "Returns the item count of an array",
   args: [
     {
       name: "array",
-      type: {
-        type: "array",
-      },
+      type: arraySchema,
       description: "the array to get the length from",
     }
   ],
   returnType: num,
-  function: (arr: ReadonlyArray<unknown>) => arr.length,
+  func: (arr: ReadonlyArray<unknown>) => Array.isArray(arr.length) ? arr.length : 0,
 };
 
 export const helpers: ReadonlyArray<HelperFunc> = [
@@ -268,7 +258,7 @@ export const helpers: ReadonlyArray<HelperFunc> = [
   lookup,
   groupByKey,
   sortBy,
-  length,
+  arrayLength,
 ];
 
 // -- Diffucult to validate and give completion

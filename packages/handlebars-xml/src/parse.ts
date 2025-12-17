@@ -31,7 +31,7 @@ export const renderMustache = Mustache.render;
 
 export const renderHandlebars = (template: string, data: any, partials: Record<string, string>): string => {
   const hbs = Handlebars.create();
-  helpers.forEach((h) => hbs.registerHelper(h.name, h.function as any));
+  helpers.forEach((h) => hbs.registerHelper(h.name, h.func as any));
   Object.entries(partials).forEach(([name, partial]) => hbs.registerPartial(name, partial));
   return hbs.compile(template, { compat: true, preventIndent: true })(data);
 };
