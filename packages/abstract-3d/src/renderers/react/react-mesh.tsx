@@ -411,9 +411,21 @@ function Polygon({
   }, [polygon]);
 
   return (
-    <mesh position={[polygon.pos.x, polygon.pos.y, polygon.pos.z]}>
-      <bufferGeometry key={vertices.length}>
-        <bufferAttribute attach="attributes-position" array={vertices} itemSize={3} args={fakeArgs} />
+    <mesh
+      rotation={[polygon.rot?.x ?? 0, polygon.rot?.y ?? 0, polygon.rot?.z ?? 0]}
+      position={[polygon.pos.x, polygon.pos.y, polygon.pos.z]}
+      castShadow
+      receiveShadow
+    >
+      <bufferGeometry key={vertices.length} attach="geometry" onUpdate={(self) => self.computeVertexNormals()}>
+        <bufferAttribute
+          attach="attributes-position"
+          needsUpdate={true}
+          args={fakeArgs}
+          array={vertices}
+          count={vertices.length / 3}
+          itemSize={3}
+        />
       </bufferGeometry>
       {children}
     </mesh>
