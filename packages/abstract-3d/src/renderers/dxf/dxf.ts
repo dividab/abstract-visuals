@@ -17,8 +17,8 @@ import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
-import { Optional, rotationForCameraPos } from "../shared.js";
 import { generateUUID } from "three/src/math/MathUtils.js";
+import { Optional, rotationForCameraPos } from "../shared.js";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
 export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin };
