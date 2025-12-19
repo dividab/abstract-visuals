@@ -18,6 +18,7 @@ import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { Optional, rotationForCameraPos } from "../shared.js";
+import { generateUUID } from "three/src/math/MathUtils.js";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
 export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin };
@@ -33,7 +34,7 @@ export const render = (scene: Scene, options: Optional<DxfOptions>): string => {
       ? vec3Zero
       : vec3(Math.abs(boundingBox.min.x), Math.abs(boundingBox.min.y), -boundingBox.max.z);
   const groupRoot = group([], offset, vec3Zero, scene.groups);
-  const id = "D171D";
+  const id = generateUUID();
   const handleRef = { handle: 0x1000 }; //make sure we start with a value higher than any other handle id's used in the header
   return dxfHeader(boundingBoxSize, center, id) + dxfGroup(groupRoot, center, unitRot, handleRef) + dxfFooter(id);
 };
