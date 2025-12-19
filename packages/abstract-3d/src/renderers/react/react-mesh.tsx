@@ -376,72 +376,44 @@ function Polygon({
   readonly polygon: A3dPolygon;
   readonly children?: React.JSX.Element;
 }): React.JSX.Element {
-  const ref = React.useRef<BufferAttribute>(undefined!);
   const vertices = React.useMemo(() => {
-    let newVertices: Float32Array = undefined!;
-    switch (polygon.points.length) {
-      default:
-      case 3: {
-        newVertices = new Float32Array(polygon.points.length * 3);
-        let i = 0;
-        polygon.points.forEach((p) => {
-          newVertices[i++] = p.x;
-          newVertices[i++] = p.y;
-          newVertices[i++] = p.z;
-        });
-        break;
-      }
-      case 4: {
-        const v0 = polygon.points[0]!;
-        const v1 = polygon.points[1]!;
-        const v2 = polygon.points[2]!;
-        const v3 = polygon.points[3]!;
-        newVertices = new Float32Array([
-          v0.x,
-          v0.y,
-          v0.z,
-          v1.x,
-          v1.y,
-          v1.z,
-          v2.x,
-          v2.y,
-          v2.z,
-          v2.x,
-          v2.y,
-          v2.z,
-          v3.x,
-          v3.y,
-          v3.z,
-          v0.x,
-          v0.y,
-          v0.z,
-        ]);
-        break;
-      }
+    if (polygon.points.length === 4) {
+      const [v0, v1, v2, v3] = polygon.points;
+      return new Float32Array([
+        v0!.x,
+        v0!.y,
+        v0!.z,
+        v1!.x,
+        v1!.y,
+        v1!.z,
+        v2!.x,
+        v2!.y,
+        v2!.z,
+        v2!.x,
+        v2!.y,
+        v2!.z,
+        v3!.x,
+        v3!.y,
+        v3!.z,
+        v0!.x,
+        v0!.y,
+        v0!.z,
+      ]);
     }
-    if (ref.current) {
-      ref.current.needsUpdate = true;
-    }
-    return newVertices;
+
+    const arr = new Float32Array(9);
+    polygon.points.forEach((p, i) => {
+      arr[i * 3 + 0] = p.x;
+      arr[i * 3 + 1] = p.y;
+      arr[i * 3 + 2] = p.z;
+    });
+    return arr;
   }, [polygon]);
 
   return (
-    <mesh
-      rotation={[polygon.rot?.x ?? 0, polygon.rot?.y ?? 0, polygon.rot?.z ?? 0]}
-      position={[polygon.pos.x, polygon.pos.y, polygon.pos.z]}
-      castShadow
-      receiveShadow
-    >
-      <bufferGeometry attach="geometry" onUpdate={(self) => self.computeVertexNormals()}>
-        <bufferAttribute
-          attach="attributes-position"
-          needsUpdate={true}
-          ref={ref}
-          args={fakeArgs}
-          array={vertices}
-          count={vertices.length / 3}
-          itemSize={3}
-        />
+    <mesh position={[polygon.pos.x, polygon.pos.y, polygon.pos.z]}>
+      <bufferGeometry key={vertices.length}>
+        <bufferAttribute attach="attributes-position" array={vertices} itemSize={3} args={fakeArgs} />
       </bufferGeometry>
       {children}
     </mesh>
