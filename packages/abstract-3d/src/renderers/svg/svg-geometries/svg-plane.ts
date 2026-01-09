@@ -12,6 +12,8 @@ import {
   vec3ZMean,
   Material,
   Hole,
+  vec2Add,
+  vec2Sub,
 } from "../../../abstract-3d.js";
 import { gray, black, zElem, zOrderElement, SvgOptions } from "./shared.js";
 import { EmbededImage, svgImage, svgPolygon } from "../svg-encoding.js";
@@ -45,12 +47,8 @@ export function plane(
       : undefined;
 
   if (image) {
-    const [leftX, rightX] = v4.x > v2.x ? [v2.x, v4.x] : [v4.x, v2.x];
-    const [bottomY, topY] = v4.y > v2.y ? [v4.y, v2.y] : [v2.y, v4.y];
-    const bottomLeft = point(leftX, bottomY);
-    const topRight = point(rightX, topY);
-    const p = point(pos.x, pos.y);
-    const img = svgImage(p, vec2(topRight.x - bottomLeft.x, topRight.y - bottomLeft.y), rot, image);
+    const size = vec2Scale(p.size, factor);
+    const img = svgImage(point(v4.x, v4.y), size, rot, image);
     return [zElem(img, (v2.z + v4.z) / 2)];
   }
 

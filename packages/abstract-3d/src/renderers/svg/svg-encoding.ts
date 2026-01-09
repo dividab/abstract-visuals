@@ -81,8 +81,7 @@ export type EmbededImage =
   | { readonly type: "svg"; readonly svg: string };
 
 export const svgImage = (p: Vec2, size: Vec2, rot: Vec3, data: EmbededImage): string => {
-  const half = vec2Scale(size, 0.5);
-  const matrix = eulerToSvgMatrix(rot, p, half);
+  const matrix = eulerToSvgMatrix(rot, p);
   return data.type === "url"
     ? `<image width="${size.x}" height="${size.y}" transform="${matrix}" href="${data.url}" />`
     : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" transform="${matrix}">${data.svg}</svg>
