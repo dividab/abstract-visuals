@@ -147,7 +147,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^12.0.5
+        specifier: ^12.0.6
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -156,7 +156,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^12.0.5
+        specifier: ^12.0.6
         version: link:../abstract-image
       docx:
         specifier: ^6.0.3
@@ -168,7 +168,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.3.1
+        specifier: ^0.3.2
         version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
@@ -238,7 +238,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.3.1
+        specifier: ^0.3.2
         version: link:../handlebars-xml
       jsxpression:
         specifier: ^0.1.12
@@ -272,7 +272,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.3.1
+        specifier: ^0.3.2
         version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
@@ -306,19 +306,19 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^1.3.2
+        specifier: ^1.3.7
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^12.0.5
+        specifier: ^12.0.6
         version: link:../abstract-chart
       abstract-document:
-        specifier: ^18.0.4
+        specifier: ^18.0.5
         version: link:../abstract-document
       abstract-image:
-        specifier: ^12.0.5
+        specifier: ^12.0.6
         version: link:../abstract-image
       abstract-sheet:
-        specifier: ^1.1.15
+        specifier: ^1.1.16
         version: link:../abstract-sheet
       base64-js:
         specifier: ^1.5.1
@@ -330,7 +330,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.3.1
+        specifier: ^0.3.2
         version: link:../handlebars-xml
       jsxpression:
         specifier: 0.1.12
@@ -6819,6 +6819,7 @@ packages:
   whatwg-encoding@2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
     engines: {node: '>=12'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
