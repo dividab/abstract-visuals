@@ -44,13 +44,13 @@ export function plane(
       ? { type: "url", url: imageData ?? material.imageUrl }
       : undefined;
 
-  if (opts.view === "front" && image) {
+  if (image) {
     const [leftX, rightX] = v4.x > v2.x ? [v2.x, v4.x] : [v4.x, v2.x];
     const [bottomY, topY] = v4.y > v2.y ? [v4.y, v2.y] : [v2.y, v4.y];
     const bottomLeft = point(leftX, bottomY);
     const topRight = point(rightX, topY);
-    const degrees = isZero(rot.z, 0.1) ? 0 : rot.z * (-180 / Math.PI);
-    const img = svgImage(bottomLeft, vec2(topRight.x - bottomLeft.x, topRight.y - bottomLeft.y), degrees, image);
+    const p = point(pos.x, pos.y);
+    const img = svgImage(p, vec2(topRight.x - bottomLeft.x, topRight.y - bottomLeft.y), rot, image);
     return [zElem(img, (v2.z + v4.z) / 2)];
   }
 
