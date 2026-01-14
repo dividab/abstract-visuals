@@ -92,13 +92,16 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
       >
         <div style={{ display: "flex", gap: "10px" }}>
           <button
-            onClick={async () => {
-              const res = await genereteDoc(data, template, { partial }, "PDF");
-              if (res.type === "Ok") {
-                setPdf({ type: "Ok", url: URL.createObjectURL(res.blob) });
-              } else {
-                setPdf(res);
-              }
+            onClick={() => {
+              genereteDoc(data, template, { "partial": partial }, "PDF").then((res) => {
+                if (res.type === "Ok") {
+                  setPdf({ type: "Ok", url: URL.createObjectURL(res.blob) });
+                } else {
+                  setPdf(res);
+                }
+              }).catch((reason) => {
+                setPdf({type: "Err", error: JSON.stringify(reason) });
+              })
             }}
           >
             Preview PDF
@@ -142,14 +145,9 @@ async function genereteDoc(
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." + e };
   }
-  const handlebarsRendered = renderHandlebars(template, dataObject, partials);
-  const validationErrors = validateXml(handlebarsRendered, AbstractDocXml.parsedXsd);
-  if (validationErrors.length > 0) {
-    return { type: "Err", error: errorToReadableText(validationErrors, "template") };
-  }
 
   // Fetch image and fonts once the ADXml has been parsed
-  const [doc, _ignored_imageUrls, _ignored_fontFamilies] = AbstractDocXml.abstractDocXml(template, data, partials);
+  const [doc, _ignored_imageUrls, _ignored_fontFamilies] = AbstractDocXml.abstractDocXml(template, dataObject, partials);
   const docWithResources = AbstractDoc.AbstractDoc.addResources(doc, { imageResources });
   const blob: Blob =
     format === "PDF"
