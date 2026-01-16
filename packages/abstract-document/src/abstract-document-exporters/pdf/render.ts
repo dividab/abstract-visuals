@@ -317,7 +317,7 @@ function renderParagraph(
       x -= styleMargins.right;
     }
 
-    if (row.length > 1 || row[0].type === "Image" || row[0].type === "TextRun") {
+    if (row.length > 1 || row[0].type === "Image" || row[0].type === "TextRun" || row[0].type === "TextField") {
       // Using continued with alignment "center" or "right" is broken:
       // https://github.com/foliojs/pdfkit/issues/240
       // Therefore we have to position it ourself
