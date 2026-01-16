@@ -70,7 +70,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     const fixedStyles: Record<string, Record<string, string | number>> = {};
     if (props.styles) {
       Object.keys(props.styles).forEach((key: string) => {
-        fixedStyles[(props.styles[key]?.type ?? "") + "_" + key] = { ...props.styles[key] };
+        fixedStyles[key] = { ...props.styles[key] };
       });
     }
 
