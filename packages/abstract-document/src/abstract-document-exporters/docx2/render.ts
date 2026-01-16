@@ -72,9 +72,10 @@ function createDocument(doc: AD.AbstractDoc.AbstractDoc): Document {
 function renderSection(section: AD.Section.Section, parentResources: AD.Resources.Resources): ISectionOptions {
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
+  const pageContentMargins = AD.LayoutFoundation.orDefault(section.page.style.contentMargins);
 
   const contentAvailableWidth =
-    pageWidth - (section.page.style.contentMargins.left + section.page.style.contentMargins.right);
+    pageWidth - (pageContentMargins.left + pageContentMargins.right);
 
   const resources = AD.Resources.mergeResources([parentResources, section]);
 
@@ -117,12 +118,12 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
             section.page.style.orientation === "Landscape" ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT,
         },
         margin: {
-          bottom: section.page.style.contentMargins.bottom * abstractDocPixelToDocxDXARatio,
-          top: section.page.style.contentMargins.top * abstractDocPixelToDocxDXARatio,
-          right: section.page.style.contentMargins.right * abstractDocPixelToDocxDXARatio,
-          left: section.page.style.contentMargins.left * abstractDocPixelToDocxDXARatio,
-          header: section.page.style.headerMargins.top * abstractDocPixelToDocxDXARatio,
-          footer: section.page.style.footerMargins.bottom * abstractDocPixelToDocxDXARatio,
+          bottom: pageContentMargins.bottom * abstractDocPixelToDocxDXARatio,
+          top: pageContentMargins.top * abstractDocPixelToDocxDXARatio,
+          right: pageContentMargins.right * abstractDocPixelToDocxDXARatio,
+          left: pageContentMargins.left * abstractDocPixelToDocxDXARatio,
+          header: pageContentMargins.top * abstractDocPixelToDocxDXARatio,
+          footer: pageContentMargins.bottom * abstractDocPixelToDocxDXARatio,
         },
       },
     },
@@ -214,6 +215,7 @@ function renderTable(
     table.styleName,
     resources
   ) as AD.TableStyle.TableStyle;
+  const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
 
   if (table.children.length === 0) {
     return undefined;
@@ -237,10 +239,10 @@ function renderTable(
           ? AlignmentType.RIGHT
           : AlignmentType.CENTER,
     margins: {
-      top: style.margins.top * abstractDocPixelToDocxDXARatio,
-      bottom: style.margins.bottom * abstractDocPixelToDocxDXARatio,
-      left: style.margins.left * abstractDocPixelToDocxDXARatio,
-      right: style.margins.right * abstractDocPixelToDocxDXARatio,
+      top: styleMargins.top * abstractDocPixelToDocxDXARatio,
+      bottom: styleMargins.bottom * abstractDocPixelToDocxDXARatio,
+      left: styleMargins.left * abstractDocPixelToDocxDXARatio,
+      right: styleMargins.right * abstractDocPixelToDocxDXARatio,
     },
     width: {
       type: WidthType.DXA,
@@ -310,8 +312,8 @@ function renderCell(
     resources
   ) as AD.TableCellStyle.TableCellStyle;
 
-  const stylePadding = style.padding ?? AD.LayoutFoundation.create();
-  const styleBorders = style.borders ?? AD.LayoutFoundation.create();
+  const stylePadding = AD.LayoutFoundation.orDefault(style.padding);
+  const styleBorders = AD.LayoutFoundation.orDefault(style.borders);
 
   return new TableCell({
     verticalAlign:
@@ -522,6 +524,7 @@ function renderParagraph(
     paragraph.styleName,
     resources
   ) as AD.ParagraphStyle.ParagraphStyle;
+  const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
 
   return new Paragraph({
     keepNext: keepNext,
@@ -535,12 +538,12 @@ function renderParagraph(
       undefined,
 
     spacing: {
-      before: Math.max(style.margins.top, 0) * abstractDocPixelToDocxDXARatio,
-      after: Math.max(style.margins.bottom, 0) * abstractDocPixelToDocxDXARatio,
+      before: Math.max(styleMargins.top, 0) * abstractDocPixelToDocxDXARatio,
+      after: Math.max(styleMargins.bottom, 0) * abstractDocPixelToDocxDXARatio,
     },
     indent: {
-      left: Math.max(style.margins.left, 0) * abstractDocPixelToDocxDXARatio,
-      right: Math.max(style.margins.right, 0) * abstractDocPixelToDocxDXARatio,
+      left: Math.max(styleMargins.left, 0) * abstractDocPixelToDocxDXARatio,
+      right: Math.max(styleMargins.right, 0) * abstractDocPixelToDocxDXARatio,
     },
     children: paragraph.children.map((atom) => renderAtom(resources, style.textStyle, atom)),
   });

@@ -50,10 +50,10 @@ export function overrideWith(
   const b: TableCellStyleProps = toOverride || {};
   return create({
     background: a.background || b.background,
-    borders: a.borders || b.borders,
+    borders: LayoutFoundation.overrideWith(a.borders, b.borders),
     borderColor: a.borderColor || b.borderColor,
-    borderColors: a.borderColors || b.borderColors,
-    padding: a.padding || b.padding,
+    borderColors: LayoutFoundationColor.overrideWith(a.borderColors, b.borderColors),
+    padding: LayoutFoundation.overrideWith(a.padding, b.padding),
     verticalAlignment: a.verticalAlignment || b.verticalAlignment,
   });
 }

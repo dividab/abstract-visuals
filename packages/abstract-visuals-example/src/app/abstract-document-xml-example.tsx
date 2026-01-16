@@ -9,8 +9,8 @@ import {
   white,
   createBinaryImage,
 } from "../../../abstract-image/src/index.js";
-import { renderHandlebars, validateXml, errorToReadableText } from "../../../handlebars-xml/src/index.js";
 import { AbstractDoc, AbstractDocDocx, AbstractDocPdf, AbstractDocXml } from "../../../abstract-document/src/index.js";
+import { errorToReadableText, renderHandlebars, validateXml } from "handlebars-xml";
 
 export function AbstractDocumentXMLExample(): React.JSX.Element {
   const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
@@ -144,6 +144,12 @@ async function genereteDoc(
     dataObject = JSON.parse(data);
   } catch (e) {
     return { type: "Err", error: "Failed to parse JSON." + e };
+  }
+
+  const handlebarsRendered = renderHandlebars(template, dataObject, partials);
+  const validationErrors = validateXml(handlebarsRendered, AbstractDocXml.parsedXsd);
+  if (validationErrors.length > 0) {
+    return { type: "Err", error: errorToReadableText(validationErrors, "template") };
   }
 
   // Fetch image and fonts once the ADXml has been parsed

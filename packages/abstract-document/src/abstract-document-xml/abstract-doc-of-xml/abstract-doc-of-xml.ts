@@ -98,10 +98,11 @@ function abstractDocXmlRecursive(
   //
   const obj = creator(allProps, children) as { [k: string]: unknown };
 
-  for (const propName of Object.keys(allProps)) {
-    const propsCreator = allProps[propName] && propsCreators[propName] ? propsCreators[propName] : undefined;
+  for (const propName of Object.keys(allProps).sort((a, b) => a.length - b.length)) {
+    const propsCreator = allProps[propName] !== undefined && propsCreators[propName] ? propsCreators[propName] : undefined;
     if (propsCreator) {
-      obj[propsCreator.name] = propsCreator(allProps, children);
+      const attributeName = getSuffixedAttributeBaseName(propsCreator.name) ?? propsCreator.name;
+      obj[attributeName] = propsCreator(allProps, children);
     }
   }
 
@@ -146,6 +147,27 @@ function abstractDocXmlRecursive(
     obj.children = children;
   }
   return obj;
+}
+
+function getSuffixedAttributeBaseName(attributeName: string): string | undefined {
+  const suffixRemoved = (() => {
+    const suffixes = ["Top", "Bottom", "Left", "Right"];
+    for(const suffix of suffixes) {
+      if(attributeName.endsWith(suffix)) {
+        return attributeName.slice(0, -suffix.length);
+      }
+    }
+    return undefined;
+  })();
+
+  const actualLookup: Record<string, string> = {
+    border: "borders",
+    margin: "margins",
+    padding: "padding",
+    borderColor: "borderColors",
+  };
+
+  return actualLookup[suffixRemoved ?? ""];
 }
 
 function extractImageFontsStyleNames(

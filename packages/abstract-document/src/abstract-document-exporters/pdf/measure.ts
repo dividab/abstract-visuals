@@ -49,8 +49,10 @@ function measureSection(
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
   const resources = AD.Resources.mergeResources([section, parentResources]);
 
+  const pageContentMargins = AD.LayoutFoundation.orDefault(section.page.style.contentMargins);
+
   const totalContentAvailableWidth =
-    pageWidth - (section.page.style.contentMargins.left + section.page.style.contentMargins.right);
+    pageWidth - (pageContentMargins.left + pageContentMargins.right);
   const contentAvailableWidth =
     totalContentAvailableWidth / section.page.style.columnLayout.columnCount -
     section.page.style.columnLayout.columnGap * (section.page.style.columnLayout.columnCount - 1);
@@ -58,12 +60,12 @@ function measureSection(
   const sectionSizes = children.map((e) => measureSectionElement(pdfKit, resources, contentAvailableSize, e));
 
   const headerAvailableWidth =
-    pageWidth - (section.page.style.headerMargins.left + section.page.style.headerMargins.right);
+    pageWidth - (pageContentMargins.left + pageContentMargins.right);
   const headerAvailableSize = AD.Size.create(headerAvailableWidth, pageHeight);
   const headerSizes = header.map((e) => measureSectionElement(pdfKit, resources, headerAvailableSize, e));
 
   const footerAvailableWidth =
-    pageWidth - (section.page.style.footerMargins.left + section.page.style.footerMargins.right);
+    pageWidth - (pageContentMargins.left + pageContentMargins.right);
   const footerAvailableSize = AD.Size.create(footerAvailableWidth, pageHeight);
   const footerSizes = footer.map((e) => measureSectionElement(pdfKit, resources, footerAvailableSize, e));
 
@@ -76,7 +78,8 @@ function measureSection(
       [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins],
     ];
   const firstPageHeaderAndFooterSizes = firstPageHeaderAndFootersExtracted.reduce((prev, [sections, margins]) => {
-    const availabelWidth = pageWidth - (margins.left + margins.right);
+    const defMargins = AD.LayoutFoundation.orDefault(margins);
+    const availabelWidth = pageWidth - (defMargins.left + defMargins.right);
     const availableSizes = AD.Size.create(availabelWidth, pageHeight);
     return [...prev, ...sections.map((e) => measureSectionElement(pdfKit, resources, availableSizes, e))];
   }, []);
@@ -124,11 +127,12 @@ function measureParagraph(
     paragraph.styleName,
     resources
   ) as AD.ParagraphStyle.ParagraphStyle;
-  const contentAvailableWidth = availableSize.width - (style.margins.left + style.margins.right);
-  const contentAvailableHeight = availableSize.height - (style.margins.top + style.margins.bottom);
+  const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
+  const contentAvailableWidth = availableSize.width - (styleMargins.left + styleMargins.right);
+  const contentAvailableHeight = availableSize.height - (styleMargins.top + styleMargins.bottom);
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, contentAvailableHeight);
 
-  let paragraphHeight = style.margins.top + style.margins.bottom;
+  let paragraphHeight = styleMargins.top + styleMargins.bottom;
   let desiredSizes = new Map<any, AD.Size.Size>();
 
   const rows: Array<Array<AD.Atom.Atom>> = [];
@@ -243,7 +247,8 @@ export function measureTable(
     table.styleName,
     resources
   ) as AD.TableStyle.TableStyle;
-  const tableAvailableWidth = availableSize.width - (style.margins.left + style.margins.right);
+  const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
+  const tableAvailableWidth = availableSize.width - (styleMargins.left + styleMargins.right);
   const numInfinityColumns = table.columnWidths.filter((w) => !isFinite(w)).length;
   const fixedColumnsWidth = table.columnWidths.filter((w) => isFinite(w)).reduce((a, b) => a + b, 0);
   const infinityWidth = (tableAvailableWidth - fixedColumnsWidth) / numInfinityColumns;
@@ -261,8 +266,15 @@ export function measureTable(
         resources
       ) as AD.TableCellStyle.TableCellStyle;
       const cellWidth = columnWidths.slice(column, column + cell.columnSpan).reduce((a, b) => a + b, 0);
-      const cellStylePadding = cellStyle.padding ?? AD.LayoutFoundation.create();
+      //const cellStylePadding2 = cellStyle.padding ?? AD.LayoutFoundation.create();
 
+      const cellStylePadding = {
+        top: cellStyle.padding?.top ?? 0,
+        bottom: cellStyle.padding?.bottom ?? 0,
+        left: cellStyle.padding?.left ?? 0,
+        right: cellStyle.padding?.right ?? 0,
+      };
+    
       const contentAvailableWidth = cellWidth - (cellStylePadding.left + cellStylePadding.right);
       let cellDesiredHeight = cellStylePadding.top + cellStylePadding.bottom;
 
@@ -311,8 +323,8 @@ export function measureTable(
 
   const desiredWidth = table.columnWidths.some((w) => !isFinite(w))
     ? availableSize.width
-    : table.columnWidths.reduce((a, b) => a + b, style.margins.left + style.margins.right);
-  let desiredHeight = style.margins.top + style.margins.bottom;
+    : table.columnWidths.reduce((a, b) => a + b, styleMargins.left + styleMargins.right);
+  let desiredHeight = styleMargins.top + styleMargins.bottom;
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     const rowHeight = minRowHeights[i];

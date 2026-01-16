@@ -266,8 +266,8 @@ export function getHeaderAndFooter(
 ): {
   readonly header: Array<AD.SectionElement.SectionElement>;
   readonly footer: Array<AD.SectionElement.SectionElement>;
-  readonly headerMargins: AD.LayoutFoundation.LayoutFoundation;
-  readonly footerMargins: AD.LayoutFoundation.LayoutFoundation;
+  readonly headerMargins: Required<AD.LayoutFoundation.LayoutFoundation>;
+  readonly footerMargins: Required<AD.LayoutFoundation.LayoutFoundation>;
 } {
   const FIRST_PAGE = 1;
   const EVEN_PAGE = 0;
@@ -280,12 +280,12 @@ export function getHeaderAndFooter(
       return {
         footer: normalFooter ? section.page.footer : section.page.frontFooter,
         header: normalHeader ? section.page.header : section.page.frontHeader,
-        headerMargins: normalHeader
+        headerMargins: AD.LayoutFoundation.orDefault(normalHeader
           ? section.page.style.headerMargins
-          : section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins,
-        footerMargins: normalFooter
+          : section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins),
+        footerMargins: AD.LayoutFoundation.orDefault(normalFooter
           ? section.page.style.footerMargins
-          : section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins,
+          : section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins),
       };
     }
     case pageNo === 0:
@@ -295,8 +295,8 @@ export function getHeaderAndFooter(
       return {
         header: section.page.header,
         footer: section.page.footer,
-        headerMargins: section.page.style.headerMargins,
-        footerMargins: section.page.style.footerMargins,
+        headerMargins: AD.LayoutFoundation.orDefault(section.page.style.headerMargins),
+        footerMargins: AD.LayoutFoundation.orDefault(section.page.style.footerMargins),
       };
     }
   }
@@ -308,6 +308,7 @@ function getPageContentRect(
   pageNo: number
 ): AD.Rect.Rect {
   const style = section.page.style;
+  const styleContentMargins = AD.LayoutFoundation.orDefault(style.contentMargins);
   const pageWidth = AD.PageStyle.getWidth(style);
   const pageHeight = AD.PageStyle.getHeight(style);
 
@@ -328,10 +329,10 @@ function getPageContentRect(
   }
   headerY += headerMargins.bottom;
 
-  const rectX = style.contentMargins.left;
-  const rectY = headerY + style.contentMargins.top;
-  const rectWidth = pageWidth - (style.contentMargins.left + style.contentMargins.right);
-  const rectHeight = pageHeight - headerHeight - footerHeight - style.contentMargins.top - style.contentMargins.bottom;
+  const rectX = styleContentMargins.left;
+  const rectY = headerY + styleContentMargins.top;
+  const rectWidth = pageWidth - (styleContentMargins.left + styleContentMargins.right);
+  const rectHeight = pageHeight - headerHeight - footerHeight - styleContentMargins.top - styleContentMargins.bottom;
   return AD.Rect.create(rectX, rectY, rectWidth, rectHeight);
 }
 
@@ -343,11 +344,11 @@ function getLeadingAndTrailingSpace(
   const { noTopBottomMargin } = section.page.style;
 
   const first = elements[0];
-  const firstMargins = first && getSectionElementMargin(resources, first);
+  const firstMargins = first && AD.LayoutFoundation.orDefault(getSectionElementMargin(resources, first));
   const leadingSpace = firstMargins && noTopBottomMargin ? firstMargins.top : 0;
 
   const last = elements.length > 0 ? elements[elements.length - 1] : undefined;
-  const lastMargins = last && getSectionElementMargin(resources, last);
+  const lastMargins = last && AD.LayoutFoundation.orDefault(getSectionElementMargin(resources, last));
   const trailingSpace = lastMargins && noTopBottomMargin ? lastMargins.bottom : 0;
 
   return [leadingSpace, trailingSpace];

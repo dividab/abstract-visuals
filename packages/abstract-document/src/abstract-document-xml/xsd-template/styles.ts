@@ -4,7 +4,39 @@ export const StyleNames = `<xs:complexType name="StyleNames">
 	</xs:sequence>
 </xs:complexType>`;
 
+export const paddingAttributes = `
+  <xs:attribute name="paddingTop" type="xs:decimal"/>
+  <xs:attribute name="paddingRight" type="xs:decimal"/>
+  <xs:attribute name="paddingBottom" type="xs:decimal"/>
+  <xs:attribute name="paddingLeft" type="xs:decimal"/>
+`;
+
+export const bordersAttributes = `
+  <xs:attribute name="borderTop" type="xs:decimal"/>
+  <xs:attribute name="borderRight" type="xs:decimal"/>
+  <xs:attribute name="borderBottom" type="xs:decimal"/>
+  <xs:attribute name="borderLeft" type="xs:decimal"/>
+`;
+
+export const marginsAttributes = `
+  <xs:attribute name="marginTop" type="xs:decimal"/>
+  <xs:attribute name="marginRight" type="xs:decimal"/>
+  <xs:attribute name="marginBottom" type="xs:decimal"/>
+  <xs:attribute name="marginLeft" type="xs:decimal"/>
+`;
+
+export const borderColorsAttributes = `
+  <xs:attribute name="borderColorTop" type="xs:string"/>
+  <xs:attribute name="borderColorRight" type="xs:string"/>
+  <xs:attribute name="borderColorBottom" type="xs:string"/>
+  <xs:attribute name="borderColorLeft" type="xs:string"/>
+`;
+
 export const StyleName = `<xs:complexType name="StyleName">
+	${borderColorsAttributes}
+	${marginsAttributes}
+	${bordersAttributes}
+	${paddingAttributes}
 	<xs:attribute name="name" type="xs:string" use="required" />
 	<xs:attribute name="type" use="required">
 		<xs:annotation>
@@ -76,6 +108,7 @@ export const StyleName = `<xs:complexType name="StyleName">
 </xs:complexType>`;
 
 export const groupStyle = `<xs:complexType name="GroupStyle">
+	${marginsAttributes}
 	<xs:annotation>
 		<xs:documentation>Group style</xs:documentation>
 	</xs:annotation>
@@ -92,6 +125,9 @@ export const groupStyle = `<xs:complexType name="GroupStyle">
 </xs:complexType>`;
 
 export const tableCellStyle = `<xs:complexType name="TableCellStyle">
+	${paddingAttributes}
+	${bordersAttributes}
+	${borderColorsAttributes}
 	<xs:annotation>
 		<xs:documentation>Table cell style</xs:documentation>
 	</xs:annotation>
@@ -136,6 +172,7 @@ export const tableCellStyle = `<xs:complexType name="TableCellStyle">
 </xs:complexType>`;
 
 export const tableStyle = `<xs:complexType name="TableStyle">
+	${marginsAttributes}
 	<xs:annotation>
 		<xs:documentation>Table style</xs:documentation>
 	</xs:annotation>
@@ -167,6 +204,7 @@ export const tableStyle = `<xs:complexType name="TableStyle">
 </xs:complexType>`;
 
 export const paragraphStyle = `<xs:complexType name="ParagraphStyle">
+	${paddingAttributes}
 	<xs:annotation>
 		<xs:documentation>Paragraph style</xs:documentation>
 	</xs:annotation>

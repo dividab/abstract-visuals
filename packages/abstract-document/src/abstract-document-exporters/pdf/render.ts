@@ -190,8 +190,9 @@ function renderGroup(
   finalRect: AD.Rect.Rect,
   group: AD.Group.Group
 ): void {
-  const finalX = finalRect.x + group.style.margins.left;
-  const startY = finalRect.y + group.style.margins.top;
+  const styleMargins = AD.LayoutFoundation.orDefault(group.style.margins);
+  const finalX = finalRect.x + styleMargins.left;
+  const startY = finalRect.y + styleMargins.top;
   let y = startY;
   for (const element of group.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
@@ -223,7 +224,8 @@ function renderParagraph(
     paragraph.styleName,
     resources
   ) as AD.ParagraphStyle.ParagraphStyle;
-  const availableWidth = finalRect.width - (style.margins.left + style.margins.right);
+  const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
+  const availableWidth = finalRect.width - (styleMargins.left + styleMargins.right);
 
   let rows: Array<Array<AD.Atom.Atom>> = [];
   let currentRow: Array<AD.Atom.Atom> = [];
@@ -286,7 +288,7 @@ function renderParagraph(
     rows.push(currentRow);
   }
 
-  let y = finalRect.y + style.margins.top;
+  let y = finalRect.y + styleMargins.top;
   const alignment = parseAlignment(style.alignment);
   const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment);
   const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(
@@ -310,9 +312,9 @@ function renderParagraph(
     let x = finalRect.x;
 
     if (style.alignment === "Start" || style.alignment === "Justify") {
-      x += style.margins.left;
+      x += styleMargins.left;
     } else if (style.alignment === "End") {
-      x -= style.margins.right;
+      x -= styleMargins.right;
     }
 
     if (row.length > 1 || row[0].type === "Image" || row[0].type === "TextRun") {
@@ -737,12 +739,13 @@ function renderTable(
     table.styleName,
     resources
   ) as AD.TableStyle.TableStyle;
+  const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
   const availableWidth = finalRect.width;
-  let y = finalRect.y + style.margins.top;
+  let y = finalRect.y + styleMargins.top;
   const rows = [...table.headerRows, ...table.children];
   for (let [index, row] of rows.entries()) {
     const rowSize = getDesiredSize(row, desiredSizes);
-    let x = finalRect.x + style.margins.left;
+    let x = finalRect.x + styleMargins.left;
     if (style.alignment === "Center") x += 0.5 * (availableWidth - rowSize.width);
     else if (style.alignment === "Right") x += availableWidth - rowSize.width;
     const rowRect = AD.Rect.create(x, y, rowSize.width, rowSize.height);
@@ -812,8 +815,8 @@ function renderCell(
     pdf.rect(finalRect.x, finalRect.y, finalRect.width, finalRect.height).fill(style.background);
   }
 
-  const borders = style.borders ?? { top: 0, bottom: 0, left: 0, right: 0 };
-  const padding = style.padding ?? { top: 0, bottom: 0, left: 0, right: 0 };
+  const borders = AD.LayoutFoundation.orDefault(style.borders);
+  const padding = AD.LayoutFoundation.orDefault(style.padding);
 
   let x = finalRect.x + padding.left;
   const availableHeight = finalRect.height;
