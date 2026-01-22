@@ -417,7 +417,7 @@ function Polygon({
       castShadow
       receiveShadow
     >
-      <bufferGeometry key={vertices.length} attach="geometry" onUpdate={(self) => self.computeVertexNormals()}>
+      <bufferGeometry key={vertices.join("")} attach="geometry" onUpdate={(self) => self.computeVertexNormals()}>
         <bufferAttribute
           attach="attributes-position"
           needsUpdate={true}
