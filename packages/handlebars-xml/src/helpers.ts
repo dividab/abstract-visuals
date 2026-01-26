@@ -238,11 +238,30 @@ const arrayLength: HelperFunc = {
     {
       name: "array",
       type: arraySchema,
-      description: "the array to get the length from",
+      description: "The array to get the length from",
     }
   ],
   returnType: num,
   func: (arr: ReadonlyArray<unknown>) => Array.isArray(arr.length) ? arr.length : 0,
+};
+
+const round: HelperFunc = {
+  name: "round",
+  description: "Rounds a number to the desired decimal points",
+  args: [
+    {
+      name: "number",
+      type: num,
+      description: "The number to round",
+    },
+    {
+      name: "decimals",
+      type: num,
+      description: "The decimal count to round to",
+    }
+  ],
+  returnType: num,
+  func: (n: number, d: number) => Math.round(n * 10 ** d) / 10 ** d,
 };
 
 export const helpers: ReadonlyArray<HelperFunc> = [
@@ -259,6 +278,7 @@ export const helpers: ReadonlyArray<HelperFunc> = [
   groupByKey,
   sortBy,
   arrayLength,
+  round,
 ];
 
 // -- Diffucult to validate and give completion

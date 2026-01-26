@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.3.3 - 2025.01.26
+
+- Added the helper `round`.
+
 ## v0.3.2 - 2025.12.17
 
 - Renamed the helper `length` to `arrayLength`.
