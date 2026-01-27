@@ -10,18 +10,6 @@ import {
   bounds3FromVec3Array,
   bounds3ToSize,
   vec3Zero,
-  Bounds3,
-  bounds3Merge,
-  Group,
-  vec3TransRot,
-  vec3RotCombine,
-  Scene,
-  Sphere,
-  bounds3,
-  Plane,
-  Box,
-  Cylinder,
-  Cone,
 } from "../abstract-3d.js";
 
 export function sizeCenterForCameraPos(

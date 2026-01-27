@@ -20,11 +20,13 @@ import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { generateUUID } from "three/src/math/MathUtils.js";
 import { Optional, rotationForCameraPos } from "../shared.js";
 
+const DEFAULT_CYLINDER_SIDE_COUNT = 18;
+
 export type DxfOrigin = "BottomLeftFront" | "Center";
-export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin };
+export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin; readonly cylinderSideCount: number; };
 
 export const render = (scene: Scene, options: Optional<DxfOptions>): string => {
-  const opts: DxfOptions = { view: options.view ?? "front", origin: options.origin ?? "BottomLeftFront" };
+  const opts: DxfOptions = { view: options.view ?? "front", origin: options.origin ?? "BottomLeftFront", cylinderSideCount: DEFAULT_CYLINDER_SIDE_COUNT };
   const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
   const boundingBox = boundsScene(scene);
   const boundingBoxSize = bounds3ToSize(boundingBox);
@@ -36,10 +38,10 @@ export const render = (scene: Scene, options: Optional<DxfOptions>): string => {
   const groupRoot = group([], offset, vec3Zero, scene.groups);
   const id = generateUUID();
   const handleRef = { handle: 0x1000 }; //make sure we start with a value higher than any other handle id's used in the header
-  return dxfHeader(boundingBoxSize, center, id) + dxfGroup(groupRoot, center, unitRot, handleRef) + dxfFooter(id);
+  return dxfHeader(boundingBoxSize, center, id) + dxfGroup(groupRoot, center, unitRot, options, handleRef) + dxfFooter(id);
 };
 
-function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, handleRef: { handle: number }): string {
+function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: Optional<DxfOptions>, handleRef: { handle: number }): string {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
   return (
@@ -52,10 +54,10 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, handleRef: { handl
           return a + dxfBox(c.geometry, c.material, pos, rot, handleRef);
         }
         case "Cylinder": {
-          return a + dxfCylinder(c.geometry, c.material, 18, pos, rot, handleRef);
+          return a + dxfCylinder(c.geometry, c.material, options.cylinderSideCount ?? DEFAULT_CYLINDER_SIDE_COUNT, pos, rot, handleRef);
         }
         case "Cone": {
-          return a + dxfCone(c.geometry, c.material, 18, pos, rot, handleRef);
+          return a + dxfCone(c.geometry, c.material, options.cylinderSideCount ?? DEFAULT_CYLINDER_SIDE_COUNT, pos, rot, handleRef);
         }
         case "Polygon": {
           return a + dxfPolygon(c.geometry, c.material, pos, rot, handleRef);
@@ -64,6 +66,6 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, handleRef: { handl
           return a;
         }
       }
-    }, "") ?? "") + g.groups?.reduce((a, c) => a + dxfGroup(c, pos, rot, handleRef), "")
+    }, "") ?? "") + g.groups?.reduce((a, c) => a + dxfGroup(c, pos, rot, options, handleRef), "")
   );
 }
