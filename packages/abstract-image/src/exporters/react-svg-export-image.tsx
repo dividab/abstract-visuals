@@ -276,7 +276,7 @@ function getImageUrl(format: BinaryFormat, data: ImageData): string {
   } else if (format === "png") {
     const base64 = fromByteArray(data.bytes);
     return `data:image/png;base64,${base64}`;
-  } else {
+  } else if (format === "svg") {
     const svg = String.fromCharCode(...data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
     const bytes = [];
     for (let i = 0; i < svg.length; ++i) {
@@ -285,6 +285,7 @@ function getImageUrl(format: BinaryFormat, data: ImageData): string {
     const base64 = fromByteArray(new Uint8Array(bytes));
     return `data:image/svg+xml;base64,${base64}`;
   }
+  return `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==`;
 }
 
 function TSpan({

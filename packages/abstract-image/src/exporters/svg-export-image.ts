@@ -30,17 +30,19 @@ function abstractComponentToSVG(component: Component): string {
       );
     case "binaryimage":
       const url = getImageUrl(component.format, component.data);
-      return createElement(
-        "image",
-        {
-          x: component.topLeft.x.toString(),
-          y: component.topLeft.y.toString(),
-          width: (component.bottomRight.x - component.topLeft.x).toString(),
-          height: (component.bottomRight.y - component.topLeft.y).toString(),
-          href: url,
-        },
-        []
-      );
+      return url
+        ? createElement(
+            "image",
+            {
+              x: component.topLeft.x.toString(),
+              y: component.topLeft.y.toString(),
+              width: (component.bottomRight.x - component.topLeft.x).toString(),
+              height: (component.bottomRight.y - component.topLeft.y).toString(),
+              href: url,
+            },
+            []
+          )
+        : "";
     case "subimage":
       return "";
     case "line": {
@@ -337,13 +339,13 @@ function colorToOpacity(color: Color): string {
   return (color.a / 255).toString();
 }
 
-function getImageUrl(format: BinaryFormat, data: ImageData): string {
+function getImageUrl(format: BinaryFormat, data: ImageData): string | undefined {
   if (data.type === "url") {
     return data.url;
   } else if (format === "png") {
     const base64 = fromByteArray(data.bytes);
     return `data:image/png;base64,${base64}`;
-  } else {
+  } else if (format === "svg") {
     const svg = String.fromCharCode(...data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
     const bytes = [];
     for (let i = 0; i < svg.length; ++i) {
@@ -352,4 +354,5 @@ function getImageUrl(format: BinaryFormat, data: ImageData): string {
     const base64 = fromByteArray(new Uint8Array(bytes));
     return `data:image/svg+xml;base64,${base64}`;
   }
+  return undefined;
 }

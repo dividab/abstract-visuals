@@ -1,4 +1,5 @@
 import React from "react";
+import circleDxf from "../../assets/circle-dxf.txt?raw";
 import {
   createLine,
   createPoint,
@@ -8,7 +9,6 @@ import {
   red,
   createText,
   black,
-  createEllipse,
   createPolyLine,
   brown,
   createPolygon,
@@ -20,6 +20,8 @@ import {
   createSVG,
   dxf2dExportImage,
   epsExportImage,
+  createBinaryImage,
+  DXF_DATA_URL,
 } from "../../../abstract-image/src/index.js";
 
 export function AbstractImageExampleDxf(): React.JSX.Element {
@@ -42,9 +44,13 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
       black,
       false
     ),
-    createEllipse(createPoint(80, 40), createPoint(100, 60), black, 1, blue),
+    // createEllipse(createPoint(80, 40), createPoint(100, 60), black, 1, blue),
     createPolyLine([createPoint(10, 10), createPoint(390, 390), createPoint(390, 10)], brown, 2),
     createPolygon([createPoint(200, 250), createPoint(250, 250), createPoint(200, 200)], yellow, 2, gray),
+    createBinaryImage(createPoint(80, 40), createPoint(100, 60), "dxf", {
+      type: "url",
+      url: `${DXF_DATA_URL}${circleDxf}`,
+    }),
   ];
   const image = createAbstractImage(createPoint(0, 0), createSize(400, 400), white, components);
   const svg = createSVG(image);
