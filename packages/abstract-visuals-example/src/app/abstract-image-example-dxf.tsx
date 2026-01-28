@@ -22,6 +22,7 @@ import {
   epsExportImage,
   createBinaryImage,
   DXF_DATA_URL,
+  dynamicImage,
 } from "../../../abstract-image/src/index.js";
 
 export function AbstractImageExampleDxf(): React.JSX.Element {
@@ -62,10 +63,23 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
   const eps = epsExportImage(image);
   const epsUrl = toDataUrl("text/plain", eps);
 
+  const dynamicImg = `<AbstractImage width={1191} height={842}>
+  <Image src={data.ahu} x={0} y={0} width={600} height={200} />
+</AbstractImage>`;
+  const ai = dynamicImage(dynamicImg, { ahu: `${DXF_DATA_URL}${circleDxf}` });
+
+  const dxf2 = ai.type === "Ok" ? dxf2dExportImage(ai.image) : undefined;
+  const dxfUrl2 = dxf2 ? toDataUrl("text/plain", dxf2) : undefined;
+
   return (
     <div>
       <h1>DXF</h1>
       <img width="400" height="400" src={`data:image/svg+xml;base64,${base64}`} />
+      <div>
+        <a href={dxfUrl2} download={"abstract_image_demo2.dxf"}>
+          Download DXF 2
+        </a>
+      </div>
       <a href={dxfUrl} download={"abstract_image_demo1.dxf"}>
         Download DXF
       </a>

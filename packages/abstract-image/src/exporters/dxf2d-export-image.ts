@@ -1,10 +1,19 @@
 import { AbstractImage } from "../model/abstract-image.js";
 import { Component, corners } from "../model/component.js";
+import { Optional } from "../model/shared.js";
 import { Size } from "../model/size.js";
 
 export const DXF_DATA_URL = "data:application/dxf,";
 
-export function dxf2dExportImage(root: AbstractImage): string {
+export type DxfOptions = {
+  readonly imageDataByUrl: Record<string, `${typeof DXF_DATA_URL}${string}`>;
+};
+
+export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOptions>): string {
+  const opts: DxfOptions = {
+    imageDataByUrl: options?.imageDataByUrl ?? {},
+  };
+
   let svg = "";
   let layer = 0;
 
@@ -22,7 +31,7 @@ export function dxf2dExportImage(root: AbstractImage): string {
   let entities = "";
   let blocks = "";
   for (const component of root.components) {
-    const [newSvg, newBlocks] = componentSvg(component, layer, root.size);
+    const [newSvg, newBlocks] = componentSvg(component, layer, root.size, opts);
     entities += newSvg;
     blocks += newBlocks;
   }
@@ -41,13 +50,13 @@ export function dxf2dExportImage(root: AbstractImage): string {
   return svg;
 }
 
-function componentSvg(c: Component, layer: number, size: Size): readonly [string, string] {
+function componentSvg(c: Component, layer: number, size: Size, options: DxfOptions): readonly [string, string] {
   let svg = "";
   let blocks = "";
 
   if (c.type === "group") {
     for (const child of c.children) {
-      const [newSvg, newBlocks] = componentSvg(child, layer, size);
+      const [newSvg, newBlocks] = componentSvg(child, layer, size, options);
       svg += newSvg;
       blocks += newBlocks;
     }
@@ -55,17 +64,21 @@ function componentSvg(c: Component, layer: number, size: Size): readonly [string
   }
 
   if (c.type == "binaryimage") {
-    if (c.format !== "dxf" || c.data.type !== "url" || !c.data.url.startsWith(DXF_DATA_URL)) {
+    if (c.data.type !== "url") {
+      return [svg, blocks];
+    }
+    const url = options.imageDataByUrl[c.data.url] ?? c.data.url;
+    if (!url.startsWith(DXF_DATA_URL)) {
       return [svg, blocks];
     }
 
-    const dxf = c.data.url.split(DXF_DATA_URL)[1];
+    const dxf = url.split(DXF_DATA_URL)[1];
     if (!dxf) {
       return [svg, blocks];
     }
 
-    const extents = extractExtents(c.data.url);
-    const entities = extractEntities(c.data.url);
+    const extents = extractExtents(dxf);
+    const entities = extractEntities(url);
     if (!extents || !entities) {
       return [svg, blocks];
     }
@@ -98,7 +111,7 @@ function componentSvg(c: Component, layer: number, size: Size): readonly [string
       c.id +
       "\n" +
       "1\n\n" +
-      extractEntities(c.data.url) +
+      extractEntities(dxf) +
       "\n" +
       "0\nENDBLK\n";
 

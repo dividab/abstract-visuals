@@ -29,27 +29,27 @@ import { svg } from "./svg-encoding.js";
 
 export function render(
   scene: Scene,
-  options: Optional<SvgOptions>
+  options?: Optional<SvgOptions>
 ): { readonly image: string; readonly width: number; readonly height: number } {
   const opts: SvgOptions = {
-    view: options.view ?? "front",
-    stroke: options.stroke ?? 2,
-    scale: options.scale ?? undefined,
-    onlyStroke: options.onlyStroke ?? false,
-    grayScale: options.grayScale ?? false,
-    onlyStrokeFill: options.onlyStrokeFill ?? "rgba(255,255,255,0)",
-    font: options.font ?? "",
-    imageDataByUrl: options.imageDataByUrl ?? {},
-    rotation: options.rotation ?? 0,
+    view: options?.view ?? "front",
+    stroke: options?.stroke ?? 2,
+    scale: options?.scale ?? undefined,
+    onlyStroke: options?.onlyStroke ?? false,
+    grayScale: options?.grayScale ?? false,
+    onlyStrokeFill: options?.onlyStrokeFill ?? "rgba(255,255,255,0)",
+    font: options?.font ?? "",
+    imageDataByUrl: options?.imageDataByUrl ?? {},
+    rotation: options?.rotation ?? 0,
   };
 
   const factor = opts.scale
     ? opts.scale.size /
-    (opts.scale.scaleByWidth
-      ? opts.view === "right" || opts.view === "left"
-        ? scene.size_deprecated.z
-        : scene.size_deprecated.x
-      : opts.view === "top" || opts.view === "bottom"
+      (opts.scale.scaleByWidth
+        ? opts.view === "right" || opts.view === "left"
+          ? scene.size_deprecated.z
+          : scene.size_deprecated.x
+        : opts.view === "top" || opts.view === "bottom"
         ? scene.size_deprecated.z
         : scene.size_deprecated.y)
     : 1;
