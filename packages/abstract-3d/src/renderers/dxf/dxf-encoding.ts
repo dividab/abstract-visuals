@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { Vec3 } from "../../abstract-3d.js";
 
-//this doesn't have to be ordered, it can be completely random. 
+//this doesn't have to be ordered, it can be completely random.
 //the only requirement is that all of them are unique. So handling
 //it like this makes the format more deterministic and less prone to
 //errors
@@ -9,7 +9,14 @@ function dxfHandle(handleRef: { handle: number }): string {
   return (++handleRef.handle).toString(16).toUpperCase();
 }
 
-export const dxf3DFACE = (vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, color: number, handleRef: { handle: number }): string => `  0
+export const dxf3DFACE = (
+  vec1: Vec3,
+  vec2: Vec3,
+  vec3: Vec3,
+  vec4: Vec3,
+  color: number,
+  handleRef: { handle: number }
+): string => `  0
 3DFACE
  5
 ${dxfHandle(handleRef)}
@@ -121,7 +128,13 @@ ${end.y}
 ${end.z}
 `;
 
-export const dxf3DEllipse = (center: Vec3, major: Vec3, minor: Vec3, color: string, handleRef: { handle: number }): string =>
+export const dxf3DEllipse = (
+  center: Vec3,
+  major: Vec3,
+  minor: Vec3,
+  color: string,
+  handleRef: { handle: number }
+): string =>
   `  0
 ELLIPSE
  5
@@ -187,21 +200,21 @@ $INSBASE
 0.0
   9
 $EXTMIN
- 10
+10
 0.0
- 20
+20
 0.0
- 30
+30
 0.0
-  9
+9
 $EXTMAX
- 10
+10
 ${size.x}
- 20
- ${size.y}
- 30
- ${size.z}
- 9
+20
+${size.y}
+30
+${size.z}
+9
 $LIMMIN
  10
 0.0
@@ -1805,25 +1818,25 @@ ${groupId}
 
 export const dxfFooter = (groupId: string): string => `  0
 ENDBLK
-  5
+5
 AA2
 330
 2D
 100
 AcDbEntity
-  8
+8
 0
 100
 AcDbBlockEnd
-  0
+0
 ENDSEC
-  0
+0
 SECTION
-  2
+2
 ENTITIES
-  0
+0
 INSERT
-  5
+5
 AA3
 330
 1D

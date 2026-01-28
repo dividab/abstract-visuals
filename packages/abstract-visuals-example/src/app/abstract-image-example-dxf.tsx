@@ -66,9 +66,12 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
   const dynamicImg = `<AbstractImage width={1191} height={842}>
   <Image src={data.ahu} x={0} y={0} width={600} height={200} />
 </AbstractImage>`;
-  const ai = dynamicImage(dynamicImg, { ahu: `${DXF_DATA_URL}${circleDxf}` });
+  const ai = dynamicImage(dynamicImg, { ahu: "sketch" });
 
-  const dxf2 = ai.type === "Ok" ? dxf2dExportImage(ai.image) : undefined;
+  const dxf2 =
+    ai.type === "Ok"
+      ? dxf2dExportImage(ai.image, { imageDataByUrl: { sketch: `${DXF_DATA_URL}${circleDxf}` } })
+      : undefined;
   const dxfUrl2 = dxf2 ? toDataUrl("text/plain", dxf2) : undefined;
 
   return (
