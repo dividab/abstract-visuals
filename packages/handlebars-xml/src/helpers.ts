@@ -258,7 +258,7 @@ const arrayLength: HelperFunc = {
     },
   ],
   returnType: num,
-  func: (arr: ReadonlyArray<unknown>) => (Array.isArray(arr.length) ? arr.length : 0),
+  func: (arr: ReadonlyArray<unknown>) => (Array.isArray(arr) ? arr.length : 0),
 };
 
 const round: HelperFunc = {
