@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.4.0 - 2025.01.29
+
+- Added logical operator helpers `or`, `and` and `not`.
+- Changed so `groupByKey` also accepts a key as a JSON path.
+
 ## v0.3.3 - 2025.01.26
 
 - Added the helper `round`.

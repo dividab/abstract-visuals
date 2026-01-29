@@ -23,6 +23,57 @@ const nullSchema: JSONSchema7 = { type: "null" };
 const arraySchema: JSONSchema7 = { type: "array", items: {} };
 const anySchema: JSONSchema7 = {}; // accepts any JSON value
 
+const and: HelperFunc = {
+  name: "and",
+  description: "Logical AND (v1 && v2 ...)",
+  args: [
+    { name: "v1", description: "Boolean value", type: bool },
+    { name: "v2", description: "Boolean value", type: bool },
+    { name: "v3", description: "Boolean value", type: bool },
+    { name: "v4", description: "Boolean value", type: bool },
+    { name: "v5", description: "Boolean value", type: bool },
+    { name: "v6", description: "Boolean value", type: bool },
+    { name: "v8", description: "Boolean value", type: bool },
+    { name: "v9", description: "Boolean value", type: bool },
+  ],
+  returnType: bool,
+  func: (...args: ReadonlyArray<boolean>) =>
+    args
+      .slice(0, -1) // skip the last context param
+      .filter((a) => a !== undefined)
+      .reduce((acc, a) => acc && a, true),
+};
+
+const or: HelperFunc = {
+  name: "or",
+  description: "Logical OR (v1 || v2 ...)",
+  args: [
+    { name: "v1", description: "Boolean value", type: bool },
+    { name: "v2", description: "Boolean value", type: bool },
+    { name: "v3", description: "Boolean value", type: bool },
+    { name: "v4", description: "Boolean value", type: bool },
+    { name: "v5", description: "Boolean value", type: bool },
+    { name: "v6", description: "Boolean value", type: bool },
+    { name: "v8", description: "Boolean value", type: bool },
+    { name: "v9", description: "Boolean value", type: bool },
+  ],
+  returnType: bool,
+  func: (...args: ReadonlyArray<boolean>) => {
+    return args
+      .slice(0, -1) // skip the last context param
+      .filter((a) => a !== undefined)
+      .reduce((acc, a) => acc || a, false);
+  },
+};
+
+const not: HelperFunc = {
+  name: "not",
+  description: "Logical NOT (!v)",
+  args: [{ name: "v", description: "Boolean value", type: bool }],
+  returnType: bool,
+  func: (v: boolean) => !v,
+};
+
 const add: HelperFunc = {
   name: "add",
   description: "Adds two numbers",
@@ -139,14 +190,14 @@ const lookup: HelperFunc = {
 
 const groupByKey: HelperFunc = {
   name: "groupByKey",
-  description: "Groups an array of objects or arrays by a specified key or index",
+  description: "Groups an array of objects or arrays by a specified key or index (can be a path)",
   args: [
     {
       name: "items",
       description: "Array of items to be grouped",
       type: arraySchema,
     },
-    { name: "key", description: "Key or index to group by", type: stringOrNum },
+    { name: "key", description: "Key or index to group by (can be a path)", type: stringOrNum },
   ],
   returnType: (...argSchemas) => ({
     type: "object",
@@ -157,7 +208,7 @@ const groupByKey: HelperFunc = {
   }),
   func: (items: ReadonlyArray<any>, key: string | number) =>
     items.reduce((result: Record<string, Array<any>>, item) => {
-      const groupKey = item[key]?.toString();
+      const groupKey = (typeof key === "number" ? item[key] : extractStringPath(item, key))?.toString();
       if (groupKey === undefined) {
         return result;
       }
@@ -192,23 +243,8 @@ const sortBy: HelperFunc = {
       },
     },
   ],
-  returnType: (...argSchemas) =>
-    argSchemas[0]?.type === "array"
-      ? argSchemas[0]
-      : arraySchema,
+  returnType: (...argSchemas) => (argSchemas[0]?.type === "array" ? argSchemas[0] : arraySchema),
   func: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
-    const pathParts = path.split(".");
-    const extractPath = (obj: Record<string, any>, curParts?: ReadonlyArray<string>): any => {
-      const [first, ...rest] = curParts || pathParts;
-      if (first === undefined) {
-        return obj;
-      } else if (typeof obj !== "object" || obj == null) {
-        return undefined;
-      } else {
-        return extractPath(obj[first], rest);
-      }
-    };
-
     const compare = (a: any, b: any): number => {
       if (a === null || b === null || a === undefined || b === undefined) {
         if ((a === null || a === undefined) && (b === null || b === undefined)) {
@@ -224,9 +260,10 @@ const sortBy: HelperFunc = {
         return 0;
       }
     };
-
     return [...items].sort((a, b) =>
-      order === "desc" ? compare(extractPath(b), extractPath(a)) : compare(extractPath(a), extractPath(b))
+      order === "desc"
+        ? compare(extractStringPath(b, path), extractStringPath(a, path))
+        : compare(extractStringPath(a, path), extractStringPath(b, path))
     );
   },
 };
@@ -239,10 +276,10 @@ const arrayLength: HelperFunc = {
       name: "array",
       type: arraySchema,
       description: "The array to get the length from",
-    }
+    },
   ],
   returnType: num,
-  func: (arr: ReadonlyArray<unknown>) => Array.isArray(arr.length) ? arr.length : 0,
+  func: (arr: ReadonlyArray<unknown>) => (Array.isArray(arr.length) ? arr.length : 0),
 };
 
 const round: HelperFunc = {
@@ -258,13 +295,16 @@ const round: HelperFunc = {
       name: "decimals",
       type: num,
       description: "The decimal count to round to",
-    }
+    },
   ],
   returnType: num,
   func: (n: number, d: number) => Math.round(n * 10 ** d) / 10 ** d,
 };
 
 export const helpers: ReadonlyArray<HelperFunc> = [
+  and,
+  or,
+  not,
   add,
   subtract,
   multiply,
@@ -314,3 +354,18 @@ export const helpers: ReadonlyArray<HelperFunc> = [
 //     return moment().format(format);
 //   });
 // }
+
+function extractStringPath(obj: Record<string, any>, path: string): any {
+  return extractArrayPath(obj, path.split("."));
+}
+
+function extractArrayPath(obj: Record<string, any>, path: ReadonlyArray<string>): any {
+  const [first, ...rest] = path;
+  if (first === undefined) {
+    return obj;
+  } else if (typeof obj !== "object" || obj == null) {
+    return undefined;
+  } else {
+    return extractArrayPath(obj[first], rest);
+  }
+}
