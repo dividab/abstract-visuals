@@ -167,8 +167,8 @@ const lookup: HelperFunc = {
   func: (obj: Record<string, JSONSchema7>, key: string) => obj[key],
 };
 
-const groupByKey: HelperFunc = {
-  name: "groupByKey",
+const groupBy: HelperFunc = {
+  name: "groupBy",
   description: "Groups an array of objects or arrays by a specified key or index (can be a path)",
   args: [
     {
@@ -294,7 +294,7 @@ export const helpers: ReadonlyArray<HelperFunc> = [
   lessThanEqual,
   greaterThanEqual,
   lookup,
-  groupByKey,
+  groupBy,
   sortBy,
   arrayLength,
   round,
