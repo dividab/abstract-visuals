@@ -1,6 +1,6 @@
 # abstract-visuals
 
-[![build][build-image]][build-url]
+[![CI](https://github.com/dividab/abstract-visuals/actions/workflows/ci.yml/badge.svg)](https://github.com/dividab/abstract-visuals/actions/workflows/ci.yml)
 [![Coverage Status][codecov-image]][codecov-url]
 [![code style: prettier][prettier-image]][prettier-url]
 [![types][types-image]][types-url]
