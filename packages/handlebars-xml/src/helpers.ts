@@ -179,11 +179,11 @@ const groupBy: HelperFunc = {
     { name: "key", description: "Key or index to group by (can be a path)", type: stringOrNum },
   ],
   returnType: (...argSchemas) => ({
-    type: "object",
-    additionalProperties: {
-      type: "array",
-      items: argSchemas[0]?.type === "array" ? argSchemas[0].items ?? {} : {},
-    },
+      type: "object",
+      additionalProperties: {
+          type: "array",
+          items: argSchemas[0] ?? anySchema,
+      },
   }),
   func: (items: ReadonlyArray<any>, key: string | number) =>
     items.reduce((result: Record<string, Array<any>>, item) => {
