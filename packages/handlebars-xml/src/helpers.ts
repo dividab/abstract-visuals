@@ -222,7 +222,7 @@ const sortBy: HelperFunc = {
       },
     },
   ],
-  returnType: (...argSchemas) => (argSchemas[0]?.type === "array" ? argSchemas[0] : arraySchema),
+  returnType: (...argSchemas) => (argSchemas[0] ?? arraySchema),
   func: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
     const compare = (a: any, b: any): number => {
       if (a === null || b === null || a === undefined || b === undefined) {
