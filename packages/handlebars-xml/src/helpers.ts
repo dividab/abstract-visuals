@@ -25,53 +25,32 @@ const anySchema: JSONSchema7 = {}; // accepts any JSON value
 
 const and: HelperFunc = {
   name: "and",
-  description: "Logical AND (v1 && v2 ...)",
+  description: "Logical AND",
   args: [
-    { name: "v1", description: "Boolean value", type: bool },
-    { name: "v2", description: "Boolean value", type: bool },
-    { name: "v3", description: "Boolean value", type: bool },
-    { name: "v4", description: "Boolean value", type: bool },
-    { name: "v5", description: "Boolean value", type: bool },
-    { name: "v6", description: "Boolean value", type: bool },
-    { name: "v8", description: "Boolean value", type: bool },
-    { name: "v9", description: "Boolean value", type: bool },
+    { name: "a", description: "Any value", type: anySchema },
+    { name: "b", description: "Any value", type: anySchema },
   ],
   returnType: bool,
-  func: (...args: ReadonlyArray<boolean>) =>
-    args
-      .slice(0, -1) // skip the last context param
-      .filter((a) => a !== undefined)
-      .reduce((acc, a) => acc && a, true),
+  func: (a: any, b: any): boolean => a && b,
 };
 
 const or: HelperFunc = {
   name: "or",
-  description: "Logical OR (v1 || v2 ...)",
+  description: "Logical OR",
   args: [
-    { name: "v1", description: "Boolean value", type: bool },
-    { name: "v2", description: "Boolean value", type: bool },
-    { name: "v3", description: "Boolean value", type: bool },
-    { name: "v4", description: "Boolean value", type: bool },
-    { name: "v5", description: "Boolean value", type: bool },
-    { name: "v6", description: "Boolean value", type: bool },
-    { name: "v8", description: "Boolean value", type: bool },
-    { name: "v9", description: "Boolean value", type: bool },
+    { name: "a", description: "Any value", type: anySchema },
+    { name: "b", description: "Any value", type: anySchema },
   ],
   returnType: bool,
-  func: (...args: ReadonlyArray<boolean>) => {
-    return args
-      .slice(0, -1) // skip the last context param
-      .filter((a) => a !== undefined)
-      .reduce((acc, a) => acc || a, false);
-  },
+  func: (a: any, b: any): boolean => a || b,
 };
 
 const not: HelperFunc = {
   name: "not",
-  description: "Logical NOT (!v)",
-  args: [{ name: "v", description: "Boolean value", type: bool }],
+  description: "Logical NOT",
+  args: [{ name: "v", description: "Any value", type: anySchema }],
   returnType: bool,
-  func: (v: boolean) => !v,
+  func: (v: any): boolean => !v,
 };
 
 const add: HelperFunc = {
