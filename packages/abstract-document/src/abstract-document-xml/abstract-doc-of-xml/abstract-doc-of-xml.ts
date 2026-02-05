@@ -4,6 +4,7 @@ import * as StyleKey from "../../abstract-document/styles/style-key.js";
 import { Resources } from "../../abstract-document/resources.js";
 import { ADCreatorFn, creators, propsCreators } from "./creator.js";
 import { parseHandlebarsXml, parseMustacheXml, type XmlElement } from "handlebars-xml";
+import { getFontStyleName } from "../../abstract-document-exporters/pdf/font.js";
 
 export type TemplateInput = {
   readonly template: string;
@@ -176,21 +177,29 @@ function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
   styleNames: Record<string, string> = {},
   images: Record<string, true> = {},
-  fonts: Record<string, true> = {}
-): readonly [imageUrls: Record<string, true>, fontFamilies: Record<string, true>, styleNames: Record<string, string>] {
+  fonts: Record<string, true> = {},
+  fontStyles: Record<string, ReadonlyArray<string>> = {},
+): readonly [imageUrls: Record<string, true>, fontFamilies: Record<string, true>, styleNames: Record<string, string>, fontStyles: Record<string, ReadonlyArray<string>>] {
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
       images[item.attributes.src as string] = true;
     } else if (item.attributes?.fontFamily) {
       fonts[item.attributes.fontFamily as string] = true;
+
+      const styleName = getFontStyleName(item.attributes);
+      const currentStyleNames = fontStyles[item.attributes.fontFamily as string] ?? [];
+      if(currentStyleNames.findIndex((v) => v === styleName) === -1) {
+        fontStyles[item.attributes.fontFamily as string] = [...currentStyleNames, styleName];
+      }
+
       if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
         styleNames[item.attributes.name as string] = item.attributes.type;
       }
     } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
       styleNames[item.attributes.name as string] = item.attributes.type;
     } else {
-      extractImageFontsStyleNames(item.children, styleNames, images, fonts);
+      extractImageFontsStyleNames(item.children, styleNames, images, fonts, fontStyles);
     }
   });
-  return [images, fonts, styleNames];
+  return [images, fonts, styleNames, fontStyles];
 }

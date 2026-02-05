@@ -28,8 +28,8 @@ export function registerFonts(
   }
 }
 
-export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
-  const fontWeight = textStyle.fontWeight
+function getFontWeightFromStyle(textStyle: AD.TextStyle.TextStyle): TextFontWeight {
+  return textStyle.fontWeight
     ? textStyle.fontWeight
     : textStyle.light
     ? "light"
@@ -42,7 +42,25 @@ export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
     : textStyle.extraBold
     ? "extraBold"
     : "normal";
+}
+
+function getFontWeightFromAttributes(attribs: Record<string, string>): TextFontWeight {
+  const style = AD.TextStyle.create(attribs);
+  return getFontWeightFromStyle(style);
+}
+
+export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
+  const fontWeight = getFontWeightFromStyle(textStyle);
   return getFontName(textStyle.fontFamily, fontWeight, textStyle.italic);
+}
+
+export function getFontStyleName(attributes: Record<string, string>): string {
+  const fontWeight = getFontWeightFromAttributes(attributes);
+  const italic = attributes.italic === "true";
+  if(fontWeight === "normal") {
+    return italic ? "italic" : fontWeight;
+  }
+  return `${fontWeight}${italic ? "Italic": ""}`;
 }
 
 export function getFontName(
