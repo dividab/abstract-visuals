@@ -46,7 +46,7 @@ export function abstractDocXml(
   data: any,
   partials: Record<string, string>,
   rendered: "Mustache" | "Handlebars" = "Handlebars"
-): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, true>, fontStyles: Record<string, ReadonlyArray<string>>] {
+): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, true>, fontStyles: Record<string, ReadonlyArray<keyof Font>>] {
   const xml =
     rendered === "Mustache" ? parseMustacheXml(template, data, partials) : parseHandlebarsXml(template, data, partials);
   const [imageUrls, fontFamilies, styleNames, fontStyles] = extractImageFontsStyleNames(xml);
