@@ -5,6 +5,7 @@ import { Resources } from "../../abstract-document/resources.js";
 import { ADCreatorFn, creators, propsCreators } from "./creator.js";
 import { parseHandlebarsXml, parseMustacheXml, type XmlElement } from "handlebars-xml";
 import { getFontStyleName } from "../../abstract-document-exporters/pdf/font.js";
+import { Font } from "../../abstract-document/primitives/font.js";
 
 export type TemplateInput = {
   readonly template: string;
@@ -178,8 +179,8 @@ function extractImageFontsStyleNames(
   styleNames: Record<string, string> = {},
   images: Record<string, true> = {},
   fonts: Record<string, true> = {},
-  fontStyles: Record<string, ReadonlyArray<string>> = {},
-): readonly [imageUrls: Record<string, true>, fontFamilies: Record<string, true>, styleNames: Record<string, string>, fontStyles: Record<string, ReadonlyArray<string>>] {
+  fontStyles: Record<string, ReadonlyArray<keyof Font>> = {},
+): readonly [imageUrls: Record<string, true>, fontFamilies: Record<string, true>, styleNames: Record<string, string>, fontStyles: Record<string, ReadonlyArray<keyof Font>>] {
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
       images[item.attributes.src as string] = true;

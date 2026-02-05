@@ -1,4 +1,5 @@
 import * as AD from "../../abstract-document/index.js";
+import { Font } from "../../abstract-document/primitives/font.js";
 import { TextFontWeight } from "../../abstract-document/styles/text-style.js";
 import { getResources } from "../shared/get_resources.js";
 
@@ -54,13 +55,13 @@ export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
   return getFontName(textStyle.fontFamily, fontWeight, textStyle.italic);
 }
 
-export function getFontStyleName(attributes: Record<string, string>): string {
+export function getFontStyleName(attributes: Record<string, string>): keyof Font {
   const fontWeight = getFontWeightFromAttributes(attributes);
   const italic = attributes.italic === "true";
   if(fontWeight === "normal") {
     return italic ? "italic" : fontWeight;
   }
-  return `${fontWeight}${italic ? "Italic": ""}`;
+  return `${fontWeight === "mediumBold" ? "medium" : fontWeight}${italic ? "Italic": ""}`;
 }
 
 export function getFontName(
