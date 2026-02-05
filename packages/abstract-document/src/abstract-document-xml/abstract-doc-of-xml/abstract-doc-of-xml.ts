@@ -45,12 +45,12 @@ export function abstractDocXml(
   data: any,
   partials: Record<string, string>,
   rendered: "Mustache" | "Handlebars" = "Handlebars"
-): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, true>] {
+): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, true>, fontStyles: Record<string, ReadonlyArray<string>>] {
   const xml =
     rendered === "Mustache" ? parseMustacheXml(template, data, partials) : parseHandlebarsXml(template, data, partials);
-  const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
+  const [imageUrls, fontFamilies, styleNames, fontStyles] = extractImageFontsStyleNames(xml);
   const doc = abstractDocXmlRecursive(creators(styleNames), xml[0]!);
-  return [doc, imageUrls, fontFamilies];
+  return [doc, imageUrls, fontFamilies, fontStyles];
 }
 
 function abstractDocXmlRecursive(
