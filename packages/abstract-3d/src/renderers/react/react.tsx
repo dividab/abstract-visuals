@@ -21,6 +21,7 @@ type ReactProps = {
   readonly useAnimations?: boolean;
   readonly camera?: Camera;
   readonly view?: View;
+  readonly useAlphaTest?: boolean;
   readonly controlsHelper?: ControlsHelper;
   readonly canvasProps?: Omit<CanvasProps & React.RefAttributes<HTMLCanvasElement>, "children">;
   readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
@@ -72,6 +73,7 @@ export const render = memo(
     orbitContolsProps,
     materialStateImages,
     sceneFallback,
+    useAlphaTest = true,
     onClickGroup,
     onHoverGroup,
     onContextMenuGroup,
@@ -150,6 +152,7 @@ export const render = memo(
             onClickHotSpot={onClickHotSpot}
             createGroupKey={createGroupKey}
             createGroupId={createGroupId}
+            useAlphaTest={useAlphaTest}
           />
           {!useOldMode && (
             <EffectComposer multisampling={8}>

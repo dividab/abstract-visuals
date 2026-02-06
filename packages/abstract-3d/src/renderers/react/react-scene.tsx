@@ -23,6 +23,7 @@ export function ReactScene({
   hotSpotTexts,
   showHotSpotTexts,
   showDimensions,
+  useAlphaTest,
   materialStateImages,
   reactPopovers,
   onClickGroup,
@@ -39,6 +40,7 @@ export function ReactScene({
   readonly activeComponents: Record<string, MaterialState> | undefined;
   readonly showHotSpotTexts: boolean;
   readonly showDimensions: boolean;
+  readonly useAlphaTest?: boolean;
   readonly hotSpotTexts?: Record<string, string>;
   readonly materialStateImages?: Record<string, string>;
   readonly reactPopovers?: ReadonlyArray<ReactPopover>;
@@ -102,6 +104,7 @@ export function ReactScene({
             onContextMenuGroup={onContextMenuGroup}
             createGroupKey={createGroupKey}
             id={id}
+            useAlphaTest={useAlphaTest}
             rootData={g.data}
           />
         );

@@ -13,6 +13,7 @@ export function ReactGroup({
   selectedIds,
   hotSpotsActive,
   activeComponents,
+  useAlphaTest,
   id,
   rootData,
   onClickGroup,
@@ -26,6 +27,7 @@ export function ReactGroup({
   readonly hoveredIdExternal: string | undefined;
   readonly selectedIds: Record<string, boolean> | undefined;
   readonly hotSpotsActive: boolean;
+  readonly useAlphaTest?: boolean;
   readonly activeComponents: Record<string, MaterialState> | undefined;
   readonly id: string | undefined;
   readonly rootData: Record<string, string> | undefined;
@@ -120,6 +122,7 @@ export function ReactGroup({
           id={id}
           rootData={rootData}
           createGroupKey={createGroupKey}
+          useAlphaTest={useAlphaTest}
         />
       ))}
       {g.meshes?.map((m, i) => (
@@ -133,6 +136,7 @@ export function ReactGroup({
             materialStateImages={materialStateImages}
             disabled={disabled}
             state={materialState}
+            useAlphaTest={useAlphaTest}
           />
         </ReactMesh>
       ))}

@@ -28,6 +28,7 @@ export function ReactMaterial({
   isText,
   isHotSpot,
   drawBackOnly,
+  useAlphaTest,
 }: {
   readonly material: Material;
   readonly id?: string;
@@ -39,6 +40,7 @@ export function ReactMaterial({
   readonly isText: boolean;
   readonly isHotSpot?: boolean;
   readonly drawBackOnly?: boolean;
+  readonly useAlphaTest?: boolean;
 }): React.JSX.Element {
   const mat =
     !state || material.imageUrl === "UrlImage"
@@ -69,6 +71,7 @@ export function ReactMaterial({
         url={state === "Error" ? materialStateImages?.[ERROR_IMG_KEY] ?? material.imageUrl : material.imageUrl}
         color={color}
         material={mat}
+        useAlphaTest={useAlphaTest}
       />
     );
   }
@@ -120,10 +123,12 @@ function TextureMaterial({
   url,
   color,
   material,
+  useAlphaTest = true,
 }: {
   readonly url: string;
   readonly color: string | Color | undefined;
   readonly material: Material;
+  readonly useAlphaTest?: boolean;
 }): React.JSX.Element {
   const texture = suspend(
     new Promise((res) =>
@@ -152,7 +157,7 @@ function TextureMaterial({
     <meshBasicMaterial
       color={color}
       side={DoubleSide}
-      alphaTest={0.8}
+      alphaTest={useAlphaTest ? 0.8 : undefined}
       map={texture}
       {...(material.opacity !== undefined && material.opacity < 1 ? { opacity: material.opacity } : materialDefaults)}
       transparent
