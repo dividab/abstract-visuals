@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.3.12
+
+- Added a flag to turn off alpha test on texture materials
+
 ## v1.3.9
 
 - Added a setting for the dxf exporter to specify the sides of the cylinders.
