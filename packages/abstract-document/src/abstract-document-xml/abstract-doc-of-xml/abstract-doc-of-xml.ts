@@ -21,17 +21,30 @@ export type Format = "PDF" | "DOCX";
 
 export async function abstractDocsXml(
   templateInputs: ReadonlyArray<TemplateInput>,
-  getResources: (imageUrls: Record<string, true>, fontFamilies: Record<string, true>) => Promise<Resources>
+  getResources: (imageUrls: Record<string, true>, fontFamilies: Record<string, ReadonlyArray<keyof Font>>) => Promise<Resources>
 ): Promise<AbstractDoxXmlsResult> {
   try {
     const abstractDocs = Array<AbstractDoc.AbstractDoc>();
     let imageUrls: Record<string, true> = {};
-    let fontFamilies: Record<string, true> = {};
+    let fontFamilies: Record<string, ReadonlyArray<keyof Font>> = {};
     for (const r of templateInputs) {
       const [ad, newImageUrls, newFontFamilies] = abstractDocXml(r.template, r.data, r.partials, "Handlebars");
       abstractDocs.push(ad);
       imageUrls = { ...imageUrls, ...newImageUrls };
-      fontFamilies = { ...fontFamilies, ...newFontFamilies };
+
+      for(const [font, families] of Object.entries(newFontFamilies)) {
+        if(font in fontFamilies) {
+          const newFamilies: Array<keyof Font> = [];
+          for(const newFamily of families) {
+            if(fontFamilies[font].find((v) => v === newFamily) === undefined) {
+              newFamilies.push(newFamily);
+            }
+          }
+          fontFamilies[font] = [...fontFamilies[font], ...newFamilies];
+        } else {
+          fontFamilies[font] = families;
+        }
+      }
     }
     const resources = await getResources(imageUrls, fontFamilies);
     const combinedReport = addResources(merge(...abstractDocs), resources);
@@ -46,12 +59,12 @@ export function abstractDocXml(
   data: any,
   partials: Record<string, string>,
   rendered: "Mustache" | "Handlebars" = "Handlebars"
-): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, true>, fontStyles: Record<string, ReadonlyArray<keyof Font>>] {
+): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, ReadonlyArray<keyof Font>>] {
   const xml =
     rendered === "Mustache" ? parseMustacheXml(template, data, partials) : parseHandlebarsXml(template, data, partials);
-  const [imageUrls, fontFamilies, styleNames, fontStyles] = extractImageFontsStyleNames(xml);
+  const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
   const doc = abstractDocXmlRecursive(creators(styleNames), xml[0]!);
-  return [doc, imageUrls, fontFamilies, fontStyles];
+  return [doc, imageUrls, fontFamilies];
 }
 
 function abstractDocXmlRecursive(
@@ -178,19 +191,17 @@ function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
   styleNames: Record<string, string> = {},
   images: Record<string, true> = {},
-  fonts: Record<string, true> = {},
-  fontStyles: Record<string, ReadonlyArray<keyof Font>> = {},
-): readonly [imageUrls: Record<string, true>, fontFamilies: Record<string, true>, styleNames: Record<string, string>, fontStyles: Record<string, ReadonlyArray<keyof Font>>] {
+  fonts: Record<string, ReadonlyArray<keyof Font>> = {},
+): readonly [imageUrls: Record<string, true>, fontFamilies: Record<string, ReadonlyArray<keyof Font>>, styleNames: Record<string, string>] {
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
       images[item.attributes.src as string] = true;
     } else if (item.attributes?.fontFamily) {
-      fonts[item.attributes.fontFamily as string] = true;
 
       const styleName = getFontStyleName(item.attributes);
-      const currentStyleNames = fontStyles[item.attributes.fontFamily as string] ?? [];
+      const currentStyleNames = fonts[item.attributes.fontFamily as string] ?? [];
       if(currentStyleNames.findIndex((v) => v === styleName) === -1) {
-        fontStyles[item.attributes.fontFamily as string] = [...currentStyleNames, styleName];
+        fonts[item.attributes.fontFamily as string] = [...currentStyleNames, styleName];
       }
 
       if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
@@ -199,8 +210,8 @@ function extractImageFontsStyleNames(
     } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
       styleNames[item.attributes.name as string] = item.attributes.type;
     } else {
-      extractImageFontsStyleNames(item.children, styleNames, images, fonts, fontStyles);
+      extractImageFontsStyleNames(item.children, styleNames, images, fonts);
     }
   });
-  return [images, fonts, styleNames, fontStyles];
+  return [images, fonts, styleNames];
 }
