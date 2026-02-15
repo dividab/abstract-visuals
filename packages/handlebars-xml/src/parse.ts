@@ -1,6 +1,5 @@
 import { X2jOptions, XMLParser } from "fast-xml-parser";
 import Handlebars from "handlebars";
-import Mustache from "mustache";
 import { helpers } from "./helpers.js";
 
 export type XmlElement = {
@@ -18,16 +17,6 @@ export const parseHandlebarsXml = (
 ): ReadonlyArray<XmlElement> => {
   return parseXml(renderHandlebars(template, data, partials));
 };
-
-export const parseMustacheXml = (
-  template: string,
-  data: any,
-  partials: Record<string, string>
-): ReadonlyArray<XmlElement> => {
-  return parseXml(renderMustache(template, data, partials));
-};
-
-export const renderMustache = Mustache.render;
 
 export const renderHandlebars = (template: string, data: any, partials: Record<string, string>): string => {
   const hbs = Handlebars.create();

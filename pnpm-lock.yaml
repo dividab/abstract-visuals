@@ -173,9 +173,6 @@ importers:
       moment:
         specifier: ^2.30.1
         version: 2.30.1
-      mustache:
-        specifier: ^4.2.0
-        version: 4.2.0
       pdfkit:
         specifier: ^0.17.2
         version: 0.17.2
@@ -198,9 +195,6 @@ importers:
       '@types/isomorphic-fetch':
         specifier: ^0.0.34
         version: 0.0.34
-      '@types/mustache':
-        specifier: ^4.2.5
-        version: 4.2.5
       '@types/pdfkit':
         specifier: ^0.17.2
         version: 0.17.2
@@ -277,9 +271,6 @@ importers:
       moment:
         specifier: ^2.30.1
         version: 2.30.1
-      mustache:
-        specifier: ^4.2.0
-        version: 4.2.0
       react:
         specifier: '>=17.0.0 <20.0.0'
         version: 19.0.0
@@ -290,9 +281,6 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
     devDependencies:
-      '@types/mustache':
-        specifier: ^4.2.5
-        version: 4.2.5
       '@types/node':
         specifier: ^22.10.1
         version: 22.10.1
@@ -381,9 +369,6 @@ importers:
       json-schema:
         specifier: ^0.4.0
         version: 0.4.0
-      mustache:
-        specifier: ^4.2.0
-        version: 4.2.0
       ts-exhaustive-check:
         specifier: ^1.0.0
         version: 1.0.0
@@ -391,9 +376,6 @@ importers:
       '@types/json-schema':
         specifier: ^7.0.15
         version: 7.0.15
-      '@types/mustache':
-        specifier: ^4.2.5
-        version: 4.2.5
       '@types/node':
         specifier: ^24.9.2
         version: 24.9.2
@@ -1933,9 +1915,6 @@ packages:
 
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
-
-  '@types/mustache@4.2.5':
-    resolution: {integrity: sha512-PLwiVvTBg59tGFL/8VpcGvqOu3L4OuveNvPi0EYbWchRdEVP++yRUXJPFl+CApKEq13017/4Nf7aQ5lTtHUNsA==}
 
   '@types/node@14.18.63':
     resolution: {integrity: sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==}
@@ -4814,10 +4793,6 @@ packages:
   multimatch@3.0.0:
     resolution: {integrity: sha512-22foS/gqQfANZ3o+W7ST2x25ueHDVNWl/b9OlGcLpy/iKxjCpvcNCM51YCenUi7Mt/jAjjqv8JwZRs8YP5sRjA==}
     engines: {node: '>=6'}
-
-  mustache@4.2.0:
-    resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
-    hasBin: true
 
   mute-stream@0.0.7:
     resolution: {integrity: sha512-r65nCZhrbXXb6dXOACihYApHw2Q6pV0M3V0PSxd74N0+D8nzAdEAITq2oAjA1jVnKI+tGvEBUpqiMh0+rW6zDQ==}
@@ -8748,8 +8723,6 @@ snapshots:
 
   '@types/minimist@1.2.5': {}
 
-  '@types/mustache@4.2.5': {}
-
   '@types/node@14.18.63': {}
 
   '@types/node@22.10.1':
@@ -12181,8 +12154,6 @@ snapshots:
       array-union: 1.0.2
       arrify: 1.0.1
       minimatch: 3.1.2
-
-  mustache@4.2.0: {}
 
   mute-stream@0.0.7: {}
 

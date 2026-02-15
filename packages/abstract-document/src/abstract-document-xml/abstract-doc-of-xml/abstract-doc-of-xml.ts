@@ -3,7 +3,7 @@ import { AbstractDoc } from "../../abstract-document/index.js";
 import * as StyleKey from "../../abstract-document/styles/style-key.js";
 import { Resources } from "../../abstract-document/resources.js";
 import { ADCreatorFn, creators, propsCreators } from "./creator.js";
-import { parseHandlebarsXml, parseMustacheXml, type XmlElement } from "handlebars-xml";
+import { parseHandlebarsXml, type XmlElement } from "handlebars-xml";
 import { getFontStyleName } from "../../abstract-document-exporters/pdf/font.js";
 import { Font } from "../../abstract-document/primitives/font.js";
 
@@ -21,32 +21,27 @@ export type Format = "PDF" | "DOCX";
 
 export async function abstractDocsXml(
   templateInputs: ReadonlyArray<TemplateInput>,
-  getResources: (imageUrls: Record<string, true>, fontFamilies: Record<string, ReadonlyArray<keyof Font>>) => Promise<Resources>
+  getResources: (
+    imageUrls: Record<string, true>,
+    fontFamilies: Record<string, ReadonlyArray<keyof Font>>
+  ) => Promise<Resources>
 ): Promise<AbstractDoxXmlsResult> {
   try {
     const abstractDocs = Array<AbstractDoc.AbstractDoc>();
     let imageUrls: Record<string, true> = {};
-    let fontFamilies: Record<string, ReadonlyArray<keyof Font>> = {};
+    const fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>> = {};
     for (const r of templateInputs) {
-      const [ad, newImageUrls, newFontFamilies] = abstractDocXml(r.template, r.data, r.partials, "Handlebars");
+      const [ad, newImageUrls, newFontFamilies] = abstractDocXml(r.template, r.data, r.partials);
       abstractDocs.push(ad);
       imageUrls = { ...imageUrls, ...newImageUrls };
-
-      for(const [font, families] of Object.entries(newFontFamilies)) {
-        if(font in fontFamilies) {
-          const newFamilies: Array<keyof Font> = [];
-          for(const newFamily of families) {
-            if(fontFamilies[font].find((v) => v === newFamily) === undefined) {
-              newFamilies.push(newFamily);
-            }
-          }
-          fontFamilies[font] = [...fontFamilies[font], ...newFamilies];
-        } else {
-          fontFamilies[font] = families;
-        }
-      }
+      Object.entries(newFontFamilies).forEach(
+        ([font, types]) => (fontFamilies[font] = { ...fontFamilies[font], ...types })
+      );
     }
-    const resources = await getResources(imageUrls, fontFamilies);
+    const resources = await getResources(
+      imageUrls,
+      Object.fromEntries(Object.entries(fontFamilies).map(([f, s]) => [f, Object.keys(s) as Array<keyof Font>]))
+    );
     const combinedReport = addResources(merge(...abstractDocs), resources);
     return { type: "Ok", value: combinedReport };
   } catch (e) {
@@ -57,11 +52,13 @@ export async function abstractDocsXml(
 export function abstractDocXml(
   template: string,
   data: any,
-  partials: Record<string, string>,
-  rendered: "Mustache" | "Handlebars" = "Handlebars"
-): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, ReadonlyArray<keyof Font>>] {
-  const xml =
-    rendered === "Mustache" ? parseMustacheXml(template, data, partials) : parseHandlebarsXml(template, data, partials);
+  partials: Record<string, string>
+): readonly [
+  AbstractDoc.AbstractDoc,
+  imageUrls: Record<string, true>,
+  fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>
+] {
+  const xml = parseHandlebarsXml(template, data, partials);
   const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
   const doc = abstractDocXmlRecursive(creators(styleNames), xml[0]!);
   return [doc, imageUrls, fontFamilies];
@@ -116,7 +113,8 @@ function abstractDocXmlRecursive(
   const obj = creator(allProps, children) as { [k: string]: unknown };
 
   for (const propName of Object.keys(allProps).sort((a, b) => a.length - b.length)) {
-    const propsCreator = allProps[propName] !== undefined && propsCreators[propName] ? propsCreators[propName] : undefined;
+    const propsCreator =
+      allProps[propName] !== undefined && propsCreators[propName] ? propsCreators[propName] : undefined;
     if (propsCreator) {
       const attributeName = getSuffixedAttributeBaseName(propsCreator.name) ?? propsCreator.name;
       obj[attributeName] = propsCreator(allProps, children);
@@ -169,8 +167,8 @@ function abstractDocXmlRecursive(
 function getSuffixedAttributeBaseName(attributeName: string): string | undefined {
   const suffixRemoved = (() => {
     const suffixes = ["Top", "Bottom", "Left", "Right"];
-    for(const suffix of suffixes) {
-      if(attributeName.endsWith(suffix)) {
+    for (const suffix of suffixes) {
+      if (attributeName.endsWith(suffix)) {
         return attributeName.slice(0, -suffix.length);
       }
     }
@@ -191,19 +189,18 @@ function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
   styleNames: Record<string, string> = {},
   images: Record<string, true> = {},
-  fonts: Record<string, ReadonlyArray<keyof Font>> = {},
-): readonly [imageUrls: Record<string, true>, fontFamilies: Record<string, ReadonlyArray<keyof Font>>, styleNames: Record<string, string>] {
+  fonts: Record<string, Partial<Record<keyof Font, boolean>>> = {}
+): readonly [
+  imageUrls: Record<string, true>,
+  fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>,
+  styleNames: Record<string, string>
+] {
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
       images[item.attributes.src as string] = true;
     } else if (item.attributes?.fontFamily) {
-
       const styleName = getFontStyleName(item.attributes);
-      const currentStyleNames = fonts[item.attributes.fontFamily as string] ?? [];
-      if(currentStyleNames.findIndex((v) => v === styleName) === -1) {
-        fonts[item.attributes.fontFamily as string] = [...currentStyleNames, styleName];
-      }
-
+      (fonts[item.attributes.fontFamily as string] ??= {})[styleName] = true;
       if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
         styleNames[item.attributes.name as string] = item.attributes.type;
       }
