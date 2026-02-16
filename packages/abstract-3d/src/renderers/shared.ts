@@ -174,8 +174,8 @@ export function shade(p: number, from: string, to?: string): string | undefined 
       (f[3]! < 0 && t[3]! < 0
         ? ")"
         : "," +
-        (f[3]! > -1 && t[3]! > -1 ? r(((t[3]! - f[3]!) * p + f[3]!) * 10000) / 10000 : t[3]! < 0 ? f[3] : t[3]) +
-        ")")
+          (f[3]! > -1 && t[3]! > -1 ? r(((t[3]! - f[3]!) * p + f[3]!) * 10000) / 10000 : t[3]! < 0 ? f[3] : t[3]) +
+          ")")
     );
   }
 
@@ -189,10 +189,10 @@ export function shade(p: number, from: string, to?: string): string | undefined 
       (f[3]! > -1 && t[3]! > -1
         ? r(((t[3]! - f[3]!) * p + f[3]!) * 255)
         : t[3]! > -1
-          ? r(t[3]! * 255)
-          : f[3]! > -1
-            ? r(f[3]! * 255)
-            : 255)
+        ? r(t[3]! * 255)
+        : f[3]! > -1
+        ? r(f[3]! * 255)
+        : 255)
     )
       .toString(16)
       .slice(1, f[3]! > -1 || t[3]! > -1 ? undefined : -2)
