@@ -79,6 +79,24 @@ export const imageRow = `<xs:complexType name="ImageRow">
 	<xs:attribute name="src" type="xs:string" use="required" />
 	<xs:attribute name="width" type="xs:decimal" use="required" />
 	<xs:attribute name="height" type="xs:decimal" use="required" />
+	<xs:attribute name="verticalAlignment">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Top" />
+				<xs:enumeration value="Center" />
+				<xs:enumeration value="Bottom" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="horizontalAlignment">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Left" />
+				<xs:enumeration value="Center" />
+				<xs:enumeration value="Right" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="cellStyle" type="TableCellStyle" />
 	</xs:choice>
@@ -98,6 +116,24 @@ export const imageCell = `<xs:complexType name="ImageCell">
 	<xs:attribute name="src" type="xs:string" use="required" />
 	<xs:attribute name="width" type="xs:decimal" use="required" />
 	<xs:attribute name="height" type="xs:decimal" use="required" />
+	<xs:attribute name="verticalAlignment">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Top" />
+				<xs:enumeration value="Center" />
+				<xs:enumeration value="Bottom" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="horizontalAlignment">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Left" />
+				<xs:enumeration value="Center" />
+				<xs:enumeration value="Right" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="style" type="TableCellStyle" />
 	</xs:choice>
@@ -115,6 +151,24 @@ export const imageParagraph = `<xs:complexType name="ImageParagraph">
 	<xs:attribute name="src" type="xs:string" use="required" />
 	<xs:attribute name="width" type="xs:decimal" use="required" />
 	<xs:attribute name="height" type="xs:decimal" use="required" />
+	<xs:attribute name="verticalAlignment">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Top" />
+				<xs:enumeration value="Center" />
+				<xs:enumeration value="Bottom" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="horizontalAlignment">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Left" />
+				<xs:enumeration value="Center" />
+				<xs:enumeration value="Right" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
 	<xs:choice minOccurs="0" maxOccurs="1">
 		<xs:element name="style" type="ParagraphStyle" />
 	</xs:choice>
