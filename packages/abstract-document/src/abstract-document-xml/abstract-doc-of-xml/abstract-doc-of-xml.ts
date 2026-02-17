@@ -23,7 +23,7 @@ export async function abstractDocsXml(
   templateInputs: ReadonlyArray<TemplateInput>,
   getResources: (
     imageUrls: Record<string, true>,
-    fontFamilies: Record<string, ReadonlyArray<keyof Font>>
+    fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>
   ) => Promise<Resources>
 ): Promise<AbstractDoxXmlsResult> {
   try {
@@ -38,10 +38,7 @@ export async function abstractDocsXml(
         ([font, types]) => (fontFamilies[font] = { ...fontFamilies[font], ...types })
       );
     }
-    const resources = await getResources(
-      imageUrls,
-      Object.fromEntries(Object.entries(fontFamilies).map(([f, s]) => [f, Object.keys(s) as Array<keyof Font>]))
-    );
+    const resources = await getResources(imageUrls, fontFamilies);
     const combinedReport = addResources(merge(...abstractDocs), resources);
     return { type: "Ok", value: combinedReport };
   } catch (e) {
