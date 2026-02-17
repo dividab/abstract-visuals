@@ -51,21 +51,18 @@ function measureSection(
 
   const pageContentMargins = AD.LayoutFoundation.orDefault(section.page.style.contentMargins);
 
-  const totalContentAvailableWidth =
-    pageWidth - (pageContentMargins.left + pageContentMargins.right);
+  const totalContentAvailableWidth = pageWidth - (pageContentMargins.left + pageContentMargins.right);
   const contentAvailableWidth =
     totalContentAvailableWidth / section.page.style.columnLayout.columnCount -
     section.page.style.columnLayout.columnGap * (section.page.style.columnLayout.columnCount - 1);
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, pageHeight);
   const sectionSizes = children.map((e) => measureSectionElement(pdfKit, resources, contentAvailableSize, e));
 
-  const headerAvailableWidth =
-    pageWidth - (pageContentMargins.left + pageContentMargins.right);
+  const headerAvailableWidth = pageWidth - (pageContentMargins.left + pageContentMargins.right);
   const headerAvailableSize = AD.Size.create(headerAvailableWidth, pageHeight);
   const headerSizes = header.map((e) => measureSectionElement(pdfKit, resources, headerAvailableSize, e));
 
-  const footerAvailableWidth =
-    pageWidth - (pageContentMargins.left + pageContentMargins.right);
+  const footerAvailableWidth = pageWidth - (pageContentMargins.left + pageContentMargins.right);
   const footerAvailableSize = AD.Size.create(footerAvailableWidth, pageHeight);
   const footerSizes = footer.map((e) => measureSectionElement(pdfKit, resources, footerAvailableSize, e));
 
@@ -74,9 +71,9 @@ function measureSection(
   const firstPageHeaderAndFootersExtracted: ReadonlyArray<
     [ReadonlyArray<AD.SectionElement.SectionElement>, AD.LayoutFoundation.LayoutFoundation]
   > = [
-      [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
-      [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins],
-    ];
+    [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
+    [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins],
+  ];
   const firstPageHeaderAndFooterSizes = firstPageHeaderAndFootersExtracted.reduce((prev, [sections, margins]) => {
     const defMargins = AD.LayoutFoundation.orDefault(margins);
     const availabelWidth = pageWidth - (defMargins.left + defMargins.right);
@@ -274,7 +271,7 @@ export function measureTable(
         left: cellStyle.padding?.left ?? 0,
         right: cellStyle.padding?.right ?? 0,
       };
-    
+
       const contentAvailableWidth = cellWidth - (cellStylePadding.left + cellStylePadding.right);
       let cellDesiredHeight = cellStylePadding.top + cellStylePadding.bottom;
 

@@ -1,3 +1,4 @@
+import { ImageProps } from "../../abstract-document/atoms/image.js";
 import {
   TextStyle,
   ParagraphStyle,
@@ -110,9 +111,20 @@ export type ImageCellProps = Omit<ImageParagraphProps, "style"> & {
 };
 
 export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
-  const { imageResource, width, height, paragraphStyle, style, columnSpan, rowSpan } = props;
+  const {
+    imageResource,
+    width,
+    height,
+    horizontalAlignment,
+    verticalAlignment,
+    paragraphStyle,
+    style,
+    columnSpan,
+    rowSpan,
+  } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const imageElement = imageResource && Image.create({ imageResource, width, height });
+  const imageElement =
+    imageResource && Image.create({ imageResource, width, height, horizontalAlignment, verticalAlignment });
   const pararaphProps = {
     style: paragraphStyle ? { ...paragraphStyle, type: "ParagraphStyle" } : undefined,
     styleName: styleNames.ParagraphStyle,
@@ -123,10 +135,7 @@ export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, 
   return TableCell.create({ columnSpan, rowSpan, style, styleName: styleNames.TableCellStyle }, [paragraph]);
 }
 
-export type ImageParagraphProps = {
-  readonly imageResource: ImageResource.ImageResource;
-  readonly width: number;
-  readonly height: number;
+export type ImageParagraphProps = ImageProps & {
   readonly style?: ParagraphStyle.ParagraphStyle;
   readonly styleNames?: string;
 };
@@ -135,9 +144,10 @@ export function ImageParagraph(
   props: ImageParagraphProps,
   styleNameTypes: Record<string, string>
 ): Paragraph.Paragraph | undefined {
-  const { imageResource, width, height, style } = props;
+  const { imageResource, width, height, style, horizontalAlignment, verticalAlignment } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const imageElement = imageResource && Image.create({ imageResource, width, height });
+  const imageElement =
+    imageResource && Image.create({ imageResource, width, height, horizontalAlignment, verticalAlignment });
   const pararaphProps = { style, styleName: styleNames.ParagraphStyle };
   return imageElement
     ? Paragraph.create(pararaphProps, [imageElement])

@@ -39,7 +39,7 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
                 <TextCell text="Price3 €" styleNames="footerResultText, footerResultCell"/>
                 {{/falsy}}
             </TableRow>
-            <ImageRow src="${wiringDiagramUrl}" height="100" width="300"/>
+            <ImageRow src="${wiringDiagramUrl}" height="100" width="300" horizontalAlignment="Center"/>
             <TableRow>
                 {{> inlinePartial}}
             </TableRow>
@@ -94,7 +94,7 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
           <button
             onClick={async () => {
               const res = await genereteDoc(data, template, { partial }, "PDF");
-              if(res.type === "Ok") {
+              if (res.type === "Ok") {
                 setPdf({ type: "Ok", url: URL.createObjectURL(res.blob) });
               } else {
                 setPdf(res);
@@ -143,9 +143,12 @@ async function genereteDoc(
     return { type: "Err", error: "Failed to parse JSON." + e };
   }
 
-
   // Fetch image and fonts once the ADXml has been parsed
-  const [doc, _ignored_imageUrls, _ignored_fontFamilies] = AbstractDocXml.abstractDocXml(template, dataObject, partials);
+  const [doc, _ignored_imageUrls, _ignored_fontFamilies] = AbstractDocXml.abstractDocXml(
+    template,
+    dataObject,
+    partials
+  );
   const docWithResources = AbstractDoc.AbstractDoc.addResources(doc, { imageResources });
   const blob: Blob =
     format === "PDF"

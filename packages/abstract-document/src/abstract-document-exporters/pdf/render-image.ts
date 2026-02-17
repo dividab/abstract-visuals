@@ -22,13 +22,34 @@ export function renderImage(
 
   const position = AD.Point.create(finalRect.x, finalRect.y);
   const rect = resourceRect(resource, finalRect);
-  const factor = Math.min(
-    rect.width / (resource.abstractImage.size.width || 1),
-    rect.height / (resource.abstractImage.size.height || 1)
-  );
+
+  const imgW = resource.abstractImage.size.width || 1;
+  const imgH = resource.abstractImage.size.height || 1;
+
+  const scaleX = rect.width / imgW;
+  const scaleY = rect.height / imgH;
+  const scale = Math.min(scaleX, scaleY);
+
+  const drawnW = imgW * scale;
+  const drawnH = imgH * scale;
+
+  const offsetX =
+    image.horizontalAlignment === "Center"
+      ? (rect.width - drawnW) / 2
+      : image.horizontalAlignment === "Right"
+      ? rect.width - drawnW
+      : 0;
+
+  const offsetY =
+    image.verticalAlignment === "Center"
+      ? (rect.height - drawnH) / 2
+      : image.verticalAlignment === "Bottom"
+      ? rect.height - drawnH
+      : 0;
+
   pdf.save();
-  pdf.translate(position.x, position.y).scale(factor);
-  resource.abstractImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0, factor));
+  pdf.translate(position.x + offsetX, position.y + offsetY).scale(scale);
+  resource.abstractImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0, scale));
   pdf.restore();
 }
 
@@ -61,7 +82,7 @@ function abstractComponentToPdf(
           pdf.save();
           pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
           imageResource.abstractImage.components.forEach((c) =>
-            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale *scale)
+            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale * scale)
           );
           pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
@@ -72,7 +93,7 @@ function abstractComponentToPdf(
             pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [w, h] });
           } else {
             pdf.fontSize(11 / (accScale || 1)).fillColor("red");
-            pdf.text(`Image missing: ${component.data.url}`, w / 100, h/ 100);
+            pdf.text(`Image missing: ${component.data.url}`, w / 100, h / 100);
           }
         }
       } else if (format === "png") {

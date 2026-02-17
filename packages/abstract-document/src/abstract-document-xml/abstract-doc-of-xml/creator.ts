@@ -46,9 +46,10 @@ export const creators: (styleNames: Record<string, string>) => Record<string, AD
     TextCell: (props: TextCellProps) => TextCell(props, styleNames),
     TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
     TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
-    ImageRow: (props: ImageRowProps) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames),
-    ImageCell: (props: ImageCellProps) => ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames),
-    ImageParagraph: (props: ImageParagraphProps) =>
+    ImageRow: (props: Record<string, unknown>) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames),
+    ImageCell: (props: Record<string, unknown>) =>
+      ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames),
+    ImageParagraph: (props: Record<string, unknown>) =>
       ImageParagraph(imageProps(props) as unknown as ImageParagraphProps, styleNames),
     Image: (props: Record<string, unknown>) => Image.create(imageProps(props) as unknown as Image.ImageProps),
     Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
@@ -139,27 +140,27 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
   borderTop: (props: { readonly borderTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const borders: { top?: number, bottom?: number, left?: number, right?: number } = allProps.borders ?? {};
+    const borders: { top?: number; bottom?: number; left?: number; right?: number } = allProps.borders ?? {};
     borders.top = Number(props.borderTop);
-    return borders; 
+    return borders;
   },
   borderBottom: (props: { readonly borderBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const borders: { top?: number, bottom?: number, left?: number, right?: number } = allProps.borders ?? {};
+    const borders: { top?: number; bottom?: number; left?: number; right?: number } = allProps.borders ?? {};
     borders.bottom = Number(props.borderBottom);
-    return borders; 
+    return borders;
   },
   borderLeft: (props: { readonly borderLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const borders: { top?: number, bottom?: number, left?: number, right?: number } = allProps.borders ?? {};
+    const borders: { top?: number; bottom?: number; left?: number; right?: number } = allProps.borders ?? {};
     borders.left = Number(props.borderLeft);
-    return borders; 
+    return borders;
   },
   borderRight: (props: { readonly borderRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const borders: { top?: number, bottom?: number, left?: number, right?: number } = allProps.borders ?? {};
+    const borders: { top?: number; bottom?: number; left?: number; right?: number } = allProps.borders ?? {};
     borders.right = Number(props.borderRight);
-    return borders; 
+    return borders;
   },
   padding: (props: { readonly padding: string }): unknown => {
     const padding: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
@@ -205,27 +206,27 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
   paddingTop: (props: { readonly paddingTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const padding: { top?: number, bottom?: number, left?: number, right?: number } = allProps.padding ?? {};
+    const padding: { top?: number; bottom?: number; left?: number; right?: number } = allProps.padding ?? {};
     padding.top = Number(props.paddingTop);
-    return padding; 
+    return padding;
   },
   paddingBottom: (props: { readonly paddingBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const padding: { top?: number, bottom?: number, left?: number, right?: number } = allProps.padding ?? {};
+    const padding: { top?: number; bottom?: number; left?: number; right?: number } = allProps.padding ?? {};
     padding.bottom = Number(props.paddingBottom);
-    return padding; 
+    return padding;
   },
   paddingLeft: (props: { readonly paddingLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const padding: { top?: number, bottom?: number, left?: number, right?: number } = allProps.padding ?? {};
+    const padding: { top?: number; bottom?: number; left?: number; right?: number } = allProps.padding ?? {};
     padding.left = Number(props.paddingLeft);
-    return padding; 
+    return padding;
   },
   paddingRight: (props: { readonly paddingRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const padding: { top?: number, bottom?: number, left?: number, right?: number } = allProps.padding ?? {};
+    const padding: { top?: number; bottom?: number; left?: number; right?: number } = allProps.padding ?? {};
     padding.right = Number(props.paddingRight);
-    return padding; 
+    return padding;
   },
   margins: (props: { readonly margins: string }): unknown => {
     const margins: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
@@ -269,27 +270,27 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
   marginTop: (props: { readonly marginTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const margins: { top?: number, bottom?: number, left?: number, right?: number } = allProps.margins ?? {};
+    const margins: { top?: number; bottom?: number; left?: number; right?: number } = allProps.margins ?? {};
     margins.top = Number(props.marginTop);
-    return margins; 
+    return margins;
   },
   marginBottom: (props: { readonly marginBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const margins: { top?: number, bottom?: number, left?: number, right?: number } = allProps.margins ?? {};
+    const margins: { top?: number; bottom?: number; left?: number; right?: number } = allProps.margins ?? {};
     margins.bottom = Number(props.marginBottom);
-    return margins; 
+    return margins;
   },
   marginLeft: (props: { readonly marginLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const margins: { top?: number, bottom?: number, left?: number, right?: number } = allProps.margins ?? {};
+    const margins: { top?: number; bottom?: number; left?: number; right?: number } = allProps.margins ?? {};
     margins.left = Number(props.marginLeft);
-    return margins; 
+    return margins;
   },
   marginRight: (props: { readonly marginRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const margins: { top?: number, bottom?: number, left?: number, right?: number } = allProps.margins ?? {};
+    const margins: { top?: number; bottom?: number; left?: number; right?: number } = allProps.margins ?? {};
     margins.right = Number(props.marginRight);
-    return margins; 
+    return margins;
   },
   borderColors: (props: { readonly borderColors: string }): unknown => {
     const borderColors: { [k: string]: string } = { top: "", right: "", bottom: "", left: "" };
@@ -315,27 +316,27 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
   borderColorTop: (props: { readonly borderColorTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const margins: { top?: string, bottom?: string, left?: string, right?: string } = allProps.borderColors ?? {};
+    const margins: { top?: string; bottom?: string; left?: string; right?: string } = allProps.borderColors ?? {};
     margins.top = props.borderColorTop;
-    return margins; 
+    return margins;
   },
   borderColorBottom: (props: { readonly borderColorBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const boderColors: { top?: string, bottom?: string, left?: string, right?: string } = allProps.borderColors ?? {};
+    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps.borderColors ?? {};
     boderColors.bottom = props.borderColorBottom;
-    return boderColors; 
+    return boderColors;
   },
   borderColorLeft: (props: { readonly borderColorLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const boderColors: { top?: string, bottom?: string, left?: string, right?: string } = allProps.borderColors ?? {};
+    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps.borderColors ?? {};
     boderColors.left = props.borderColorLeft;
-    return boderColors; 
+    return boderColors;
   },
   borderColorRight: (props: { readonly borderColorRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const boderColors: { top?: string, bottom?: string, left?: string, right?: string } = allProps.borderColors ?? {};
+    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps.borderColors ?? {};
     boderColors.right = props.borderColorRight;
-    return boderColors; 
+    return boderColors;
   },
 };
 
