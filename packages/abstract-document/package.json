@@ -1,6 +1,6 @@
 {
   "name": "abstract-document",
-  "version": "18.2.8",
+  "version": "18.2.9",
   "description": "Dynamically create documents using code or JSX and render to any format",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
   "main": "lib/index.js",
