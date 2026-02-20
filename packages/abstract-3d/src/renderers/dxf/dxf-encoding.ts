@@ -9,6 +9,11 @@ function dxfHandle(handleRef: { handle: number }): string {
   return (++handleRef.handle).toString(16).toUpperCase();
 }
 
+function dxfRound(n: number): number {
+  const d = 3;
+  return Math.round((n + Number.EPSILON) * 10 ** d) / 10 ** d;
+}
+
 export const dxf3DFACE = (
   vec1: Vec3,
   vec2: Vec3,
@@ -20,6 +25,8 @@ export const dxf3DFACE = (
 3DFACE
  5
 ${dxfHandle(handleRef)}
+ 330
+  1D
 100
 AcDbEntity
   62
@@ -27,29 +34,29 @@ AcDbEntity
 100
 AcDbFace
 10
-${vec1.x}
+${dxfRound(vec1.x)}
 20
-${vec1.y}
+${dxfRound(vec1.y)}
 30
-${vec1.z}
+${dxfRound(vec1.z)}
 11
-${vec2.x}
+${dxfRound(vec2.x)}
 21
-${vec2.y}
+${dxfRound(vec2.y)}
 31
-${vec2.z}
+${dxfRound(vec2.z)}
 12
-${vec3.x}
+${dxfRound(vec3.x)}
 22
-${vec3.y}
+${dxfRound(vec3.y)}
 32
-${vec3.z}
+${dxfRound(vec3.z)}
 13
-${vec4.x}
+${dxfRound(vec4.x)}
 23
-${vec4.y}
+${dxfRound(vec4.y)}
 33
-${vec4.z}
+${dxfRound(vec4.z)}
 `;
 
 export const dxfPOLYLINE = (vertices: readonly Vec3[], color: string): string =>
@@ -68,11 +75,11 @@ VERTEX
   8
 A3D
   10
-${v.x}
+${dxfRound(v.x)}
   20
-${v.y}
+${dxfRound(v.y)}
   30
-${v.z}`
+${dxfRound(v.z)}`
   )}
   0
 SEQEND
@@ -86,17 +93,17 @@ A3D
   62
 ${color}
   10
-${pos.x}
+${dxfRound(pos.x)}
   20
-${pos.y}
+${dxfRound(pos.y)}
   30
-${pos.z}
+${dxfRound(pos.z)}
   11
-${pos.x}
+${dxfRound(pos.x)}
   21
-${pos.y}
+${dxfRound(pos.y)}
   31
-${pos.z}
+${dxfRound(pos.z)}
   40
 ${fontSize}
   1
@@ -115,17 +122,17 @@ A3D
 100
 AcDbLine
   10
-${start.x}
+${dxfRound(start.x)}
   20
-${start.y}
+${dxfRound(start.y)}
   30
-${start.z}
+${dxfRound(start.z)}
   11
-${end.x}
+${dxfRound(end.x)}
   21
-${end.y}
+${dxfRound(end.y)}
   31
-${end.z}
+${dxfRound(end.z)}
 `;
 
 export const dxf3DEllipse = (
@@ -146,17 +153,17 @@ A3D
 100
 AcDbEllipse
   10
-${center.x}
+${dxfRound(center.x)}
   20
-${center.y}
+${dxfRound(center.y)}
   30
-${center.z}
+${dxfRound(center.z)}
   11
-${major.x - center.x}
+${dxfRound(major.x - center.x)}
   21
-${major.y - center.y}
+${dxfRound(major.y - center.y)}
   31
-${major.z - center.z}
+${dxfRound(major.z - center.z)}
   40
 1
   41

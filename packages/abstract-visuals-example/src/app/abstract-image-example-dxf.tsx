@@ -1,5 +1,7 @@
 import React from "react";
+import unitDxf from "../../assets/T202.dxf?raw";
 import circleDxf from "../../assets/circle-dxf.txt?raw";
+import squareDxf from "../../assets/square.dxf?raw";
 import {
   createLine,
   createPoint,
@@ -23,6 +25,7 @@ import {
   createBinaryImage,
   DXF_DATA_URL,
   dynamicImage,
+  magenta,
 } from "../../../abstract-image/src/index.js";
 
 export function AbstractImageExampleDxf(): React.JSX.Element {
@@ -35,7 +38,7 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
       "Test",
       "Helvetica",
       12,
-      black,
+      magenta,
       "normal",
       0,
       "center",
@@ -64,13 +67,15 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
   const epsUrl = toDataUrl("text/plain", eps);
 
   const dynamicImg = `<AbstractImage width={1191} height={842}>
-  <Image src={data.ahu} x={0} y={0} width={600} height={200} />
-</AbstractImage>`;
-  const ai = dynamicImage(dynamicImg, { ahu: "sketch" });
+    <Image src={data.square} x={0} y={0} width={1191} height={842} />
+    <Image src={data.ahu} x={100} y={0} width={400} height={200} />
+    <Image src={data.dxf1} x={200} y={200} width={200} height={200} />
+  </AbstractImage>`;
+  const ai = dynamicImage(dynamicImg, { ahu: "sketch", square: "square", dxf1: "dxf1" });
 
   const dxf2 =
     ai.type === "Ok"
-      ? dxf2dExportImage(ai.image, { imageDataByUrl: { sketch: `${DXF_DATA_URL}${circleDxf}` } })
+      ? dxf2dExportImage(ai.image, { imageDataByUrl: { sketch: `${DXF_DATA_URL}${unitDxf}`, square: `${DXF_DATA_URL}${squareDxf}`, dxf1: `${DXF_DATA_URL}${dxf}` } })
       : undefined;
   const dxfUrl2 = dxf2 ? toDataUrl("text/plain", dxf2) : undefined;
 
