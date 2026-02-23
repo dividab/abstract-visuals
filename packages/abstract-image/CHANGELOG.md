@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [13.0.0] - 2026-02-23
 
-- Dxf AC1015 2D Exporter
+- Dxf AC1015 2D Exporter that can import external dxf files with the same standard.
 
 ## [12.0.0] - 2025-10-30
 
