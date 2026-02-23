@@ -2,6 +2,7 @@
 import { AbstractImage } from "../model/abstract-image.js";
 import { Color } from "../model/color.js";
 import { BinaryImage, Component, corners } from "../model/component.js";
+import { Point } from "../model/point.js";
 import { Optional } from "../model/shared.js";
 import { Size } from "../model/size.js";
 
@@ -79,9 +80,6 @@ type BlockRecord = {
 };
 
 export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOptions>): string {
-
-  console.log("NEW!!!\n\n");
-  
   const externalCache = new Map<string, DxfInsert>();
   const { newHandle, currentHandle } = handleGenerator();
   const modelSpaceHandle = newHandle();
@@ -227,7 +225,6 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       newBlockRecordHandle,
       newHandle
     );
-    console.log("version: ", version, dxfString.length, extractBlocks(dxfString, newName, `*EXT_PS_${newName}`).length, newBlocks.length);
 
     if (!newEntities) {
       return [entities, blocks, blockRecords];
@@ -248,8 +245,6 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
         name: blockRecordName,
       });
     }
-
-    console.log(blockRecords);
 
     const newBlock =
       "0\nBLOCK\n" +
@@ -289,21 +284,41 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
   }
 
   if (c.type === "line") {
-    entities += "0\nLINE\n";
-    entities += "5\n" + newHandle() + "\n";
+    const handle = newHandle();
+    entities += "0\nPOLYLINE\n";
+    entities += "5\n" + handle + "\n";
     entities += "330\n" + modelSpaceHandle + "\n";
     entities += "100\nAcDbEntity\n";
-    entities += "8\nLines\n";
+    entities += "8\n" + layer + "\n";
     entities += "60\n0\n";
     entities += "62\n256\n";
     entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
-    entities += "100\nAcDbLine\n";
-    entities += "10\n" + c.start.x.toString() + "\n";
-    entities += "20\n" + invert(c.start.y, size.height).toString() + "\n";
-    entities += "30\n0.0\n";
-    entities += "11\n" + c.end.x.toString() + "\n";
-    entities += "21\n" + invert(c.end.y, size.height).toString() + "\n";
-    entities += "31\n0.0\n";
+    entities += "100\nAcDb2dPolyline\n";
+    entities += "10\n0\n20\n0\n30\n0\n";
+    entities += "70\n0\n";
+    entities += "40\n" + c.strokeThickness + "\n";
+    entities += "41\n" + c.strokeThickness + "\n";
+
+    const points: ReadonlyArray<Point> = [{ x: c.start.x, y: invert(c.start.y, size.height)}, { x: c.end.x, y: invert(c.end.y, size.height) }];
+    for (const point of points) {
+      entities += "0\nVERTEX\n";
+      entities += "5\n" + newHandle() + "\n";
+      entities += "330\n" + handle + "\n";
+      entities += "100\nAcDbEntity\n";
+      entities += "8\n" + layer.toString() + "\n";
+      entities += "100\nAcDbVertex\n";
+      entities += "100\nAcDb2dVertex\n";
+      entities += "70\n0\n";
+      entities += "10\n" + point.x.toString() + "\n";
+      entities += "20\n" + invert(point.y, size.height).toString() + "\n";
+      entities += "30\n0.0\n";
+    }
+    
+    entities += "0\nSEQEND\n";
+    entities += "5\n" + newHandle() + "\n";
+    entities += "100\nAcDbEntity\n";
+    entities += "8\n" + layer.toString() + "\n";
+    entities += "330\n" + handle + "\n";
     return [entities, blocks, blockRecords];
   }
 
@@ -320,6 +335,8 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDb2dPolyline\n";
     entities += "10\n0\n20\n0\n30\n0\n";
     entities += "70\n0\n";
+    entities += "40\n" + c.strokeThickness + "\n";
+    entities += "41\n" + c.strokeThickness + "\n";
     for (const point of c.points) {
       entities += "0\nVERTEX\n";
       entities += "5\n" + newHandle() + "\n";
@@ -383,9 +400,20 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
 
   if (c.type === "ellipse") {
     layer++;
-
-    const handle = newHandle();
     
+    const handle = newHandle();
+    const points: Array<Point> = [];
+    const r1 = Math.abs(c.bottomRight.x - c.topLeft.x) / 2.0;
+    const r2 = Math.abs(c.topLeft.y - c.bottomRight.y) / 2.0;
+    const numPoints = 32;
+    for (let i = 0; i <= numPoints; i++) {
+      const t = (2 * Math.PI * i) / numPoints;
+      const x = c.topLeft.x + r1 + r1 * Math.cos(t);
+      const y = c.topLeft.y + r2 + r2 * Math.sin(t);
+      points.push({x, y});
+    }
+    entities += createHatch(modelSpaceHandle, layer.toString(), c.fillColor, points, size.height, newHandle);
+
     entities += "0\nPOLYLINE\n";
     entities += "5\n" + handle + "\n";
     entities += "330\n" + modelSpaceHandle + "\n";
@@ -393,20 +421,15 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "8\n" + layer.toString() + "\n";
     entities += "60\n0\n";
     entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.fillColor) + "\n";
+    entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
     entities += "100\nAcDb2dPolyline\n";
     entities += "66\n1\n";
     entities += "70\n1\n";
     entities += "10\n0.0\n20\n0.0\n30\n0.0\n";
-
-    const r1 = Math.abs(c.bottomRight.x - c.topLeft.x) / 2.0;
-    const r2 = Math.abs(c.topLeft.y - c.bottomRight.y) / 2.0;
-    const numPoints = 32;
-
-    for (let i = 0; i <= numPoints; i++) {
-      const t = (2 * Math.PI * i) / numPoints;
-      const x = c.topLeft.x + r1 + r1 * Math.cos(t);
-      const y = c.topLeft.y + r2 + r2 * Math.sin(t);
+    entities += "40\n" + c.strokeThickness + "\n";
+    entities += "41\n" + c.strokeThickness + "\n";
+    
+    for (const point of points) {
       entities += "0\nVERTEX\n";
       entities += "5\n" + newHandle() + "\n";
       entities += "330\n" + handle + "\n";
@@ -415,8 +438,8 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       entities += "100\nAcDbVertex\n";
       entities += "100\nAcDb2dVertex\n";
       entities += "70\n0\n";
-      entities += "10\n" + x.toString() + "\n";
-      entities += "20\n" + invert(y, size.height).toString() + "\n";
+      entities += "10\n" + point.x.toString() + "\n";
+      entities += "20\n" + invert(point.y, size.height).toString() + "\n";
       entities += "30\n0.0\n";
     }
 
@@ -431,6 +454,8 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
   if (c.type === "polygon") {
     const handle = newHandle();
 
+    entities += createHatch(modelSpaceHandle, layer.toString(), c.fillColor, c.points.concat(c.points[0]), size.height, newHandle);
+
     entities += "0\nPOLYLINE\n";
     entities += "5\n" + handle + "\n";
     entities += "330\n" + modelSpaceHandle + "\n";
@@ -438,11 +463,13 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "8\n" + layer + "\n";
     entities += "60\n0\n";
     entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.fillColor) + "\n";
+    entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
     entities += "100\nAcDb2dPolyline\n";
     entities += "66\n1\n";
     entities += "70\n1\n";
     entities += "10\n0.0\n20\n0.0\n30\n0.0\n";
+    entities += "40\n" + c.strokeThickness + "\n";
+    entities += "41\n" + c.strokeThickness + "\n";
 
     for (const point of c.points.concat(c.points[0])) {
       entities += "0\nVERTEX\n";
@@ -470,6 +497,8 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     const cors = corners(c);
     const handle = newHandle();
 
+    entities += createHatch(modelSpaceHandle, layer.toString(), c.fillColor, cors.concat(cors[0]), size.height, newHandle);
+
     entities += "0\nPOLYLINE\n";
     entities += "5\n" + handle + "\n";
     entities += "330\n" + modelSpaceHandle + "\n";
@@ -477,11 +506,13 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "8\n" + layer.toString() + "\n";
     entities += "60\n0\n";
     entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.fillColor) + "\n";
+    entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
     entities += "100\nAcDb2dPolyline\n";
     entities += "66\n1\n";
     entities += "70\n1\n";
     entities += "10\n0.0\n20\n0.0\n30\n0.0\n";
+    entities += "40\n" + c.strokeThickness + "\n";
+    entities += "41\n" + c.strokeThickness + "\n";
 
     for (const point of cors.concat(cors[0])) {
       entities += "0\nVERTEX\n";
@@ -658,9 +689,6 @@ function remapHandleIds(entities: string | undefined, blocks: string | undefined
     }
     return out.join("\n");
   }
-
-  console.log("oj", initHandleMap);
-
   const remappedBlocks = collectAndRemap(blocks);
   const remappedEntities = collectAndRemap(entities);
   return [remappedEntities, remappedBlocks];
@@ -1100,10 +1128,55 @@ function createSpaceBlock(type: DxfSpace, ownerHandle: string, newHandle: () => 
   return block;
 }
 
+function createHatch(
+  modelSpaceHandle: string,
+  layer: string,
+  fillColor: Color,
+  points: { x: number; y: number }[],
+  height: number,
+  newHandle: () => string
+): string {
+  const invertedPoints = points.map(p => ({ x: p.x, y: invert(p.y, height) }));
+  const cx = invertedPoints.reduce((s, p) => s + p.x, 0) / invertedPoints.length;
+  const cy = invertedPoints.reduce((s, p) => s + p.y, 0) / invertedPoints.length;
+
+  let hatch = "";
+  hatch += "0\nHATCH\n";
+  hatch += "5\n" + newHandle() + "\n";
+  hatch += "330\n" + modelSpaceHandle + "\n";
+  hatch += "100\nAcDbEntity\n";
+  hatch += "8\n" + layer + "\n";
+  hatch += "62\n0\n";
+  hatch += "420\n" + colorToInteger(fillColor) + "\n";
+  hatch += "100\nAcDbHatch\n";
+  hatch += "10\n0.0\n20\n0.0\n30\n0.0\n";
+  hatch += "210\n0.0\n220\n0.0\n230\n1.0\n";
+  hatch += "2\nSOLID\n";
+  hatch += "70\n1\n";
+  hatch += "71\n0\n";
+  hatch += "91\n1\n";
+  hatch += "92\n3\n";
+  hatch += "72\n0\n";
+  hatch += "73\n1\n";
+  hatch += "93\n" + invertedPoints.length + "\n";
+
+  for (const p of invertedPoints) {
+    hatch += "10\n" + p.x + "\n";
+    hatch += "20\n" + p.y + "\n";
+  }
+
+  hatch += "97\n0\n";
+  hatch += "75\n0\n";
+  hatch += "76\n1\n";
+  hatch += "98\n1\n";
+  hatch += "10\n" + cx + "\n";
+  hatch += "20\n" + cy + "\n";
+
+  return hatch;
+}
+
 function handleGenerator(): { newHandle: () => string, currentHandle: () => string } {
   let index = 0x1000;
-  const check: Record<string, true> = {};
-
   return {
     newHandle: () => (index++).toString(16).toUpperCase(),
     currentHandle: () => (index).toString(16).toUpperCase(),

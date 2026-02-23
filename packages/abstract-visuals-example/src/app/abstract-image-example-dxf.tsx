@@ -33,6 +33,13 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
     createLine(createPoint(200, 0), createPoint(200, 400), green, 1),
     createLine(createPoint(0, 200), createPoint(400, 200), green, 1),
     createRectangle(createPoint(10, 50), createPoint(40, 80), blue, 2, red),
+    // createEllipse(createPoint(80, 40), createPoint(100, 60), black, 1, blue),
+    createPolyLine([createPoint(10, 10), createPoint(390, 390), createPoint(390, 10)], brown, 2),
+    createPolygon([createPoint(200, 250), createPoint(250, 250), createPoint(200, 200)], yellow, 2, gray),
+    createBinaryImage(createPoint(80, 40), createPoint(100, 60), "dxf", {
+      type: "url",
+      url: `${DXF_DATA_URL}${circleDxf}`,
+    }),
     createText(
       createPoint(200, 200),
       "Test",
@@ -48,13 +55,6 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
       black,
       false
     ),
-    // createEllipse(createPoint(80, 40), createPoint(100, 60), black, 1, blue),
-    createPolyLine([createPoint(10, 10), createPoint(390, 390), createPoint(390, 10)], brown, 2),
-    createPolygon([createPoint(200, 250), createPoint(250, 250), createPoint(200, 200)], yellow, 2, gray),
-    createBinaryImage(createPoint(80, 40), createPoint(100, 60), "dxf", {
-      type: "url",
-      url: `${DXF_DATA_URL}${circleDxf}`,
-    }),
   ];
   const image = createAbstractImage(createPoint(0, 0), createSize(400, 400), white, components);
   const svg = createSVG(image);
