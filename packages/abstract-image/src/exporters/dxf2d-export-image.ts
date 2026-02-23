@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { AbstractImage } from "../model/abstract-image.js";
 import { Color } from "../model/color.js";
 import { BinaryImage, Component, corners } from "../model/component.js";
@@ -75,13 +76,14 @@ type DxfInsert = {
 type BlockRecord = {
   readonly id: string;
   readonly name: string;
-  readonly blockHandle: string;
 };
 
 export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOptions>): string {
 
+  console.log("NEW!!!\n\n");
+  
   const externalCache = new Map<string, DxfInsert>();
-  const newHandle = handleGenerator();
+  const { newHandle, currentHandle } = handleGenerator();
   const modelSpaceHandle = newHandle();
   const paperSpaceHandle = newHandle();
 
@@ -91,20 +93,6 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
 
   let dxf = "";
   let layer = 0;
-
-  dxf += "999\nELIGO DXF GENERATOR\n";
-
-  /* HEADER */
-  dxf += "0\nSECTION\n2\nHEADER\n";
-  dxf += "9\n$ACADVER\n1\n" + DXF_STANDARD + "\n";
-  dxf += "9\n$DWGCODEPAGE\n3\nANSI_1252\n";
-  dxf += "9\n$INSBASE\n10\n0.0\n20\n0.0\n30\n0.0\n";
-  dxf += "9\n$EXTMIN\n10\n0.0\n20\n0.0\n";
-  dxf += "9\n$EXTMAX\n";
-  dxf += "10\n" + root.size.width.toString() + "\n";
-  dxf += "20\n" + root.size.height.toString() + "\n";
-  dxf += "0\nENDSEC\n";
-  dxf += "0\nSECTION\n2\nCLASSES\n0\nENDSEC\n";
 
   let entities = "";
   let blocks = "";
@@ -120,13 +108,15 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
 
   /* TABLES */
   dxf += "0\nSECTION\n2\nTABLES\n";
-  dxf += createBlockRecordsTable(modelSpaceHandle, paperSpaceHandle, blockRecords, newHandle);
-  dxf += createAppIdTable(newHandle);
   dxf += createVPortTable(newHandle);
   dxf += createLTypeTable(newHandle);
   dxf += createLayerTable(newHandle);
   dxf += createStyleTable(newHandle);
+  dxf += createViewTable(newHandle);
+  dxf += createUcsTable(newHandle);
+  dxf += createAppIdTable(newHandle);
   dxf += createDimStyleTable(newHandle);
+  dxf += createBlockRecordsTable(modelSpaceHandle, paperSpaceHandle, blockRecords, newHandle);
   dxf += "0\nENDSEC\n";
 
   /* BLOCKS */
@@ -140,27 +130,27 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   dxf += "0\nENDSEC\n";
 
   /* OBJECTS */
-  const dict1Id = newHandle();
-  const dict2Id = newHandle();
-  dxf += "0\nSECTION\n";
-  dxf += "2\nOBJECTS\n";
-  dxf += "0\nDICTIONARY\n";
-  dxf += "5\n" + dict1Id + "\n";
-  dxf += "330\n0\n";
-  dxf += "100\nAcDbDictionary\n";
-  dxf += "281\n1\n";
-  dxf += "3\nACAD_GROUP\n";
-  dxf += "350\n" + dict2Id + "\n";
-  dxf += "0\nDICTIONARY\n";
-  dxf += "5\n" + dict2Id + "\n";
-  dxf += "330\n" + dict1Id + "\n";
-  dxf += "100\nAcDbDictionary\n";
-  dxf += "281\n1\n";
-  dxf += "0\nENDSEC\n";
+  dxf += createObjects(modelSpaceHandle, paperSpaceHandle, root, newHandle);
+
+  /* HEADER */
+  let header = "";
+  header += "999\nELIGO DXF GENERATOR\n";
+  header += "0\nSECTION\n2\nHEADER\n";
+  header += "9\n$ACADVER\n1\n" + DXF_STANDARD + "\n";
+  header += "9\n$HANDSEED\n5\n" + currentHandle() + "\n"; //handseed is the last handle id?
+  header += "9\n$DWGCODEPAGE\n3\nANSI_1252\n";
+  header += "9\n$INSBASE\n10\n0.0\n20\n0.0\n30\n0.0\n";
+  header += "9\n$EXTMIN\n10\n0.0\n20\n0.0\n30\n-10000\n";
+  header += "9\n$EXTMAX\n";
+  header += "10\n" + root.size.width.toString() + "\n";
+  header += "20\n" + root.size.height.toString() + "\n";
+  header += "30\n10000\n";
+  header += "0\nENDSEC\n";
+  header += "0\nSECTION\n2\nCLASSES\n0\nENDSEC\n";
 
   /* END */
   dxf += "0\nEOF";
-  return dxf;
+  return header + dxf;
 }
 
 function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle: string, externalCache: Map<string, DxfInsert>, options: DxfOptions, newHandle: () => string): readonly [string, string, ReadonlyArray<BlockRecord>] {
@@ -187,10 +177,11 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       return [entities, blocks, blockRecords];
     }
 
-    const dxfString = url.split(DXF_DATA_URL)[1];
-    if (!dxfString) {
+    const dxfStringRaw = url.split(DXF_DATA_URL)[1];
+    if (!dxfStringRaw) {
       return [entities, blocks, blockRecords];
     }
+    const dxfString = dxfStringRaw.split("\n").map((v) => v.trim()).join("\n");
 
     const version = extractStandard(dxfString);
     if (version !== DXF_STANDARD) {
@@ -212,71 +203,73 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
 
     const externalBlockRecords = extractBlockRecords(dxfString);
 
-    // The new handle that will own the embedded block (replaces external's *Model_Space record)
     const newBlockRecordHandle = newHandle();
-    const newName = `EMBEDED_IMAGE_${randomID()}_${scale.x.toString().replace(".", "_")}X${scale.y.toString().replace(".", "_")}`;
+    const newName = `EMBEDED_IMAGE_${randomID()}_${scale.x.toPrecision(4).replace(".", "_")}X${scale.y.toPrecision(4).replace(".", "_")}`;
 
     const initOldHandlesMap = new Map<string, string>();
 
     for (const br of externalBlockRecords) {
       if (br.name === "*Model_Space") {
-        // External model space entities become owned by our new block record
         initOldHandlesMap.set(br.id, newBlockRecordHandle);
       } else if (br.name === "*Paper_Space") {
-        // Paper space is unused — remap to newBlockRecordHandle too so handles don't go unmapped
         initOldHandlesMap.set(br.id, newBlockRecordHandle);
-      } else {
-        // Any other named blocks inside the external DXF keep their own record
+      } else if(!initOldHandlesMap.has(br.id)) {
         const newId = newHandle();
         initOldHandlesMap.set(br.id, newId);
-        blockRecords.push({ name: br.name, id: newId, blockHandle: "0" });
+        blockRecords.push({ name: br.name, id: newId });
       }
     }
 
-    // Remap all handles in both the blocks and entities sections
     const [newEntities, newBlocks] = remapHandleIds(
       scaleDxf(extractEntities(dxfString), scale.x, scale.y),
       scaleDxf(extractBlocks(dxfString, newName, `*EXT_PS_${newName}`), scale.y, scale.y),
       initOldHandlesMap,
+      newBlockRecordHandle,
       newHandle
     );
+    console.log("version: ", version, dxfString.length, extractBlocks(dxfString, newName, `*EXT_PS_${newName}`).length, newBlocks.length);
 
     if (!newEntities) {
       return [entities, blocks, blockRecords];
     }
 
-    // Include any named sub-blocks from the external DXF (e.g. nested embedded images)
-    // extractBlocks gives us all blocks; we only want the non-Model_Space/Paper_Space ones
-    // plus our renamed model space block. newBlocks already has them all renamed correctly.
     blocks += stripBlocks(newBlocks, [newName, `*EXT_PS_${newName}`]);
 
-    // Register our new block record
-    const blockId = newHandle();
-    blockRecords.push({
-      id: newBlockRecordHandle,
-      name: newName,
-      blockHandle: blockId,
-    });
+    let blockRecordName = newName;
+    let blockRecordId = "0";
+    const existingBlockRecord = blockRecords.find((v) => v.name.localeCompare(newName) === 0);
+    if(existingBlockRecord !== undefined) {
+      blockRecordName = existingBlockRecord.name;
+      blockRecordId = existingBlockRecord.id;
+    } else {
+      blockRecordId = newHandle();
+      blockRecords.push({
+        id: blockRecordId,
+        name: blockRecordName,
+      });
+    }
+
+    console.log(blockRecords);
 
     const newBlock =
       "0\nBLOCK\n" +
-      "5\n" + blockId + "\n" +
-      "330\n" + newBlockRecordHandle + "\n" +
+      "5\n" + newHandle() + "\n" +
+      "330\n" + blockRecordId + "\n" +
       "100\nAcDbEntity\n" +
       "8\n0\n" +
       "100\nAcDbBlockBegin\n" +
-      "2\n" + newName + "\n" +
+      "2\n" + blockRecordName + "\n" +
       "70\n0\n" +
       "10\n0\n" +
       "20\n0\n" + 
       "30\n0\n" +
-      "3\n" + newName + "\n" +
+      "3\n" + blockRecordName + "\n" +
       "1\n\n" +
       newEntities +
       "\n" +
       "0\nENDBLK\n" +
       "5\n" + newHandle() + "\n" +
-      "330\n" + newBlockRecordHandle + "\n" +
+      "330\n" + blockRecordId + "\n" +
       "100\nAcDbEntity\n" +
       "8\n0\n" +
       "100\nAcDbBlockEnd\n";
@@ -285,8 +278,8 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
 
     // Cache and emit the INSERT
     const insert: DxfInsert = {
-      blockRecordId: newBlockRecordHandle,
-      name: newName,
+      blockRecordId: blockRecordId,
+      name: blockRecordName,
       extents
     };
     externalCache.set(cachKey, insert);
@@ -302,6 +295,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\nLines\n";
     entities += "60\n0\n";
+    entities += "62\n256\n";
     entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
     entities += "100\nAcDbLine\n";
     entities += "10\n" + c.start.x.toString() + "\n";
@@ -321,17 +315,18 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer + "\n";
     entities += "60\n0\n";
+    entities += "62\n256\n";
     entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
     entities += "100\nAcDb2dPolyline\n";
-    entities += "66\n1\n";
+    entities += "10\n0\n20\n0\n30\n0\n";
     entities += "70\n0\n";
-    entities += "10\n0.0\n20\n0.0\n30\n0.0\n";
     for (const point of c.points) {
       entities += "0\nVERTEX\n";
       entities += "5\n" + newHandle() + "\n";
       entities += "330\n" + handle + "\n";
       entities += "100\nAcDbEntity\n";
       entities += "8\n" + layer.toString() + "\n";
+      entities += "100\nAcDbVertex\n";
       entities += "100\nAcDb2dVertex\n";
       entities += "70\n0\n";
       entities += "10\n" + point.x.toString() + "\n";
@@ -340,9 +335,9 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     }
     entities += "0\nSEQEND\n";
     entities += "5\n" + newHandle() + "\n";
-    entities += "330\n" + handle + "\n";
     entities += "100\nAcDbEntity\n";
-    entities += "8\n" + layer + "\n";
+    entities += "8\n" + layer.toString() + "\n";
+    entities += "330\n" + handle + "\n";
     return [entities, blocks, blockRecords];
   }
 
@@ -358,6 +353,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\nText\n";
     entities += "60\n0\n";
+    entities += "62\n256\n";
     entities += "420\n" + colorToInteger(c.textColor) + "\n";
     entities += "100\nAcDbText\n";
     entities += "10\n" + c.position.x.toString() + "\n";
@@ -365,15 +361,21 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "30\n0.0\n";
     entities += "40\n" + fontSize.toString() + "\n";
     entities += "1\n" + c.text + "\n";
-    entities += "7\nSTANDARD\n";
     entities += "50\n0.0\n";
+    entities += "41\n1.0\n";
+    entities += "7\nSTANDARD\n";
+    entities += "71\n0\n";
     entities += "72\n" + horizontalAlignment.toString() + "\n";
-    entities += "73\n" + verticalAlignment.toString() + "\n";
 
-    if(horizontalAlignment !== 0 || verticalAlignment !== 0) {
+    if(horizontalAlignment === 0 && verticalAlignment === 0) {
+      entities += "100\nAcDbText\n";
+      entities += "73\n0\n";
+    } else {
       entities += "11\n" + c.position.x.toString() + "\n";
       entities += "21\n" + invert(c.position.y, size.height) + "\n";
-      entities += "31\n0.0\n";
+      entities += "31\n0\n";
+      entities += "100\nAcDbText\n";
+      entities += "73\n" + verticalAlignment.toString() + "\n";
     }
 
     return [entities, blocks, blockRecords];
@@ -390,6 +392,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer.toString() + "\n";
     entities += "60\n0\n";
+    entities += "62\n256\n";
     entities += "420\n" + colorToInteger(c.fillColor) + "\n";
     entities += "100\nAcDb2dPolyline\n";
     entities += "66\n1\n";
@@ -409,6 +412,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       entities += "330\n" + handle + "\n";
       entities += "100\nAcDbEntity\n";
       entities += "8\n" + layer.toString() + "\n";
+      entities += "100\nAcDbVertex\n";
       entities += "100\nAcDb2dVertex\n";
       entities += "70\n0\n";
       entities += "10\n" + x.toString() + "\n";
@@ -418,9 +422,9 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
 
     entities += "0\nSEQEND\n";
     entities += "5\n" + newHandle() + "\n";
-    entities += "330\n" + handle + "\n";
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer.toString() + "\n";
+    entities += "330\n" + handle + "\n";
     return [entities, blocks, blockRecords];
   }
 
@@ -433,6 +437,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer + "\n";
     entities += "60\n0\n";
+    entities += "62\n256\n";
     entities += "420\n" + colorToInteger(c.fillColor) + "\n";
     entities += "100\nAcDb2dPolyline\n";
     entities += "66\n1\n";
@@ -445,6 +450,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       entities += "330\n" + handle + "\n";
       entities += "100\nAcDbEntity\n";
       entities += "8\n" + layer.toString() + "\n";
+      entities += "100\nAcDbVertex\n";
       entities += "100\nAcDb2dVertex\n";
       entities += "70\n0\n";
       entities += "10\n" + point.x.toString() + "\n";
@@ -454,9 +460,9 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
 
     entities += "0\nSEQEND\n";
     entities += "5\n" + newHandle() + "\n";
-    entities += "330\n" + handle + "\n";
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer.toString() + "\n";
+    entities += "330\n" + handle + "\n";
     return [entities, blocks, blockRecords];
   }
 
@@ -470,6 +476,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer.toString() + "\n";
     entities += "60\n0\n";
+    entities += "62\n256\n";
     entities += "420\n" + colorToInteger(c.fillColor) + "\n";
     entities += "100\nAcDb2dPolyline\n";
     entities += "66\n1\n";
@@ -482,6 +489,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       entities += "330\n" + handle + "\n";
       entities += "100\nAcDbEntity\n";
       entities += "8\n" + layer.toString() + "\n";
+      entities += "100\nAcDbVertex\n";
       entities += "100\nAcDb2dVertex\n";
       entities += "70\n0\n";
       entities += "10\n" + point.x.toString() + "\n";
@@ -491,9 +499,9 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
 
     entities += "0\nSEQEND\n";
     entities += "5\n" + newHandle() + "\n";
-    entities += "330\n" + handle + "\n";
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer.toString() + "\n";
+    entities += "330\n" + handle + "\n";
     return [entities, blocks, blockRecords];
   }
 
@@ -567,7 +575,6 @@ function extractBlockRecords(dxf: string): ReadonlyArray<BlockRecord> {
   return [...dxf.matchAll(/^\s*0\s*\n\s*BLOCK_RECORD[\s\S]*?\n\s*5\s*\n\s*([0-9A-Fa-f]+)[\s\S]*?\n\s*2\s*\n\s*([^\r\n]+)/gm)].map((match) => ({
     name: match[2],
     id: match[1],
-    blockHandle: "0",
   }));
 }
 
@@ -603,13 +610,15 @@ function extractStandard(dxf: string): string | undefined {
   return version ? version[1] : undefined;
 }
 
-function remapHandleIds(entities: string | undefined, blocks: string | undefined, initHandleMap: Map<string, string>, newHandle: () => string): [string | undefined, string] {
+function remapHandleIds(entities: string | undefined, blocks: string | undefined, initHandleMap: Map<string, string>, rootModelHandle: string, newHandle: () => string): [string | undefined, string] {
   if (entities === undefined || blocks === undefined) {
     return [undefined, ""];
   }
 
   const handleGroupCodes = new Set(["5", "330", "340", "331", "350", "360"]);
   const ents = new Set(DXF_ENTITIES);
+  ents.add("BLOCK");
+  ents.add("ENDBLK");
 
   function collectAndRemap(src: string): string {
     const lines = src.split("\n");
@@ -631,11 +640,15 @@ function remapHandleIds(entities: string | undefined, blocks: string | undefined
       if (inEntityHeader && (i + 1 < lines.length && handleGroupCodes.has(groupCode))) {
         const value = lines[i + 1].trim();
         if (/^[0-9A-Fa-f]+$/.test(value)) {
+          out.push(groupCode);
+
           if (!initHandleMap.has(value)) {
-            initHandleMap.set(value, newHandle());
+            const newId = newHandle();
+            initHandleMap.set(value, newId);
+            out.push(newId);
+          } else {
+            out.push(initHandleMap.get(value)!);
           }
-          out.push(lines[i]);
-          out.push(initHandleMap.get(value)!);
           i += 2;
           continue;
         }
@@ -646,10 +659,11 @@ function remapHandleIds(entities: string | undefined, blocks: string | undefined
     return out.join("\n");
   }
 
-  collectAndRemap(entities);
-  collectAndRemap(blocks);
+  console.log("oj", initHandleMap);
 
-  return [collectAndRemap(entities), collectAndRemap(blocks)];
+  const remappedBlocks = collectAndRemap(blocks);
+  const remappedEntities = collectAndRemap(entities);
+  return [remappedEntities, remappedBlocks];
 }
 
 function scaleDxf(dxfString: string | undefined, sx: number, sy: number): string | undefined {
@@ -716,20 +730,9 @@ function getScale(extents: DxfExtents, c: BinaryImage): { readonly x: number; re
 }
 
 function createExternalInsert(ins: DxfInsert, c: BinaryImage, size: Size, modelSpaceHandle: string, newHandle: () => string): string {
-  const srcW = ins.extents.maxX - ins.extents.minX;
-  const srcH = ins.extents.maxY - ins.extents.minY;
 
   const minX = Math.min(c.topLeft.x, c.bottomRight.x);
-  const maxX = Math.max(c.topLeft.x, c.bottomRight.x);
-  const minY = Math.min(c.topLeft.y, c.bottomRight.y);
   const maxY = Math.max(c.topLeft.y, c.bottomRight.y);
-
-  const targetW = maxX - minX;
-  const targetH = maxY - minY;
-
-  const sx = targetW / srcW;
-  const sy = targetH / srcH;
-
   const x = minX - ins.extents.minX;
   const y = invert(maxY, size.height);
 
@@ -794,7 +797,7 @@ function createLTypeTable(newHandle: () => string): string {
   table += "5\n" + rootId + "\n";
   table += "330\n0\n";
   table += "100\nAcDbSymbolTable\n";
-  table += "70\n4\n";
+  table += "70\n3\n";
   table += "0\nLTYPE\n";
   table += "5\n" + newHandle() + "\n";
   table += "330\n" + rootId + "\n";
@@ -856,6 +859,30 @@ function createLayerTable(newHandle: () => string): string {
   return table;
 }
 
+function createUcsTable(newHandle: () => string): string {
+  let table = "";
+  table += "0\nTABLE\n";
+  table += "2\nUCS\n";
+  table += "5\n" + newHandle() + "\n";
+  table += "330\n0\n";
+  table += "100\nAcDbSymbolTable\n";
+  table += "70\n0\n";
+  table += "0\nENDTAB\n";
+  return table;
+}
+
+function createViewTable(newHandle: () => string): string {
+  let table = "";
+  table += "0\nTABLE\n";
+  table += "2\nVIEW\n";
+  table += "5\n" + newHandle() + "\n";
+  table += "330\n0\n";
+  table += "100\nAcDbSymbolTable\n";
+  table += "70\n0\n";
+  table += "0\nENDTAB\n";
+  return table;
+}
+
 function createStyleTable(newHandle: () => string): string {
   const rootId = newHandle();
   let table = "";
@@ -864,7 +891,7 @@ function createStyleTable(newHandle: () => string): string {
   table += "5\n" + rootId + "\n";
   table += "330\n0\n";
   table += "100\nAcDbSymbolTable\n";
-  table += "70\n3\n";
+  table += "70\n1\n";
   table += "0\nSTYLE\n";
   table += "5\n" + newHandle() + "\n";
   table += "330\n" + rootId + "\n";
@@ -966,8 +993,8 @@ function createDimStyleTable(newHandle: () => string): string {
 
 function createBlockRecordsTable(modelSpaceHandle: string, paperSpaceHandle: string, blockRecords: ReadonlyArray<BlockRecord>, newHandle: () => string): string {
   const br: ReadonlyArray<BlockRecord> = [
-    { id: modelSpaceHandle, name: "*Model_Space", blockHandle: "0" },
-    { id: paperSpaceHandle, name: "*Paper_Space", blockHandle: "0" },
+    { id: modelSpaceHandle, name: "*Model_Space" },
+    { id: paperSpaceHandle, name: "*Paper_Space" },
     ...blockRecords
   ];
 
@@ -997,6 +1024,58 @@ function createBlockRecordsTable(modelSpaceHandle: string, paperSpaceHandle: str
   return table;
 }
 
+function createObjects(modelSpaceHandle: string, paperSpaceHandle: string, root: AbstractImage, newHandle: () => string): string {
+  let objects = "";
+  const rootDictId = newHandle();
+  const groupDictId = newHandle();
+  const layoutDictId = newHandle();
+  const layoutModelId = newHandle();
+  const layoutPaperId = newHandle();
+
+  objects += "0\nSECTION\n2\nOBJECTS\n";
+
+  // Root dictionary
+  objects += "0\nDICTIONARY\n5\n" + rootDictId + "\n330\n0\n100\nAcDbDictionary\n281\n1\n";
+  objects += "3\nACAD_GROUP\n350\n" + groupDictId + "\n";
+  objects += "3\nACAD_LAYOUT\n350\n" + layoutDictId + "\n";
+
+  // ACAD_GROUP (empty)
+  objects += "0\nDICTIONARY\n5\n" + groupDictId + "\n330\n" + rootDictId + "\n100\nAcDbDictionary\n281\n1\n";
+
+  // ACAD_LAYOUT dictionary
+  objects += "0\nDICTIONARY\n5\n" + layoutDictId + "\n330\n" + rootDictId + "\n100\nAcDbDictionary\n281\n1\n";
+  objects += "3\nLayout1\n350\n" + layoutPaperId + "\n";
+  objects += "3\nModel\n350\n" + layoutModelId + "\n";
+
+  // Model layout *Model_Space
+  objects += "0\nLAYOUT\n5\n" + layoutModelId + "\n102\n{ACAD_REACTORS\n330\n" + layoutDictId + "\n102\n}\n";
+  objects += "330\n" + layoutDictId + "\n100\nAcDbPlotSettings\n1\n\n2\nnone_device\n4\n\n6\n\n";
+  objects += "40\n0.0\n41\n0.0\n42\n0.0\n43\n0.0\n44\n0.0\n45\n0.0\n46\n0.0\n47\n0.0\n48\n0.0\n49\n0.0\n";
+  objects += "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n1712\n72\n0\n73\n0\n74\n0\n7\n\n75\n0\n147\n1.0\n148\n0.0\n149\n0.0\n";
+  objects += "100\nAcDbLayout\n1\nModel\n70\n1\n71\n0\n";
+  objects += "10\n0.0\n20\n0.0\n11\n" + root.size.width + "\n21\n" + root.size.height + "\n";
+  objects += "12\n0.0\n22\n0.0\n32\n0.0\n14\n0.0\n24\n0.0\n34\n0.0\n";
+  objects += "15\n" + root.size.width + "\n25\n" + root.size.height + "\n35\n0.0\n";
+  objects += "146\n0.0\n13\n0.0\n23\n0.0\n33\n0.0\n16\n1.0\n26\n0.0\n36\n0.0\n17\n0.0\n27\n1.0\n37\n0.0\n76\n0\n";
+  objects += "330\n" + modelSpaceHandle + "\n";
+
+  // Layout1 *Paper_Space
+  objects += "0\nLAYOUT\n5\n" + layoutPaperId + "\n102\n{ACAD_REACTORS\n330\n" + layoutDictId + "\n102\n}\n";
+  objects += "330\n" + layoutDictId + "\n100\nAcDbPlotSettings\n1\n\n2\nnone_device\n4\n\n6\n\n";
+  objects += "40\n0.0\n41\n0.0\n42\n0.0\n43\n0.0\n44\n0.0\n45\n0.0\n46\n0.0\n47\n0.0\n48\n0.0\n49\n0.0\n";
+  objects += "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n688\n72\n0\n73\n0\n74\n5\n7\n\n75\n16\n147\n1.0\n148\n0.0\n149\n0.0\n";
+  objects += "100\nAcDbLayout\n1\nLayout1\n70\n1\n71\n1\n";
+  objects += "10\n0.0\n20\n0.0\n11\n" + root.size.width + "\n21\n" + root.size.height + "\n";
+  objects += "12\n0.0\n22\n0.0\n32\n0.0\n14\n1.0E+20\n24\n1.0E+20\n34\n1.0E+20\n";
+  objects += "15\n-1.0E+20\n25\n-1.0E+20\n35\n-1.0E+20\n";
+  objects += "146\n0.0\n13\n0.0\n23\n0.0\n33\n0.0\n16\n1.0\n26\n0.0\n36\n0.0\n17\n0.0\n27\n1.0\n37\n0.0\n76\n0\n";
+  objects += "330\n" + paperSpaceHandle + "\n";
+
+  objects += "0\nENDSEC\n";
+
+  return objects;
+}
+
 function createSpaceBlock(type: DxfSpace, ownerHandle: string, newHandle: () => string): string {
   let block = "";
   block += "0\nBLOCK\n";
@@ -1021,13 +1100,18 @@ function createSpaceBlock(type: DxfSpace, ownerHandle: string, newHandle: () => 
   return block;
 }
 
-function handleGenerator(): () => string {
-  let index = 0xFF;
-  return () => (index++).toString(16).toUpperCase();
+function handleGenerator(): { newHandle: () => string, currentHandle: () => string } {
+  let index = 0x1000;
+  const check: Record<string, true> = {};
+
+  return {
+    newHandle: () => (index++).toString(16).toUpperCase(),
+    currentHandle: () => (index).toString(16).toUpperCase(),
+  };
 }
 
 function randomID(): string {
-  return "xxxxxxxxxxxxxxx".replaceAll("x", () => (Math.round(Math.random() * 16)).toString(16)).toLocaleUpperCase();
+  return "xxxxxxxxxxxxxxxx".replaceAll("x", () => (Math.round(Math.random() * 16)).toString(16)).toLocaleUpperCase();
 }
 
 function colorToInteger(color: Color): number {
