@@ -313,7 +313,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       entities += "20\n" + invert(point.y, size.height).toString() + "\n";
       entities += "30\n0.0\n";
     }
-    
+
     entities += "0\nSEQEND\n";
     entities += "5\n" + newHandle() + "\n";
     entities += "100\nAcDbEntity\n";
@@ -400,139 +400,29 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
 
   if (c.type === "ellipse") {
     layer++;
-    
-    const handle = newHandle();
     const points: Array<Point> = [];
     const r1 = Math.abs(c.bottomRight.x - c.topLeft.x) / 2.0;
     const r2 = Math.abs(c.topLeft.y - c.bottomRight.y) / 2.0;
     const numPoints = 32;
-    for (let i = 0; i <= numPoints; i++) {
+    for (let i = 0; i < numPoints; i++) {
       const t = (2 * Math.PI * i) / numPoints;
       const x = c.topLeft.x + r1 + r1 * Math.cos(t);
       const y = c.topLeft.y + r2 + r2 * Math.sin(t);
       points.push({x, y});
     }
-    entities += createHatch(modelSpaceHandle, layer.toString(), c.fillColor, points, size.height, newHandle);
 
-    entities += "0\nPOLYLINE\n";
-    entities += "5\n" + handle + "\n";
-    entities += "330\n" + modelSpaceHandle + "\n";
-    entities += "100\nAcDbEntity\n";
-    entities += "8\n" + layer.toString() + "\n";
-    entities += "60\n0\n";
-    entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
-    entities += "100\nAcDb2dPolyline\n";
-    entities += "66\n1\n";
-    entities += "70\n1\n";
-    entities += "10\n0.0\n20\n0.0\n30\n0.0\n";
-    entities += "40\n" + c.strokeThickness + "\n";
-    entities += "41\n" + c.strokeThickness + "\n";
-    
-    for (const point of points) {
-      entities += "0\nVERTEX\n";
-      entities += "5\n" + newHandle() + "\n";
-      entities += "330\n" + handle + "\n";
-      entities += "100\nAcDbEntity\n";
-      entities += "8\n" + layer.toString() + "\n";
-      entities += "100\nAcDbVertex\n";
-      entities += "100\nAcDb2dVertex\n";
-      entities += "70\n0\n";
-      entities += "10\n" + point.x.toString() + "\n";
-      entities += "20\n" + invert(point.y, size.height).toString() + "\n";
-      entities += "30\n0.0\n";
-    }
-
-    entities += "0\nSEQEND\n";
-    entities += "5\n" + newHandle() + "\n";
-    entities += "100\nAcDbEntity\n";
-    entities += "8\n" + layer.toString() + "\n";
-    entities += "330\n" + handle + "\n";
+    entities += createPolygon(modelSpaceHandle, layer.toString(), points, c.strokeColor, c.fillColor, c.strokeThickness, size.height, newHandle);
     return [entities, blocks, blockRecords];
   }
 
   if (c.type === "polygon") {
-    const handle = newHandle();
-
-    entities += createHatch(modelSpaceHandle, layer.toString(), c.fillColor, c.points.concat(c.points[0]), size.height, newHandle);
-
-    entities += "0\nPOLYLINE\n";
-    entities += "5\n" + handle + "\n";
-    entities += "330\n" + modelSpaceHandle + "\n";
-    entities += "100\nAcDbEntity\n";
-    entities += "8\n" + layer + "\n";
-    entities += "60\n0\n";
-    entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
-    entities += "100\nAcDb2dPolyline\n";
-    entities += "66\n1\n";
-    entities += "70\n1\n";
-    entities += "10\n0.0\n20\n0.0\n30\n0.0\n";
-    entities += "40\n" + c.strokeThickness + "\n";
-    entities += "41\n" + c.strokeThickness + "\n";
-
-    for (const point of c.points.concat(c.points[0])) {
-      entities += "0\nVERTEX\n";
-      entities += "5\n" + newHandle() + "\n";
-      entities += "330\n" + handle + "\n";
-      entities += "100\nAcDbEntity\n";
-      entities += "8\n" + layer.toString() + "\n";
-      entities += "100\nAcDbVertex\n";
-      entities += "100\nAcDb2dVertex\n";
-      entities += "70\n0\n";
-      entities += "10\n" + point.x.toString() + "\n";
-      entities += "20\n" + invert(point.y, size.height).toString() + "\n";
-      entities += "30\n0.0\n";
-    }
-
-    entities += "0\nSEQEND\n";
-    entities += "5\n" + newHandle() + "\n";
-    entities += "100\nAcDbEntity\n";
-    entities += "8\n" + layer.toString() + "\n";
-    entities += "330\n" + handle + "\n";
+    entities += createPolygon(modelSpaceHandle, layer.toString(), c.points, c.strokeColor, c.fillColor, c.strokeThickness, size.height, newHandle);
     return [entities, blocks, blockRecords];
   }
 
   if (c.type === "rectangle") {
     const cors = corners(c);
-    const handle = newHandle();
-
-    entities += createHatch(modelSpaceHandle, layer.toString(), c.fillColor, cors.concat(cors[0]), size.height, newHandle);
-
-    entities += "0\nPOLYLINE\n";
-    entities += "5\n" + handle + "\n";
-    entities += "330\n" + modelSpaceHandle + "\n";
-    entities += "100\nAcDbEntity\n";
-    entities += "8\n" + layer.toString() + "\n";
-    entities += "60\n0\n";
-    entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
-    entities += "100\nAcDb2dPolyline\n";
-    entities += "66\n1\n";
-    entities += "70\n1\n";
-    entities += "10\n0.0\n20\n0.0\n30\n0.0\n";
-    entities += "40\n" + c.strokeThickness + "\n";
-    entities += "41\n" + c.strokeThickness + "\n";
-
-    for (const point of cors.concat(cors[0])) {
-      entities += "0\nVERTEX\n";
-      entities += "5\n" + newHandle() + "\n";
-      entities += "330\n" + handle + "\n";
-      entities += "100\nAcDbEntity\n";
-      entities += "8\n" + layer.toString() + "\n";
-      entities += "100\nAcDbVertex\n";
-      entities += "100\nAcDb2dVertex\n";
-      entities += "70\n0\n";
-      entities += "10\n" + point.x.toString() + "\n";
-      entities += "20\n" + invert(point.y, size.height).toString() + "\n";
-      entities += "30\n0.0\n";
-    }
-
-    entities += "0\nSEQEND\n";
-    entities += "5\n" + newHandle() + "\n";
-    entities += "100\nAcDbEntity\n";
-    entities += "8\n" + layer.toString() + "\n";
-    entities += "330\n" + handle + "\n";
+    entities += createPolygon(modelSpaceHandle, layer.toString(), cors, c.strokeColor, c.fillColor, c.strokeThickness, size.height, newHandle);
     return [entities, blocks, blockRecords];
   }
 
@@ -705,9 +595,14 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number): string
   const lines = dxfString.split(/\r?\n/);
   const scaledLines: string[] = [];
 
+  let currentAcDbEntity = "";
   for (let i = 0; i < lines.length; i+=2) {
     const codeLine = lines[i];
     const valueLine = lines[i + 1];
+
+    if(codeLine === "100") {
+      currentAcDbEntity = valueLine;
+    }
 
     scaledLines.push(codeLine);
     if (valueLine === undefined) {
@@ -727,10 +622,15 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number): string
       if (!isNaN(num)) {
         value = (num * sy).toString();
       }
-    } else if(code === 40) { //font size
+    } else if(code === 40 && currentAcDbEntity === "AcDbText") { //font size
       const num = parseInt(valueLine.trim(), 10);
       if (!isNaN(num)) {
         value = Math.round((num + 2) * Math.max(sx, sy)).toString();
+      }
+    } else if((code === 41 || code === 40) && currentAcDbEntity === "AcDb2dPolyline") { // stroke thickness
+      const num = parseInt(valueLine.trim(), 10);
+      if (!isNaN(num)) {
+        value = (num * Math.max(sx, sy)).toString();
       }
     }
 
@@ -1132,7 +1032,7 @@ function createHatch(
   modelSpaceHandle: string,
   layer: string,
   fillColor: Color,
-  points: { x: number; y: number }[],
+  points: ReadonlyArray<Point>,
   height: number,
   newHandle: () => string
 ): string {
@@ -1173,6 +1073,50 @@ function createHatch(
   hatch += "20\n" + cy + "\n";
 
   return hatch;
+}
+
+function createPolygon(modelSpaceHandle: string, layer: string, points: ReadonlyArray<Point>, strokeColor: Color, fillColor: Color, strokeThickness: number, height: number, newHandle: () => string): string {
+  const handle = newHandle();
+  let polygon = "";
+
+  polygon += createHatch(modelSpaceHandle, layer, fillColor, points, height, newHandle);
+
+  polygon += "0\nPOLYLINE\n";
+  polygon += "5\n" + handle + "\n";
+  polygon += "330\n" + modelSpaceHandle + "\n";
+  polygon += "100\nAcDbEntity\n";
+  polygon += "8\n" + layer.toString() + "\n";
+  polygon += "60\n0\n";
+  polygon += "62\n256\n";
+  polygon += "420\n" + colorToInteger(strokeColor) + "\n";
+  polygon += "100\nAcDb2dPolyline\n";
+  polygon += "66\n1\n";
+  polygon += "70\n1\n";
+  polygon += "10\n0.0\n20\n0.0\n30\n0.0\n";
+  polygon += "40\n" + strokeThickness.toPrecision(4) + "\n";
+  polygon += "41\n" + strokeThickness.toPrecision(4) + "\n";
+
+  for (const point of points) {
+    polygon += "0\nVERTEX\n";
+    polygon += "5\n" + newHandle() + "\n";
+    polygon += "330\n" + handle + "\n";
+    polygon += "100\nAcDbEntity\n";
+    polygon += "8\n" + layer.toString() + "\n";
+    polygon += "100\nAcDbVertex\n";
+    polygon += "100\nAcDb2dVertex\n";
+    polygon += "70\n0\n";
+    polygon += "10\n" + point.x.toString() + "\n";
+    polygon += "20\n" + invert(point.y, height).toString() + "\n";
+    polygon += "30\n0.0\n";
+  }
+
+  polygon += "0\nSEQEND\n";
+  polygon += "5\n" + newHandle() + "\n";
+  polygon += "100\nAcDbEntity\n";
+  polygon += "8\n" + layer.toString() + "\n";
+  polygon += "330\n" + handle + "\n";
+
+  return polygon;
 }
 
 function handleGenerator(): { newHandle: () => string, currentHandle: () => string } {
