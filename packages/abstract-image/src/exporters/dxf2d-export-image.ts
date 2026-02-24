@@ -1088,41 +1088,42 @@ function createPolygon(modelSpaceHandle: string, layer: string, points: Readonly
   let polygon = "";
 
   polygon += createHatch(modelSpaceHandle, layer, fillColor, points, height, newHandle);
-
-  polygon += "0\nPOLYLINE\n";
-  polygon += "5\n" + handle + "\n";
-  polygon += "330\n" + modelSpaceHandle + "\n";
-  polygon += "100\nAcDbEntity\n";
-  polygon += "8\n" + layer.toString() + "\n";
-  polygon += "60\n0\n";
-  polygon += "62\n256\n";
-  polygon += "420\n" + colorToInteger(strokeColor) + "\n";
-  polygon += "100\nAcDb2dPolyline\n";
-  polygon += "66\n1\n";
-  polygon += "70\n1\n";
-  polygon += "10\n0.0\n20\n0.0\n30\n0.0\n";
-  polygon += "40\n" + (strokeThickness ?? 0).toPrecision(4) + "\n";
-  polygon += "41\n" + (strokeThickness ?? 0).toPrecision(4) + "\n";
-
-  for (const point of points) {
-    polygon += "0\nVERTEX\n";
-    polygon += "5\n" + newHandle() + "\n";
-    polygon += "330\n" + handle + "\n";
+  if(strokeThickness && strokeThickness >= Number.EPSILON) {
+    polygon += "0\nPOLYLINE\n";
+    polygon += "5\n" + handle + "\n";
+    polygon += "330\n" + modelSpaceHandle + "\n";
     polygon += "100\nAcDbEntity\n";
     polygon += "8\n" + layer.toString() + "\n";
-    polygon += "100\nAcDbVertex\n";
-    polygon += "100\nAcDb2dVertex\n";
-    polygon += "70\n0\n";
-    polygon += "10\n" + point.x.toString() + "\n";
-    polygon += "20\n" + invert(point.y, height).toString() + "\n";
-    polygon += "30\n0.0\n";
+    polygon += "60\n0\n";
+    polygon += "62\n256\n";
+    polygon += "420\n" + colorToInteger(strokeColor) + "\n";
+    polygon += "100\nAcDb2dPolyline\n";
+    polygon += "66\n1\n";
+    polygon += "70\n1\n";
+    polygon += "10\n0.0\n20\n0.0\n30\n0.0\n";
+    polygon += "40\n" + strokeThickness.toPrecision(4) + "\n";
+    polygon += "41\n" + strokeThickness.toPrecision(4) + "\n";
+  
+    for (const point of points) {
+      polygon += "0\nVERTEX\n";
+      polygon += "5\n" + newHandle() + "\n";
+      polygon += "330\n" + handle + "\n";
+      polygon += "100\nAcDbEntity\n";
+      polygon += "8\n" + layer.toString() + "\n";
+      polygon += "100\nAcDbVertex\n";
+      polygon += "100\nAcDb2dVertex\n";
+      polygon += "70\n0\n";
+      polygon += "10\n" + point.x.toString() + "\n";
+      polygon += "20\n" + invert(point.y, height).toString() + "\n";
+      polygon += "30\n0.0\n";
+    }
+  
+    polygon += "0\nSEQEND\n";
+    polygon += "5\n" + newHandle() + "\n";
+    polygon += "100\nAcDbEntity\n";
+    polygon += "8\n" + layer.toString() + "\n";
+    polygon += "330\n" + handle + "\n";
   }
-
-  polygon += "0\nSEQEND\n";
-  polygon += "5\n" + newHandle() + "\n";
-  polygon += "100\nAcDbEntity\n";
-  polygon += "8\n" + layer.toString() + "\n";
-  polygon += "330\n" + handle + "\n";
 
   return polygon;
 }
