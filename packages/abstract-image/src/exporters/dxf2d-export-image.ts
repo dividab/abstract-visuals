@@ -80,6 +80,13 @@ type BlockRecord = {
   readonly name: string;
 };
 
+export function dxf2dExportImageEncoded(root: AbstractImage, options?: Optional<DxfOptions>): Buffer {
+  return iconv.encode(dxf2dExportImage(root, options), "windows1252");
+}
+
+/**
+ * @deprecated Use `dxf2dExportImageEncoded()` instead. Otherwise the text might not be correctly encoded in some languages.
+ */
 export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOptions>): string {
   const externalCache = new Map<string, DxfInsert>();
   const { newHandle, currentHandle } = handleGenerator();
@@ -378,7 +385,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "20\n" + invert(c.position.y, size.height) + "\n";
     entities += "30\n0.0\n";
     entities += "40\n" + fontSize.toString() + "\n";
-    entities += "1\n" + encodeDxfString(c.text) + "\n";
+    entities += "1\n" + c.text + "\n";
     entities += "50\n0.0\n";
     entities += "41\n1.0\n";
     entities += "7\nSTANDARD\n";
@@ -1130,10 +1137,6 @@ function handleGenerator(): { newHandle: () => string, currentHandle: () => stri
 
 function randomID(): string {
   return "xxxxxxxxxxxxxxxx".replaceAll("x", () => (Math.round(Math.random() * 16)).toString(16)).toLocaleUpperCase();
-}
-
-function encodeDxfString(str: string): string {
-  return iconv.encode(str, "windows1252").toString("latin1");
 }
 
 function colorToInteger(color: Color): number {
