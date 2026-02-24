@@ -1142,8 +1142,8 @@ function randomID(): string {
 
 function colorToInteger(color: Color): number {
   const colorAsInt = (color.r << 16) + (color.g << 8) + color.b;
-  if(Number.isNaN(colorAsInt)) {
-    return 0;
+  if(Number.isNaN(colorAsInt) || colorAsInt === 0) {
+    return 1; //librecad treats 0 as white. A color of 1 should be black enough
   }
   return colorAsInt;
 }
