@@ -296,8 +296,8 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDb2dPolyline\n";
     entities += "10\n0\n20\n0\n30\n0\n";
     entities += "70\n0\n";
-    entities += "40\n" + c.strokeThickness + "\n";
-    entities += "41\n" + c.strokeThickness + "\n";
+    entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
+    entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
 
     const points: ReadonlyArray<Point> = [{ x: c.start.x, y: invert(c.start.y, size.height)}, { x: c.end.x, y: invert(c.end.y, size.height) }];
     for (const point of points) {
@@ -335,8 +335,8 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDb2dPolyline\n";
     entities += "10\n0\n20\n0\n30\n0\n";
     entities += "70\n0\n";
-    entities += "40\n" + c.strokeThickness + "\n";
-    entities += "41\n" + c.strokeThickness + "\n";
+    entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
+    entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
     for (const point of c.points) {
       entities += "0\nVERTEX\n";
       entities += "5\n" + newHandle() + "\n";
@@ -1075,7 +1075,7 @@ function createHatch(
   return hatch;
 }
 
-function createPolygon(modelSpaceHandle: string, layer: string, points: ReadonlyArray<Point>, strokeColor: Color, fillColor: Color, strokeThickness: number, height: number, newHandle: () => string): string {
+function createPolygon(modelSpaceHandle: string, layer: string, points: ReadonlyArray<Point>, strokeColor: Color, fillColor: Color, strokeThickness: number | undefined, height: number, newHandle: () => string): string {
   const handle = newHandle();
   let polygon = "";
 
@@ -1093,8 +1093,8 @@ function createPolygon(modelSpaceHandle: string, layer: string, points: Readonly
   polygon += "66\n1\n";
   polygon += "70\n1\n";
   polygon += "10\n0.0\n20\n0.0\n30\n0.0\n";
-  polygon += "40\n" + strokeThickness.toPrecision(4) + "\n";
-  polygon += "41\n" + strokeThickness.toPrecision(4) + "\n";
+  polygon += "40\n" + (strokeThickness ?? 0).toPrecision(4) + "\n";
+  polygon += "41\n" + (strokeThickness ?? 0).toPrecision(4) + "\n";
 
   for (const point of points) {
     polygon += "0\nVERTEX\n";
@@ -1132,5 +1132,9 @@ function randomID(): string {
 }
 
 function colorToInteger(color: Color): number {
-  return (color.r << 16) + (color.g << 8) + color.b;
+  const colorAsInt = (color.r << 16) + (color.g << 8) + color.b;
+  if(Number.isNaN(colorAsInt)) {
+    return 0;
+  }
+  return colorAsInt;
 }
