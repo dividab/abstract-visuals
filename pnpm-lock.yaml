@@ -147,7 +147,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^12.0.12
+        specifier: ^13.0.0
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -156,7 +156,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^12.0.12
+        specifier: ^13.0.0
         version: link:../abstract-image
       docx:
         specifier: ^6.0.3
@@ -168,7 +168,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.4.1
+        specifier: ^0.4.3
         version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
@@ -232,10 +232,10 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.4.1
+        specifier: ^0.4.3
         version: link:../handlebars-xml
       jsxpression:
-        specifier: ^0.1.12
+        specifier: ^0.1.13
         version: link:../jsxpression
     devDependencies:
       '@types/base64-js':
@@ -266,7 +266,7 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.4.1
+        specifier: ^0.4.3
         version: link:../handlebars-xml
       moment:
         specifier: ^2.30.1
@@ -294,19 +294,19 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^1.4.0
+        specifier: ^1.4.3
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^12.0.12
+        specifier: ^12.0.16
         version: link:../abstract-chart
       abstract-document:
-        specifier: ^18.2.6
+        specifier: ^18.2.14
         version: link:../abstract-document
       abstract-image:
-        specifier: ^12.0.12
+        specifier: ^13.0.0
         version: link:../abstract-image
       abstract-sheet:
-        specifier: ^1.1.19
+        specifier: ^1.1.21
         version: link:../abstract-sheet
       base64-js:
         specifier: ^1.5.1
@@ -318,10 +318,10 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: ^0.4.1
+        specifier: ^0.4.3
         version: link:../handlebars-xml
       jsxpression:
-        specifier: 0.1.12
+        specifier: ^0.1.13
         version: link:../jsxpression
       pdfkit:
         specifier: ^0.17.2
