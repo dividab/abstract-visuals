@@ -882,7 +882,7 @@ AcDbEntity
 62
 256
 420
-0
+1
 100
 AcDb2dPolyline
 66
