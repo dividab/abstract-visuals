@@ -331,7 +331,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       entities += "100\nAcDb2dVertex\n";
       entities += "70\n0\n";
       entities += "10\n" + point.x.toString() + "\n";
-      entities += "20\n" + invert(point.y, size.height).toString() + "\n";
+      entities += "20\n" + point.y.toString() + "\n";
       entities += "30\n0.0\n";
     }
 
