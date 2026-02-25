@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import iconv from "iconv-lite";
 import { AbstractImage } from "../model/abstract-image.js";
-import { Color } from "../model/color.js";
+import { black, Color } from "../model/color.js";
 import { BinaryImage, Component, corners } from "../model/component.js";
 import { Point } from "../model/point.js";
 import { Optional } from "../model/shared.js";
@@ -305,7 +305,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer + "\n";
 
-    if(options.useColor) {
+    if(options.useColor && !isBlack(c.strokeColor)) {
       entities += "60\n0\n";
       entities += "62\n256\n";
       entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
@@ -351,7 +351,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer + "\n";
 
-    if(options.useColor) {
+    if(options.useColor && !isBlack(c.strokeColor)) {
       entities += "60\n0\n";
       entities += "62\n256\n";
       entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
@@ -399,7 +399,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\nText\n";
 
-    if(options.useColor) {
+    if(options.useColor && !isBlack(c.textColor)) {
       entities += "60\n0\n";
       entities += "62\n256\n";
       entities += "420\n" + colorToInteger(c.textColor) + "\n";
@@ -1122,7 +1122,7 @@ function createPolygon(modelSpaceHandle: string, layer: string, points: Readonly
   polygon += "100\nAcDbEntity\n";
   polygon += "8\n" + layer.toString() + "\n";
 
-  if(options.useColor) {
+  if(options.useColor && !isBlack(strokeColor)) {
     polygon += "60\n0\n";
     polygon += "62\n256\n";
     polygon += "420\n" + colorToInteger(strokeColor) + "\n";
@@ -1171,6 +1171,10 @@ function handleGenerator(): { newHandle: () => string, currentHandle: () => stri
 
 function randomID(): string {
   return "xxxxxxxxxxxxxxxx".replaceAll("x", () => (Math.round(Math.random() * 16)).toString(16)).toLocaleUpperCase();
+}
+
+function isBlack(color: Color): boolean {
+  return color.r === 0 && color.g === 0 && color.b === 0;
 }
 
 function colorToInteger(color: Color): number {
