@@ -58,6 +58,7 @@ export const DXF_ENTITIES: string[] = [
 
 export type DxfOptions = {
   readonly imageDataByUrl: Record<string, `${typeof DXF_DATA_URL}${string}`>;
+  readonly fillPolygons?: boolean;
 };
 
 export type DxfSpace = "*Model_Space" | "*Paper_Space";
@@ -93,8 +94,9 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   const modelSpaceHandle = newHandle();
   const paperSpaceHandle = newHandle();
 
-  const opts: DxfOptions = {
+  const opts: Required<DxfOptions> = {
     imageDataByUrl: options?.imageDataByUrl ?? {},
+    fillPolygons: options?.fillPolygons ?? false,
   };
 
   let dxf = "";
@@ -159,7 +161,7 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   return header + dxf;
 }
 
-function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle: string, externalCache: Map<string, DxfInsert>, options: DxfOptions, newHandle: () => string): readonly [string, string, ReadonlyArray<BlockRecord>] {
+function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle: string, externalCache: Map<string, DxfInsert>, options: Required<DxfOptions>, newHandle: () => string): readonly [string, string, ReadonlyArray<BlockRecord>] {
   let entities = "";
   let blocks = "";
   let blockRecords: Array<BlockRecord> = [];
@@ -419,18 +421,18 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       points.push({x, y});
     }
 
-    entities += createPolygon(modelSpaceHandle, layer.toString(), points, c.strokeColor, c.fillColor, c.strokeThickness, size.height, newHandle);
+    entities += createPolygon(modelSpaceHandle, layer.toString(), points, c.strokeColor, c.fillColor, c.strokeThickness, size.height, options, newHandle);
     return [entities, blocks, blockRecords];
   }
 
   if (c.type === "polygon") {
-    entities += createPolygon(modelSpaceHandle, layer.toString(), c.points, c.strokeColor, c.fillColor, c.strokeThickness, size.height, newHandle);
+    entities += createPolygon(modelSpaceHandle, layer.toString(), c.points, c.strokeColor, c.fillColor, c.strokeThickness, size.height, options, newHandle);
     return [entities, blocks, blockRecords];
   }
 
   if (c.type === "rectangle") {
     const cors = corners(c);
-    entities += createPolygon(modelSpaceHandle, layer.toString(), cors, c.strokeColor, c.fillColor, c.strokeThickness, size.height, newHandle);
+    entities += createPolygon(modelSpaceHandle, layer.toString(), cors, c.strokeColor, c.fillColor, c.strokeThickness, size.height, options, newHandle);
     return [entities, blocks, blockRecords];
   }
 
@@ -1083,11 +1085,13 @@ function createHatch(
   return hatch;
 }
 
-function createPolygon(modelSpaceHandle: string, layer: string, points: ReadonlyArray<Point>, strokeColor: Color, fillColor: Color, strokeThickness: number | undefined, height: number, newHandle: () => string): string {
+function createPolygon(modelSpaceHandle: string, layer: string, points: ReadonlyArray<Point>, strokeColor: Color, fillColor: Color, strokeThickness: number | undefined, height: number, options: Required<DxfOptions>, newHandle: () => string): string {
   const handle = newHandle();
   let polygon = "";
 
-  polygon += createHatch(modelSpaceHandle, layer, fillColor, points, height, newHandle);
+  if(options.fillPolygons) {
+    polygon += createHatch(modelSpaceHandle, layer, fillColor, points, height, newHandle);
+  }
   if(strokeThickness && strokeThickness >= Number.EPSILON) {
     polygon += "0\nPOLYLINE\n";
     polygon += "5\n" + handle + "\n";
@@ -1142,8 +1146,8 @@ function randomID(): string {
 
 function colorToInteger(color: Color): number {
   const colorAsInt = (color.r << 16) + (color.g << 8) + color.b;
-  if(Number.isNaN(colorAsInt) || colorAsInt === 0) {
-    return 1; //librecad treats 0 as white. A color of 1 should be black enough
+  if(Number.isNaN(colorAsInt)) {
+    return 0;
   }
   return colorAsInt;
 }
