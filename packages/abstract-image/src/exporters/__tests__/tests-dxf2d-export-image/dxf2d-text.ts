@@ -700,12 +700,6 @@ TEXT
 AcDbEntity
 8
 Text
-60
-0
-62
-256
-420
-0
 100
 AcDbText
 10

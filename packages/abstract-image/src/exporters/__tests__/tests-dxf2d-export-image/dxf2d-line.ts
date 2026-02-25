@@ -691,12 +691,6 @@ POLYLINE
 AcDbEntity
 8
 0
-60
-0
-62
-256
-420
-32768
 100
 AcDb2dPolyline
 10
@@ -707,10 +701,6 @@ AcDb2dPolyline
 0
 70
 0
-40
-1
-41
-1
 0
 VERTEX
 5

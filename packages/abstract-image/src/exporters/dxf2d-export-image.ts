@@ -59,6 +59,8 @@ export const DXF_ENTITIES: string[] = [
 export type DxfOptions = {
   readonly imageDataByUrl: Record<string, `${typeof DXF_DATA_URL}${string}`>;
   readonly fillPolygons?: boolean;
+  readonly useStrokeThickness?: boolean;
+  readonly useColor?: boolean;
 };
 
 export type DxfSpace = "*Model_Space" | "*Paper_Space";
@@ -97,6 +99,8 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   const opts: Required<DxfOptions> = {
     imageDataByUrl: options?.imageDataByUrl ?? {},
     fillPolygons: options?.fillPolygons ?? false,
+    useColor: options?.useColor ?? false,
+    useStrokeThickness: options?.useStrokeThickness ?? false,
   };
 
   let dxf = "";
@@ -300,14 +304,21 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "330\n" + modelSpaceHandle + "\n";
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer + "\n";
-    entities += "60\n0\n";
-    entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
+
+    if(options.useColor) {
+      entities += "60\n0\n";
+      entities += "62\n256\n";
+      entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
+    }
+
     entities += "100\nAcDb2dPolyline\n";
     entities += "10\n0\n20\n0\n30\n0\n";
     entities += "70\n0\n";
-    entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
-    entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
+
+    if(options.useStrokeThickness) {
+      entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
+      entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
+    }
 
     const points: ReadonlyArray<Point> = [{ x: c.start.x, y: invert(c.start.y, size.height)}, { x: c.end.x, y: invert(c.end.y, size.height) }];
     for (const point of points) {
@@ -339,14 +350,22 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "330\n" + modelSpaceHandle + "\n";
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer + "\n";
-    entities += "60\n0\n";
-    entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
+
+    if(options.useColor) {
+      entities += "60\n0\n";
+      entities += "62\n256\n";
+      entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
+    }
+
     entities += "100\nAcDb2dPolyline\n";
     entities += "10\n0\n20\n0\n30\n0\n";
     entities += "70\n0\n";
-    entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
-    entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
+
+    if(options.useStrokeThickness) {
+      entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
+      entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
+    }
+
     for (const point of c.points) {
       entities += "0\nVERTEX\n";
       entities += "5\n" + newHandle() + "\n";
@@ -379,9 +398,13 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "330\n" + modelSpaceHandle + "\n";
     entities += "100\nAcDbEntity\n";
     entities += "8\nText\n";
-    entities += "60\n0\n";
-    entities += "62\n256\n";
-    entities += "420\n" + colorToInteger(c.textColor) + "\n";
+
+    if(options.useColor) {
+      entities += "60\n0\n";
+      entities += "62\n256\n";
+      entities += "420\n" + colorToInteger(c.textColor) + "\n";
+    }
+
     entities += "100\nAcDbText\n";
     entities += "10\n" + c.position.x.toString() + "\n";
     entities += "20\n" + invert(c.position.y, size.height) + "\n";
@@ -1092,42 +1115,48 @@ function createPolygon(modelSpaceHandle: string, layer: string, points: Readonly
   if(options.fillPolygons) {
     polygon += createHatch(modelSpaceHandle, layer, fillColor, points, height, newHandle);
   }
-  if(strokeThickness && strokeThickness >= Number.EPSILON) {
-    polygon += "0\nPOLYLINE\n";
-    polygon += "5\n" + handle + "\n";
-    polygon += "330\n" + modelSpaceHandle + "\n";
-    polygon += "100\nAcDbEntity\n";
-    polygon += "8\n" + layer.toString() + "\n";
+  
+  polygon += "0\nPOLYLINE\n";
+  polygon += "5\n" + handle + "\n";
+  polygon += "330\n" + modelSpaceHandle + "\n";
+  polygon += "100\nAcDbEntity\n";
+  polygon += "8\n" + layer.toString() + "\n";
+
+  if(options.useColor) {
     polygon += "60\n0\n";
     polygon += "62\n256\n";
     polygon += "420\n" + colorToInteger(strokeColor) + "\n";
-    polygon += "100\nAcDb2dPolyline\n";
-    polygon += "66\n1\n";
-    polygon += "70\n1\n";
-    polygon += "10\n0.0\n20\n0.0\n30\n0.0\n";
+  }
+
+  polygon += "100\nAcDb2dPolyline\n";
+  polygon += "66\n1\n";
+  polygon += "70\n1\n";
+  polygon += "10\n0.0\n20\n0.0\n30\n0.0\n";
+
+  if(options.useStrokeThickness && strokeThickness && strokeThickness >= Number.EPSILON) {
     polygon += "40\n" + strokeThickness.toPrecision(4) + "\n";
     polygon += "41\n" + strokeThickness.toPrecision(4) + "\n";
-  
-    for (const point of points) {
-      polygon += "0\nVERTEX\n";
-      polygon += "5\n" + newHandle() + "\n";
-      polygon += "330\n" + handle + "\n";
-      polygon += "100\nAcDbEntity\n";
-      polygon += "8\n" + layer.toString() + "\n";
-      polygon += "100\nAcDbVertex\n";
-      polygon += "100\nAcDb2dVertex\n";
-      polygon += "70\n0\n";
-      polygon += "10\n" + point.x.toString() + "\n";
-      polygon += "20\n" + invert(point.y, height).toString() + "\n";
-      polygon += "30\n0.0\n";
-    }
-  
-    polygon += "0\nSEQEND\n";
+  }
+
+  for (const point of points) {
+    polygon += "0\nVERTEX\n";
     polygon += "5\n" + newHandle() + "\n";
+    polygon += "330\n" + handle + "\n";
     polygon += "100\nAcDbEntity\n";
     polygon += "8\n" + layer.toString() + "\n";
-    polygon += "330\n" + handle + "\n";
+    polygon += "100\nAcDbVertex\n";
+    polygon += "100\nAcDb2dVertex\n";
+    polygon += "70\n0\n";
+    polygon += "10\n" + point.x.toString() + "\n";
+    polygon += "20\n" + invert(point.y, height).toString() + "\n";
+    polygon += "30\n0.0\n";
   }
+
+  polygon += "0\nSEQEND\n";
+  polygon += "5\n" + newHandle() + "\n";
+  polygon += "100\nAcDbEntity\n";
+  polygon += "8\n" + layer.toString() + "\n";
+  polygon += "330\n" + handle + "\n";
 
   return polygon;
 }
