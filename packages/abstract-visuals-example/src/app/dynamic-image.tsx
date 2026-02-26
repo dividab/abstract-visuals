@@ -3,6 +3,9 @@ import wiringPng from "../../assets/wiring.png";
 import FileSaver from "file-saver";
 import { compileDynamicImage, renderDynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
+import { generateDataSchema } from "../../../abstract-image/src/dynamic-image/utils.js";
+import { PropertySchema } from "jsxpression";
+import { FunctionSchema } from "../../../jsxpression/src/schema.js";
 
 export function DynamicImage({}: {}): React.JSX.Element {
   const [data, setData] = React.useState(
@@ -28,8 +31,26 @@ export function DynamicImage({}: {}): React.JSX.Element {
   } catch (e) {
     console.log(e);
   }
-  const jsString = compileDynamicImage(template);
-  const rendered = jsString.type === "Ok" ? renderDynamicImage(jsString.value, dataParsed) : undefined;
+
+  const schema: Record<string, PropertySchema> = generateDataSchema(dataParsed);
+  const funcSchema: Record<string, FunctionSchema> = {
+    test: {
+      ret: { type: "string" },
+      args: [
+        {
+          name: "str",
+          property: { type: "string" },
+        }
+      ]
+    }
+  }
+
+  const functions: Record<string, Function> = {
+    test: (str: string): string => `0x${str.length.toString(16)}`,
+  }
+
+  const jsString = compileDynamicImage(template, schema, funcSchema, true);
+  const rendered = jsString.type === "Ok" ? renderDynamicImage(jsString.value, dataParsed, functions) : undefined;
   return (
     <div
       style={{

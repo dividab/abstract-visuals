@@ -29,18 +29,31 @@ export interface EvaluateOptions<T = any> {
   data?: DataDict;
   /** Map of component names to component functions used in JSX */
   components?: ComponentDict;
+  /** Map of additional functions */
+  functions?: Record<string, Function>;
   /** Function to create JSX elements (e.g., React.createElement, h) */
   createElement?: CreateElement<T>;
 }
 
 export function evaluate<T = any>(source: string, schema: Schema, options: EvaluateOptions<T>): T {
-  const { data = {}, components = {}, createElement } = options;
+  const { data = {}, components = {}, functions = {}, createElement } = options;
 
   const h = createH(components, createElement || defaultCreateElement, schema);
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-    return new Function("h", "data", "Math", source)(h, deepFreezeData(data), Math) as T;
+    return new Function(
+      "h",
+      "data",
+      "Math",
+      ...Object.keys(functions),
+      source
+    )(
+      h,
+      deepFreezeData(data),
+      Math,
+      ...Object.values(functions),
+    ) as T;
   } catch (error: unknown) {
     // We may have thrown an EvaluationError from createH()
     if (error instanceof EvaluationError) {

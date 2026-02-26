@@ -57,9 +57,22 @@ export type ElementSchema = {
   allowedChildren?: string[];
 };
 
+export type ArgumentSchema = {
+  name: string;
+  description?: string;
+  property: PropertySchema;
+};
+
+export type FunctionSchema = {
+  description?: string;
+  args?: ReadonlyArray<ArgumentSchema>;
+  ret: PropertySchema;
+};
+
 export interface Schema {
   data?: Record<string, PropertySchema>;
   elements?: Record<string, ElementSchema>;
+  functions?: Record<string, FunctionSchema>;
 }
 
 export function isElementAllowed(schema: Schema, tagName: string): boolean {

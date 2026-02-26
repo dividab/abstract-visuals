@@ -1,6 +1,6 @@
 import { Schema } from "../schema.js";
 import { declareBuiltinTypes } from "./builtins/index.js";
-import { declareComponentTypes, declareDataTypes } from "./schema/index.js";
+import { declareComponentTypes, declareDataTypes, declareFunctionTypes } from "./schema/index.js";
 
 /**
  * Generates TypeScript definitions from a JSXExpression schema.
@@ -31,5 +31,5 @@ import { declareComponentTypes, declareDataTypes } from "./schema/index.js";
  * ```
  */
 export function generateTypeScriptDefinitions(schema: Schema): string {
-  return [declareBuiltinTypes(), declareComponentTypes(schema), declareDataTypes(schema)].join("\n");
+  return [declareBuiltinTypes(), declareComponentTypes(schema), declareDataTypes(schema), declareFunctionTypes(schema)].join("\n");
 }

@@ -3,6 +3,7 @@ import { AbstractImage } from "../model/abstract-image.js";
 import { generateDataSchema } from "./utils.js";
 import { createComponents } from "./components.js";
 import { baseSchema } from "./schema.js";
+import { FunctionSchema } from "../../../jsxpression/src/schema.js";
 
 export type DynamicImageResult =
   | { readonly type: "Ok"; readonly image: AbstractImage; readonly imageUrls: ReadonlyArray<string> }
@@ -17,14 +18,17 @@ export type DynamicImageError = {
 export function dynamicImage(
   source: string,
   data: Record<string, unknown>,
-  dataSchema?: Record<string, PropertySchema>
+  dataSchema?: Record<string, PropertySchema>,
+  functions?: Record<string, Function>,
+  funcSchema?: Record<string, FunctionSchema>
 ): DynamicImageResult {
   try {
     const imageUrls = Array<string>();
-    const schema: Schema = dataSchema ? { ...baseSchema, data: dataSchema } : baseSchema;
+    const schema: Schema = dataSchema ? { ...baseSchema, data: dataSchema, functions: funcSchema } : baseSchema;
 
     const image = render<AbstractImage>(source, schema, {
       data,
+      functions,
       components: createComponents(imageUrls),
     });
 
@@ -44,6 +48,7 @@ export type CompileDynamicImageResult =
 export function compileDynamicImage(
   source: string,
   dataSchema?: Record<string, PropertySchema>,
+  functionSchema?: Record<string, FunctionSchema>,
   tempSkipValidation?: boolean | undefined
 ): CompileDynamicImageResult {
   try {
@@ -51,7 +56,7 @@ export function compileDynamicImage(
       type: "Ok",
       value: compile(
         source,
-        dataSchema ? { ...baseSchema, data: dataSchema } : baseSchema,
+        dataSchema ? { ...baseSchema, data: dataSchema, functions: functionSchema } : baseSchema,
         undefined,
         tempSkipValidation
       ),
@@ -64,12 +69,12 @@ export function compileDynamicImage(
   }
 }
 
-export function renderDynamicImage(jsString: string, data: Record<string, unknown>): DynamicImageResult {
+export function renderDynamicImage(jsString: string, data: Record<string, unknown>, functions?: Record<string, Function>): DynamicImageResult {
   const imageUrls = Array<string>();
   try {
     return {
       type: "Ok",
-      image: evaluate(jsString, baseSchema, { data, components: createComponents(imageUrls) }) as AbstractImage,
+      image: evaluate(jsString, baseSchema, { data, functions, components: createComponents(imageUrls) }) as AbstractImage,
       imageUrls,
     };
   } catch (error) {
