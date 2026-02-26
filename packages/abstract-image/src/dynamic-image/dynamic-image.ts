@@ -1,6 +1,5 @@
 import { render, Schema, compile, evaluate, PropertySchema } from "jsxpression";
 import { AbstractImage } from "../model/abstract-image.js";
-import { generateDataSchema } from "./utils.js";
 import { createComponents } from "./components.js";
 import { baseSchema } from "./schema.js";
 import { FunctionSchema } from "../../../jsxpression/src/schema.js";
