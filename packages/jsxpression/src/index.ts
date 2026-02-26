@@ -1,4 +1,4 @@
-export type { Schema, PropertySchema } from "./schema.js";
+export type { Schema, PropertySchema, FunctionSchema } from "./schema.js";
 
 export { ParseError } from "./parse/index.js";
 export { CompilationError } from "./compile/index.js";
