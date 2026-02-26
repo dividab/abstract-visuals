@@ -53,14 +53,14 @@ export const DXF_ENTITIES: string[] = [
   "VERTEX",
   "VIEWPORT",
   "WIPEOUT",
-  "XLINE"
+  "XLINE",
 ];
 
 export type DxfOptions = {
   readonly imageDataByUrl: Record<string, `${typeof DXF_DATA_URL}${string}`>;
-  readonly fillPolygons?: boolean;
-  readonly useStrokeThickness?: boolean;
-  readonly useColor?: boolean;
+  readonly fillPolygons: boolean;
+  readonly useStrokeThickness: boolean;
+  readonly useColor: boolean;
 };
 
 export type DxfSpace = "*Model_Space" | "*Paper_Space";
@@ -96,7 +96,7 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   const modelSpaceHandle = newHandle();
   const paperSpaceHandle = newHandle();
 
-  const opts: Required<DxfOptions> = {
+  const opts: DxfOptions = {
     imageDataByUrl: options?.imageDataByUrl ?? {},
     fillPolygons: options?.fillPolygons ?? false,
     useColor: options?.useColor ?? false,
@@ -112,7 +112,15 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   blocks += createSpaceBlock("*Model_Space", modelSpaceHandle, newHandle);
   blocks += createSpaceBlock("*Paper_Space", paperSpaceHandle, newHandle);
   for (const component of root.components) {
-    const [newEntities, newBlocks, newBlockRecords] = componentDxf(component, layer, root.size, modelSpaceHandle, externalCache, opts, newHandle);
+    const [newEntities, newBlocks, newBlockRecords] = componentDxf(
+      component,
+      layer,
+      root.size,
+      modelSpaceHandle,
+      externalCache,
+      opts,
+      newHandle
+    );
     entities += newEntities;
     blocks += newBlocks;
     blockRecords.push(...newBlockRecords);
@@ -165,14 +173,30 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   return header + dxf;
 }
 
-function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle: string, externalCache: Map<string, DxfInsert>, options: Required<DxfOptions>, newHandle: () => string): readonly [string, string, ReadonlyArray<BlockRecord>] {
+function componentDxf(
+  c: Component,
+  layer: number,
+  size: Size,
+  modelSpaceHandle: string,
+  externalCache: Map<string, DxfInsert>,
+  options: Required<DxfOptions>,
+  newHandle: () => string
+): readonly [string, string, ReadonlyArray<BlockRecord>] {
   let entities = "";
   let blocks = "";
   let blockRecords: Array<BlockRecord> = [];
 
   if (c.type === "group") {
     for (const child of c.children) {
-      const [newEntities, newBlocks, newBlockRecords] = componentDxf(child, layer, size, modelSpaceHandle, externalCache, options, newHandle);
+      const [newEntities, newBlocks, newBlockRecords] = componentDxf(
+        child,
+        layer,
+        size,
+        modelSpaceHandle,
+        externalCache,
+        options,
+        newHandle
+      );
       entities += newEntities;
       blocks += newBlocks;
       blockRecords.push(...newBlockRecords);
@@ -193,7 +217,10 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     if (!dxfStringRaw) {
       return [entities, blocks, blockRecords];
     }
-    const dxfString = dxfStringRaw.split("\n").map((v) => v.trim()).join("\n");
+    const dxfString = dxfStringRaw
+      .split("\n")
+      .map((v) => v.trim())
+      .join("\n");
 
     const version = extractStandard(dxfString);
     if (version !== DXF_STANDARD) {
@@ -216,7 +243,9 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     const externalBlockRecords = extractBlockRecords(dxfString);
 
     const newBlockRecordHandle = newHandle();
-    const newName = `EMBEDED_IMAGE_${randomID()}_${scale.x.toPrecision(4).replace(".", "_")}X${scale.y.toPrecision(4).replace(".", "_")}`;
+    const newName = `EMBEDED_IMAGE_${randomID()}_${scale.x.toPrecision(4).replace(".", "_")}X${scale.y
+      .toPrecision(4)
+      .replace(".", "_")}`;
 
     const initOldHandlesMap = new Map<string, string>();
 
@@ -225,7 +254,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
         initOldHandlesMap.set(br.id, newBlockRecordHandle);
       } else if (br.name === "*Paper_Space") {
         initOldHandlesMap.set(br.id, newBlockRecordHandle);
-      } else if(!initOldHandlesMap.has(br.id)) {
+      } else if (!initOldHandlesMap.has(br.id)) {
         const newId = newHandle();
         initOldHandlesMap.set(br.id, newId);
         blockRecords.push({ name: br.name, id: newId });
@@ -249,7 +278,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     let blockRecordName = newName;
     let blockRecordId = "0";
     const existingBlockRecord = blockRecords.find((v) => v.name.localeCompare(newName) === 0);
-    if(existingBlockRecord !== undefined) {
+    if (existingBlockRecord !== undefined) {
       blockRecordName = existingBlockRecord.name;
       blockRecordId = existingBlockRecord.id;
     } else {
@@ -262,23 +291,35 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
 
     const newBlock =
       "0\nBLOCK\n" +
-      "5\n" + newHandle() + "\n" +
-      "330\n" + blockRecordId + "\n" +
+      "5\n" +
+      newHandle() +
+      "\n" +
+      "330\n" +
+      blockRecordId +
+      "\n" +
       "100\nAcDbEntity\n" +
       "8\n0\n" +
       "100\nAcDbBlockBegin\n" +
-      "2\n" + blockRecordName + "\n" +
+      "2\n" +
+      blockRecordName +
+      "\n" +
       "70\n0\n" +
       "10\n0\n" +
-      "20\n0\n" + 
+      "20\n0\n" +
       "30\n0\n" +
-      "3\n" + blockRecordName + "\n" +
+      "3\n" +
+      blockRecordName +
+      "\n" +
       "1\n\n" +
       newEntities +
       "\n" +
       "0\nENDBLK\n" +
-      "5\n" + newHandle() + "\n" +
-      "330\n" + blockRecordId + "\n" +
+      "5\n" +
+      newHandle() +
+      "\n" +
+      "330\n" +
+      blockRecordId +
+      "\n" +
       "100\nAcDbEntity\n" +
       "8\n0\n" +
       "100\nAcDbBlockEnd\n";
@@ -289,7 +330,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     const insert: DxfInsert = {
       blockRecordId: blockRecordId,
       name: blockRecordName,
-      extents
+      extents,
     };
     externalCache.set(cachKey, insert);
     entities += createExternalInsert(insert, c, size, modelSpaceHandle, newHandle);
@@ -305,7 +346,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer + "\n";
 
-    if(options.useColor && !isBlack(c.strokeColor)) {
+    if (options.useColor && !isBlack(c.strokeColor)) {
       entities += "60\n0\n";
       entities += "62\n256\n";
       entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
@@ -315,12 +356,15 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "10\n0\n20\n0\n30\n0\n";
     entities += "70\n0\n";
 
-    if(options.useStrokeThickness) {
+    if (options.useStrokeThickness) {
       entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
       entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
     }
 
-    const points: ReadonlyArray<Point> = [{ x: c.start.x, y: invert(c.start.y, size.height)}, { x: c.end.x, y: invert(c.end.y, size.height) }];
+    const points: ReadonlyArray<Point> = [
+      { x: c.start.x, y: invert(c.start.y, size.height) },
+      { x: c.end.x, y: invert(c.end.y, size.height) },
+    ];
     for (const point of points) {
       entities += "0\nVERTEX\n";
       entities += "5\n" + newHandle() + "\n";
@@ -351,7 +395,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer + "\n";
 
-    if(options.useColor && !isBlack(c.strokeColor)) {
+    if (options.useColor && !isBlack(c.strokeColor)) {
       entities += "60\n0\n";
       entities += "62\n256\n";
       entities += "420\n" + colorToInteger(c.strokeColor) + "\n";
@@ -361,7 +405,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "10\n0\n20\n0\n30\n0\n";
     entities += "70\n0\n";
 
-    if(options.useStrokeThickness) {
+    if (options.useStrokeThickness) {
       entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
       entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
     }
@@ -399,7 +443,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "100\nAcDbEntity\n";
     entities += "8\nText\n";
 
-    if(options.useColor && !isBlack(c.textColor)) {
+    if (options.useColor && !isBlack(c.textColor)) {
       entities += "60\n0\n";
       entities += "62\n256\n";
       entities += "420\n" + colorToInteger(c.textColor) + "\n";
@@ -417,7 +461,7 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
     entities += "71\n0\n";
     entities += "72\n" + horizontalAlignment.toString() + "\n";
 
-    if(horizontalAlignment === 0 && verticalAlignment === 0) {
+    if (horizontalAlignment === 0 && verticalAlignment === 0) {
       entities += "100\nAcDbText\n";
       entities += "73\n0\n";
     } else {
@@ -441,21 +485,51 @@ function componentDxf(c: Component, layer: number, size: Size, modelSpaceHandle:
       const t = (2 * Math.PI * i) / numPoints;
       const x = c.topLeft.x + r1 + r1 * Math.cos(t);
       const y = c.topLeft.y + r2 + r2 * Math.sin(t);
-      points.push({x, y});
+      points.push({ x, y });
     }
 
-    entities += createPolygon(modelSpaceHandle, layer.toString(), points, c.strokeColor, c.fillColor, c.strokeThickness, size.height, options, newHandle);
+    entities += createPolygon(
+      modelSpaceHandle,
+      layer.toString(),
+      points,
+      c.strokeColor,
+      c.fillColor,
+      c.strokeThickness,
+      size.height,
+      options,
+      newHandle
+    );
     return [entities, blocks, blockRecords];
   }
 
   if (c.type === "polygon") {
-    entities += createPolygon(modelSpaceHandle, layer.toString(), c.points, c.strokeColor, c.fillColor, c.strokeThickness, size.height, options, newHandle);
+    entities += createPolygon(
+      modelSpaceHandle,
+      layer.toString(),
+      c.points,
+      c.strokeColor,
+      c.fillColor,
+      c.strokeThickness,
+      size.height,
+      options,
+      newHandle
+    );
     return [entities, blocks, blockRecords];
   }
 
   if (c.type === "rectangle") {
     const cors = corners(c);
-    entities += createPolygon(modelSpaceHandle, layer.toString(), cors, c.strokeColor, c.fillColor, c.strokeThickness, size.height, options, newHandle);
+    entities += createPolygon(
+      modelSpaceHandle,
+      layer.toString(),
+      cors,
+      c.strokeColor,
+      c.fillColor,
+      c.strokeThickness,
+      size.height,
+      options,
+      newHandle
+    );
     return [entities, blocks, blockRecords];
   }
 
@@ -474,11 +548,10 @@ function stripBlocks(blocks: string, blocksToStrip: ReadonlyArray<string>): stri
   let currentBlock: Array<string> = [];
   let currentBlockName = undefined;
   let i = 0;
-  while(i < b.length) {
-    if(b[i] === "0" && b[i+1] === "BLOCK") {
-
-      if(i !== 0) {
-        if(currentBlockName && !s.has(currentBlockName)) {
+  while (i < b.length) {
+    if (b[i] === "0" && b[i + 1] === "BLOCK") {
+      if (i !== 0) {
+        if (currentBlockName && !s.has(currentBlockName)) {
           validBlocks.push(...currentBlock);
           currentBlock = [];
           currentBlockName = undefined;
@@ -488,10 +561,10 @@ function stripBlocks(blocks: string, blocksToStrip: ReadonlyArray<string>): stri
         }
       }
 
-      currentBlock.push(b[i], b[i+1]);
+      currentBlock.push(b[i], b[i + 1]);
       i += 2;
-    } else if(b[i] === "2") {
-      currentBlockName = b[i+1];
+    } else if (b[i] === "2") {
+      currentBlockName = b[i + 1];
       currentBlock.push(b[i]);
       i += 1;
     } else {
@@ -500,7 +573,7 @@ function stripBlocks(blocks: string, blocksToStrip: ReadonlyArray<string>): stri
     }
   }
 
-  if(currentBlockName && !s.has(currentBlockName)) {
+  if (currentBlockName && !s.has(currentBlockName)) {
     validBlocks.push(...currentBlock);
   }
 
@@ -526,7 +599,9 @@ function extractEntities(dxf: string): string | undefined {
 }
 
 function extractBlockRecords(dxf: string): ReadonlyArray<BlockRecord> {
-  return [...dxf.matchAll(/^\s*0\s*\n\s*BLOCK_RECORD[\s\S]*?\n\s*5\s*\n\s*([0-9A-Fa-f]+)[\s\S]*?\n\s*2\s*\n\s*([^\r\n]+)/gm)].map((match) => ({
+  return [
+    ...dxf.matchAll(/^\s*0\s*\n\s*BLOCK_RECORD[\s\S]*?\n\s*5\s*\n\s*([0-9A-Fa-f]+)[\s\S]*?\n\s*2\s*\n\s*([^\r\n]+)/gm),
+  ].map((match) => ({
     name: match[2],
     id: match[1],
   }));
@@ -534,7 +609,7 @@ function extractBlockRecords(dxf: string): ReadonlyArray<BlockRecord> {
 
 function extractBlocks(dxf: string, newModelSpace: string, newPaperSpace: string): string {
   const blockMatch = /0\s+SECTION\s+2\s+BLOCKS\s+([\s\S]*?)0\s+ENDSEC/m.exec(dxf);
-  if(blockMatch === null) {
+  if (blockMatch === null) {
     return "";
   }
 
@@ -564,7 +639,13 @@ function extractStandard(dxf: string): string | undefined {
   return version ? version[1] : undefined;
 }
 
-function remapHandleIds(entities: string | undefined, blocks: string | undefined, initHandleMap: Map<string, string>, rootModelHandle: string, newHandle: () => string): [string | undefined, string] {
+function remapHandleIds(
+  entities: string | undefined,
+  blocks: string | undefined,
+  initHandleMap: Map<string, string>,
+  rootModelHandle: string,
+  newHandle: () => string
+): [string | undefined, string] {
   if (entities === undefined || blocks === undefined) {
     return [undefined, ""];
   }
@@ -582,16 +663,16 @@ function remapHandleIds(entities: string | undefined, blocks: string | undefined
     while (i < lines.length) {
       const groupCode = lines[i].trim();
       const next = (lines[i + 1] ?? "").trim();
-      
-      if(groupCode === "0" && ents.has(next)) {
+
+      if (groupCode === "0" && ents.has(next)) {
         inEntityHeader = true;
       }
 
-      if(groupCode === "100" && next === "AcDbEntity") {
+      if (groupCode === "100" && next === "AcDbEntity") {
         inEntityHeader = false;
       }
 
-      if (inEntityHeader && (i + 1 < lines.length && handleGroupCodes.has(groupCode))) {
+      if (inEntityHeader && i + 1 < lines.length && handleGroupCodes.has(groupCode)) {
         const value = lines[i + 1].trim();
         if (/^[0-9A-Fa-f]+$/.test(value)) {
           out.push(groupCode);
@@ -618,7 +699,7 @@ function remapHandleIds(entities: string | undefined, blocks: string | undefined
 }
 
 function scaleDxf(dxfString: string | undefined, sx: number, sy: number): string | undefined {
-  if(!dxfString) {
+  if (!dxfString) {
     return undefined;
   }
 
@@ -629,11 +710,11 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number): string
   const scaledLines: string[] = [];
 
   let currentAcDbEntity = "";
-  for (let i = 0; i < lines.length; i+=2) {
+  for (let i = 0; i < lines.length; i += 2) {
     const codeLine = lines[i];
     const valueLine = lines[i + 1];
 
-    if(codeLine === "100") {
+    if (codeLine === "100") {
       currentAcDbEntity = valueLine;
     }
 
@@ -650,17 +731,19 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number): string
       if (!isNaN(num)) {
         value = (num * sx).toString();
       }
-    } else if(yCoordinateCodes.has(code)) {
+    } else if (yCoordinateCodes.has(code)) {
       const num = parseFloat(valueLine);
       if (!isNaN(num)) {
         value = (num * sy).toString();
       }
-    } else if(code === 40 && currentAcDbEntity === "AcDbText") { //font size
+    } else if (code === 40 && currentAcDbEntity === "AcDbText") {
+      //font size
       const num = parseInt(valueLine.trim(), 10);
       if (!isNaN(num)) {
         value = Math.round((num + 2) * Math.max(sx, sy)).toString();
       }
-    } else if((code === 41 || code === 40) && currentAcDbEntity === "AcDb2dPolyline") { // stroke thickness
+    } else if ((code === 41 || code === 40) && currentAcDbEntity === "AcDb2dPolyline") {
+      // stroke thickness
       const num = parseInt(valueLine.trim(), 10);
       if (!isNaN(num)) {
         value = (num * Math.max(sx, sy)).toString();
@@ -686,12 +769,17 @@ function getScale(extents: DxfExtents, c: BinaryImage): { readonly x: number; re
   const sy = targetH / srcH;
   return {
     x: sx,
-    y: sy
-  }
+    y: sy,
+  };
 }
 
-function createExternalInsert(ins: DxfInsert, c: BinaryImage, size: Size, modelSpaceHandle: string, newHandle: () => string): string {
-
+function createExternalInsert(
+  ins: DxfInsert,
+  c: BinaryImage,
+  size: Size,
+  modelSpaceHandle: string,
+  newHandle: () => string
+): string {
   const minX = Math.min(c.topLeft.x, c.bottomRight.x);
   const maxY = Math.max(c.topLeft.y, c.bottomRight.y);
   const x = minX - ins.extents.minX;
@@ -791,7 +879,6 @@ function createLTypeTable(newHandle: () => string): string {
 }
 
 function createLayerTable(newHandle: () => string): string {
-
   const layers = ["0", "1", "A3D", "Lines", "Text"];
   const layerId = newHandle();
 
@@ -803,7 +890,7 @@ function createLayerTable(newHandle: () => string): string {
   table += "100\nAcDbSymbolTable\n";
   table += "70\n" + layers.length.toString() + "\n";
 
-  for(const layer of layers) {
+  for (const layer of layers) {
     table += "0\nLAYER\n";
     table += "5\n" + newHandle() + "\n";
     table += "330\n" + layerId + "\n";
@@ -952,11 +1039,16 @@ function createDimStyleTable(newHandle: () => string): string {
   return table;
 }
 
-function createBlockRecordsTable(modelSpaceHandle: string, paperSpaceHandle: string, blockRecords: ReadonlyArray<BlockRecord>, newHandle: () => string): string {
+function createBlockRecordsTable(
+  modelSpaceHandle: string,
+  paperSpaceHandle: string,
+  blockRecords: ReadonlyArray<BlockRecord>,
+  newHandle: () => string
+): string {
   const br: ReadonlyArray<BlockRecord> = [
     { id: modelSpaceHandle, name: "*Model_Space" },
     { id: paperSpaceHandle, name: "*Paper_Space" },
-    ...blockRecords
+    ...blockRecords,
   ];
 
   const blockRecordsHandle = newHandle();
@@ -969,7 +1061,7 @@ function createBlockRecordsTable(modelSpaceHandle: string, paperSpaceHandle: str
   table += "100\nAcDbSymbolTable\n";
   table += "70\n" + br.length.toString() + "\n";
 
-  for(const record of br) {
+  for (const record of br) {
     table += "0\nBLOCK_RECORD\n";
     table += "5\n" + record.id + "\n";
     table += "330\n" + blockRecordsHandle + "\n";
@@ -985,7 +1077,12 @@ function createBlockRecordsTable(modelSpaceHandle: string, paperSpaceHandle: str
   return table;
 }
 
-function createObjects(modelSpaceHandle: string, paperSpaceHandle: string, root: AbstractImage, newHandle: () => string): string {
+function createObjects(
+  modelSpaceHandle: string,
+  paperSpaceHandle: string,
+  root: AbstractImage,
+  newHandle: () => string
+): string {
   let objects = "";
   const rootDictId = newHandle();
   const groupDictId = newHandle();
@@ -1012,7 +1109,8 @@ function createObjects(modelSpaceHandle: string, paperSpaceHandle: string, root:
   objects += "0\nLAYOUT\n5\n" + layoutModelId + "\n102\n{ACAD_REACTORS\n330\n" + layoutDictId + "\n102\n}\n";
   objects += "330\n" + layoutDictId + "\n100\nAcDbPlotSettings\n1\n\n2\nnone_device\n4\n\n6\n\n";
   objects += "40\n0.0\n41\n0.0\n42\n0.0\n43\n0.0\n44\n0.0\n45\n0.0\n46\n0.0\n47\n0.0\n48\n0.0\n49\n0.0\n";
-  objects += "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n1712\n72\n0\n73\n0\n74\n0\n7\n\n75\n0\n147\n1.0\n148\n0.0\n149\n0.0\n";
+  objects +=
+    "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n1712\n72\n0\n73\n0\n74\n0\n7\n\n75\n0\n147\n1.0\n148\n0.0\n149\n0.0\n";
   objects += "100\nAcDbLayout\n1\nModel\n70\n1\n71\n0\n";
   objects += "10\n0.0\n20\n0.0\n11\n" + root.size.width + "\n21\n" + root.size.height + "\n";
   objects += "12\n0.0\n22\n0.0\n32\n0.0\n14\n0.0\n24\n0.0\n34\n0.0\n";
@@ -1024,7 +1122,8 @@ function createObjects(modelSpaceHandle: string, paperSpaceHandle: string, root:
   objects += "0\nLAYOUT\n5\n" + layoutPaperId + "\n102\n{ACAD_REACTORS\n330\n" + layoutDictId + "\n102\n}\n";
   objects += "330\n" + layoutDictId + "\n100\nAcDbPlotSettings\n1\n\n2\nnone_device\n4\n\n6\n\n";
   objects += "40\n0.0\n41\n0.0\n42\n0.0\n43\n0.0\n44\n0.0\n45\n0.0\n46\n0.0\n47\n0.0\n48\n0.0\n49\n0.0\n";
-  objects += "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n688\n72\n0\n73\n0\n74\n5\n7\n\n75\n16\n147\n1.0\n148\n0.0\n149\n0.0\n";
+  objects +=
+    "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n688\n72\n0\n73\n0\n74\n5\n7\n\n75\n16\n147\n1.0\n148\n0.0\n149\n0.0\n";
   objects += "100\nAcDbLayout\n1\nLayout1\n70\n1\n71\n1\n";
   objects += "10\n0.0\n20\n0.0\n11\n" + root.size.width + "\n21\n" + root.size.height + "\n";
   objects += "12\n0.0\n22\n0.0\n32\n0.0\n14\n1.0E+20\n24\n1.0E+20\n34\n1.0E+20\n";
@@ -1069,7 +1168,7 @@ function createHatch(
   height: number,
   newHandle: () => string
 ): string {
-  const invertedPoints = points.map(p => ({ x: p.x, y: invert(p.y, height) }));
+  const invertedPoints = points.map((p) => ({ x: p.x, y: invert(p.y, height) }));
   const cx = invertedPoints.reduce((s, p) => s + p.x, 0) / invertedPoints.length;
   const cy = invertedPoints.reduce((s, p) => s + p.y, 0) / invertedPoints.length;
 
@@ -1108,21 +1207,31 @@ function createHatch(
   return hatch;
 }
 
-function createPolygon(modelSpaceHandle: string, layer: string, points: ReadonlyArray<Point>, strokeColor: Color, fillColor: Color, strokeThickness: number | undefined, height: number, options: Required<DxfOptions>, newHandle: () => string): string {
+function createPolygon(
+  modelSpaceHandle: string,
+  layer: string,
+  points: ReadonlyArray<Point>,
+  strokeColor: Color,
+  fillColor: Color,
+  strokeThickness: number | undefined,
+  height: number,
+  options: Required<DxfOptions>,
+  newHandle: () => string
+): string {
   const handle = newHandle();
   let polygon = "";
 
-  if(options.fillPolygons) {
+  if (options.fillPolygons) {
     polygon += createHatch(modelSpaceHandle, layer, fillColor, points, height, newHandle);
   }
-  
+
   polygon += "0\nPOLYLINE\n";
   polygon += "5\n" + handle + "\n";
   polygon += "330\n" + modelSpaceHandle + "\n";
   polygon += "100\nAcDbEntity\n";
   polygon += "8\n" + layer.toString() + "\n";
 
-  if(options.useColor && !isBlack(strokeColor)) {
+  if (options.useColor && !isBlack(strokeColor)) {
     polygon += "60\n0\n";
     polygon += "62\n256\n";
     polygon += "420\n" + colorToInteger(strokeColor) + "\n";
@@ -1133,7 +1242,7 @@ function createPolygon(modelSpaceHandle: string, layer: string, points: Readonly
   polygon += "70\n1\n";
   polygon += "10\n0.0\n20\n0.0\n30\n0.0\n";
 
-  if(options.useStrokeThickness && strokeThickness && strokeThickness >= Number.EPSILON) {
+  if (options.useStrokeThickness && strokeThickness && strokeThickness >= Number.EPSILON) {
     polygon += "40\n" + strokeThickness.toPrecision(4) + "\n";
     polygon += "41\n" + strokeThickness.toPrecision(4) + "\n";
   }
@@ -1161,16 +1270,16 @@ function createPolygon(modelSpaceHandle: string, layer: string, points: Readonly
   return polygon;
 }
 
-function handleGenerator(): { newHandle: () => string, currentHandle: () => string } {
+function handleGenerator(): { newHandle: () => string; currentHandle: () => string } {
   let index = 0x1000;
   return {
     newHandle: () => (index++).toString(16).toUpperCase(),
-    currentHandle: () => (index).toString(16).toUpperCase(),
+    currentHandle: () => index.toString(16).toUpperCase(),
   };
 }
 
 function randomID(): string {
-  return "xxxxxxxxxxxxxxxx".replaceAll("x", () => (Math.round(Math.random() * 16)).toString(16)).toLocaleUpperCase();
+  return "xxxxxxxxxxxxxxxx".replaceAll("x", () => Math.round(Math.random() * 16).toString(16)).toLocaleUpperCase();
 }
 
 function isBlack(color: Color): boolean {
@@ -1179,7 +1288,7 @@ function isBlack(color: Color): boolean {
 
 function colorToInteger(color: Color): number {
   const colorAsInt = (color.r << 16) + (color.g << 8) + color.b;
-  if(Number.isNaN(colorAsInt)) {
+  if (Number.isNaN(colorAsInt)) {
     return 0;
   }
   return colorAsInt;

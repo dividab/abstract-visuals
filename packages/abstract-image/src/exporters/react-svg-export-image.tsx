@@ -4,6 +4,7 @@ import { AbstractImage } from "../model/abstract-image.js";
 import { createPoint, Point } from "../model/point.js";
 import { AbstractFontWeight, BinaryFormat, Component, GrowthDirection, ImageData } from "../model/component.js";
 import { Color } from "../model/color.js";
+import { Optional } from "../model/shared.js";
 
 export interface ReactSvgCallbacks {
   readonly onClick?: MouseCallback;
@@ -14,13 +15,22 @@ export interface ReactSvgCallbacks {
 
 export type MouseCallback = (id: string | undefined, point: Point) => void;
 
+export type ReactSvgOptions = {
+  readonly imageDataByUrl: Record<string, `data:image/${string},${string}`>;
+};
+
 export function ReactSvg({
   image,
   callbacks,
+  options,
 }: {
   readonly image: AbstractImage;
   readonly callbacks?: ReactSvgCallbacks;
+  readonly options: Optional<ReactSvgOptions>;
 }): React.JSX.Element {
+  const opts: ReactSvgOptions = {
+    imageDataByUrl: options?.imageDataByUrl ?? {},
+  };
   const cb = callbacks || {};
   const id = "ai_root";
   return (
@@ -35,7 +45,7 @@ export function ReactSvg({
       onContextMenu={_callback(cb.onContextMenu, id)}
     >
       {image.components.map((c, i) => (
-        <JsxComponent key={i} component={c} />
+        <JsxComponent key={i} component={c} options={opts} />
       ))}
     </svg>
   );
@@ -74,18 +84,24 @@ function getIdAttr(target: Element | undefined, rootId: string): string | undefi
   return parts[1];
 }
 
-function JsxComponent({ component }: { readonly component: Component }): React.JSX.Element {
+function JsxComponent({
+  component,
+  options,
+}: {
+  readonly component: Component;
+  readonly options: ReactSvgOptions;
+}): React.JSX.Element {
   switch (component.type) {
     case "group":
       return (
         <g name={component.name}>
           {component.children.flatMap((c, i) => (
-            <JsxComponent key={i} component={c} />
+            <JsxComponent key={i} component={c} options={options} />
           ))}
         </g>
       );
     case "binaryimage":
-      const url = getImageUrl(component.format, component.data);
+      const url = getImageUrl(component.format, component.data, options);
       return (
         <image
           x={component.topLeft.x}
@@ -270,9 +286,9 @@ function getTextFontWeight(fontWeight: AbstractFontWeight): React.CSSProperties[
   }
 }
 
-function getImageUrl(format: BinaryFormat, data: ImageData): string {
+function getImageUrl(format: BinaryFormat, data: ImageData, options: ReactSvgOptions): string {
   if (data.type === "url") {
-    return data.url;
+    return options.imageDataByUrl[data.url] ?? data.url;
   } else if (format === "png") {
     const base64 = fromByteArray(data.bytes);
     return `data:image/png;base64,${base64}`;

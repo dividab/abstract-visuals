@@ -2,23 +2,37 @@ import { fromByteArray } from "base64-js";
 import { Component, GrowthDirection, BinaryFormat, ImageData } from "../model/component.js";
 import { AbstractImage } from "../model/abstract-image.js";
 import { Color } from "../model/color.js";
+import { Optional } from "../model/shared.js";
 
-export function createSVG(image: AbstractImage, pixelWidth?: number, pixelHeight?: number): string {
-  const imageElements = image.components.map((c: Component) => abstractComponentToSVG(c));
+export const SVG_DATA_URL = "data:image/svg+xml,";
+
+export type SvgOptions = {
+  readonly pixelWidth: number;
+  readonly pixelHeight: number;
+  readonly imageDataByUrl: Record<string, `data:image/${string},${string}`>;
+};
+
+export function createSVG(image: AbstractImage, options: Optional<SvgOptions>): string {
+  const opts: SvgOptions = {
+    imageDataByUrl: options?.imageDataByUrl ?? {},
+    pixelWidth: options?.pixelWidth || image.size.width,
+    pixelHeight: options?.pixelHeight || image.size.height,
+  };
+  const imageElements = image.components.map((c: Component) => abstractComponentToSVG(c, opts));
 
   return createElement(
     "svg",
     {
       xmlns: "http://www.w3.org/2000/svg",
-      width: `${pixelWidth || image.size.width}px`,
-      height: `${pixelHeight || image.size.height}px`,
+      width: `${opts.pixelWidth}px`,
+      height: `${opts.pixelHeight}px`,
       viewBox: [0, 0, image.size.width, image.size.height].join(" "),
     },
     imageElements
   );
 }
 
-function abstractComponentToSVG(component: Component): string {
+function abstractComponentToSVG(component: Component, options: SvgOptions): string {
   switch (component.type) {
     case "group":
       return createElement(
@@ -26,10 +40,10 @@ function abstractComponentToSVG(component: Component): string {
         {
           name: component.name,
         },
-        component.children.map((c) => abstractComponentToSVG(c))
+        component.children.map((c) => abstractComponentToSVG(c, options))
       );
     case "binaryimage":
-      const url = getImageUrl(component.format, component.data);
+      const url = getImageUrl(component.format, component.data, options);
       return url
         ? createElement(
             "image",
@@ -339,9 +353,9 @@ function colorToOpacity(color: Color): string {
   return (color.a / 255).toString();
 }
 
-function getImageUrl(format: BinaryFormat, data: ImageData): string | undefined {
+function getImageUrl(format: BinaryFormat, data: ImageData, options: SvgOptions): string | undefined {
   if (data.type === "url") {
-    return data.url;
+    return options.imageDataByUrl[data.url] ?? data.url;
   } else if (format === "png") {
     const base64 = fromByteArray(data.bytes);
     return `data:image/png;base64,${base64}`;
