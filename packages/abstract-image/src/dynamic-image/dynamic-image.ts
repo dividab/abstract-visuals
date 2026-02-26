@@ -14,14 +14,14 @@ export type DynamicImageError = {
   cause?: unknown;
 };
 
-export function dynamicImage(source: string, data: Record<string, unknown>): DynamicImageResult {
+export function dynamicImage(
+  source: string,
+  data: Record<string, unknown>,
+  dataSchema?: Record<string, PropertySchema>
+): DynamicImageResult {
   try {
     const imageUrls = Array<string>();
-
-    const schema: Schema = {
-      ...baseSchema,
-      data: generateDataSchema(data),
-    };
+    const schema: Schema = dataSchema ? { ...baseSchema, data: dataSchema } : baseSchema;
 
     const image = render<AbstractImage>(source, schema, {
       data,
