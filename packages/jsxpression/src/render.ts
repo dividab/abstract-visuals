@@ -74,11 +74,18 @@ export function render<T = any>(
   return evaluate(compileInternal(ast), schema, options) as T;
 }
 
-export function compile<T = any>(source: string, schema: Schema, { minSeverity = 3 }: RenderOptions<T> = {}): string {
+export function compile<T = any>(
+  source: string,
+  schema: Schema,
+  { minSeverity = 3 }: RenderOptions<T> = {},
+  tempSkipValidation?: boolean | undefined
+): string {
   const ast = parse(source);
-  const report = analyze(ast, schema);
-  if (report.hasIssues(minSeverity)) {
-    throw AnalysisError.fromReport(report);
+  if (!tempSkipValidation) {
+    const report = analyze(ast, schema);
+    if (report.hasIssues(minSeverity)) {
+      throw AnalysisError.fromReport(report);
+    }
   }
   return compileInternal(ast);
 }
