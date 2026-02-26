@@ -24,9 +24,9 @@ import {
   epsExportImage,
   createBinaryImage,
   DXF_DATA_URL,
-  dynamicImage,
   magenta,
 } from "../../../abstract-image/src/index.js";
+import { dynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 
 export function AbstractImageExampleDxf(): React.JSX.Element {
   const components = [
@@ -75,7 +75,13 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
 
   const dxf2 =
     ai.type === "Ok"
-      ? dxf2dExportImage(ai.image, { imageDataByUrl: { sketch: `${DXF_DATA_URL}${unitDxf}`, square: `${DXF_DATA_URL}${squareDxf}`, dxf1: `${DXF_DATA_URL}${dxf}` } })
+      ? dxf2dExportImage(ai.image, {
+          imageDataByUrl: {
+            sketch: `${DXF_DATA_URL}${unitDxf}`,
+            square: `${DXF_DATA_URL}${squareDxf}`,
+            dxf1: `${DXF_DATA_URL}${dxf}`,
+          },
+        })
       : undefined;
   const dxfUrl2 = dxf2 ? toDataUrl("text/plain", dxf2) : undefined;
 

@@ -1,4 +1,4 @@
-import { compile } from "./compile/index.js";
+import { compile as compileInternal } from "./compile/index.js";
 import { evaluate, EvaluateOptions } from "./evaluate/evaluate.js";
 import { parse } from "./parse/index.js";
 import { Schema } from "./schema.js";
@@ -71,5 +71,14 @@ export function render<T = any>(
     throw AnalysisError.fromReport(report);
   }
 
-  return evaluate(compile(ast), schema, options) as T;
+  return evaluate(compileInternal(ast), schema, options) as T;
+}
+
+export function compile<T = any>(source: string, schema: Schema, { minSeverity = 3 }: RenderOptions<T> = {}): string {
+  const ast = parse(source);
+  const report = analyze(ast, schema);
+  if (report.hasIssues(minSeverity)) {
+    throw AnalysisError.fromReport(report);
+  }
+  return compileInternal(ast);
 }

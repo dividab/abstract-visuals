@@ -1,10 +1,10 @@
 import React from "react";
 import wiringPng from "../../assets/wiring.png";
 import FileSaver from "file-saver";
-import { dynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
+import { compileDynamicImage, renderDynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
 
-export function AbstractImageXml({}: {}): React.JSX.Element {
+export function DynamicImage({}: {}): React.JSX.Element {
   const [data, setData] = React.useState(
     JSON.stringify(
       {
@@ -28,9 +28,8 @@ export function AbstractImageXml({}: {}): React.JSX.Element {
   } catch (e) {
     console.log(e);
   }
-  const result = dynamicImage(template, dataParsed);
-  console.log("ai", result);
-
+  const jsString = compileDynamicImage(template);
+  const rendered = jsString.type === "Ok" ? renderDynamicImage(jsString.value, dataParsed) : undefined;
   return (
     <div
       style={{
@@ -86,17 +85,23 @@ export function AbstractImageXml({}: {}): React.JSX.Element {
       >
         <div style={{ display: "flex", gap: "10px" }}>
           <button
-            disabled={result.type !== "Ok"}
+            disabled={rendered?.type !== "Ok"}
             onClick={() => {
-              if (result.type === "Ok") {
-                FileSaver.saveAs(new Blob([createSVG(result.image)], { type: "image/svg+xml" }), "template-svg.svg");
+              if (rendered?.type === "Ok") {
+                FileSaver.saveAs(new Blob([createSVG(rendered.image)], { type: "image/svg+xml" }), "template-svg.svg");
               }
             }}
           >
             Download Svg
           </button>
         </div>
-        {result.type === "Ok" ? <ReactSvg image={result.image} /> : result.error.message}
+        {rendered?.type === "Ok" ? (
+          <ReactSvg image={rendered.image} />
+        ) : jsString.type === "Err" ? (
+          jsString.error.message
+        ) : (
+          rendered?.error?.message ?? ""
+        )}
         {/* <div dangerouslySetInnerHTML={{ __html: svg }} /> */}
       </div>
     </div>

@@ -1,6 +1,5 @@
-import { render, Schema } from "jsxpression";
+import { render, Schema, compile, evaluate, PropertySchema } from "jsxpression";
 import { AbstractImage } from "../model/abstract-image.js";
-
 import { generateDataSchema } from "./utils.js";
 import { createComponents } from "./components.js";
 import { baseSchema } from "./schema.js";
@@ -33,11 +32,41 @@ export function dynamicImage(source: string, data: Record<string, unknown>): Dyn
   } catch (error) {
     return {
       type: "Err",
-      error: {
-        type: "RENDER_ERROR",
-        message: error instanceof Error ? error.message : String(error),
-        cause: error,
-      },
+      error: { type: "RENDER_ERROR", message: error instanceof Error ? error.message : String(error), cause: error },
+    };
+  }
+}
+
+export type CompileDynamicImageResult =
+  | { readonly type: "Ok"; value: string }
+  | { readonly type: "Err"; readonly error: DynamicImageError };
+
+export function compileDynamicImage(
+  source: string,
+  dataSchema?: Record<string, PropertySchema>
+): CompileDynamicImageResult {
+  try {
+    return { type: "Ok", value: compile(source, dataSchema ? { ...baseSchema, data: dataSchema } : baseSchema) };
+  } catch (error) {
+    return {
+      type: "Err",
+      error: { type: "RENDER_ERROR", message: error instanceof Error ? error.message : String(error), cause: error },
+    };
+  }
+}
+
+export function renderDynamicImage(jsString: string, data: Record<string, unknown>): DynamicImageResult {
+  const imageUrls = Array<string>();
+  try {
+    return {
+      type: "Ok",
+      image: evaluate(jsString, baseSchema, { data, components: createComponents(imageUrls) }) as AbstractImage,
+      imageUrls,
+    };
+  } catch (error) {
+    return {
+      type: "Err",
+      error: { type: "RENDER_ERROR", message: error instanceof Error ? error.message : String(error), cause: error },
     };
   }
 }

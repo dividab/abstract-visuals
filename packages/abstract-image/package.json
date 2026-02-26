@@ -9,7 +9,8 @@
   "type": "module",
   "license": "MIT",
   "exports": {
-    ".": "./lib/index.js"
+    ".": "./lib/index.js",
+    "./dynamic-image": "./lib/dynamic-image/index.js"
   },
   "files": [
     "/lib",
