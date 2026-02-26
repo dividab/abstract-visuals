@@ -26,7 +26,7 @@ export function ReactSvg({
 }: {
   readonly image: AbstractImage;
   readonly callbacks?: ReactSvgCallbacks;
-  readonly options: Optional<ReactSvgOptions>;
+  readonly options?: Optional<ReactSvgOptions>;
 }): React.JSX.Element {
   const opts: ReactSvgOptions = {
     imageDataByUrl: options?.imageDataByUrl ?? {},

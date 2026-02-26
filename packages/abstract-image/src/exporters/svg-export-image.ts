@@ -12,7 +12,7 @@ export type SvgOptions = {
   readonly imageDataByUrl: Record<string, `data:image/${string},${string}`>;
 };
 
-export function createSVG(image: AbstractImage, options: Optional<SvgOptions>): string {
+export function createSVG(image: AbstractImage, options?: Optional<SvgOptions>): string {
   const opts: SvgOptions = {
     imageDataByUrl: options?.imageDataByUrl ?? {},
     pixelWidth: options?.pixelWidth || image.size.width,
