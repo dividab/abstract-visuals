@@ -163,11 +163,11 @@ export function getPropertyAtPath(schema: Schema, path: string[]): PropertySchem
     return undefined;
   }
 
-  let current: PropertySchema | undefined = schema.data[path[0]];
+  let current: PropertySchema | undefined = path[0] !== undefined ? schema.data[path[0]] : undefined;
 
   for (let i = 1; i < path.length && current; i++) {
     if (current.type === "object" && current.shape) {
-      current = current.shape[path[i]];
+      current = current.shape[path[i]!];
     } else {
       return undefined;
     }
