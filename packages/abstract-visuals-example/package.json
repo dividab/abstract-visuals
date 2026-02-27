@@ -29,9 +29,9 @@
     "@types/pdfkit": "^0.17.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.1",
-    "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^6.0.1",
-    "vite-plugin-node-polyfills": "^0.24.0"
+    "@vitejs/plugin-react": "^5.1.4",
+    "vite": "^7.3.1",
+    "vite-plugin-node-polyfills": "^0.25.0"
   },
   "scripts": {
     "bundle": "vite-bundle-visualizer"
