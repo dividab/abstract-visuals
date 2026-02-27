@@ -41,7 +41,13 @@ export function plane(
 
   const imageData = material.imageUrl ? opts.imageDataByUrl?.[material.imageUrl] : undefined;
   const image: EmbededImage | undefined = imageData?.startsWith(rawSvgPrefix)
-    ? { type: "svg", svg: decodeURIComponent(imageData.slice(rawSvgPrefix.length)) }
+    ? {
+        type: "svg",
+        svg: decodeURIComponent(imageData.slice(rawSvgPrefix.length)).replace(
+          /^\s*(<\?xml[^>]*\?>\s*)?(<!DOCTYPE[^>]*>\s*)?/i,
+          ""
+        ),
+      }
     : material.imageUrl
     ? { type: "url", url: imageData ?? material.imageUrl }
     : undefined;
