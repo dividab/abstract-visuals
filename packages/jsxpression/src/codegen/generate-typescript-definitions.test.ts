@@ -460,6 +460,76 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("namespace JSX");
     });
 
+    it("should generate union types", () => {
+      const schema: Schema = {
+        data: {
+          union: {
+            type: "union",
+            shape: [
+              {
+                type: "object",
+                shape: {
+                  id: {
+                    type: "string",
+                    enum: ["TypeA"],
+                  },
+                  valueA: {
+                    type: "string"
+                  }
+                }
+              },
+              {
+                type: "object",
+                shape: {
+                  id: {
+                    type: "string",
+                    enum: ["TypeB"],
+                  },
+                  valueB: {
+                    type: "number"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      };
+
+       
+
+      const result = generateTypeScriptDefinitions(schema);
+      expect(result).toContain(`id: "TypeA";\n        valueA: string;\n      } | {\n        id: "TypeB";\n        valueB: number;\n      };`);
+    });
+
+    it("should generate functions", () => {
+      const schema: Schema = {
+        functions: {
+          test: {
+            ret: {
+              type: "string",
+            },
+            args: [
+              {
+                name: "arg1",
+                property: {
+                  type: "number",
+                }
+              },
+              {
+                name: "arg2",
+                property: {
+                  type: "string"
+                }
+              }
+            ]
+          }
+        }
+      };
+
+      const result = generateTypeScriptDefinitions(schema);
+      expect(result).toContain(`function test(arg1: number, arg2: string): string;`);
+    });
+
     it("should generate valid TypeScript that can be parsed", () => {
       const schema: Schema = {
         data: {
