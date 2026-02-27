@@ -27,7 +27,7 @@ export function plane(
   opts: SvgOptions,
   parentPos: Vec3,
   parentRot: Vec3,
-  holes?: ReadonlyArray<Hole>,
+  holes?: ReadonlyArray<Hole>
 ): ReadonlyArray<zOrderElement> {
   const half = vec2Scale(p.size, 0.5);
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
@@ -41,10 +41,10 @@ export function plane(
 
   const imageData = material.imageUrl ? opts.imageDataByUrl?.[material.imageUrl] : undefined;
   const image: EmbededImage | undefined = imageData?.startsWith(rawSvgPrefix)
-    ? { type: "svg", svg: imageData.slice(rawSvgPrefix.length) }
+    ? { type: "svg", svg: decodeURIComponent(imageData.slice(rawSvgPrefix.length)) }
     : material.imageUrl
-      ? { type: "url", url: imageData ?? material.imageUrl }
-      : undefined;
+    ? { type: "url", url: imageData ?? material.imageUrl }
+    : undefined;
 
   if (image) {
     const size = vec2Scale(p.size, factor);
@@ -57,7 +57,12 @@ export function plane(
   const [strokeColor, fill, strokeThickness] = opts.onlyStroke
     ? [opts.grayScale ? gray : material.normal, opts.onlyStrokeFill, opts.stroke]
     : [black, opts.grayScale ? rgbGrayScale(material.normal) : material.normal, 0];
-  return [zElem(svgPolygon(factor, rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes), vec3ZMean(v1, v2, v3, v4))];
+  return [
+    zElem(
+      svgPolygon(factor, rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes),
+      vec3ZMean(v1, v2, v3, v4)
+    ),
+  ];
 }
 
 const rawSvgPrefix = "data:image/svg+xml,";

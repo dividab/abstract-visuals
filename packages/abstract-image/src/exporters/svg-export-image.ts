@@ -1,5 +1,5 @@
 import { fromByteArray } from "base64-js";
-import { Component, GrowthDirection, BinaryFormat, ImageData } from "../model/component.js";
+import { Component, GrowthDirection } from "../model/component.js";
 import { AbstractImage } from "../model/abstract-image.js";
 import { Color } from "../model/color.js";
 import { Optional } from "../model/shared.js";
@@ -42,21 +42,29 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
         },
         component.children.map((c) => abstractComponentToSVG(c, options))
       );
-    case "binaryimage":
-      const url = getImageUrl(component.format, component.data, options);
-      return url
-        ? createElement(
-            "image",
-            {
-              x: component.topLeft.x.toString(),
-              y: component.topLeft.y.toString(),
-              width: (component.bottomRight.x - component.topLeft.x).toString(),
-              height: (component.bottomRight.y - component.topLeft.y).toString(),
-              href: url,
-            },
-            []
-          )
-        : "";
+    case "binaryimage": {
+      const x = component.topLeft.x.toString();
+      const y = component.topLeft.y.toString();
+      const width = (component.bottomRight.x - component.topLeft.x).toString();
+      const height = (component.bottomRight.y - component.topLeft.y).toString();
+
+      if (component.data.type === "url") {
+        const url = options.imageDataByUrl[component.data.url] ?? component.data.url;
+        return createElement("image", { x, y, width, height, href: url }, []);
+      } else if (component.format === "png") {
+        const base64 = fromByteArray(component.data.bytes);
+        return createElement("image", { x, y, width, height, href: `data:image/png;base64,${base64}` }, []);
+      } else if (component.format === "svg") {
+        const svg = String.fromCharCode(...component.data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
+        const bytes = [];
+        for (let i = 0; i < svg.length; ++i) {
+          bytes.push(svg.charCodeAt(i));
+        }
+        const base64 = fromByteArray(new Uint8Array(bytes));
+        return createElement("image", { x, y, width, height, href: `data:image/svg+xml;base64,${base64}` }, []);
+      }
+      return "";
+    }
     case "subimage":
       return "";
     case "line": {
@@ -351,22 +359,4 @@ function colorToRgb(color: Color): string {
 
 function colorToOpacity(color: Color): string {
   return (color.a / 255).toString();
-}
-
-function getImageUrl(format: BinaryFormat, data: ImageData, options: SvgOptions): string | undefined {
-  if (data.type === "url") {
-    return options.imageDataByUrl[data.url] ?? data.url;
-  } else if (format === "png") {
-    const base64 = fromByteArray(data.bytes);
-    return `data:image/png;base64,${base64}`;
-  } else if (format === "svg") {
-    const svg = String.fromCharCode(...data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
-    const bytes = [];
-    for (let i = 0; i < svg.length; ++i) {
-      bytes.push(svg.charCodeAt(i));
-    }
-    const base64 = fromByteArray(new Uint8Array(bytes));
-    return `data:image/svg+xml;base64,${base64}`;
-  }
-  return undefined;
 }

@@ -86,7 +86,13 @@ function abstractComponentToPdf(
           );
           pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
-          addWithSvgToPdfKit(component.data.url.slice(rawSvgPrefix.length), component, pdf, resources, textStyle);
+          addWithSvgToPdfKit(
+            decodeURIComponent(component.data.url.slice(rawSvgPrefix.length)),
+            component,
+            pdf,
+            resources,
+            textStyle
+          );
         } else {
           const match = /^data:.+?;base64,(.*)$/.exec(component.data.url);
           if (match) {

@@ -2,7 +2,7 @@ import { fromByteArray } from "base64-js";
 import React from "react";
 import { AbstractImage } from "../model/abstract-image.js";
 import { createPoint, Point } from "../model/point.js";
-import { AbstractFontWeight, BinaryFormat, Component, GrowthDirection, ImageData } from "../model/component.js";
+import { AbstractFontWeight, Component, GrowthDirection } from "../model/component.js";
 import { Color } from "../model/color.js";
 import { Optional } from "../model/shared.js";
 
@@ -100,19 +100,29 @@ function JsxComponent({
           ))}
         </g>
       );
-    case "binaryimage":
-      const url = getImageUrl(component.format, component.data, options);
-      return (
-        <image
-          x={component.topLeft.x}
-          y={component.topLeft.y}
-          width={component.bottomRight.x - component.topLeft.x}
-          height={component.bottomRight.y - component.topLeft.y}
-          id={makeIdAttr(component.id)}
-          href={url}
-        />
-      );
-
+    case "binaryimage": {
+      const x = component.topLeft.x;
+      const y = component.topLeft.y;
+      const width = component.bottomRight.x - component.topLeft.x;
+      const height = component.bottomRight.y - component.topLeft.y;
+      const id = makeIdAttr(component.id);
+      if (component.data.type === "url") {
+        const url = options.imageDataByUrl[component.data.url] ?? component.data.url;
+        return <image x={x} y={y} width={width} height={height} id={id} href={url} />;
+      } else if (component.format === "png") {
+        const base64 = fromByteArray(component.data.bytes);
+        return <image x={x} y={y} width={width} height={height} id={id} href={`data:image/png;base64,${base64}`} />;
+      } else if (component.format === "svg") {
+        const svg = String.fromCharCode(...component.data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
+        const bytes = [];
+        for (let i = 0; i < svg.length; ++i) {
+          bytes.push(svg.charCodeAt(i));
+        }
+        const base64 = fromByteArray(new Uint8Array(bytes));
+        return <image x={x} y={y} width={width} height={height} id={id} href={`data:image/svg+xml;base64,${base64}`} />;
+      }
+      return <></>;
+    }
     case "line": {
       const strokeDasharray =
         component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
@@ -284,24 +294,6 @@ function getTextFontWeight(fontWeight: AbstractFontWeight): React.CSSProperties[
   } else {
     return fontWeight;
   }
-}
-
-function getImageUrl(format: BinaryFormat, data: ImageData, options: ReactSvgOptions): string {
-  if (data.type === "url") {
-    return options.imageDataByUrl[data.url] ?? data.url;
-  } else if (format === "png") {
-    const base64 = fromByteArray(data.bytes);
-    return `data:image/png;base64,${base64}`;
-  } else if (format === "svg") {
-    const svg = String.fromCharCode(...data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
-    const bytes = [];
-    for (let i = 0; i < svg.length; ++i) {
-      bytes.push(svg.charCodeAt(i));
-    }
-    const base64 = fromByteArray(new Uint8Array(bytes));
-    return `data:image/svg+xml;base64,${base64}`;
-  }
-  return `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==`;
 }
 
 function TSpan({
