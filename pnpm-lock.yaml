@@ -147,7 +147,7 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^13.0.19
+        specifier: ^13.0.22
         version: link:../abstract-image
       ts-exhaustive-check:
         specifier: ^1.0.0
@@ -156,7 +156,7 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^13.0.19
+        specifier: ^13.0.22
         version: link:../abstract-image
       docx:
         specifier: ^6.0.3
@@ -238,7 +238,7 @@ importers:
         specifier: ^0.7.2
         version: 0.7.2
       jsxpression:
-        specifier: ^0.1.19
+        specifier: ^0.1.21
         version: link:../jsxpression
     devDependencies:
       '@types/base64-js':
@@ -297,16 +297,16 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^1.4.4
+        specifier: ^1.4.6
         version: link:../abstract-3d
       abstract-chart:
-        specifier: ^12.0.35
+        specifier: ^12.0.38
         version: link:../abstract-chart
       abstract-document:
-        specifier: ^18.2.33
+        specifier: ^18.2.36
         version: link:../abstract-document
       abstract-image:
-        specifier: ^13.0.19
+        specifier: ^13.0.22
         version: link:../abstract-image
       abstract-sheet:
         specifier: ^1.1.21
@@ -324,7 +324,7 @@ importers:
         specifier: ^0.4.3
         version: link:../handlebars-xml
       jsxpression:
-        specifier: ^0.1.19
+        specifier: ^0.1.21
         version: link:../jsxpression
       pdfkit:
         specifier: ^0.17.2
