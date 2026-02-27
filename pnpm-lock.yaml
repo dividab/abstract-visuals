@@ -297,19 +297,19 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: workspace:*
+        specifier: ^1.4.6
         version: link:../abstract-3d
       abstract-chart:
-        specifier: workspace:*
+        specifier: ^12.0.38
         version: link:../abstract-chart
       abstract-document:
-        specifier: workspace:*
+        specifier: ^18.2.36
         version: link:../abstract-document
       abstract-image:
-        specifier: workspace:*
+        specifier: ^13.0.22
         version: link:../abstract-image
       abstract-sheet:
-        specifier: workspace:*
+        specifier: ^1.1.21
         version: link:../abstract-sheet
       base64-js:
         specifier: ^1.5.1
@@ -321,10 +321,10 @@ importers:
         specifier: 4.7.8
         version: 4.7.8
       handlebars-xml:
-        specifier: workspace:*
+        specifier: ^0.4.3
         version: link:../handlebars-xml
       jsxpression:
-        specifier: workspace:*
+        specifier: ^0.1.21
         version: link:../jsxpression
       pdfkit:
         specifier: ^0.17.2
