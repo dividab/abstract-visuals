@@ -39,20 +39,14 @@ export function evaluate<T = any>(source: string, schema: Schema, options: Evalu
   const { data = {}, components = {}, functions = {}, createElement } = options;
 
   const h = createH(components, createElement || defaultCreateElement, schema);
-
+  const frozen = deepFreezeData(data);
   try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-    return new Function(
-      "h",
-      "data",
-      "Math",
-      ...Object.keys(functions),
-      source
-    )(
+    return new Function("h", "Math", ...Object.keys(frozen), ...Object.keys(functions), source)(
       h,
-      deepFreezeData(data),
       Math,
-      ...Object.values(functions),
+      ...Object.values(frozen),
+      ...Object.values(functions)
     ) as T;
   } catch (error: unknown) {
     // We may have thrown an EvaluationError from createH()
@@ -82,7 +76,7 @@ function createH(components: ComponentDict, createElement: CreateElement, schema
   };
 }
 
-function deepFreezeData(obj: DataDict): DataDict {
+function deepFreezeData(obj: Record<string, unknown>): Record<string, unknown> {
   Object.freeze(obj);
   Object.values(obj).filter(isDataDict).forEach(deepFreezeData);
   return obj;
