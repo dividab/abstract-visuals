@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "abstract-visuals-example",
-  "version": "15.2.120",
+  "version": "15.2.121",
   "description": "abstract-visuals-example",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib/index.js",
@@ -10,15 +10,15 @@
   "type": "module",
   "dependencies": {
     "abstract-3d": "^1.4.6",
-    "abstract-chart": "^12.0.37",
-    "abstract-document": "^18.2.35",
-    "abstract-image": "^13.0.21",
+    "abstract-chart": "^12.0.38",
+    "abstract-document": "^18.2.36",
+    "abstract-image": "^13.0.22",
     "abstract-sheet": "^1.1.21",
     "base64-js": "^1.5.1",
     "file-saver": "^2.0.5",
     "handlebars": "4.7.8",
     "handlebars-xml": "^0.4.3",
-    "jsxpression": "^0.1.20",
+    "jsxpression": "^0.1.21",
     "pdfkit": "^0.17.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
