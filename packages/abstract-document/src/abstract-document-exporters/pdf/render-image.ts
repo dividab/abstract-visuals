@@ -28,10 +28,9 @@ export function renderImage(
 
   const scaleX = rect.width / imgW;
   const scaleY = rect.height / imgH;
-  const scale = Math.min(scaleX, scaleY);
 
-  const drawnW = imgW * scale;
-  const drawnH = imgH * scale;
+  const drawnW = imgW * scaleX;
+  const drawnH = imgH * scaleY;
 
   const offsetX =
     image.horizontalAlignment === "Center"
@@ -48,8 +47,9 @@ export function renderImage(
       : 0;
 
   pdf.save();
-  pdf.translate(position.x + offsetX, position.y + offsetY).scale(scale);
-  resource.abstractImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0, scale));
+  console.log("scale: ", scaleX, scaleY);
+  pdf.translate(position.x + offsetX, position.y + offsetY).scale(scaleX, scaleY);
+  resource.abstractImage.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, 0, scaleX, scaleY));
   pdf.restore();
 }
 
@@ -59,14 +59,15 @@ function abstractComponentToPdf(
   component: AbstractImage.Component,
   textStyle: AD.TextStyle.TextStyle,
   circuitBreaker: number,
-  accScale: number
+  accScaleX: number,
+  accScaleY: number
 ): void {
   if (++circuitBreaker > 20) {
     return;
   }
   switch (component.type) {
     case "group":
-      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale));
+      component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScaleX, accScaleY));
       break;
     case "binaryimage":
       const format = component.format.toLowerCase();
@@ -75,14 +76,13 @@ function abstractComponentToPdf(
       if (component.data.type === "url") {
         const imageResource = resources.imageResources?.[component.data.url];
         if (imageResource) {
-          const scale = Math.min(
-            w / (imageResource.abstractImage.size.width || 1),
-            h / (imageResource.abstractImage.size.height || 1)
-          );
+          const scaleX = w / (imageResource.abstractImage.size.width || 1);
+          const scaleY = h / (imageResource.abstractImage.size.height || 1);
+
           pdf.save();
-          pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
+          pdf.translate(component.topLeft.x, component.topLeft.y).scale(scaleX, scaleY);
           imageResource.abstractImage.components.forEach((c) =>
-            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale * scale)
+            abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScaleX * scaleX, accScaleY * scaleY)
           );
           pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
@@ -98,7 +98,7 @@ function abstractComponentToPdf(
           if (match) {
             pdf.image(component.data.url, component.topLeft.x, component.topLeft.y, { fit: [w, h] });
           } else {
-            pdf.fontSize(11 / (accScale || 1)).fillColor("red");
+            pdf.fontSize(11 / (Math.min(accScaleX, accScaleY) || 1)).fillColor("red");
             pdf.text(`Image missing: ${component.data.url}`, w / 100, h / 100);
           }
         }

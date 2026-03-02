@@ -168,8 +168,8 @@ const pngBase64 =
 const imageResources: Record<string, AbstractDoc.ImageResource.ImageResource> = {
   [wiringDiagramUrl]: AbstractDoc.ImageResource.create({
     id: wiringDiagramUrl,
-    abstractImage: createAbstractImage(createPoint(0, 0), createSize(200, 100), white, [
-      createBinaryImage(createPoint(0, 0), createPoint(200, 100), "png", { type: "url", url: pngBase64 }),
+    abstractImage: createAbstractImage(createPoint(0, 0), createSize(200, 150), white, [
+      createBinaryImage(createPoint(0, 0), createPoint(200, 150), "png", { type: "url", url: pngBase64 }),
     ]),
   }),
 };
