@@ -65,7 +65,7 @@ const dxfGroups = (
   const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
   const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
   const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot, 1);
-  const centerWithOffset = vec3Add(center, offset);
+  const centerWithOffset = vec3Add(center, { x: offset.x, y: -offset.y, z: offset.z });
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, centerWithOffset, unitRot, options, handleRef), ""),
     size,

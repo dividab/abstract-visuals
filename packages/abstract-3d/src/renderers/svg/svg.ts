@@ -43,13 +43,13 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Opti
   const allElements = Array<zOrderElement>();
   const bounds = Array<Bounds2>();
   for (const view of scenes) {
-    const { elements, size, center } = renderInternal(
+    const { elements, size } = renderInternal(
       view.scene,
       { ...baseOptions, ...view.options, view: undefined, rotation: undefined },
       view.pos
     );
     allElements.push(...elements);
-    bounds.push(bounds2FromPosAndSize(center, size));
+    bounds.push(bounds2FromPosAndSize(view.pos, size));
   }
   const size = bounds2ToSize(bounds2Merge(...bounds));
   const image = svg(
@@ -74,7 +74,7 @@ function renderInternal(
   scene: Scene,
   options: Optional<SvgOptions> | undefined,
   offset: Vec2
-): { readonly elements: ReadonlyArray<zOrderElement>; size: Vec2; center: Vec2 } {
+): { readonly elements: ReadonlyArray<zOrderElement>; size: Vec2 } {
   const opts: SvgOptions = {
     view: options?.view ?? "front",
     stroke_thickness: options?.stroke_thickness ?? 2,
@@ -133,7 +133,7 @@ function renderInternal(
     }
   }
 
-  return { elements, size: svgSize, center: vec2Add(offset, centerAdj) };
+  return { elements, size: svgSize };
 }
 
 function svgGroup(
