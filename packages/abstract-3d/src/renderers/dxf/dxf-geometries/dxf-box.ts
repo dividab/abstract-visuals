@@ -1,8 +1,8 @@
 import { Box, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3Scale, vec3 } from "../../../abstract-3d.js";
 import { color } from "../color.js";
-import { dxf3DFACE } from "../dxf-encoding.js";
+import { dxf3DFACE, Handle } from "../dxf-encoding.js";
 
-export function dxfBox(b: Box, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: {handle: number}): string {
+export function dxfBox(b: Box, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const pos = vec3TransRot(b.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
   const half = vec3Scale(b.size, 0.5);

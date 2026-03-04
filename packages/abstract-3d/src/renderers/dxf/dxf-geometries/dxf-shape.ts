@@ -1,10 +1,10 @@
 import { Shape, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import { color } from "../color.js";
-import { dxf3DFACE } from "../dxf-encoding.js";
+import { dxf3DFACE, Handle } from "../dxf-encoding.js";
 
 const chunkSize = 4;
 
-export function dxfPolygon(s: Shape, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: {handle: number}): string {
+export function dxfPolygon(s: Shape, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   let polygonString = "";
   const pos = vec3TransRot(s.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, s.rot ?? vec3Zero);
