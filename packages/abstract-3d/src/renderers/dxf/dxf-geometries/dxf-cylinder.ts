@@ -13,14 +13,7 @@ import { color } from "../color.js";
 import { dxf3DFACE } from "../dxf-encoding.js";
 import { dxfPlane } from "./dxf-plane.js";
 
-export function dxfCylinder(
-  c: Cylinder,
-  m: Material,
-  sides: number,
-  parentPos: Vec3,
-  parentRot: Vec3,
-  handleRef: { handle: number }
-): string {
+export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3, Handle): string {
   const angleStart = c.angleStart ?? 0.0;
   const angleLength = c.angleLength ?? Math.PI * 2;
   const angleEnd = angleStart + angleLength;

@@ -1,11 +1,20 @@
 /* eslint-disable max-lines */
 import { Vec3 } from "../../abstract-3d.js";
+import { generateUUID } from "three/src/math/MathUtils.js";
 
 //this doesn't have to be ordered, it can be completely random.
 //the only requirement is that all of them are unique. So handling
 //it like this makes the format more deterministic and less prone to
 //errors
-function dxfHandle(handleRef: { handle: number }): string {
+
+export function dxf(groups: string, center: Vec3, size: Vec3): string {
+  const id = generateUUID();
+  return dxfHeader(size, center, id) + groups + dxfFooter(id);
+}
+
+export type Handle = { handle: number };
+
+function dxfHandle(handleRef: Handle): string {
   return (++handleRef.handle).toString(16).toUpperCase();
 }
 
@@ -20,7 +29,7 @@ export const dxf3DFACE = (
   vec3: Vec3,
   vec4: Vec3,
   color: number,
-  handleRef: { handle: number }
+  handleRef: Handle
 ): string => `  0
 3DFACE
  5
@@ -110,7 +119,7 @@ ${fontSize}
 ${text}
 `;
 
-export const dxf3DLine = (start: Vec3, end: Vec3, color: string, handleRef: { handle: number }): string =>
+export const dxf3DLine = (start: Vec3, end: Vec3, color: string, handleRef: Handle): string =>
   `  0
 LINE
  5
@@ -135,13 +144,7 @@ ${dxfRound(end.y)}
 ${dxfRound(end.z)}
 `;
 
-export const dxf3DEllipse = (
-  center: Vec3,
-  major: Vec3,
-  minor: Vec3,
-  color: string,
-  handleRef: { handle: number }
-): string =>
+export const dxf3DEllipse = (center: Vec3, major: Vec3, minor: Vec3, color: string, handleRef: Handle): string =>
   `  0
 ELLIPSE
  5

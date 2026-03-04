@@ -304,6 +304,8 @@ export const boundsZero: Bounds = bounds(0, 0);
 export const bounds2Zero: Bounds2 = bounds2(vec2Zero, vec2Zero);
 export const bounds3Zero: Bounds3 = bounds3(vec3Zero, vec3Zero);
 
+export const bounds2ToSize = (bounds: Bounds2): Vec2 => vec2(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y);
+
 export const bounds3ToSize = (bounds: Bounds3): Vec3 =>
   vec3(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y, bounds.max.z - bounds.min.z);
 
@@ -342,11 +344,27 @@ export function bounds3FromPosAndSize(pos: Vec3, size: Vec3): Bounds3 {
   return bounds3(vec3(pos.x - halfX, pos.y - halfY, pos.z - halfZ), vec3(pos.x + halfX, pos.y + halfY, pos.z + halfZ));
 }
 
-export const bounds2Merge = (a: Bounds2, b: Bounds2): Bounds2 => {
-  return bounds2(
-    vec2(Math.min(a.min.x, b.min.x), Math.min(a.min.y, b.min.y)),
-    vec2(Math.max(a.max.x, b.max.x), Math.max(a.max.y, b.max.y))
-  );
+export const bounds2Merge = (...bounds: ReadonlyArray<Bounds2>): Bounds2 => {
+  if (bounds.length === 0) {
+    return bounds2Zero;
+  }
+  const min = vec2Dupl(Number.MAX_VALUE) as { x: number; y: number };
+  const max = vec2Dupl(-Number.MAX_VALUE) as { x: number; y: number };
+  bounds.forEach((b) => {
+    if (b.min.x < min.x) {
+      min.x = b.min.x;
+    }
+    if (b.min.y < min.y) {
+      min.y = b.min.y;
+    }
+    if (b.max.x > max.x) {
+      max.x = b.max.x;
+    }
+    if (b.max.y > max.y) {
+      max.y = b.max.y;
+    }
+  });
+  return bounds2(min, max);
 };
 
 export const bounds3Merge = (...bounds: ReadonlyArray<Bounds3>): Bounds3 => {

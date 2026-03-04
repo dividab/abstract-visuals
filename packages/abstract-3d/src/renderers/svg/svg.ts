@@ -16,6 +16,11 @@ import {
   Material,
   rotationForCameraPos,
   sizeCenterForCameraPos,
+  Bounds2,
+  bounds2FromPosAndSize,
+  bounds2ToSize,
+  bounds2Merge,
+  vec2Zero,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -29,10 +34,51 @@ import { cone } from "./svg-geometries/svg-cone.js";
 import { Optional } from "../shared.js";
 import { svg } from "./svg-encoding.js";
 
+export function renderScenes(
+  scenes: ReadonlyArray<{ readonly scene: Scene; readonly options?: Optional<SvgOptions>; readonly pos: Vec2 }>
+): {
+  readonly image: string;
+  readonly width: number;
+  readonly height: number;
+} {
+  const allElements = Array<zOrderElement>();
+  const bounds = Array<Bounds2>();
+  for (const view of scenes) {
+    const { elements, width, height } = renderInternal(
+      view.scene,
+      { ...view.options, view: undefined, rotation: undefined },
+      view.pos
+    );
+    allElements.push(...elements);
+    bounds.push(bounds2FromPosAndSize(view.pos, vec2(width, height)));
+  }
+  const size = bounds2ToSize(bounds2Merge(...bounds));
+  const image = svg(
+    size.x,
+    size.y,
+    allElements.reduce((a, { element }) => `${a} ${element}`, "")
+  );
+  return { image, width: size.x, height: size.y };
+}
+
 export function render(
   scene: Scene,
   options?: Optional<SvgOptions>
 ): { readonly image: string; readonly width: number; readonly height: number } {
+  const { elements, width, height } = renderInternal(scene, options, vec2Zero);
+  const image = svg(
+    width,
+    height,
+    elements.reduce((a, { element }) => `${a} ${element}`, "")
+  );
+  return { image, width, height };
+}
+
+function renderInternal(
+  scene: Scene,
+  options: Optional<SvgOptions> | undefined,
+  offset: Vec2
+): { readonly elements: ReadonlyArray<zOrderElement>; readonly width: number; readonly height: number } {
   const opts: SvgOptions = {
     view: options?.view ?? "front",
     stroke: options?.stroke ?? 2,
@@ -65,7 +111,7 @@ export function render(
   const centerAdj = vec3(center.x - opts.stroke * 0.75, center.y + opts.stroke * 0.75, center.z);
   const elements = Array<zOrderElement>();
   const point = (x: number, y: number): Vec2 =>
-    vec2(-centerAdj.x + unitHalfSize.x + x * factor, centerAdj.y + unitHalfSize.y - y * factor);
+    vec2(-centerAdj.x + unitHalfSize.x + x * factor + offset.x, centerAdj.y + unitHalfSize.y - y * factor + offset.y);
 
   for (const g of scene.groups) {
     const pos = vec3Rot(g.pos, unitPos, unitRot);
@@ -87,12 +133,7 @@ export function render(
     }
   }
 
-  const image = svg(
-    width,
-    height,
-    elements.reduce((a, { element }) => `${a} ${element}`, "")
-  );
-  return { image, width, height };
+  return { elements, width, height };
 }
 
 function svgGroup(
