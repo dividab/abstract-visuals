@@ -430,7 +430,7 @@ export function bounds3FromVec3Array(vec3Array: ReadonlyArray<Vec3>): Bounds3 {
 export function boundsScene(scene: Scene): Bounds3 {
   const bounds: Array<Bounds3> = [];
   for (const group of scene.groups) {
-    bounds.push(...boundsGroup(group, vec3Zero, vec3Zero))
+    bounds.push(...boundsGroup(group, vec3Zero, vec3Zero));
   }
   return bounds3Merge(...bounds);
 }
@@ -549,17 +549,18 @@ export function boundsCone(c: Cone, parentPos: Vec3, parentRot: Vec3): Bounds3 {
 }
 
 export function boundsText(t: Text, parentPos: Vec3, parentRot: Vec3): Bounds3 {
-  const characterRatio = (9.0 / 16.0);
+  const characterRatio = 9.0 / 16.0;
   const charWidth = t.fontSize * characterRatio;
   const rows = t.text.split("\n");
   const width = Math.max(...rows.map((v) => v.length)) * charWidth;
   const height = rows.length * t.fontSize * 1.2;
-  return boundsPlane({
-    type: "Plane",
-    pos: t.pos,
-    size: vec2(width, height),
-    rot: t.rot,
-  },
+  return boundsPlane(
+    {
+      type: "Plane",
+      pos: t.pos,
+      size: vec2(width, height),
+      rot: t.rot,
+    },
     parentPos,
     parentRot
   );
@@ -785,3 +786,49 @@ export const circleCurve = (radius: number, angleStart: number, angleLength: num
   angleStart,
 });
 export const splineCurve = (points: ReadonlyArray<Vec3>): SplineCurve => ({ type: "SplineCurve", points });
+
+// -- Camera
+
+export function sizeCenterForCameraPos(
+  size: Vec3,
+  center: Vec3,
+  rotation: Vec3,
+  factor: number
+): readonly [Vec3, Vec3] {
+  const scaledCenter = vec3Scale(center, factor);
+  if (isZero(rotation.x) && isZero(rotation.y) && isZero(rotation.z)) {
+    return [vec3Scale(size, factor), scaledCenter];
+  }
+
+  const half = vec3Scale(size, 0.5);
+  const min = vec3Sub(center, half);
+  const max = vec3Add(center, half);
+  const v1 = vec3Rot(vec3(min.x, min.y, max.z), center, rotation);
+  const v2 = vec3Rot(vec3(max.x, min.y, max.z), center, rotation);
+  const v3 = vec3Rot(vec3(max.x, max.y, max.z), center, rotation);
+  const v4 = vec3Rot(vec3(min.x, max.y, max.z), center, rotation);
+  const v5 = vec3Rot(vec3(min.x, min.y, min.z), center, rotation);
+  const v6 = vec3Rot(vec3(max.x, min.y, min.z), center, rotation);
+  const v7 = vec3Rot(vec3(max.x, max.y, min.z), center, rotation);
+  const v8 = vec3Rot(vec3(min.x, max.y, min.z), center, rotation);
+  const bounds = bounds3FromVec3Array([v1, v2, v3, v4, v5, v6, v7, v8]);
+  return [vec3Scale(bounds3ToSize(bounds), factor), scaledCenter];
+}
+
+export function rotationForCameraPos(view: View): Vec3 {
+  switch (view) {
+    default:
+    case "front":
+      return vec3Zero;
+    case "back":
+      return vec3(-Math.PI, 0, -Math.PI);
+    case "top":
+      return vec3(Math.PI / 2, 0, 0);
+    case "bottom":
+      return vec3(-Math.PI / 2, 0, 0);
+    case "right":
+      return vec3(0, -Math.PI / 2, 0);
+    case "left":
+      return vec3(0, Math.PI / 2, 0);
+  }
+}

@@ -14,6 +14,8 @@ import {
   Group,
   vec3TransRot,
   Material,
+  rotationForCameraPos,
+  sizeCenterForCameraPos,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -24,14 +26,24 @@ import { shape } from "./svg-geometries/svg-shape.js";
 import { polygon } from "./svg-geometries/svg-polygon.js";
 import { text } from "./svg-geometries/svg-text.js";
 import { cone } from "./svg-geometries/svg-cone.js";
-import { Optional, rotationForCameraPos, sizeCenterForCameraPos } from "../shared.js";
+import { Optional } from "../shared.js";
 import { svg } from "./svg-encoding.js";
 
 export function render(
   scene: Scene,
   options?: Optional<SvgOptions>
 ): { readonly image: string; readonly width: number; readonly height: number } {
-  const opts = defaultOptions(options);
+  const opts: SvgOptions = {
+    view: options?.view ?? "front",
+    stroke: options?.stroke ?? 2,
+    scale: options?.scale ?? undefined,
+    onlyStroke: options?.onlyStroke ?? false,
+    grayScale: options?.grayScale ?? false,
+    onlyStrokeFill: options?.onlyStrokeFill ?? "rgba(255,255,255,0)",
+    font: options?.font ?? "",
+    imageDataByUrl: options?.imageDataByUrl ?? {},
+    rotation: options?.rotation ?? 0,
+  };
 
   const factor = opts.scale
     ? opts.scale.size /
@@ -155,39 +167,3 @@ const flipViews = (v: View | undefined, pos: Vec3): View | undefined => {
       return v;
   }
 };
-
-export function size(
-  scene: Scene,
-  options?: Optional<SvgOptions>
-): { readonly width: number; readonly height: number } {
-  const opts = defaultOptions(options);
-  const factor = opts.scale
-    ? opts.scale.size /
-      (opts.scale.scaleByWidth
-        ? opts.view === "right" || opts.view === "left"
-          ? scene.size_deprecated.z
-          : scene.size_deprecated.x
-        : opts.view === "top" || opts.view === "bottom"
-        ? scene.size_deprecated.z
-        : scene.size_deprecated.y)
-    : 1;
-  const baseRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
-  const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
-  const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
-  const [size] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot, factor);
-  return { width: size.x + 1.5 * opts.stroke, height: size.y + 1.5 * opts.stroke };
-}
-
-function defaultOptions(options: Optional<SvgOptions> | undefined): SvgOptions {
-  return {
-    view: options?.view ?? "front",
-    stroke: options?.stroke ?? 2,
-    scale: options?.scale ?? undefined,
-    onlyStroke: options?.onlyStroke ?? false,
-    grayScale: options?.grayScale ?? false,
-    onlyStrokeFill: options?.onlyStrokeFill ?? "rgba(255,255,255,0)",
-    font: options?.font ?? "",
-    imageDataByUrl: options?.imageDataByUrl ?? {},
-    rotation: options?.rotation ?? 0,
-  };
-}
