@@ -15,7 +15,7 @@ export function line(
   const v2 = vec3TransRot(l.end, parentPos, parentRot);
   return [
     zElem(
-      svgLine(point(v1.x, v1.y), point(v2.x, v2.y), opts.grayScale ? rgbGrayScale(fill) : fill, l.thickness),
+      svgLine(point(v1.x, v1.y), point(v2.x, v2.y), opts.gray_scale ? rgbGrayScale(fill) : fill, l.thickness),
       vec3ZMean(v1, v2)
     ),
   ];

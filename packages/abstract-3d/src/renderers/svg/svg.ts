@@ -84,11 +84,11 @@ function renderInternal(
 ): { readonly elements: ReadonlyArray<zOrderElement>; readonly width: number; readonly height: number } {
   const opts: SvgOptions = {
     view: options?.view ?? "front",
-    stroke: options?.stroke ?? 2,
+    stroke_thickness: options?.stroke_thickness ?? 2,
     scale: options?.scale ?? undefined,
-    onlyStroke: options?.onlyStroke ?? false,
-    grayScale: options?.grayScale ?? false,
-    onlyStrokeFill: options?.onlyStrokeFill ?? "rgba(255,255,255,0)",
+    only_stroke: options?.only_stroke ?? false,
+    gray_scale: options?.gray_scale ?? false,
+    only_stroke_fill: options?.only_stroke_fill ?? "rgba(255,255,255,0)",
     font: options?.font ?? "",
     imageDataByUrl: options?.imageDataByUrl ?? {},
     rotation: options?.rotation ?? 0,
@@ -108,10 +108,10 @@ function renderInternal(
   const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
   const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
   const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot, factor);
-  const width = size.x + 1.5 * opts.stroke;
-  const height = size.y + 1.5 * opts.stroke;
+  const width = size.x + 1.5 * opts.stroke_thickness;
+  const height = size.y + 1.5 * opts.stroke_thickness;
   const unitHalfSize = vec3Scale(size, 0.5);
-  const centerAdj = vec3(center.x - opts.stroke * 0.75, center.y + opts.stroke * 0.75, center.z);
+  const centerAdj = vec3(center.x - opts.stroke_thickness * 0.75, center.y + opts.stroke_thickness * 0.75, center.z);
   const elements = Array<zOrderElement>();
   const point = (x: number, y: number): Vec2 =>
     vec2(-centerAdj.x + unitHalfSize.x + x * factor + offset.x, centerAdj.y + unitHalfSize.y - y * factor + offset.y);
@@ -121,7 +121,7 @@ function renderInternal(
     const rot = vec3RotCombine(unitRot, g.rot ?? vec3Zero);
     elements.push(...svgGroup(g, pos, rot, point, factor, opts));
   }
-  const dimOpts: SvgOptions = { ...opts, onlyStroke: false, grayScale: false };
+  const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
   const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, scene.rotation_deprecated ?? vec3Zero);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {

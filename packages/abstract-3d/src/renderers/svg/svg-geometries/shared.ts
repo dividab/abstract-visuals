@@ -18,14 +18,15 @@ export type ImageDataUri =
 
 export type SvgOptions = {
   readonly view: View;
-  readonly stroke: number;
+  readonly stroke_thickness: number;
+  readonly only_stroke: boolean;
+  readonly gray_scale: boolean;
+  readonly only_stroke_fill: string;
+  readonly rotation: number;
+
   readonly scale: { readonly size: number; readonly scaleByWidth: boolean } | undefined;
-  readonly onlyStroke: boolean;
-  readonly grayScale: boolean;
-  readonly onlyStrokeFill: string;
   readonly font: string;
   readonly imageDataByUrl: Record<string, ImageDataUri>;
-  readonly rotation: number;
 };
 
 export function eulerToSvgMatrix(rot: Vec3, pos: Vec2): string {

@@ -60,9 +60,9 @@ export function plane(
 
   const points = [point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)];
 
-  const [strokeColor, fill, strokeThickness] = opts.onlyStroke
-    ? [opts.grayScale ? gray : material.normal, opts.onlyStrokeFill, opts.stroke]
-    : [black, opts.grayScale ? rgbGrayScale(material.normal) : material.normal, 0];
+  const [strokeColor, fill, strokeThickness] = opts.only_stroke
+    ? [opts.gray_scale ? gray : material.normal, opts.only_stroke_fill, opts.stroke_thickness]
+    : [black, opts.gray_scale ? rgbGrayScale(material.normal) : material.normal, 0];
   return [
     zElem(
       svgPolygon(factor, rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes),

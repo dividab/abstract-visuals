@@ -30,9 +30,9 @@ export function cone(
 
   const color = material.normal;
   const opacity = material.opacity ?? 1.0;
-  const [stroke, fill] = opts.onlyStroke
-    ? [opts.grayScale ? gray : color, opts.onlyStrokeFill]
-    : [transparent, opts.grayScale ? rgbGrayScale(color) : color];
+  const [stroke, fill] = opts.only_stroke
+    ? [opts.gray_scale ? gray : color, opts.only_stroke_fill]
+    : [transparent, opts.gray_scale ? rgbGrayScale(color) : color];
   const zOrderComponents = Array<zOrderElement>();
 
   const sides = 8;
@@ -52,7 +52,9 @@ export function cone(
         point(topPos.x, topPos.y),
         point(topPos.x, topPos.y),
       ];
-      zOrderComponents.push(zElem(svgPolygon(factor, rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, topPos)));
+      zOrderComponents.push(
+        zElem(svgPolygon(factor, rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, topPos))
+      );
     }
     currentAngle += angleStep;
   }
@@ -62,7 +64,10 @@ export function cone(
   const cylBottom = vec3tr(vec3(0, -half.y, 0));
   if (equals(cylTop.x, cylBottom.x, 0.1) && equals(cylTop.y, cylBottom.y, 0.1)) {
     zOrderComponents.push(
-      zElem(svgCircle(factor * c.radius, rot, point(cylBottom.x, cylBottom.y), fill, opacity, stroke, stBW, factor), cylBottom.z)
+      zElem(
+        svgCircle(factor * c.radius, rot, point(cylBottom.x, cylBottom.y), fill, opacity, stroke, stBW, factor),
+        cylBottom.z
+      )
     );
   }
 

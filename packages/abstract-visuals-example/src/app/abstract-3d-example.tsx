@@ -32,7 +32,13 @@ export function Abstract3DExample(): React.ReactNode {
           onClick={() =>
             FileSaver.saveAs(
               new Blob(
-                [Svg.render(systemair, { view: "front", stroke: 2, scale: { size: 180, scaleByWidth: true } }).image],
+                [
+                  Svg.render(systemair, {
+                    view: "front",
+                    stroke_thickness: 2,
+                    scale: { size: 180, scaleByWidth: true },
+                  }).image,
+                ],
                 {
                   type: "text/plain",
                 }
@@ -49,7 +55,7 @@ export function Abstract3DExample(): React.ReactNode {
           dangerouslySetInnerHTML={{
             __html: Svg.render(systemair, {
               view: "front",
-              stroke: 1,
+              stroke_thickness: 1,
               scale: { size: 400, scaleByWidth: true },
               rotation: 270,
             }).image,
