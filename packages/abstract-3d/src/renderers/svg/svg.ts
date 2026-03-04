@@ -34,9 +34,9 @@ import { cone } from "./svg-geometries/svg-cone.js";
 import { Optional } from "../shared.js";
 import { svg } from "./svg-encoding.js";
 
-export function renderScenes(
-  scenes: ReadonlyArray<{ readonly scene: Scene; readonly options?: Optional<SvgOptions>; readonly pos: Vec2 }>
-): {
+export type SvgScene = { readonly scene: Scene; readonly options?: Optional<SvgOptions>; readonly pos: Vec2 };
+
+export function renderScenes(scenes: ReadonlyArray<SvgScene>): {
   readonly image: string;
   readonly width: number;
   readonly height: number;

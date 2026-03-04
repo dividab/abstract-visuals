@@ -28,9 +28,9 @@ const DEFAULT_CYLINDER_SIDE_COUNT = 18;
 export type DxfOrigin = "BottomLeftFront" | "Center";
 export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin; readonly cylinderSideCount: number };
 
-export function renderScenes(
-  scenes: ReadonlyArray<{ readonly scene: Scene; readonly options?: Optional<DxfOptions>; readonly pos: Vec3 }>
-): string {
+export type DxfScene = { readonly scene: Scene; readonly options?: Optional<DxfOptions>; readonly pos: Vec3 };
+
+export function renderScenes(scenes: ReadonlyArray<DxfScene>): string {
   let allGroups = "";
   const allBounds = Array<Bounds3>();
   const handle = { handle: 0x1000 };
