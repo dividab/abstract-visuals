@@ -45,8 +45,6 @@ export function DynamicImage({}: {}): React.JSX.Element {
     }
   }
 
-  console.log("schema: ", schema, "data: ", dataParsed);
-
   const functions: Record<string, Function> = {
     test: (str: string): string => `0x${str.length.toString(16)}`,
   }
