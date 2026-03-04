@@ -2,7 +2,7 @@ import type { Schema } from "../../schema.js";
 import { mapSchemaTypeToTypeScript } from "./utils.js";
 
 export function declareDataTypes(schema: Schema): string {
-  let output = `declare global { //data \n`;
+  let output = `declare global {\n`;
 
   if (schema.data) {
     Object.entries(schema.data).forEach(([dataKey, dataSchema]) => {
