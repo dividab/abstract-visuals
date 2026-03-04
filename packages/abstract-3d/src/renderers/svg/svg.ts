@@ -21,6 +21,7 @@ import {
   bounds2ToSize,
   bounds2Merge,
   vec2Zero,
+  vec2Add,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -42,13 +43,13 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Opti
   const allElements = Array<zOrderElement>();
   const bounds = Array<Bounds2>();
   for (const view of scenes) {
-    const { elements, width, height } = renderInternal(
+    const { elements, size, center } = renderInternal(
       view.scene,
       { ...baseOptions, ...view.options, view: undefined, rotation: undefined },
       view.pos
     );
     allElements.push(...elements);
-    bounds.push(bounds2FromPosAndSize(view.pos, vec2(width, height)));
+    bounds.push(bounds2FromPosAndSize(center, size));
   }
   const size = bounds2ToSize(bounds2Merge(...bounds));
   const image = svg(
@@ -60,20 +61,20 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Opti
 }
 
 export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSize {
-  const { elements, width, height } = renderInternal(scene, options, vec2Zero);
+  const { elements, size } = renderInternal(scene, options, vec2Zero);
   const image = svg(
-    width,
-    height,
+    size.x,
+    size.y,
     elements.reduce((a, { element }) => `${a} ${element}`, "")
   );
-  return { image, width, height };
+  return { image, width: size.x, height: size.y };
 }
 
 function renderInternal(
   scene: Scene,
   options: Optional<SvgOptions> | undefined,
   offset: Vec2
-): { readonly elements: ReadonlyArray<zOrderElement>; readonly width: number; readonly height: number } {
+): { readonly elements: ReadonlyArray<zOrderElement>; size: Vec2; center: Vec2 } {
   const opts: SvgOptions = {
     view: options?.view ?? "front",
     stroke_thickness: options?.stroke_thickness ?? 2,
@@ -102,6 +103,7 @@ function renderInternal(
   const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot, factor);
   const width = size.x + 1.5 * opts.stroke_thickness;
   const height = size.y + 1.5 * opts.stroke_thickness;
+  const svgSize = vec2(width, height);
   const unitHalfSize = vec3Scale(size, 0.5);
   const centerAdj = vec3(center.x - opts.stroke_thickness * 0.75, center.y + opts.stroke_thickness * 0.75, center.z);
   const elements = Array<zOrderElement>();
@@ -131,7 +133,7 @@ function renderInternal(
     }
   }
 
-  return { elements, width, height };
+  return { elements, size: svgSize, center: vec2Add(offset, centerAdj) };
 }
 
 function svgGroup(

@@ -7,7 +7,9 @@ import { generateUUID } from "three/src/math/MathUtils.js";
 //it like this makes the format more deterministic and less prone to
 //errors
 
-export function dxf(groups: string, center: Vec3, size: Vec3): string {
+export type DxfOrigin = "BottomLeftFront" | "Center";
+
+export function dxf(groups: string, center: Vec3, size: Vec3, _origin: DxfOrigin): string {
   const id = generateUUID();
   return dxfHeader(size, center, id) + groups + dxfFooter(id);
 }
