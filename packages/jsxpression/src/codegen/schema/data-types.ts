@@ -11,7 +11,7 @@ export function declareDataTypes(schema: Schema): string {
       const type = mapSchemaTypeToTypeScript(dataSchema);
 
       const indentedType = type.includes("\n") ? type.replace(/\n/g, "\n    ").replace(/\n {4}$/, "\n  ") : type;
-      output += `  ${dataKey}: ${indentedType};\n`;
+      output += `  const ${dataKey}: ${indentedType};\n`;
     });
   }
 
