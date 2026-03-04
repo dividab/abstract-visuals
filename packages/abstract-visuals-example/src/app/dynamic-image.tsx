@@ -49,8 +49,10 @@ export function DynamicImage({}: {}): React.JSX.Element {
     test: (str: string): string => `0x${str.length.toString(16)}`,
   }
 
-  const test = generateTypeScriptDefinitions(schema);
-  console.log("test", test);
+  const test = generateTypeScriptDefinitions({
+    data: schema,
+  });
+  console.log("test", test, schema);
 
   const jsString = compileDynamicImage(template, schema, funcSchema, false);
   console.log("jsString", jsString);
