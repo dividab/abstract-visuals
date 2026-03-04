@@ -20,7 +20,6 @@ export type Renderer = "react" | "ai_schematic" | "ai_detailed" | "dxf";
 export type Dimensions = {
   readonly dimensions: ReadonlyArray<Dimension>;
   readonly material: Material;
-  readonly bounds: DimensionBounds;
 };
 
 export type Dimension = {
