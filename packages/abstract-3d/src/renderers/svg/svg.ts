@@ -106,7 +106,10 @@ function renderInternal(
   const centerAdj = vec3(center.x - opts.stroke_thickness * 0.75, center.y + opts.stroke_thickness * 0.75, center.z);
   const elements = Array<zOrderElement>();
   const point = (x: number, y: number): Vec2 =>
-    vec2(-centerAdj.x + unitHalfSize.x + x * factor + offset.x, centerAdj.y + unitHalfSize.y - y * factor + offset.y);
+    vec2(
+      -centerAdj.x + unitHalfSize.x + (x + offset.x) * factor,
+      centerAdj.y + unitHalfSize.y - (y - offset.y) * factor
+    );
 
   for (const g of scene.groups) {
     const pos = vec3Rot(g.pos, unitPos, unitRot);
