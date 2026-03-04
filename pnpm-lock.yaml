@@ -324,7 +324,7 @@ importers:
         specifier: ^0.4.3
         version: link:../handlebars-xml
       jsxpression:
-        specifier: ^0.1.22
+        specifier: 'workspace:'
         version: link:../jsxpression
       pdfkit:
         specifier: ^0.17.2

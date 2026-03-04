@@ -45,11 +45,13 @@ export function DynamicImage({}: {}): React.JSX.Element {
     }
   }
 
+  console.log("schema: ", schema, "data: ", dataParsed);
+
   const functions: Record<string, Function> = {
     test: (str: string): string => `0x${str.length.toString(16)}`,
   }
 
-  const jsString = compileDynamicImage(template, schema, funcSchema, true);
+  const jsString = compileDynamicImage(template, schema, funcSchema, false);
   const rendered = jsString.type === "Ok" ? renderDynamicImage(jsString.value, dataParsed, functions) : undefined;
   return (
     <div
