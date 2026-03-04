@@ -36,14 +36,9 @@ import { svg } from "./svg-encoding.js";
 
 export type SvgScene = { readonly scene: Scene; readonly options?: Optional<SvgOptions>; readonly pos: Vec2 };
 
-export function renderScenes(
-  scenes: ReadonlyArray<SvgScene>,
-  baseOptions?: Optional<SvgOptions>
-): {
-  readonly image: string;
-  readonly width: number;
-  readonly height: number;
-} {
+export type SvgWithSize = { readonly image: string; readonly width: number; readonly height: number };
+
+export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Optional<SvgOptions>): SvgWithSize {
   const allElements = Array<zOrderElement>();
   const bounds = Array<Bounds2>();
   for (const view of scenes) {
@@ -64,10 +59,7 @@ export function renderScenes(
   return { image, width: size.x, height: size.y };
 }
 
-export function render(
-  scene: Scene,
-  options?: Optional<SvgOptions>
-): { readonly image: string; readonly width: number; readonly height: number } {
+export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSize {
   const { elements, width, height } = renderInternal(scene, options, vec2Zero);
   const image = svg(
     width,

@@ -37,12 +37,12 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   for (const view of scenes) {
     const { groups } = dxfGroups(
       view.scene,
-      { ...baseOptions, ...view.options, view: undefined, origin: undefined },
+      { ...baseOptions, ...view.options, view: undefined, origin: "Center" },
       view.pos,
       handle
     );
     allGroups += groups;
-    allBounds.push(bounds3FromPosAndSize(view.scene.center_deprecated ?? vec3Zero, view.scene.size_deprecated));
+    allBounds.push(bounds3FromPosAndSize(view.pos, view.scene.size_deprecated));
   }
   const bounds = bounds3Merge(...allBounds);
   return dxf(allGroups, bounds3Center(bounds), bounds3ToSize(bounds));
