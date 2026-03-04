@@ -6,19 +6,19 @@ export function declareDataTypes(schema: Schema): string {
 
   if (schema.data) {
     output += generateDataObjectComment(schema.data, "  ");
-    output += `  const data: {\n`;
+    //output += `  const data: {\n`;
     Object.entries(schema.data).forEach(([dataKey, dataSchema]) => {
       output += generateNestedPropertyJSDoc(dataKey, dataSchema, "    ");
 
       const type = mapSchemaTypeToTypeScript(dataSchema);
 
       const indentedType = type.includes("\n") ? type.replace(/\n/g, "\n    ").replace(/\n {4}$/, "\n  ") : type;
-      output += `    ${dataKey}: ${indentedType};\n`;
+      output += `  ${dataKey}: ${indentedType};\n`;
     });
     output += `  };\n`;
   }
 
-  output += `}\n\n`;
+  //output += `}\n\n`;
   output += `export {};\n`;
 
   return output;
