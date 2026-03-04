@@ -36,7 +36,10 @@ import { svg } from "./svg-encoding.js";
 
 export type SvgScene = { readonly scene: Scene; readonly options?: Optional<SvgOptions>; readonly pos: Vec2 };
 
-export function renderScenes(scenes: ReadonlyArray<SvgScene>): {
+export function renderScenes(
+  scenes: ReadonlyArray<SvgScene>,
+  baseOptions?: Optional<SvgOptions>
+): {
   readonly image: string;
   readonly width: number;
   readonly height: number;
@@ -46,7 +49,7 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>): {
   for (const view of scenes) {
     const { elements, width, height } = renderInternal(
       view.scene,
-      { ...view.options, view: undefined, rotation: undefined },
+      { ...baseOptions, ...view.options, view: undefined, rotation: undefined },
       view.pos
     );
     allElements.push(...elements);

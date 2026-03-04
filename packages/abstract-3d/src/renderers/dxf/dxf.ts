@@ -30,12 +30,17 @@ export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin; read
 
 export type DxfScene = { readonly scene: Scene; readonly options?: Optional<DxfOptions>; readonly pos: Vec3 };
 
-export function renderScenes(scenes: ReadonlyArray<DxfScene>): string {
+export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Optional<DxfOptions>): string {
   let allGroups = "";
   const allBounds = Array<Bounds3>();
   const handle = { handle: 0x1000 };
   for (const view of scenes) {
-    const { groups } = dxfGroups(view.scene, { ...view.options, view: undefined, origin: undefined }, view.pos, handle);
+    const { groups } = dxfGroups(
+      view.scene,
+      { ...baseOptions, ...view.options, view: undefined, origin: undefined },
+      view.pos,
+      handle
+    );
     allGroups += groups;
     allBounds.push(bounds3FromPosAndSize(view.scene.center_deprecated ?? vec3Zero, view.scene.size_deprecated));
   }
