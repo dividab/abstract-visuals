@@ -4,7 +4,7 @@ import FileSaver from "file-saver";
 import { compileDynamicImage, renderDynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
 import { generateDataSchema } from "../../../abstract-image/src/dynamic-image/utils.js";
-import { PropertySchema } from "jsxpression";
+import { generateTypeScriptDefinitions, PropertySchema } from "jsxpression";
 import { FunctionSchema } from "../../../jsxpression/src/schema.js";
 
 export function DynamicImage({}: {}): React.JSX.Element {
@@ -49,7 +49,11 @@ export function DynamicImage({}: {}): React.JSX.Element {
     test: (str: string): string => `0x${str.length.toString(16)}`,
   }
 
+  const test = generateTypeScriptDefinitions(schema);
+  console.log("test", test);
+
   const jsString = compileDynamicImage(template, schema, funcSchema, false);
+  console.log("jsString", jsString);
   const rendered = jsString.type === "Ok" ? renderDynamicImage(jsString.value, dataParsed, functions) : undefined;
   return (
     <div
