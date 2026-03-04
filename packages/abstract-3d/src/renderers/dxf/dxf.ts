@@ -14,6 +14,7 @@ import {
   Bounds3,
   bounds3Merge,
   bounds3Center,
+  vec3Add,
 } from "../../abstract-3d.js";
 import { dxf, Handle } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
@@ -38,7 +39,7 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
     const { groups } = dxfGroups(
       view.scene,
       { ...baseOptions, ...view.options, view: undefined, origin: "Center" },
-      view.pos,
+      vec3Add(view.pos, view.scene.center_deprecated ?? vec3Zero),
       handle
     );
     allGroups += groups;
@@ -53,14 +54,16 @@ export const render = (scene: Scene, options?: Optional<DxfOptions>): string => 
   const bounds = bounds3FromPosAndSize(center, scene.size_deprecated);
   const offset =
     options?.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z);
-  const res = dxfGroups(scene, options, offset, { handle: 0x1000 });
+  const res = dxfGroups({ ...scene, groups: [group([], offset, vec3Zero, scene.groups)] }, options, center, {
+    handle: 0x1000,
+  });
   return dxf(res.groups, center, scene.size_deprecated);
 };
 
 const dxfGroups = (
   scene: Scene,
   options: Optional<DxfOptions> | undefined,
-  offset: Vec3,
+  center: Vec3,
   handleRef: Handle //make sure we start with a value higher than any other handle id's used in the header
 ): { readonly groups: string } => {
   const opts: DxfOptions = {
@@ -69,9 +72,7 @@ const dxfGroups = (
     cylinderSideCount: DEFAULT_CYLINDER_SIDE_COUNT,
   };
   const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
-  const center = scene.center_deprecated ?? vec3Zero;
-  const groupRoot = group([], offset, vec3Zero, scene.groups);
-  return { groups: dxfGroup(groupRoot, center, unitRot, opts, handleRef) };
+  return { groups: scene.groups.reduce((a, c) => a + dxfGroup(c, center, unitRot, opts, handleRef), "") };
 };
 
 function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOptions, handleRef: Handle): string {
