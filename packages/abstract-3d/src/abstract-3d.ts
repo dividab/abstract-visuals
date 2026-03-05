@@ -806,15 +806,16 @@ export const splineCurve = (points: ReadonlyArray<Vec3>): SplineCurve => ({ type
 
 // -- Camera
 
-export function sizeCenterForCameraPos(
+export function sizeCenterBoundsForCameraPos(
   size: Vec3,
   center: Vec3,
   rotation: Vec3,
   factor: number
-): readonly [Vec3, Vec3] {
+): readonly [Vec3, Vec3, Bounds3] {
   const scaledCenter = vec3Scale(center, factor);
   if (isZero(rotation.x) && isZero(rotation.y) && isZero(rotation.z)) {
-    return [vec3Scale(size, factor), scaledCenter];
+    const scaledSize = vec3Scale(size, factor);
+    return [scaledSize, scaledCenter, bounds3FromPosAndSize(scaledCenter, scaledSize)];
   }
 
   const half = vec3Scale(size, 0.5);
@@ -829,7 +830,7 @@ export function sizeCenterForCameraPos(
   const v7 = vec3Rot(vec3(max.x, max.y, min.z), center, rotation);
   const v8 = vec3Rot(vec3(min.x, max.y, min.z), center, rotation);
   const bounds = bounds3FromVec3Array([v1, v2, v3, v4, v5, v6, v7, v8]);
-  return [vec3Scale(bounds3ToSize(bounds), factor), scaledCenter];
+  return [vec3Scale(bounds3ToSize(bounds), factor), scaledCenter, bounds];
 }
 
 export function rotationForCameraPos(view: View): Vec3 {

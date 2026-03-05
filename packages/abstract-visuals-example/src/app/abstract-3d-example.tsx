@@ -3,6 +3,9 @@ import FileSaver from "file-saver";
 import { React3Js, Dxf, Stl, Step, Svg } from "../../../abstract-3d/src/index.js";
 import { systemair } from "./systemair.js";
 import { vortice } from "./vortice.js";
+import { ai, componentGeometries } from "./double-view-scenes.js";
+import { createSVG } from "../../../abstract-image/src/exporters/svg-export-image.js";
+import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
@@ -12,9 +15,35 @@ export function Abstract3DExample(): React.ReactNode {
     ? { id: "popover", pos: { ...group.pos, y: group.pos.y - 300 }, content: "Hej" }
     : undefined;
   console.log(hovered, group, popover);
+
+  const imageDataByUrlSvg: Record<string, any> = {};
+  const imageDataByUrlDxf: Record<string, any> = {};
+
+  for (const geo of Object.values(componentGeometries)) {
+    imageDataByUrlSvg[geo.image.url] = `data:image/svg+xml,${encodeURIComponent(
+      Svg.renderScenes(geo.scenes as any).image
+    )}`;
+  }
+
+  for (const geo of Object.values(componentGeometries)) {
+    imageDataByUrlDxf[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes as any)}`;
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
+        <button
+          onClick={() =>
+            FileSaver.saveAs(
+              new Blob([dxf2dExportImage(ai, { imageDataByUrl: imageDataByUrlDxf, useColor: true })], {
+                type: "text/plain",
+              }),
+              `a3d.dxf`
+            )
+          }
+        >
+          DXF double
+        </button>
         <button
           onClick={() =>
             FileSaver.saveAs(new Blob([Dxf.render(systemair, { view: "top" })], { type: "text/plain" }), `a3d.dxf`)
@@ -59,6 +88,11 @@ export function Abstract3DExample(): React.ReactNode {
               scale: { size: 400, scaleByWidth: true },
               rotation: 270,
             }).image,
+          }}
+        />
+        <div
+          dangerouslySetInnerHTML={{
+            __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }),
           }}
         />
         <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>

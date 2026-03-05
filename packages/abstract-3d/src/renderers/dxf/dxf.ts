@@ -16,7 +16,7 @@ import {
   bounds3Center,
   vec3Add,
   vec3Rot,
-  sizeCenterForCameraPos,
+  sizeCenterBoundsForCameraPos,
 } from "../../abstract-3d.js";
 import { dxf, DxfOrigin, Handle } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
@@ -50,10 +50,23 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   return dxf(allGroups, bounds3Center(bounds), bounds3ToSize(bounds), "Center");
 }
 
-export const render = (scene: Scene, options?: Optional<DxfOptions>): string => {
+export const renderNew = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
   const { groups, size, center } = dxfGroups(scene, opts, vec3Zero, { handle: 0x1000 });
   return dxf(groups, center, size, opts.origin);
+};
+
+// This is the original
+export const render = (scene: Scene, options: Optional<DxfOptions>): string => {
+  const opts = optionsDef(options);
+  const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
+  const bounds = bounds3FromPosAndSize(scene.center_deprecated ?? vec3Zero, scene.size_deprecated);
+  const center = vec3Zero;
+  const offset =
+    opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z);
+  const groupRoot = group([], offset, vec3Zero, scene.groups);
+  const handleRef = { handle: 0x1000 };
+  return dxf(dxfGroup(groupRoot, center, unitRot, opts, handleRef), center, scene.size_deprecated, opts.origin);
 };
 
 const dxfGroups = (
@@ -64,8 +77,8 @@ const dxfGroups = (
 ): { readonly groups: string; readonly size: Vec3; readonly center: Vec3 } => {
   const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
   const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
-  const [size, center] = sizeCenterForCameraPos(scene.size_deprecated, unitPos, unitRot, 1);
-  const centerWithOffset = vec3Add(center, { x: offset.x, y: -offset.y, z: offset.z });
+  const [size, center] = sizeCenterBoundsForCameraPos(scene.size_deprecated, unitPos, unitRot, 1);
+  const centerWithOffset = vec3Add(center, offset);
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, centerWithOffset, unitRot, options, handleRef), ""),
     size,
