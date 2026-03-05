@@ -42,13 +42,13 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Opti
   const allElements = Array<zOrderElement>();
   const bounds = Array<Bounds2>();
   for (const view of scenes) {
-    const { elements, size, center } = renderInternal(
+    const { elements, size } = renderInternal(
       view.scene,
       { ...baseOptions, ...view.options, view: undefined, rotation: undefined, scale: undefined },
       view.pos
     );
     allElements.push(...elements);
-    bounds.push(bounds2FromPosAndSize(center, size));
+    bounds.push(bounds2FromPosAndSize(view.pos, size));
   }
   const size = bounds2ToSize(bounds2Merge(...bounds));
   const image = svg(
@@ -104,15 +104,14 @@ function renderInternal(
   const height = size.y + 1.5 * opts.stroke_thickness;
   const svgSize = vec2(width, height);
   const unitHalfSize = vec3Scale(size, 0.5);
-  const centerAdj = vec3(
-    center.x + offset.x * factor - opts.stroke_thickness * 0.75,
-    center.y + offset.y * factor + opts.stroke_thickness * 0.75,
-    center.z
-  );
-  console.log({ centerAdj, center });
+  const centerAdj = vec3(center.x - opts.stroke_thickness * 0.75, center.y + opts.stroke_thickness * 0.75, center.z);
+
   const elements = Array<zOrderElement>();
   const point = (x: number, y: number): Vec2 =>
-    vec2(-centerAdj.x + unitHalfSize.x + x * factor, centerAdj.y + unitHalfSize.y - y * factor);
+    vec2(
+      -centerAdj.x + unitHalfSize.x + (x + offset.x) * factor,
+      centerAdj.y + unitHalfSize.y - (y - offset.y) * factor
+    );
 
   for (const g of scene.groups) {
     const pos = vec3Rot(g.pos, unitPos, unitRot);
