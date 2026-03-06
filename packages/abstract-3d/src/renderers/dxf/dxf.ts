@@ -39,7 +39,7 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   for (const view of scenes) {
     const { groups, size, center } = dxfGroups(
       view.scene,
-      optionsDef({ ...baseOptions, ...view.options, view: undefined, origin: "Center" }),
+      optionsDef({ ...baseOptions, ...view.options, origin: "Center" }),
       view.pos,
       handle
     );

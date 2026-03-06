@@ -44,7 +44,7 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Opti
   for (const view of scenes) {
     const { elements, size } = renderInternal(
       view.scene,
-      { ...baseOptions, ...view.options, view: undefined, rotation: undefined, scale: undefined },
+      { ...baseOptions, ...view.options, scale: undefined },
       view.pos
     );
     allElements.push(...elements);
