@@ -48,7 +48,8 @@ export function generateObjectTypeWithJSDoc(properties: any, depth: number = 0):
 
     const nestedType = mapSchemaTypeToTypeScript(value, depth + 1);
     const required = value.required !== false ? "" : "?";
-    result += `    ${key}${required}: ${nestedType};\n`;
+
+    result += `    ${formatKey(key)}${required}: ${nestedType};\n`;
   });
 
   result += "  }";
@@ -111,4 +112,11 @@ export function generatePropertyJSDoc(
   output += `${indent} */\n`;
 
   return output;
+}
+
+function formatKey(key: string): string {
+  if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key)) {
+    return key;
+  }
+  return `"${key}"`;
 }
