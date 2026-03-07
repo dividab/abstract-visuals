@@ -4,28 +4,28 @@ import { TextFontWeight } from "../../abstract-document/styles/text-style.js";
 import { getResources } from "../shared/get_resources.js";
 
 export function registerFonts(
-  registerFont: (fontName: string, fontSource: AD.Font.FontSource, family: string) => void,
+  registerFont: (fontName: string, fontSource: AD.Font.FontSource) => void,
   document: AD.AbstractDoc.AbstractDoc
 ): void {
   const resources = getResources(document);
   for (const [fontName, font] of Object.entries(resources.fonts ?? {})) {
     // Required
-    registerFont(fontName, font.normal, fontName);
-    registerFont(fontName + "-Bold", font.bold, fontName);
-    registerFont(fontName + "-Oblique", font.italic, fontName);
-    registerFont(fontName + "-Italic", font.italic, fontName);
-    registerFont(fontName + "-BoldOblique", font.boldItalic, fontName);
-    registerFont(fontName + "-BoldItalic", font.boldItalic, fontName);
+    registerFont(fontName, font.normal);
+    registerFont(fontName + "-Bold", font.bold);
+    registerFont(fontName + "-Oblique", font.italic);
+    registerFont(fontName + "-Italic", font.italic);
+    registerFont(fontName + "-BoldOblique", font.boldItalic);
+    registerFont(fontName + "-BoldItalic", font.boldItalic);
     // Optional
-    registerFont(fontName + "-Light", font.light || font.normal, fontName);
-    registerFont(fontName + "-Medium", font.medium || font.normal, fontName);
-    registerFont(fontName + "-ExtraBold", font.extraBold || font.bold, fontName);
-    registerFont(fontName + "-LightOblique", font.lightItalic || font.normal, fontName);
-    registerFont(fontName + "-LightItalic", font.lightItalic || font.normal, fontName);
-    registerFont(fontName + "-MediumOblique", font.mediumItalic || font.italic, fontName);
-    registerFont(fontName + "-MediumItalic", font.mediumItalic || font.italic, fontName);
-    registerFont(fontName + "-ExtraBoldItalic", font.extraBoldItalic || font.boldItalic, fontName);
-    registerFont(fontName + "-ExtraBoldOblique", font.extraBoldItalic || font.boldItalic, fontName);
+    registerFont(fontName + "-Light", font.light || font.normal);
+    registerFont(fontName + "-Medium", font.medium || font.normal);
+    registerFont(fontName + "-ExtraBold", font.extraBold || font.bold);
+    registerFont(fontName + "-LightOblique", font.lightItalic || font.normal);
+    registerFont(fontName + "-LightItalic", font.lightItalic || font.normal);
+    registerFont(fontName + "-MediumOblique", font.mediumItalic || font.italic);
+    registerFont(fontName + "-MediumItalic", font.mediumItalic || font.italic);
+    registerFont(fontName + "-ExtraBoldItalic", font.extraBoldItalic || font.boldItalic);
+    registerFont(fontName + "-ExtraBoldOblique", font.extraBoldItalic || font.boldItalic);
   }
 }
 
@@ -58,10 +58,10 @@ export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
 export function getFontStyleName(attributes: Record<string, string>): keyof Font {
   const fontWeight = getFontWeightFromAttributes(attributes);
   const italic = attributes.italic === "true";
-  if (fontWeight === "normal") {
+  if(fontWeight === "normal") {
     return italic ? "italic" : fontWeight;
   }
-  return `${fontWeight === "mediumBold" ? "medium" : fontWeight}${italic ? "Italic" : ""}`;
+  return `${fontWeight === "mediumBold" ? "medium" : fontWeight}${italic ? "Italic": ""}`;
 }
 
 export function getFontName(

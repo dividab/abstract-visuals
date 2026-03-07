@@ -50,7 +50,7 @@ function createDocument(
   const pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true });
 
   const document = preProcess(ad);
-  registerFonts(pdf.registerFont, document);
+  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   const desiredSizes = measure(pdfKit, document);
   const pages = paginate(pdfKit, document, desiredSizes);
   const updatedPages = updatePageRefs(pages);
@@ -825,8 +825,10 @@ function renderCell(
     .reduce((a, b) => a + b, 0);
   const startY = finalRect.y + padding.top;
   let y = startY;
-  if (style.verticalAlignment === "Middle") y += 0.5 * (availableHeight - contentHeight - padding.top - padding.bottom);
-  else if (style.verticalAlignment === "Bottom") y += availableHeight - contentHeight - padding.top - padding.bottom;
+  if (style.verticalAlignment === "Middle")
+    y += 0.5 * (availableHeight - contentHeight - padding.top - padding.bottom);
+  else if (style.verticalAlignment === "Bottom")
+    y += availableHeight - contentHeight - padding.top - padding.bottom;
 
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);
