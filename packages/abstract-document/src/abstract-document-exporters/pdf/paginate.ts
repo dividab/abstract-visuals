@@ -26,7 +26,7 @@ export function paginate(
   const resources = getResources(document);
   const pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true });
 
-  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  registerFonts(pdf.registerFont, document);
   const pages = new Array<Page>();
   for (let section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
@@ -280,12 +280,16 @@ export function getHeaderAndFooter(
       return {
         footer: normalFooter ? section.page.footer : section.page.frontFooter,
         header: normalHeader ? section.page.header : section.page.frontHeader,
-        headerMargins: AD.LayoutFoundation.orDefault(normalHeader
-          ? section.page.style.headerMargins
-          : section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins),
-        footerMargins: AD.LayoutFoundation.orDefault(normalFooter
-          ? section.page.style.footerMargins
-          : section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins),
+        headerMargins: AD.LayoutFoundation.orDefault(
+          normalHeader
+            ? section.page.style.headerMargins
+            : section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins
+        ),
+        footerMargins: AD.LayoutFoundation.orDefault(
+          normalFooter
+            ? section.page.style.footerMargins
+            : section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins
+        ),
       };
     }
     case pageNo === 0:
@@ -486,7 +490,7 @@ function splitTableAt(
 
   const availableSize = getDesiredSize(table, desiredSizes);
   let pdf = new pdfKit();
-  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  registerFonts(pdf.registerFont, document);
   const headSizes = measureTable(pdf, resources, availableSize, tableHead);
   const tailSizes = measureTable(pdf, resources, availableSize, tableTail);
 
