@@ -2,53 +2,78 @@ import { Polygon, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero } from 
 import { color } from "../color.js";
 import { dxf3DFACE, Handle } from "../dxf-encoding.js";
 
-const chunkSize = 4;
+const QUAD_STRIDE = 4;
+const TRIANGLE_STRIDE = 3;
 
 export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   let polygonString = "";
+  const col = color(m.normal);
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
   const points = p.points.map((p) => vec3TransRot(p, pos, rot));
   let i = 0;
-  if (points.length >= chunkSize) {
-    for (i; i < points.length; i += chunkSize) {
+  while((points.length - i) >= QUAD_STRIDE) {
+    const vec1 = points[i];
+    const vec2 = points[i + 1];
+    const vec3 = points[i + 2];
+    const vec4 = points[i + 3];
+    if(vec1 && vec2 && vec3 && vec4) {
       polygonString += dxf3DFACE(
-        points[i]!,
-        points[i + 1]!,
-        points[i + 2]!,
-        points[i + 3]!,
-        color(m.normal),
+        vec1,
+        vec2,
+        vec3,
+        vec4,
+        col,
         handleRef
       );
     }
+    i += QUAD_STRIDE;
   }
 
-  if (i <= points.length && chunkSize - 1 <= points.length) {
+  if (i <= points.length && TRIANGLE_STRIDE <= points.length) {
     const lastArrayLength = points.length - i;
     switch (lastArrayLength) {
-      case 1:
-        polygonString += dxf3DFACE(points[i - 2]!, points[i - 1]!, points[i]!, points[i]!, color(m.normal), handleRef);
+      case 1: {
+        const vec1 = points[i];
+        const vec2 = points[i - 1];
+        const vec3 = points[i - 2];
+        if(vec1 && vec2 && vec3) {
+          polygonString += dxf3DFACE(vec3, vec2, vec1, vec1, col, handleRef);
+        }
         break;
-      case 2:
-        polygonString += dxf3DFACE(
-          points[i - 1]!,
-          points[i]!,
-          points[i + 1]!,
-          points[i + 1]!,
-          color(m.normal),
-          handleRef
-        );
+      }
+      case 2: {
+        const vec1 = points[i];
+        const vec2 = points[i - 1];
+        const vec3 = points[i + 1];
+        if(vec1 && vec2 && vec3) {
+          polygonString += dxf3DFACE(
+            vec2,
+            vec1,
+            vec3,
+            vec3,
+            col,
+            handleRef
+          );
+        }
         break;
-      case 3:
-        polygonString += dxf3DFACE(
-          points[i]!,
-          points[i + 1]!,
-          points[i + 2]!,
-          points[i + 2]!,
-          color(m.normal),
-          handleRef
-        );
+      }
+      case 3: {
+        const vec1 = points[i];
+        const vec2 = points[i + 1];
+        const vec3 = points[i + 2];
+        if(vec1 && vec2 && vec3) {
+          polygonString += dxf3DFACE(
+            vec1,
+            vec2,
+            vec3,
+            vec3,
+            col,
+            handleRef
+          );
+        }
         break;
+      }
       default:
         break;
     }
