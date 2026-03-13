@@ -89,30 +89,40 @@ const dxfGroups = (
 function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOptions, handleRef: Handle): string {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
-  return (
-    (g.meshes?.reduce((a, c) => {
-      switch (c.geometry.type) {
-        case "Plane": {
-          return a + dxfPlane(c.geometry, c.material, pos, rot, handleRef);
-        }
-        case "Box": {
-          return a + dxfBox(c.geometry, c.material, pos, rot, handleRef);
-        }
-        case "Cylinder": {
-          return a + dxfCylinder(c.geometry, c.material, options.cylinderSideCount, pos, rot, handleRef);
-        }
-        case "Cone": {
-          return a + dxfCone(c.geometry, c.material, options.cylinderSideCount, pos, rot, handleRef);
-        }
-        case "Polygon": {
-          return a + dxfPolygon(c.geometry, c.material, pos, rot, handleRef);
-        }
-        default: {
-          return a;
-        }
+
+  let dxf = "";
+  for(const mesh of g.meshes ?? []) {
+    switch (mesh.geometry.type) {
+      case "Plane": {
+        dxf += dxfPlane(mesh.geometry, mesh.material, pos, rot, handleRef);
+        break;
       }
-    }, "") ?? "") + g.groups?.reduce((a, c) => a + dxfGroup(c, pos, rot, options, handleRef), "")
-  );
+      case "Box": {
+        dxf += dxfBox(mesh.geometry, mesh.material, pos, rot, handleRef);
+        break;
+      }
+      case "Cylinder": {
+        dxf += dxfCylinder(mesh.geometry, mesh.material, options.cylinderSideCount, pos, rot, handleRef);
+        break;
+      }
+      case "Cone": {
+        dxf += dxfCone(mesh.geometry, mesh.material, options.cylinderSideCount, pos, rot, handleRef);
+        break;
+      }
+      case "Polygon": {
+        dxf += dxfPolygon(mesh.geometry, mesh.material, pos, rot, handleRef);
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  for(const group of g.groups ?? []) {
+    dxf += dxfGroup(group, pos, rot, options, handleRef);
+  }
+
+  return dxf;
 }
 
 function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {

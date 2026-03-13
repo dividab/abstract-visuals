@@ -2,11 +2,6 @@
 import { Vec3 } from "../../abstract-3d.js";
 import { generateUUID } from "three/src/math/MathUtils.js";
 
-//this doesn't have to be ordered, it can be completely random.
-//the only requirement is that all of them are unique. So handling
-//it like this makes the format more deterministic and less prone to
-//errors
-
 export type DxfOrigin = "BottomLeftFront" | "Center";
 
 export function dxf(groups: string, center: Vec3, size: Vec3, _origin: DxfOrigin): string {
