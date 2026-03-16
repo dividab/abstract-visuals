@@ -17,6 +17,8 @@ import {
   vec3Add,
   vec3Rot,
   sizeCenterBoundsForCameraPos,
+  vec3Sub,
+  vec3Scale,
 } from "../../abstract-3d.js";
 import { dxf, DxfOrigin, Handle } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
@@ -36,6 +38,7 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   let allGroups = "";
   const allBounds = Array<Bounds3>();
   const handle = { handle: 0x1000 };
+
   for (const view of scenes) {
     const { groups, size, center } = dxfGroups(
       view.scene,
@@ -44,8 +47,9 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
       handle
     );
     allGroups += groups;
-    allBounds.push(bounds3FromPosAndSize(center, size));
+    allBounds.push(bounds3FromPosAndSize(view.pos, size));
   }
+
   const bounds = bounds3Merge(...allBounds);
   return dxf(allGroups, bounds3Center(bounds), bounds3ToSize(bounds), "Center");
 }
@@ -73,16 +77,16 @@ const dxfGroups = (
   scene: Scene,
   options: DxfOptions,
   offset: Vec3,
-  handleRef: Handle //make sure we start with a value higher than any other handle id's used in the header
+  handleRef: Handle
 ): { readonly groups: string; readonly size: Vec3; readonly center: Vec3 } => {
   const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
   const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
   const [size, center] = sizeCenterBoundsForCameraPos(scene.size_deprecated, unitPos, unitRot, 1);
-  const centerWithOffset = vec3Add(center, offset);
+  const origin = vec3(center.x + size.x * 0.5, center.y + size.y * 0.5, center.z);
   return {
-    groups: scene.groups.reduce((a, c) => a + dxfGroup(c, centerWithOffset, unitRot, options, handleRef), ""),
+    groups: scene.groups.reduce((a, c) => a + dxfGroup(c, vec3Add(origin, offset), unitRot, options, handleRef), ""),
     size,
-    center: centerWithOffset,
+    center,
   };
 };
 
@@ -91,7 +95,7 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
 
   let dxf = "";
-  for(const mesh of g.meshes ?? []) {
+  for (const mesh of g.meshes ?? []) {
     switch (mesh.geometry.type) {
       case "Plane": {
         dxf += dxfPlane(mesh.geometry, mesh.material, pos, rot, handleRef);
@@ -118,7 +122,7 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
     }
   }
 
-  for(const group of g.groups ?? []) {
+  for (const group of g.groups ?? []) {
     dxf += dxfGroup(group, pos, rot, options, handleRef);
   }
 

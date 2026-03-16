@@ -4,9 +4,9 @@ import { generateUUID } from "three/src/math/MathUtils.js";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
 
-export function dxf(groups: string, center: Vec3, size: Vec3, _origin: DxfOrigin): string {
+export function dxf(groups: string, center: Vec3, size: Vec3, origin: DxfOrigin): string {
   const id = generateUUID();
-  return dxfHeader(size, center, id) + groups + dxfFooter(id);
+  return dxfHeader(size, center, id, origin) + groups + dxfFooter(id);
 }
 
 export type Handle = { handle: number };
@@ -178,7 +178,7 @@ ${dxfRound(major.z - center.z)}
 0
 `;
 
-export const dxfHeader = (size: Vec3, center: Vec3, groupId: string): string =>
+export const dxfHeader = (size: Vec3, center: Vec3, groupId: string, origin: DxfOrigin): string =>
   ` 999
 DXF Generated from Divid Abstract 3D
 0
