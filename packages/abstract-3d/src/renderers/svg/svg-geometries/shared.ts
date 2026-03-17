@@ -24,7 +24,6 @@ export type SvgOptions = {
   readonly only_stroke_fill: string;
   readonly rotation: number;
 
-  readonly scale: { readonly size: number; readonly scaleByWidth: boolean } | undefined;
   readonly font: string;
   readonly imageDataByUrl: Record<string, ImageDataUri>;
 };

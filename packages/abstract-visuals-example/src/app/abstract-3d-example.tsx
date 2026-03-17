@@ -3,9 +3,11 @@ import FileSaver from "file-saver";
 import { React3Js, Dxf, Stl, Step, Svg } from "../../../abstract-3d/src/index.js";
 import { systemair } from "./systemair.js";
 import { vortice } from "./vortice.js";
-import { ai, componentGeometries } from "./double-view-scenes.js";
+import { ai } from "./double-view-ai.js";
 import { createSVG } from "../../../abstract-image/src/exporters/svg-export-image.js";
 import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
+import { svgComponentGeometries } from "./double-view-svg-component-geometries.js";
+import { dxfComponentGeometries } from "./double-view-dxf-component-geometries copy.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
@@ -18,19 +20,23 @@ export function Abstract3DExample(): React.ReactNode {
 
   const imageDataByUrlSvg: Record<string, any> = {};
   const imageDataByUrlDxf: Record<string, any> = {};
+  const svgs = Array<string>();
+  for (const geo of Object.values(svgComponentGeometries)) {
+    for (const s of geo.scenes as any) {
+      svgs.push(`data:image/svg+xml,${encodeURIComponent(Svg.render(s.scene).image)}`);
+    }
 
-  for (const geo of Object.values(componentGeometries)) {
     imageDataByUrlSvg[geo.image.url] = `data:image/svg+xml,${encodeURIComponent(
       Svg.renderScenes(geo.scenes as any).image
     )}`;
   }
 
-  for (const geo of Object.values(componentGeometries)) {
+  for (const geo of Object.values(dxfComponentGeometries)) {
     imageDataByUrlDxf[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes as any)}`;
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "rgb(230,  230, 230)" }}>
       <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
         <button
           onClick={() =>
@@ -60,18 +66,7 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob(
-                [
-                  Svg.render(systemair, {
-                    view: "front",
-                    stroke_thickness: 2,
-                    scale: { size: 180, scaleByWidth: true },
-                  }).image,
-                ],
-                {
-                  type: "text/plain",
-                }
-              ),
+              new Blob([Svg.render(systemair, { view: "front", stroke_thickness: 2 }).image], { type: "text/plain" }),
               `a3d.svg`
             )
           }
@@ -80,21 +75,17 @@ export function Abstract3DExample(): React.ReactNode {
         </button>
       </div>
       <div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: Svg.render(systemair, {
-              view: "front",
-              stroke_thickness: 1,
-              scale: { size: 400, scaleByWidth: true },
-              rotation: 270,
-            }).image,
-          }}
+        <img
+          width="200px"
+          style={{ height: "max-content" }}
+          src={`data:image/svg+xml,${encodeURIComponent(
+            Svg.render(systemair, { view: "front", stroke_thickness: 1, rotation: 270 }).image
+          )}`}
         />
-        <div
-          dangerouslySetInnerHTML={{
-            __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }),
-          }}
-        />
+        <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} />
+        {svgs.map((svg) => (
+          <img src={svg} width="200px" style={{ height: "max-content" }} />
+        ))}
         <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
             <React3Js.render

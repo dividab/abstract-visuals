@@ -1,1595 +1,31 @@
 /* eslint-disable max-lines */
-import { AbstractImage } from "abstract-image";
-
-export const ai = {
-  topLeft: {
-    x: 0,
-    y: 0,
-  },
-  size: {
-    width: 420,
-    height: 297,
-  },
-  backgroundColor: {
-    a: 0,
-    r: 255,
-    g: 255,
-    b: 255,
-  },
-  components: [
-    "//section 1",
-    {
-      type: "rectangle",
-      topLeft: {
-        x: 269,
-        y: 1,
-      },
-      bottomRight: {
-        x: 419,
-        y: 296,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-      fillColor: {
-        a: 255,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 8,
-      },
-      text: "drawing is for bid purposes only, and are subject to change during detailed",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 203,
-        b: 62,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 14,
-      },
-      text: "engineering",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 203,
-        b: 62,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 2",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 24,
-      },
-      end: {
-        x: 419,
-        y: 24,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "rectangle",
-      topLeft: {
-        x: 273,
-        y: 31,
-      },
-      bottomRight: {
-        x: 277,
-        y: 35,
-      },
-      strokeColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-      fillColor: {
-        a: 255,
-        r: 255,
-        g: 15,
-        b: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 274,
-        y: 39,
-      },
-      text: "T",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 285,
-        y: 33,
-      },
-      text: "Electrical switch for power circuit",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 203,
-        b: 62,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 285,
-        y: 39,
-      },
-      text: "Door with lever",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 203,
-        b: 62,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 3",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 47,
-      },
-      end: {
-        x: 419,
-        y: 47,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 54.5,
-      },
-      text: "TH",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 285,
-        y: 54.5,
-      },
-      text: "Tür Standard mit Türgriff",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 4",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 64,
-      },
-      end: {
-        x: 419,
-        y: 64,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 73,
-      },
-      text: "ODA",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 285,
-        y: 73,
-      },
-      text: "Außenluft",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 79,
-      },
-      text: "SUP",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 285,
-        y: 79,
-      },
-      text: "Zuluft",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 5",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 87,
-      },
-      end: {
-        x: 419,
-        y: 87,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 96,
-      },
-      text: "Nr.",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 285,
-        y: 96,
-      },
-      text: "Breite",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 313,
-        y: 96,
-      },
-      text: "Höhe",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 343,
-        y: 96,
-      },
-      text: "Länge",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 383,
-        y: 96,
-      },
-      text: "Gewicht",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 102,
-      },
-      text: "1",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 285,
-        y: 102,
-      },
-      text: "3200",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 313,
-        y: 102,
-      },
-      text: "2600",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 343,
-        y: 102,
-      },
-      text: "1750",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 383,
-        y: 102,
-      },
-      text: "815",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 110,
-      },
-      text: "Verschiedenes",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 383,
-        y: 110,
-      },
-      text: "517",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 5",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 118,
-      },
-      end: {
-        x: 419,
-        y: 118,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 127,
-      },
-      text: "M: 1.75",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 297,
-        y: 127,
-      },
-      text: "|",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 299,
-        y: 127,
-      },
-      text: "Gesamtgewicht Gerät ca. 7,152 [kg]",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 6",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 135,
-      },
-      end: {
-        x: 419,
-        y: 135,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 144,
-      },
-      text: "Ausführung: VDI-6022 Gerät für Innenaufstellung",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 7",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 152,
-      },
-      end: {
-        x: 419,
-        y: 152,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 161,
-      },
-      text: "1 Stk. Zuluft XPRO17",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 8",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 169,
-      },
-      end: {
-        x: 419,
-        y: 169,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 178,
-      },
-      text: "Luftmenge m³/h 70,000",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 184,
-      },
-      text: "Satischer druck Pa 0",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 9",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 192,
-      },
-      end: {
-        x: 419,
-        y: 192,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 199,
-      },
-      text: "Projekt Nr.:",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 303,
-        y: 199,
-      },
-      text: "09 0015",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 205,
-      },
-      text: "Position:",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 303,
-        y: 205,
-      },
-      text: "001a",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 211,
-      },
-      text: "Projekt:",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 303,
-        y: 211,
-      },
-      text: "Siemens Halle 60",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 217,
-      },
-      text: "Anl.:",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 303,
-        y: 217,
-      },
-      text: "Zentrale Nord",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 223,
-      },
-      text: "Kund:",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 303,
-        y: 223,
-      },
-      text: "WOWI Haustechnik GmbH",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 10",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 229,
-      },
-      end: {
-        x: 419,
-        y: 229,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 236,
-      },
-      text: "gezeichnet: DIN A4",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    {
-      type: "text",
-      position: {
-        x: 273,
-        y: 242,
-      },
-      text: "Datum: 19.03.2009",
-      fontFamily: "",
-      fontSize: 4,
-      textColor: {
-        a: 255,
-        r: 255,
-        g: 0,
-        b: 0,
-      },
-      fontWeight: "normal",
-      clockwiseRotationDegrees: 0,
-      textAlignment: "left",
-      horizontalGrowthDirection: "right",
-      verticalGrowthDirection: "down",
-      strokeThickness: 0,
-      strokeColor: {
-        a: 0,
-        r: 255,
-        g: 255,
-        b: 255,
-      },
-      italic: false,
-    },
-    "//section 11",
-    {
-      type: "line",
-      start: {
-        x: 269,
-        y: 251,
-      },
-      end: {
-        x: 419,
-        y: 251,
-      },
-      strokeColor: {
-        a: 255,
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-      strokeThickness: 1,
-      strokeDashStyle: {
-        dashes: [],
-        offset: 0,
-      },
-    },
-    "//ahu front & top",
-    {
-      type: "binaryimage",
-      topLeft: {
-        x: 0,
-        y: 0,
-      },
-      bottomRight: {
-        x: 269,
-        y: 297,
-      },
-      format: "png",
-      data: {
-        type: "url",
-        url: "/image/component-geometry/17330457-fcc9-4eb9-a994-5b880e8247e5/a32dffa8-904b-47d8-8aad-10740c0bb08b?type=ComponentGeometryImage&language=en-GB&cols=0&rows=0&views=%5B%7B%22view%22%3A%22front%22%2C%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22rotation%22%3A0%7D%2C%7B%22view%22%3A%22top%22%2C%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22rotation%22%3A0%7D%5D",
-      },
-    },
-  ],
-} as AbstractImage;
-
-export const componentGeometries = {
-  "/image/component-geometry/17330457-fcc9-4eb9-a994-5b880e8247e5/a32dffa8-904b-47d8-8aad-10740c0bb08b?type=ComponentGeometryImage&language=en-GB&cols=0&rows=0&views=%5B%7B%22view%22%3A%22front%22%2C%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22rotation%22%3A0%7D%2C%7B%22view%22%3A%22top%22%2C%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22rotation%22%3A0%7D%5D":
+export const dxfComponentGeometries = {
+  "/image/component-geometry/35156100-5bba-4926-ac3f-7368c9dfe0b9/348a1ad1-5f0e-4745-8f46-be2b49e7df21?type=ComponentGeometryImage&language=en-GB&cols=0&rows=0&views=%5B%7B%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22view%22%3A%22front%22%2C%22detail_level%22%3A%22detailed%22%2C%22rotation%22%3A0%7D%2C%7B%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22view%22%3A%22top%22%2C%22detail_level%22%3A%22detailed%22%2C%22rotation%22%3A0%7D%5D":
     {
       image: {
         type: "ComponentGeometryImage",
-        ahuId: "17330457-fcc9-4eb9-a994-5b880e8247e5",
-        componentId: "a32dffa8-904b-47d8-8aad-10740c0bb08b",
+        ahuId: "35156100-5bba-4926-ac3f-7368c9dfe0b9",
+        componentId: "348a1ad1-5f0e-4745-8f46-be2b49e7df21",
         language: "en-GB",
         cols: 0,
         rows: 0,
         views: [
           {
-            view: "front",
             split_casing_layers: false,
             titles: [],
+            view: "front",
+            detail_level: "detailed",
             rotation: 0,
           },
           {
-            view: "top",
             split_casing_layers: false,
             titles: [],
+            view: "top",
+            detail_level: "detailed",
             rotation: 0,
           },
         ],
-        url: "/image/component-geometry/17330457-fcc9-4eb9-a994-5b880e8247e5/a32dffa8-904b-47d8-8aad-10740c0bb08b?type=ComponentGeometryImage&language=en-GB&cols=0&rows=0&views=%5B%7B%22view%22%3A%22front%22%2C%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22rotation%22%3A0%7D%2C%7B%22view%22%3A%22top%22%2C%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22rotation%22%3A0%7D%5D",
+        url: "/image/component-geometry/35156100-5bba-4926-ac3f-7368c9dfe0b9/348a1ad1-5f0e-4745-8f46-be2b49e7df21?type=ComponentGeometryImage&language=en-GB&cols=0&rows=0&views=%5B%7B%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22view%22%3A%22front%22%2C%22detail_level%22%3A%22detailed%22%2C%22rotation%22%3A0%7D%2C%7B%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22view%22%3A%22top%22%2C%22detail_level%22%3A%22detailed%22%2C%22rotation%22%3A0%7D%5D",
       },
       scenes: [
         {
@@ -1618,7 +54,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "26a9c195-2b6a-4a13-aaca-ecdd98e27d2e",
+                  id: "502e16e1-9a8c-4f78-80cd-df19f3d3e657",
                   box: "",
                 },
                 groups: [
@@ -1644,7 +80,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -1674,7 +110,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -1704,7 +140,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -1734,7 +170,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -1765,7 +201,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -1796,7 +232,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -1835,7 +271,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "c33492d1-acca-4323-9665-90c25ed7d93c",
+                  id: "0ad88f16-859e-4d43-999b-933b6b1575ce",
                   box: "",
                 },
                 groups: [
@@ -1861,7 +297,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -1891,7 +327,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -1921,7 +357,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -1951,7 +387,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -1982,7 +418,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -2013,7 +449,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -2052,7 +488,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "3e71bf98-5a23-4628-a034-d04f08a305a9",
+                  id: "540a99a9-7aaf-4368-9288-a714b70bd970",
                   box: "",
                 },
                 groups: [
@@ -2078,7 +514,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -2108,7 +544,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -2138,7 +574,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -2168,7 +604,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -2199,7 +635,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -2230,7 +666,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -2269,7 +705,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "b93c5c55-9013-4397-88dc-7d436615405f",
+                  id: "3ec159d1-de4a-4b52-8672-1b7648675975",
                   box: "",
                 },
                 groups: [
@@ -2295,7 +731,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -2325,7 +761,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -2355,7 +791,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -2385,7 +821,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -2416,7 +852,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -2447,7 +883,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -2486,7 +922,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "96403790-e828-4c1d-aa22-686dc5402445",
+                  id: "871254af-6754-422a-83c4-e3d37adcb779",
                   box: "",
                 },
                 groups: [
@@ -2513,7 +949,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2544,7 +980,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2583,7 +1019,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "c5e14301-dd53-480e-afb2-71e2f2254537",
+                  id: "a70c7eba-c0f9-4461-ba11-a2025591c179",
                   box: "",
                 },
                 groups: [
@@ -2610,7 +1046,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2641,7 +1077,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2680,7 +1116,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "8e0fd09d-c922-4cda-841d-73b2f7243394",
+                  id: "3b412972-3251-40d0-894c-d2ea2c3fe549",
                   box: "",
                 },
                 groups: [
@@ -2707,7 +1143,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2738,7 +1174,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2777,7 +1213,7 @@ export const componentGeometries = {
                   z: -1.5707963267948963,
                 },
                 data: {
-                  id: "93d1a26b-4c9a-433b-a73d-71bdad46eb6a",
+                  id: "77c528fa-fe16-4bde-addf-5d7cdcccea40",
                   box: "",
                 },
                 groups: [
@@ -2804,7 +1240,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2835,7 +1271,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2874,7 +1310,7 @@ export const componentGeometries = {
                   z: 1.5707963267948963,
                 },
                 data: {
-                  id: "1049c537-5aa5-4c6b-a90a-f43640b88b9f",
+                  id: "163f74b5-2dfb-49ce-842d-122cbe783a0b",
                   box: "",
                 },
                 groups: [
@@ -2901,7 +1337,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2932,7 +1368,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -2971,7 +1407,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "424a5a2c-e015-436d-989d-75049b2bd669",
+                  id: "92abd8e8-b687-4f8a-8954-135848762ca7",
                   box: "",
                 },
                 groups: [
@@ -2998,7 +1434,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3029,7 +1465,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3068,7 +1504,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "c83dc180-9cca-48cb-a5c9-b1e4dffc0cdd",
+                  id: "c4edb1d9-5f75-45d6-82ce-f40eb958d285",
                   box: "",
                 },
                 groups: [
@@ -3095,7 +1531,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3126,7 +1562,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3165,7 +1601,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "3b29fe16-83a1-4394-a271-7fc291942ff9",
+                  id: "1832dcc1-1364-4177-8c30-e0dd31d64f45",
                   box: "",
                 },
                 groups: [
@@ -3192,7 +1628,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3223,7 +1659,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3262,7 +1698,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "9fdbc21b-a1ee-40d8-bc27-8179aa0cba83",
+                  id: "7feb4a16-90b8-457a-948b-31fa0014b577",
                   box: "",
                 },
                 groups: [
@@ -3289,7 +1725,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3320,7 +1756,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3359,7 +1795,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "56783538-8b6b-4d40-9d31-86cd795706f4",
+                  id: "fb2db138-42cd-49e1-81c7-1a85116050f3",
                   box: "",
                 },
                 groups: [
@@ -3386,7 +1822,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3417,7 +1853,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3456,7 +1892,7 @@ export const componentGeometries = {
                   z: -1.2246467991473532e-16,
                 },
                 data: {
-                  id: "5298c0b6-bdd4-48dd-b59d-37e03ab1dcae",
+                  id: "6521f268-d1bd-493d-bec7-db575994ae27",
                   box: "",
                 },
                 groups: [
@@ -3483,7 +1919,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3514,7 +1950,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3553,7 +1989,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "cded9c2f-4f75-4b34-be08-c5f3ee14d9a0",
+                  id: "8f750e83-eec4-4e06-b292-e8df6fdf7269",
                   box: "",
                 },
                 groups: [
@@ -3580,7 +2016,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3611,7 +2047,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3650,7 +2086,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "77b039f8-db15-498c-a3f7-560c4eab6939",
+                  id: "616dc86d-7aba-4dfb-8481-a328a8c1a6de",
                   box: "",
                 },
                 groups: [
@@ -3677,7 +2113,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3708,7 +2144,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3747,7 +2183,7 @@ export const componentGeometries = {
                   z: 1.5707963267948963,
                 },
                 data: {
-                  id: "19dad9b9-d968-4f43-9e94-0a2016141ea0",
+                  id: "37d56751-c08b-477f-acd9-64de5259416c",
                   box: "",
                 },
                 groups: [
@@ -3774,7 +2210,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3805,7 +2241,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3844,7 +2280,7 @@ export const componentGeometries = {
                   z: -1.5707963267948963,
                 },
                 data: {
-                  id: "6d510381-dc74-4f6c-b7dc-be547dac5a89",
+                  id: "af2b5e68-25da-470a-b430-c95018fb5e65",
                   box: "",
                 },
                 groups: [
@@ -3871,7 +2307,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3902,7 +2338,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -3941,7 +2377,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "8a72ed7d-b0a4-4fd6-86be-df880786a6f0",
+                  id: "01429dcc-2822-47ee-b784-794981d4f2ff",
                   box: "",
                 },
                 groups: [
@@ -3968,7 +2404,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -3999,7 +2435,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4030,7 +2466,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4061,7 +2497,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4100,7 +2536,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "0c676e34-c3e5-44e6-8969-13d14f2c9d39",
+                  id: "3762d369-4d33-41b5-93e2-0d59177b71b5",
                   box: "",
                 },
                 groups: [
@@ -4127,7 +2563,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4158,7 +2594,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4189,7 +2625,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4220,7 +2656,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4259,7 +2695,7 @@ export const componentGeometries = {
                   z: -3.141592653589793,
                 },
                 data: {
-                  id: "8076d942-dd21-4c0d-ab0d-7a0a8ef0fd80",
+                  id: "330e07e5-afca-405d-bc77-7c8a99e33d96",
                   box: "",
                 },
                 groups: [
@@ -4286,7 +2722,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4317,7 +2753,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4348,7 +2784,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4379,7 +2815,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4418,7 +2854,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "7905e91c-1480-4c04-8827-954257e1b2e3",
+                  id: "2d53b033-a25d-4dd5-9b3a-afd0da51a159",
                   box: "",
                 },
                 groups: [
@@ -4445,7 +2881,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4476,7 +2912,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4507,7 +2943,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4538,7 +2974,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4577,7 +3013,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "851cd541-2082-444f-aac4-0596a87f5f91",
+                  id: "76b01500-b2ac-4367-afb3-37ff7829008e",
                   box: "",
                 },
                 groups: [
@@ -4604,7 +3040,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4635,7 +3071,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4666,7 +3102,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4697,7 +3133,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4736,7 +3172,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "e0d35617-3abd-48f1-86e0-29e7400265da",
+                  id: "ea21795d-3088-43ee-8824-207d964f8ac5",
                   box: "",
                 },
                 groups: [
@@ -4763,7 +3199,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4794,7 +3230,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4825,7 +3261,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4856,7 +3292,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4895,7 +3331,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "1ee180c7-bec2-425d-9aeb-e90aaff8e6e2",
+                  id: "aafc3075-2c24-4eb4-a46b-c5d5d3012f0e",
                   box: "",
                 },
                 groups: [
@@ -4922,7 +3358,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4953,7 +3389,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -4984,7 +3420,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -5015,7 +3451,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -5054,7 +3490,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "b5e2e07c-be56-4088-9ddc-6e1f3fda52f2",
+                  id: "d1e0c27b-0dd7-4a41-a8b9-6a8ea92eb132",
                   box: "",
                 },
                 groups: [
@@ -5081,7 +3517,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -5112,7 +3548,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -5143,7 +3579,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -5174,7 +3610,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -5213,7 +3649,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "c1f22a8b-fc39-48b3-b546-120d17dc2074",
+                  id: "746c6883-cb66-4e54-85bb-1e7f4f983113",
                   box: "box",
                 },
                 groups: [
@@ -5374,7 +3810,7 @@ export const componentGeometries = {
             dimensions_deprecated: {
               dimensions: [],
               material: {
-                row_id: "8c8e43a2-3ae3-410d-a1ea-cbaef8748412",
+                row_id: "516558f2-4752-4873-a561-be5cab97aef3",
                 sort_no: 3,
                 name: "dimension_dark",
                 type: 2,
@@ -5392,20 +3828,24 @@ export const componentGeometries = {
             hotSpots_deprecated: [],
           },
           options: {
-            view: "front",
+            origin: "drawing",
+            format: "dxf",
+            toggles: {
+              panels: true,
+              open_doors: false,
+            },
+            unitStatus: 0,
             split_casing_layers: false,
             titles: [],
+            view: "front",
+            detail_level: "detailed",
             rotation: 0,
+            alignment: "casing",
           },
           size: {
             x: 2130,
             y: 1280.0000000000002,
             z: 1350.0000000000005,
-          },
-          center: {
-            x: 0,
-            y: -90,
-            z: 0,
           },
           pos: {
             x: 0,
@@ -5439,7 +3879,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "26a9c195-2b6a-4a13-aaca-ecdd98e27d2e",
+                  id: "502e16e1-9a8c-4f78-80cd-df19f3d3e657",
                   box: "",
                 },
                 groups: [
@@ -5465,7 +3905,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5495,7 +3935,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5525,7 +3965,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5555,7 +3995,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5586,7 +4026,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -5617,7 +4057,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -5656,7 +4096,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "c33492d1-acca-4323-9665-90c25ed7d93c",
+                  id: "0ad88f16-859e-4d43-999b-933b6b1575ce",
                   box: "",
                 },
                 groups: [
@@ -5682,7 +4122,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5712,7 +4152,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5742,7 +4182,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5772,7 +4212,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5803,7 +4243,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -5834,7 +4274,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -5873,7 +4313,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "3e71bf98-5a23-4628-a034-d04f08a305a9",
+                  id: "540a99a9-7aaf-4368-9288-a714b70bd970",
                   box: "",
                 },
                 groups: [
@@ -5899,7 +4339,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5929,7 +4369,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5959,7 +4399,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -5989,7 +4429,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -6020,7 +4460,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -6051,7 +4491,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -6090,7 +4530,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "b93c5c55-9013-4397-88dc-7d436615405f",
+                  id: "3ec159d1-de4a-4b52-8672-1b7648675975",
                   box: "",
                 },
                 groups: [
@@ -6116,7 +4556,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -6146,7 +4586,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -6176,7 +4616,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -6206,7 +4646,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "b3cd55c3-b5ec-4d5c-a7ec-877b45d85db6",
+                          row_id: "8dd4768d-fb7c-42a9-97b7-82597e75fc9b",
                           sort_no: 12,
                           name: "panel_border",
                           type: 0,
@@ -6237,7 +4677,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -6268,7 +4708,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "cdd3cac4-c63c-4fdd-9831-3b12e3a922da",
+                          row_id: "788b5c2f-564d-492c-8bb1-3d6d83a406a6",
                           sort_no: 65,
                           name: "galvanised",
                           type: 1,
@@ -6307,7 +4747,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "96403790-e828-4c1d-aa22-686dc5402445",
+                  id: "871254af-6754-422a-83c4-e3d37adcb779",
                   box: "",
                 },
                 groups: [
@@ -6334,7 +4774,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6365,7 +4805,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6404,7 +4844,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "c5e14301-dd53-480e-afb2-71e2f2254537",
+                  id: "a70c7eba-c0f9-4461-ba11-a2025591c179",
                   box: "",
                 },
                 groups: [
@@ -6431,7 +4871,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6462,7 +4902,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6501,7 +4941,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "8e0fd09d-c922-4cda-841d-73b2f7243394",
+                  id: "3b412972-3251-40d0-894c-d2ea2c3fe549",
                   box: "",
                 },
                 groups: [
@@ -6528,7 +4968,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6559,7 +4999,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6598,7 +5038,7 @@ export const componentGeometries = {
                   z: -1.5707963267948963,
                 },
                 data: {
-                  id: "93d1a26b-4c9a-433b-a73d-71bdad46eb6a",
+                  id: "77c528fa-fe16-4bde-addf-5d7cdcccea40",
                   box: "",
                 },
                 groups: [
@@ -6625,7 +5065,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6656,7 +5096,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6695,7 +5135,7 @@ export const componentGeometries = {
                   z: 1.5707963267948963,
                 },
                 data: {
-                  id: "1049c537-5aa5-4c6b-a90a-f43640b88b9f",
+                  id: "163f74b5-2dfb-49ce-842d-122cbe783a0b",
                   box: "",
                 },
                 groups: [
@@ -6722,7 +5162,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6753,7 +5193,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6792,7 +5232,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "424a5a2c-e015-436d-989d-75049b2bd669",
+                  id: "92abd8e8-b687-4f8a-8954-135848762ca7",
                   box: "",
                 },
                 groups: [
@@ -6819,7 +5259,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6850,7 +5290,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6889,7 +5329,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "c83dc180-9cca-48cb-a5c9-b1e4dffc0cdd",
+                  id: "c4edb1d9-5f75-45d6-82ce-f40eb958d285",
                   box: "",
                 },
                 groups: [
@@ -6916,7 +5356,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6947,7 +5387,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -6986,7 +5426,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "3b29fe16-83a1-4394-a271-7fc291942ff9",
+                  id: "1832dcc1-1364-4177-8c30-e0dd31d64f45",
                   box: "",
                 },
                 groups: [
@@ -7013,7 +5453,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7044,7 +5484,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7083,7 +5523,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "9fdbc21b-a1ee-40d8-bc27-8179aa0cba83",
+                  id: "7feb4a16-90b8-457a-948b-31fa0014b577",
                   box: "",
                 },
                 groups: [
@@ -7110,7 +5550,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7141,7 +5581,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7180,7 +5620,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "56783538-8b6b-4d40-9d31-86cd795706f4",
+                  id: "fb2db138-42cd-49e1-81c7-1a85116050f3",
                   box: "",
                 },
                 groups: [
@@ -7207,7 +5647,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7238,7 +5678,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7277,7 +5717,7 @@ export const componentGeometries = {
                   z: -1.2246467991473532e-16,
                 },
                 data: {
-                  id: "5298c0b6-bdd4-48dd-b59d-37e03ab1dcae",
+                  id: "6521f268-d1bd-493d-bec7-db575994ae27",
                   box: "",
                 },
                 groups: [
@@ -7304,7 +5744,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7335,7 +5775,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7374,7 +5814,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "cded9c2f-4f75-4b34-be08-c5f3ee14d9a0",
+                  id: "8f750e83-eec4-4e06-b292-e8df6fdf7269",
                   box: "",
                 },
                 groups: [
@@ -7401,7 +5841,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7432,7 +5872,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7471,7 +5911,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "77b039f8-db15-498c-a3f7-560c4eab6939",
+                  id: "616dc86d-7aba-4dfb-8481-a328a8c1a6de",
                   box: "",
                 },
                 groups: [
@@ -7498,7 +5938,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7529,7 +5969,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7568,7 +6008,7 @@ export const componentGeometries = {
                   z: 1.5707963267948963,
                 },
                 data: {
-                  id: "19dad9b9-d968-4f43-9e94-0a2016141ea0",
+                  id: "37d56751-c08b-477f-acd9-64de5259416c",
                   box: "",
                 },
                 groups: [
@@ -7595,7 +6035,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7626,7 +6066,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7665,7 +6105,7 @@ export const componentGeometries = {
                   z: -1.5707963267948963,
                 },
                 data: {
-                  id: "6d510381-dc74-4f6c-b7dc-be547dac5a89",
+                  id: "af2b5e68-25da-470a-b430-c95018fb5e65",
                   box: "",
                 },
                 groups: [
@@ -7692,7 +6132,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7723,7 +6163,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "e0862788-9fe0-46d9-a2b3-c104dce82a6e",
+                          row_id: "4ef3afd1-ffa9-4bb5-92f5-f8a5970dc1ef",
                           sort_no: 62,
                           name: "profile",
                           type: 0,
@@ -7762,7 +6202,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "8a72ed7d-b0a4-4fd6-86be-df880786a6f0",
+                  id: "01429dcc-2822-47ee-b784-794981d4f2ff",
                   box: "",
                 },
                 groups: [
@@ -7789,7 +6229,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -7820,7 +6260,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -7851,7 +6291,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -7882,7 +6322,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -7921,7 +6361,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "0c676e34-c3e5-44e6-8969-13d14f2c9d39",
+                  id: "3762d369-4d33-41b5-93e2-0d59177b71b5",
                   box: "",
                 },
                 groups: [
@@ -7948,7 +6388,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -7979,7 +6419,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8010,7 +6450,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8041,7 +6481,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8080,7 +6520,7 @@ export const componentGeometries = {
                   z: -3.141592653589793,
                 },
                 data: {
-                  id: "8076d942-dd21-4c0d-ab0d-7a0a8ef0fd80",
+                  id: "330e07e5-afca-405d-bc77-7c8a99e33d96",
                   box: "",
                 },
                 groups: [
@@ -8107,7 +6547,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8138,7 +6578,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8169,7 +6609,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8200,7 +6640,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8239,7 +6679,7 @@ export const componentGeometries = {
                   z: 3.141592653589793,
                 },
                 data: {
-                  id: "7905e91c-1480-4c04-8827-954257e1b2e3",
+                  id: "2d53b033-a25d-4dd5-9b3a-afd0da51a159",
                   box: "",
                 },
                 groups: [
@@ -8266,7 +6706,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8297,7 +6737,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8328,7 +6768,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8359,7 +6799,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8398,7 +6838,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "851cd541-2082-444f-aac4-0596a87f5f91",
+                  id: "76b01500-b2ac-4367-afb3-37ff7829008e",
                   box: "",
                 },
                 groups: [
@@ -8425,7 +6865,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8456,7 +6896,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8487,7 +6927,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8518,7 +6958,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8557,7 +6997,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "e0d35617-3abd-48f1-86e0-29e7400265da",
+                  id: "ea21795d-3088-43ee-8824-207d964f8ac5",
                   box: "",
                 },
                 groups: [
@@ -8584,7 +7024,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8615,7 +7055,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8646,7 +7086,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8677,7 +7117,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8716,7 +7156,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "1ee180c7-bec2-425d-9aeb-e90aaff8e6e2",
+                  id: "aafc3075-2c24-4eb4-a46b-c5d5d3012f0e",
                   box: "",
                 },
                 groups: [
@@ -8743,7 +7183,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8774,7 +7214,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8805,7 +7245,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8836,7 +7276,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8875,7 +7315,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "b5e2e07c-be56-4088-9ddc-6e1f3fda52f2",
+                  id: "d1e0c27b-0dd7-4a41-a8b9-6a8ea92eb132",
                   box: "",
                 },
                 groups: [
@@ -8902,7 +7342,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8933,7 +7373,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8964,7 +7404,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -8995,7 +7435,7 @@ export const componentGeometries = {
                           holes: [],
                         },
                         material: {
-                          row_id: "3725b143-73d3-44af-9c39-6041a826d0f8",
+                          row_id: "d5166446-81be-487d-8225-afd516147274",
                           sort_no: 63,
                           name: "corner",
                           type: 0,
@@ -9034,7 +7474,7 @@ export const componentGeometries = {
                   z: 0,
                 },
                 data: {
-                  id: "c1f22a8b-fc39-48b3-b546-120d17dc2074",
+                  id: "746c6883-cb66-4e54-85bb-1e7f4f983113",
                   box: "box",
                 },
                 groups: [
@@ -9195,7 +7635,7 @@ export const componentGeometries = {
             dimensions_deprecated: {
               dimensions: [],
               material: {
-                row_id: "8c8e43a2-3ae3-410d-a1ea-cbaef8748412",
+                row_id: "516558f2-4752-4873-a561-be5cab97aef3",
                 sort_no: 3,
                 name: "dimension_dark",
                 type: 2,
@@ -9213,20 +7653,24 @@ export const componentGeometries = {
             hotSpots_deprecated: [],
           },
           options: {
-            view: "top",
+            origin: "drawing",
+            format: "dxf",
+            toggles: {
+              panels: true,
+              open_doors: false,
+            },
+            unitStatus: 0,
             split_casing_layers: false,
             titles: [],
+            view: "front",
+            detail_level: "detailed",
             rotation: 0,
+            alignment: "casing",
           },
           size: {
             x: 2130,
             y: 1350.000000000001,
             z: 1280.0000000000007,
-          },
-          center: {
-            x: 0,
-            y: -90,
-            z: 0,
           },
           pos: {
             x: 0,

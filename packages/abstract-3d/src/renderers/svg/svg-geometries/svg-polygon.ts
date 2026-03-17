@@ -15,7 +15,6 @@ import { rgbGrayScale } from "../../shared.js";
 export function polygon(
   p: Polygon,
   point: (x: number, y: number) => Vec2,
-  factor: number,
   material: Material,
   opts: SvgOptions,
   parentPos: Vec3,
@@ -31,7 +30,7 @@ export function polygon(
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color, 0];
   return [
     zElem(
-      svgPolygon(factor, rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness),
+      svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness),
       vec3ZMean(...rotatedPoints)
     ),
   ];

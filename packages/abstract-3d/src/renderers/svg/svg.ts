@@ -21,6 +21,9 @@ import {
   bounds2ToSize,
   bounds2Merge,
   vec2Zero,
+  boundsScene,
+  bounds3Center,
+  bounds3ToSize,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -34,7 +37,12 @@ import { cone } from "./svg-geometries/svg-cone.js";
 import { Optional } from "../shared.js";
 import { svg } from "./svg-encoding.js";
 
-export type SvgScene = { readonly scene: Scene; readonly options?: Optional<SvgOptions>; readonly pos: Vec2 };
+export type SvgScene = {
+  readonly scene: Scene;
+  readonly options?: Optional<SvgOptions>;
+  readonly pos: Vec2;
+  readonly originalView: View;
+};
 
 export type SvgWithSize = { readonly image: string; readonly width: number; readonly height: number };
 
@@ -42,13 +50,14 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Opti
   const allElements = Array<zOrderElement>();
   const bounds = Array<Bounds2>();
   for (const view of scenes) {
-    const { elements, size } = renderInternal(
+    const { elements, size, center } = renderInternal(
       view.scene,
-      { ...baseOptions, ...view.options, scale: undefined },
-      view.pos
+      { ...baseOptions, ...view.options },
+      view.pos,
+      view.originalView
     );
     allElements.push(...elements);
-    bounds.push(bounds2FromPosAndSize(view.pos, size));
+    bounds.push(bounds2FromPosAndSize(center, size));
   }
   const size = bounds2ToSize(bounds2Merge(...bounds));
   const image = svg(
@@ -60,7 +69,7 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Opti
 }
 
 export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSize {
-  const { elements, size } = renderInternal(scene, options, vec2Zero);
+  const { elements, size } = renderInternal(scene, options, vec2Zero, undefined);
   const image = svg(
     size.x,
     size.y,
@@ -72,12 +81,12 @@ export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSiz
 function renderInternal(
   scene: Scene,
   options: Optional<SvgOptions> | undefined,
-  offset: Vec2
+  offset: Vec2,
+  originalView: View | undefined
 ): { readonly elements: ReadonlyArray<zOrderElement>; readonly size: Vec2; readonly center: Vec2 } {
   const opts: SvgOptions = {
     view: options?.view ?? "front",
     stroke_thickness: options?.stroke_thickness ?? 2,
-    scale: options?.scale ?? undefined,
     only_stroke: options?.only_stroke ?? false,
     gray_scale: options?.gray_scale ?? false,
     only_stroke_fill: options?.only_stroke_fill ?? "rgba(255,255,255,0)",
@@ -85,50 +94,41 @@ function renderInternal(
     imageDataByUrl: options?.imageDataByUrl ?? {},
     rotation: options?.rotation ?? 0,
   };
-
-  const factor = opts.scale
-    ? opts.scale.size /
-      (opts.scale.scaleByWidth
-        ? opts.view === "right" || opts.view === "left"
-          ? scene.size_deprecated.z
-          : scene.size_deprecated.x
-        : opts.view === "top" || opts.view === "bottom"
-        ? scene.size_deprecated.z
-        : scene.size_deprecated.y)
-    : 1;
-  const baseRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
+  const sceneRot = scene.rotation_deprecated ?? vec3Zero;
+  const viewRot = rotationForCameraPos(opts.view);
+  const baseRot = vec3RotCombine(viewRot, sceneRot);
   const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
-  const unitPos = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
-  const [size, center] = sizeCenterBoundsForCameraPos(scene.size_deprecated, unitPos, unitRot, factor);
+
+  const center = scene.center_deprecated ?? vec3Zero;
+  const [size, rotatedCenter] = sizeCenterBoundsForCameraPos(scene.size_deprecated, center, unitRot);
   const width = size.x + 1.5 * opts.stroke_thickness;
   const height = size.y + 1.5 * opts.stroke_thickness;
   const svgSize = vec2(width, height);
   const unitHalfSize = vec3Scale(size, 0.5);
-  const centerAdj = vec3(center.x - opts.stroke_thickness * 0.75, center.y + opts.stroke_thickness * 0.75, center.z);
+  const centerAdj = vec3(
+    rotatedCenter.x + offset.x - opts.stroke_thickness * 0.75,
+    rotatedCenter.y + offset.y + opts.stroke_thickness * 0.75,
+    rotatedCenter.z
+  );
 
   const elements = Array<zOrderElement>();
   const point = (x: number, y: number): Vec2 =>
-    vec2(
-      -centerAdj.x + unitHalfSize.x + (x + offset.x) * factor,
-      centerAdj.y + unitHalfSize.y - (y - offset.y) * factor
-    );
+    vec2(-centerAdj.x + unitHalfSize.x + x, centerAdj.y + unitHalfSize.y - y);
 
   for (const g of scene.groups) {
-    const pos = vec3Rot(g.pos, unitPos, unitRot);
+    const pos = vec3Rot(g.pos, center, unitRot);
     const rot = vec3RotCombine(unitRot, g.rot ?? vec3Zero);
-    elements.push(...svgGroup(g, pos, rot, point, factor, opts));
+    elements.push(...svgGroup(g, pos, rot, point, opts));
   }
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
-  const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, scene.rotation_deprecated ?? vec3Zero);
+  const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, unitRot);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
-    if (flipViews(d.views[0], cameraPos) === opts.view) {
-      const pos = vec3Rot(d.pos, unitPos, unitRot);
+    if (flipViews(d.views[0], cameraPos) === (originalView ?? opts.view)) {
+      const pos = vec3Rot(d.pos, center, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
-        elements.push(
-          ...svgMesh(m, pos, rot, point, factor, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts)
-        );
+        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
       }
     }
   }
@@ -141,17 +141,16 @@ function svgGroup(
   pos: Vec3,
   rot: Vec3,
   point: (x: number, y: number) => Vec2,
-  factor: number,
   opts: SvgOptions
 ): ReadonlyArray<zOrderElement> {
   const elements = Array<zOrderElement>();
   for (const m of g.meshes ?? []) {
-    elements.push(...svgMesh(m, pos, rot, point, factor, m.material, opts));
+    elements.push(...svgMesh(m, pos, rot, point, m.material, opts));
   }
   for (const sg of g.groups ?? []) {
     const sPos = vec3TransRot(sg.pos, pos, rot);
     const sRot = vec3RotCombine(rot, sg.rot ?? vec3Zero);
-    elements.push(...svgGroup(sg, sPos, sRot, point, factor, opts));
+    elements.push(...svgGroup(sg, sPos, sRot, point, opts));
   }
   return elements;
 }
@@ -161,27 +160,26 @@ function svgMesh(
   parentPos: Vec3,
   parentRot: Vec3,
   point: (x: number, y: number) => Vec2,
-  factor: number,
   material: Material,
   opts: SvgOptions
 ): ReadonlyArray<zOrderElement> {
   switch (mesh.geometry.type) {
     case "Box":
-      return box(mesh.geometry, point, material, opts, parentPos, parentRot, factor);
+      return box(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Plane":
-      return plane(mesh.geometry, point, factor, material, opts, parentPos, parentRot);
+      return plane(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Cylinder":
-      return cylinder(mesh.geometry, point, material, opts, parentPos, parentRot, factor);
+      return cylinder(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Cone":
-      return cone(mesh.geometry, point, material, opts, parentPos, parentRot, factor);
+      return cone(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Line":
       return line(mesh.geometry, point, material.normal, opts, parentPos, parentRot);
     case "Polygon":
-      return polygon(mesh.geometry, point, factor, material, opts, parentPos, parentRot);
+      return polygon(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Shape":
-      return shape(mesh.geometry, point, factor, material, opts, parentPos, parentRot);
+      return shape(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Text":
-      return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot, factor);
+      return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot);
     case "Tube":
     case "Sphere":
       return [];

@@ -7,13 +7,9 @@ import {
   vec3RotCombine,
   vec3Zero,
   vec3,
-  isZero,
-  vec2,
   vec3ZMean,
   Material,
   Hole,
-  vec2Add,
-  vec2Sub,
 } from "../../../abstract-3d.js";
 import { gray, black, zElem, zOrderElement, SvgOptions } from "./shared.js";
 import { EmbededImage, svgImage, svgPolygon } from "../svg-encoding.js";
@@ -22,7 +18,6 @@ import { rgbGrayScale } from "../../shared.js";
 export function plane(
   p: Plane,
   point: (x: number, y: number) => Vec2,
-  factor: number,
   material: Material,
   opts: SvgOptions,
   parentPos: Vec3,
@@ -53,8 +48,7 @@ export function plane(
     : undefined;
 
   if (image) {
-    const size = vec2Scale(p.size, factor);
-    const img = svgImage(point(v4.x, v4.y), size, rot, image);
+    const img = svgImage(point(v4.x, v4.y), p.size, rot, image);
     return [zElem(img, (v2.z + v4.z) / 2)];
   }
 
@@ -65,7 +59,7 @@ export function plane(
     : [black, opts.gray_scale ? rgbGrayScale(material.normal) : material.normal, 0];
   return [
     zElem(
-      svgPolygon(factor, rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes),
+      svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes),
       vec3ZMean(v1, v2, v3, v4)
     ),
   ];

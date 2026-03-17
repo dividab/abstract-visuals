@@ -9,13 +9,12 @@ export function text(
   fill: string,
   opts: SvgOptions,
   parentPos: Vec3,
-  parentRot: Vec3,
-  factor: number
+  parentRot: Vec3
 ): ReadonlyArray<zOrderElement> {
   const pos = vec3TransRot(t.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, t.rot ?? vec3Zero);
   const texts = Array<zOrderElement>();
-  const fontSize = t.fontSize * factor;
+  const fontSize = t.fontSize;
   const strings = t.text.split("\n");
   let posY = strings.length === 1 ? 0 : (fontSize * strings.length - fontSize) / 2;
   for (const s of strings) {

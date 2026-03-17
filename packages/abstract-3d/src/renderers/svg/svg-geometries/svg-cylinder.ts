@@ -20,8 +20,7 @@ export function cylinder(
   material: Material,
   opts: SvgOptions,
   parentPos: Vec3,
-  parentRot: Vec3,
-  factor: number
+  parentRot: Vec3
 ): ReadonlyArray<zOrderElement> {
   const half = vec3(c.radius, c.length / 2, c.radius);
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
@@ -59,10 +58,7 @@ export function cylinder(
         point(currTop.x, currTop.y),
       ];
       zOrderComponents.push(
-        zElem(
-          svgPolygon(factor, rot, points, fill, opacity, stroke, stBW),
-          vec3ZMean(currBot, prevBot, currTop, prevTop)
-        )
+        zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, currTop, prevTop))
       );
     }
     currentAngle += angleStep;
@@ -75,17 +71,7 @@ export function cylinder(
       const circlePos = circleTop.z > circleBottom.z ? circleTop : circleBottom;
       zOrderComponents.push(
         zElem(
-          svgCircle(
-            factor * c.radius,
-            rot,
-            point(circlePos.x, circlePos.y),
-            fill,
-            opacity,
-            stroke,
-            stBW,
-            factor,
-            c.holes
-          ),
+          svgCircle(c.radius, rot, point(circlePos.x, circlePos.y), fill, opacity, stroke, stBW, c.holes),
           circlePos.z
         )
       );

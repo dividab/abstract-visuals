@@ -20,8 +20,7 @@ export function cone(
   material: Material,
   opts: SvgOptions,
   parentPos: Vec3,
-  parentRot: Vec3,
-  factor: number
+  parentRot: Vec3
 ): ReadonlyArray<zOrderElement> {
   const half = vec3(c.radius, c.length / 2, c.radius);
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
@@ -53,7 +52,7 @@ export function cone(
         point(topPos.x, topPos.y),
       ];
       zOrderComponents.push(
-        zElem(svgPolygon(factor, rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, topPos))
+        zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, topPos))
       );
     }
     currentAngle += angleStep;
@@ -64,10 +63,7 @@ export function cone(
   const cylBottom = vec3tr(vec3(0, -half.y, 0));
   if (equals(cylTop.x, cylBottom.x, 0.1) && equals(cylTop.y, cylBottom.y, 0.1)) {
     zOrderComponents.push(
-      zElem(
-        svgCircle(factor * c.radius, rot, point(cylBottom.x, cylBottom.y), fill, opacity, stroke, stBW, factor),
-        cylBottom.z
-      )
+      zElem(svgCircle(c.radius, rot, point(cylBottom.x, cylBottom.y), fill, opacity, stroke, stBW), cylBottom.z)
     );
   }
 
