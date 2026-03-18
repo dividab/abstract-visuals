@@ -15,7 +15,6 @@ import {
   bounds3Merge,
   bounds3Center,
   vec3Add,
-  vec3Rot,
   sizeCenterBoundsForCameraPos,
 } from "../../abstract-3d.js";
 import { dxf, DxfOrigin, Handle } from "./dxf-encoding.js";
@@ -37,7 +36,7 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   const allBounds = Array<Bounds3>();
   const handle = { handle: 0x1000 };
   for (const view of scenes) {
-    const { groups, size, center } = dxfGroups(
+    const { groups, size, center } = renderInternal(
       view.scene,
       optionsDef({ ...baseOptions, ...view.options, origin: "Center" }),
       view.pos,
@@ -50,45 +49,30 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   return dxf(allGroups, bounds3Center(bounds), bounds3ToSize(bounds), "Center");
 }
 
-export const renderNew = (scene: Scene, options?: Optional<DxfOptions>): string => {
+export const render = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
-  const { groups, size, center } = dxfGroups(scene, opts, vec3Zero, { handle: 0x1000 });
+  const { groups, size, center } = renderInternal(scene, opts, vec3Zero, { handle: 0x1000 });
   return dxf(groups, center, size, opts.origin);
 };
 
-// This is the original
-export const render = (scene: Scene, options: Optional<DxfOptions>): string => {
-  const opts = optionsDef(options);
-  const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
-  const bounds = bounds3FromPosAndSize(scene.center_deprecated ?? vec3Zero, scene.size_deprecated);
-  const center = vec3Zero;
-  const offset =
-    opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z);
-  const groupRoot = group([], offset, vec3Zero, scene.groups);
-  const handleRef = { handle: 0x1000 };
-  return dxf(dxfGroup(groupRoot, center, unitRot, opts, handleRef), center, scene.size_deprecated, opts.origin);
-};
-
-const dxfGroups = (
+const renderInternal = (
   scene: Scene,
   options: DxfOptions,
   offset: Vec3,
-  handleRef: Handle //make sure we start with a value higher than any other handle id's used in the header
+  handleRef: Handle
 ): { readonly groups: string; readonly size: Vec3; readonly center: Vec3 } => {
-  const sceneRot = scene.rotation_deprecated ?? vec3Zero;
-  const viewRot = rotationForCameraPos(options.view);
-  const unitRot = vec3RotCombine(viewRot, sceneRot);
-
+  const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
   const [size, center] = sizeCenterBoundsForCameraPos(
     scene.size_deprecated,
     scene.center_deprecated ?? vec3Zero,
     unitRot
   );
-  const centerWithOffset = vec3Add(center, offset);
+  // const unitCenterFlipped = vec3Flip(center);
+  const dxfCenter = vec3Add(center, offset);
   return {
-    groups: scene.groups.reduce((a, c) => a + dxfGroup(c, centerWithOffset, unitRot, options, handleRef), ""),
+    groups: scene.groups.reduce((a, c) => a + dxfGroup(c, dxfCenter, unitRot, options, handleRef), ""),
     size,
-    center: centerWithOffset,
+    center: dxfCenter,
   };
 };
 
@@ -138,3 +122,16 @@ function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
     cylinderSideCount: DEFAULT_CYLINDER_SIDE_COUNT,
   };
 }
+
+// This is the original
+export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string => {
+  const opts = optionsDef(options);
+  const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
+  const bounds = bounds3FromPosAndSize(scene.center_deprecated ?? vec3Zero, scene.size_deprecated);
+  const center = vec3Zero;
+  const offset =
+    opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z);
+  const groupRoot = group([], offset, vec3Zero, scene.groups);
+  const handleRef = { handle: 0x1000 };
+  return dxf(dxfGroup(groupRoot, center, unitRot, opts, handleRef), center, scene.size_deprecated, opts.origin);
+};

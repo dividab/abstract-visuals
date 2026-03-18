@@ -21,6 +21,8 @@ export function Abstract3DExample(): React.ReactNode {
 
   const imageDataByUrlSvg: Record<string, any> = {};
   const imageDataByUrlDxf: Record<string, any> = {};
+  const imageDataByUrlDxf2: Record<string, any> = {};
+
   const svgs = Array<string>();
 
   for (const geo of Object.values(componentGeometries)) {
@@ -34,6 +36,7 @@ export function Abstract3DExample(): React.ReactNode {
 
   for (const geo of Object.values(componentGeometries)) {
     imageDataByUrlDxf[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes as any)}`;
+    imageDataByUrlDxf2[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderOld((geo.scenes[0] as any)!.scene)}`;
   }
 
   const templateImage = Svg.render(templateScene as Scene, { stroke_thickness: 3, only_stroke: true }).image;
@@ -63,7 +66,31 @@ export function Abstract3DExample(): React.ReactNode {
         </button>
         <button
           onClick={() =>
-            FileSaver.saveAs(new Blob([Dxf.render(systemair, { view: "top" })], { type: "text/plain" }), `a3d.dxf`)
+            FileSaver.saveAs(
+              new Blob([dxf2dExportImage(ai, { imageDataByUrl: imageDataByUrlDxf2, useColor: true })], {
+                type: "text/plain",
+              }),
+              `a3d.dxf`
+            )
+          }
+        >
+          DXF single
+        </button>
+        <button
+          onClick={() =>
+            FileSaver.saveAs(
+              new Blob([Dxf.renderOld((Object.values(componentGeometries)[0]!.scenes[0] as any)!.scene)], {
+                type: "text/plain",
+              }),
+              `a3d.dxf`
+            )
+          }
+        >
+          DXF single raw
+        </button>
+        <button
+          onClick={() =>
+            FileSaver.saveAs(new Blob([Dxf.renderOld(systemair, { view: "top" })], { type: "text/plain" }), `a3d.dxf`)
           }
         >
           DXF

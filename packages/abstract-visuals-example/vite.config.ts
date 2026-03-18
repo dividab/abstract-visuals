@@ -25,6 +25,14 @@ export default defineConfig({
       define: { global: "globalThis" },
     },
     // abstract-image is a depency of abstract-chart and abstract-document.
-    include: ["abstract-image", "handlebars-xml", "jsxpression"],
+    include: [
+      "abstract-sheet",
+      "abstract-chart",
+      "abstract-document",
+      "abstract-3d",
+      "abstract-image",
+      "handlebars-xml",
+      "jsxpression",
+    ],
   },
 });
