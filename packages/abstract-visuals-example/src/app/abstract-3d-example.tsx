@@ -7,6 +7,8 @@ import { ai } from "./double-view-ai.js";
 import { createSVG } from "../../../abstract-image/src/exporters/svg-export-image.js";
 import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
 import { componentGeometries } from "./double-view-component-geometries.js";
+import { templateScene } from "./template-scene.js";
+import { Scene } from "../../../abstract-3d/src/abstract-3d.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
@@ -20,6 +22,7 @@ export function Abstract3DExample(): React.ReactNode {
   const imageDataByUrlSvg: Record<string, any> = {};
   const imageDataByUrlDxf: Record<string, any> = {};
   const svgs = Array<string>();
+
   for (const geo of Object.values(componentGeometries)) {
     for (const s of geo.scenes as any) {
       svgs.push(`data:image/svg+xml,${encodeURIComponent(Svg.render(s.scene, s.options).image)}`);
@@ -33,8 +36,18 @@ export function Abstract3DExample(): React.ReactNode {
     imageDataByUrlDxf[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes as any)}`;
   }
 
+  const templateImage = Svg.render(templateScene as Scene, { stroke_thickness: 3, only_stroke: true }).image;
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "rgb(230,  230, 230)" }}>
+      <style>
+        {`
+       .wrapper > svg {
+        width: 100%;
+        height: 100%;
+      }
+    `}
+      </style>
       <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
         <button
           onClick={() =>
@@ -80,9 +93,14 @@ export function Abstract3DExample(): React.ReactNode {
             Svg.render(systemair, { view: "front", stroke_thickness: 1, rotation: 270 }).image
           )}`}
         />
+        <div
+          className="wrapper"
+          style={{ width: "200px", height: "200px", minWidth: "200px" }}
+          dangerouslySetInnerHTML={{ __html: templateImage }}
+        />
         <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} />
-        {svgs.map((svg) => (
-          <img src={svg} width="200px" style={{ height: "max-content" }} />
+        {svgs.map((svg, i) => (
+          <img key={i} src={svg} width="200px" style={{ height: "max-content" }} />
         ))}
         <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
