@@ -40,7 +40,6 @@ export type SvgScene = {
   readonly scene: Scene;
   readonly options?: Optional<SvgOptions>;
   readonly pos: Vec2;
-  readonly originalView: View;
 };
 
 export type SvgWithSize = { readonly image: string; readonly width: number; readonly height: number };
