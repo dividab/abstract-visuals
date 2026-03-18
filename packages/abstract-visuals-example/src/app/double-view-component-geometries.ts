@@ -3847,7 +3847,6 @@ export const componentGeometries = {
             y: 1100.0000000000002,
             z: 1170.0000000000005,
           },
-          originalView: "front",
           pos: {
             x: 0,
             y: 0,
@@ -7673,7 +7672,6 @@ export const componentGeometries = {
             y: 1170.000000000001,
             z: 1280.0000000000007,
           },
-          originalView: "top",
           pos: {
             x: 0,
             y: 1608.7500000000005,
