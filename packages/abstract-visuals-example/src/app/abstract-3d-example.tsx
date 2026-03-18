@@ -6,8 +6,7 @@ import { vortice } from "./vortice.js";
 import { ai } from "./double-view-ai.js";
 import { createSVG } from "../../../abstract-image/src/exporters/svg-export-image.js";
 import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
-import { svgComponentGeometries } from "./double-view-svg-component-geometries.js";
-import { dxfComponentGeometries } from "./double-view-dxf-component-geometries copy.js";
+import { componentGeometries } from "./double-view-component-geometries.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
@@ -21,17 +20,16 @@ export function Abstract3DExample(): React.ReactNode {
   const imageDataByUrlSvg: Record<string, any> = {};
   const imageDataByUrlDxf: Record<string, any> = {};
   const svgs = Array<string>();
-  for (const geo of Object.values(svgComponentGeometries)) {
+  for (const geo of Object.values(componentGeometries)) {
     for (const s of geo.scenes as any) {
-      svgs.push(`data:image/svg+xml,${encodeURIComponent(Svg.render(s.scene).image)}`);
+      svgs.push(`data:image/svg+xml,${encodeURIComponent(Svg.render(s.scene, s.options).image)}`);
     }
-
     imageDataByUrlSvg[geo.image.url] = `data:image/svg+xml,${encodeURIComponent(
       Svg.renderScenes(geo.scenes as any).image
     )}`;
   }
 
-  for (const geo of Object.values(dxfComponentGeometries)) {
+  for (const geo of Object.values(componentGeometries)) {
     imageDataByUrlDxf[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes as any)}`;
   }
 

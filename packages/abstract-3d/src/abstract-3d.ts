@@ -306,6 +306,9 @@ export const bounds3Zero: Bounds3 = bounds3(vec3Zero, vec3Zero);
 
 export const bounds2ToSize = (bounds: Bounds2): Vec2 => vec2(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y);
 
+export const bounds2Shift = (bounds: Bounds2, offset: Vec2): Bounds2 =>
+  bounds2(vec2Add(bounds.min, offset), vec2Add(bounds.max, offset));
+
 export const bounds3ToSize = (bounds: Bounds3): Vec3 =>
   vec3(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y, bounds.max.z - bounds.min.z);
 
@@ -327,6 +330,9 @@ export const bounds2OverlapY = (a: Bounds2, b: Bounds2): boolean =>
 
 export const boundsXOverlapX = (a: Bounds2, b: Bounds2): boolean =>
   (greater(a.max.x, b.min.x) && less(a.min.x, b.max.x)) || (greater(b.max.x, a.min.x) && less(b.min.x, a.max.x));
+
+export const bounds2Center = (bounds: Bounds2): Vec2 =>
+  vec2((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2);
 
 export const bounds3Center = (bounds: Bounds3): Vec3 =>
   vec3((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2, (bounds.min.z + bounds.max.z) / 2);
@@ -824,7 +830,7 @@ export function sizeCenterBoundsForCameraPos(size: Vec3, center: Vec3, rotation:
   const v8 = vec3Rot(vec3(min.x, max.y, min.z), center, rotation);
   const bounds = bounds3FromVec3Array([v1, v2, v3, v4, v5, v6, v7, v8]);
 
-  return [bounds3ToSize(bounds), center, bounds];
+  return [bounds3ToSize(bounds), bounds3Center(bounds), bounds];
 }
 
 export function rotationForCameraPos(view: View): Vec3 {

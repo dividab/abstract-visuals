@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-export const dxfComponentGeometries = {
+export const componentGeometries = {
   "/image/component-geometry/35156100-5bba-4926-ac3f-7368c9dfe0b9/348a1ad1-5f0e-4745-8f46-be2b49e7df21?type=ComponentGeometryImage&language=en-GB&cols=0&rows=0&views=%5B%7B%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22view%22%3A%22front%22%2C%22detail_level%22%3A%22detailed%22%2C%22rotation%22%3A0%7D%2C%7B%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22view%22%3A%22top%22%2C%22detail_level%22%3A%22detailed%22%2C%22rotation%22%3A0%7D%5D":
     {
       image: {
@@ -32,12 +32,12 @@ export const dxfComponentGeometries = {
           scene: {
             center_deprecated: {
               x: 0,
-              y: -90,
+              y: 0,
               z: 0,
             },
             size_deprecated: {
               x: 2130,
-              y: 1280.0000000000002,
+              y: 1100.0000000000002,
               z: 1350.0000000000005,
             },
             groups: [
@@ -3829,7 +3829,7 @@ export const dxfComponentGeometries = {
           },
           options: {
             origin: "drawing",
-            format: "dxf",
+            format: "svg",
             toggles: {
               panels: true,
               open_doors: false,
@@ -3844,9 +3844,10 @@ export const dxfComponentGeometries = {
           },
           size: {
             x: 2130,
-            y: 1280.0000000000002,
-            z: 1350.0000000000005,
+            y: 1100.0000000000002,
+            z: 1170.0000000000005,
           },
+          originalView: "front",
           pos: {
             x: 0,
             y: 0,
@@ -3857,12 +3858,12 @@ export const dxfComponentGeometries = {
           scene: {
             center_deprecated: {
               x: 0,
-              y: -90,
+              y: 0,
               z: 0,
             },
             size_deprecated: {
               x: 2130,
-              y: 1280.0000000000002,
+              y: 1100.0000000000002,
               z: 1350.0000000000005,
             },
             groups: [
@@ -7646,7 +7647,7 @@ export const dxfComponentGeometries = {
               },
             },
             rotation_deprecated: {
-              x: 1.5707963267948963,
+              x: 0,
               y: 0,
               z: 0,
             },
@@ -7654,7 +7655,7 @@ export const dxfComponentGeometries = {
           },
           options: {
             origin: "drawing",
-            format: "dxf",
+            format: "svg",
             toggles: {
               panels: true,
               open_doors: false,
@@ -7662,16 +7663,17 @@ export const dxfComponentGeometries = {
             unitStatus: 0,
             split_casing_layers: false,
             titles: [],
-            view: "front",
+            view: "top",
             detail_level: "detailed",
             rotation: 0,
             alignment: "casing",
           },
           size: {
             x: 2130,
-            y: 1350.000000000001,
+            y: 1170.000000000001,
             z: 1280.0000000000007,
           },
+          originalView: "top",
           pos: {
             x: 0,
             y: 1608.7500000000005,

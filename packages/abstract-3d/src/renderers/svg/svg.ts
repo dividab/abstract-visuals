@@ -21,9 +21,6 @@ import {
   bounds2ToSize,
   bounds2Merge,
   vec2Zero,
-  boundsScene,
-  bounds3Center,
-  bounds3ToSize,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -49,30 +46,29 @@ export type SvgWithSize = { readonly image: string; readonly width: number; read
 export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Optional<SvgOptions>): SvgWithSize {
   const allElements = Array<zOrderElement>();
   const bounds = Array<Bounds2>();
+
   for (const view of scenes) {
-    const { elements, size, center } = renderInternal(
-      view.scene,
-      { ...baseOptions, ...view.options },
-      view.pos,
-      view.originalView
-    );
+    const { elements, size, center } = renderInternal(view.scene, { ...baseOptions, ...view.options }, view.pos);
     allElements.push(...elements);
-    bounds.push(bounds2FromPosAndSize(center, size));
+    const newBounds = bounds2FromPosAndSize(center, size);
+    bounds.push(newBounds);
   }
-  const size = bounds2ToSize(bounds2Merge(...bounds));
+  const mergedBounds = bounds2Merge(...bounds);
+  const size = bounds2ToSize(mergedBounds);
   const image = svg(
-    size.x,
-    size.y,
+    mergedBounds.min,
+    size,
     allElements.reduce((a, { element }) => `${a} ${element}`, "")
   );
   return { image, width: size.x, height: size.y };
 }
 
 export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSize {
-  const { elements, size } = renderInternal(scene, options, vec2Zero, undefined);
+  const { elements, size, center } = renderInternal(scene, options, vec2Zero);
+
   const image = svg(
-    size.x,
-    size.y,
+    bounds2FromPosAndSize(center, size).min,
+    size,
     elements.reduce((a, { element }) => `${a} ${element}`, "")
   );
   return { image, width: size.x, height: size.y };
@@ -81,9 +77,12 @@ export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSiz
 function renderInternal(
   scene: Scene,
   options: Optional<SvgOptions> | undefined,
-  offset: Vec2,
-  originalView: View | undefined
-): { readonly elements: ReadonlyArray<zOrderElement>; readonly size: Vec2; readonly center: Vec2 } {
+  offset: Vec2
+): {
+  readonly elements: ReadonlyArray<zOrderElement>;
+  readonly size: Vec2;
+  readonly center: Vec2;
+} {
   const opts: SvgOptions = {
     view: options?.view ?? "front",
     stroke_thickness: options?.stroke_thickness ?? 2,
@@ -94,29 +93,25 @@ function renderInternal(
     imageDataByUrl: options?.imageDataByUrl ?? {},
     rotation: options?.rotation ?? 0,
   };
-  const sceneRot = scene.rotation_deprecated ?? vec3Zero;
   const viewRot = rotationForCameraPos(opts.view);
-  const baseRot = vec3RotCombine(viewRot, sceneRot);
+  const baseRot = vec3RotCombine(viewRot, scene.rotation_deprecated ?? vec3Zero);
   const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
-
-  const center = scene.center_deprecated ?? vec3Zero;
-  const [size, rotatedCenter] = sizeCenterBoundsForCameraPos(scene.size_deprecated, center, unitRot);
-  const width = size.x + 1.5 * opts.stroke_thickness;
-  const height = size.y + 1.5 * opts.stroke_thickness;
-  const svgSize = vec2(width, height);
-  const unitHalfSize = vec3Scale(size, 0.5);
-  const centerAdj = vec3(
-    rotatedCenter.x + offset.x - opts.stroke_thickness * 0.75,
-    rotatedCenter.y + offset.y + opts.stroke_thickness * 0.75,
-    rotatedCenter.z
+  const [unitSize, unitCenter] = sizeCenterBoundsForCameraPos(
+    scene.size_deprecated,
+    scene.center_deprecated ?? vec3Zero,
+    unitRot
+  );
+  const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
+  const svgCenter = vec2(
+    -unitCenter.x - offset.x + opts.stroke_thickness * 0.75,
+    unitCenter.y + offset.y + opts.stroke_thickness * 0.75
   );
 
-  const elements = Array<zOrderElement>();
-  const point = (x: number, y: number): Vec2 =>
-    vec2(-centerAdj.x + unitHalfSize.x + x, centerAdj.y + unitHalfSize.y - y);
+  const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
 
+  const elements = Array<zOrderElement>();
   for (const g of scene.groups) {
-    const pos = vec3Rot(g.pos, center, unitRot);
+    const pos = vec3Rot(g.pos, unitCenter, unitRot);
     const rot = vec3RotCombine(unitRot, g.rot ?? vec3Zero);
     elements.push(...svgGroup(g, pos, rot, point, opts));
   }
@@ -124,16 +119,15 @@ function renderInternal(
   elements.sort((a, b) => a.zOrder - b.zOrder);
   const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, unitRot);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
-    if (flipViews(d.views[0], cameraPos) === (originalView ?? opts.view)) {
-      const pos = vec3Rot(d.pos, center, unitRot);
+    if (flipViews(d.views[0], cameraPos) === opts.view) {
+      const pos = vec3Rot(d.pos, unitCenter, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
         elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
       }
     }
   }
-
-  return { elements, size: svgSize, center: centerAdj };
+  return { elements, size: svgSize, center: svgCenter };
 }
 
 function svgGroup(
