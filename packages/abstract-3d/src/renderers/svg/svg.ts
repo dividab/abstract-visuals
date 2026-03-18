@@ -67,7 +67,7 @@ export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSiz
   const { elements, size, center } = renderInternal(scene, options, vec2Zero);
 
   const image = svg(
-    bounds2FromPosAndSize(center, size).min,
+    vec2(center.x - size.x / 2, center.y - size.y / 2),
     size,
     elements.reduce((a, { element }) => `${a} ${element}`, "")
   );
@@ -102,10 +102,7 @@ function renderInternal(
     unitRot
   );
   const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
-  const svgCenter = vec2(
-    -unitCenter.x - offset.x + opts.stroke_thickness * 0.75,
-    unitCenter.y + offset.y + opts.stroke_thickness * 0.75
-  );
+  const svgCenter = vec2(-offset.x + opts.stroke_thickness * 0.75, offset.y + opts.stroke_thickness * 0.75);
 
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
 
