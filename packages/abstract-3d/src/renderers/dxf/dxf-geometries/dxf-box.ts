@@ -16,7 +16,7 @@ export function dxfBox(b: Box, m: Material, parentPos: Vec3, parentRot: Vec3, ha
   const v6 = vec3tr3(half.x, -half.y, -half.z);
   const v7 = vec3tr3(half.x, half.y, -half.z);
   const v8 = vec3tr3(-half.x, half.y, -half.z);
-  const mat = color(m.normal);
+  const mat = m.normal;
   return (
     dxf3DFACE(v1, v2, v3, v4, mat, handleRef) + // front
     dxf3DFACE(v5, v6, v7, v8, mat, handleRef) + // Back

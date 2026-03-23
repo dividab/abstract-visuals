@@ -21,7 +21,7 @@ export function dxfPlane(p: Plane, m: Material, parentPos: Vec3, parentRot: Vec3
     vec3tr(half.x, -half.y),
     vec3tr(half.x, half.y),
     vec3tr(-half.x, half.y),
-    color(m.normal),
+    m.normal,
     handleRef
   );
 }

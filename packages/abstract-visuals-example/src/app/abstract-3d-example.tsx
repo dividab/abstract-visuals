@@ -90,7 +90,7 @@ export function Abstract3DExample(): React.ReactNode {
         </button>
         <button
           onClick={() =>
-            FileSaver.saveAs(new Blob([Dxf.renderOld(systemair, { view: "top" })], { type: "text/plain" }), `a3d.dxf`)
+            FileSaver.saveAs(new Blob([Dxf.renderOld(systemair, { view: "front", origin: "Center" })], { type: "text/plain" }), `a3d.dxf`)
           }
         >
           DXF
@@ -104,7 +104,7 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Svg.render(systemair, { view: "front", stroke_thickness: 2 }).image], { type: "text/plain" }),
+              new Blob([Svg.render(systemair, { view: "top", stroke_thickness: 2 }).image], { type: "text/plain" }),
               `a3d.svg`
             )
           }

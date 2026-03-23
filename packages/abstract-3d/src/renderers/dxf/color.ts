@@ -1,5 +1,15 @@
 import { Vec3, vec3, vec3DistSquared } from "../../abstract-3d.js";
 
+export function colorToInteger(color: string): number {
+  const originalColor = colorNormalToVec3Color(color);
+
+  const colorAsInt = (originalColor.x << 16) + (originalColor.y << 8) + originalColor.z;
+  if(Number.isNaN(colorAsInt)) {
+    return 0;
+  }
+  return colorAsInt;
+}
+
 export function color(colorNormal: string | undefined): number {
     const ERROR_COLOR = 6; //magenta
     const ACI_COLOR_COUNT = 256;
@@ -22,7 +32,7 @@ export function color(colorNormal: string | undefined): number {
     }
     return closestColor;
 }
-  
+
 function colorNormalToVec3Color(colorNormal: string): Vec3 {
   const errorColor = vec3(255, 0, 255); // #ff00ff, magenta
   const paranthesisRegex = /(?<=\().+?(?=\))/;

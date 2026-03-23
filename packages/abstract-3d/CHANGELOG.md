@@ -2,9 +2,13 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.5.0
+
+- Included abstract image and made a new Image component to draw abstract images.
+
 ## v1.4.0
 
-- Added a flag to turn off alpha test on texture materials
+- Added a flag to turn off alpha test on texture materials.
 
 ## v1.3.9
 
@@ -16,11 +20,11 @@ All notable changes to this project will be documented in this file. The format 
 
 ## v1.3.1
 
-- Text bounds calculation
+- Text bounds calculation.
 
 ## v1.3.0
 
-- Exposed functions to calculate bounds from geometry
+- Exposed functions to calculate bounds from geometry.
 
 ## v1.2.2
 

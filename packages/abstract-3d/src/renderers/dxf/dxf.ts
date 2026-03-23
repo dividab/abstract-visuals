@@ -24,6 +24,7 @@ import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { Optional } from "../shared.js";
+import { dxfImage } from "./dxf-geometries/dxf-image.js";
 
 const DEFAULT_CYLINDER_SIDE_COUNT = 18;
 
@@ -67,6 +68,7 @@ const renderInternal = (
     scene.center_deprecated ?? vec3Zero,
     unitRot
   );
+
   // const unitCenterFlipped = vec3Flip(center);
   const dxfCenter = vec3Add(center, offset);
   return {
@@ -101,6 +103,10 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
       }
       case "Polygon": {
         dxf += dxfPolygon(mesh.geometry, mesh.material, pos, rot, handleRef);
+        break;
+      }
+      case "Image": {
+        dxf += dxfImage(mesh.geometry, pos, rot, handleRef);
         break;
       }
       default:

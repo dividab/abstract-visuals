@@ -1,3 +1,4 @@
+import * as AI from "abstract-image";
 import { Vector3 } from "three/src/math/Vector3.js";
 import { Matrix4 } from "three/src/math/Matrix4.js";
 import { Euler } from "three/src/math/Euler.js";
@@ -55,7 +56,7 @@ export type Group = {
 
 export type Mesh = {
   readonly material: Material;
-  readonly geometry: Cylinder | Cone | Box | Line | Text | Polygon | Plane | Tube | Sphere | Shape;
+  readonly geometry: Cylinder | Cone | Box | Line | Text | Polygon | Plane | Tube | Sphere | Shape | Image;
 };
 
 export type Material = {
@@ -64,6 +65,17 @@ export type Material = {
   readonly metalness?: number;
   readonly roughness?: number;
   readonly imageUrl?: string;
+};
+
+export type Image = {
+  readonly type: "Image";
+  readonly pos: Vec3;
+  readonly rot?: Vec3;
+  readonly size: Vec2;
+  readonly image: {
+    readonly type: "AbstractImage",
+    readonly image: AI.AbstractImage,
+  }
 };
 
 export type Cylinder = {
@@ -715,6 +727,18 @@ export const box = (
 ): BoxMesh => ({
   geometry: { type: "Box", pos, rot, size, holes },
   material,
+});
+export const image = (
+  size: Vec3,
+  image: Image["image"],
+  pos: Vec3 = vec3Zero,
+  rot: Vec3 = vec3Zero,
+): Image => ({
+  type: "Image",
+  image,
+  pos,
+  size,
+  rot,
 });
 
 export const roundHole = (pos: Vec2, radius: number): Hole => ({ type: "RoundHole", pos, radius });

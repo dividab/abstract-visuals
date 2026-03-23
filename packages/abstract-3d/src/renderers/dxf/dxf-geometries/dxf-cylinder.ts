@@ -28,7 +28,7 @@ export function dxfCylinder(
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (x: number, y: number, z: number): Vec3 => vec3TransRot(vec3(x, y, z), pos, rot);
-  const mat = color(m.normal);
+  const mat = m.normal;
   const angleStep = angleLength / sides;
   let currentAngle = angleStart;
 

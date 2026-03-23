@@ -35,6 +35,7 @@ import { text } from "./svg-geometries/svg-text.js";
 import { cone } from "./svg-geometries/svg-cone.js";
 import { Optional } from "../shared.js";
 import { svg } from "./svg-encoding.js";
+import { image } from "./svg-geometries/svg-image.js";
 
 export type SvgScene = {
   readonly scene: Scene;
@@ -169,6 +170,8 @@ function svgMesh(
       return shape(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Text":
       return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot);
+    case "Image":
+      return image(mesh.geometry, point, opts, parentPos, parentRot);
     case "Tube":
     case "Sphere":
       return [];

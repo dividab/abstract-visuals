@@ -9,7 +9,7 @@ export function dxfPolygon(s: Shape, m: Material, parentPos: Vec3, parentRot: Ve
   const pos = vec3TransRot(s.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, s.rot ?? vec3Zero);
   const points = s.points.map((p) => vec3TransRot(vec3(p.x, p.y, 0), pos, rot));
-  const mat = color(m.normal);
+  const mat = m.normal;
   let i = 0;
   if (points.length >= chunkSize) {
     for (i; i < points.length; i += chunkSize) {

@@ -8205,7 +8205,7 @@ export const systemair = {
       meshes: [
         {
           geometry: {
-            type: "Plane",
+            type: "Image",
             pos: {
               x: 0,
               y: 0,
@@ -8221,7 +8221,991 @@ export const systemair = {
               y: 180,
               z: 0,
             },
-            holes: [],
+            image: {
+              type: "AbstractImage",
+              image: {
+                "components": [
+                  {
+                    "type": "rectangle",
+                    "topLeft": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "bottomRight": {
+                      "x": 50,
+                      "y": 50
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    },
+                    "fillColor": {
+                      "a": 255,
+                      "r": 255,
+                      "g": 255,
+                      "b": 255
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 50,
+                      "y": 0
+                    },
+                    "end": {
+                      "x": 0,
+                      "y": 50
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 48.75,
+                      "y": 1.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 1.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 47.5,
+                      "y": 2.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 2.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 46.25,
+                      "y": 3.75
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 3.75
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 45,
+                      "y": 5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 43.75,
+                      "y": 6.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 6.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 42.5,
+                      "y": 7.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 7.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 41.25,
+                      "y": 8.75
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 8.75
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 40,
+                      "y": 10
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 10
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 38.75,
+                      "y": 11.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 11.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 37.5,
+                      "y": 12.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 12.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 36.25,
+                      "y": 13.750000000000002
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 13.750000000000002
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 35,
+                      "y": 15
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 15
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 33.75,
+                      "y": 16.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 16.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 32.5,
+                      "y": 17.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 17.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 31.25,
+                      "y": 18.75
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 18.75
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 30,
+                      "y": 20
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 20
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 28.75,
+                      "y": 21.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 21.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 27.5,
+                      "y": 22.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 22.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 26.25,
+                      "y": 23.75
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 23.75
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 25,
+                      "y": 25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 23.75,
+                      "y": 26.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 26.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 22.499999999999996,
+                      "y": 27.500000000000004
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 27.500000000000004
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 21.250000000000004,
+                      "y": 28.749999999999996
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 28.749999999999996
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 20,
+                      "y": 30
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 30
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 18.75,
+                      "y": 31.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 31.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 17.5,
+                      "y": 32.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 32.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 16.25,
+                      "y": 33.75
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 33.75
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 15,
+                      "y": 35
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 35
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 13.75,
+                      "y": 36.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 36.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 12.5,
+                      "y": 37.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 37.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 11.25,
+                      "y": 38.75
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 38.75
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 10,
+                      "y": 40
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 40
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 8.75,
+                      "y": 41.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 41.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 7.5,
+                      "y": 42.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 42.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 6.25,
+                      "y": 43.75
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 43.75
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 5,
+                      "y": 45
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 45
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 3.75,
+                      "y": 46.25
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 46.25
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 2.5,
+                      "y": 47.5
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 47.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "line",
+                    "start": {
+                      "x": 1.25,
+                      "y": 48.75
+                    },
+                    "end": {
+                      "x": 50,
+                      "y": 48.75
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  },
+                  {
+                    "type": "ellipse",
+                    "topLeft": {
+                      "x": 12.5,
+                      "y": 12.5
+                    },
+                    "bottomRight": {
+                      "x": 37.5,
+                      "y": 37.5
+                    },
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    },
+                    "fillColor": {
+                      "a": 0,
+                      "r": 255,
+                      "g": 255,
+                      "b": 255
+                    }
+                  },
+                  {
+                    "type": "polyline",
+                    "points": [
+                      {
+                        "x": 32.5,
+                        "y": 35
+                      },
+                      {
+                        "x": 37.5,
+                        "y": 25
+                      },
+                      {
+                        "x": 42.5,
+                        "y": 35
+                      }
+                    ],
+                    "strokeColor": {
+                      "a": 255,
+                      "r": 0,
+                      "g": 0,
+                      "b": 0
+                    },
+                    "strokeThickness": 1,
+                    "strokeDashStyle": {
+                      "dashes": [],
+                      "offset": 0
+                    }
+                  }
+                ],
+                "backgroundColor": {
+                  "a": 255,
+                  "r": 255,
+                  "g": 255,
+                  "b": 255
+                },
+                "size": {
+                  "width": 50,
+                  "height": 50
+                },
+                "topLeft": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+            }
           },
           material: {
             sort_no: 28,
@@ -8235,8 +9219,6 @@ export const systemair = {
             dxf: "255",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/3b1d8658bda7de75d985095d2251ae09f096bbf8?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
           },
         },
         {

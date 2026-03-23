@@ -188,6 +188,19 @@ export function ReactMesh({
         );
       }
     }
+    case "Image": {
+      const { pos, size, rot } = mesh.geometry;
+      return <mesh
+        geometry={planeGeometry}
+        scale={[size.x, size.y, 1]}
+        position={[pos.x, pos.y, pos.z]}
+        rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+        castShadow
+        receiveShadow
+      >
+        {children}
+      </mesh>;
+    }
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;
       const filteredHoles = holes?.filter((h) => !holeIsZero(h));

@@ -1,7 +1,8 @@
 import React from "react";
+import * as AI from "abstract-image";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { Group } from "three";
-import { Group as Group_1 } from "../../abstract-3d.js";
+import { Group as Group_1, Material, Mesh } from "../../abstract-3d.js";
 import { MaterialState, ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
 
@@ -128,7 +129,7 @@ export function ReactGroup({
       {g.meshes?.map((m, i) => (
         <ReactMesh key={`mesh_${i}`} mesh={m}>
           <ReactMaterial
-            material={m.material}
+            material={getMaterial(m)}
             id={id}
             selectedIds={selectedIds}
             isText={m.geometry.type === "Text"}
@@ -142,4 +143,23 @@ export function ReactGroup({
       ))}
     </group>
   );
+}
+
+function getMaterial(mesh: Mesh): Material {
+  if(mesh.geometry.type !== "Image") {
+    return mesh.material;
+  }
+
+  switch(mesh.geometry.image.type) {
+    case "AbstractImage": {
+      const svg = AI.createSVG(mesh.geometry.image.image);
+      const svgUrl = `data:image/svg+xml,${svg}`;
+      return {
+        ...mesh.material,
+        imageUrl: svgUrl,
+      };
+    }
+    default:
+      return mesh.material;
+  }
 }

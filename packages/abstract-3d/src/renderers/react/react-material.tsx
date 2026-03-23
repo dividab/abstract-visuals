@@ -14,6 +14,7 @@ import { shade } from "../shared.js";
 
 const decreasedOpacity = 0.125;
 
+export type TextureFilter = "Nearest" | "Linear";
 export type MaterialState = "Accept" | "Error" | "Warning";
 export const ERROR_IMG_KEY = "error";
 
@@ -124,11 +125,13 @@ function TextureMaterial({
   color,
   material,
   useAlphaTest = true,
+  filter = "Linear"
 }: {
   readonly url: string;
   readonly color: string | Color | undefined;
   readonly material: Material;
   readonly useAlphaTest?: boolean;
+  readonly filter?: TextureFilter;
 }): React.JSX.Element {
   const texture = suspend(
     new Promise((res) =>
@@ -136,6 +139,10 @@ function TextureMaterial({
         url,
         (data) => {
           data.colorSpace = SRGBColorSpace;
+          if(filter === "Nearest") {
+            data.minFilter = 1003;
+            data.magFilter = 1003;
+          }
           res(data);
         },
         undefined,

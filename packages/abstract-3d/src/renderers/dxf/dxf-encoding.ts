@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import { Vec3 } from "../../abstract-3d.js";
 import { generateUUID } from "three/src/math/MathUtils.js";
+import { colorToInteger } from "./color.js";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
 
@@ -11,7 +12,7 @@ export function dxf(groups: string, center: Vec3, size: Vec3, origin: DxfOrigin)
 
 export type Handle = { handle: number };
 
-function dxfHandle(handleRef: Handle): string {
+export function dxfHandle(handleRef: Handle): string {
   return (++handleRef.handle).toString(16).toUpperCase();
 }
 
@@ -25,18 +26,25 @@ export const dxf3DFACE = (
   vec2: Vec3,
   vec3: Vec3,
   vec4: Vec3,
-  color: number,
+  col: string | 7,
   handleRef: Handle
 ): string => `  0
 3DFACE
- 5
+5
 ${dxfHandle(handleRef)}
- 330
-  1D
+330
+1D
 100
 AcDbEntity
-  62
- ${color}
+${
+  typeof col === "number" ?
+`62\n7`
+  :
+`62
+256
+420
+${colorToInteger(col)}`
+}
 100
 AcDbFace
 10

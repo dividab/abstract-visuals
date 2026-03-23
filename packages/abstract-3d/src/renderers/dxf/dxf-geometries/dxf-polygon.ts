@@ -7,7 +7,7 @@ const TRIANGLE_STRIDE = 3;
 
 export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   let polygonString = "";
-  const col = color(m.normal);
+  const col = m.normal;
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
   const points = p.points.map((p) => vec3TransRot(p, pos, rot));
