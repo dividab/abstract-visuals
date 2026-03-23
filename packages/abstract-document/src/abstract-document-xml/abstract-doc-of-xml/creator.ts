@@ -1,9 +1,8 @@
-import * as AI from "abstract-image";
+import { createAbstractImage, createBinaryImage, createPoint, createSize, white } from "abstract-image";
 import {
   AbstractDoc,
   Atom,
   DefaultStyles,
-  Font,
   Group,
   Image,
   Markdown,
@@ -17,7 +16,6 @@ import {
   TextField,
   TextRun,
   TocSeparator,
-  Types,
   ImageResource,
 } from "../../abstract-document/index.js";
 import {
@@ -340,15 +338,15 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
 };
 
-const zero = AI.createPoint(0, 0);
-const size = AI.createSize(0, 0);
+const zero = createPoint(0, 0);
+const size = createSize(0, 0);
 function imageProps(props: Record<string, unknown>): Record<string, unknown> {
   return {
     ...props,
     imageResource: ImageResource.create({
       id: props.src as string,
-      abstractImage: AI.createAbstractImage(zero, size, AI.white, [
-        AI.createBinaryImage(zero, zero, "png", { type: "url", url: props.src as string }),
+      abstractImage: createAbstractImage(zero, size, white, [
+        createBinaryImage(zero, zero, "png", { type: "url", url: props.src as string }),
       ]),
       renderScale: 1,
     }),

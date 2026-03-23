@@ -1,5 +1,5 @@
 import React from "react";
-import * as AI from "abstract-image";
+import { createSVG } from "abstract-image";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { Group } from "three";
 import { Group as Group_1, Material, Mesh } from "../../abstract-3d.js";
@@ -152,7 +152,7 @@ function getMaterial(mesh: Mesh): Material {
 
   switch(mesh.geometry.image.type) {
     case "AbstractImage": {
-      const svg = AI.createSVG(mesh.geometry.image.image);
+      const svg = createSVG(mesh.geometry.image.image);
       const svgUrl = `data:image/svg+xml,${svg}`;
       return {
         ...mesh.material,

@@ -1,4 +1,4 @@
-import * as AI from "abstract-image";
+import { AbstractImage, createSVG } from "abstract-image";
 import {
   Image,
   Vec2,
@@ -30,12 +30,15 @@ export function image(
 
   switch(i.image.type) {
     case "AbstractImage": {
-      const svg = AI.createSVG(i.image.image, opts);
-      const svgUrl = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+      const scale = {
+        x: i.size.x / i.image.image.size.width,
+        y: i.size.y / i.image.image.size.height,
+      };
+      const svg = createSVG(i.image.image, opts);
       const img = svgImage(point(v4.x, v4.y), i.size, rot, {
-        type: "url",
-        url: svgUrl,
-      });
+        type: "svg",
+        svg,
+      }, scale);
       return [zElem(img, (v2.z + v4.z) / 2)];
     }
     default:

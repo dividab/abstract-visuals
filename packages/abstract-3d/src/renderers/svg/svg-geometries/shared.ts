@@ -28,9 +28,9 @@ export type SvgOptions = {
   readonly imageDataByUrl: Record<string, ImageDataUri>;
 };
 
-export function eulerToSvgMatrix(rot: Vec3, pos: Vec2): string {
-  const xRot = vec3TransRot({ x: 1, y: 0, z: 0 }, vec3Zero, rot);
-  const yRot = vec3TransRot({ x: 0, y: -1, z: 0 }, vec3Zero, rot);
+export function svgMatrix(translation: Vec2, rotation: Vec3, scale?: Vec2): string {
+  const xRot = vec3TransRot({ x: 1, y: 0, z: 0 }, vec3Zero, rotation);
+  const yRot = vec3TransRot({ x: 0, y: -1, z: 0 }, vec3Zero, rotation);
 
   const x2D = { x: xRot.x, y: -xRot.y };
   const y2D = { x: yRot.x, y: -yRot.y };
@@ -40,12 +40,15 @@ export function eulerToSvgMatrix(rot: Vec3, pos: Vec2): string {
   const xN = { x: x2D.x / lenX, y: x2D.y / lenX };
   const yN = { x: y2D.x / lenY, y: y2D.y / lenY };
 
-  const a = xN.x * lenX;
-  const b = xN.y * lenX;
-  const c = yN.x * lenY;
-  const d = yN.y * lenY;
-  const e = pos.x;
-  const f = pos.y;
+  const sx = scale?.x ?? 1;
+  const sy = scale?.y ?? 1;
+
+  const a = xN.x * lenX * sx;
+  const b = xN.y * lenX * sx;
+  const c = yN.x * lenY * sy;
+  const d = yN.y * lenY * sy;
+  const e = translation.x;
+  const f = translation.y;
 
   return `matrix(${a} ${b} ${c} ${d} ${e} ${f})`;
 }

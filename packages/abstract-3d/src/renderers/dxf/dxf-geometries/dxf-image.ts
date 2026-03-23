@@ -1,4 +1,4 @@
-import * as AI from "abstract-image";
+import type { AbstractImage, Color, Component } from "abstract-image";
 import {
   Image,
   Vec3,
@@ -38,7 +38,7 @@ export function dxfImage(i: Image, parentPos: Vec3, parentRot: Vec3, handleRef: 
   }
 }
 
-function abstractImageToDxf3D(image: AI.AbstractImage, pos: Vec3, rot: Vec3, scale: Vec3, handleRef: Handle): string {
+function abstractImageToDxf3D(image: AbstractImage, pos: Vec3, rot: Vec3, scale: Vec3, handleRef: Handle): string {
   const strokeScale = Math.max(scale.x, scale.y, scale.z);
 
   let dxf = "";
@@ -61,9 +61,9 @@ function abstractImageToDxf3D(image: AI.AbstractImage, pos: Vec3, rot: Vec3, sca
   return dxf;
 }
 
-function abstractImageComponentToDxf3D(comp: AI.Component, pos: Vec3, rot: Vec3, scale: Vec3, strokeScale: number, handleRef: Handle): string {
+function abstractImageComponentToDxf3D(comp: Component, pos: Vec3, rot: Vec3, scale: Vec3, strokeScale: number, handleRef: Handle): string {
   const vec3tr = (x: number, y: number): Vec3 => vec3TransRot(vec3(x * scale.x, y * scale.y, 0), pos, rot);
-  const strokeColor: AI.Color = { a: 255.0, r: 0.0, g: 0.0, b: 0.0 };
+  const strokeColor: Color = { a: 255.0, r: 0.0, g: 0.0, b: 0.0 };
 
   let dxf = "";
   switch(comp.type) {
@@ -122,7 +122,7 @@ function abstractImageComponentToDxf3D(comp: AI.Component, pos: Vec3, rot: Vec3,
   return dxf;
 }
 
-function dxfLine(vecStart: Vec3, vecEnd: Vec3, color: AI.Color, strokeThickness: number, normal: Vec3, handleRef: Handle): string {
+function dxfLine(vecStart: Vec3, vecEnd: Vec3, color: Color, strokeThickness: number, normal: Vec3, handleRef: Handle): string {
   const norm = eulerToVector(normal);
   strokeThickness = 0;
 
@@ -136,7 +136,7 @@ function dxfLine(vecStart: Vec3, vecEnd: Vec3, color: AI.Color, strokeThickness:
   return dxf3DFACE(s1, e1, e2, s2, 7, handleRef);
 }
 
-function dxfPolyline(points: ReadonlyArray<Vec3>, color: AI.Color, closed: boolean, strokeThickness: number, normal: Vec3, handleRef: Handle): string {
+function dxfPolyline(points: ReadonlyArray<Vec3>, color: Color, closed: boolean, strokeThickness: number, normal: Vec3, handleRef: Handle): string {
   let dxf = "";
   for(let i = 0; i < points.length - 1; i++) {
     const p1 = points[i];
@@ -156,7 +156,7 @@ function dxfPolyline(points: ReadonlyArray<Vec3>, color: AI.Color, closed: boole
   return dxf;
 }
 
-function abstractImageColorToHex(color: AI.Color): string {
+function abstractImageColorToHex(color: Color): string {
   const col = `rgb(${color.r}, ${color.g}, ${color.b})`;
   return col;
 }

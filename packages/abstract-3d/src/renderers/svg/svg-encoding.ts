@@ -12,7 +12,7 @@ import {
   vec3Rot,
   vec3Zero,
 } from "../../abstract-3d.js";
-import { eulerToSvgMatrix } from "./svg-geometries/shared.js";
+import { svgMatrix } from "./svg-geometries/shared.js";
 
 export const svg = (min: Vec2, size: Vec2, children: string): string => {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${min.x.toFixed(0)} ${min.y.toFixed(0)} ${size.x.toFixed(
@@ -128,8 +128,8 @@ export type EmbededImage =
   | { readonly type: "url"; readonly url: string }
   | { readonly type: "svg"; readonly svg: string };
 
-export const svgImage = (p: Vec2, size: Vec2, rot: Vec3, data: EmbededImage): string => {
-  const matrix = eulerToSvgMatrix(rot, p);
+export const svgImage = (p: Vec2, size: Vec2, rot: Vec3, data: EmbededImage, scale?: Vec2): string => {
+  const matrix = svgMatrix(p, rot, scale);
   return data.type === "url"
     ? `<image width="${size.x}" height="${size.y}" transform="${matrix}" href="${data.url}" />`
     : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" transform="${matrix}">${data.svg}</svg>

@@ -1,4 +1,4 @@
-import * as AI from "abstract-image";
+import type { AbstractImage } from "abstract-image";
 import { Vector3 } from "three/src/math/Vector3.js";
 import { Matrix4 } from "three/src/math/Matrix4.js";
 import { Euler } from "three/src/math/Euler.js";
@@ -74,7 +74,7 @@ export type Image = {
   readonly size: Vec2;
   readonly image: {
     readonly type: "AbstractImage",
-    readonly image: AI.AbstractImage,
+    readonly image: AbstractImage,
   }
 };
 
