@@ -122,7 +122,7 @@ importers:
         specifier: 3.0.4
         version: 3.0.4(@react-three/fiber@9.4.0(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(three@0.180.0))(@types/three@0.180.0)(react@19.0.0)(three@0.180.0)
       abstract-image:
-        specifier: workspace:*91111111111
+        specifier: ^13.0.29
         version: link:../abstract-image
       suspend-react:
         specifier: ^0.1.3
