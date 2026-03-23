@@ -730,15 +730,19 @@ export const box = (
 });
 export const image = (
   size: Vec3,
+  material: Material,
   image: Image["image"],
   pos: Vec3 = vec3Zero,
   rot: Vec3 = vec3Zero,
-): Image => ({
-  type: "Image",
-  image,
-  pos,
-  size,
-  rot,
+): Mesh => ({
+  material,
+  geometry: {
+    type: "Image",
+    image,
+    pos,
+    size,
+    rot,
+  }
 });
 
 export const roundHole = (pos: Vec2, radius: number): Hole => ({ type: "RoundHole", pos, radius });
