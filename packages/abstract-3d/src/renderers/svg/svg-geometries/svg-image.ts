@@ -1,4 +1,4 @@
-import { AbstractImage, createSVG } from "abstract-image";
+import { createSVG } from "abstract-image";
 import {
   Image,
   Vec2,

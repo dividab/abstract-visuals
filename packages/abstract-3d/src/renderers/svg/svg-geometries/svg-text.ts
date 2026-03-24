@@ -1,5 +1,5 @@
 import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d.js";
-import { svgMatrix, SvgOptions, zElem, zOrderElement } from "./shared.js";
+import { svgTrsMatrix, SvgOptions, zElem, zOrderElement } from "./shared.js";
 import { svgText } from "../svg-encoding.js";
 
 // dummy
@@ -18,7 +18,7 @@ export function text(
   const strings = t.text.split("\n");
   let posY = strings.length === 1 ? 0 : (fontSize * strings.length - fontSize) / 2;
   for (const s of strings) {
-    const matrix = svgMatrix(point(pos.x, pos.y + posY), rot);
+    const matrix = svgTrsMatrix(point(pos.x, pos.y + posY), rot);
     texts.push(zElem(svgText(s, matrix, fill, opts.font, fontSize), pos.z));
     posY -= fontSize * 1.2;
   }

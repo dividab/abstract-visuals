@@ -36,7 +36,8 @@ export function Abstract3DExample(): React.ReactNode {
 
   for (const geo of Object.values(componentGeometries)) {
     imageDataByUrlDxf[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes as any)}`;
-    imageDataByUrlDxf2[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderOld((geo.scenes[0] as any)!.scene)}`;
+    //imageDataByUrlDxf2[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderOld((geo.scenes[0] as any)!.scene)}`;
+    imageDataByUrlDxf2[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes.slice(0, 1) as any)}`;
   }
 
   const templateImage = Svg.render(templateScene as Scene, { stroke_thickness: 3, only_stroke: true }).image;
@@ -79,7 +80,7 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Dxf.renderOld((Object.values(componentGeometries)[0]!.scenes[0] as any)!.scene)], {
+              new Blob([Dxf.renderScenes([(Object.values(componentGeometries)[0]!.scenes[0] as any)])], {
                 type: "text/plain",
               }),
               `a3d.dxf`

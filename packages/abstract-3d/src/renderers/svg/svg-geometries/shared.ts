@@ -28,7 +28,7 @@ export type SvgOptions = {
   readonly imageDataByUrl: Record<string, ImageDataUri>;
 };
 
-export function svgMatrix(translation: Vec2, rotation: Vec3, scale?: Vec2): string {
+export function svgTrsMatrix(translation: Vec2, rotation: Vec3, scale?: Vec2): string {
   const xRot = vec3TransRot({ x: 1, y: 0, z: 0 }, vec3Zero, rotation);
   const yRot = vec3TransRot({ x: 0, y: -1, z: 0 }, vec3Zero, rotation);
 

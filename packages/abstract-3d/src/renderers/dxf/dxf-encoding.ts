@@ -1,13 +1,14 @@
 /* eslint-disable max-lines */
-import { Vec3 } from "../../abstract-3d.js";
+import { Bounds3, Vec3 } from "../../abstract-3d.js";
 import { generateUUID } from "three/src/math/MathUtils.js";
 import { colorToInteger } from "./color.js";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
+export type DxfDynamicColor = 7; // this color becomes white on a black background and black on a white background (therefore theme/dxf viewer dependent)
 
-export function dxf(groups: string, center: Vec3, size: Vec3, origin: DxfOrigin): string {
+export function dxf(groups: string, bounds: Bounds3, size: Vec3, center: Vec3): string {
   const id = generateUUID();
-  return dxfHeader(size, center, id, origin) + groups + dxfFooter(id);
+  return dxfHeader(bounds, center, id, size) + groups + dxfFooter(id);
 }
 
 export type Handle = { handle: number };
@@ -26,7 +27,7 @@ export const dxf3DFACE = (
   vec2: Vec3,
   vec3: Vec3,
   vec4: Vec3,
-  col: string | 7,
+  col: string | DxfDynamicColor,
   handleRef: Handle
 ): string => `  0
 3DFACE
@@ -186,7 +187,7 @@ ${dxfRound(major.z - center.z)}
 0
 `;
 
-export const dxfHeader = (size: Vec3, center: Vec3, groupId: string, origin: DxfOrigin): string =>
+export const dxfHeader = (bounds: Bounds3, center: Vec3, groupId: string, size: Vec3): string =>
   ` 999
 DXF Generated from Divid Abstract 3D
 0
@@ -216,19 +217,19 @@ $INSBASE
   9
 $EXTMIN
 10
-0.0
+${bounds.min.x}
 20
-0.0
+${bounds.min.y}
 30
-0.0
+${bounds.min.z}
 9
 $EXTMAX
 10
-${size.x}
+${bounds.max.x}
 20
-${size.y}
+${bounds.max.y}
 30
-${size.z}
+${bounds.max.z}
 9
 $LIMMIN
  10

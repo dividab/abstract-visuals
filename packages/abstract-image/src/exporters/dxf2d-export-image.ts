@@ -262,8 +262,8 @@ function componentDxf(
     }
 
     const [newEntities, newBlocks] = remapHandleIds(
-      scaleDxf(extractEntities(dxfString), scale.x, scale.y),
-      scaleDxf(extractBlocks(dxfString, newName, `*EXT_PS_${newName}`), scale.y, scale.y),
+      scaleDxf(extractEntities(dxfString), scale.x, scale.y, size.height),
+      scaleDxf(extractBlocks(dxfString, newName, `*EXT_PS_${newName}`), scale.y, scale.y, size.height),
       initOldHandlesMap,
       newBlockRecordHandle,
       newHandle
@@ -330,7 +330,12 @@ function componentDxf(
     const insert: DxfInsert = {
       blockRecordId: blockRecordId,
       name: blockRecordName,
-      extents,
+      extents: { //scale the extents to be able to place it correctly in the destination image
+        minX: extents.minX * scale.x,
+        maxX: extents.maxX * scale.x,
+        minY: extents.minY * scale.y,
+        maxY: extents.maxY * scale.y,
+      },
     };
     externalCache.set(cachKey, insert);
     entities += createExternalInsert(insert, c, size, modelSpaceHandle, newHandle);
@@ -698,7 +703,7 @@ function remapHandleIds(
   return [remappedEntities, remappedBlocks];
 }
 
-function scaleDxf(dxfString: string | undefined, sx: number, sy: number): string | undefined {
+function scaleDxf(dxfString: string | undefined, sx: number, sy: number, height: number): string | undefined {
   if (!dxfString) {
     return undefined;
   }
@@ -765,11 +770,13 @@ function getScale(extents: DxfExtents, c: BinaryImage): { readonly x: number; re
   const maxY = Math.max(c.topLeft.y, c.bottomRight.y);
   const targetW = maxX - minX;
   const targetH = maxY - minY;
+
   const sx = targetW / srcW;
   const sy = targetH / srcH;
+  const scale = Math.min(sx, sy);
   return {
-    x: sx,
-    y: sy,
+    x: scale,
+    y: scale,
   };
 }
 
@@ -780,10 +787,14 @@ function createExternalInsert(
   modelSpaceHandle: string,
   newHandle: () => string
 ): string {
-  const minX = Math.min(c.topLeft.x, c.bottomRight.x);
-  const maxY = Math.max(c.topLeft.y, c.bottomRight.y);
-  const x = minX - ins.extents.minX;
-  const y = invert(maxY, size.height);
+  const srcH = ins.extents.maxY - ins.extents.minY;
+  const srcW = ins.extents.maxX - ins.extents.minX;
+  const destW = c.bottomRight.x - c.topLeft.x;
+  const destH = c.bottomRight.y - c.topLeft.y;
+  const xOffset = (destW - srcW) / 2;
+  const yOffset = (destH - srcH) / 2;
+  const x = c.topLeft.x - ins.extents.minX + xOffset;
+  const y = invert(srcH + yOffset + ins.extents.minY + c.topLeft.y, size.height);
 
   let insert = "";
   insert += "0\nINSERT\n";

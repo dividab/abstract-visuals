@@ -16,6 +16,8 @@ import {
   bounds3Center,
   vec3Add,
   sizeCenterBoundsForCameraPos,
+  boundsScene,
+  vec3Sub,
 } from "../../abstract-3d.js";
 import { dxf, DxfOrigin, Handle } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
@@ -36,24 +38,26 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   let allGroups = "";
   const allBounds = Array<Bounds3>();
   const handle = { handle: 0x1000 };
+  const originOffset = originOffsetFromScenes(scenes, baseOptions?.origin ?? "Center");
   for (const view of scenes) {
     const { groups, size, center } = renderInternal(
       view.scene,
       optionsDef({ ...baseOptions, ...view.options, origin: "Center" }),
-      view.pos,
+      vec3Add(view.pos, originOffset),
       handle
     );
     allGroups += groups;
     allBounds.push(bounds3FromPosAndSize(center, size));
   }
   const bounds = bounds3Merge(...allBounds);
-  return dxf(allGroups, bounds3Center(bounds), bounds3ToSize(bounds), "Center");
+  return dxf(allGroups, bounds, bounds3ToSize(bounds), bounds3Center(bounds));
 }
 
 export const render = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
+  const bounds = boundsScene(scene);
   const { groups, size, center } = renderInternal(scene, opts, vec3Zero, { handle: 0x1000 });
-  return dxf(groups, center, size, opts.origin);
+  return dxf(groups, bounds, size, center);
 };
 
 const renderInternal = (
@@ -68,15 +72,44 @@ const renderInternal = (
     scene.center_deprecated ?? vec3Zero,
     unitRot
   );
-
-  // const unitCenterFlipped = vec3Flip(center);
-  const dxfCenter = vec3Add(center, offset);
+  const bounds = bounds3FromPosAndSize(center, size);
+  const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin)
+  const pos = vec3NegateY(vec3Add(center, vec3Add(offset, dxfOriginOffset)));
   return {
-    groups: scene.groups.reduce((a, c) => a + dxfGroup(c, dxfCenter, unitRot, options, handleRef), ""),
+    groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
     size,
-    center: dxfCenter,
+    center: pos,
   };
 };
+
+function vec3NegateY(vec: Vec3): Vec3 {
+  return {
+    x: vec.x,
+    y: -vec.y,
+    z: vec.z
+  };
+}
+
+function originOffsetFromScenes(scenes: ReadonlyArray<DxfScene>, origin: DxfOrigin): Vec3 {
+  const allBounds = Array<Bounds3>();
+  for(const scene of scenes) {
+    const center = scene.scene.center_deprecated ?? vec3Zero;
+    const size = scene.scene.size_deprecated;
+    allBounds.push(bounds3FromPosAndSize(center, size));
+  }
+  return originOffsetFromBounds(bounds3Merge(...allBounds), origin);
+}
+
+function originOffsetFromBounds(bounds: Bounds3, origin: DxfOrigin): Vec3 {
+  switch(origin) {
+    case "BottomLeftFront": {
+      return vec3(Math.abs(bounds.min.x), -Math.abs(bounds.min.y), -Math.abs(bounds.min.z));
+    }
+    case "Center":
+    default:
+      return vec3Zero;
+  }
+}
 
 function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOptions, handleRef: Handle): string {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
@@ -132,12 +165,27 @@ function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
 // This is the original
 export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
+  const center = scene.center_deprecated ?? vec3Zero;
   const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
-  const bounds = bounds3FromPosAndSize(scene.center_deprecated ?? vec3Zero, scene.size_deprecated);
-  const center = vec3Zero;
+  const bounds = bounds3FromPosAndSize(center, scene.size_deprecated);
   const offset =
-    opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z);
+    vec3Sub(opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z), center);
+  
+  const newBounds: Bounds3 = {
+    max: {
+      x: bounds.max.x + offset.x,
+      y: bounds.max.y + offset.y,
+      z: bounds.max.z + offset.z,
+    },
+    min: {
+      x: bounds.min.x + offset.x,
+      y: bounds.min.y + offset.y,
+      z: bounds.min.z + offset.z,
+    }
+  };
+
+  const bounds2 = bounds3FromPosAndSize(offset, scene.size_deprecated);
   const groupRoot = group([], offset, vec3Zero, scene.groups);
   const handleRef = { handle: 0x1000 };
-  return dxf(dxfGroup(groupRoot, center, unitRot, opts, handleRef), center, scene.size_deprecated, opts.origin);
+  return dxf(dxfGroup(groupRoot, center, unitRot, opts, handleRef), bounds2, scene.size_deprecated, center);
 };

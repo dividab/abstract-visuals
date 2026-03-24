@@ -12,7 +12,7 @@ import {
   vec3Rot,
   vec3Zero,
 } from "../../abstract-3d.js";
-import { svgMatrix } from "./svg-geometries/shared.js";
+import { svgTrsMatrix } from "./svg-geometries/shared.js";
 
 export const svg = (min: Vec2, size: Vec2, children: string): string => {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${min.x.toFixed(0)} ${min.y.toFixed(0)} ${size.x.toFixed(
@@ -122,14 +122,14 @@ function svgMaskHoles(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string
 }
 
 export const svgText = (text: string, matrix: string, color: string, font: string, fontSize: number): string =>
-  `<text font-family="${font}" font-size="${fontSize}px" text-anchor="middle" alignment-baseline="middle" fill="${color}" transform="${matrix} ">${text}</text>`;
+  `<text font-family="${font}" font-size="${fontSize}px" text-anchor="middle" alignment-baseline="middle" fill="${color}" transform="${matrix}">${text}</text>`;
 
 export type EmbededImage =
   | { readonly type: "url"; readonly url: string }
   | { readonly type: "svg"; readonly svg: string };
 
 export const svgImage = (p: Vec2, size: Vec2, rot: Vec3, data: EmbededImage, scale?: Vec2): string => {
-  const matrix = svgMatrix(p, rot, scale);
+  const matrix = svgTrsMatrix(p, rot, scale);
   return data.type === "url"
     ? `<image width="${size.x}" height="${size.y}" transform="${matrix}" href="${data.url}" />`
     : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" transform="${matrix}">${data.svg}</svg>

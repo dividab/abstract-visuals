@@ -4,13 +4,13 @@ import type { A3D } from "../../../abstract-3d/src/index.js";
 export const systemair = {
   center_deprecated: {
     x: -41,
-    y: 0,
+    y: -59,
     z: 0,
   },
   size_deprecated: {
-    x: 3612,
-    y: 2128,
-    z: 1138,
+    x: 3271,
+    y: 1200,
+    z: 1196,
   },
   hotSpots_deprecated: [
     {
