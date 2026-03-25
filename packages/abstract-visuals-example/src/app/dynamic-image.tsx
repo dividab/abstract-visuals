@@ -21,8 +21,8 @@ export function DynamicImage({}: {}): React.JSX.Element {
   );
 
   const [template, setTemplate] = React.useState(`<AbstractImage width={600} height={200}>
-  <Text x={20} y={20} fontSize="32">{data.property1}</Text>
-  <Image src={data.imageUrl} x={0} y={0} width={200} height={400}/>
+  <Text x={20} y={20} fontSize="32">{property1}</Text>
+  <Image src={imageUrl} x={0} y={0} width={200} height={400}/>
 </AbstractImage>`);
 
   let dataParsed = {};
