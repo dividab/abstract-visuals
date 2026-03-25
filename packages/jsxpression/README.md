@@ -46,7 +46,7 @@ const schema = {
   },
 };
 
-const result = render("<Text size={16}>Hello {data.user.name}!</Text>", schema, {
+const result = render("<Text size={16}>Hello {user.name}!</Text>", schema, {
   data: { user: { name: "Peter" }, items: ["apple", "banana"] },
   components: { Text: ({ size, children }) => `<span style="font-size: ${size}px">${children}</span>` },
 });
@@ -111,7 +111,7 @@ function DynamicComponent({ template, userData }) {
 
 // Usage
 <DynamicComponent
-  template="<Card title={data.user.role}><Text className='username'>{data.user.name}</Text></Card>"
+  template="<Card title={user.role}><Text className='username'>{user.name}</Text></Card>"
   userData={{ name: "Alice", role: "Developer" }}
 />;
 ```
@@ -122,20 +122,20 @@ JSXpression supports different expression patterns:
 
 ```typescript
 // JSX Elements
-"<Text>Hello {data.user.name}</Text>";
+"<Text>Hello {user.name}</Text>";
 
 // Fragments (for mixed content)
-"<>Hello {data.user.name}, you have {data.items.length} items!</>";
+"<>Hello {user.name}, you have {items.length} items!</>";
 
 // Bare expressions (single values)
-"{data.user.name}";
-"{data.items.length * 2}";
+"{user.name}";
+"{items.length * 2}";
 ```
 
 **Important:** Like React components, mixed content needs fragment wrapping:
 
-- ❌ `"Hello {data.user.name}!"` - Won't work
-- ✅ `"<>Hello {data.user.name}!</>"` - Correct approach
+- ❌ `"Hello {user.name}!"` - Won't work
+- ✅ `"<>Hello {user.name}!</>"` - Correct approach
 
 ## Supported Methods
 
@@ -159,33 +159,33 @@ JSXpression gives you access to common JavaScript methods for working with data 
 
 ```typescript
 // Array operations
-"{data.items.map(item => item.toUpperCase())}";
-"{data.numbers.filter(n => n > 10).length}";
-"{data.items.at(-1)}"; // Last item
-"{data.arrays.flat()}"; // Flatten nested arrays
-"{data.items.findIndex(item => item.id === 5)}"; // Find index
-"{Array.isArray(data.value) ? data.value.length : 0}"; // Type check
+"{items.map(item => item.toUpperCase())}";
+"{numbers.filter(n => n > 10).length}";
+"{items.at(-1)}"; // Last item
+"{arrays.flat()}"; // Flatten nested arrays
+"{items.findIndex(item => item.id === 5)}"; // Find index
+"{Array.isArray(value) ? value.length : 0}"; // Type check
 
 // String operations
-"{data.text.toUpperCase().trim()}";
-"{data.name.slice(0, 3)}";
-"{data.label.padStart(10, '0')}"; // "00000label"
-"{data.text.repeat(3)}"; // Repeat string
-"{data.str.replaceAll('old', 'new')}"; // Replace all occurrences
+"{text.toUpperCase().trim()}";
+"{name.slice(0, 3)}";
+"{label.padStart(10, '0')}"; // "00000label"
+"{text.repeat(3)}"; // Repeat string
+"{str.replaceAll('old', 'new')}"; // Replace all occurrences
 
 // Math operations
-"{Math.max(...data.scores)}";
-"{Math.round(data.price * 1.2)}";
-"{Math.sqrt(data.area)}"; // Square root
+"{Math.max(...scores)}";
+"{Math.round(price * 1.2)}";
+"{Math.sqrt(area)}"; // Square root
 "{Math.pow(2, 8)}"; // 2^8 = 256
-"{Math.sin(data.angle)}"; // Trigonometry
+"{Math.sin(angle)}"; // Trigonometry
 
 // Number operations
-"{Number.isNaN(data.value)}";
-"{Number.parseInt(data.stringNumber, 10)}";
-"{data.temperature.toFixed(1)}°C"; // 23.5°C
-"{data.price.toFixed(2)}"; // 19.99
-"{data.airflow.toPrecision(4)} m³/h"; // Technical measurements
+"{Number.isNaN(value)}";
+"{Number.parseInt(stringNumber, 10)}";
+"{temperature.toFixed(1)}°C"; // 23.5°C
+"{price.toFixed(2)}"; // 19.99
+"{airflow.toPrecision(4)} m³/h"; // Technical measurements
 ```
 
 ## Schema Definition
@@ -197,7 +197,7 @@ import type { Schema } from "jsxpression";
 
 const schema = {
   //
-  // Data schema – everything under `data.*` is available in expressions
+  // Data schema – each key becomes a top-level variable in expressions
   //
   data: {
     user: {
@@ -282,10 +282,10 @@ const schema = {
   },
 } satisfies Schema;
 
-// <Text size={16} color="blue">{data.user.name}</Text>
-// <Image src={data.user.avatar} />
-// <Button label="Click" onClick={data.onClick}><Text>OK</Text></Button>
-// <Card title="Profile"><Text>{data.user.role}</Text><Button label="Edit" /></Card>
+// <Text size={16} color="blue">{user.name}</Text>
+// <Image src={user.avatar} />
+// <Button label="Click" onClick={onClick}><Text>OK</Text></Button>
+// <Card title="Profile"><Text>{user.role}</Text><Button label="Edit" /></Card>
 ```
 
 ## API
@@ -296,10 +296,10 @@ Renders a JSX expression with data and components.
 
 **Arguments:**
 
-- `source: string` - The JSX expression to render (e.g., `"<Text>{data.name}</Text>"`)
+- `source: string` - The JSX expression to render (e.g., `"<Text>{name}</Text>"`)
 - `schema: Schema` - Schema defining available data properties and components
 - `options?: RenderOptions` - Optional rendering settings:
-  - `data?: Record<string, any>` - The actual data available as `data.*` in expressions
+  - `data?: Record<string, any>` - Data object whose keys become top-level variables in expressions
   - `components?: Record<string, Component>` - Component implementations
   - `createElement?: Function` - Optional createElement function (e.g., React's `createElement`)
   - `minSeverity?: 1 | 2 | 3` - Minimum severity to abort (1=info, 2=warning, 3=error). Default: 3
@@ -311,7 +311,7 @@ Renders a JSX expression with data and components.
 **Example:**
 
 ```typescript
-const result = render("<Card title={data.title}>{data.content}</Card>", schema, {
+const result = render("<Card title={title}>{content}</Card>", schema, {
   data: { title: "Hello", content: "World" },
   components: { Card: MyCardComponent },
   createElement: React.createElement,
@@ -334,7 +334,7 @@ Validatesa JSX expression against a schema without rendering. Great for checking
 **Example:**
 
 ```typescript
-const result = validate("{data.user.invalidProperty}", schema);
+const result = validate("{user.invalidProperty}", schema);
 
 if (!result.ok) {
   console.error("Validation failed:", result.error.message);
