@@ -13,7 +13,7 @@ export function analyzeSecurity(ast: Program, schema: Schema): AnalysisReport {
 
   return new AnalysisReport().merge(
     analyzeDeclarations(ast, schema, validationContext),
-    //analyzeIdentifiers(ast, schema, validationContext),
+    analyzeIdentifiers(ast, schema, validationContext),
     analyzeExpressions(ast, schema, validationContext),
     analyzeMemberAccess(ast, schema, validationContext),
     analyzeCallExpressions(ast, schema, validationContext)
