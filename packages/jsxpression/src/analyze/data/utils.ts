@@ -1,4 +1,4 @@
-import type { MemberExpression, Program } from "acorn";
+import type { MemberExpression } from "acorn";
 import {
   isAllowedOnArray,
   isAllowedOnString,
@@ -10,7 +10,7 @@ import { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
 import { ValidationContext } from "../validation-context.js";
 
-export function isSimpleDataAccess(node: MemberExpression): boolean {
+export function isSimpleDataAccess(node: MemberExpression, dataKeys: ReadonlySet<string>): boolean {
   if (node.computed) {
     return node.property.type === "Literal" && typeof node.property.value === "number";
   }
@@ -22,7 +22,7 @@ export function isSimpleDataAccess(node: MemberExpression): boolean {
 
   while (current) {
     if (current.type === "Identifier") {
-      return current.name === "data";
+      return dataKeys.has(current.name);
     }
 
     if (current.type === "MemberExpression") {
@@ -68,35 +68,6 @@ export function extractPath(node: MemberExpression): string[] {
   }
 
   return path;
-}
-
-export function getParentNode(targetNode: any, ast: Program): any | null {
-  let parent: any = null;
-
-  function traverseForParent(node: any, currentParent: any = null): void {
-    if (node === targetNode) {
-      parent = currentParent;
-      return;
-    }
-
-    for (const key of Object.keys(node)) {
-      const value = node[key];
-      if (value && typeof value === "object") {
-        if (Array.isArray(value)) {
-          value.forEach((child) => {
-            if (child && typeof child === "object" && child.type) {
-              traverseForParent(child, node);
-            }
-          });
-        } else if (value.type) {
-          traverseForParent(value, node);
-        }
-      }
-    }
-  }
-
-  traverseForParent(ast);
-  return parent;
 }
 
 export function getAvailablePropsAtPath(path: string[], depth: number, schemaData: any): string[] {
@@ -148,7 +119,7 @@ export function validateSchemaPath(
   if (!current) {
     analysisReport.addIssue(
       "INVALID_DATA_ACCESS",
-      `Property 'data.${path[0]}' does not exist in schema`,
+      `Property '${path[0]}' does not exist in schema`,
       getNodeRange(node),
       validationContext.getSnapshot(),
       Object.keys(schemaData)
@@ -160,7 +131,7 @@ export function validateSchemaPath(
 
   for (let i = 1; i < path.length; i++) {
     const prop = path[i];
-    const isElementAccess = elementAccessFlags[i];
+    const isElementAccess = elementAccessFlags[i - 1];
 
     if (current.type === "array") {
       if (!isElementAccess) {
@@ -168,7 +139,7 @@ export function validateSchemaPath(
           return;
         }
 
-        const accessedPath = ["data", ...path.slice(0, i), prop].join(".");
+        const accessedPath = [...path.slice(0, i), prop].join(".");
         analysisReport.addIssue(
           "INVALID_DATA_ACCESS",
           `Property '${accessedPath}' does not exist on array type`,
@@ -201,7 +172,7 @@ export function validateSchemaPath(
 
           analysisReport.addIssue(
             "INVALID_DATA_ACCESS",
-            `Property 'data.${paths.join(".")}' does not exist in schema`,
+            `Property '${paths.join(".")}' does not exist in schema`,
             getNodeRange(node),
             validationContext.getSnapshot(),
             suggestions
@@ -218,7 +189,7 @@ export function validateSchemaPath(
           return;
         }
 
-        const accessedPath = ["data", ...path.slice(0, i), prop].join(".");
+        const accessedPath = [...path.slice(0, i), prop].join(".");
         analysisReport.addIssue(
           "INVALID_DATA_ACCESS",
           `Property '${accessedPath}' does not exist on array type`,
@@ -234,7 +205,7 @@ export function validateSchemaPath(
           return;
         }
 
-        const accessedPath = ["data", ...path.slice(0, i), prop].join(".");
+        const accessedPath = [...path.slice(0, i), prop].join(".");
         analysisReport.addIssue(
           "INVALID_DATA_ACCESS",
           `Property '${accessedPath}' does not exist on string type`,
@@ -259,7 +230,7 @@ export function validateSchemaPath(
         return;
       }
 
-      const accessedPath = ["data", ...path.slice(0, i), prop].join(".");
+      const accessedPath = [...path.slice(0, i), prop].join(".");
       analysisReport.addIssue(
         "INVALID_DATA_ACCESS",
         `Property '${accessedPath}' does not exist on string type`,
@@ -288,7 +259,7 @@ export function validateSchemaPath(
 
       analysisReport.addIssue(
         "INVALID_DATA_ACCESS",
-        `Property 'data.${paths.join(".")}' does not exist in schema`,
+        `Property '${paths.join(".")}' does not exist in schema`,
         getNodeRange(node),
         validationContext.getSnapshot(),
         availableProps
