@@ -19,7 +19,13 @@ import {
   boundsScene,
   vec3Sub,
 } from "../../abstract-3d.js";
-import { dxf, dxfHandleCreate, DxfOrigin, Handle } from "./dxf-encoding.js";
+import {
+  DEFAULT_CIRCLE_SIDE_COUNT,
+  dxf,
+  dxfHandleCreate,
+  DxfOrigin,
+  Handle
+} from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
@@ -28,11 +34,17 @@ import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { Optional } from "../shared.js";
 import { dxfImage } from "./dxf-geometries/dxf-image.js";
 
-const DEFAULT_CYLINDER_SIDE_COUNT = 18;
+export type DxfOptions = {
+  readonly view: View;
+  readonly origin: DxfOrigin;
+  readonly cylinderSideCount: number;
+};
 
-export type DxfOptions = { readonly view: View; readonly origin: DxfOrigin; readonly cylinderSideCount: number };
-
-export type DxfScene = { readonly scene: Scene; readonly options?: Optional<DxfOptions>; readonly pos: Vec3 };
+export type DxfScene = {
+  readonly scene: Scene;
+  readonly options?: Optional<DxfOptions>;
+  readonly pos: Vec3;
+};
 
 export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Optional<DxfOptions>): string {
   let allGroups = "";
@@ -158,7 +170,7 @@ function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
   return {
     view: options?.view ?? "front",
     origin: options?.origin ?? "BottomLeftFront",
-    cylinderSideCount: DEFAULT_CYLINDER_SIDE_COUNT,
+    cylinderSideCount: DEFAULT_CIRCLE_SIDE_COUNT,
   };
 }
 

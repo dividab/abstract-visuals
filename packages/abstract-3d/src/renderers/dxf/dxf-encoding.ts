@@ -1,20 +1,22 @@
 /* eslint-disable max-lines */
-import { Bounds3, Vec3 } from "../../abstract-3d.js";
 import { generateUUID } from "three/src/math/MathUtils.js";
+import { Bounds3, Vec3, vec3Add, vec3Scale } from "../../abstract-3d.js";
 import { colorToInteger } from "./color.js";
 
-const DXF_DEFAULT_HANDLE: number = 0x1000;
-const DXF_MODEL_SPACE_HANDLE: string = (0x1D).toString(16);
+export const DEFAULT_CIRCLE_SIDE_COUNT = 16;
+const DXF_MAKER = "DXF Generated from Divid Abstract 3D";
+const DXF_STANDARD = "AC1015";
+const DXF_DEFAULT_HANDLE = 0x1000;
+const DXF_MODEL_SPACE_HANDLE = "1D";
 
 export type DxfOrigin = "BottomLeftFront" | "Center";
 export type DxfDynamicColor = 7; // this color becomes white on a black background and black on a white background (therefore theme/dxf viewer dependent)
+export type Handle = { handle: number };
 
 export function dxf(groups: string, bounds: Bounds3, size: Vec3, center: Vec3): string {
   const id = generateUUID();
   return dxfHeader(bounds, center, id, size) + groups + dxfFooter(id);
 }
-
-export type Handle = { handle: number };
 
 export function dxfHandleCreate(): Handle {
   return {
@@ -31,7 +33,7 @@ function dxfRound(n: number): number {
   return Math.round((n + Number.EPSILON) * 10 ** d) / 10 ** d;
 }
 
-export const dxf3DFACE = (
+export const dxfQuad = (
   vec1: Vec3,
   vec2: Vec3,
   vec3: Vec3,
@@ -83,122 +85,45 @@ ${dxfRound(vec4.y)}
 ${dxfRound(vec4.z)}
 `;
 
-export const dxfPOLYLINE = (vertices: readonly Vec3[], color: string): string =>
-  `  0
-POLYLINE
-  8
-A3D
-  62
-${color}
-  66
-1${vertices.map(
-    (v) =>
-      `
-  0
-VERTEX
-  8
-A3D
-  10
-${dxfRound(v.x)}
-  20
-${dxfRound(v.y)}
-  30
-${dxfRound(v.z)}`
-  )}
-  0
-SEQEND
-`;
+export const dxfTriangle = (
+  vec1: Vec3,
+  vec2: Vec3,
+  vec3: Vec3,
+  col: string | DxfDynamicColor,
+  handleRef: Handle
+): string => dxfQuad(vec1, vec2, vec3, vec3, col, handleRef);
 
-export const dxfText = (pos: Vec3, fontSize: number, text: string, color: string): string =>
-  `  0
-Text
-  8
-A3D
-  62
-${color}
-  10
-${dxfRound(pos.x)}
-  20
-${dxfRound(pos.y)}
-  30
-${dxfRound(pos.z)}
-  11
-${dxfRound(pos.x)}
-  21
-${dxfRound(pos.y)}
-  31
-${dxfRound(pos.z)}
-  40
-${fontSize}
-  1
-${text}
-`;
+export function dxfPolyline(
+  points: ReadonlyArray<Vec3>,
+  col: string | DxfDynamicColor,
+  closed: boolean,
+  handleRef: Handle
+): string {
+  let dxf = "";
+  for(let i = 0; i < points.length; i++) {
+    const p1 = points[i];
+    const p2 = points[i+1];
+    if(p1 && p2) {
+      dxf += dxfLine(p1, p2, col, handleRef);
+    }
+  }
+  if(closed) {
+    const start = points[0];
+    const end = points[points.length - 1];
+    if(start && end) {
+      dxf += dxfLine(start, end, col, handleRef);
+    }
+  }
+  return dxf;
+}
 
-export const dxf3DLine = (start: Vec3, end: Vec3, color: string, handleRef: Handle): string =>
-  `  0
-LINE
- 5
-${dxfHandle(handleRef)}
-100
-AcDbEntity
-  8
-A3D
-100
-AcDbLine
-  10
-${dxfRound(start.x)}
-  20
-${dxfRound(start.y)}
-  30
-${dxfRound(start.z)}
-  11
-${dxfRound(end.x)}
-  21
-${dxfRound(end.y)}
-  31
-${dxfRound(end.z)}
-`;
+export function dxfLine(vecStart: Vec3, vecEnd: Vec3, col: string | DxfDynamicColor, handleRef: Handle): string {
+  return dxfQuad(vecStart, vecStart, vecEnd, vecEnd, col, handleRef);
+}
 
-export const dxf3DEllipse = (center: Vec3, major: Vec3, minor: Vec3, color: string, handleRef: Handle): string =>
-  `  0
-ELLIPSE
- 5
-${dxfHandle(handleRef)}
-100
-AcDbEntity
-  8
-A3D
-100
-AcDbEllipse
-  10
-${dxfRound(center.x)}
-  20
-${dxfRound(center.y)}
-  30
-${dxfRound(center.z)}
-  11
-${dxfRound(major.x - center.x)}
-  21
-${dxfRound(major.y - center.y)}
-  31
-${dxfRound(major.z - center.z)}
-  40
-1
-  41
-0.0
-  42
-6.2831
-  210
-0
-  220
-1
-  230
-0
-`;
-
-export const dxfHeader = (bounds: Bounds3, center: Vec3, groupId: string, size: Vec3): string =>
+export const dxfHeader = (bounds: Bounds3, center: Vec3, blockId: string, size: Vec3): string =>
   ` 999
-DXF Generated from Divid Abstract 3D
+${DXF_MAKER}
 0
 SECTION
   2
@@ -206,7 +131,7 @@ HEADER
   9
 $ACADVER
   1
-AC1015
+${DXF_STANDARD}
   9
 $ACADMAINTVER
  70
@@ -1716,7 +1641,7 @@ AcDbSymbolTableRecord
 100
 AcDbBlockTableRecord
   2
-${groupId}
+${blockId}
 340
 0
 102
@@ -1826,7 +1751,7 @@ A3D
 100
 AcDbBlockBegin
   2
-${groupId}
+${blockId}
  70
      0
  10
@@ -1836,12 +1761,12 @@ ${groupId}
  30
 0.0
   3
-${groupId}
+${blockId}
   1
 
 `;
 
-export const dxfFooter = (groupId: string): string => `  0
+export const dxfFooter = (blockId: string): string => `  0
 ENDBLK
 5
 AA2
@@ -1874,7 +1799,7 @@ Continuous
 100
 AcDbBlockReference
   2
-${groupId}
+${blockId}
  10
 0.0
  20

@@ -1,6 +1,5 @@
 import { Polygon, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d.js";
-import { color } from "../color.js";
-import { dxf3DFACE, Handle } from "../dxf-encoding.js";
+import { dxfQuad, dxfTriangle, Handle } from "../dxf-encoding.js";
 
 const QUAD_STRIDE = 4;
 const TRIANGLE_STRIDE = 3;
@@ -18,7 +17,7 @@ export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: 
     const vec3 = points[i + 2];
     const vec4 = points[i + 3];
     if(vec1 && vec2 && vec3 && vec4) {
-      polygonString += dxf3DFACE(
+      polygonString += dxfQuad(
         vec1,
         vec2,
         vec3,
@@ -38,7 +37,7 @@ export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: 
         const vec2 = points[i - 1];
         const vec3 = points[i - 2];
         if(vec1 && vec2 && vec3) {
-          polygonString += dxf3DFACE(vec3, vec2, vec1, vec1, col, handleRef);
+          polygonString += dxfTriangle(vec3, vec2, vec1, col, handleRef);
         }
         break;
       }
@@ -47,10 +46,9 @@ export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: 
         const vec2 = points[i - 1];
         const vec3 = points[i + 1];
         if(vec1 && vec2 && vec3) {
-          polygonString += dxf3DFACE(
+          polygonString += dxfTriangle(
             vec2,
             vec1,
-            vec3,
             vec3,
             col,
             handleRef
@@ -63,10 +61,9 @@ export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: 
         const vec2 = points[i + 1];
         const vec3 = points[i + 2];
         if(vec1 && vec2 && vec3) {
-          polygonString += dxf3DFACE(
+          polygonString += dxfTriangle(
             vec1,
             vec2,
-            vec3,
             vec3,
             col,
             handleRef

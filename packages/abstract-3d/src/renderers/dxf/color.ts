@@ -1,3 +1,4 @@
+import { Color } from "abstract-image";
 import { Vec3, vec3, vec3DistSquared } from "../../abstract-3d.js";
 
 export function colorToInteger(color: string): number {
@@ -8,6 +9,10 @@ export function colorToInteger(color: string): number {
     return 0;
   }
   return colorAsInt;
+}
+
+export function colorHexFromAbstractImageColor(color: Color): string {
+  return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
 }
 
 export function color(colorNormal: string | undefined): number {

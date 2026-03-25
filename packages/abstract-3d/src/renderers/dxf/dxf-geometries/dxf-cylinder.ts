@@ -9,8 +9,7 @@ import {
   vec3Scale,
   equals,
 } from "../../../abstract-3d.js";
-import { color } from "../color.js";
-import { dxf3DFACE, Handle } from "../dxf-encoding.js";
+import { dxfQuad, dxfTriangle, Handle } from "../dxf-encoding.js";
 import { dxfPlane } from "./dxf-plane.js";
 
 export function dxfCylinder(
@@ -21,41 +20,39 @@ export function dxfCylinder(
   parentRot: Vec3,
   handleRef: Handle
 ): string {
-  const angleStart = c.angleStart ?? 0.0;
-  const angleLength = c.angleLength ?? Math.PI * 2;
-  const angleEnd = angleStart + angleLength;
-  let dxfString = "";
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (x: number, y: number, z: number): Vec3 => vec3TransRot(vec3(x, y, z), pos, rot);
-  const mat = m.normal;
+
+  const angleStart = c.angleStart ?? 0.0;
+  const angleLength = c.angleLength ?? Math.PI * 2;
+  const angleEnd = angleStart + angleLength;
   const angleStep = angleLength / sides;
   let currentAngle = angleStart;
+  let dxfString = "";
 
   const half = c.length / 2;
   const topPos = vec3tr(0, half, 0);
   const botPos = vec3tr(0, -half, 0);
 
-  const botVec3Array = Array<Vec3>();
-  const topVec3Array = Array<Vec3>();
-
+  let prevBot = undefined;
+  let prevTop = undefined;
   for (let i = 0; i <= sides; i++) {
     const x = Math.sin(currentAngle) * c.radius;
     const z = Math.cos(currentAngle) * c.radius;
     const currBot = vec3tr(x, -half, z);
     const currTop = vec3tr(x, half, z);
-    botVec3Array.push(currBot);
-    topVec3Array.push(currTop);
-    if (i !== 0) {
-      const prevBot = botVec3Array[i - 1]!;
-      const prevTop = topVec3Array[i - 1]!;
+    if (i !== 0 && prevBot && prevTop) {
       if (!c.open) {
         dxfString +=
-          dxf3DFACE(botPos, prevBot, currBot, currBot, mat, handleRef) +
-          dxf3DFACE(topPos, prevTop, currTop, currTop, mat, handleRef);
+          dxfTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
+          dxfTriangle(topPos, prevTop, currTop, m.normal, handleRef);
       }
-      dxfString += dxf3DFACE(currBot, prevBot, prevTop, currTop, mat, handleRef);
+      dxfString += dxfQuad(currBot, prevBot, prevTop, currTop, m.normal, handleRef);
     }
+
+    prevBot = currBot;
+    prevTop = currTop;
     currentAngle += angleStep;
   }
 
