@@ -9,6 +9,7 @@ import { getNodeRange } from "../utils.js";
 
 export function analyzeMethodCalls(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();
+  const dataKeys = new Set(Object.keys(schema.data ?? {}));
 
   traverse(ast, {
     CallExpression(node) {
@@ -17,10 +18,10 @@ export function analyzeMethodCalls(ast: Program, schema: Schema, validationConte
       if (callee.type === "MemberExpression" && !callee.computed && callee.property.type === "Identifier") {
         const method = callee.property.name;
 
-        if (isSimpleDataAccess(callee)) {
+        if (isSimpleDataAccess(callee, dataKeys)) {
           const path = extractPath(callee);
-          if (path[0] === "data") {
-            const schemaPath = path.slice(1, -1);
+          if (dataKeys.has(path[0])) {
+            const schemaPath = path.slice(0, -1);
             if (schemaPath.length > 0) {
               validateSchemaPath(schemaPath, schema, analysisReport, callee, validationContext);
             }
