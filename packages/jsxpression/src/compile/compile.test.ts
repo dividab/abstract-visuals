@@ -50,27 +50,27 @@ describe("compile", () => {
   });
 
   it("should compile bare expression containers", () => {
-    const ast = parse("{data.user.name}");
+    const ast = parse("{user.name}");
     const result = compile(ast);
-    expect(result).toBe('"use strict";return data.user.name;');
+    expect(result).toBe('"use strict";return user.name;');
   });
 
   it("should compile bare mathematical expressions", () => {
-    const ast = parse("{data.count * 2}");
+    const ast = parse("{count * 2}");
     const result = compile(ast);
-    expect(result).toBe('"use strict";return (data.count * 2);');
+    expect(result).toBe('"use strict";return (count * 2);');
   });
 
   it("should compile bare method calls", () => {
-    const ast = parse("{data.text.toUpperCase()}");
+    const ast = parse("{text.toUpperCase()}");
     const result = compile(ast);
-    expect(result).toBe('"use strict";return data.text.toUpperCase();');
+    expect(result).toBe('"use strict";return text.toUpperCase();');
   });
 
   it("should compile bare complex expressions", () => {
-    const ast = parse("{data.items.filter(x => x.length > 2).length}");
+    const ast = parse("{items.filter(x => x.length > 2).length}");
     const result = compile(ast);
-    expect(result).toBe('"use strict";return data.items.filter((x) => (x.length > 2)).length;');
+    expect(result).toBe('"use strict";return items.filter((x) => (x.length > 2)).length;');
   });
 
   describe("JSX empty expressions", () => {
@@ -94,14 +94,14 @@ describe("compile", () => {
     });
 
     it("should handle mixed empty and real expressions", () => {
-      const ast = parse("<Text>Hello {}{data.x}{} World</Text>");
+      const ast = parse("<Text>Hello {}{x}{} World</Text>");
       const compiled = compile(ast);
 
       expect(compiled).toContain("return");
       expect(compiled).toContain("Text");
       expect(compiled).toContain("Hello");
       expect(compiled).toContain("World");
-      expect(compiled).toContain("data.x");
+      expect(compiled).toContain("x");
     });
 
     it("should generate valid JavaScript code structure", () => {
@@ -115,59 +115,59 @@ describe("compile", () => {
 
   describe("spread elements", () => {
     it("should compile spread in arrays", () => {
-      const ast = parse("<div>{[...data.items]}</div>");
+      const ast = parse("<div>{[...items]}</div>");
       const result = compile(ast);
-      expect(result).toBe('"use strict";return h("div", null, [...data.items]);');
+      expect(result).toBe('"use strict";return h("div", null, [...items]);');
     });
 
     it("should compile spread in objects", () => {
-      const ast = parse("<div style={{ ...data.styles }}>Text</div>");
+      const ast = parse("<div style={{ ...styles }}>Text</div>");
       const result = compile(ast);
-      expect(result).toBe('"use strict";return h("div", { style: { ...data.styles } }, "Text");');
+      expect(result).toBe('"use strict";return h("div", { style: { ...styles } }, "Text");');
     });
 
     it("should compile mixed spread and regular elements in arrays", () => {
-      const ast = parse("<div>{[1, ...data.items, 2]}</div>");
+      const ast = parse("<div>{[1, ...items, 2]}</div>");
       const result = compile(ast);
-      expect(result).toBe('"use strict";return h("div", null, [1, ...data.items, 2]);');
+      expect(result).toBe('"use strict";return h("div", null, [1, ...items, 2]);');
     });
 
     it("should compile mixed spread and regular properties in objects", () => {
-      const ast = parse("<div style={{ color: 'red', ...data.styles, width: 100 }}>Text</div>");
+      const ast = parse("<div style={{ color: 'red', ...styles, width: 100 }}>Text</div>");
       const result = compile(ast);
       expect(result).toBe(
-        '"use strict";return h("div", { style: { color: "red", ...data.styles, width: 100 } }, "Text");'
+        '"use strict";return h("div", { style: { color: "red", ...styles, width: 100 } }, "Text");'
       );
     });
 
     it("should compile multiple spreads in arrays", () => {
-      const ast = parse("<div>{[...data.first, ...data.second]}</div>");
+      const ast = parse("<div>{[...first, ...second]}</div>");
       const result = compile(ast);
-      expect(result).toBe('"use strict";return h("div", null, [...data.first, ...data.second]);');
+      expect(result).toBe('"use strict";return h("div", null, [...first, ...second]);');
     });
 
     it("should compile multiple spreads in objects", () => {
-      const ast = parse("<div style={{ ...data.base, ...data.override }}>Text</div>");
+      const ast = parse("<div style={{ ...base, ...override }}>Text</div>");
       const result = compile(ast);
-      expect(result).toBe('"use strict";return h("div", { style: { ...data.base, ...data.override } }, "Text");');
+      expect(result).toBe('"use strict";return h("div", { style: { ...base, ...override } }, "Text");');
     });
 
     it("should compile spread in function call arguments", () => {
-      const ast = parse("<div>{Math.max(...data.numbers)}</div>");
+      const ast = parse("<div>{Math.max(...numbers)}</div>");
       const result = compile(ast);
-      expect(result).toBe('"use strict";return h("div", null, Math.max(...data.numbers));');
+      expect(result).toBe('"use strict";return h("div", null, Math.max(...numbers));');
     });
 
     it("should compile spread with map in function call", () => {
-      const ast = parse("<div>{Math.min(...data.items.map(x => x.price))}</div>");
+      const ast = parse("<div>{Math.min(...items.map(x => x.price))}</div>");
       const result = compile(ast);
-      expect(result).toBe('"use strict";return h("div", null, Math.min(...data.items.map((x) => x.price)));');
+      expect(result).toBe('"use strict";return h("div", null, Math.min(...items.map((x) => x.price)));');
     });
 
     it("should compile mixed spread and regular arguments", () => {
-      const ast = parse("<div>{Math.max(0, ...data.numbers, 100)}</div>");
+      const ast = parse("<div>{Math.max(0, ...numbers, 100)}</div>");
       const result = compile(ast);
-      expect(result).toBe('"use strict";return h("div", null, Math.max(0, ...data.numbers, 100));');
+      expect(result).toBe('"use strict";return h("div", null, Math.max(0, ...numbers, 100));');
     });
   });
 
