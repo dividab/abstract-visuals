@@ -3,12 +3,13 @@ import { traverse } from "../../traverse.js";
 import type { ArrayPropertySchema, PropertySchema, Schema } from "../../schema.js";
 import { ValidationContext } from "../validation-context.js";
 import { AnalysisReport } from "../analysis-report.js";
-import { isSimpleDataAccess, extractPath, getParentNode, validateSchemaPath } from "./utils.js";
+import { isSimpleDataAccess, extractPath, validateSchemaPath } from "./utils.js";
 import { getNodeRange } from "../utils.js";
 
 export function analyzeDataAccess(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();
 
+  const dataKeys = new Set(Object.keys(schema.data ?? {}));
   const dataPaths = new Set<string>();
   const arrowFunctionContexts = new Map<any, Map<string, any>>();
 
@@ -71,9 +72,9 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
 
   traverse(ast, {
     MemberExpression(node) {
-      if (isSimpleDataAccess(node)) {
+      if (isSimpleDataAccess(node, dataKeys)) {
         const path = extractPath(node);
-        if (path[0] === "data") {
+        if (dataKeys.has(path[0])) {
           dataPaths.add(path.join("."));
         }
       }
@@ -82,6 +83,8 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
 
   // Collect all arrow function contexts including nested ones
   collectArrowFunctionContexts(ast);
+
+  const parentMap = buildParentMap(ast);
 
   const validatablePaths = new Set<string>();
 
@@ -101,13 +104,13 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
   // Second pass: validate with context awareness
   traverse(ast, {
     MemberExpression(node) {
-      const parent = getParentNode(node, ast);
+      const parent = parentMap.get(node);
       if (parent && parent.type === "CallExpression" && parent.callee === node) {
         return;
       }
 
       // Check if this is inside an arrow function with parameter context
-      const arrowFunctionContext = findArrowFunctionContext(node, ast, arrowFunctionContexts);
+      const arrowFunctionContext = findEnclosingArrowContext(node, arrowFunctionContexts);
 
       if (arrowFunctionContext && node.object.type === "Identifier") {
         const paramType = arrowFunctionContext.get(node.object.name);
@@ -117,15 +120,14 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
         }
       }
 
-      if (isSimpleDataAccess(node)) {
+      if (isSimpleDataAccess(node, dataKeys)) {
         const path = extractPath(node);
 
-        if (path[0] === "data") {
+        if (dataKeys.has(path[0])) {
           const pathString = path.join(".");
 
           if (validatablePaths.has(pathString)) {
-            const schemaPath = path.slice(1);
-            validateSchemaPath(schemaPath, schema, analysisReport, node, validationContext);
+            validateSchemaPath(path, schema, analysisReport, node, validationContext);
           }
         }
       }
@@ -135,48 +137,20 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
   return analysisReport;
 }
 
-function findArrowFunctionContext(
+function findEnclosingArrowContext(
   targetNode: any,
-  ast: Program,
   arrowFunctionContexts: Map<any, Map<string, any>>
 ): Map<string, any> | null {
-  function findInNode(node: any, depth: number = 0): any {
-    if (node === targetNode) {
-      return { found: true, depth };
-    }
-
-    if (node.type === "ArrowFunctionExpression" && arrowFunctionContexts.has(node)) {
-      const result = findInNode(node.body, depth + 1);
-      if (result?.found) {
-        return { arrowFunction: node, depth: result.depth };
+  let best: { arrowFn: any; size: number } | null = null;
+  for (const arrowFn of arrowFunctionContexts.keys()) {
+    if (targetNode.start >= arrowFn.start && targetNode.end <= arrowFn.end) {
+      const size = arrowFn.end - arrowFn.start;
+      if (!best || size < best.size) {
+        best = { arrowFn, size };
       }
     }
-
-    for (const key of Object.keys(node)) {
-      const value = node[key];
-      if (value && typeof value === "object") {
-        if (Array.isArray(value)) {
-          for (const child of value) {
-            if (child && typeof child === "object" && child.type) {
-              const result = findInNode(child, depth);
-              if (result?.found || result?.arrowFunction) {
-                return result;
-              }
-            }
-          }
-        } else if (value.type) {
-          const result = findInNode(value, depth);
-          if (result?.found || result?.arrowFunction) {
-            return result;
-          }
-        }
-      }
-    }
-    return null;
   }
-
-  const result = findInNode(ast);
-  return result?.arrowFunction ? arrowFunctionContexts.get(result.arrowFunction) || null : null;
+  return best ? arrowFunctionContexts.get(best.arrowFn) || null : null;
 }
 
 function getArrayElementTypeFromCall(
@@ -185,15 +159,16 @@ function getArrayElementTypeFromCall(
   arrowFunctionContexts: Map<any, Map<string, any>>
 ): any {
   const { callee } = node;
+  const dataKeys = new Set(Object.keys(schema.data ?? {}));
 
   if (callee.type !== "MemberExpression") {
     return null;
   }
 
-  if (isSimpleDataAccess(callee)) {
+  if (isSimpleDataAccess(callee, dataKeys)) {
     const path = extractPath(callee);
-    if (path[0] === "data") {
-      const schemaPath = path.slice(1, -1); // Remove "data" prefix and method name
+    if (dataKeys.has(path[0])) {
+      const schemaPath = path.slice(0, -1); // Remove method name
       const arraySchema = getSchemaAtPath(schemaPath, schema);
 
       if (arraySchema?.type === "array") {
@@ -217,14 +192,6 @@ function getArrayElementTypeFromCall(
         const propertySchema = parameterType.shape[propertyName];
         if (propertySchema && propertySchema.type === "array") {
           return getArrayElementType(propertySchema);
-        }
-      }
-
-      // Fallback: try to find any matching property in schema
-      if (propertyName === "items" || propertyName === "employees") {
-        const itemsArraySchema = findArrayPropertyInSchema(schema, propertyName);
-        if (itemsArraySchema) {
-          return getArrayElementType(itemsArraySchema);
         }
       }
     }
@@ -256,40 +223,6 @@ function isNodeInsideArrowFunction(targetNode: any, arrowFunction: any): boolean
     return true;
   }
   return false;
-}
-
-function findArrayPropertyInSchema(schema: Schema, propertyName: string): any {
-  function searchInObject(obj: any): any {
-    if (!obj || typeof obj !== "object") return null;
-
-    if (obj.type === "object" && obj.shape) {
-      // Check if this object has the property we're looking for
-      if (obj.shape[propertyName] && obj.shape[propertyName].type === "array") {
-        return obj.shape[propertyName];
-      }
-
-      // Recursively search in nested objects
-      for (const key of Object.keys(obj.shape)) {
-        const result = searchInObject(obj.shape[key]);
-        if (result) return result;
-      }
-    }
-
-    if (obj.type === "array" && obj.shape) {
-      return searchInObject(obj.shape);
-    }
-
-    return null;
-  }
-
-  if (!schema.data) return null;
-
-  for (const key of Object.keys(schema.data)) {
-    const result = searchInObject(schema.data[key]);
-    if (result) return result;
-  }
-
-  return null;
 }
 
 function getSchemaAtPath(path: string[], schema: Schema): any {
@@ -346,4 +279,26 @@ function validateParameterAccess(
 
 export function getArrayElementType(schema: ArrayPropertySchema): PropertySchema | null {
   return schema.shape || null;
+}
+
+function buildParentMap(ast: Program): Map<any, any> {
+  const map = new Map<any, any>();
+  function visit(node: any, parent: any): void {
+    if (!node || typeof node !== "object" || !node.type) return;
+    map.set(node, parent);
+    for (const key of Object.keys(node)) {
+      const value = node[key];
+      if (value && typeof value === "object") {
+        if (Array.isArray(value)) {
+          for (const child of value) {
+            visit(child, node);
+          }
+        } else {
+          visit(value, node);
+        }
+      }
+    }
+  }
+  visit(ast, null);
+  return map;
 }
