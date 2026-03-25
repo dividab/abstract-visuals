@@ -12,14 +12,14 @@ type TestNode = {
 
 describe("render", () => {
   it("should render complete JSX pipeline successfully", () => {
-    const TestComponent = (props: { x: number; y: number }, ...children: any[]): TestNode => ({
+    const TestComponent = ({ children, ...props }: { x: number; y: number; children?: any[] }): TestNode => ({
       type: "TestComponent",
       props,
-      children,
+      children: children ?? [],
     });
 
     const result = render(
-      "<Test x={data.x} y={Math.floor(data.y)}>Hello</Test>",
+      "<Test x={x} y={Math.floor(y)}>Hello</Test>",
       {
         data: {
           x: { type: "number" },
@@ -53,7 +53,7 @@ describe("render", () => {
     });
 
     const result = render(
-      "<Test values={data.items.filter(x => x > 2).map(x => x * 2).join(', ')}>Text</Test>",
+      "<Test values={items.filter(x => x > 2).map(x => x * 2).join(', ')}>Text</Test>",
       {
         data: {
           items: { type: "array", shape: { type: "number" } },
@@ -76,16 +76,16 @@ describe("render", () => {
   });
 
   it("should render nested JSX elements", () => {
-    const OuterComponent = (props: { x: number }, ...children: any[]): TestNode => ({
+    const OuterComponent = ({ children, ...props }: { x: number; children?: any[] }): TestNode => ({
       type: "OuterComponent",
       props,
-      children,
+      children: children ?? [],
     });
 
-    const InnerComponent = (props: { y: number }): TestNode => ({
+    const InnerComponent = ({ children, ...props }: { y: number; children?: any[] }): TestNode => ({
       type: "InnerComponent",
       props,
-      children: [],
+      children: children ?? [],
     });
 
     const result = render(
@@ -146,7 +146,7 @@ describe("render", () => {
 
   it("should render bare expression containers", () => {
     const result = render(
-      "{data.user.name}",
+      "{user.name}",
       {
         data: {
           user: {
@@ -169,7 +169,7 @@ describe("render", () => {
 
   it("should render bare mathematical expressions", () => {
     const result = render(
-      "{data.count * 2}",
+      "{count * 2}",
       {
         data: {
           count: { type: "number" },
@@ -187,7 +187,7 @@ describe("render", () => {
 
   it("should render bare method calls", () => {
     const result = render(
-      "{data.text.toUpperCase()}",
+      "{text.toUpperCase()}",
       {
         data: {
           text: { type: "string" },
@@ -205,7 +205,7 @@ describe("render", () => {
 
   it("should render bare complex expressions", () => {
     const result = render(
-      "{data.numbers.map(x => x * 2).join(', ')}",
+      "{numbers.map(x => x * 2).join(', ')}",
       {
         data: {
           numbers: {
@@ -289,7 +289,7 @@ describe("render", () => {
 
     expect(() =>
       render(
-        "<Test>{data.items.push(1)}</Test>",
+        "<Test>{items.push(1)}</Test>",
         {
           data: {
             items: {
@@ -343,7 +343,7 @@ describe("render", () => {
 
     expect(() =>
       render(
-        "<Test value={data.missing.nested}>Hello</Test>",
+        "<Test value={missing.nested}>Hello</Test>",
         {
           data: {
             missing: {
@@ -401,7 +401,7 @@ describe("render", () => {
     });
 
     const result = render(
-      "<Test msg={data.show ? 'visible' : 'hidden'}>Text</Test>",
+      "<Test msg={show ? 'visible' : 'hidden'}>Text</Test>",
       {
         data: {
           show: { type: "boolean" },
