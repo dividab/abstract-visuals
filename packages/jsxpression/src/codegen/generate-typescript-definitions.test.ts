@@ -265,8 +265,7 @@ describe("generateTypeScriptDefinitions", () => {
 
       const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("const data:");
-      expect(result).toContain("userName: string");
+      expect(result).toContain("const userName: string");
     });
 
     it("should generate data with multiple property types", () => {
@@ -281,10 +280,9 @@ describe("generateTypeScriptDefinitions", () => {
 
       const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("const data:");
-      expect(result).toContain("name: string");
-      expect(result).toContain("age: number");
-      expect(result).toContain("active: boolean");
+      expect(result).toContain("const name: string");
+      expect(result).toContain("const age: number");
+      expect(result).toContain("const active: boolean");
     });
 
     it("should generate data with object property", () => {
@@ -303,8 +301,7 @@ describe("generateTypeScriptDefinitions", () => {
 
       const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("const data:");
-      expect(result).toContain("user:");
+      expect(result).toContain("const user:");
       expect(result).toContain("name: string");
       expect(result).toContain("email: string");
     });
@@ -331,8 +328,7 @@ describe("generateTypeScriptDefinitions", () => {
 
       const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("const data:");
-      expect(result).toContain("user:");
+      expect(result).toContain("const user:");
       expect(result).toContain("profile:");
       expect(result).toContain("avatar: string");
       expect(result).toContain("bio: string");
@@ -355,9 +351,8 @@ describe("generateTypeScriptDefinitions", () => {
 
       const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("const data:");
-      expect(result).toContain("tags: string[]");
-      expect(result).toContain("scores: number[]");
+      expect(result).toContain("const tags: string[]");
+      expect(result).toContain("const scores: number[]");
     });
 
     it("should generate data with array of objects", () => {
@@ -379,8 +374,7 @@ describe("generateTypeScriptDefinitions", () => {
 
       const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("const data:");
-      expect(result).toContain("users:");
+      expect(result).toContain("const users:");
       expect(result).toContain("name: string");
       expect(result).toContain("age: number");
       expect(result).toContain("[]");
@@ -419,9 +413,10 @@ describe("generateTypeScriptDefinitions", () => {
 
       const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("const data:");
-      expect(result).toContain('status: "pending" | "active" | "completed"');
-      expect(result).toContain("priority: 1 | 2 | 3");
+      expect(result).toContain("const status:");
+      expect(result).toContain('"pending" | "active" | "completed"');
+      expect(result).toContain("const priority:");
+      expect(result).toContain("1 | 2 | 3");
     });
   });
 
@@ -448,9 +443,8 @@ describe("generateTypeScriptDefinitions", () => {
 
       const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("const data:");
-      expect(result).toContain("userName: string");
-      expect(result).toContain("count: number");
+      expect(result).toContain("const userName: string");
+      expect(result).toContain("const count: number");
 
       expect(result).toContain("interface DisplayProps");
       expect(result).toContain("interface CounterProps");
@@ -589,8 +583,7 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("declare global");
       expect(result).toContain("export {};");
 
-      expect(result).toContain("const data:");
-      expect(result).toContain("user:");
+      expect(result).toContain("const user:");
       expect(result).toContain("name: string");
       expect(result).toContain("email: string");
       expect(result).toContain("settings:");
