@@ -8,17 +8,27 @@ import { getNodeRange } from "../utils.js";
 
 export function analyzeIdentifiers(
   ast: Program,
-  _schema: Schema,
+  schema: Schema,
   validationContext: ValidationContext
 ): AnalysisReport {
   const analysisReport = new AnalysisReport();
   const arrowParamScopes = getArrowParamScopes(ast);
+  const parentMap = buildParentMap(ast);
 
   traverse(ast, {
     Identifier(node: Identifier) {
       const { name } = node;
 
-      const allowedRoots = ["props", "data", ...getBuiltinGlobals()];
+      const parent = parentMap.get(node);
+      if (parent?.type === "MemberExpression" && parent.property === node && !parent.computed) {
+        return;
+      }
+      if (parent?.type === "Property" && parent.key === node && !parent.computed) {
+        return;
+      }
+
+      const dataKeys = Object.keys(schema.data ?? {});
+      const allowedRoots = ["props", ...dataKeys, ...getBuiltinGlobals()];
 
       if (allowedRoots.includes(name)) {
         return;
@@ -110,4 +120,32 @@ function findArrowParent(targetNode: AnyNode, rootNode: AnyNode): ArrowFunctionE
 
   walk(rootNode);
   return found;
+}
+
+function buildParentMap(ast: Program): Map<any, any> {
+  const parentMap = new Map<any, any>();
+
+  function visit(node: any, parent: any): void {
+    if (!node || typeof node !== "object") return;
+    if (node.type) {
+      parentMap.set(node, parent);
+    }
+    for (const key of Object.keys(node)) {
+      const value = node[key];
+      if (value && typeof value === "object") {
+        if (Array.isArray(value)) {
+          for (const child of value) {
+            if (child && typeof child === "object" && child.type) {
+              visit(child, node);
+            }
+          }
+        } else if (value.type) {
+          visit(value, node);
+        }
+      }
+    }
+  }
+
+  visit(ast, null);
+  return parentMap;
 }
