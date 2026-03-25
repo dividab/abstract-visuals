@@ -25,7 +25,7 @@ export type Component = (...args: any[]) => any;
  * @template T - The return type of createElement function
  */
 export interface EvaluateOptions<T = any> {
-  /** Data object available as `data.*` in JSX expressions */
+  /** Data object whose keys become top-level variables in JSX expressions */
   data?: DataDict;
   /** Map of component names to component functions used in JSX */
   components?: ComponentDict;
@@ -35,14 +35,21 @@ export interface EvaluateOptions<T = any> {
   createElement?: CreateElement<T>;
 }
 
+const RESERVED_PARAMS = new Set(["h", "Math"]);
+const VALID_IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
 export function evaluate<T = any>(source: string, schema: Schema, options: EvaluateOptions<T>): T {
   const { data = {}, components = {}, functions = {}, createElement } = options;
 
+  const dataKeys = Object.keys(data);
+  const functionKeys = Object.keys(functions);
+  validateParamKeys(dataKeys, functionKeys);
+
   const h = createH(components, createElement || defaultCreateElement, schema);
-  const frozen = deepFreezeData(data);
+  const frozen = deepFreezeData(structuredClone(data));
   try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-    return new Function("h", "Math", ...Object.keys(frozen), ...Object.keys(functions), source)(
+    return new Function("h", "Math", ...dataKeys, ...functionKeys, source)(
       h,
       Math,
       ...Object.values(frozen),
@@ -55,6 +62,19 @@ export function evaluate<T = any>(source: string, schema: Schema, options: Evalu
     }
 
     throw new EvaluationError(error instanceof Error ? error.message : "Evaluation failed");
+  }
+}
+
+function validateParamKeys(dataKeys: string[], functionKeys: string[]): void {
+  const seen = new Set<string>(RESERVED_PARAMS);
+  for (const key of [...dataKeys, ...functionKeys]) {
+    if (!VALID_IDENTIFIER.test(key)) {
+      throw new EvaluationError(`Invalid key "${key}": must be a valid JavaScript identifier`);
+    }
+    if (seen.has(key)) {
+      throw new EvaluationError(`Duplicate or reserved parameter name "${key}"`);
+    }
+    seen.add(key);
   }
 }
 
@@ -78,12 +98,12 @@ function createH(components: ComponentDict, createElement: CreateElement, schema
 
 function deepFreezeData(obj: Record<string, unknown>): Record<string, unknown> {
   Object.freeze(obj);
-  Object.values(obj).filter(isDataDict).forEach(deepFreezeData);
+  for (const value of Object.values(obj)) {
+    if (typeof value === "object" && value !== null) {
+      deepFreezeData(value as Record<string, unknown>);
+    }
+  }
   return obj;
-}
-
-function isDataDict(value: any): value is DataDict {
-  return typeof value === "object" && value !== null;
 }
 
 function defaultCreateElement(Component: Component, props: PropsDict = {}, ...children: any[]): Node {
