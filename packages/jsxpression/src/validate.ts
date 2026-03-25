@@ -25,7 +25,7 @@ export interface ValidateOptions {
  *
  * @example
  * ```typescript
- * const result = validate("<Text>{data.user.name}</Text>", schema);
+ * const result = validate("<Text>{user.name}</Text>", schema);
  * if (result.ok) {
  *   console.log("JSX is valid!");
  * } else {
