@@ -35,13 +35,14 @@ export function svgPolygon(
 ): string {
   const bounds = bounds2FromVec2Array(points);
   const size = vec2Sub(bounds.max, bounds.min);
+  const pos = vec2Scale(vec2Add(bounds.max, bounds.min), 0.5);
   const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
   const pol = `<polygon points="${points
     .reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "")
     .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(
     1
   )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
-  return mask + pol;
+  return mask + pol + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
 export function svgCircle(
@@ -52,7 +53,6 @@ export function svgCircle(
   opacity: number,
   stroke: string,
   strokeWidth: number,
-
   holes?: ReadonlyArray<Hole>
 ): string {
   const size = vec2Scale(vec2(radius, radius), 2);
@@ -62,7 +62,49 @@ export function svgCircle(
   )}" fill="${fill}" fill-opacity="${opacity.toFixed(
     1
   )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
-  return mask + cir;
+  return mask + cir + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
+}
+
+function svgStrokedHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, strokeColor: string, strokeThickness: number): string {
+  if(strokeThickness <= Number.EPSILON) {
+    return "";
+  }
+
+  let svgHoles = "";
+  for(const hole of holes) {
+    const matrix = svgTrsMatrix(vec2Add(pos, hole.pos), rot);
+    switch(hole.type) {
+      case "RoundHole": {
+        svgHoles += `<circle
+          r="${hole.radius.toFixed(0)}"
+          transform="${matrix}"
+          fill="none"
+          stroke="${strokeColor}"
+          stroke-width="${strokeThickness}"
+        />`;
+        break;
+      }
+
+      case "SquareHole": {
+        const half = vec2Scale(hole.size, 0.5);
+        const points = [
+          vec2(-half.x, half.y),
+          vec2(half.x, half.y),
+          vec2(half.x, -half.y),
+          vec2(-half.x, -half.y),
+        ].map(((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`)).join(" ");
+        svgHoles += `<polygon 
+          points="${points}"
+          transform="${matrix}"
+          fill="none"
+          stroke="${strokeColor}"
+          stroke-width="${strokeThickness}"
+        />`;
+        break;
+      }
+    }
+  }
+  return svgHoles;
 }
 
 export const svgCircle2 = (

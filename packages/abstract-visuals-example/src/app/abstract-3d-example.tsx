@@ -115,10 +115,10 @@ export function Abstract3DExample(): React.ReactNode {
       </div>
       <div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
         <img
-          width="200px"
+          width="1000px"
           style={{ height: "max-content" }}
           src={`data:image/svg+xml,${encodeURIComponent(
-            Svg.render(systemair, { view: "front", stroke_thickness: 1, rotation: 270 }).image
+            Svg.render(systemair, { view: "front", stroke_thickness: 1, rotation: 0, only_stroke: false }).image
           )}`}
         />
         <div

@@ -19,7 +19,7 @@ import {
   boundsScene,
   vec3Sub,
 } from "../../abstract-3d.js";
-import { dxf, DxfOrigin, Handle } from "./dxf-encoding.js";
+import { dxf, dxfHandleCreate, DxfOrigin, Handle } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
@@ -37,7 +37,7 @@ export type DxfScene = { readonly scene: Scene; readonly options?: Optional<DxfO
 export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Optional<DxfOptions>): string {
   let allGroups = "";
   const allBounds = Array<Bounds3>();
-  const handle = { handle: 0x1000 };
+  const handle = dxfHandleCreate();
   const originOffset = originOffsetFromScenes(scenes, baseOptions?.origin ?? "Center");
   for (const view of scenes) {
     const { groups, size, center } = renderInternal(
@@ -56,7 +56,7 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
 export const render = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
   const bounds = boundsScene(scene);
-  const { groups, size, center } = renderInternal(scene, opts, vec3Zero, { handle: 0x1000 });
+  const { groups, size, center } = renderInternal(scene, opts, vec3Zero, dxfHandleCreate());
   return dxf(groups, bounds, size, center);
 };
 
@@ -186,6 +186,6 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
 
   const bounds2 = bounds3FromPosAndSize(offset, scene.size_deprecated);
   const groupRoot = group([], offset, vec3Zero, scene.groups);
-  const handleRef = { handle: 0x1000 };
+  const handleRef = dxfHandleCreate();
   return dxf(dxfGroup(groupRoot, center, unitRot, opts, handleRef), bounds2, scene.size_deprecated, center);
 };

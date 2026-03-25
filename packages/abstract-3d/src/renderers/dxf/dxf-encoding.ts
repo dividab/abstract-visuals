@@ -3,6 +3,9 @@ import { Bounds3, Vec3 } from "../../abstract-3d.js";
 import { generateUUID } from "three/src/math/MathUtils.js";
 import { colorToInteger } from "./color.js";
 
+const DXF_DEFAULT_HANDLE: number = 0x1000;
+const DXF_MODEL_SPACE_HANDLE: string = (0x1D).toString(16);
+
 export type DxfOrigin = "BottomLeftFront" | "Center";
 export type DxfDynamicColor = 7; // this color becomes white on a black background and black on a white background (therefore theme/dxf viewer dependent)
 
@@ -12,6 +15,12 @@ export function dxf(groups: string, bounds: Bounds3, size: Vec3, center: Vec3): 
 }
 
 export type Handle = { handle: number };
+
+export function dxfHandleCreate(): Handle {
+  return {
+    handle: DXF_DEFAULT_HANDLE,
+  };
+}
 
 export function dxfHandle(handleRef: Handle): string {
   return (++handleRef.handle).toString(16).toUpperCase();
@@ -34,7 +43,7 @@ export const dxf3DFACE = (
 5
 ${dxfHandle(handleRef)}
 330
-1D
+${DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
 ${
@@ -1671,7 +1680,7 @@ AcDbSymbolTable
   0
 BLOCK_RECORD
   5
-1D
+${DXF_MODEL_SPACE_HANDLE}
 330
 1
 100
@@ -1729,7 +1738,7 @@ BLOCK
   5
 AB6
 330
-1D
+${DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
   8
@@ -1755,7 +1764,7 @@ ENDBLK
   5
 AB7
 330
-1D
+${DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
   8
@@ -1855,7 +1864,7 @@ INSERT
 5
 AA3
 330
-1D
+${DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
   8
@@ -2713,7 +2722,7 @@ Model
  76
      0
 330
-1D
+${DXF_MODEL_SPACE_HANDLE}
 331
 2A
   0
