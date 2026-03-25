@@ -43,28 +43,28 @@ describe("parse", () => {
   });
 
   it("should parse JSX with complex expressions", () => {
-    const result = parse("<Text>{data.items.map(x => x * 2).join(', ')}</Text>");
+    const result = parse("<Text>{items.map(x => x * 2).join(', ')}</Text>");
 
     expect(result.type).toBe("Program");
     expect(result.body[0].type).toBe("ExpressionStatement");
   });
 
   it("should parse JSX with attributes", () => {
-    const result = parse('<Text x={10} y="hello" z={data.value}>Content</Text>');
+    const result = parse('<Text x={10} y="hello" z={value}>Content</Text>');
 
     expect(result.type).toBe("Program");
     expect(result.body[0].type).toBe("ExpressionStatement");
   });
 
   it("should parse self-closing JSX elements", () => {
-    const result = parse("<Input value={data.name} />");
+    const result = parse("<Input value={name} />");
 
     expect(result.type).toBe("Program");
     expect(result.body[0].type).toBe("ExpressionStatement");
   });
 
   it("should parse JSX with conditional expressions", () => {
-    const result = parse("<Text>{data.show ? 'visible' : 'hidden'}</Text>");
+    const result = parse("<Text>{show ? 'visible' : 'hidden'}</Text>");
 
     expect(result.type).toBe("Program");
     expect(result.body[0].type).toBe("ExpressionStatement");
