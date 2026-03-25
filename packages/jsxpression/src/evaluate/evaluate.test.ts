@@ -32,7 +32,7 @@ describe("evaluate", () => {
       children: props.children,
     });
 
-    const result = compileAndEvaluate("<Test x={data.x} y={data.y}>Hello</Test>", {
+    const result = compileAndEvaluate("<Test x={x} y={y}>Hello</Test>", {
       data: { x: 10, y: 20 },
       components: {
         Test: TestComponent,
@@ -53,7 +53,7 @@ describe("evaluate", () => {
       children: [],
     });
 
-    const result = compileAndEvaluate("<Test value={Math.floor(data.x * Math.PI)}>Text</Test>", {
+    const result = compileAndEvaluate("<Test value={Math.floor(x * Math.PI)}>Text</Test>", {
       data: { x: 5 },
       components: {
         Test: TestComponent,
@@ -105,7 +105,7 @@ describe("evaluate", () => {
       children: props.children,
     });
 
-    const result = compileAndEvaluate("<Outer x={data.x}><Inner y={data.y}>Text</Inner></Outer>", {
+    const result = compileAndEvaluate("<Outer x={x}><Inner y={y}>Text</Inner></Outer>", {
       data: { x: 10, y: 20 },
       components: {
         Outer: OuterComponent,
@@ -152,7 +152,7 @@ describe("evaluate", () => {
       children: [],
     });
 
-    const result = compileAndEvaluate("<Test msg={data.show ? 'visible' : 'hidden'}>Text</Test>", {
+    const result = compileAndEvaluate("<Test msg={show ? 'visible' : 'hidden'}>Text</Test>", {
       data: { show: true },
       components: {
         Test: TestComponent,
@@ -169,7 +169,7 @@ describe("evaluate", () => {
       children: [],
     });
 
-    const result = compileAndEvaluate("<Test values={data.items.filter(x => x > 2).map(x => x * 2)}>Text</Test>", {
+    const result = compileAndEvaluate("<Test values={items.filter(x => x > 2).map(x => x * 2)}>Text</Test>", {
       data: { items: [1, 2, 3, 4, 5] },
       components: {
         Test: TestComponent,
@@ -180,7 +180,7 @@ describe("evaluate", () => {
   });
 
   it("should handle runtime errors gracefully", () => {
-    const compiled = compile(parse("<Test value={data.missing.nested}>Text</Test>"));
+    const compiled = compile(parse("<Test value={missing.nested}>Text</Test>"));
     const TestComponent = (): Node => ({ type: "Test", props: {}, children: [] });
     const schema = createPermissiveSchema(["Test"]);
 
@@ -201,7 +201,7 @@ describe("evaluate", () => {
       children: [],
     });
 
-    const result = compileAndEvaluate("<Test msg={data.name || 'Anonymous'}>Text</Test>", {
+    const result = compileAndEvaluate("<Test msg={name || 'Anonymous'}>Text</Test>", {
       data: { name: "" },
       components: {
         Test: TestComponent,
@@ -218,7 +218,7 @@ describe("evaluate", () => {
       children: props.children,
     });
 
-    const result = compileAndEvaluate("<Test>{data.show && 'Visible'}{false}{'Always'}</Test>", {
+    const result = compileAndEvaluate("<Test>{show && 'Visible'}{false}{'Always'}</Test>", {
       data: { show: true },
       components: {
         Test: TestComponent,
@@ -246,7 +246,7 @@ describe("evaluate", () => {
       children: props.children,
     });
 
-    const result = compileAndEvaluate("<Test>{}{data.value}{}</Test>", {
+    const result = compileAndEvaluate("<Test>{}{value}{}</Test>", {
       data: { value: "hello" },
       components: { Test: TestComponent },
     });
@@ -262,7 +262,7 @@ describe("evaluate", () => {
     });
 
     const result = compileAndEvaluate(
-      "<Test values={data.items.filter(x => x > 2).map(x => x * 2).join(', ')}>Text</Test>",
+      "<Test values={items.filter(x => x > 2).map(x => x * 2).join(', ')}>Text</Test>",
       {
         data: { items: [1, 2, 3, 4, 5] },
         components: { Test: TestComponent },
@@ -290,7 +290,7 @@ describe("evaluate", () => {
       children: [],
     });
 
-    const result = compileAndEvaluate('<Test msg={"Hello " + data.name}>Text</Test>', {
+    const result = compileAndEvaluate('<Test msg={"Hello " + name}>Text</Test>', {
       data: { name: "World" },
       components: { Test: TestComponent },
     });
@@ -305,7 +305,7 @@ describe("evaluate", () => {
       children: [],
     });
 
-    const result = compileAndEvaluate("<Test value={data.x + data.y * 2}>Text</Test>", {
+    const result = compileAndEvaluate("<Test value={x + y * 2}>Text</Test>", {
       data: { x: 5, y: 3 },
       components: { Test: TestComponent },
     });
@@ -320,7 +320,7 @@ describe("evaluate", () => {
       children: props.children,
     });
 
-    const result = compileAndEvaluate("<Test>Hello {data.name}!</Test>", {
+    const result = compileAndEvaluate("<Test>Hello {name}!</Test>", {
       data: { name: "World" },
       components: { Test: TestComponent },
     });
