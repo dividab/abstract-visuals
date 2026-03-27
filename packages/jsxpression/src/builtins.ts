@@ -49,6 +49,7 @@ export interface BuiltinSchema {
 const MATH = "Math";
 const NUMBER = "Number";
 const NUMBER_PROTOTYPE = "Number.prototype";
+const STRING = "String";
 const ARRAY = "Array";
 const ARRAY_PROTOTYPE = "Array.prototype";
 const STRING_PROTOTYPE = "String.prototype";
@@ -737,6 +738,11 @@ const BUILTINS: Record<string, BuiltinSchema> = {
         description: "Gets the length of the array. This is a number one higher than the highest index in the array",
       },
     },
+  },
+
+  [STRING]: {
+    global: true,
+    intrinsic: false,
   },
 
   [STRING_PROTOTYPE]: {

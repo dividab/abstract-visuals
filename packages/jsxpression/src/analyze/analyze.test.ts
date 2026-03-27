@@ -1,829 +1,967 @@
-import { describe, it, expect } from "vitest";
-import { analyze } from "./analyze.js";
-import { parse } from "../parse/index.js";
-import { type Schema } from "../schema.js";
+import { describe, expect, it } from "vitest";
 import { getBuiltins } from "../builtins.js";
+import { parse } from "../parse/index.js";
+import type { Schema } from "../schema.js";
+import { analyze } from "./analyze.js";
 
 describe("analyze - consolidated tests", () => {
-  const baseSchema = {
-    data: {
-      user: {
-        type: "object",
-        shape: {
-          name: { type: "string" },
-          age: { type: "number" },
-          profile: {
-            type: "object",
-            shape: {
-              avatar: { type: "string" },
-              bio: { type: "string" },
-            },
-          },
-        },
-      },
-      text: { type: "string" },
-      items: {
-        type: "array",
-        shape: { type: "string" },
-      },
-      numbers: {
-        type: "array",
-        shape: { type: "number" },
-      },
-      products: {
-        type: "array",
-        shape: {
-          type: "object",
-          shape: {
-            name: { type: "string" },
-            price: { type: "number" },
-            tags: {
-              type: "array",
-              shape: { type: "string" },
-            },
-          },
-        },
-      },
-      departments: {
-        type: "array",
-        shape: {
-          type: "object",
-          shape: {
-            name: { type: "string" },
-            employees: {
-              type: "array",
-              shape: {
-                type: "object",
-                shape: {
-                  name: { type: "string" },
-                  role: { type: "string" },
-                  salary: { type: "number" },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    elements: {
-      Text: { props: {} },
-      div: { props: {} },
-      span: { props: {} },
-    },
-  } satisfies Schema;
+	const baseSchema = {
+		data: {
+			user: {
+				type: "object",
+				shape: {
+					name: { type: "string" },
+					age: { type: "number" },
+					profile: {
+						type: "object",
+						shape: {
+							avatar: { type: "string" },
+							bio: { type: "string" },
+						},
+					},
+				},
+			},
+			text: { type: "string" },
+			items: {
+				type: "array",
+				shape: { type: "string" },
+			},
+			numbers: {
+				type: "array",
+				shape: { type: "number" },
+			},
+			products: {
+				type: "array",
+				shape: {
+					type: "object",
+					shape: {
+						name: { type: "string" },
+						price: { type: "number" },
+						tags: {
+							type: "array",
+							shape: { type: "string" },
+						},
+					},
+				},
+			},
+			departments: {
+				type: "array",
+				shape: {
+					type: "object",
+					shape: {
+						name: { type: "string" },
+						employees: {
+							type: "array",
+							shape: {
+								type: "object",
+								shape: {
+									name: { type: "string" },
+									role: { type: "string" },
+									salary: { type: "number" },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		elements: {
+			Text: { props: {} },
+			div: { props: {} },
+			span: { props: {} },
+		},
+	} satisfies Schema;
 
-  describe("data access validation", () => {
-    describe("basic data access", () => {
-      it("should allow valid data access", () => {
-        const ast = parse("<Text>{user.name}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+	describe("data access validation", () => {
+		describe("basic data access", () => {
+			it("should allow valid data access", () => {
+				const ast = parse("<Text>{user.name}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow nested object access", () => {
-        const ast = parse("<Text>{user.profile.avatar}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow nested object access", () => {
+				const ast = parse("<Text>{user.profile.avatar}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should block invalid data properties", () => {
-        const ast = parse("<Text>{user.invalid}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Property 'user.invalid' does not exist in schema");
-      });
+			it("should block invalid data properties", () => {
+				const ast = parse("<Text>{user.invalid}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"Property 'user.invalid' does not exist in schema",
+				);
+			});
 
-      it("should block invalid nested properties", () => {
-        const ast = parse("<Text>{user.profile.invalid}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Property 'user.profile.invalid' does not exist in schema");
-      });
-    });
+			it("should block invalid nested properties", () => {
+				const ast = parse("<Text>{user.profile.invalid}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"Property 'user.profile.invalid' does not exist in schema",
+				);
+			});
+		});
 
-    describe("array access", () => {
-      it("should allow array access with valid methods", () => {
-        const ast = parse("<Text>{items.map(item => item)}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+		describe("array access", () => {
+			it("should allow array access with valid methods", () => {
+				const ast = parse("<Text>{items.map(item => item)}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow numeric array index access", () => {
-        const ast = parse("<Text>{items[0]}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow numeric array index access", () => {
+				const ast = parse("<Text>{items[0]}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow various numeric array indices", () => {
-        const ast = parse("<Text>{items[42]} and {numbers[1]}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow various numeric array indices", () => {
+				const ast = parse("<Text>{items[42]} and {numbers[1]}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow nested array access with indices", () => {
-        const ast = parse("<Text>{products[0].tags[1]}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow nested array access with indices", () => {
+				const ast = parse("<Text>{products[0].tags[1]}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should require array indices for nested object access", () => {
-        const ast = parse("<Text>{products.tags}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("products.tags");
-      });
+			it("should require array indices for nested object access", () => {
+				const ast = parse("<Text>{products.tags}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain("products.tags");
+			});
 
-      it("should detect typos on array properties", () => {
-        const ast = parse("<Text>{departments.lengdth}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].code).toBe("INVALID_DATA_ACCESS");
-        expect(result.errors[0].suggestions).toContain("length");
-      });
+			it("should detect typos on array properties", () => {
+				const ast = parse("<Text>{departments.lengdth}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].code).toBe("INVALID_DATA_ACCESS");
+				expect(result.errors[0].suggestions).toContain("length");
+			});
 
-      it("should allow string members on array elements", () => {
-        const ast = parse("<Text>{items[0].length}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow string members on array elements", () => {
+				const ast = parse("<Text>{items[0].length}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow array.at() method with positive index", () => {
-        const ast = parse("<Text>{items.at(0)}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow array.at() method with positive index", () => {
+				const ast = parse("<Text>{items.at(0)}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow array.at() method with negative index", () => {
-        const ast = parse("<Text>{items.at(-1)}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow array.at() method with negative index", () => {
+				const ast = parse("<Text>{items.at(-1)}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow array.at() method in complex expressions", () => {
-        const ast = parse("<Text>{products.at(-1).name}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow array.at() method in complex expressions", () => {
+				const ast = parse("<Text>{products.at(-1).name}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should block dynamic array access with variables", () => {
-        const ast = parse("<Text>{items[variable]}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors.some((e) => e.message.includes("variable") || e.message.includes("not allowed"))).toBe(
-          true
-        );
-      });
+			it("should block dynamic array access with variables", () => {
+				const ast = parse("<Text>{items[variable]}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(
+					result.errors.some(
+						(e) =>
+							e.message.includes("variable") ||
+							e.message.includes("not allowed"),
+					),
+				).toBe(true);
+			});
 
-      it("should block string-based computed access on objects", () => {
-        const ast = parse("<Text>{user['name']}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors.some((e) => e.message.includes("computed member access not allowed"))).toBe(true);
-      });
+			it("should block string-based computed access on objects", () => {
+				const ast = parse("<Text>{user['name']}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(
+					result.errors.some((e) =>
+						e.message.includes("computed member access not allowed"),
+					),
+				).toBe(true);
+			});
 
-      it("should block mutating array methods", () => {
-        const ast = parse("<Text>{items.push('new')}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("method items.push not allowed");
-      });
-    });
+			it("should block mutating array methods", () => {
+				const ast = parse("<Text>{items.push('new')}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"method items.push not allowed",
+				);
+			});
+		});
 
-    describe("arrow function parameter validation", () => {
-      it("should validate arrow function parameters - valid access", () => {
-        const ast = parse("<Text>{products.map((product, i) => product.name)}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+		describe("arrow function parameter validation", () => {
+			it("should validate arrow function parameters - valid access", () => {
+				const ast = parse(
+					"<Text>{products.map((product, i) => product.name)}</Text>",
+				);
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should validate arrow function parameters - invalid property", () => {
-        const ast = parse("<Text>{products.map((product, i) => product.invalid)}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Property 'invalid' does not exist on parameter 'product'");
-      });
+			it("should validate arrow function parameters - invalid property", () => {
+				const ast = parse(
+					"<Text>{products.map((product, i) => product.invalid)}</Text>",
+				);
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"Property 'invalid' does not exist on parameter 'product'",
+				);
+			});
 
-      it("should validate nested arrow functions", () => {
-        const ast = parse("<Text>{products.map(product => product.tags.map(tag => tag))}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should validate nested arrow functions", () => {
+				const ast = parse(
+					"<Text>{products.map(product => product.tags.map(tag => tag))}</Text>",
+				);
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should catch errors in nested arrow functions", () => {
-        const ast = parse("<Text>{products.map(product => product.tags.map(tag => tag.invalid))}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Cannot access property 'invalid' on string type");
-      });
+			it("should catch errors in nested arrow functions", () => {
+				const ast = parse(
+					"<Text>{products.map(product => product.tags.map(tag => tag.invalid))}</Text>",
+				);
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"Cannot access property 'invalid' on string type",
+				);
+			});
 
-      it("should validate index parameters", () => {
-        const ast = parse("<Text>{items.map((item, i) => i + 1)}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should validate index parameters", () => {
+				const ast = parse("<Text>{items.map((item, i) => i + 1)}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should catch invalid index parameter access", () => {
-        const ast = parse("<Text>{items.map((item, i) => i.invalid)}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Cannot access property 'invalid' on number type");
-      });
+			it("should catch invalid index parameter access", () => {
+				const ast = parse("<Text>{items.map((item, i) => i.invalid)}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"Cannot access property 'invalid' on number type",
+				);
+			});
 
-      it("should handle complex nested scenarios", () => {
-        const ast = parse(
-          "<Text>{departments.map((dept) => dept.employees.map((employee) => employee.salary))}</Text>"
-        );
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should handle complex nested scenarios", () => {
+				const ast = parse(
+					"<Text>{departments.map((dept) => dept.employees.map((employee) => employee.salary))}</Text>",
+				);
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should detect typos in complex nested scenarios", () => {
-        const ast = parse(
-          "<Text>{departments.map((dept) => dept.employees.map((employee) => employee.saladry))}</Text>"
-        );
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Property 'saladry' does not exist on parameter 'employee'");
-        expect(result.errors[0].suggestions).toEqual(["name", "role", "salary"]);
-      });
-    });
-  });
+			it("should detect typos in complex nested scenarios", () => {
+				const ast = parse(
+					"<Text>{departments.map((dept) => dept.employees.map((employee) => employee.saladry))}</Text>",
+				);
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"Property 'saladry' does not exist on parameter 'employee'",
+				);
+				expect(result.errors[0].suggestions).toEqual([
+					"name",
+					"role",
+					"salary",
+				]);
+			});
+		});
+	});
 
-  describe("method calls validation", () => {
-    // Dynamic builtin schema tests - generates tests for all methods in BUILTINS
-    describe("builtin methods - dynamic validation", () => {
-      const builtins = getBuiltins();
+	describe("method calls validation", () => {
+		// Dynamic builtin schema tests - generates tests for all methods in BUILTINS
+		describe("builtin methods - dynamic validation", () => {
+			const builtins = getBuiltins();
 
-      // Test each builtin object (Math, Array.prototype, String.prototype)
-      Object.entries(builtins).forEach(([objectName, schema]) => {
-        if (!schema.methods) return;
+			// Test each builtin object (Math, Array.prototype, String.prototype)
+			Object.entries(builtins).forEach(([objectName, schema]) => {
+				if (!schema.methods) return;
 
-        describe(`${objectName} methods`, () => {
-          Object.entries(schema.methods!).forEach(([methodName, methodDef]) => {
-            const displayName = objectName === "Math" ? `Math.${methodName}` : methodName;
+				describe(`${objectName} methods`, () => {
+					Object.entries(schema.methods!).forEach(([methodName, methodDef]) => {
+						const displayName =
+							objectName === "Math" ? `Math.${methodName}` : methodName;
 
-            it(`should allow ${displayName} with valid parameters`, () => {
-              let testExpression: string;
+						it(`should allow ${displayName} with valid parameters`, () => {
+							let testExpression: string;
 
-              if (objectName === "Math") {
-                // Math methods
-                if (methodDef.params[0]?.variadic) {
-                  // Variadic methods like max/min
-                  testExpression = `<Text>{Math.${methodName}(1, 2, 3)}</Text>`;
-                } else {
-                  // Fixed parameter methods like floor/ceil
-                  testExpression = `<Text>{Math.${methodName}(3.14)}</Text>`;
-                }
-              } else if (objectName === "Array.prototype") {
-                // Array methods
-                if (methodName === "map" || methodName === "filter") {
-                  testExpression = `<Text>{items.${methodName}(x => x)}</Text>`;
-                } else if (methodName === "reduce") {
-                  testExpression = `<Text>{numbers.${methodName}((a, b) => a + b, 0)}</Text>`;
-                } else if (methodName === "slice") {
-                  testExpression = `<Text>{items.${methodName}(0, 2)}</Text>`;
-                } else if (methodName === "join") {
-                  testExpression = `<Text>{items.${methodName}(", ")}</Text>`;
-                } else if (methodName === "includes" || methodName === "indexOf") {
-                  testExpression = `<Text>{items.${methodName}("test")}</Text>`;
-                } else if (methodName === "find" || methodName === "some" || methodName === "every") {
-                  // These methods need proper boolean-returning callbacks
-                  testExpression = `<Text>{items.${methodName}(x => x === "test")}</Text>`;
-                } else {
-                  // Other array methods with basic usage
-                  testExpression = `<Text>{items.${methodName}(x => x.length > 0)}</Text>`;
-                }
-              } else if (objectName === "String.prototype") {
-                // String methods
-                if (methodName === "charAt" || methodName === "charCodeAt") {
-                  testExpression = `<Text>{text.${methodName}(0)}</Text>`;
-                } else if (methodName === "slice" || methodName === "substring") {
-                  testExpression = `<Text>{text.${methodName}(0, 5)}</Text>`;
-                } else if (methodName === "indexOf" || methodName === "lastIndexOf") {
-                  testExpression = `<Text>{text.${methodName}("test")}</Text>`;
-                } else if (methodName === "split") {
-                  testExpression = `<Text>{text.${methodName}(",")}</Text>`;
-                } else if (methodName === "concat") {
-                  testExpression = `<Text>{text.${methodName}(" world")}</Text>`;
-                } else if (methodName === "includes" || methodName === "startsWith" || methodName === "endsWith") {
-                  testExpression = `<Text>{text.${methodName}("test")}</Text>`;
-                } else {
-                  // Methods with no parameters like trim, toLowerCase
-                  testExpression = `<Text>{text.${methodName}()}</Text>`;
-                }
-              } else {
-                // Fallback
-                testExpression = `<Text>{${objectName}.${methodName}()}</Text>`;
-              }
+							if (objectName === "Math") {
+								// Math methods
+								if (methodDef.params[0]?.variadic) {
+									// Variadic methods like max/min
+									testExpression = `<Text>{Math.${methodName}(1, 2, 3)}</Text>`;
+								} else {
+									// Fixed parameter methods like floor/ceil
+									testExpression = `<Text>{Math.${methodName}(3.14)}</Text>`;
+								}
+							} else if (objectName === "Array.prototype") {
+								// Array methods
+								if (methodName === "map" || methodName === "filter") {
+									testExpression = `<Text>{items.${methodName}(x => x)}</Text>`;
+								} else if (methodName === "reduce") {
+									testExpression = `<Text>{numbers.${methodName}((a, b) => a + b, 0)}</Text>`;
+								} else if (methodName === "slice") {
+									testExpression = `<Text>{items.${methodName}(0, 2)}</Text>`;
+								} else if (methodName === "join") {
+									testExpression = `<Text>{items.${methodName}(", ")}</Text>`;
+								} else if (
+									methodName === "includes" ||
+									methodName === "indexOf"
+								) {
+									testExpression = `<Text>{items.${methodName}("test")}</Text>`;
+								} else if (
+									methodName === "find" ||
+									methodName === "some" ||
+									methodName === "every"
+								) {
+									// These methods need proper boolean-returning callbacks
+									testExpression = `<Text>{items.${methodName}(x => x === "test")}</Text>`;
+								} else {
+									// Other array methods with basic usage
+									testExpression = `<Text>{items.${methodName}(x => x.length > 0)}</Text>`;
+								}
+							} else if (objectName === "String.prototype") {
+								// String methods
+								if (methodName === "charAt" || methodName === "charCodeAt") {
+									testExpression = `<Text>{text.${methodName}(0)}</Text>`;
+								} else if (
+									methodName === "slice" ||
+									methodName === "substring"
+								) {
+									testExpression = `<Text>{text.${methodName}(0, 5)}</Text>`;
+								} else if (
+									methodName === "indexOf" ||
+									methodName === "lastIndexOf"
+								) {
+									testExpression = `<Text>{text.${methodName}("test")}</Text>`;
+								} else if (methodName === "split") {
+									testExpression = `<Text>{text.${methodName}(",")}</Text>`;
+								} else if (methodName === "concat") {
+									testExpression = `<Text>{text.${methodName}(" world")}</Text>`;
+								} else if (
+									methodName === "includes" ||
+									methodName === "startsWith" ||
+									methodName === "endsWith"
+								) {
+									testExpression = `<Text>{text.${methodName}("test")}</Text>`;
+								} else {
+									// Methods with no parameters like trim, toLowerCase
+									testExpression = `<Text>{text.${methodName}()}</Text>`;
+								}
+							} else {
+								// Fallback
+								testExpression = `<Text>{${objectName}.${methodName}()}</Text>`;
+							}
 
-              const ast = parse(testExpression);
-              const result = analyze(ast, baseSchema);
-              expect(result.hasErrors).toBe(false);
-            });
+							const ast = parse(testExpression);
+							const result = analyze(ast, baseSchema);
+							expect(result.hasErrors).toBe(false);
+						});
 
-            // Test parameter validation for methods that have parameter constraints
-            const requiredParams = methodDef.params.filter((p) => p.required);
-            const nonVariadicParams = methodDef.params.filter((p) => !p.variadic);
+						// Test parameter validation for methods that have parameter constraints
+						const requiredParams = methodDef.params.filter((p) => p.required);
+						const nonVariadicParams = methodDef.params.filter(
+							(p) => !p.variadic,
+						);
 
-            if (requiredParams.length > 0) {
-              it(`should validate ${displayName} minimum parameters`, () => {
-                let testExpression: string;
+						if (requiredParams.length > 0) {
+							it(`should validate ${displayName} minimum parameters`, () => {
+								let testExpression: string;
 
-                if (objectName === "Math") {
-                  testExpression = `<Text>{Math.${methodName}()}</Text>`;
-                } else if (objectName === "Array.prototype") {
-                  testExpression = `<Text>{items.${methodName}()}</Text>`;
-                } else if (objectName === "String.prototype") {
-                  testExpression = `<Text>{text.${methodName}()}</Text>`;
-                } else {
-                  testExpression = `<Text>{${objectName}.${methodName}()}</Text>`;
-                }
+								if (objectName === "Math") {
+									testExpression = `<Text>{Math.${methodName}()}</Text>`;
+								} else if (objectName === "Array.prototype") {
+									testExpression = `<Text>{items.${methodName}()}</Text>`;
+								} else if (objectName === "String.prototype") {
+									testExpression = `<Text>{text.${methodName}()}</Text>`;
+								} else {
+									testExpression = `<Text>{${objectName}.${methodName}()}</Text>`;
+								}
 
-                const ast = parse(testExpression);
-                const result = analyze(ast, baseSchema);
-                expect(result.hasWarnings).toBe(true);
-                expect(result.warnings[0].message).toContain(
-                  `${displayName} expects at least ${requiredParams.length} parameter`
-                );
-              });
-            }
+								const ast = parse(testExpression);
+								const result = analyze(ast, baseSchema);
+								expect(result.hasWarnings).toBe(true);
+								expect(result.warnings[0].message).toContain(
+									`${displayName} expects at least ${requiredParams.length} parameter`,
+								);
+							});
+						}
 
-            // Test maximum parameters for non-variadic methods
-            if (nonVariadicParams.length === methodDef.params.length && methodDef.params.length > 0) {
-              it(`should validate ${displayName} maximum parameters`, () => {
-                // Create a call with too many parameters
-                const maxParams = methodDef.params.length;
-                const extraParams = Array(maxParams + 2)
-                  .fill("1")
-                  .join(", ");
+						// Test maximum parameters for non-variadic methods
+						if (
+							nonVariadicParams.length === methodDef.params.length &&
+							methodDef.params.length > 0
+						) {
+							it(`should validate ${displayName} maximum parameters`, () => {
+								// Create a call with too many parameters
+								const maxParams = methodDef.params.length;
+								const extraParams = Array(maxParams + 2)
+									.fill("1")
+									.join(", ");
 
-                let testExpression: string;
+								let testExpression: string;
 
-                if (objectName === "Math") {
-                  testExpression = `<Text>{Math.${methodName}(${extraParams})}</Text>`;
-                } else if (objectName === "Array.prototype") {
-                  if (methodName === "map" || methodName === "filter") {
-                    testExpression = `<Text>{items.${methodName}(x => x, {}, ${extraParams})}</Text>`;
-                  } else {
-                    testExpression = `<Text>{items.${methodName}(${extraParams})}</Text>`;
-                  }
-                } else if (objectName === "String.prototype") {
-                  testExpression = `<Text>{text.${methodName}(${extraParams})}</Text>`;
-                } else {
-                  testExpression = `<Text>{${objectName}.${methodName}(${extraParams})}</Text>`;
-                }
+								if (objectName === "Math") {
+									testExpression = `<Text>{Math.${methodName}(${extraParams})}</Text>`;
+								} else if (objectName === "Array.prototype") {
+									if (methodName === "map" || methodName === "filter") {
+										testExpression = `<Text>{items.${methodName}(x => x, {}, ${extraParams})}</Text>`;
+									} else {
+										testExpression = `<Text>{items.${methodName}(${extraParams})}</Text>`;
+									}
+								} else if (objectName === "String.prototype") {
+									testExpression = `<Text>{text.${methodName}(${extraParams})}</Text>`;
+								} else {
+									testExpression = `<Text>{${objectName}.${methodName}(${extraParams})}</Text>`;
+								}
 
-                const ast = parse(testExpression);
-                const result = analyze(ast, baseSchema);
-                expect(result.hasWarnings).toBe(true);
-                expect(result.warnings[0].message).toContain(`${displayName} expects at most ${maxParams} parameter`);
-              });
-            }
-          });
-        });
-      });
-    });
+								const ast = parse(testExpression);
+								const result = analyze(ast, baseSchema);
+								expect(result.hasWarnings).toBe(true);
+								expect(result.warnings[0].message).toContain(
+									`${displayName} expects at most ${maxParams} parameter`,
+								);
+							});
+						}
+					});
+				});
+			});
+		});
 
-    describe("builtin properties - dynamic validation", () => {
-      const builtins = getBuiltins();
+		describe("builtin properties - dynamic validation", () => {
+			const builtins = getBuiltins();
 
-      Object.entries(builtins).forEach(([objectName, schema]) => {
-        if (!schema.properties) return;
+			Object.entries(builtins).forEach(([objectName, schema]) => {
+				if (!schema.properties) return;
 
-        describe(`${objectName} properties`, () => {
-          Object.entries(schema.properties!).forEach(([propName, propDef]) => {
-            it(`should allow ${objectName}.${propName} property access`, () => {
-              let testExpression: string;
+				describe(`${objectName} properties`, () => {
+					Object.entries(schema.properties!).forEach(([propName, propDef]) => {
+						it(`should allow ${objectName}.${propName} property access`, () => {
+							let testExpression: string;
 
-              if (objectName === "Array.prototype") {
-                testExpression = `<Text>{items.${propName}}</Text>`;
-              } else if (objectName === "String.prototype") {
-                testExpression = `<Text>{text.${propName}}</Text>`;
-              } else {
-                testExpression = `<Text>{${objectName}.${propName}}</Text>`;
-              }
+							if (objectName === "Array.prototype") {
+								testExpression = `<Text>{items.${propName}}</Text>`;
+							} else if (objectName === "String.prototype") {
+								testExpression = `<Text>{text.${propName}}</Text>`;
+							} else {
+								testExpression = `<Text>{${objectName}.${propName}}</Text>`;
+							}
 
-              const ast = parse(testExpression);
-              const result = analyze(ast, baseSchema);
-              expect(result.hasErrors).toBe(false);
-            });
-          });
-        });
-      });
-    });
+							const ast = parse(testExpression);
+							const result = analyze(ast, baseSchema);
+							expect(result.hasErrors).toBe(false);
+						});
+					});
+				});
+			});
+		});
 
-    describe("blocked methods", () => {
-      it("should block mutating array methods", () => {
-        const blockedMethods = ["push", "pop", "shift", "unshift", "splice", "reverse", "sort"];
+		describe("blocked methods", () => {
+			it("should block mutating array methods", () => {
+				const blockedMethods = [
+					"push",
+					"pop",
+					"shift",
+					"unshift",
+					"splice",
+					"reverse",
+					"sort",
+				];
 
-        blockedMethods.forEach((method) => {
-          const ast = parse(`<Text>{items.${method}()}</Text>`);
-          const result = analyze(ast, baseSchema);
-          expect(result.hasErrors).toBe(true);
-          expect(result.errors[0].message).toContain(`method items.${method} not allowed`);
-        });
-      });
+				blockedMethods.forEach((method) => {
+					const ast = parse(`<Text>{items.${method}()}</Text>`);
+					const result = analyze(ast, baseSchema);
+					expect(result.hasErrors).toBe(true);
+					expect(result.errors[0].message).toContain(
+						`method items.${method} not allowed`,
+					);
+				});
+			});
 
-      it("should block Math.random (non-deterministic)", () => {
-        const ast = parse("<Text>{Math.random()}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("method Math.random not allowed");
-      });
+			it("should block Math.random (non-deterministic)", () => {
+				const ast = parse("<Text>{Math.random()}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"method Math.random not allowed",
+				);
+			});
 
-      it("should block unknown methods", () => {
-        const ast = parse("<Text>{Math.unknownMethod()}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("method Math.unknownMethod not allowed");
-      });
-    });
+			it("should block unknown methods", () => {
+				const ast = parse("<Text>{Math.unknownMethod()}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"method Math.unknownMethod not allowed",
+				);
+			});
+		});
 
-    describe("custom builtin schema", () => {
-      it("should work with custom builtin schema", () => {
-        const customSchema: Schema = {
-          data: {
-            value: { type: "number" },
-          },
-          elements: {
-            Text: { props: {} },
-          },
-        };
+		describe("custom builtin schema", () => {
+			it("should work with custom builtin schema", () => {
+				const customSchema: Schema = {
+					data: {
+						value: { type: "number" },
+					},
+					elements: {
+						Text: { props: {} },
+					},
+				};
 
-        // Math.max should work with default builtins
-        const ast1 = parse("<Text>{Math.max(value, 10)}</Text>");
-        const result1 = analyze(ast1, customSchema);
-        expect(result1.hasErrors).toBe(false);
+				// Math.max should work with default builtins
+				const ast1 = parse("<Text>{Math.max(value, 10)}</Text>");
+				const result1 = analyze(ast1, customSchema);
+				expect(result1.hasErrors).toBe(false);
 
-        // Math.min should also work since we use BUILTINS
-        const ast2 = parse("<Text>{Math.min(value, 10)}</Text>");
-        const result2 = analyze(ast2, customSchema);
-        expect(result2.hasErrors).toBe(false);
-      });
+				// Math.min should also work since we use BUILTINS
+				const ast2 = parse("<Text>{Math.min(value, 10)}</Text>");
+				const result2 = analyze(ast2, customSchema);
+				expect(result2.hasErrors).toBe(false);
+			});
 
-      it("should allow custom String methods in builtin schema", () => {
-        const customSchema: Schema = {
-          data: {
-            text: { type: "string" },
-          },
-          elements: {
-            Text: { props: {} },
-          },
-        };
+			it("should allow custom String methods in builtin schema", () => {
+				const customSchema: Schema = {
+					data: {
+						text: { type: "string" },
+					},
+					elements: {
+						Text: { props: {} },
+					},
+				};
 
-        const ast1 = parse("<Text>{text.toUpperCase()}</Text>");
-        const result1 = analyze(ast1, customSchema);
-        expect(result1.hasErrors).toBe(false);
+				const ast1 = parse("<Text>{text.toUpperCase()}</Text>");
+				const result1 = analyze(ast1, customSchema);
+				expect(result1.hasErrors).toBe(false);
 
-        const ast2 = parse("<Text>{text.toLowerCase()}</Text>");
-        const result2 = analyze(ast2, customSchema);
-        expect(result2.hasErrors).toBe(false);
-      });
+				const ast2 = parse("<Text>{text.toLowerCase()}</Text>");
+				const result2 = analyze(ast2, customSchema);
+				expect(result2.hasErrors).toBe(false);
+			});
 
-      it("should fall back to default builtin schema when not specified", () => {
-        const schemaWithoutBuiltins: Schema = {
-          data: {
-            x: { type: "number" },
-          },
-          elements: {
-            Text: { props: {} },
-          },
-          // No builtins specified - should use default
-        };
+			it("should fall back to default builtin schema when not specified", () => {
+				const schemaWithoutBuiltins: Schema = {
+					data: {
+						x: { type: "number" },
+					},
+					elements: {
+						Text: { props: {} },
+					},
+					// No builtins specified - should use default
+				};
 
-        // Should work with default builtin schema
-        const ast = parse("<Text>{Math.max(x, 10)}</Text>");
-        const result = analyze(ast, schemaWithoutBuiltins);
-        expect(result.hasErrors).toBe(false);
-      });
-    });
-  });
+				// Should work with default builtin schema
+				const ast = parse("<Text>{Math.max(x, 10)}</Text>");
+				const result = analyze(ast, schemaWithoutBuiltins);
+				expect(result.hasErrors).toBe(false);
+			});
+		});
+	});
 
-  describe("JSX validation", () => {
-    describe("elements", () => {
-      it("should allow valid elements", () => {
-        const ast = parse("<Text>Hello</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+	describe("JSX validation", () => {
+		describe("elements", () => {
+			it("should allow valid elements", () => {
+				const ast = parse("<Text>Hello</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should accept enum-constrained attribute values", () => {
-        const schema: Schema = {
-          ...baseSchema,
-          elements: {
-            ...baseSchema.elements,
-            Badge: {
-              props: {
-                variant: { type: "string", enum: ["primary", "secondary"] },
-              },
-            },
-          },
-        };
+			it("should accept enum-constrained attribute values", () => {
+				const schema: Schema = {
+					...baseSchema,
+					elements: {
+						...baseSchema.elements,
+						Badge: {
+							props: {
+								variant: { type: "string", enum: ["primary", "secondary"] },
+							},
+						},
+					},
+				};
 
-        const ast = parse('<Badge variant="primary" />');
-        const result = analyze(ast, schema);
-        expect(result.hasWarnings).toBe(false);
-        expect(result.hasErrors).toBe(false);
-      });
+				const ast = parse('<Badge variant="primary" />');
+				const result = analyze(ast, schema);
+				expect(result.hasWarnings).toBe(false);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should report invalid enum attribute values", () => {
-        const schema: Schema = {
-          ...baseSchema,
-          elements: {
-            ...baseSchema.elements,
-            Badge: {
-              props: {
-                variant: { type: "string", enum: ["primary", "secondary"] },
-              },
-            },
-          },
-        };
+			it("should report invalid enum attribute values", () => {
+				const schema: Schema = {
+					...baseSchema,
+					elements: {
+						...baseSchema.elements,
+						Badge: {
+							props: {
+								variant: { type: "string", enum: ["primary", "secondary"] },
+							},
+						},
+					},
+				};
 
-        const ast = parse('<Badge variant="danger" />');
-        const result = analyze(ast, schema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].code).toBe("INVALID_ATTRIBUTE_VALUE");
-        expect(result.errors[0].suggestions).toEqual(["primary", "secondary"]);
-      });
+				const ast = parse('<Badge variant="danger" />');
+				const result = analyze(ast, schema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].code).toBe("INVALID_ATTRIBUTE_VALUE");
+				expect(result.errors[0].suggestions).toEqual(["primary", "secondary"]);
+			});
 
-      it("should block invalid elements", () => {
-        const ast = parse("<InvalidElement>Hello</InvalidElement>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Element <InvalidElement> not allowed");
-      });
+			it("should block invalid elements", () => {
+				const ast = parse("<InvalidElement>Hello</InvalidElement>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					"Element <InvalidElement> not allowed",
+				);
+			});
 
-      it("should allow nested valid elements", () => {
-        const ast = parse(`
+			it("should allow nested valid elements", () => {
+				const ast = parse(`
           <div>
             <Text>Hello</Text>
             <span>World</span>
           </div>
         `);
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
-    });
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
+		});
 
-    describe("spread attributes", () => {
-      it("should allow spread with data object", () => {
-        const schema: Schema = {
-          data: {
-            props: {
-              type: "object",
-              shape: {
-                title: { type: "string" },
-                count: { type: "number" },
-              },
-            },
-          },
-          elements: {
-            Card: {
-              props: {
-                title: { type: "string" },
-                count: { type: "number" },
-              },
-            },
-          },
-        };
+		describe("spread attributes", () => {
+			it("should allow spread with data object", () => {
+				const schema: Schema = {
+					data: {
+						props: {
+							type: "object",
+							shape: {
+								title: { type: "string" },
+								count: { type: "number" },
+							},
+						},
+					},
+					elements: {
+						Card: {
+							props: {
+								title: { type: "string" },
+								count: { type: "number" },
+							},
+						},
+					},
+				};
 
-        const ast = parse("<Card {...props} />");
-        const result = analyze(ast, schema);
-        expect(result.hasErrors).toBe(false);
-      });
+				const ast = parse("<Card {...props} />");
+				const result = analyze(ast, schema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow spread with nested data object", () => {
-        const schema: Schema = {
-          data: {
-            user: {
-              type: "object",
-              shape: {
-                attributes: {
-                  type: "object",
-                  shape: {
-                    style: { type: "string" },
-                    className: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-          elements: {
-            Text: {
-              props: {
-                style: { type: "string" },
-                className: { type: "string" },
-              },
-            },
-          },
-        };
+			it("should allow spread with nested data object", () => {
+				const schema: Schema = {
+					data: {
+						user: {
+							type: "object",
+							shape: {
+								attributes: {
+									type: "object",
+									shape: {
+										style: { type: "string" },
+										className: { type: "string" },
+									},
+								},
+							},
+						},
+					},
+					elements: {
+						Text: {
+							props: {
+								style: { type: "string" },
+								className: { type: "string" },
+							},
+						},
+					},
+				};
 
-        const ast = parse("<Text {...user.attributes} />");
-        const result = analyze(ast, schema);
-        expect(result.hasErrors).toBe(false);
-      });
+				const ast = parse("<Text {...user.attributes} />");
+				const result = analyze(ast, schema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow spread with arrow function parameter", () => {
-        const schema: Schema = {
-          data: {
-            items: {
-              type: "array",
-              shape: {
-                type: "object",
-                shape: {
-                  name: { type: "string" },
-                  props: {
-                    type: "object",
-                    shape: {
-                      color: { type: "string" },
-                      size: { type: "number" },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          elements: {
-            Item: {
-              props: {
-                color: { type: "string" },
-                size: { type: "number" },
-              },
-            },
-            div: {
-              props: {},
-            },
-          },
-        };
+			it("should allow spread with arrow function parameter", () => {
+				const schema: Schema = {
+					data: {
+						items: {
+							type: "array",
+							shape: {
+								type: "object",
+								shape: {
+									name: { type: "string" },
+									props: {
+										type: "object",
+										shape: {
+											color: { type: "string" },
+											size: { type: "number" },
+										},
+									},
+								},
+							},
+						},
+					},
+					elements: {
+						Item: {
+							props: {
+								color: { type: "string" },
+								size: { type: "number" },
+							},
+						},
+						div: {
+							props: {},
+						},
+					},
+				};
 
-        const ast = parse("<div>{items.map(item => <Item {...item.props} />)}</div>");
-        const result = analyze(ast, schema);
-        expect(result.hasErrors).toBe(false);
-      });
+				const ast = parse(
+					"<div>{items.map(item => <Item {...item.props} />)}</div>",
+				);
+				const result = analyze(ast, schema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow spread with the parameter itself", () => {
-        const schema: Schema = {
-          data: {
-            items: {
-              type: "array",
-              shape: {
-                type: "object",
-                shape: {
-                  name: { type: "string" },
-                  value: { type: "number" },
-                },
-              },
-            },
-          },
-          elements: {
-            Item: {
-              props: {
-                name: { type: "string" },
-                value: { type: "number" },
-              },
-            },
-            div: {
-              props: {},
-            },
-          },
-        };
+			it("should allow spread with the parameter itself", () => {
+				const schema: Schema = {
+					data: {
+						items: {
+							type: "array",
+							shape: {
+								type: "object",
+								shape: {
+									name: { type: "string" },
+									value: { type: "number" },
+								},
+							},
+						},
+					},
+					elements: {
+						Item: {
+							props: {
+								name: { type: "string" },
+								value: { type: "number" },
+							},
+						},
+						div: {
+							props: {},
+						},
+					},
+				};
 
-        const ast = parse("<div>{items.map(item => <Item {...item} />)}</div>");
-        const result = analyze(ast, schema);
-        expect(result.hasErrors).toBe(false);
-      });
+				const ast = parse("<div>{items.map(item => <Item {...item} />)}</div>");
+				const result = analyze(ast, schema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow spread combined with regular attributes", () => {
-        const schema: Schema = {
-          data: {
-            props: {
-              type: "object",
-              shape: {
-                title: { type: "string" },
-              },
-            },
-          },
-          elements: {
-            Card: {
-              props: {
-                title: { type: "string" },
-                highlighted: { type: "boolean" },
-              },
-            },
-          },
-        };
+			it("should allow spread combined with regular attributes", () => {
+				const schema: Schema = {
+					data: {
+						props: {
+							type: "object",
+							shape: {
+								title: { type: "string" },
+							},
+						},
+					},
+					elements: {
+						Card: {
+							props: {
+								title: { type: "string" },
+								highlighted: { type: "boolean" },
+							},
+						},
+					},
+				};
 
-        const ast = parse("<Card {...props} highlighted={true} />");
-        const result = analyze(ast, schema);
-        expect(result.hasErrors).toBe(false);
-      });
+				const ast = parse("<Card {...props} highlighted={true} />");
+				const result = analyze(ast, schema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow multiple spreads", () => {
-        const schema: Schema = {
-          data: {
-            baseProps: {
-              type: "object",
-              shape: {
-                title: { type: "string" },
-              },
-            },
-            extraProps: {
-              type: "object",
-              shape: {
-                count: { type: "number" },
-              },
-            },
-          },
-          elements: {
-            Card: {
-              props: {
-                title: { type: "string" },
-                count: { type: "number" },
-              },
-            },
-          },
-        };
+			it("should allow multiple spreads", () => {
+				const schema: Schema = {
+					data: {
+						baseProps: {
+							type: "object",
+							shape: {
+								title: { type: "string" },
+							},
+						},
+						extraProps: {
+							type: "object",
+							shape: {
+								count: { type: "number" },
+							},
+						},
+					},
+					elements: {
+						Card: {
+							props: {
+								title: { type: "string" },
+								count: { type: "number" },
+							},
+						},
+					},
+				};
 
-        const ast = parse("<Card {...baseProps} {...extraProps} />");
-        const result = analyze(ast, schema);
-        expect(result.hasErrors).toBe(false);
-      });
-    });
+				const ast = parse("<Card {...baseProps} {...extraProps} />");
+				const result = analyze(ast, schema);
+				expect(result.hasErrors).toBe(false);
+			});
+		});
 
-    describe("empty expressions", () => {
-      it("should allow empty JSX expressions {} in children", () => {
-        const ast = parse("<Text>{}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+		describe("empty expressions", () => {
+			it("should allow empty JSX expressions {} in children", () => {
+				const ast = parse("<Text>{}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow multiple empty expressions in children", () => {
-        const ast = parse("<Text>{}{}{}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow multiple empty expressions in children", () => {
+				const ast = parse("<Text>{}{}{}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should allow empty expressions mixed with content in children", () => {
-        const ast = parse("<Text>Hello {}{user.name}{} World</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-      });
+			it("should allow empty expressions mixed with content in children", () => {
+				const ast = parse("<Text>Hello {}{user.name}{} World</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+			});
 
-      it("should handle empty expressions without compile errors", () => {
-        const ast = parse("<Text>{}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(false);
-        expect(ast).toBeDefined();
-        expect(ast.body).toHaveLength(1);
-      });
-    });
-  });
+			it("should handle empty expressions without compile errors", () => {
+				const ast = parse("<Text>{}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(false);
+				expect(ast).toBeDefined();
+				expect(ast.body).toHaveLength(1);
+			});
+		});
+	});
 
-  describe("security validation", () => {
-    describe("disallowed identifiers", () => {
-      it("should block window access", () => {
-        const ast = parse("<Text>{window.alert('hack')}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain('Identifier "window" not allowed');
-      });
+	describe("security validation", () => {
+		describe("disallowed identifiers", () => {
+			it("should block window access", () => {
+				const ast = parse("<Text>{window.alert('hack')}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					'Identifier "window" not allowed',
+				);
+			});
 
-      it("should block document access", () => {
-        const ast = parse("<Text>{document.body}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain('Identifier "document" not allowed');
-      });
-    });
+			it("should block document access", () => {
+				const ast = parse("<Text>{document.body}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					'Identifier "document" not allowed',
+				);
+			});
+		});
 
-    describe("dangerous expressions", () => {
-      it("should block eval", () => {
-        const ast = parse("<Text>{eval('alert(1)')}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain('Identifier "eval" not allowed');
-      });
+		describe("dangerous expressions", () => {
+			it("should block eval", () => {
+				const ast = parse("<Text>{eval('alert(1)')}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					'Identifier "eval" not allowed',
+				);
+			});
 
-      it("should block Function constructor", () => {
-        const ast = parse("<Text>{new Function('return 1')()}</Text>");
-        const result = analyze(ast, baseSchema);
-        expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain('Identifier "Function" not allowed');
-      });
-    });
-  });
+			it("should block Function constructor", () => {
+				const ast = parse("<Text>{new Function('return 1')()}</Text>");
+				const result = analyze(ast, baseSchema);
+				expect(result.hasErrors).toBe(true);
+				expect(result.errors[0].message).toContain(
+					'Identifier "Function" not allowed',
+				);
+			});
+		});
+	});
 
-  describe("integration scenarios", () => {
-    it("should catch multiple errors in complex expressions", () => {
-      const ast = parse(`
+	describe("integration scenarios", () => {
+		it("should catch multiple errors in complex expressions", () => {
+			const ast = parse(`
         <InvalidElement>
           <Text>{user.invalid}</Text>
           <span>{window.location}</span>
         </InvalidElement>
       `);
-      const result = analyze(ast, baseSchema);
-      expect(result.hasErrors).toBe(true);
-      expect(result.errors.length).toBeGreaterThan(1);
-    });
-  });
+			const result = analyze(ast, baseSchema);
+			expect(result.hasErrors).toBe(true);
+			expect(result.errors.length).toBeGreaterThan(1);
+		});
+	});
+
+	describe("return requirement", () => {
+		it("should allow bare JSX without return (no declarations)", () => {
+			const ast = parse("<Text>hello</Text>");
+			const result = analyze(ast, baseSchema);
+			expect(
+				result.issues.filter((i) => i.code === "RETURN_REQUIRED"),
+			).toHaveLength(0);
+		});
+
+		it("should require return when const is present", () => {
+			const ast = parse("const x = 1;\n<Text>hello</Text>");
+			const result = analyze(ast, baseSchema);
+			expect(result.issues.some((i) => i.code === "RETURN_REQUIRED")).toBe(
+				true,
+			);
+		});
+
+		it("should allow const + return", () => {
+			const ast = parse("const x = 1\nreturn <Text>hello</Text>");
+			const result = analyze(ast, baseSchema);
+			expect(
+				result.issues.filter((i) => i.code === "RETURN_REQUIRED"),
+			).toHaveLength(0);
+		});
+
+		it("should require return when function is present", () => {
+			const ast = parse(
+				"function Foo() {\n  return <Text>hi</Text>\n}\n<Foo />",
+			);
+			const result = analyze(ast, baseSchema);
+			expect(result.issues.some((i) => i.code === "RETURN_REQUIRED")).toBe(
+				true,
+			);
+		});
+
+		it("should allow function + return", () => {
+			const ast = parse(
+				"function Foo() {\n  return <Text>hi</Text>\n}\nreturn <Foo />",
+			);
+			const result = analyze(ast, baseSchema);
+			expect(
+				result.issues.filter((i) => i.code === "RETURN_REQUIRED"),
+			).toHaveLength(0);
+		});
+
+		it("should give helpful message for bare JSX after declarations", () => {
+			const ast = parse("const x = 1;\n<Text>hello</Text>");
+			const result = analyze(ast, baseSchema);
+			const issue = result.issues.find((i) => i.code === "RETURN_REQUIRED");
+			expect(issue?.message).toContain("Add 'return' before the JSX");
+		});
+	});
 });
