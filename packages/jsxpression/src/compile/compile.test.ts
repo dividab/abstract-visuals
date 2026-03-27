@@ -135,9 +135,7 @@ describe("compile", () => {
     it("should compile mixed spread and regular properties in objects", () => {
       const ast = parse("<div style={{ color: 'red', ...styles, width: 100 }}>Text</div>");
       const result = compile(ast);
-      expect(result).toBe(
-        '"use strict";return h("div", { style: { color: "red", ...styles, width: 100 } }, "Text");'
-      );
+      expect(result).toBe('"use strict";return h("div", { style: { color: "red", ...styles, width: 100 } }, "Text");');
     });
 
     it("should compile multiple spreads in arrays", () => {
@@ -288,9 +286,7 @@ describe("compile", () => {
     });
 
     it("should compile return after const and function", () => {
-      const ast = parse(
-        "const x = 1;\nfunction F() {\n  return <span>f</span>\n}\nreturn <div><F />{x}</div>"
-      );
+      const ast = parse("const x = 1;\nfunction F() {\n  return <span>f</span>\n}\nreturn <div><F />{x}</div>");
       const result = compile(ast);
       expect(result).toContain("const x = 1;");
       expect(result).toContain("function F()");

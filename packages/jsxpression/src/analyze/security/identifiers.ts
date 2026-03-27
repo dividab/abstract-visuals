@@ -1,10 +1,4 @@
-import type {
-  AnyNode,
-  ArrowFunctionExpression,
-  FunctionDeclaration,
-  Identifier,
-  Program,
-} from "acorn";
+import type { AnyNode, ArrowFunctionExpression, FunctionDeclaration, Identifier, Program } from "acorn";
 import { getBuiltinGlobals } from "../../builtins.js";
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
@@ -12,11 +6,7 @@ import { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
 
-export function analyzeIdentifiers(
-  ast: Program,
-  schema: Schema,
-  validationContext: ValidationContext
-): AnalysisReport {
+export function analyzeIdentifiers(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();
   const arrowParamScopes = getArrowParamScopes(ast);
   const functionParamScopes = getFunctionParamScopes(ast);
@@ -197,10 +187,7 @@ function getTopLevelFunctionNames(ast: Program): string[] {
   return names;
 }
 
-function findScopeParent(
-  targetNode: AnyNode,
-  rootNode: AnyNode
-): ArrowFunctionExpression | FunctionDeclaration | null {
+function findScopeParent(targetNode: AnyNode, rootNode: AnyNode): ArrowFunctionExpression | FunctionDeclaration | null {
   let found: ArrowFunctionExpression | FunctionDeclaration | null = null;
 
   function walk(node: AnyNode): boolean {
@@ -208,9 +195,7 @@ function findScopeParent(
       return true;
     }
 
-    const isScope =
-      node.type === "ArrowFunctionExpression" ||
-      node.type === "FunctionDeclaration";
+    const isScope = node.type === "ArrowFunctionExpression" || node.type === "FunctionDeclaration";
 
     if (isScope) {
       found = node as ArrowFunctionExpression | FunctionDeclaration;

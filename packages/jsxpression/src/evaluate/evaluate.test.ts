@@ -350,13 +350,10 @@ describe("evaluate", () => {
         children: [],
       });
 
-      const result = compileAndEvaluate(
-        "const a = x + 1;\nconst b = a * 2;\nreturn <Test value={b}>Text</Test>",
-        {
-          data: { x: 3 },
-          components: { Test: TestComponent },
-        }
-      );
+      const result = compileAndEvaluate("const a = x + 1;\nconst b = a * 2;\nreturn <Test value={b}>Text</Test>", {
+        data: { x: 3 },
+        components: { Test: TestComponent },
+      });
 
       expect(result.props!.value).toBe(8); // (3+1)*2
     });
@@ -368,13 +365,10 @@ describe("evaluate", () => {
         children: [],
       });
 
-      const result = compileAndEvaluate(
-        "const greeting = 'Hello ' + name;\nreturn <Test msg={greeting}>Text</Test>",
-        {
-          data: { name: "World" },
-          components: { Test: TestComponent },
-        }
-      );
+      const result = compileAndEvaluate("const greeting = 'Hello ' + name;\nreturn <Test msg={greeting}>Text</Test>", {
+        data: { name: "World" },
+        components: { Test: TestComponent },
+      });
 
       expect(result.props!.msg).toBe("Hello World");
     });
