@@ -1,10 +1,16 @@
-import type { AnyNode, ArrowFunctionExpression, Identifier, Program } from "acorn";
-import { traverse } from "../../traverse.js";
-import type { Schema } from "../../schema.js";
+import type {
+  AnyNode,
+  ArrowFunctionExpression,
+  FunctionDeclaration,
+  Identifier,
+  Program,
+} from "acorn";
 import { getBuiltinGlobals } from "../../builtins.js";
-import { ValidationContext } from "../validation-context.js";
+import type { Schema } from "../../schema.js";
+import { traverse } from "../../traverse.js";
 import { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
+import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeIdentifiers(
   ast: Program,
@@ -13,7 +19,13 @@ export function analyzeIdentifiers(
 ): AnalysisReport {
   const analysisReport = new AnalysisReport();
   const arrowParamScopes = getArrowParamScopes(ast);
+  const functionParamScopes = getFunctionParamScopes(ast);
+  const functionLocalConsts = getFunctionLocalConsts(ast);
   const parentMap = buildParentMap(ast);
+
+  const constNames = getTopLevelConstNames(ast);
+  const functionNames = getTopLevelFunctionNames(ast);
+  const schemaFunctionNames = Object.keys(schema.functions ?? {});
 
   traverse(ast, {
     Identifier(node: Identifier) {
@@ -26,20 +38,43 @@ export function analyzeIdentifiers(
       if (parent?.type === "Property" && parent.key === node && !parent.computed) {
         return;
       }
+      if (parent?.type === "VariableDeclarator" && parent.id === node) {
+        return;
+      }
+      if (parent?.type === "FunctionDeclaration" && parent.id === node) {
+        return;
+      }
 
       const dataKeys = Object.keys(schema.data ?? {});
-      const allowedRoots = ["props", ...dataKeys, ...getBuiltinGlobals()];
+      const allowedRoots = [
+        "props",
+        ...dataKeys,
+        ...getBuiltinGlobals(),
+        ...constNames,
+        ...functionNames,
+        ...schemaFunctionNames,
+      ];
 
       if (allowedRoots.includes(name)) {
         return;
       }
 
-      const arrowParent = findArrowParent(node, ast);
+      const scopeParent = findScopeParent(node, ast);
 
-      if (arrowParent) {
-        const params = arrowParamScopes.get(arrowParent);
+      if (scopeParent) {
+        const params =
+          scopeParent.type === "ArrowFunctionExpression"
+            ? arrowParamScopes.get(scopeParent)
+            : functionParamScopes.get(scopeParent as FunctionDeclaration);
         if (params?.has(name)) {
           return;
+        }
+
+        if (scopeParent.type === "FunctionDeclaration") {
+          const localConsts = functionLocalConsts.get(scopeParent as FunctionDeclaration);
+          if (localConsts?.has(name)) {
+            return;
+          }
         }
       }
 
@@ -56,10 +91,6 @@ export function analyzeIdentifiers(
   return analysisReport;
 }
 
-// Build a map of arrow functions to their parameter names so we can check if an
-// identifier is a legit arrow function param or something shady. We do this in
-// a separate traversal because it's cleaner than trying to track scope during the
-// main validation pass.
 function getArrowParamScopes(ast: Program): Map<ArrowFunctionExpression, Set<string>> {
   const arrowParamScopes = new Map<ArrowFunctionExpression, Set<string>>();
   traverse(ast, {
@@ -68,9 +99,7 @@ function getArrowParamScopes(ast: Program): Map<ArrowFunctionExpression, Set<str
       if (Array.isArray(params)) {
         const paramNames = new Set<string>();
         params.forEach((p) => {
-          if (p.type === "Identifier") {
-            paramNames.add(p.name);
-          }
+          collectParamNames(p, paramNames);
         });
         arrowParamScopes.set(node, paramNames);
       }
@@ -79,20 +108,112 @@ function getArrowParamScopes(ast: Program): Map<ArrowFunctionExpression, Set<str
   return arrowParamScopes;
 }
 
-// Walk up the AST tree to find the nearest ArrowFunctionExpression parent.
-// This lets us check if an identifier is in scope as an arrow function parameter.
-function findArrowParent(targetNode: AnyNode, rootNode: AnyNode): ArrowFunctionExpression | null {
-  let found: ArrowFunctionExpression | null = null;
+function getFunctionParamScopes(ast: Program): Map<FunctionDeclaration, Set<string>> {
+  const functionParamScopes = new Map<FunctionDeclaration, Set<string>>();
+  traverse(ast, {
+    FunctionDeclaration(node) {
+      const paramNames = new Set<string>();
+      for (const param of node.params) {
+        collectParamNames(param, paramNames);
+      }
+      functionParamScopes.set(node as FunctionDeclaration, paramNames);
+    },
+  });
+  return functionParamScopes;
+}
+
+function getFunctionLocalConsts(ast: Program): Map<FunctionDeclaration, Set<string>> {
+  const map = new Map<FunctionDeclaration, Set<string>>();
+  traverse(ast, {
+    FunctionDeclaration(node) {
+      const names = new Set<string>();
+      const body = (node as FunctionDeclaration).body;
+      if (body?.type === "BlockStatement") {
+        for (const stmt of body.body) {
+          if (stmt.type === "VariableDeclaration" && stmt.kind === "const") {
+            for (const decl of stmt.declarations) {
+              if (decl.id.type === "Identifier") {
+                names.add(decl.id.name);
+              }
+            }
+          }
+        }
+      }
+      map.set(node as FunctionDeclaration, names);
+    },
+  });
+  return map;
+}
+
+function collectParamNames(param: AnyNode, names: Set<string>): void {
+  switch (param.type) {
+    case "Identifier":
+      names.add((param as Identifier).name);
+      break;
+    case "ObjectPattern":
+      for (const prop of (param as any).properties) {
+        if (prop.type === "RestElement") {
+          collectParamNames(prop.argument, names);
+        } else {
+          collectParamNames(prop.value, names);
+        }
+      }
+      break;
+    case "ArrayPattern":
+      for (const el of (param as any).elements) {
+        if (el) collectParamNames(el, names);
+      }
+      break;
+    case "AssignmentPattern":
+      collectParamNames((param as any).left, names);
+      break;
+    case "RestElement":
+      collectParamNames((param as any).argument, names);
+      break;
+  }
+}
+
+function getTopLevelConstNames(ast: Program): string[] {
+  const names: string[] = [];
+  for (const stmt of ast.body) {
+    if (stmt.type === "VariableDeclaration" && stmt.kind === "const") {
+      for (const decl of stmt.declarations) {
+        if (decl.id.type === "Identifier") {
+          names.push(decl.id.name);
+        }
+      }
+    }
+  }
+  return names;
+}
+
+function getTopLevelFunctionNames(ast: Program): string[] {
+  const names: string[] = [];
+  for (const stmt of ast.body) {
+    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+      names.push(stmt.id.name);
+    }
+  }
+  return names;
+}
+
+function findScopeParent(
+  targetNode: AnyNode,
+  rootNode: AnyNode
+): ArrowFunctionExpression | FunctionDeclaration | null {
+  let found: ArrowFunctionExpression | FunctionDeclaration | null = null;
 
   function walk(node: AnyNode): boolean {
     if (node === targetNode) {
       return true;
     }
 
-    const isArrow = node.type === "ArrowFunctionExpression";
+    const isScope =
+      node.type === "ArrowFunctionExpression" ||
+      node.type === "FunctionDeclaration";
 
-    if (isArrow) {
-      found = node as ArrowFunctionExpression;
+    if (isScope) {
+      found = node as ArrowFunctionExpression | FunctionDeclaration;
     }
 
     for (const key of Object.keys(node)) {
@@ -111,7 +232,7 @@ function findArrowParent(targetNode: AnyNode, rootNode: AnyNode): ArrowFunctionE
       }
     }
 
-    if (isArrow) {
+    if (isScope) {
       found = null;
     }
 

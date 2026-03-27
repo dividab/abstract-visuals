@@ -1,9 +1,10 @@
 import type { Program } from "acorn";
-import { traverse } from "../../traverse.js";
+import { isJsxRoot } from "../../jsx.js";
 import type { Schema } from "../../schema.js";
-import { ValidationContext } from "../validation-context.js";
+import { traverse } from "../../traverse.js";
 import { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
+import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeDeclarations(
   ast: Program,
@@ -11,6 +12,7 @@ export function analyzeDeclarations(
   validationContext: ValidationContext
 ): AnalysisReport {
   const analysisReport = new AnalysisReport();
+  const topLevelNodes = new Set(ast.body);
 
   traverse(ast, {
     ImportDeclaration(node) {
@@ -38,12 +40,14 @@ export function analyzeDeclarations(
       );
     },
     FunctionDeclaration(node) {
-      analysisReport.addIssue(
-        "FUNCTION_NOT_ALLOWED",
-        "function declarations not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      if (!topLevelNodes.has(node as any)) {
+        analysisReport.addIssue(
+          "FUNCTION_NOT_ALLOWED",
+          "nested function declarations not allowed",
+          getNodeRange(node),
+          validationContext.getSnapshot()
+        );
+      }
     },
     ClassDeclaration(node) {
       analysisReport.addIssue(
@@ -54,14 +58,36 @@ export function analyzeDeclarations(
       );
     },
     VariableDeclaration(node) {
+      if (node.kind === "const") {
+        return;
+      }
       analysisReport.addIssue(
         "VARIABLE_NOT_ALLOWED",
-        "variables not allowed",
+        `${node.kind} not allowed, use const`,
         getNodeRange(node),
         validationContext.getSnapshot()
       );
     },
   });
+
+  const hasDeclarations = ast.body.some((s) => s.type === "VariableDeclaration" || s.type === "FunctionDeclaration");
+  if (hasDeclarations) {
+    const lastStatement = ast.body[ast.body.length - 1];
+    if (!lastStatement || lastStatement.type !== "ReturnStatement") {
+      const isBareJsx = lastStatement?.type === "ExpressionStatement" && isJsxRoot(lastStatement.expression);
+      const range = lastStatement
+        ? getNodeRange(lastStatement)
+        : { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } };
+      analysisReport.addIssue(
+        "RETURN_REQUIRED",
+        isBareJsx
+          ? "Templates with declarations must end with a return statement. Add 'return' before the JSX."
+          : "Templates with declarations must end with a return statement",
+        range,
+        validationContext.getSnapshot()
+      );
+    }
+  }
 
   return analysisReport;
 }

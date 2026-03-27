@@ -1,18 +1,30 @@
 import type { Program } from "acorn";
+import { getAllElements, isElementAllowed, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
-import { type Schema, isElementAllowed, getAllElements } from "../../schema.js";
-import { ValidationContext } from "../validation-context.js";
 import { AnalysisReport } from "../analysis-report.js";
-import { getNodeRange, getElementSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils.js";
+import { getBestSimilarityMatcherSuggestion, getElementSimilarityMatchers, getNodeRange } from "../utils.js";
+import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeElementTags(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();
+
+  const localFunctionNames = new Set<string>();
+  for (const stmt of ast.body) {
+    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+      localFunctionNames.add(stmt.id.name);
+    }
+  }
 
   traverse(ast, {
     JSXElement(node) {
       const tagName = node.openingElement.name.name;
 
       validationContext.enterElement(tagName);
+
+      if (localFunctionNames.has(tagName)) {
+        validationContext.exitElement();
+        return;
+      }
 
       const snapshot = validationContext.getSnapshot();
       const range = getNodeRange(node);

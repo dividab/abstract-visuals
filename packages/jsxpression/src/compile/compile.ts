@@ -1,72 +1,87 @@
-import type { Expression, PrivateIdentifier, Program, Super, Identifier, Literal } from "acorn";
+import type {
+  BlockStatement,
+  Expression,
+  FunctionDeclaration,
+  Identifier,
+  Literal,
+  Pattern,
+  PrivateIdentifier,
+  Program,
+  Statement,
+  Super,
+  VariableDeclaration,
+} from "acorn";
 
 import {
   isJsxElement,
+  isJsxEmptyExpression,
+  isJsxExpressionContainer,
   isJsxFragment,
   isJsxRoot,
   isJsxText,
-  isJsxExpressionContainer,
-  isJsxEmptyExpression,
-  type JSXRoot,
-  type JSXElement,
-  type JSXFragment,
-  type JSXEmptyExpression,
-  type JSXNode,
   type JSXAttribute,
-  type JSXSpreadAttribute,
+  type JSXElement,
+  type JSXEmptyExpression,
+  type JSXFragment,
   type JSXNameNode,
+  type JSXNode,
+  type JSXRoot,
+  type JSXSpreadAttribute,
 } from "../jsx.js";
 import { CompilationError } from "./compilation-error.js";
 
 type CompilableExpression = Expression | PrivateIdentifier | Super | JSXElement | JSXFragment | JSXEmptyExpression;
 
 export function compile(ast: Program): string {
-  const root = getRoot(ast);
-  const code = emitJsxRoot(root);
-
-  return `"use strict";return ${code};`;
-}
-
-function getRoot(ast: Program): JSXRoot {
-  for (const declaration of ast.body) {
-    if (declaration.type === "ExpressionStatement" && isJsxRoot(declaration.expression)) {
-      return declaration.expression;
+  const localFunctions = new Set<string>();
+  for (const stmt of ast.body) {
+    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+      localFunctions.add(stmt.id.name);
     }
-    if (declaration.type === "ReturnStatement" && declaration.argument && isJsxRoot(declaration.argument)) {
-      return declaration.argument;
-    }
-    // Handle bare expressions like {data.user.name} which parse as BlockStatement
-    if (declaration.type === "BlockStatement" && declaration.body.length === 1) {
-      const innerStatement = declaration.body[0];
+  }
+
+  const parts: string[] = ['"use strict";'];
+
+  const hasDeclarations = ast.body.some((s) => s.type === "VariableDeclaration" || s.type === "FunctionDeclaration");
+
+  for (const statement of ast.body) {
+    if (statement.type === "VariableDeclaration") {
+      parts.push(emitVariableDeclaration(statement, localFunctions));
+    } else if (statement.type === "FunctionDeclaration") {
+      parts.push(emitFunctionDeclaration(statement as FunctionDeclaration, localFunctions));
+    } else if (statement.type === "ReturnStatement" && statement.argument && isJsxRoot(statement.argument)) {
+      parts.push(`return ${emitJsxRoot(statement.argument, localFunctions)};`);
+    } else if (!hasDeclarations && statement.type === "ExpressionStatement" && isJsxRoot(statement.expression)) {
+      parts.push(`return ${emitJsxRoot(statement.expression, localFunctions)};`);
+    } else if (!hasDeclarations && statement.type === "BlockStatement" && statement.body.length === 1) {
+      const innerStatement = statement.body[0];
       if (innerStatement.type === "ExpressionStatement") {
-        // Create a synthetic JSXExpressionContainer for the bare expression
         const syntheticContainer = {
           type: "JSXExpressionContainer" as const,
           expression: innerStatement.expression as CompilableExpression,
         };
-        return syntheticContainer as JSXRoot;
+        parts.push(`return ${emitJsxRoot(syntheticContainer as JSXRoot, localFunctions)};`);
       }
     }
   }
 
-  throw CompilationError.fromNode("No root JSX element/fragment/expression found", ast);
+  return parts.join("");
 }
 
-function emitJsxRoot(node: JSXRoot): string {
+function emitJsxRoot(node: JSXRoot, localFunctions: Set<string>): string {
   if (isJsxElement(node)) {
-    return emitJsxElement(node);
+    return emitJsxElement(node, localFunctions);
   }
   if (isJsxFragment(node)) {
-    return emitJsxFragment(node);
+    return emitJsxFragment(node, localFunctions);
   }
-  // Handle bare expression containers like {data.user.name}
-  return emitExpression(node.expression);
+  return emitExpression(node.expression, localFunctions);
 }
 
-function emitJsxElement(node: JSXElement): string {
-  const name = emitJsxName(node.openingElement.name as JSXNameNode);
-  const attributes = emitAttributes(node.openingElement.attributes);
-  const children = emitJsxChildren(node.children);
+function emitJsxElement(node: JSXElement, localFunctions: Set<string>): string {
+  const name = emitJsxName(node.openingElement.name as JSXNameNode, localFunctions);
+  const attributes = emitAttributes(node.openingElement.attributes, localFunctions);
+  const children = emitJsxChildren(node.children, localFunctions);
 
   if (children.length > 0) {
     return `h(${name}, ${attributes}, ${children.join(", ")})`;
@@ -75,18 +90,21 @@ function emitJsxElement(node: JSXElement): string {
   return `h(${name}, ${attributes})`;
 }
 
-function emitJsxFragment(node: JSXFragment): string {
-  const children = emitJsxChildren(node.children);
+function emitJsxFragment(node: JSXFragment, localFunctions: Set<string>): string {
+  const children = emitJsxChildren(node.children, localFunctions);
   return `[${children.join(", ")}]`;
 }
 
-function emitJsxName(nameNode: JSXNameNode): string {
+function emitJsxName(nameNode: JSXNameNode, localFunctions: Set<string>): string {
   switch (nameNode.type) {
     case "JSXIdentifier":
+      if (localFunctions.has(nameNode.name)) {
+        return nameNode.name;
+      }
       return JSON.stringify(nameNode.name);
     case "JSXMemberExpression": {
-      const left = emitJsxName(nameNode.object);
-      const right = emitJsxName(nameNode.property);
+      const left = emitJsxName(nameNode.object, localFunctions);
+      const right = emitJsxName(nameNode.property, localFunctions);
       return JSON.stringify(JSON.parse(left) + "." + JSON.parse(right));
     }
     default:
@@ -94,7 +112,7 @@ function emitJsxName(nameNode: JSXNameNode): string {
   }
 }
 
-function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[]): string {
+function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[], localFunctions: Set<string>): string {
   const parts: string[] = [];
   let currentObj: string[] = [];
 
@@ -108,7 +126,7 @@ function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[]): stri
   for (const attribute of attributes) {
     if (attribute.type === "JSXSpreadAttribute") {
       flushCurrent();
-      parts.push(`(${emitExpression(attribute.argument as CompilableExpression)})`);
+      parts.push(`(${emitExpression(attribute.argument as CompilableExpression, localFunctions)})`);
       continue;
     }
 
@@ -124,7 +142,7 @@ function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[]): stri
     } else if (attribute.value.type === "Literal") {
       value = JSON.stringify(attribute.value.value);
     } else if (attribute.value.type === "JSXExpressionContainer") {
-      value = emitExpression(attribute.value.expression as CompilableExpression);
+      value = emitExpression(attribute.value.expression as CompilableExpression, localFunctions);
     } else {
       throw CompilationError.fromNode("Unsupported attribute value", attribute.value);
     }
@@ -145,7 +163,7 @@ function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[]): stri
   return `Object.assign({}, ${parts.join(", ")})`;
 }
 
-function emitJsxChildren(children: JSXNode[]): string[] {
+function emitJsxChildren(children: JSXNode[], localFunctions: Set<string>): string[] {
   const result: string[] = [];
 
   for (const child of children) {
@@ -155,14 +173,13 @@ function emitJsxChildren(children: JSXNode[]): string[] {
         result.push(JSON.stringify(text));
       }
     } else if (isJsxExpressionContainer(child)) {
-      // Skip empty expressions {} - they don't contribute any content
       if (!isJsxEmptyExpression(child.expression)) {
-        result.push(emitExpression(child.expression as CompilableExpression));
+        result.push(emitExpression(child.expression as CompilableExpression, localFunctions));
       }
     } else if (isJsxElement(child)) {
-      result.push(emitJsxElement(child));
+      result.push(emitJsxElement(child, localFunctions));
     } else if (isJsxFragment(child)) {
-      result.push(emitJsxFragment(child));
+      result.push(emitJsxFragment(child, localFunctions));
     }
   }
 
@@ -171,7 +188,7 @@ function emitJsxChildren(children: JSXNode[]): string[] {
 
 const TRAILING_PLUS_RX = /\+\s*\+\s*$/;
 
-function emitExpression(node: CompilableExpression): string {
+function emitExpression(node: CompilableExpression, localFunctions: Set<string>): string {
   switch (node.type) {
     case "Literal":
       return JSON.stringify(node.value);
@@ -181,23 +198,27 @@ function emitExpression(node: CompilableExpression): string {
       const bits: string[] = [];
       node.quasis.forEach((quasi, index) => {
         bits.push(JSON.stringify(quasi.value.cooked ?? ""));
-
         if (node.expressions.length > index) {
-          bits.push(`+(${emitExpression(node.expressions[index])})+`);
+          bits.push(`+(${emitExpression(node.expressions[index], localFunctions)})+`);
         }
       });
-
       return bits.join("").replace(TRAILING_PLUS_RX, "") || '""';
     }
     case "ParenthesizedExpression":
-      return `(${emitExpression(node.expression)})`;
+      return `(${emitExpression(node.expression, localFunctions)})`;
     case "UnaryExpression":
-      return `${node.operator}${emitExpression(node.argument)}`;
+      return `${node.operator}${emitExpression(node.argument, localFunctions)}`;
     case "BinaryExpression":
     case "LogicalExpression":
-      return `(${emitExpression(node.left)} ${node.operator} ${emitExpression(node.right)})`;
+      return `(${emitExpression(node.left, localFunctions)} ${node.operator} ${emitExpression(
+        node.right,
+        localFunctions
+      )})`;
     case "ConditionalExpression":
-      return `(${emitExpression(node.test)}?${emitExpression(node.consequent)}:${emitExpression(node.alternate)})`;
+      return `(${emitExpression(node.test, localFunctions)}?${emitExpression(
+        node.consequent,
+        localFunctions
+      )}:${emitExpression(node.alternate, localFunctions)})`;
     case "ArrayExpression":
       return `[${node.elements
         .map((element) => {
@@ -205,60 +226,131 @@ function emitExpression(node: CompilableExpression): string {
             return "undefined";
           }
           if (element.type === "SpreadElement") {
-            return `...${emitExpression(element.argument as CompilableExpression)}`;
+            return `...${emitExpression(element.argument as CompilableExpression, localFunctions)}`;
           }
-          return emitExpression(element as CompilableExpression);
+          return emitExpression(element as CompilableExpression, localFunctions);
         })
         .join(", ")}]`;
     case "ObjectExpression": {
       const keyValuePairs = node.properties
         .map((property) => {
           if (property.type === "SpreadElement") {
-            return `...${emitExpression(property.argument as CompilableExpression)}`;
+            return `...${emitExpression(property.argument as CompilableExpression, localFunctions)}`;
           }
-
           const key = getAstKeyString(property.key as Identifier | Literal);
-          return `${key}: ${emitExpression(property.value)}`;
+          return `${key}: ${emitExpression(property.value, localFunctions)}`;
         })
         .join(", ");
       return `{ ${keyValuePairs} }`;
     }
     case "MemberExpression": {
-      const obj = emitExpression(node.object);
+      const obj = emitExpression(node.object, localFunctions);
       let prop: string;
       if (node.computed) {
-        prop = `[${emitExpression(node.property)}]`;
+        prop = `[${emitExpression(node.property, localFunctions)}]`;
       } else {
         prop = `.${getAstKeyString(node.property as Identifier | Literal)}`;
       }
       return `${obj}${prop}`;
     }
     case "CallExpression": {
-      const callee = emitExpression(node.callee);
+      const callee = emitExpression(node.callee, localFunctions);
       const args = node.arguments
         .map((argument) => {
           if (argument.type === "SpreadElement") {
-            return `...${emitExpression(argument.argument as CompilableExpression)}`;
+            return `...${emitExpression(argument.argument as CompilableExpression, localFunctions)}`;
           }
-          return emitExpression(argument as CompilableExpression);
+          return emitExpression(argument as CompilableExpression, localFunctions);
         })
         .join(", ");
       return `${callee}(${args})`;
     }
     case "ArrowFunctionExpression": {
-      const params = node.params.map((param) => emitExpression(param as CompilableExpression)).join(", ");
-      // analyze() ensures this is not a BlockStatement
-      const body = emitExpression(node.body as CompilableExpression);
+      const params = node.params
+        .map((param) => emitExpression(param as CompilableExpression, localFunctions))
+        .join(", ");
+      const body = emitExpression(node.body as CompilableExpression, localFunctions);
       return `(${params}) => ${body}`;
     }
     case "JSXElement":
-      return emitJsxElement(node);
+      return emitJsxElement(node, localFunctions);
     case "JSXFragment":
-      return emitJsxFragment(node);
+      return emitJsxFragment(node, localFunctions);
     case "JSXEmptyExpression":
       return "null";
     default:
       throw CompilationError.fromNode(`Unsupported expression: ${node?.type}`, node);
+  }
+}
+
+function emitVariableDeclaration(node: VariableDeclaration, localFunctions: Set<string>): string {
+  const decls = node.declarations
+    .map((d) => {
+      const name = (d.id as Identifier).name;
+      const init = d.init ? emitExpression(d.init as CompilableExpression, localFunctions) : "undefined";
+      return `${name} = ${init}`;
+    })
+    .join(", ");
+  return `const ${decls};`;
+}
+
+function emitFunctionDeclaration(node: FunctionDeclaration, localFunctions: Set<string>): string {
+  const name = node.id!.name;
+  const params = node.params.map((p) => emitParam(p, localFunctions)).join(", ");
+  const body = emitFunctionBody(node.body as BlockStatement, localFunctions);
+  return `function ${name}(${params}) ${body}`;
+}
+
+function emitFunctionBody(body: BlockStatement, localFunctions: Set<string>): string {
+  const statements = body.body.map((s) => emitStatement(s, localFunctions));
+  return `{ ${statements.join(" ")} }`;
+}
+
+function emitStatement(statement: Statement, localFunctions: Set<string>): string {
+  switch (statement.type) {
+    case "ReturnStatement":
+      if (!statement.argument) {
+        return "return;";
+      }
+      return `return ${emitExpression(statement.argument as CompilableExpression, localFunctions)};`;
+    case "VariableDeclaration":
+      return emitVariableDeclaration(statement, localFunctions);
+    case "ExpressionStatement":
+      return `${emitExpression(statement.expression as CompilableExpression, localFunctions)};`;
+    default:
+      throw CompilationError.fromNode(`Unsupported statement: ${statement.type}`, statement);
+  }
+}
+
+function emitParam(param: Pattern, localFunctions: Set<string>): string {
+  switch (param.type) {
+    case "Identifier":
+      return (param as Identifier).name;
+    case "ObjectPattern": {
+      const props = (param as any).properties.map((p: any) => {
+        if (p.type === "RestElement") {
+          return `...${emitParam(p.argument, localFunctions)}`;
+        }
+        const key = (p.key as Identifier).name;
+        if (p.value.type === "AssignmentPattern") {
+          return `${key} = ${emitExpression(p.value.right as CompilableExpression, localFunctions)}`;
+        }
+        if (p.value !== p.key && p.value.type === "Identifier" && p.value.name !== key) {
+          return `${key}: ${emitParam(p.value, localFunctions)}`;
+        }
+        return key;
+      });
+      return `{ ${props.join(", ")} }`;
+    }
+    case "AssignmentPattern":
+      return `${emitParam((param as any).left, localFunctions)} = ${emitExpression(
+        (param as any).right as CompilableExpression,
+        localFunctions
+      )}`;
+    case "RestElement":
+      return `...${emitParam((param as any).argument, localFunctions)}`;
+    default:
+      throw CompilationError.fromNode(`Unsupported parameter: ${param.type}`, param);
   }
 }
 
@@ -268,8 +360,6 @@ function getAstKeyString(node: Identifier | Literal): string {
   } else if (node.type === "Literal") {
     return JSON.stringify(node.value);
   } else {
-    // This should never happen due to type constraints but
-    // if JSX ever changes this could be possible!
     throw CompilationError.fromNode("Unsupported key type", node);
   }
 }

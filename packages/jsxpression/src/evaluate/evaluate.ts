@@ -1,5 +1,5 @@
+import { canHaveChildren, isElementAllowed, type Schema } from "../schema.js";
 import { EvaluationError } from "./evaluation-error.js";
-import { Schema, isElementAllowed, canHaveChildren } from "../schema.js";
 
 export type ComponentDict = Record<string, Component>;
 
@@ -15,7 +15,7 @@ export type Node = {
   children: Node[];
 };
 
-export type H = (type: string, props?: PropsDict, ...children: Node[]) => Node;
+export type H = (type: string | Function, props?: PropsDict, ...children: Node[]) => Node;
 
 export type Component = (...args: any[]) => any;
 
@@ -80,6 +80,10 @@ function validateParamKeys(dataKeys: string[], functionKeys: string[]): void {
 
 function createH(components: ComponentDict, createElement: CreateElement, schema: Schema): H {
   return function h(type, props, ...children) {
+    if (typeof type === "function") {
+      return createElement(type as Component, props, ...children.flat().filter(Boolean));
+    }
+
     const Component = components[type];
 
     if (!Component) {

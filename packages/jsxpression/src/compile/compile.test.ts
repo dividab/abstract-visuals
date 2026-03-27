@@ -171,6 +171,133 @@ describe("compile", () => {
     });
   });
 
+  describe("const declarations", () => {
+    it("should compile const with literal value", () => {
+      const ast = parse("const x = 42;\nreturn <div>{x}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";const x = 42;return h("div", null, x);');
+    });
+
+    it("should compile const with expression value", () => {
+      const ast = parse("const label = name.toUpperCase();\nreturn <div>{label}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";const label = name.toUpperCase();return h("div", null, label);');
+    });
+
+    it("should compile multiple const declarations", () => {
+      const ast = parse('const a = 1;\nconst b = "hello";\nreturn <div>{a}{b}</div>');
+      const result = compile(ast);
+      expect(result).toBe('"use strict";const a = 1;const b = "hello";return h("div", null, a, b);');
+    });
+
+    it("should compile const with object value", () => {
+      const ast = parse("const style = { color: 'red' };\nreturn <div style={style}>Text</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";const style = { color: "red" };return h("div", { style: style }, "Text");');
+    });
+
+    it("should compile const with array value", () => {
+      const ast = parse("const nums = [1, 2, 3];\nreturn <div>{nums.join(', ')}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";const nums = [1, 2, 3];return h("div", null, nums.join(", "));');
+    });
+
+    it("should not auto-wrap bare JSX when declarations present", () => {
+      const ast = parse("const x = 1;\n<div>{x}</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";const x = 1;');
+    });
+  });
+
+  describe("function declarations", () => {
+    it("should compile simple function declaration", () => {
+      const ast = parse("function Badge() {\n  return <span>badge</span>\n}\nreturn <Badge />");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";function Badge() { return h("span", null, "badge"); }return h(Badge, null);');
+    });
+
+    it("should compile function with props parameter", () => {
+      const ast = parse('function Badge({ label }) {\n  return <span>{label}</span>\n}\nreturn <Badge label="hi" />');
+      const result = compile(ast);
+      expect(result).toBe(
+        '"use strict";function Badge({ label }) { return h("span", null, label); }return h(Badge, { label: "hi" });'
+      );
+    });
+
+    it("should compile function with default parameter", () => {
+      const ast = parse("function Badge({ label = 'default' }) {\n  return <span>{label}</span>\n}\nreturn <Badge />");
+      const result = compile(ast);
+      expect(result).toBe(
+        '"use strict";function Badge({ label = "default" }) { return h("span", null, label); }return h(Badge, null);'
+      );
+    });
+
+    it("should compile function with const inside body", () => {
+      const ast = parse(
+        "function Badge({ value }) {\n  const doubled = value * 2;\n  return <span>{doubled}</span>\n}\nreturn <Badge value={5} />"
+      );
+      const result = compile(ast);
+      expect(result).toContain("const doubled = (value * 2);");
+      expect(result).toContain('return h("span", null, doubled);');
+    });
+
+    it("should compile function used as child element", () => {
+      const ast = parse("function Item() {\n  return <span>item</span>\n}\nreturn <div><Item /></div>");
+      const result = compile(ast);
+      expect(result).toContain("function Item()");
+      expect(result).toContain("h(Item, null)");
+      expect(result).toContain('h("div", null, h(Item, null))');
+    });
+
+    it("should compile multiple function declarations", () => {
+      const ast = parse(
+        "function A() {\n  return <span>a</span>\n}\nfunction B() {\n  return <span>b</span>\n}\nreturn <div><A /><B /></div>"
+      );
+      const result = compile(ast);
+      expect(result).toContain("function A()");
+      expect(result).toContain("function B()");
+      expect(result).toContain("h(A, null)");
+      expect(result).toContain("h(B, null)");
+    });
+
+    it("should compile function calling another function", () => {
+      const ast = parse(
+        "function Inner() {\n  return <span>inner</span>\n}\nfunction Outer() {\n  return <div><Inner /></div>\n}\nreturn <Outer />"
+      );
+      const result = compile(ast);
+      expect(result).toContain("function Inner()");
+      expect(result).toContain("function Outer()");
+      expect(result).toContain("h(Inner, null)");
+      expect(result).toContain("h(Outer, null)");
+    });
+
+    it("should emit local function names as references not strings in JSX", () => {
+      const ast = parse("function Badge() {\n  return <span>b</span>\n}\nreturn <Badge />");
+      const result = compile(ast);
+      // Badge should be a reference, not a string
+      expect(result).toContain("h(Badge, null)");
+      expect(result).not.toContain('h("Badge"');
+    });
+  });
+
+  describe("return statements", () => {
+    it("should compile explicit return with JSX", () => {
+      const ast = parse("return <div>hello</div>");
+      const result = compile(ast);
+      expect(result).toBe('"use strict";return h("div", null, "hello");');
+    });
+
+    it("should compile return after const and function", () => {
+      const ast = parse(
+        "const x = 1;\nfunction F() {\n  return <span>f</span>\n}\nreturn <div><F />{x}</div>"
+      );
+      const result = compile(ast);
+      expect(result).toContain("const x = 1;");
+      expect(result).toContain("function F()");
+      expect(result).toMatch(/return h\("div"/);
+    });
+  });
+
   // TODO: Add ChainExpression support for optional chaining (?.)
   // it("should compile nested object access with conditionals", () => {
   //   const ast = parse("<div>{props.user?.profile?.name || 'Anonymous'}</div>");
