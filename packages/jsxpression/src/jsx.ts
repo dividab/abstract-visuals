@@ -12,27 +12,10 @@ import type {
   UnaryExpression,
 } from "acorn";
 
-export type JSXStringLiteral = {
+export type JSXLiteral = {
   type: "Literal";
-  value: string;
+  value: string | number | boolean | null;
 };
-
-export type JSXNumberLiteral = {
-  type: "Literal";
-  value: number;
-};
-
-export type JSXBooleanLiteral = {
-  type: "Literal";
-  value: boolean;
-};
-
-export type JSXNullLiteral = {
-  type: "Literal";
-  value: null;
-};
-
-export type JSXLiteral = JSXStringLiteral | JSXNumberLiteral | JSXBooleanLiteral | JSXNullLiteral;
 
 export type JSXAttributeValue = JSXLiteral | JSXExpressionContainer;
 
@@ -116,10 +99,6 @@ export type JSXRoot = JSXElement | JSXFragment | JSXExpressionContainer;
 export type JSXNodeWithChildren = JSXElement | JSXFragment;
 export type JSXLeafNode = JSXText | JSXEmptyExpression;
 
-export type JSXExpressionHost = JSXExpressionContainer;
-
-export type GetAttributeValue<T extends JSXAttribute> = T["value"];
-
 export function isJsxElement(value: unknown): value is JSXElement {
   return (value as JSXElement)?.type === "JSXElement";
 }
@@ -136,10 +115,6 @@ export function isJsxAttribute(value: unknown): value is JSXAttribute {
   return (value as JSXAttribute)?.type === "JSXAttribute";
 }
 
-export function isJsxLiteral(value: unknown): value is JSXLiteral {
-  return (value as JSXLiteral)?.type === "Literal";
-}
-
 export function isJsxExpressionContainer(value: unknown): value is JSXExpressionContainer {
   return (value as JSXExpressionContainer)?.type === "JSXExpressionContainer";
 }
@@ -150,10 +125,6 @@ export function isJsxEmptyExpression(value: unknown): value is JSXEmptyExpressio
 
 export function isJsxText(value: unknown): value is JSXText {
   return (value as JSXText)?.type === "JSXText";
-}
-
-export function isJsxNodeWithChildren(value: JSXNode): value is JSXNodeWithChildren {
-  return isJsxElement(value) || isJsxFragment(value);
 }
 
 export function isJsxLeafNode(value: JSXNode): value is JSXLeafNode {

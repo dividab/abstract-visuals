@@ -126,10 +126,6 @@ export function getAllElements(schema: Schema): string[] {
   return schema.elements ? Object.keys(schema.elements) : [];
 }
 
-export function getElementConfig(schema: Schema, tagName: string): ElementSchema | undefined {
-  return getElementSchema(schema, tagName);
-}
-
 export function getAttributeSchema(schema: Schema, tagName: string, attributeName: string): PropertySchema | undefined {
   const elementSchema = getElementSchema(schema, tagName);
   return elementSchema?.props?.[attributeName];
@@ -151,57 +147,7 @@ export function getRequiredAttributes(schema: Schema, tagName: string): string[]
   return required;
 }
 
-export function getOptionalAttributes(schema: Schema, tagName: string): string[] {
-  const allAttributes = getAllowedAttributes(schema, tagName);
-  const requiredAttributes = getRequiredAttributes(schema, tagName);
-  return allAttributes.filter((attr) => !requiredAttributes.includes(attr));
-}
-
-export function isAttributeRequired(schema: Schema, tagName: string, attributeName: string): boolean {
-  const requiredAttributes = getRequiredAttributes(schema, tagName);
-  return requiredAttributes.includes(attributeName);
-}
-
-export function getDataSchema(schema: Schema): Record<string, PropertySchema> | undefined {
-  return schema.data;
-}
-
-export function getPropertyAtPath(schema: Schema, path: string[]): PropertySchema | undefined {
-  if (!schema.data || path.length === 0) {
-    return undefined;
-  }
-
-  let current: PropertySchema | undefined = path[0] !== undefined ? schema.data[path[0]] : undefined;
-
-  for (let i = 1; i < path.length && current; i++) {
-    if (current.type === "object" && current.shape) {
-      current = current.shape[path[i]!];
-    } else {
-      return undefined;
-    }
-  }
-
-  return current;
-}
-
-export function getAvailablePropertiesAtPath(schema: Schema, path: string[]): string[] {
-  if (!schema.data) {
-    return [];
-  }
-
-  if (path.length === 0) {
-    return Object.keys(schema.data);
-  }
-
-  const parentProperty = getPropertyAtPath(schema, path);
-  if (parentProperty?.type === "object" && parentProperty.shape) {
-    return Object.keys(parentProperty.shape);
-  }
-
-  return [];
-}
-
-export type PropertyEnumValue = string | number | boolean;
+type PropertyEnumValue = string | number | boolean;
 
 export function getEnumValues(property: PropertySchema): readonly PropertyEnumValue[] | undefined {
   switch (property.type) {

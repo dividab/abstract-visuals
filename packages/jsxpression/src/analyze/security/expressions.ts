@@ -1,4 +1,4 @@
-import type { Program } from "acorn";
+import type { Program, Expression, Super } from "acorn";
 import { traverse } from "../../traverse.js";
 import type { Schema } from "../../schema.js";
 import { ValidationContext } from "../validation-context.js";
@@ -76,10 +76,24 @@ export function analyzeExpressions(
       }
     },
     MemberExpression(node) {
+      let depth = 0;
+      let currentNode: Expression | Super = node;
+      while (currentNode.type === "MemberExpression") {
+        depth += 1;
+        currentNode = currentNode.object;
+      }
+      if (depth > 5) {
+        analysisReport.addIssue(
+          "MEMBER_CHAIN_TOO_DEEP",
+          "member chain too deep",
+          getNodeRange(node),
+          validationContext.getSnapshot()
+        );
+      }
+
       if (node.computed) {
-        // We allow numeric literals for array access (data.items[0])
         if (node.property.type === "Literal" && typeof node.property.value === "number") {
-          return; // Allow numeric array indices
+          return;
         }
 
         analysisReport.addIssue(

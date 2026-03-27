@@ -6,7 +6,6 @@ import { analyzeCallExpressions } from "./call-expressions.js";
 import { analyzeDeclarations } from "./declarations.js";
 import { analyzeExpressions } from "./expressions.js";
 import { analyzeIdentifiers } from "./identifiers.js";
-import { analyzeMemberAccess } from "./member-access.js";
 
 export function analyzeSecurity(ast: Program, schema: Schema): AnalysisReport {
   const validationContext = new ValidationContext();
@@ -15,7 +14,6 @@ export function analyzeSecurity(ast: Program, schema: Schema): AnalysisReport {
     analyzeDeclarations(ast, schema, validationContext),
     analyzeIdentifiers(ast, schema, validationContext),
     analyzeExpressions(ast, schema, validationContext),
-    analyzeMemberAccess(ast, schema, validationContext),
     analyzeCallExpressions(ast, schema, validationContext)
   );
 }
