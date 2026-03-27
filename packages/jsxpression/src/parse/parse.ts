@@ -1,12 +1,13 @@
 import { Parser, type Program } from "acorn";
-import jsx from "acorn-jsx";
+import { tsPlugin } from "acorn-typescript";
 import { ParseError } from "./parse-error.js";
 
-const JSXParser = Parser.extend(jsx());
+// @ts-expect-error acorn-typescript jsx option types mismatch
+const TSXParser = Parser.extend(tsPlugin({ jsx: true }));
 
 export function parse(source: string): Program {
   try {
-    return JSXParser.parse(source, {
+    return TSXParser.parse(source, {
       ecmaVersion: "latest",
       sourceType: "module",
       locations: true,

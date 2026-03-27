@@ -1,14 +1,14 @@
-import { Program } from "acorn";
-import { simple, base, SimpleVisitors, RecursiveVisitors } from "acorn-walk";
+import type { Program } from "acorn";
+import { base, type RecursiveVisitors, type SimpleVisitors, simple } from "acorn-walk";
 import {
-  JSXAttribute,
-  JSXElement,
-  JSXExpressionContainer,
-  JSXFragment,
-  JSXOpeningElement,
-  JSXSpreadAttribute,
-  isJsxText,
   isJsxEmptyExpression,
+  isJsxText,
+  type JSXAttribute,
+  type JSXElement,
+  type JSXExpressionContainer,
+  type JSXFragment,
+  type JSXOpeningElement,
+  type JSXSpreadAttribute,
 } from "./jsx.js";
 
 type Visit = (node: unknown, state: unknown) => void;
@@ -33,46 +33,132 @@ type ExtendedSimpleVisitors = SimpleVisitors<unknown> & {
   JSXSpreadAttribute?: SimpleVisitor<JSXSpreadAttribute>;
 };
 
-export function traverse(ast: Program, visitors: Partial<ExtendedSimpleVisitors>): void {
-  simple(ast, visitors, {
+const tsNodeTypes = [
+  "TSInterfaceDeclaration",
+  "TSInterfaceBody",
+  "TSTypeAliasDeclaration",
+  "TSTypeAnnotation",
+  "TSTypeReference",
+  "TSTypeParameterDeclaration",
+  "TSTypeParameterInstantiation",
+  "TSTypeParameter",
+  "TSAsExpression",
+  "TSSatisfiesExpression",
+  "TSNonNullExpression",
+  "TSTypeAssertion",
+  "TSEnumDeclaration",
+  "TSEnumMember",
+  "TSModuleDeclaration",
+  "TSModuleBlock",
+  "TSImportEqualsDeclaration",
+  "TSExportAssignment",
+  "TSNamespaceExportDeclaration",
+  "TSDeclareFunction",
+  "TSDeclareMethod",
+  "TSExternalModuleReference",
+  "TSInstantiationExpression",
+  "TSTypeCastExpression",
+  "TSParameterProperty",
+  "TSIndexSignature",
+  "TSCallSignatureDeclaration",
+  "TSConstructSignatureDeclaration",
+  "TSPropertySignature",
+  "TSMethodSignature",
+  "TSTypePredicate",
+  "TSTypeQuery",
+  "TSTypeLiteral",
+  "TSTypeOperator",
+  "TSMappedType",
+  "TSConditionalType",
+  "TSInferType",
+  "TSImportType",
+  "TSExpressionWithTypeArguments",
+  "TSQualifiedName",
+  "TSFunctionType",
+  "TSConstructorType",
+  "TSUnionType",
+  "TSIntersectionType",
+  "TSTupleType",
+  "TSNamedTupleMember",
+  "TSArrayType",
+  "TSOptionalType",
+  "TSRestType",
+  "TSLiteralType",
+  "TSIndexedAccessType",
+  "TSParenthesizedType",
+  "TSAnyKeyword",
+  "TSBooleanKeyword",
+  "TSBigIntKeyword",
+  "TSNeverKeyword",
+  "TSNullKeyword",
+  "TSNumberKeyword",
+  "TSObjectKeyword",
+  "TSStringKeyword",
+  "TSSymbolKeyword",
+  "TSUndefinedKeyword",
+  "TSUnknownKeyword",
+  "TSVoidKeyword",
+  "TSThisType",
+] as const;
+
+const tsWalkers: Record<string, (node: any, state: any, c: any) => void> = {};
+for (const nodeType of tsNodeTypes) {
+  tsWalkers[nodeType] = () => {};
+}
+
+const jsxWalkers: ExtendedRecursiveVisitors = {
+  JSXElement(node, state, visit) {
+    const element = node as JSXElement;
+    visit(element.openingElement, state);
+    for (const child of element.children) {
+      if (isJsxText(child) || isJsxEmptyExpression(child)) {
+        continue;
+      }
+      visit(child as any, state);
+    }
+  },
+
+  JSXFragment(node, state, visit) {
+    const fragment = node as JSXFragment;
+    for (const child of fragment.children) {
+      if (isJsxText(child) || isJsxEmptyExpression(child)) {
+        continue;
+      }
+      visit(child as any, state);
+    }
+  },
+
+  JSXOpeningElement(node, state, visit) {
+    const opening = node as JSXOpeningElement;
+    for (const attr of opening.attributes) {
+      visit(attr as any, state);
+    }
+  },
+
+  JSXAttribute(node, state, visit) {
+    const attr = node as JSXAttribute;
+    if (attr.value) {
+      visit(attr.value as any, state);
+    }
+  },
+
+  JSXSpreadAttribute(node, state, visit) {
+    const spread = node as JSXSpreadAttribute;
+    visit(spread.argument as any, state);
+  },
+
+  JSXExpressionContainer(node, state, visit) {
+    const container = node as JSXExpressionContainer;
+    if (!isJsxEmptyExpression(container.expression)) {
+      visit(container.expression as any, state);
+    }
+  },
+};
+
+export function traverse(ast: Program, visitors: ExtendedSimpleVisitors): void {
+  simple(ast, visitors as SimpleVisitors<unknown>, {
     ...base,
-    JSXAttribute(node, state, visit) {
-      if (node.value) {
-        visit(node.value, state);
-      }
-    },
-    JSXElement(node, state, visit) {
-      const { openingElement } = node;
-      if (openingElement && Array.isArray(openingElement.attributes)) {
-        for (const attribute of openingElement.attributes) {
-          visit(attribute, state);
-        }
-      }
-      for (const child of node.children) {
-        if (!isJsxText(child)) {
-          visit(child, state);
-        }
-      }
-    },
-    JSXExpressionContainer(node, state, visit) {
-      if (!isJsxEmptyExpression(node.expression)) {
-        visit(node.expression, state);
-      }
-    },
-    JSXFragment(node, state, visit) {
-      for (const child of node.children) {
-        if (!isJsxText(child)) {
-          visit(child, state);
-        }
-      }
-    },
-    JSXOpeningElement(node, state, visit) {
-      for (const attribute of node.attributes) {
-        visit(attribute, state);
-      }
-    },
-    JSXSpreadAttribute(node, state, visit) {
-      visit(node.argument, state);
-    },
-  } as ExtendedRecursiveVisitors);
+    ...jsxWalkers,
+    ...tsWalkers,
+  });
 }
