@@ -1,4 +1,4 @@
-import { Schema } from "jsxpression";
+import type { Schema } from "jsxpression";
 
 export const baseSchema = {
   elements: {
@@ -239,7 +239,6 @@ export const baseSchema = {
           description: "Fill color (text color).",
         },
       },
-      allowedChildren: [],
     },
   },
 } as const satisfies Schema;
