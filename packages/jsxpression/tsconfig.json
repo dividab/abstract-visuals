@@ -2,6 +2,7 @@
   //dummy
   "extends": "../tsconfig.settings.json",
   "include": ["src"],
+  "exclude": ["src/**/*.test.ts"],
   "typeRoots": ["src/@types", "node_modules/@types"],
   "compilerOptions": {
     "outDir": "lib",

@@ -1,10 +1,10 @@
 import type { Program } from "acorn";
+import { isJsxElement, isJsxFragment, isJsxLeafNode, isJsxText } from "../../jsx.js";
+import { getAllowedChildren, isSelfClosing, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
-import { type Schema, getAllowedChildren, isSelfClosing } from "../../schema.js";
-import { isJsxElement, isJsxFragment, isJsxText, isJsxLeafNode } from "../../jsx.js";
-import { ValidationContext } from "../validation-context.js";
 import { AnalysisReport } from "../analysis-report.js";
-import { getNodeRange, getElementSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils.js";
+import { getBestSimilarityMatcherSuggestion, getElementSimilarityMatchers, getNodeRange } from "../utils.js";
+import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeElementChildren(
   ast: Program,
@@ -13,11 +13,23 @@ export function analyzeElementChildren(
 ): AnalysisReport {
   const analysisReport = new AnalysisReport();
 
+  const localFunctionNames = new Set<string>();
+  for (const stmt of ast.body) {
+    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+      localFunctionNames.add(stmt.id.name);
+    }
+  }
+
   traverse(ast, {
     JSXElement(node) {
       const parentTag = node.openingElement.name.name;
 
       validationContext.enterElement(parentTag);
+
+      if (localFunctionNames.has(parentTag)) {
+        validationContext.exitElement();
+        return;
+      }
 
       const currentContext = validationContext.getSnapshot();
 
@@ -57,6 +69,10 @@ export function analyzeElementChildren(
         if (isJsxElement(child)) {
           const childTag = child.openingElement.name.name;
 
+          if (localFunctionNames.has(childTag)) {
+            continue;
+          }
+
           if (!allowedChildren.includes(childTag)) {
             const elementSimilarityMatchers = getElementSimilarityMatchers(childTag, allowedChildren);
             const bestSimilarityMatcherSuggestion = getBestSimilarityMatcherSuggestion(childTag, allowedChildren);
@@ -83,8 +99,6 @@ export function analyzeElementChildren(
         } else if (isJsxText(child)) {
           const hasContent = child.value.trim().length > 0;
           if (!hasContent) {
-            // Allow whitespace-only text nodes (very common in JSX formatting)
-            continue;
           }
         }
       }

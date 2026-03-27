@@ -1,18 +1,17 @@
 import type { Program } from "acorn";
-import { traverse } from "../../traverse.js";
+import { isJsxAttribute, isJsxExpressionContainer, type JSXAttribute } from "../../jsx.js";
 import {
-  type Schema,
-  isAttributeAllowed,
   getAllowedAttributes,
-  getRequiredAttributes,
   getAttributeSchema,
   getEnumValues,
+  getRequiredAttributes,
+  isAttributeAllowed,
+  type Schema,
 } from "../../schema.js";
-import { isJsxAttribute, isJsxExpressionContainer, type JSXAttribute } from "../../jsx.js";
-import { ValidationContext } from "../validation-context.js";
+import { traverse } from "../../traverse.js";
 import { AnalysisReport } from "../analysis-report.js";
-
-import { getNodeRange, getAttributeSimilarityMatchers, getBestSimilarityMatcherSuggestion } from "../utils.js";
+import { getAttributeSimilarityMatchers, getBestSimilarityMatcherSuggestion, getNodeRange } from "../utils.js";
+import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeElementAttributes(
   ast: Program,
@@ -21,11 +20,24 @@ export function analyzeElementAttributes(
 ): AnalysisReport {
   const analysisReport = new AnalysisReport();
 
+  const localFunctionNames = new Set<string>();
+  for (const stmt of ast.body) {
+    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+      localFunctionNames.add(stmt.id.name);
+    }
+  }
+
   traverse(ast, {
     JSXElement(node) {
       const tagName = node.openingElement.name.name;
 
       validationContext.enterElement(tagName);
+
+      if (localFunctionNames.has(tagName)) {
+        validationContext.exitElement();
+        return;
+      }
+
       const currentContext = validationContext.getSnapshot();
 
       const allowedAttributes = getAllowedAttributes(schema, tagName);
@@ -132,7 +144,10 @@ function getAttributeLiteralValue(attribute: JSXAttribute): string | number | bo
   }
 
   if (isJsxExpressionContainer(attribute.value)) {
-    const expression = attribute.value.expression as { type?: string; value?: unknown };
+    const expression = attribute.value.expression as {
+      type?: string;
+      value?: unknown;
+    };
 
     if (expression?.type === "Literal") {
       return expression.value as string | number | boolean | null | undefined;
