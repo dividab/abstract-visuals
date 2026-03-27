@@ -1,34 +1,31 @@
 # JSXpression
 
-**Safe JSX expressions with schema validation**
+**Sandboxed JSX components with full TypeScript support**
 
-JSXpression lets you render dynamic JSX templates in a controlled, type-safe sandbox. Perfect for user-configurable components, low-code environments, and other places where you want flexibility without giving up control.
+JSXpression is a secure runtime for user-authored JSX. Think of it as a mini component system: users write functions, define interfaces, compose components — all inside a validated sandbox. The syntax is familiar TypeScript/JSX, but the execution environment is locked down by your schema.
 
-Under the hood it parses your JSX into an AST, validates it against a schema, compiles it to safe JavaScript, and runs it in isolation – with only your data and components available.
+Under the hood it parses TSX into an AST, validates it against a schema, compiles it to safe JavaScript, and runs it in isolation — with only your data, components, and allowed builtins available.
 
 ## What's it for?
 
-Let users write JSX – safely. You define a schema describing which components and data are available, and JSXpression takes care of the rest: parsing, validation, and execution. No risk, no globals, no surprises.
+Let users build components — safely. You define a schema describing which elements and data are available, and JSXpression takes care of the rest: parsing, validation, and execution. No risk, no globals, no surprises.
 
-**Bonus:** You can generate `.d.ts` files straight from your schema for full editor support – autocomplete, error highlighting, inline docs – all the TypeScript DX, none of the compilation overhead. Your schema stays the single source of truth.
+Use cases: configurable document templates, dynamic diagram layouts, low-code UI builders, user-defined report generators — anywhere you need end-user flexibility without giving up control.
+
+**Bonus:** You can generate `.d.ts` files straight from your schema for full editor support — autocomplete, error highlighting, inline docs — all the TypeScript DX, none of the compilation overhead. Your schema stays the single source of truth.
 
 ## Features
 
-- 🛡️ **Secure by design** – Static analysis blocks everything unsafe. No `eval`, no `window`, no `document`, only pure, allowed operations
-- 📋 **Schema-driven** – Explicitly define what data and components exist. Anything not in the schema simply doesn't exist
-- ⚡ **Fast** – Parse and validate once, then run freely. No runtime compilation required
-- 🎯 **Familiar** – It's just JSX. The same syntax developers already know, now with guardrails
+- 🛡️ **Secure by design** — Static analysis blocks everything unsafe. No `eval`, no `window`, no `document`, only pure, allowed operations
+- 📋 **Schema-driven** — Explicitly define what data and elements exist. Anything not in the schema simply doesn't exist
+- ⚡ **Fast** — Parse and validate once, then run freely. No runtime compilation required
+- 🧩 **Composable** — Define local functions, extract reusable components, use `const` bindings — just like real components
+- 🎯 **Familiar** — It's TypeScript + JSX. The same syntax developers already know, now with guardrails
 
 ## Installation
 
 ```bash
 npm install jsxpression
-```
-
-or
-
-```bash
-pnpm add jsxpression
 ```
 
 ## Quick Start
@@ -50,104 +47,105 @@ const result = render("<Text size={16}>Hello {user.name}!</Text>", schema, {
   data: { user: { name: "Peter" }, items: ["apple", "banana"] },
   components: { Text: ({ size, children }) => `<span style="font-size: ${size}px">${children}</span>` },
 });
-// Result: <span style="font-size: 16px">Hello Peter!</span>
 ```
 
-## React Example
+## Writing Templates
+
+Templates are mini TypeScript/JSX programs. You can use `const` bindings, `function` declarations, `interface` types, and compose them freely — just like a React component body. The only rule: the last statement must be a `return` with your JSX.
+
+### Simple expression
 
 ```tsx
-import { createElement } from "react";
-import { render } from "jsxpression";
+return <Text size={16}>Hello {user.name}!</Text>;
+```
 
-function DynamicComponent({ template, userData }) {
-  const schema = {
-    data: {
-      user: {
-        type: "object",
-        shape: {
-          name: {
-            type: "string",
-          },
-          role: {
-            type: "string",
-          },
-        },
-      },
-    },
-    elements: {
-      Text: {
-        props: {
-          className: {
-            type: "string",
-          },
-        },
-      },
-      Card: {
-        props: {
-          title: {
-            type: "string",
-          },
-        },
-      },
-    },
-  };
+### With local variables
 
-  const result = render(template, schema, {
-    data: { user: userData },
-    components: {
-      Text: ({ className, children }) => <span className={className}>{children}</span>,
-      Card: ({ title, children }) => (
-        <div className="card">
-          <h3>{title}</h3>
-          <div>{children}</div>
-        </div>
-      ),
-    },
-    createElement,
-  });
+```tsx
+const greeting = user.isAdmin ? "Welcome back" : "Hello";
+const itemCount = items.length;
 
-  return <div className="dynamic-content">{result}</div>;
+return (
+  <Card title={greeting}>
+    <Text>{itemCount} items</Text>
+  </Card>
+);
+```
+
+### With reusable functions
+
+```tsx
+interface BadgeProps {
+  label: string;
+  color: string;
 }
 
-// Usage
-<DynamicComponent
-  template="<Card title={user.role}><Text className='username'>{user.name}</Text></Card>"
-  userData={{ name: "Alice", role: "Developer" }}
-/>;
+function Badge({ label, color }: BadgeProps) {
+  return (
+    <Box>
+      <Rectangle fill={color} width={60} height={20} />
+      <Text size={11} fill="#fff">
+        {label}
+      </Text>
+    </Box>
+  );
+}
+
+interface RowProps {
+  item: { name: string; status: string };
+  y: number;
+}
+
+function Row({ item, y }: RowProps) {
+  return (
+    <Box>
+      <Text x={10} y={y}>
+        {item.name}
+      </Text>
+      <Badge label={item.status} color={item.status === "active" ? "#2b8a3e" : "#868e96"} />
+    </Box>
+  );
+}
+
+return (
+  <Container>
+    {items.map((item, i) => (
+      <Row item={item} y={i * 24} />
+    ))}
+  </Container>
+);
 ```
+
+TypeScript syntax (`interface`, type annotations, generics) is fully supported in parsing and silently stripped at compile time. Type safety isn't lost though — it's enforced by the schema. The schema validates every element, attribute, data access, and function call at analysis time, before any code runs. TypeScript gives you the editor DX; the schema gives you the runtime guarantees.
 
 ## Expression Types
 
-JSXpression supports different expression patterns:
-
 ```typescript
-// JSX Elements
-"<Text>Hello {user.name}</Text>";
+// JSX elements
+"return <Text>Hello {user.name}</Text>";
 
-// Fragments (for mixed content)
-"<>Hello {user.name}, you have {items.length} items!</>";
+// Fragments
+"return <>Hello {user.name}, you have {items.length} items!</>";
 
-// Bare expressions (single values)
+// Bare expressions (single values — no return needed)
 "{user.name}";
 "{items.length * 2}";
 ```
 
-**Important:** Like React components, mixed content needs fragment wrapping:
+**Note:** Like React, mixed text and expressions need fragment wrapping:
 
-- ❌ `"Hello {user.name}!"` - Won't work
-- ✅ `"<>Hello {user.name}!</>"` - Correct approach
+- ❌ `"Hello {user.name}!"` — Won't work
+- ✅ `"return <>Hello {user.name}!</>"` — Correct
 
-## Supported Methods
+## Supported Builtins
 
-JSXpression gives you access to common JavaScript methods for working with data - but only the safe ones. No methods that modify arrays in place, no DOM access, no network calls. Just the everyday operations you need for formatting and transforming data in templates.
-
-**Why?** When users write templates, they should be able to format dates, filter lists, and do basic math - but not delete files or make API calls. By exposing only pure, read-only methods, templates stay predictable and safe while covering 99% of real-world needs.
+Only safe, read-only operations are exposed. No mutation, no DOM, no network — just the everyday tools needed for formatting and transforming data.
 
 **Array (static):** `isArray`
 
 **Array (prototype):** `map`, `filter`, `reduce`, `find`, `findIndex`, `some`, `every`, `slice`, `includes`, `indexOf`, `join`, `at`, `concat`, `flat`, `flatMap`, `length`
 
-**String (prototype):** `charAt`, `charCodeAt`, `concat`, `endsWith`, `includes`, `indexOf`, `lastIndexOf`, `slice`, `split`, `startsWith`, `substring`, `toLowerCase`, `toUpperCase`, `trim`, `trimStart`, `trimEnd`, `replace`, `repeat`, `padStart`, `padEnd`, `replaceAll`, `length`
+**String:** `String()` (conversion), plus prototype methods: `charAt`, `charCodeAt`, `concat`, `endsWith`, `includes`, `indexOf`, `lastIndexOf`, `slice`, `split`, `startsWith`, `substring`, `toLowerCase`, `toUpperCase`, `trim`, `trimStart`, `trimEnd`, `replace`, `repeat`, `padStart`, `padEnd`, `replaceAll`, `length`
 
 **Number (static):** `isNaN`, `isFinite`, `parseInt`, `parseFloat`
 
@@ -157,47 +155,31 @@ JSXpression gives you access to common JavaScript methods for working with data 
 
 ### Examples
 
-```typescript
+```tsx
 // Array operations
 "{items.map(item => item.toUpperCase())}";
 "{numbers.filter(n => n > 10).length}";
-"{items.at(-1)}"; // Last item
-"{arrays.flat()}"; // Flatten nested arrays
-"{items.findIndex(item => item.id === 5)}"; // Find index
-"{Array.isArray(value) ? value.length : 0}"; // Type check
+"{Array.isArray(value) ? value.length : 0}";
 
 // String operations
 "{text.toUpperCase().trim()}";
-"{name.slice(0, 3)}";
-"{label.padStart(10, '0')}"; // "00000label"
-"{text.repeat(3)}"; // Repeat string
-"{str.replaceAll('old', 'new')}"; // Replace all occurrences
+"{String(numericValue)}";
 
-// Math operations
-"{Math.max(...scores)}";
+// Math & Number
 "{Math.round(price * 1.2)}";
-"{Math.sqrt(area)}"; // Square root
-"{Math.pow(2, 8)}"; // 2^8 = 256
-"{Math.sin(angle)}"; // Trigonometry
-
-// Number operations
-"{Number.isNaN(value)}";
-"{Number.parseInt(stringNumber, 10)}";
-"{temperature.toFixed(1)}°C"; // 23.5°C
-"{price.toFixed(2)}"; // 19.99
-"{airflow.toPrecision(4)} m³/h"; // Technical measurements
+"{temperature.toFixed(1)}°C";
 ```
 
 ## Schema Definition
 
-Define what data and components are available:
+Define what data and elements are available:
 
 ```typescript
 import type { Schema } from "jsxpression";
 
 const schema = {
   //
-  // Data schema – each key becomes a top-level variable in expressions
+  // Data schema — each key becomes a top-level variable in expressions
   //
   data: {
     user: {
@@ -208,16 +190,9 @@ const schema = {
         age: { type: "number" },
         isAdmin: { type: "boolean" },
         role: { type: "string", enum: ["user", "admin", "guest"] },
-        address: {
-          type: "object",
-          shape: {
-            city: { type: "string" },
-            zip: { type: "number" },
-          },
-        },
         tags: {
           type: "array",
-          description: "User tags (array of strings)",
+          description: "User tags",
           shape: { type: "string" },
         },
       },
@@ -229,15 +204,10 @@ const schema = {
         scores: { type: "array", shape: { type: "number" } },
       },
     },
-
-    onClick: {
-      type: "function",
-      description: "A safe callback (pure, no side effects)",
-    },
   },
 
   //
-  // Element schema – defines which JSX elements can be used
+  // Element schema — defines which JSX elements can be used
   //
   elements: {
     Text: {
@@ -261,108 +231,105 @@ const schema = {
       allowedChildren: [], // means <Image src="..." /> only
     },
 
-    Button: {
-      description: "Button with event handler and label",
-      props: {
-        label: { type: "string", required: true },
-        onClick: { type: "function" },
-        variant: { type: "string", enum: ["primary", "secondary"] },
-      },
-      allowedChildren: ["Text"], // can only contain <Text>
-    },
-
     Card: {
-      description: "Wrapper element for grouping content",
+      description: "Wrapper for grouping content",
       props: {
         title: { type: "string", required: true },
         highlighted: { type: "boolean" },
       },
-      allowedChildren: ["Text", "Image", "Button"], // allowed inside <Card>...</Card>
+      allowedChildren: ["Text", "Image"], // allowed inside <Card>
+    },
+  },
+
+  //
+  // Functions — additional functions available in expressions
+  //
+  functions: {
+    formatDate: {
+      returnType: { type: "string" },
+      parameters: [{ name: "date", property: { type: "string" } }],
     },
   },
 } satisfies Schema;
-
-// <Text size={16} color="blue">{user.name}</Text>
-// <Image src={user.avatar} />
-// <Button label="Click" onClick={onClick}><Text>OK</Text></Button>
-// <Card title="Profile"><Text>{user.role}</Text><Button label="Edit" /></Card>
 ```
 
 ## API
 
 ### `render(source, schema, options?)`
 
-Renders a JSX expression with data and components.
+Parse, validate, compile, and evaluate a JSX template in one call.
 
 **Arguments:**
 
-- `source: string` - The JSX expression to render (e.g., `"<Text>{name}</Text>"`)
-- `schema: Schema` - Schema defining available data properties and components
-- `options?: RenderOptions` - Optional rendering settings:
-  - `data?: Record<string, any>` - Data object whose keys become top-level variables in expressions
-  - `components?: Record<string, Component>` - Component implementations
-  - `createElement?: Function` - Optional createElement function (e.g., React's `createElement`)
-  - `minSeverity?: 1 | 2 | 3` - Minimum severity to abort (1=info, 2=warning, 3=error). Default: 3
+- `source: string` — The JSX/TSX template
+- `schema: Schema` — Schema defining available data and elements
+- `options?: RenderOptions`:
+  - `data?: Record<string, any>` — Data variables available in the template
+  - `components?: Record<string, Component>` — Component implementations for schema elements
+  - `functions?: Record<string, Function>` — Additional function implementations
+  - `createElement?: Function` — Optional createElement (e.g., `React.createElement`)
+  - `minSeverity?: 1 | 2 | 3` — Minimum severity to abort (default: 3)
 
-**Returns:** The rendered result (type depends on the provided createElement function)
+**Returns:** The rendered result
 
-**Throws:** `AnalysisError` if validation fails
-
-**Example:**
+**Throws:** `AnalysisError` if validation fails, `ParseError` if syntax is invalid
 
 ```typescript
-const result = render("<Card title={title}>{content}</Card>", schema, {
-  data: { title: "Hello", content: "World" },
-  components: { Card: MyCardComponent },
+const result = render(template, schema, {
+  data: { title: "Hello", items: [1, 2, 3] },
+  components: { Card: MyCardComponent, Text: MyTextComponent },
   createElement: React.createElement,
 });
 ```
 
-### `validate(source, schema, options?)`
+### `compile(source, schema, options?)`
 
-Validatesa JSX expression against a schema without rendering. Great for checking templates before persisting or execution.
-
-**Arguments:**
-
-- `source: string` - The JSX expression to validate
-- `schema: Schema` - Schema to validate against
-- `options?: ValidateOptions` - Optional validation settings:
-  - `minSeverity?: 1 | 2 | 3` - Minimum severity to count as failure. Default: 3
-
-**Returns:** `ValidateResult` - Either `{ ok: true }` or `{ ok: false, error: AnalysisError | ParseError }`
-
-**Example:**
+Parse, validate, and compile — but don't evaluate. Useful for pre-compiling templates.
 
 ```typescript
-const result = validate("{user.invalidProperty}", schema);
+const compiled = compile(template, schema);
+// Store `compiled` and evaluate later with different data
+```
+
+### `validate(source, schema, options?)`
+
+Validate a template against a schema without rendering. Great for checking templates before persisting.
+
+**Returns:** `{ ok: true }` or `{ ok: false, error: AnalysisError | ParseError }`
+
+```typescript
+const result = validate(template, schema);
 
 if (!result.ok) {
-  console.error("Validation failed:", result.error.message);
-
-  // Analysis errors give you the full breakdown
+  // Individual issues with codes, messages, and source ranges
   if (result.error instanceof AnalysisError) {
     result.error.report.issues.forEach((issue) => {
-      console.error(`${issue.message} at line ${issue.range.start.line}`);
+      console.error(`[${issue.code}] ${issue.message} (line ${issue.range.start.line})`);
     });
-    // Also available: .errors (severity 3), .warnings (severity 2), .infos (severity 1)
   }
 }
 ```
 
 ### `generateTypeScriptDefinitions(schema)`
 
-Generates TypeScript type definitions from a schema. Use this to enable autocomplete and type checking in code editors like Monaco Editor or VS Code.
-
-**Arguments:**
-
-- `schema: Schema` - The schema to generate types from
-
-**Returns:** `string` - Complete TypeScript `.d.ts` file content
-
-**Example:**
+Generate `.d.ts` content from a schema for editor autocomplete.
 
 ```typescript
-const definitions = generateTypeScriptDefinitions(schema);
-// Add to Monaco Editor:
-monaco.languages.typescript.javascriptDefaults.addExtraLib(definitions, "jsxpression-types.d.ts");
+const dts = generateTypeScriptDefinitions(schema);
+// Feed to Monaco Editor, VS Code, or any TypeScript-aware editor
+monaco.languages.typescript.javascriptDefaults.addExtraLib(dts, "jsxpression-types.d.ts");
 ```
+
+## Security Model
+
+Templates run in a locked-down sandbox. The static analyzer rejects anything potentially dangerous before code is ever executed:
+
+- **No globals** — Only schema-defined data, allowed builtins, and local declarations are accessible
+- **No mutation** — `let`, `var`, assignment, `delete`, `++/--` are all blocked
+- **No escape hatches** — `eval`, `Function`, `import`, `require`, `new`, `this`, `super` are blocked
+- **No async** — `await`, `yield`, generators are blocked
+- **No side effects** — `try/catch`, `throw`, `debugger`, `with` are blocked
+- **Method allowlist** — Only explicitly safe prototype methods are callable
+- **Element validation** — Every JSX tag, attribute, and child is checked against the schema
+
+Local `const` bindings and `function` declarations are allowed for composition, but they can't break out of the sandbox.
