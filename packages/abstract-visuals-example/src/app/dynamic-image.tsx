@@ -3,8 +3,7 @@ import React from "react";
 import { compileDynamicImage, renderDynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 import { generateDataSchema } from "../../../abstract-image/src/dynamic-image/utils.js";
 import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
-// TEMP: Direct src import for dev
-import type { FunctionSchema, PropertySchema } from "../../../jsxpression/src/schema.js";
+import type { FunctionSchema, PropertySchema } from "jsxpression";
 import wiringPng from "../../assets/wiring.png";
 
 export function DynamicImage({}: {}): React.JSX.Element {
@@ -109,8 +108,8 @@ return <AbstractImage width={600} height={260}>
 
   const funcSchema: Record<string, FunctionSchema> = {
     test: {
-      returnType: { type: "string" },
-      parameters: [
+      ret: { type: "string" },
+      args: [
         {
           name: "str",
           property: { type: "string" },
@@ -123,7 +122,7 @@ return <AbstractImage width={600} height={260}>
     test: (str: string): string => `0x${str.length.toString(16)}`,
   };
 
-  const jsString = compileDynamicImage(template, schema, funcSchema, false);
+  const jsString = compileDynamicImage(template, schema, funcSchema);
   const rendered = jsString.type === "Ok" ? renderDynamicImage(jsString.value, dataParsed, functions) : undefined;
   return (
     <div

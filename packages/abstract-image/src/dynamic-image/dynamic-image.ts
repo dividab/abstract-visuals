@@ -61,18 +61,12 @@ export type CompileDynamicImageResult =
 export function compileDynamicImage(
   source: string,
   dataSchema?: Record<string, PropertySchema>,
-  functionSchema?: Record<string, FunctionSchema>,
-  tempSkipValidation?: boolean | undefined
+  functionSchema?: Record<string, FunctionSchema>
 ): CompileDynamicImageResult {
   try {
     return {
       type: "Ok",
-      value: compile(
-        source,
-        dataSchema ? { ...baseSchema, data: dataSchema, functions: functionSchema } : baseSchema,
-        undefined,
-        tempSkipValidation
-      ),
+      value: compile(source, dataSchema ? { ...baseSchema, data: dataSchema, functions: functionSchema } : baseSchema),
     };
   } catch (error) {
     return {
