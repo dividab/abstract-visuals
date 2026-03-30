@@ -1,9 +1,4 @@
-// TEMP: Direct src imports for dev (bypasses lib/ cache)
-
-import { AnalysisError } from "../../../jsxpression/src/analyze/index.js";
-import { evaluate } from "../../../jsxpression/src/evaluate/evaluate.js";
-import { compile, render } from "../../../jsxpression/src/render.js";
-import type { FunctionSchema, PropertySchema, Schema } from "../../../jsxpression/src/schema.js";
+import { AnalysisError, evaluate, compile, render, type FunctionSchema, type PropertySchema, type Schema } from "jsxpression";
 import type { AbstractImage } from "../model/abstract-image.js";
 import { createComponents } from "./components.js";
 import { baseSchema } from "./schema.js";

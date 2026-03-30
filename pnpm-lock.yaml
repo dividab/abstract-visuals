@@ -241,7 +241,7 @@ importers:
         specifier: ^0.7.2
         version: 0.7.2
       jsxpression:
-        specifier: ^0.1.28
+        specifier: ^0.1.29
         version: link:../jsxpression
     devDependencies:
       '@types/base64-js':
