@@ -111,7 +111,7 @@ function generateNamespaceDeclaration(namespace: string, schema: BuiltinSchema):
 
     result += "}\n";
   } else {
-    result += `declare const ${namespace}: {\n`;
+    result += `const ${namespace}: {\n`;
 
     if (schema.properties) {
       for (const [propName, prop] of Object.entries(schema.properties)) {
@@ -136,6 +136,12 @@ export function declareBuiltinTypes(): string {
 
   let declarations = `
 declare global {
+  interface Boolean {}
+  interface Function {}
+  interface IArguments {}
+  interface Object {}
+  interface RegExp {}
+
   namespace JSX {
     type Element = {
       type: any;

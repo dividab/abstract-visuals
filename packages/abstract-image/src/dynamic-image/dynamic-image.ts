@@ -1,4 +1,12 @@
-import { AnalysisError, evaluate, compile, render, type FunctionSchema, type PropertySchema, type Schema } from "jsxpression";
+import {
+  AnalysisError,
+  evaluate,
+  compile,
+  render,
+  type FunctionSchema,
+  type PropertySchema,
+  type Schema,
+} from "jsxpression";
 import type { AbstractImage } from "../model/abstract-image.js";
 import { createComponents } from "./components.js";
 import { baseSchema } from "./schema.js";
