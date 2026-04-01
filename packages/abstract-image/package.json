@@ -27,7 +27,7 @@
     "handlebars": "4.7.8",
     "handlebars-xml": "^0.4.3",
     "iconv-lite": "^0.7.2",
-    "jsxpression": "^0.1.29"
+    "jsxpression": "^0.1.31"
   },
   "peerDependencies": {
     "react": ">=17.0.0 <20.0.0"
