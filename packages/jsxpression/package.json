@@ -1,6 +1,6 @@
 {
   "name": "jsxpression",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "Validate and safely render JSX expressions",
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/jsxpression",
@@ -26,6 +26,5 @@
     "acorn-typescript": "1.4.13",
     "acorn-walk": "8.3.4"
   },
-  "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2",
-  "devDependencies": {}
+  "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2"
 }
