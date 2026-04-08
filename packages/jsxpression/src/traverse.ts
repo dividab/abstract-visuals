@@ -103,6 +103,7 @@ const tsNodeTypes = [
 
 const tsWalkers: Record<string, (node: any, state: any, c: any) => void> = {};
 for (const nodeType of tsNodeTypes) {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   tsWalkers[nodeType] = () => {};
 }
 
