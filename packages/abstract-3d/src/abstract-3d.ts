@@ -73,9 +73,9 @@ export type Image = {
   readonly rot?: Vec3;
   readonly size: Vec2;
   readonly image: {
-    readonly type: "AbstractImage",
-    readonly image: AbstractImage,
-  }
+    readonly type: "AbstractImage";
+    readonly image: AbstractImage;
+  };
 };
 
 export type Cylinder = {
@@ -733,7 +733,7 @@ export const image = (
   material: Material,
   image: Image["image"],
   pos: Vec3 = vec3Zero,
-  rot: Vec3 = vec3Zero,
+  rot: Vec3 = vec3Zero
 ): Mesh => ({
   material,
   geometry: {
@@ -742,7 +742,7 @@ export const image = (
     pos,
     size,
     rot,
-  }
+  },
 });
 
 export const roundHole = (pos: Vec2, radius: number): Hole => ({ type: "RoundHole", pos, radius });
@@ -840,9 +840,9 @@ export const splineCurve = (points: ReadonlyArray<Vec3>): SplineCurve => ({ type
 
 // -- Camera
 
-export function sizeCenterBoundsForCameraPos(size: Vec3, center: Vec3, rotation: Vec3): readonly [Vec3, Vec3, Bounds3] {
+export function sizeBoundsForCameraPos(size: Vec3, center: Vec3, rotation: Vec3): readonly [Vec3, Bounds3] {
   if (isZero(rotation.x) && isZero(rotation.y) && isZero(rotation.z)) {
-    return [size, center, bounds3FromPosAndSize(center, size)];
+    return [size, bounds3FromPosAndSize(center, size)];
   }
 
   const half = vec3Scale(size, 0.5);
@@ -858,7 +858,7 @@ export function sizeCenterBoundsForCameraPos(size: Vec3, center: Vec3, rotation:
   const v8 = vec3Rot(vec3(min.x, max.y, min.z), center, rotation);
   const bounds = bounds3FromVec3Array([v1, v2, v3, v4, v5, v6, v7, v8]);
 
-  return [bounds3ToSize(bounds), bounds3Center(bounds), bounds];
+  return [bounds3ToSize(bounds), bounds];
 }
 
 export function rotationForCameraPos(view: View): Vec3 {

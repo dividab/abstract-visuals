@@ -15,7 +15,7 @@ import {
   bounds3Merge,
   bounds3Center,
   vec3Add,
-  sizeCenterBoundsForCameraPos,
+  sizeBoundsForCameraPos,
   boundsScene,
   vec3Sub,
   vec3Rot,
@@ -75,10 +75,10 @@ const renderInternal = (
 ): { readonly groups: string; readonly size: Vec3; readonly center: Vec3 } => {
   const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
   const rotatedCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
-  const [size, center] = sizeCenterBoundsForCameraPos(scene.size_deprecated, rotatedCenter, unitRot);
-  const bounds = bounds3FromPosAndSize(center, size);
+  const [size] = sizeBoundsForCameraPos(scene.size_deprecated, rotatedCenter, unitRot);
+  const bounds = bounds3FromPosAndSize(rotatedCenter, size);
   const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin);
-  const pos = vec3NegateY(vec3Add(center, vec3Add(offset, dxfOriginOffset)));
+  const pos = vec3NegateY(vec3Add(rotatedCenter, vec3Add(offset, dxfOriginOffset)));
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
     size,
