@@ -97,13 +97,11 @@ function renderInternal(
   };
   const baseRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
   const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
-  const [unitSize, unitCenter] = sizeCenterBoundsForCameraPos(
-    scene.size_deprecated,
-    scene.center_deprecated ?? vec3Zero,
-    unitRot
-  );
+  const rotatedCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
+  const [unitSize, unitCenter] = sizeCenterBoundsForCameraPos(scene.size_deprecated, rotatedCenter, unitRot);
   const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
   const svgCenter = vec2(offset.x + opts.stroke_thickness * 0.75, offset.y + opts.stroke_thickness * 0.75);
+
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
   const unitCenterFlipped = vec3Flip(unitCenter);
 

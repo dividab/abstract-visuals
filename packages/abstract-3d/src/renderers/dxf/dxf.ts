@@ -18,14 +18,9 @@ import {
   sizeCenterBoundsForCameraPos,
   boundsScene,
   vec3Sub,
+  vec3Rot,
 } from "../../abstract-3d.js";
-import {
-  DEFAULT_CIRCLE_SIDE_COUNT,
-  dxf,
-  dxfHandleCreate,
-  DxfOrigin,
-  Handle
-} from "./dxf-encoding.js";
+import { DEFAULT_CIRCLE_SIDE_COUNT, dxf, dxfHandleCreate, DxfOrigin, Handle } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
@@ -79,13 +74,10 @@ const renderInternal = (
   handleRef: Handle
 ): { readonly groups: string; readonly size: Vec3; readonly center: Vec3 } => {
   const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
-  const [size, center] = sizeCenterBoundsForCameraPos(
-    scene.size_deprecated,
-    scene.center_deprecated ?? vec3Zero,
-    unitRot
-  );
+  const rotatedCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
+  const [size, center] = sizeCenterBoundsForCameraPos(scene.size_deprecated, rotatedCenter, unitRot);
   const bounds = bounds3FromPosAndSize(center, size);
-  const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin)
+  const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin);
   const pos = vec3NegateY(vec3Add(center, vec3Add(offset, dxfOriginOffset)));
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
@@ -98,13 +90,13 @@ function vec3NegateY(vec: Vec3): Vec3 {
   return {
     x: vec.x,
     y: -vec.y,
-    z: vec.z
+    z: vec.z,
   };
 }
 
 function originOffsetFromScenes(scenes: ReadonlyArray<DxfScene>, origin: DxfOrigin): Vec3 {
   const allBounds = Array<Bounds3>();
-  for(const scene of scenes) {
+  for (const scene of scenes) {
     const center = scene.scene.center_deprecated ?? vec3Zero;
     const size = scene.scene.size_deprecated;
     allBounds.push(bounds3FromPosAndSize(center, size));
@@ -113,7 +105,7 @@ function originOffsetFromScenes(scenes: ReadonlyArray<DxfScene>, origin: DxfOrig
 }
 
 function originOffsetFromBounds(bounds: Bounds3, origin: DxfOrigin): Vec3 {
-  switch(origin) {
+  switch (origin) {
     case "BottomLeftFront": {
       return vec3(Math.abs(bounds.min.x), -Math.abs(bounds.min.y), -Math.abs(bounds.min.z));
     }
@@ -180,9 +172,11 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
   const center = scene.center_deprecated ?? vec3Zero;
   const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
   const bounds = bounds3FromPosAndSize(center, scene.size_deprecated);
-  const offset =
-    vec3Sub(opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z), center);
-  
+  const offset = vec3Sub(
+    opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z),
+    center
+  );
+
   const newBounds: Bounds3 = {
     max: {
       x: bounds.max.x + offset.x,
@@ -193,7 +187,7 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
       x: bounds.min.x + offset.x,
       y: bounds.min.y + offset.y,
       z: bounds.min.z + offset.z,
-    }
+    },
   };
 
   const bounds2 = bounds3FromPosAndSize(offset, scene.size_deprecated);
