@@ -103,18 +103,17 @@ function renderInternal(
   const svgCenter = vec2(offset.x + opts.stroke_thickness * 0.75, offset.y + opts.stroke_thickness * 0.75);
 
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
-  const unitCenterFlipped = vec3Flip(rotatedCenter);
 
   const elements = Array<zOrderElement>();
   for (const g of scene.groups) {
-    elements.push(...svgGroup(g, unitCenterFlipped, unitRot, point, opts));
+    elements.push(...svgGroup(g, rotatedCenter, unitRot, point, opts));
   }
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
   const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, unitRot);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
     if (flipViews(d.views[0], cameraPos) === opts.view) {
-      const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
+      const pos = vec3TransRot(d.pos, rotatedCenter, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
         elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
