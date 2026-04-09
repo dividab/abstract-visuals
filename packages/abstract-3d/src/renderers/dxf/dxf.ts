@@ -18,7 +18,6 @@ import {
   sizeBoundsForCameraPos,
   boundsScene,
   vec3Sub,
-  vec3Rot,
 } from "../../abstract-3d.js";
 import { DEFAULT_CIRCLE_SIDE_COUNT, dxf, dxfHandleCreate, DxfOrigin, Handle } from "./dxf-encoding.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
@@ -74,11 +73,11 @@ const renderInternal = (
   handleRef: Handle
 ): { readonly groups: string; readonly size: Vec3; readonly center: Vec3 } => {
   const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
-  const rotatedCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
-  const [size] = sizeBoundsForCameraPos(scene.size_deprecated, rotatedCenter, unitRot);
-  const bounds = bounds3FromPosAndSize(rotatedCenter, size);
+  const unitCenter = scene.center_deprecated ?? vec3Zero;
+  const [size] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
+  const bounds = bounds3FromPosAndSize(unitCenter, size);
   const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin);
-  const pos = vec3NegateY(vec3Add(rotatedCenter, vec3Add(offset, dxfOriginOffset)));
+  const pos = vec3NegateY(vec3Add(unitCenter, vec3Add(offset, dxfOriginOffset)));
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
     size,

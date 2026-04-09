@@ -97,23 +97,23 @@ function renderInternal(
   };
   const baseRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
   const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
-  const rotatedCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, scene.rotation_deprecated ?? vec3Zero);
-  const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, rotatedCenter, unitRot);
+  const unitCenter = scene.center_deprecated ?? vec3Zero;
+  const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, scene.center_deprecated ?? vec3Zero, unitRot);
   const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
   const svgCenter = vec2(offset.x + opts.stroke_thickness * 0.75, offset.y + opts.stroke_thickness * 0.75);
-
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
+  const unitCenterFlipped = vec3Flip(unitCenter);
 
   const elements = Array<zOrderElement>();
   for (const g of scene.groups) {
-    elements.push(...svgGroup(g, rotatedCenter, unitRot, point, opts));
+    elements.push(...svgGroup(g, unitCenterFlipped, unitRot, point, opts));
   }
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
   const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, unitRot);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
     if (flipViews(d.views[0], cameraPos) === opts.view) {
-      const pos = vec3TransRot(d.pos, rotatedCenter, unitRot);
+      const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
         elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
