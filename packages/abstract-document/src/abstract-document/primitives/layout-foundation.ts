@@ -7,10 +7,10 @@ export interface LayoutFoundation {
 
 export function create(props?: LayoutFoundation): LayoutFoundation {
   return {
-    top: props?.top ?? 0,
-    bottom: props?.bottom ?? 0,
-    left: props?.left ?? 0,
-    right: props?.right ?? 0
+    top: props?.top,
+    bottom: props?.bottom,
+    left: props?.left,
+    right: props?.right
   };
 }
 

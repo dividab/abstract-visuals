@@ -18,7 +18,7 @@ export const testMarkdownItalic: ExportTestDef = {
     numbering: undefined,
     style: {
       alignment: undefined,
-      margins: { bottom: 0, left: 0, right: 0, top: 0 },
+      margins: { bottom: undefined, left: undefined, right: undefined, top: undefined },
       position: "relative",
       textStyle: { type: "TextStyle" },
       type: "ParagraphStyle",

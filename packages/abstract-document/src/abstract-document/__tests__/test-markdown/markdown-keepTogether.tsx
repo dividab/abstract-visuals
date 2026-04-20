@@ -28,10 +28,10 @@ export const testMarkdownKeepTogether: ExportTestDef = {
         style: {
           alignment: undefined,
           margins: {
-            bottom: 0,
-            left: 0,
-            right: 0,
-            top: 0,
+            bottom: undefined,
+            left: undefined,
+            right: undefined,
+            top: undefined,
           },
           position: "relative",
           textStyle: {
@@ -46,10 +46,10 @@ export const testMarkdownKeepTogether: ExportTestDef = {
     keepTogether: true,
     style: {
       margins: {
-        bottom: 0,
-        left: 0,
-        right: 0,
-        top: 0,
+        bottom: undefined,
+        left: undefined,
+        right: undefined,
+        top: undefined,
       },
       position: "relative",
       type: "GroupStyle",
