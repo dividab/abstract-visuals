@@ -65,15 +65,21 @@ export function svgCircle(
   return mask + cir + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
-function svgStrokedHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, strokeColor: string, strokeThickness: number): string {
-  if(strokeThickness <= Number.EPSILON) {
+function svgStrokedHoles(
+  pos: Vec2,
+  rot: Vec3,
+  holes: ReadonlyArray<Hole>,
+  strokeColor: string,
+  strokeThickness: number
+): string {
+  if (strokeThickness <= Number.EPSILON) {
     return "";
   }
 
   let svgHoles = "";
-  for(const hole of holes) {
+  for (const hole of holes) {
     const matrix = svgTrsMatrix(vec2Add(pos, hole.pos), rot);
-    switch(hole.type) {
+    switch (hole.type) {
       case "RoundHole": {
         svgHoles += `<circle
           r="${hole.radius.toFixed(0)}"
@@ -87,12 +93,9 @@ function svgStrokedHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, strok
 
       case "SquareHole": {
         const half = vec2Scale(hole.size, 0.5);
-        const points = [
-          vec2(-half.x, half.y),
-          vec2(half.x, half.y),
-          vec2(half.x, -half.y),
-          vec2(-half.x, -half.y),
-        ].map(((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`)).join(" ");
+        const points = [vec2(-half.x, half.y), vec2(half.x, half.y), vec2(half.x, -half.y), vec2(-half.x, -half.y)]
+          .map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`)
+          .join(" ");
         svgHoles += `<polygon 
           points="${points}"
           transform="${matrix}"
@@ -170,12 +173,22 @@ export type EmbededImage =
   | { readonly type: "url"; readonly url: string }
   | { readonly type: "svg"; readonly svg: string };
 
-export const svgImage = (p: Vec2, size: Vec2, rot: Vec3, data: EmbededImage, scale?: Vec2): string => {
+export const svgImage = (
+  p: Vec2,
+  size: Vec2,
+  rot: Vec3,
+  data: EmbededImage,
+  background?: string,
+  scale?: Vec2
+): string => {
   const matrix = svgTrsMatrix(p, rot, scale);
   return data.type === "url"
-    ? `<image width="${size.x}" height="${size.y}" transform="${matrix}" href="${data.url}" />`
-    : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" transform="${matrix}">${data.svg}</svg>
-  `;
+    ? `<g transform="${matrix}">${
+        background ? `<rect width="${size.x}" height="${size.y}" fill="${background}"/>` : ""
+      }<image width="${size.x}" height="${size.y}" href="${data.url}"/></g>`
+    : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" transform="${matrix}">${
+        background ? `<rect width="100%" height="100%" fill="${background}"/>` : ""
+      }${data.svg}</svg>`;
 };
 
 const counter = (() => {

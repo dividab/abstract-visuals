@@ -21,7 +21,7 @@ export type SvgOptions = {
   readonly stroke_thickness: number;
   readonly only_stroke: boolean;
   readonly gray_scale: boolean;
-  readonly only_stroke_fill: string;
+  readonly background: string;
   readonly rotation: number;
 
   readonly font: string;

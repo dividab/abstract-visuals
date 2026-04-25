@@ -48,14 +48,14 @@ export function plane(
     : undefined;
 
   if (image) {
-    const img = svgImage(point(v4.x, v4.y), p.size, rot, image);
+    const img = svgImage(point(v4.x, v4.y), p.size, rot, image, opts.background);
     return [zElem(img, (v2.z + v4.z) / 2)];
   }
 
   const points = [point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)];
 
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
-    ? [opts.gray_scale ? gray : material.normal, opts.only_stroke_fill, opts.stroke_thickness]
+    ? [opts.gray_scale ? gray : material.normal, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(material.normal) : material.normal, 0];
   return [
     zElem(

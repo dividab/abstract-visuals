@@ -90,7 +90,7 @@ function renderInternal(
     stroke_thickness: options?.stroke_thickness ?? 2,
     only_stroke: options?.only_stroke ?? false,
     gray_scale: options?.gray_scale ?? false,
-    only_stroke_fill: options?.only_stroke_fill ?? "rgba(255,255,255,0)",
+    background: options?.background ?? "rgba(255,255,255,0)",
     font: options?.font ?? "",
     imageDataByUrl: options?.imageDataByUrl ?? {},
     rotation: options?.rotation ?? 0,

@@ -60,7 +60,7 @@ export function box(
   const color = material.normal;
   const opacity = material.opacity ?? 1.0;
   const [strokeColor, fill, strokeUse] = opts.only_stroke
-    ? [opts.gray_scale ? gray : color, opts.only_stroke_fill, opts.stroke_thickness]
+    ? [opts.gray_scale ? gray : color, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(color) : color, 0];
 
   return [
