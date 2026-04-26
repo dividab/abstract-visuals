@@ -182,13 +182,13 @@ export const svgImage = (
   scale?: Vec2
 ): string => {
   const matrix = svgTrsMatrix(p, rot, scale);
-  return data.type === "url"
-    ? `<g transform="${matrix}">${
-        background ? `<rect width="${size.x}" height="${size.y}" fill="${background}"/>` : ""
-      }<image width="${size.x}" height="${size.y}" href="${data.url}"/></g>`
-    : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" transform="${matrix}">${
-        background ? `<rect width="100%" height="100%" fill="${background}"/>` : ""
-      }${data.svg}</svg>`;
+  return `<g transform="${matrix}">${
+    background ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>` : ""
+  }${
+    data.type === "url"
+      ? `<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/>`
+      : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" transform="${matrix}">`
+  }</g>`;
 };
 
 const counter = (() => {
