@@ -184,11 +184,16 @@ export const svgImage = (
   const matrix = svgTrsMatrix(p, rot, scale);
 
   return `<g transform="${matrix}">
-    ${background ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>` : ""}
     ${
       data.type === "url"
-        ? `<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/>`
-        : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}">${data.svg}</svg>`
+        ? `${
+            background ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>` : ""
+          }
+           <image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/>`
+        : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}">
+             ${background ? `<rect width="100%" height="100%" fill="${background}"/>` : ""}
+             ${data.svg}
+           </svg>`
     }
   </g>`;
 };
