@@ -34,13 +34,15 @@ export type DxfOptions = {
   readonly cylinderSideCount: number;
 };
 
+export type DxfScenesOptionsBase = Omit<DxfOptions, "origin"> & { readonly origin: Exclude<DxfOrigin, "SameAsScene"> };
+
 export type DxfScene = {
   readonly scene: Scene;
   readonly options?: Optional<DxfOptions>;
   readonly pos: Vec3;
 };
 
-export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Optional<DxfOptions>): string {
+export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Optional<DxfScenesOptionsBase>): string {
   let allGroups = "";
   const allBounds = Array<Bounds3>();
   const handle = dxfHandleCreate();
@@ -77,7 +79,8 @@ const renderInternal = (
   const [size] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
   const bounds = bounds3FromPosAndSize(unitCenter, size);
   const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin);
-  const pos = vec3NegateY(vec3Add(unitCenter, vec3Add(offset, dxfOriginOffset)));
+  const pos =
+    options.origin === "SameAsScene" ? vec3Zero : vec3NegateY(vec3Add(unitCenter, vec3Add(offset, dxfOriginOffset)));
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
     size,

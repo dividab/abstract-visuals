@@ -9,7 +9,7 @@ const DXF_STANDARD = "AC1015";
 const DXF_DEFAULT_HANDLE = 0x1000;
 const DXF_MODEL_SPACE_HANDLE = "1D";
 
-export type DxfOrigin = "BottomLeftFront" | "Center";
+export type DxfOrigin = "BottomLeftFront" | "Center" | "SameAsScene";
 export type DxfDynamicColor = 7; // this color becomes white on a black background and black on a white background (therefore theme/dxf viewer dependent)
 export type Handle = { handle: number };
 
@@ -49,10 +49,9 @@ ${DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
 ${
-  typeof col === "number" ?
-`62\n7`
-  :
-`62
+  typeof col === "number"
+    ? `62\n7`
+    : `62
 256
 420
 ${colorToInteger(col)}`
@@ -100,17 +99,17 @@ export function dxfPolyline(
   handleRef: Handle
 ): string {
   let dxf = "";
-  for(let i = 0; i < points.length; i++) {
+  for (let i = 0; i < points.length; i++) {
     const p1 = points[i];
-    const p2 = points[i+1];
-    if(p1 && p2) {
+    const p2 = points[i + 1];
+    if (p1 && p2) {
       dxf += dxfLine(p1, p2, col, handleRef);
     }
   }
-  if(closed) {
+  if (closed) {
     const start = points[0];
     const end = points[points.length - 1];
-    if(start && end) {
+    if (start && end) {
       dxf += dxfLine(start, end, col, handleRef);
     }
   }

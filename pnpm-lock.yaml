@@ -300,13 +300,13 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^1.6.8
+        specifier: ^1.6.13
         version: link:../abstract-3d
       abstract-chart:
         specifier: ^12.0.48
         version: link:../abstract-chart
       abstract-document:
-        specifier: ^18.2.48
+        specifier: ^18.2.49
         version: link:../abstract-document
       abstract-image:
         specifier: ^13.0.34
