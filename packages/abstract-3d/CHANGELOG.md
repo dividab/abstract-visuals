@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.7.0
+
+- Allow using the abstract 3d scene origin in the DXF export
+
 ## v1.6.0
 
 - Included abstract image and made a new Image component to draw abstract images.
