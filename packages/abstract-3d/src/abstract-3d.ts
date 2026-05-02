@@ -298,13 +298,15 @@ export const vec3Dist = (a: Vec3, b: Vec3): number => vec3DistSquared(a, b);
 export const vec3Cross = (a: Vec3, b: Vec3): Vec3 =>
   vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 
-export const equals = (num1: number, num2: number, equality = Number.EPSILON): boolean =>
-  Math.abs(num1 - num2) <= equality;
-export const isZero = (num: number, equality = Number.EPSILON): boolean => Math.abs(num) <= equality;
-export const geq = (num1: number, num2: number, equality = Number.EPSILON): boolean => num1 >= num2 - equality;
-export const greater = (num1: number, num2: number, equality = Number.EPSILON): boolean => num1 > num2 + equality;
-export const leq = (num1: number, num2: number, equality = Number.EPSILON): boolean => num1 <= num2 + equality;
-export const less = (num1: number, num2: number, equality = Number.EPSILON): boolean => num1 < num2 - equality;
+const TOLERANCE = 0.1;
+
+export const equals = (num1: number, num2: number, tolerance = TOLERANCE): boolean =>
+  Math.abs(num1 - num2) <= tolerance;
+export const isZero = (num: number, tolerance = TOLERANCE): boolean => Math.abs(num) <= tolerance;
+export const geq = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 >= num2 - tolerance;
+export const greater = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 > num2 + tolerance;
+export const leq = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 <= num2 + tolerance;
+export const less = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 < num2 - tolerance;
 
 // -- Bounds
 
@@ -324,24 +326,36 @@ export const bounds2Shift = (bounds: Bounds2, offset: Vec2): Bounds2 =>
 export const bounds3ToSize = (bounds: Bounds3): Vec3 =>
   vec3(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y, bounds.max.z - bounds.min.z);
 
-export const bounds3Overlap = (a: Bounds3, b: Bounds3, equality = Number.EPSILON): boolean =>
+export const bounds3Overlap = (a: Bounds3, b: Bounds3, tolerance = TOLERANCE): boolean =>
   !(
-    leq(a.max.x, b.min.x, equality) ||
-    geq(a.min.x, b.max.x, equality) ||
-    leq(a.max.y, b.min.y, equality) ||
-    geq(a.min.y, b.max.y, equality) ||
-    leq(a.max.z, b.min.z, equality) ||
-    geq(a.min.z, b.max.z, equality)
+    leq(a.max.x, b.min.x, tolerance) ||
+    geq(a.min.x, b.max.x, tolerance) ||
+    leq(a.max.y, b.min.y, tolerance) ||
+    geq(a.min.y, b.max.y, tolerance) ||
+    leq(a.max.z, b.min.z, tolerance) ||
+    geq(a.min.z, b.max.z, tolerance)
   );
 
-export const boundsOverlap = (a: Bounds, b: Bounds): boolean =>
-  (greater(a.max, b.min) && less(a.min, b.max)) || (greater(b.max, a.min) && less(b.min, a.max));
+export const boundsContains = (a: Bounds, b: Bounds, tolerance = TOLERANCE): boolean =>
+  leq(a.min, b.min, tolerance) && geq(a.max, b.max, tolerance);
 
-export const bounds2OverlapY = (a: Bounds2, b: Bounds2): boolean =>
-  (greater(a.max.y, b.min.y) && less(a.min.y, b.max.y)) || (greater(b.max.y, a.min.y) && less(b.min.y, a.max.y));
+export const boundsOverlap = (a: Bounds, b: Bounds, tolerance = TOLERANCE): boolean =>
+  (greater(a.max, b.min, tolerance) && less(a.min, b.max, tolerance)) ||
+  (greater(b.max, a.min, tolerance) && less(b.min, a.max, tolerance));
 
-export const boundsXOverlapX = (a: Bounds2, b: Bounds2): boolean =>
-  (greater(a.max.x, b.min.x) && less(a.min.x, b.max.x)) || (greater(b.max.x, a.min.x) && less(b.min.x, a.max.x));
+export const bounds2OverlapY = (a: Bounds2, b: Bounds2, tolerance = TOLERANCE): boolean =>
+  (greater(a.max.y, b.min.y, tolerance) && less(a.min.y, b.max.y, tolerance)) ||
+  (greater(b.max.y, a.min.y, tolerance) && less(b.min.y, a.max.y, tolerance));
+
+export const boundsXOverlapX = (a: Bounds2, b: Bounds2, tolerance = TOLERANCE): boolean =>
+  (greater(a.max.x, b.min.x, tolerance) && less(a.min.x, b.max.x, tolerance)) ||
+  (greater(b.max.x, a.min.x, tolerance) && less(b.min.x, a.max.x, tolerance));
+
+export const bounds2Contains = (a: Bounds2, b: Bounds2, tolerance = TOLERANCE): boolean =>
+  leq(a.min.x, b.min.x, tolerance) &&
+  geq(a.max.x, b.max.x, tolerance) &&
+  leq(a.min.y, b.min.y, tolerance) &&
+  geq(a.max.y, b.max.y, tolerance);
 
 export const bounds2Center = (bounds: Bounds2): Vec2 =>
   vec2((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2);
