@@ -304,9 +304,9 @@ export const equals = (num1: number, num2: number, tolerance = TOLERANCE): boole
   Math.abs(num1 - num2) <= tolerance;
 export const isZero = (num: number, tolerance = TOLERANCE): boolean => Math.abs(num) <= tolerance;
 export const geq = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 >= num2 - tolerance;
-export const greater = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 > num2 - tolerance;
+export const greater = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 > num2 + tolerance;
 export const leq = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 <= num2 + tolerance;
-export const less = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 < num2 + tolerance;
+export const less = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 < num2 - tolerance;
 
 // -- Bounds
 
