@@ -298,15 +298,15 @@ export const vec3Dist = (a: Vec3, b: Vec3): number => vec3DistSquared(a, b);
 export const vec3Cross = (a: Vec3, b: Vec3): Vec3 =>
   vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 
-const TOLERANCE = 0.1;
+const TOLERANCE = 0.001;
 
 export const equals = (num1: number, num2: number, tolerance = TOLERANCE): boolean =>
   Math.abs(num1 - num2) <= tolerance;
 export const isZero = (num: number, tolerance = TOLERANCE): boolean => Math.abs(num) <= tolerance;
 export const geq = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 >= num2 - tolerance;
-export const greater = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 > num2 + tolerance;
+export const greater = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 > num2 - tolerance;
 export const leq = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 <= num2 + tolerance;
-export const less = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 < num2 - tolerance;
+export const less = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 < num2 + tolerance;
 
 // -- Bounds
 
