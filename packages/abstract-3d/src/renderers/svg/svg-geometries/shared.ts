@@ -35,20 +35,22 @@ export function svgTrsMatrix(translation: Vec2, rotation: Vec3, scale?: Vec2): s
   const x2D = { x: xRot.x, y: -xRot.y };
   const y2D = { x: yRot.x, y: -yRot.y };
 
-  const lenX = Math.hypot(x2D.x, x2D.y);
-  const lenY = Math.hypot(y2D.x, y2D.y);
-  const xN = { x: x2D.x / lenX, y: x2D.y / lenX };
-  const yN = { x: y2D.x / lenY, y: y2D.y / lenY };
-
   const sx = scale?.x ?? 1;
   const sy = scale?.y ?? 1;
 
-  const a = xN.x * lenX * sx;
-  const b = xN.y * lenX * sx;
-  const c = yN.x * lenY * sy;
-  const d = yN.y * lenY * sy;
+  const a = x2D.x * sx;
+  const b = x2D.y * sx;
+  const c = y2D.x * sy;
+  const d = y2D.y * sy;
   const e = translation.x;
   const f = translation.y;
 
-  return `matrix(${a} ${b} ${c} ${d} ${e} ${f})`;
+  return `matrix(${svgNum(a)} ${svgNum(b)} ${svgNum(c)} ${svgNum(d)} ${svgNum(e)} ${svgNum(f)})`;
+}
+
+const svgNum = (num: number): string => {
+  if(Math.abs(num) < 1e-9) {
+    return "0";
+  }
+  return num.toFixed(6);
 }
