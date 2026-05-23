@@ -10,7 +10,30 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": "./lib/index.js"
+    ".": {
+      "ts": "./src/index.ts",
+      "import": "./lib/index.js"
+    },
+    "./react": {
+      "ts": "./src/renderers/react/index.ts",
+      "import": "./lib/renderers/react/index.js"
+    },
+    "./dxf": {
+      "ts": "./src/renderers/dxf/index.ts",
+      "import": "./lib/renderers/dxf/index.js"
+    },
+    "./step": {
+      "ts": "./src/renderers/step/index.ts",
+      "import": "./lib/renderers/step/index.js"
+    },
+    "./stl": {
+      "ts": "./src/renderers/stl/index.ts",
+      "import": "./lib/renderers/stl/index.js"
+    },
+    "./svg": {
+      "ts": "./src/renderers/svg/index.ts",
+      "import": "./lib/renderers/svg/index.js"
+    }
   },
   "files": [
     "/lib",
