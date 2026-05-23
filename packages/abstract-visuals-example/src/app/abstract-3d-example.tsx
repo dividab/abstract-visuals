@@ -1,6 +1,10 @@
 import React from "react";
 import FileSaver from "file-saver";
-import { React3Js, Dxf, Stl, Step, Svg } from "../../../abstract-3d/src/index.js";
+import * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
+import * as Stl from "../../../abstract-3d/src/renderers/stl/index.js";
+import * as Step from "../../../abstract-3d/src/renderers/step/index.js";
+import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";
+import * as Svg from "../../../abstract-3d/src/renderers/svg/index.js";
 import { systemair } from "./systemair.js";
 import { vortice } from "./vortice.js";
 import { ai } from "./double-view-ai.js";
@@ -80,7 +84,7 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Dxf.renderScenes([(Object.values(componentGeometries)[0]!.scenes[0] as any)])], {
+              new Blob([Dxf.renderScenes([Object.values(componentGeometries)[0]!.scenes[0] as any])], {
                 type: "text/plain",
               }),
               `a3d.dxf`
@@ -91,7 +95,10 @@ export function Abstract3DExample(): React.ReactNode {
         </button>
         <button
           onClick={() =>
-            FileSaver.saveAs(new Blob([Dxf.renderOld(systemair, { view: "front", origin: "Center" })], { type: "text/plain" }), `a3d.dxf`)
+            FileSaver.saveAs(
+              new Blob([Dxf.renderOld(systemair, { view: "front", origin: "Center" })], { type: "text/plain" }),
+              `a3d.dxf`
+            )
           }
         >
           DXF
