@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import iconv from "iconv-lite";
 import { AbstractImage } from "../model/abstract-image.js";
 import { black, Color } from "../model/color.js";
 import { BinaryImage, Component, corners } from "../model/component.js";
@@ -83,8 +82,12 @@ type BlockRecord = {
   readonly name: string;
 };
 
-export function dxf2dExportImageEncoded(root: AbstractImage, options?: Optional<DxfOptions>): Buffer {
-  return iconv.encode(dxf2dExportImage(root, options), "windows1252");
+export function dxf2dExportImageEncoded(root: AbstractImage, options?: Optional<DxfOptions>): Uint8Array {
+  return encodeWindows1252(dxf2dExportImage(root, options));
+}
+
+function encodeWindows1252(str: string): Uint8Array {
+  return Uint8Array.from(str, (c) => c.charCodeAt(0) & 0xff);
 }
 
 /**
@@ -330,7 +333,8 @@ function componentDxf(
     const insert: DxfInsert = {
       blockRecordId: blockRecordId,
       name: blockRecordName,
-      extents: { //scale the extents to be able to place it correctly in the destination image
+      extents: {
+        //scale the extents to be able to place it correctly in the destination image
         minX: extents.minX * scale.x,
         maxX: extents.maxX * scale.x,
         minY: extents.minY * scale.y,

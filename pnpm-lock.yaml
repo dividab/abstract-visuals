@@ -237,9 +237,6 @@ importers:
       handlebars-xml:
         specifier: ^0.4.3
         version: link:../handlebars-xml
-      iconv-lite:
-        specifier: ^0.7.2
-        version: 0.7.2
       jsxpression:
         specifier: ^0.1.33
         version: link:../jsxpression
@@ -300,13 +297,13 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^2.0.0
+        specifier: ^2.0.1
         version: link:../abstract-3d
       abstract-chart:
         specifier: ^12.0.48
         version: link:../abstract-chart
       abstract-document:
-        specifier: ^18.2.49
+        specifier: ^19.0.0
         version: link:../abstract-document
       abstract-image:
         specifier: ^13.0.34
@@ -4128,10 +4125,6 @@ packages:
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
-    engines: {node: '>=0.10.0'}
-
-  iconv-lite@0.7.2:
-    resolution: {integrity: sha512-im9DjEDQ55s9fL4EYzOAv0yMqmMBSZp6G0VvFyTMPKWxiSBHUj9NW/qqLmXUwXrrM7AvqSlTCfvqRb0cM8yYqw==}
     engines: {node: '>=0.10.0'}
 
   ieee754@1.2.1:
@@ -11605,10 +11598,6 @@ snapshots:
       safer-buffer: 2.1.2
 
   iconv-lite@0.6.3:
-    dependencies:
-      safer-buffer: 2.1.2
-
-  iconv-lite@0.7.2:
     dependencies:
       safer-buffer: 2.1.2
 
