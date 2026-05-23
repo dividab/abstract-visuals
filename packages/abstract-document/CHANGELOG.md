@@ -2,27 +2,31 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [19.0.0] - 2026-05-23
+
+- Abstract doc xml split into separete export to enable simple code splitting with rolldown.
+
 ## [18.1.0] - 2026-01-16
 
 - The alignments of a single TextField inside a Paragraph now work.
 - Multiple styles can now have the name 'Default' if they have different style types.
 - Added new style attributes to override a certain side (these should mirror the normal ones that encapsulates all sides). This can be used if a an override of a single side is desired, leaving the rest to the inherited style.
-  * borderTop
-  * borderBottom
-  * borderLeft
-  * borderRight
-  * borderColorTop
-  * borderColorBottom
-  * borderColorLeft
-  * borderColorRight
-  * marginTop
-  * marginBottom
-  * marginLeft
-  * marginRight
-  * paddingTop
-  * paddingBottom
-  * paddingLeft
-  * paddingRight
+  - borderTop
+  - borderBottom
+  - borderLeft
+  - borderRight
+  - borderColorTop
+  - borderColorBottom
+  - borderColorLeft
+  - borderColorRight
+  - marginTop
+  - marginBottom
+  - marginLeft
+  - marginRight
+  - paddingTop
+  - paddingBottom
+  - paddingLeft
+  - paddingRight
 
 ## [18.0.2] - 2025.12.16
 
