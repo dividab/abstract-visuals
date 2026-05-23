@@ -4,7 +4,8 @@ import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
 import FileSaver from "file-saver";
 import { createAbstractImage, createPoint, createSize, white, createBinaryImage } from "abstract-image";
 import { renderHandlebars, validateXml, errorToReadableText } from "handlebars-xml";
-import { AbstractDoc, AbstractDocDocx, AbstractDocPdf, AbstractDocXml } from "../../../abstract-document/src/index.js";
+import { AbstractDoc, AbstractDocDocx, AbstractDocPdf } from "../../../abstract-document/src/index.js";
+import * as AbstractDocXml from "../../../abstract-document/src/abstract-document-xml/index.js";
 
 export function AbstractDocumentXMLExample2(): React.JSX.Element {
   const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(

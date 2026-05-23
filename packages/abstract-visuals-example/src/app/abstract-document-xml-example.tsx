@@ -9,7 +9,8 @@ import {
   white,
   createBinaryImage,
 } from "../../../abstract-image/src/index.js";
-import { AbstractDoc, AbstractDocDocx, AbstractDocPdf, AbstractDocXml } from "../../../abstract-document/src/index.js";
+import { AbstractDoc, AbstractDocDocx, AbstractDocPdf } from "../../../abstract-document/src/index.js";
+import * as AbstractDocXml from "../../../abstract-document/src/abstract-document-xml/index.js";
 import { errorToReadableText, renderHandlebars, validateXml } from "handlebars-xml";
 
 export function AbstractDocumentXMLExample(): React.JSX.Element {

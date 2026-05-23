@@ -9,7 +9,14 @@
   "type": "module",
   "license": "MIT",
   "exports": {
-    ".": "./lib/index.js"
+    ".": {
+      "ts": "./src/index.ts",
+      "import": "./lib/index.js"
+    },
+    "./xml": {
+      "ts": "./src/abstract-document-xml/index.ts",
+      "import": "./lib/abstract-document-xml/index.js"
+    }
   },
   "files": [
     "/lib",
