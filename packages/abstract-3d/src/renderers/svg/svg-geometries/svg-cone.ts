@@ -12,7 +12,7 @@ import {
 } from "../../../abstract-3d.js";
 import { gray, stBW, zElem, zOrderElement, transparent, SvgOptions } from "./shared.js";
 import { svgCircle, svgPolygon } from "../svg-encoding.js";
-import { rgbGrayScale } from "../../shared.js";
+import { rgbGrayScale } from "../../../utils.js";
 
 export function cone(
   c: Cone,

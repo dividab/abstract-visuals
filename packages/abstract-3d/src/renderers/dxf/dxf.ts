@@ -25,7 +25,7 @@ import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
-import { Optional } from "../shared.js";
+import { Optional } from "../../utils.js";
 import { dxfImage } from "./dxf-geometries/dxf-image.js";
 
 export type DxfOptions = {

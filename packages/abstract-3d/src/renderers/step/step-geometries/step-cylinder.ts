@@ -9,7 +9,7 @@ import {
   Cylinder,
   vec3Add,
 } from "../../../abstract-3d.js";
-import { parseRgb } from "../../shared.js";
+import { parseRgb } from "../../../utils.js";
 import {
   ADVANCED_BREP_SHAPE_REPRESENTATION,
   ADVANCED_FACE,
@@ -52,7 +52,14 @@ import {
 
 const SMALLEST_RADIUS = 1e-4;
 
-export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep, rSmall?: number): void {
+export function stepCylinder(
+  c: Cylinder,
+  mat: Material,
+  parentPos: Vec3,
+  parentRot: Vec3,
+  m: MutableStep,
+  rSmall?: number
+): void {
   const r = c.radius;
   const r2 = Math.max(rSmall ?? c.radius, SMALLEST_RADIUS);
   const h = c.length;

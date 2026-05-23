@@ -33,7 +33,7 @@ import { shape } from "./svg-geometries/svg-shape.js";
 import { polygon } from "./svg-geometries/svg-polygon.js";
 import { text } from "./svg-geometries/svg-text.js";
 import { cone } from "./svg-geometries/svg-cone.js";
-import { Optional } from "../shared.js";
+import { Optional } from "../../utils.js";
 import { svg } from "./svg-encoding.js";
 import { image } from "./svg-geometries/svg-image.js";
 

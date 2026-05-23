@@ -12,7 +12,7 @@ import {
   vec3Sub,
   vec3Add,
 } from "../../../abstract-3d.js";
-import { parseRgb } from "../../shared.js";
+import { parseRgb } from "../../../utils.js";
 import {
   ADVANCED_BREP_SHAPE_REPRESENTATION,
   ADVANCED_FACE,
@@ -114,12 +114,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
     return edge;
   };
 
-  const makeFace = (
-    idxs: [number, number, number, number],
-    norm: Vec3,
-    planeDir: Vec3,
-    flip: boolean
-  ): number => {
+  const makeFace = (idxs: [number, number, number, number], norm: Vec3, planeDir: Vec3, flip: boolean): number => {
     const edges = [
       makeEdge(corners[idxs[0]]!, corners[idxs[1]]!),
       makeEdge(corners[idxs[1]]!, corners[idxs[2]]!),
@@ -141,11 +136,11 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
   };
 
   const faces = [
-    makeFace([1, 5, 7, 3], normFront, normUp, false),  // front (+Z)
-    makeFace([0, 2, 6, 4], normBack, normUp, true),    // back (-Z)
-    makeFace([4, 6, 7, 5], normRight, normUp, false),  // right (+X)
-    makeFace([0, 1, 3, 2], normLeft, normUp, true),    // left (-X)
-    makeFace([2, 3, 7, 6], normUp, normFront, false),  // top (+Y)
+    makeFace([1, 5, 7, 3], normFront, normUp, false), // front (+Z)
+    makeFace([0, 2, 6, 4], normBack, normUp, true), // back (-Z)
+    makeFace([4, 6, 7, 5], normRight, normUp, false), // right (+X)
+    makeFace([0, 1, 3, 2], normLeft, normUp, true), // left (-X)
+    makeFace([2, 3, 7, 6], normUp, normFront, false), // top (+Y)
     makeFace([0, 4, 5, 1], normDown, normFront, true), // bottom (-Y)
   ];
 

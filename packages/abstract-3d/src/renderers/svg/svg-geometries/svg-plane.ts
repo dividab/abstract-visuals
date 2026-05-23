@@ -13,7 +13,7 @@ import {
 } from "../../../abstract-3d.js";
 import { gray, black, zElem, zOrderElement, SvgOptions } from "./shared.js";
 import { EmbededImage, svgImage, svgPolygon } from "../svg-encoding.js";
-import { rgbGrayScale } from "../../shared.js";
+import { rgbGrayScale } from "../../../utils.js";
 
 export function plane(
   p: Plane,

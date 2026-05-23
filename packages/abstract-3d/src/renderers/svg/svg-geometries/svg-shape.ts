@@ -11,7 +11,7 @@ import {
 } from "../../../abstract-3d.js";
 import { gray, zElem, zOrderElement, transparent, SvgOptions } from "./shared.js";
 import { svgPolygon } from "../svg-encoding.js";
-import { rgbGrayScale } from "../../shared.js";
+import { rgbGrayScale } from "../../../utils.js";
 
 export function shape(
   s: Shape,

@@ -10,7 +10,7 @@ import {
   TextureLoader,
 } from "three";
 import { Material } from "../../abstract-3d.js";
-import { shade } from "../shared.js";
+import { shade } from "../../utils.js";
 
 const decreasedOpacity = 0.125;
 
@@ -125,7 +125,7 @@ function TextureMaterial({
   color,
   material,
   useAlphaTest = true,
-  filter = "Linear"
+  filter = "Linear",
 }: {
   readonly url: string;
   readonly color: string | Color | undefined;
@@ -139,7 +139,7 @@ function TextureMaterial({
         url,
         (data) => {
           data.colorSpace = SRGBColorSpace;
-          if(filter === "Nearest") {
+          if (filter === "Nearest") {
             data.minFilter = 1003;
             data.magFilter = 1003;
           }
