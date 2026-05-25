@@ -73,7 +73,9 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
     case "Cell": {
       const styles = el.attributes.styles?.split(",");
       if (el.attributes.number !== undefined) {
-        return { ...el.attributes, type: "number", value: el.attributes.number, styles } as Cell;
+        const parsedNumber = Number(el.attributes.number);
+        const num = Number.isNaN(parsedNumber) ? el.attributes.number : parsedNumber;
+        return { ...el.attributes, type: "number", value: num, styles } as Cell;
       } else if (el.attributes.boolean !== undefined) {
         return { ...el.attributes, type: "boolean", value: el.attributes.boolean, styles } as Cell;
       } else if (el.attributes.date !== undefined) {

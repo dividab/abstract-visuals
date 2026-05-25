@@ -122,13 +122,9 @@ const xmlParser = new XMLParser({
   ignoreDeclaration: true,
   processEntities: true,
   htmlEntities: true,
-  attributeValueProcessor: (_name, value) => {
+  attributeValueProcessor: (_name: string, value: string) => {
     if (!value?.trim()) {
       return value;
-    }
-    const nValue = Number(value);
-    if (!Number.isNaN(nValue)) {
-      return nValue;
     }
     return value;
   },
