@@ -57,7 +57,8 @@ export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
 
 export function getFontStyleName(attributes: Record<string, string>): keyof Font {
   const fontWeight = getFontWeightFromAttributes(attributes);
-  const italic = attributes.italic === "true";
+  const stringifiedItalic = `${attributes.italic}`;
+  const italic = stringifiedItalic === "true" || stringifiedItalic === "1";
   if(fontWeight === "normal") {
     return italic ? "italic" : fontWeight;
   }

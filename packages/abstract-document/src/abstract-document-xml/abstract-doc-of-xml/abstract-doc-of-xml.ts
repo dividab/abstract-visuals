@@ -42,7 +42,7 @@ export async function abstractDocsXml(
     const combinedReport = addResources(merge(...abstractDocs), resources);
     return { type: "Ok", value: combinedReport };
   } catch (e) {
-    return { type: "Err", error: typeof e === "string" ? e : e.message };
+    return { type: "Err", error: typeof e === "string" ? e : (e as any).message };
   }
 }
 
@@ -184,17 +184,36 @@ function getSuffixedAttributeBaseName(attributeName: string): string | undefined
 
 function extractImageFontsStyleNames(
   xmlElement: ReadonlyArray<XmlElement>,
+  styleFamilies: Record<string, string> = {},
   styleNames: Record<string, string> = {},
   images: Record<string, true> = {},
-  fonts: Record<string, Partial<Record<keyof Font, boolean>>> = {}
+  fonts: Record<string, Partial<Record<keyof Font, boolean>>> = {},
+  currentFontFamily: string | undefined = undefined,
 ): readonly [
   imageUrls: Record<string, true>,
   fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>,
   styleNames: Record<string, string>
 ] {
+  let crFntFam = currentFontFamily;
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.src) {
       images[item.attributes.src as string] = true;
+    } else if (item.tagName === "style") {
+      const fontFamily = crFntFam ?? styleFamilies.Default;
+      if(fontFamily) {
+        const styleName = getFontStyleName(item.attributes);
+        (fonts[fontFamily] ??= {})[styleName] = true;
+      }
+    } else if(item.attributes.styleName !== undefined) {
+      crFntFam = styleFamilies[item.attributes.styleName] ?? crFntFam;
+    } else if (item.attributes.styleNames !== undefined) {
+      const style = item.attributes.styleNames.split(",").find((style) => styleFamilies[style]);
+      if(style) {
+        const fontFamily = styleFamilies[style];
+        if(fontFamily) {
+          crFntFam = fontFamily;
+        }
+      }
     } else if (item.attributes?.fontFamily) {
       const styleName = getFontStyleName(item.attributes);
       (fonts[item.attributes.fontFamily as string] ??= {})[styleName] = true;
@@ -203,8 +222,13 @@ function extractImageFontsStyleNames(
       }
     } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
       styleNames[item.attributes.name as string] = item.attributes.type;
+      if(item.attributes.type === "TextStyle" && item.attributes.fontFamily) {
+        const styleName = getFontStyleName(item.attributes);
+        styleFamilies[item.attributes.name as string] = item.attributes.fontFamily;
+        (fonts[item.attributes.fontFamily] ??= {})[styleName] = true;
+      }
     } else {
-      extractImageFontsStyleNames(item.children, styleNames, images, fonts);
+      extractImageFontsStyleNames(item.children, styleFamilies, styleNames, images, fonts, crFntFam);
     }
   });
   return [images, fonts, styleNames];
