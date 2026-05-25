@@ -1,2 +1,14 @@
 packages:
   - "packages/*"
+
+allowBuilds:
+  esbuild: false
+  husky: false
+
+overrides:
+  three-stdlib: "^2.36.0"
+
+packageExtensions:
+  tunnel-rat@*:
+    peerDependencies:
+      react: "^19.0.0"
