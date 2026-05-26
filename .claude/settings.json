@@ -1,0 +1,6 @@
+﻿{
+  "permissions": {
+    "deny": ["Bash(*)", "Read(.claude/settings.json)", "Write(.claude/settings.json)"],
+    "allow": []
+  }
+}

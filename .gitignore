@@ -14,3 +14,4 @@ test_out/
 dist/
 storybook-static/
 tmp/
+gitleaks-report.json
