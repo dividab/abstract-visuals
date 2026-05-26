@@ -19,8 +19,7 @@ export class AnalysisError extends Error {
     this.name = "AnalysisError";
     this.report = report;
 
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, AnalysisError);
-    }
+    const ErrorWithCapture = Error as typeof Error & { captureStackTrace?: (t: object, c: unknown) => void };
+    ErrorWithCapture.captureStackTrace?.(this, AnalysisError);
   }
 }

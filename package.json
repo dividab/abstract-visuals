@@ -31,14 +31,14 @@
     "prettier": "^2.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vite": "^8.0.14",
     "vite-plugin-node-polyfills": "^0.28.0",
     "xmldom": "^0.6.0",
     "xsd-tools": "^0.2.0",
     "vitest": "3.2.4",
     "@vitest/coverage-v8": "^2.1.6",
-    "rollup-plugin-visualizer": "^6.0.3"
+    "rollup-plugin-visualizer": "7.0.1"
   },
   "scripts": {
     "precommit": "lint-staged",

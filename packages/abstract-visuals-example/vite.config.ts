@@ -20,10 +20,10 @@ export default defineConfig({
         ]
       : []),
   ],
+  define: {
+    global: "globalThis",
+  },
   optimizeDeps: {
-    esbuildOptions: {
-      define: { global: "globalThis" },
-    },
     // abstract-image is a depency of abstract-chart and abstract-document.
     include: [
       "abstract-sheet",

@@ -1,6 +1,3 @@
-/* eslint-disable functional/no-class */
-/* eslint-disable functional/no-this-expression */
-/* eslint-disable functional/prefer-readonly-type */
 import React from "react";
 import { extend } from "@react-three/fiber";
 import { Text, Line } from "@react-three/drei";
@@ -190,16 +187,18 @@ export function ReactMesh({
     }
     case "Image": {
       const { pos, size, rot } = mesh.geometry;
-      return <mesh
-        geometry={planeGeometry}
-        scale={[size.x, size.y, 1]}
-        position={[pos.x, pos.y, pos.z]}
-        rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
-        castShadow
-        receiveShadow
-      >
-        {children}
-      </mesh>;
+      return (
+        <mesh
+          geometry={planeGeometry}
+          scale={[size.x, size.y, 1]}
+          position={[pos.x, pos.y, pos.z]}
+          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+          castShadow
+          receiveShadow
+        >
+          {children}
+        </mesh>
+      );
     }
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;
@@ -504,7 +503,7 @@ class CircleCurve extends Curve<Vector3> {
     this.angleLength = circleCurve.angleLength;
   }
 
-  getPoint(t: number, optionalTarget = new Vector3()): Vector3 {
+  override getPoint(t: number, optionalTarget = new Vector3()): Vector3 {
     return optionalTarget.set(
       -this.radius * Math.sin(this.startAngle + this.angleLength * t),
       -this.radius * Math.cos(this.startAngle + this.angleLength * t),

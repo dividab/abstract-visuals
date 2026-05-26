@@ -5,6 +5,9 @@ allowBuilds:
   esbuild: false
   husky: false
 
+minimumReleaseAgeExclude:
+  - abstract-3d@2.0.3
+
 overrides:
   three-stdlib: "^2.36.0"
 
