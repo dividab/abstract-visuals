@@ -1,8 +1,4 @@
 import type { AbstractImage } from "abstract-image";
-import { Vector3 } from "three/src/math/Vector3.js";
-import { Matrix4 } from "three/src/math/Matrix4.js";
-import { Euler } from "three/src/math/Euler.js";
-import { Quaternion } from "three/src/math/Quaternion.js";
 
 export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??
@@ -617,49 +613,93 @@ export function boundsText(t: Text, parentPos: Vec3, parentRot: Vec3): Bounds3 {
 
 // -- Transformations
 
-const quaternion1 = new Quaternion();
-const quaternion2 = new Quaternion();
-const euler1 = new Euler();
-const euler2 = new Euler();
-const vector = new Vector3();
-const matrix = new Matrix4();
-
 export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
-  euler1.set(outer.x, outer.y, outer.z);
-  quaternion1.setFromEuler(euler1);
-  euler2.set(inner.x, inner.y, inner.z);
-  quaternion2.setFromEuler(euler2);
-  quaternion1.multiply(quaternion2);
-  euler1.setFromQuaternion(quaternion1);
-  return vec3(euler1.x, euler1.y, euler1.z);
-}
-
-export function vec3RotNormal(referenceNormal: Vec3, eulerRot: Vec3): Vec3 {
-  euler1.set(eulerRot.x, eulerRot.y, eulerRot.z);
-  matrix.makeRotationFromEuler(euler1);
-  vector.set(referenceNormal.x, referenceNormal.y, referenceNormal.z);
-  vector.applyMatrix4(matrix);
-  const normalized = vector.normalize();
-  return vec3(normalized.x, normalized.y, normalized.z);
-}
-
-export function vec3Rot2(vec: Vec3, eulerRot: Vec3): Vec3 {
-  euler1.set(eulerRot.x, eulerRot.y, eulerRot.z);
-  matrix.makeRotationFromEuler(euler1);
-  vector.set(vec.x, vec.y, vec.z);
-  vector.applyMatrix4(matrix);
-  return vec3(vector.x, vector.y, vector.z);
+  if (inner.x === 0 && inner.y === 0 && inner.z === 0) return outer;
+  if (outer.x === 0 && outer.y === 0 && outer.z === 0) return inner;
+  const oc1 = Math.cos(outer.x / 2),
+    os1 = Math.sin(outer.x / 2);
+  const oc2 = Math.cos(outer.y / 2),
+    os2 = Math.sin(outer.y / 2);
+  const oc3 = Math.cos(outer.z / 2),
+    os3 = Math.sin(outer.z / 2);
+  const ax = os1 * oc2 * oc3 + oc1 * os2 * os3;
+  const ay = oc1 * os2 * oc3 - os1 * oc2 * os3;
+  const az = oc1 * oc2 * os3 + os1 * os2 * oc3;
+  const aw = oc1 * oc2 * oc3 - os1 * os2 * os3;
+  const ic1 = Math.cos(inner.x / 2),
+    is1 = Math.sin(inner.x / 2);
+  const ic2 = Math.cos(inner.y / 2),
+    is2 = Math.sin(inner.y / 2);
+  const ic3 = Math.cos(inner.z / 2),
+    is3 = Math.sin(inner.z / 2);
+  const bx = is1 * ic2 * ic3 + ic1 * is2 * is3;
+  const by = ic1 * is2 * ic3 - is1 * ic2 * is3;
+  const bz = ic1 * ic2 * is3 + is1 * is2 * ic3;
+  const bw = ic1 * ic2 * ic3 - is1 * is2 * is3;
+  const qx = ax * bw + aw * bx + ay * bz - az * by;
+  const qy = ay * bw + aw * by + az * bx - ax * bz;
+  const qz = az * bw + aw * bz + ax * by - ay * bx;
+  const qw = aw * bw - ax * bx - ay * by - az * bz;
+  const m11 = 1 - 2 * (qy * qy + qz * qz);
+  const m12 = 2 * (qx * qy - qw * qz);
+  const m13 = 2 * (qx * qz + qw * qy);
+  const m22 = 1 - 2 * (qx * qx + qz * qz);
+  const m23 = 2 * (qy * qz - qw * qx);
+  const m32 = 2 * (qy * qz + qw * qx);
+  const m33 = 1 - 2 * (qx * qx + qy * qy);
+  const ey = Math.asin(Math.max(-1, Math.min(1, m13)));
+  if (Math.abs(m13) < 0.9999999) {
+    return vec3(Math.atan2(-m23, m33), ey, Math.atan2(-m12, m11));
+  }
+  return vec3(Math.atan2(m32, m22), ey, 0);
 }
 
 export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
-  euler1.set(rotation.x, rotation.y, rotation.z);
-  quaternion1.setFromEuler(euler1);
-  vector.set(point.x - origin.x, point.y - origin.y, point.z - origin.z);
-  vector.applyQuaternion(quaternion1);
-  return vec3(vector.x + origin.x, vector.y + origin.y, vector.z + origin.z);
+  if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) return point;
+  const c1 = Math.cos(rotation.x / 2),
+    s1 = Math.sin(rotation.x / 2);
+  const c2 = Math.cos(rotation.y / 2),
+    s2 = Math.sin(rotation.y / 2);
+  const c3 = Math.cos(rotation.z / 2),
+    s3 = Math.sin(rotation.z / 2);
+  const qx = s1 * c2 * c3 + c1 * s2 * s3;
+  const qy = c1 * s2 * c3 - s1 * c2 * s3;
+  const qz = c1 * c2 * s3 + s1 * s2 * c3;
+  const qw = c1 * c2 * c3 - s1 * s2 * s3;
+  const vx = point.x - origin.x,
+    vy = point.y - origin.y,
+    vz = point.z - origin.z;
+  const tx = 2 * (qy * vz - qz * vy);
+  const ty = 2 * (qz * vx - qx * vz);
+  const tz = 2 * (qx * vy - qy * vx);
+  return vec3(
+    vx + qw * tx + qy * tz - qz * ty + origin.x,
+    vy + qw * ty + qz * tx - qx * tz + origin.y,
+    vz + qw * tz + qx * ty - qy * tx + origin.z
+  );
 }
 
-export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => vec3Rot(vec3Add(p, pos), pos, rot);
+export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => {
+  if (rot.x === 0 && rot.y === 0 && rot.z === 0) return vec3(p.x + pos.x, p.y + pos.y, p.z + pos.z);
+  const c1 = Math.cos(rot.x / 2),
+    s1 = Math.sin(rot.x / 2);
+  const c2 = Math.cos(rot.y / 2),
+    s2 = Math.sin(rot.y / 2);
+  const c3 = Math.cos(rot.z / 2),
+    s3 = Math.sin(rot.z / 2);
+  const qx = s1 * c2 * c3 + c1 * s2 * s3;
+  const qy = c1 * s2 * c3 - s1 * c2 * s3;
+  const qz = c1 * c2 * s3 + s1 * s2 * c3;
+  const qw = c1 * c2 * c3 - s1 * s2 * s3;
+  const tx = 2 * (qy * p.z - qz * p.y);
+  const ty = 2 * (qz * p.x - qx * p.z);
+  const tz = 2 * (qx * p.y - qy * p.x);
+  return vec3(
+    p.x + qw * tx + qy * tz - qz * ty + pos.x,
+    p.y + qw * ty + qz * tx - qx * tz + pos.y,
+    p.z + qw * tz + qx * ty - qy * tx + pos.z
+  );
+};
 
 export function geoRot<T extends Box | Plane | Cone | Cylinder | Text | Group>(g: T, origin: Vec3, rot: Vec3): T {
   return { ...g, pos: vec3Rot(g.pos, origin, rot), rot: vec3RotCombine(rot, g.rot ?? vec3Zero) };
