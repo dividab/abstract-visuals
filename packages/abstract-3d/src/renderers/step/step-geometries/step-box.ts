@@ -1,4 +1,3 @@
-import { Euler, Matrix4, Vector3 } from "three";
 import {
   Box,
   Material,
@@ -11,6 +10,7 @@ import {
   vec3Normalize,
   vec3Sub,
   vec3Add,
+  vec3Rot,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../../utils.js";
 import {
@@ -58,10 +58,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
   const pos = vec3TransRot(b.pos, parentPos, parentRot);
   const rotation = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
   const color = parseRgb(mat.normal);
-  const rotationMatrix = new Matrix4();
-  const euler = new Euler();
-  euler.set(rotation.x, rotation.y, rotation.z);
-  rotationMatrix.makeRotationFromEuler(euler);
+  const rotate = (v: Vec3): Vec3 => vec3Rot(v, vec3Zero, rotation);
 
   const corners = [
     vec3(0, 0, 0),
@@ -72,21 +69,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
     vec3(size.x, 0, size.z),
     vec3(size.x, size.y, 0),
     vec3(size.x, size.y, size.z),
-  ].map((v) => {
-    const localCorner = vec3Sub(v, half);
-    const vec = new Vector3();
-    vec.set(localCorner.x, localCorner.y, localCorner.z);
-    vec.applyMatrix4(rotationMatrix);
-    const corner = vec3Add(vec3(vec.x, vec.y, vec.z), pos);
-    return corner;
-  });
-
-  const rotate = (original: Vec3): Vec3 => {
-    const vec = new Vector3();
-    vec.set(original.x, original.y, original.z);
-    vec.applyMatrix4(rotationMatrix);
-    return vec3(vec.x, vec.y, vec.z);
-  };
+  ].map((v) => vec3Add(rotate(vec3Sub(v, half)), pos));
 
   const normFrontGlobal = vec3(0, 0, 1);
   const normRightGlobal = vec3(1, 0, 0);

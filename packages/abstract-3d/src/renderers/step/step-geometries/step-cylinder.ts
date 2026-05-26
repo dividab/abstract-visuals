@@ -1,4 +1,3 @@
-import { Euler, Matrix4, Vector3 } from "three";
 import {
   Material,
   Vec3,
@@ -8,6 +7,7 @@ import {
   vec3,
   Cylinder,
   vec3Add,
+  vec3Rot,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../../utils.js";
 import {
@@ -66,33 +66,13 @@ export function stepCylinder(
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rotation = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
 
-  const rotationMatrix = new Matrix4();
-  const euler = new Euler();
-  euler.set(rotation.x, rotation.y, rotation.z);
-  rotationMatrix.makeRotationFromEuler(euler);
-
-  const upNormal = new Vector3();
-  const downNormal = new Vector3();
-  upNormal.set(0, 1, 0);
-  downNormal.set(0, -1, 0);
-
-  upNormal.applyMatrix4(rotationMatrix);
-  downNormal.applyMatrix4(rotationMatrix);
-
-  const circleTop = new Vector3();
-  circleTop.set(0, h / 2, 0);
-  circleTop.applyMatrix4(rotationMatrix);
-
-  const circleBot = new Vector3();
-  circleBot.set(0, -h / 2, 0);
-  circleBot.applyMatrix4(rotationMatrix);
-
-  const v1 = new Vector3();
-  const v2 = new Vector3();
-  v1.set(r2, h / 2, 0);
-  v2.set(r, -h / 2, 0);
-  v1.applyMatrix4(rotationMatrix);
-  v2.applyMatrix4(rotationMatrix);
+  const rot = (v: Vec3): Vec3 => vec3Rot(v, vec3Zero, rotation);
+  const upNormal = rot(vec3(0, 1, 0));
+  const downNormal = rot(vec3(0, -1, 0));
+  const circleTop = rot(vec3(0, h / 2, 0));
+  const circleBot = rot(vec3(0, -h / 2, 0));
+  const v1 = rot(vec3(r2, h / 2, 0));
+  const v2 = rot(vec3(r, -h / 2, 0));
 
   const applicationContext = APPLICATION_CONTEXT(m);
   APPLICATION_PROTOCOL_DEFINITION(applicationContext, m);
