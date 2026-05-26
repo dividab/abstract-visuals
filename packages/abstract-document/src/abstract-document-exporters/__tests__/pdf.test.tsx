@@ -96,6 +96,10 @@ import { testWorld } from "./pdf/world.js";
 import { testNewLineShouldBreak } from "./pdf/new-line-should-line-break.js";
 import { testNewLineShouldBreakLong } from "./pdf/new-line-should-line-break-long.js";
 import { testPageColumnLayout } from "./pdf/page-column-layout.js";
+import { testLongTextRun } from "./pdf/long-text-run.js"
+import { testLongTextRunWithSeparateAtStart } from "./pdf/long-text-run-with-separate-at-start.js";
+import { testLongTextRunWithSeparateAtEnd } from "./pdf/long-text-run-with-separate-at-end.js";
+import { testLongTextRunWithSeparateAtStartAndEnd } from "./pdf/long-text-run-with-separate-at-start_and_end.js";
 
 describe("export pdf", () => {
   [
@@ -189,6 +193,10 @@ describe("export pdf", () => {
     testTableOfContentSeparator,
     testWorld,
     testPageColumnLayout,
+    testLongTextRun,
+    testLongTextRunWithSeparateAtStart,
+    testLongTextRunWithSeparateAtEnd,
+    testLongTextRunWithSeparateAtStartAndEnd,
   ]
     //.filter((i) => i === testPageColumnLayout)
     .forEach((item) => {
