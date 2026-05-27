@@ -336,6 +336,22 @@ export const propsCreators: Record<string, ADCreatorFn> = {
       right: Number(props.contentMargins.right),
     };
   },
+  firstPageHeaderMargins: (props: { firstPageHeaderMargins: { readonly top: string; readonly bottom: string; readonly left: string; readonly right: string; } }): unknown => {
+    return {
+      top: Number(props.firstPageHeaderMargins.top),
+      bottom: Number(props.firstPageHeaderMargins.bottom),
+      left: Number(props.firstPageHeaderMargins.left),
+      right: Number(props.firstPageHeaderMargins.right),
+    };
+  },
+  firstPageFooterMargins: (props: { firstPageFooterMargins: { readonly top: string; readonly bottom: string; readonly left: string; readonly right: string; } }): unknown => {
+    return {
+      top: Number(props.firstPageFooterMargins.top),
+      bottom: Number(props.firstPageFooterMargins.bottom),
+      left: Number(props.firstPageFooterMargins.left),
+      right: Number(props.firstPageFooterMargins.right),
+    };
+  },
   borderColorTop: (props: { readonly borderColorTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const margins: { top?: string; bottom?: string; left?: string; right?: string } = allProps.borderColors ?? {};
