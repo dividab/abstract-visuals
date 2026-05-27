@@ -8,7 +8,7 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - abstract-3d@2.0.5
   - abstract-chart@12.0.51
-  - abstract-document@19.1.0
+  - abstract-document@19.1.1
   - abstract-image@13.0.37
   - abstract-sheet@1.1.22
   - handlebars-xml@0.4.4
