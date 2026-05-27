@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [19.1.0] - 2026-05-27
+
+- Added logic for splitting really long words that stretch longer than available width of a page or cell, etc.
+- Made font style collecting handle simple style tags.
+- Changed so that attributes in the xml parser doesn't convert the values to numbers.
+
 ## [19.0.0] - 2026-05-23
 
 - Abstract doc xml split into separete export to enable simple code splitting with rolldown.
