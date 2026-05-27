@@ -383,6 +383,8 @@ const size = createSize(0, 0);
 function imageProps(props: Record<string, unknown>): Record<string, unknown> {
   return {
     ...props,
+    width: Number(props.width),
+    height: Number(props.height),
     imageResource: ImageResource.create({
       id: props.src as string,
       abstractImage: createAbstractImage(zero, size, white, [
