@@ -312,46 +312,6 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     });
     return borderColors;
   },
-  footerMargins: (props: { footerMargins: { readonly top: string; readonly bottom: string; readonly left: string; readonly right: string; } }): unknown => {
-    return {
-      top: Number(props.footerMargins.top),
-      bottom: Number(props.footerMargins.bottom),
-      left: Number(props.footerMargins.left),
-      right: Number(props.footerMargins.right),
-    };
-  },
-  headerMargins: (props: { headerMargins: { readonly top: string; readonly bottom: string; readonly left: string; readonly right: string; } }): unknown => {
-    return {
-      top: Number(props.headerMargins.top),
-      bottom: Number(props.headerMargins.bottom),
-      left: Number(props.headerMargins.left),
-      right: Number(props.headerMargins.right),
-    };
-  },
-  contentMargins: (props: { contentMargins: { readonly top: string; readonly bottom: string; readonly left: string; readonly right: string; } }): unknown => {
-    return {
-      top: Number(props.contentMargins.top),
-      bottom: Number(props.contentMargins.bottom),
-      left: Number(props.contentMargins.left),
-      right: Number(props.contentMargins.right),
-    };
-  },
-  firstPageHeaderMargins: (props: { firstPageHeaderMargins: { readonly top: string; readonly bottom: string; readonly left: string; readonly right: string; } }): unknown => {
-    return {
-      top: Number(props.firstPageHeaderMargins.top),
-      bottom: Number(props.firstPageHeaderMargins.bottom),
-      left: Number(props.firstPageHeaderMargins.left),
-      right: Number(props.firstPageHeaderMargins.right),
-    };
-  },
-  firstPageFooterMargins: (props: { firstPageFooterMargins: { readonly top: string; readonly bottom: string; readonly left: string; readonly right: string; } }): unknown => {
-    return {
-      top: Number(props.firstPageFooterMargins.top),
-      bottom: Number(props.firstPageFooterMargins.bottom),
-      left: Number(props.firstPageFooterMargins.left),
-      right: Number(props.firstPageFooterMargins.right),
-    };
-  },
   borderColorTop: (props: { readonly borderColorTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const margins: { top?: string; bottom?: string; left?: string; right?: string } = allProps.borderColors ?? {};
@@ -376,6 +336,37 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     boderColors.right = props.borderColorRight;
     return boderColors;
   },
+
+  //decimal/integer values
+  width: (props: { readonly width: string; }) => strToNum(props.width),
+  height: (props: { readonly height: string; }) => strToNum(props.height),
+  rowSpan: (props: { readonly rowSpan: string; }) => strToNum(props.rowSpan),
+  columnSpan: (props: { readonly columnSpan: string; }) => strToNum(props.columnSpan),
+  fontScale: (props: { readonly fontScale: string; }) => strToNum(props.fontScale),
+  fontSize: (props: { readonly fontSize: string; }) => strToNum(props.fontSize),
+  lineGap: (props: { readonly lineGap: string; }) => strToNum(props.lineGap),
+  characterSpacing: (props: { readonly characterSpacing: string; }) => strToNum(props.characterSpacing),
+  verticalPosition: (props: { readonly verticalPosition: string; }) => strToNum(props.verticalPosition),
+  indent: (props: { readonly indent: string; }) => strToNum(props.indent),
+  top: (props: { readonly top: string; }) => strToNum(props.top),
+  bottom: (props: { readonly bottom: string; }) => strToNum(props.bottom),
+  left: (props: { readonly left: string; }) => strToNum(props.left),
+  right: (props: { readonly right: string; }) => strToNum(props.right),
+  columnCount: (props: { readonly columnCount: string; }) => strToNum(props.columnCount),
+  columnGap: (props: { readonly columnGap: string; }) => strToNum(props.columnGap),
+
+  //boolean values
+  bold: (props: { readonly bold: string; }): unknown => strToBool(props.bold),
+  italic: (props: { readonly italic: string; }): unknown => strToBool(props.italic),
+  underline: (props: { readonly underline: string; }): unknown => strToBool(props.underline),
+  superScript: (props: { readonly superScript: string; }): unknown => strToBool(props.superScript),
+  subScript: (props: { readonly subScript: string; }): unknown => strToBool(props.subScript),
+  lineBreak: (props: { readonly lineBreak: string; }): unknown => strToBool(props.lineBreak),
+  mediumBold: (props: { readonly mediumBold: string; }): unknown => strToBool(props.mediumBold),
+  noTopBottomMargin: (props: { readonly noTopBottomMargin: string; }): unknown => strToBool(props.noTopBottomMargin),
+  keepTogetherSections: (props: { readonly keepTogetherSections: string; }): unknown => strToBool(props.keepTogetherSections),
+  keepTogether: (props: { readonly keepTogether: string; }): unknown => strToBool(props.keepTogether),
+  differentFirstPage: (props: { readonly differentFirstPage: string; }): unknown => strToBool(props.differentFirstPage),
 };
 
 const zero = createPoint(0, 0);
@@ -393,4 +384,23 @@ function imageProps(props: Record<string, unknown>): Record<string, unknown> {
       renderScale: 1,
     }),
   };
+}
+
+const strToBool = (str: string | undefined): boolean => {
+  if(str === undefined) {
+    return false;
+  }
+  const validBools = {
+    "1": true,
+    "true": true
+  };
+  return str in validBools;
+}
+
+const strToNum = (str: string | undefined): number => {
+  const num = Number(str);
+  if(Number.isNaN(num)) {
+    return 0;
+  }
+  return num;
 }
