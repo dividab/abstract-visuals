@@ -122,12 +122,6 @@ const xmlParser = new XMLParser({
   ignoreDeclaration: true,
   processEntities: true,
   htmlEntities: true,
-  attributeValueProcessor: (_name: string, value: string) => {
-    if (!value?.trim()) {
-      return value;
-    }
-    return value;
-  },
 });
 xmlParser.addEntity("#x2F", "/");
 xmlParser.addEntity("#x3D", "=");

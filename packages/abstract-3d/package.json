@@ -42,22 +42,22 @@
     "package.json"
   ],
   "dependencies": {
-    "@react-three/drei": "^10.7.6",
-    "@react-three/fiber": "^9.4.0",
-    "@react-three/postprocessing": "3.0.4",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.0.4",
     "abstract-image": "^13.0.37",
     "suspend-react": "^0.1.3",
-    "three": "^0.180.0",
+    "three": "^0.184.0",
     "ts-exhaustive-check": "^1.0.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.2.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.10",
-    "@types/react-reconciler": "^0.28.9",
-    "@types/three": "^0.180.0",
-    "react": "^19.0.0"
+    "react": "^19.2.6",
+    "@types/react": "^19.2.15",
+    "@types/react-reconciler": "^0.33.0",
+    "@types/three": "^0.180.0"
   },
   "gitHead": "17921b59da5eee6cc446fd37a2134165af4d1901"
 }
