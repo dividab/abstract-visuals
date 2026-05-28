@@ -227,7 +227,8 @@ function extractImageFontsStyleNames(
         styleFamilies[item.attributes.name as string] = item.attributes.fontFamily;
         (fonts[item.attributes.fontFamily] ??= {})[styleName] = true;
       }
-    } else {
+    }
+    if(item.children.length > 0) {
       extractImageFontsStyleNames(item.children, styleFamilies, styleNames, images, fonts, crFntFam);
     }
   });
