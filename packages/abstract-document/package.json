@@ -1,6 +1,6 @@
 {
   "name": "abstract-document",
-  "version": "19.1.1",
+  "version": "19.1.2",
   "description": "Dynamically create documents using code or JSX and render to any format",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
   "main": "lib/index.js",
@@ -28,11 +28,11 @@
     "!/**/__tests__"
   ],
   "dependencies": {
-    "abstract-image": "^13.0.37",
+    "abstract-image": "^13.0.38",
     "docx": "^6.0.3",
     "fast-xml-parser": "^4.5.0",
     "handlebars": "4.7.8",
-    "handlebars-xml": "^0.4.4",
+    "handlebars-xml": "^0.4.5",
     "moment": "^2.30.1",
     "pdfkit": "^0.18.0",
     "remark-parse": "^6.0.3",
@@ -47,11 +47,11 @@
   "devDependencies": {
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/pdfkit": "^0.17.6",
+    "@types/react": "^19.2.15",
     "diff-js-xml": "^1.0.8",
     "jszip": "^3.10.1",
     "pdf2json": "2.0.1",
     "react": "^19.2.6",
-    "@types/react": "^19.2.15",
     "vite": "^6.0.1",
     "vitest": "^2.1.6"
   },
