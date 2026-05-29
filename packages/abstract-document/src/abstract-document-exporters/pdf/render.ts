@@ -139,8 +139,12 @@ function renderPage(
         AD.Rect.create(x, isAbsolute ? elementStart : y, elementSize.width, elementSize.height),
         element
       );
+
+      //the paragraph renderer can change the desired size(by splitting text runs),
+      //so we need to get the size again
+      const newElementSize = getDesiredSize(element, desiredSizes);
       if (!isAbsolute) {
-        y += elementSize.height;
+        y += newElementSize.height;
       }
     }
   }
@@ -289,6 +293,7 @@ function renderParagraph(
   }
 
   let y = finalRect.y + styleMargins.top;
+  let newHeight = 0;
   const alignment = parseAlignment(style.alignment);
   const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdfKit, resources, style.textStyle);
   const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(
@@ -351,6 +356,16 @@ function renderParagraph(
     }
 
     y += rowHeight;
+    newHeight += rowHeight;
+  }
+
+  //re set the desired size for this paragraph
+  const oldSize = desiredSizes.get(paragraph);
+  if(oldSize) {
+    desiredSizes.set(paragraph, {
+      ...oldSize,
+      height: newHeight,
+    });
   }
 }
 
