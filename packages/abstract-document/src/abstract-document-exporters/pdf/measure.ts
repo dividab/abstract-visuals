@@ -375,7 +375,7 @@ function measureAtom(
     case "TocSeparator":
       return measureTocSeparator(pdfKit, textStyle, availableSize, availableRowSpace);
     case "LineBreak":
-      return measureLineBreak(pdfKit, resources, textStyle, availableSize);
+      return measureLineBreak(pdfKit, resources, textStyle, atom, availableSize);
     case "LinkTarget":
       return {
         width: availableSize.width,
@@ -390,13 +390,18 @@ function measureLineBreak(
   pdfKit: PDFKit.PDFDocument,
   resources: AD.Resources.Resources,
   textStyle: AD.TextStyle.TextStyle,
+  lineBreak: AD.LineBreak.LineBreak,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  const textSize = measureText(pdfKit, "A", textStyle, availableSize);
-  return {
-    height: textSize.height,
-    width: 0,
-  };
+  const style = AD.Resources.getNestedStyle(
+    textStyle,
+    lineBreak.style,
+    "TextStyle",
+    lineBreak.styleName,
+    resources,
+    lineBreak.nestedStyleNames || []
+  ) as AD.TextStyle.TextStyle;
+  return measureText(pdfKit, "A", style, availableSize);
 }
 
 function measureTextRun(
