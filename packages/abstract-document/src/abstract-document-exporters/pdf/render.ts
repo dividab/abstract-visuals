@@ -293,7 +293,7 @@ function renderParagraph(
   }
 
   let y = finalRect.y + styleMargins.top;
-  let newHeight = 0;
+  let newHeight = styleMargins.top + styleMargins.bottom;
   const alignment = parseAlignment(style.alignment);
   const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdfKit, resources, style.textStyle);
   const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(
