@@ -140,11 +140,8 @@ function renderPage(
         element
       );
 
-      //the paragraph renderer can change the desired size(by splitting text runs),
-      //so we need to get the size again
-      const newElementSize = getDesiredSize(element, desiredSizes);
       if (!isAbsolute) {
-        y += newElementSize.height;
+        y += elementSize.height;
       }
     }
   }
@@ -357,15 +354,6 @@ function renderParagraph(
 
     y += rowHeight;
     newHeight += rowHeight;
-  }
-
-  //re set the desired size for this paragraph
-  const oldSize = desiredSizes.get(paragraph);
-  if(oldSize) {
-    desiredSizes.set(paragraph, {
-      ...oldSize,
-      height: newHeight,
-    });
   }
 }
 
