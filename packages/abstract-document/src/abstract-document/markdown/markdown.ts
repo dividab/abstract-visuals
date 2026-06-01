@@ -92,7 +92,7 @@ function preProcessMarkdownAst(
         );
         atoms = []; // Flush the Atoms-array for the next paragraph.
       } else if (child.type === "break") {
-        atoms.push({ type: "LineBreak" });
+        atoms.push({ type: "LineBreak", styleName: "" });
       } else if (child.type === "text") {
         atoms = atoms.concat(
           child.value.split("\n").map(
