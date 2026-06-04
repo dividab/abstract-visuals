@@ -4,6 +4,7 @@ import {
   BackSide,
   type Color,
   DoubleSide,
+  FrontSide,
   type MaterialParameters,
   SRGBColorSpace,
   type Texture,
@@ -81,7 +82,7 @@ export function ReactMaterial({
       <meshBasicMaterial
         key={`mesh_material_text}`}
         color={colorText}
-        side={DoubleSide}
+        side={FrontSide}
         transparent
         {...(opacity < 1 ? { opacity } : materialDefaults)}
       />
