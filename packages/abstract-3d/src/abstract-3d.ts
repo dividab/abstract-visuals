@@ -4,10 +4,10 @@ export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??
   readonly groups: ReadonlyArray<Group>;
   readonly data?: Record<string, string>;
-  // should be removed
+  //should be removed
   readonly center_deprecated?: Vec3;
   readonly rotation_deprecated?: Vec3;
-  // might be removed
+  //might be removed
   readonly dimensions_deprecated?: Dimensions;
   readonly hotSpots_deprecated?: ReadonlyArray<HotSpot>;
 };
