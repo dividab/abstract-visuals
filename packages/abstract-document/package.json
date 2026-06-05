@@ -11,10 +11,12 @@
   "exports": {
     ".": {
       "ts": "./src/index.ts",
+      "types": "./lib/index.d.ts",
       "import": "./lib/index.js"
     },
     "./xml": {
       "ts": "./src/abstract-document-xml/index.ts",
+      "types": "./lib/abstract-document-xml/index.d.ts",
       "import": "./lib/abstract-document-xml/index.js"
     }
   },

@@ -12,26 +12,32 @@
   "exports": {
     ".": {
       "ts": "./src/index.ts",
+      "types": "./lib/index.d.ts",
       "import": "./lib/index.js"
     },
     "./react": {
       "ts": "./src/renderers/react/index.ts",
+      "types": "./lib/renderers/react/index.d.ts",
       "import": "./lib/renderers/react/index.js"
     },
     "./dxf": {
       "ts": "./src/renderers/dxf/index.ts",
+      "types": "./lib/renderers/dxf/index.d.ts",
       "import": "./lib/renderers/dxf/index.js"
     },
     "./step": {
       "ts": "./src/renderers/step/index.ts",
+      "types": "./lib/renderers/step/index.d.ts",
       "import": "./lib/renderers/step/index.js"
     },
     "./stl": {
       "ts": "./src/renderers/stl/index.ts",
+      "types": "./lib/renderers/stl/index.d.ts",
       "import": "./lib/renderers/stl/index.js"
     },
     "./svg": {
       "ts": "./src/renderers/svg/index.ts",
+      "types": "./lib/renderers/svg/index.d.ts",
       "import": "./lib/renderers/svg/index.js"
     }
   },
