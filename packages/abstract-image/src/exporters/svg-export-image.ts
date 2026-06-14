@@ -9,7 +9,7 @@ export const SVG_DATA_URL = "data:image/svg+xml,";
 export type SvgOptions = {
   readonly pixelWidth: number;
   readonly pixelHeight: number;
-  readonly imageDataByUrl: Record<string, `data:image/${string},${string}`>;
+  readonly imageDataByUrl: Record<string, `data:image/${string},${string}` | AbstractImage>;
 };
 
 export function createSVG(image: AbstractImage, options?: Optional<SvgOptions>): string {
@@ -49,7 +49,13 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
       const height = (component.bottomRight.y - component.topLeft.y).toString();
 
       if (component.data.type === "url") {
-        const url = options.imageDataByUrl[component.data.url] ?? component.data.url;
+        const imageData = options.imageDataByUrl[component.data.url];
+        const url =
+          imageData === undefined
+            ? component.data.url
+            : typeof imageData === "string"
+            ? imageData
+            : SVG_DATA_URL + encodeURIComponent(createSVG(imageData, options));
         return createElement("image", { x, y, width, height, href: url }, []);
       } else if (component.format === "png") {
         const base64 = fromByteArray(component.data.bytes);

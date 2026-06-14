@@ -16,7 +16,7 @@ export interface ReactSvgCallbacks {
 export type MouseCallback = (id: string | undefined, point: Point) => void;
 
 export type ReactSvgOptions = {
-  readonly imageDataByUrl: Record<string, `data:image/${string},${string}`>;
+  readonly imageDataByUrl: Record<string, `data:image/${string},${string}` | AbstractImage>;
 };
 
 export function ReactSvg({
@@ -107,7 +107,11 @@ function JsxComponent({
       const height = component.bottomRight.y - component.topLeft.y;
       const id = makeIdAttr(component.id);
       if (component.data.type === "url") {
-        const url = options.imageDataByUrl[component.data.url] ?? component.data.url;
+        const imageData = options.imageDataByUrl[component.data.url];
+        if (imageData !== undefined && typeof imageData !== "string") {
+          return <ReactSvg image={imageData} options={{ imageDataByUrl: options.imageDataByUrl }} />;
+        }
+        const url = imageData ?? component.data.url;
         return <image x={x} y={y} width={width} height={height} id={id} href={url} />;
       } else if (component.format === "png") {
         const base64 = fromByteArray(component.data.bytes);

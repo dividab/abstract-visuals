@@ -56,7 +56,7 @@ export const DXF_ENTITIES: string[] = [
 ];
 
 export type DxfOptions = {
-  readonly imageDataByUrl: Record<string, `${typeof DXF_DATA_URL}${string}`>;
+  readonly imageDataByUrl: Record<string, `${typeof DXF_DATA_URL}${string}` | AbstractImage>;
   readonly fillPolygons: boolean;
   readonly useStrokeThickness: boolean;
   readonly useColor: boolean;
@@ -211,7 +211,13 @@ function componentDxf(
     if (c.data.type !== "url") {
       return [entities, blocks, blockRecords];
     }
-    const url = options.imageDataByUrl[c.data.url] ?? c.data.url;
+    const imageData = options.imageDataByUrl[c.data.url];
+    const url =
+      imageData === undefined
+        ? c.data.url
+        : typeof imageData === "string"
+        ? imageData
+        : DXF_DATA_URL + dxf2dExportImage(imageData, options);
     if (!url.startsWith(DXF_DATA_URL)) {
       return [entities, blocks, blockRecords];
     }
