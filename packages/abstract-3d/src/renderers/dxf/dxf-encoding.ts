@@ -98,26 +98,128 @@ export function dxfPolyline(
   closed: boolean,
   handleRef: Handle
 ): string {
-  let dxf = "";
-  for (let i = 0; i < points.length; i++) {
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    if (p1 && p2) {
-      dxf += dxfLine(p1, p2, col, handleRef);
-    }
+  if (points.length < 2) {
+    return "";
   }
-  if (closed) {
-    const start = points[0];
-    const end = points[points.length - 1];
-    if (start && end) {
-      dxf += dxfLine(start, end, col, handleRef);
-    }
-  }
-  return dxf;
+
+  const polylineHandle = dxfHandle(handleRef);
+
+  const colorDxf =
+    typeof col === "number"
+      ? `62
+7`
+      : `62
+256
+420
+${colorToInteger(col)}`;
+
+  const vertices = points
+    .map((p) => {
+      const vertexHandle = dxfHandle(handleRef);
+
+      return `  0
+VERTEX
+5
+${vertexHandle}
+330
+${polylineHandle}
+100
+AcDbEntity
+8
+0
+${colorDxf}
+100
+AcDbVertex
+100
+AcDb3dPolylineVertex
+10
+${dxfRound(p.x)}
+20
+${dxfRound(p.y)}
+30
+${dxfRound(p.z)}
+70
+32`;
+    })
+    .join("\n");
+
+  const seqEndHandle = dxfHandle(handleRef);
+
+  return `  0
+POLYLINE
+5
+${polylineHandle}
+330
+${DXF_MODEL_SPACE_HANDLE}
+100
+AcDbEntity
+8
+0
+${colorDxf}
+100
+AcDb3dPolyline
+66
+1
+10
+0.0
+20
+0.0
+30
+0.0
+70
+${closed ? 9 : 8}
+${vertices}
+  0
+SEQEND
+5
+${seqEndHandle}
+330
+${polylineHandle}
+100
+AcDbEntity
+8
+0
+`;
 }
 
-export function dxfLine(vecStart: Vec3, vecEnd: Vec3, col: string | DxfDynamicColor, handleRef: Handle): string {
-  return dxfQuad(vecStart, vecStart, vecEnd, vecEnd, col, handleRef);
+export function dxfLine(
+  vecStart: Vec3,
+  vecEnd: Vec3,
+  col: string | DxfDynamicColor,
+  handleRef: Handle
+): string {
+  return `  0
+LINE
+5
+${dxfHandle(handleRef)}
+330
+${DXF_MODEL_SPACE_HANDLE}
+100
+AcDbEntity
+${
+  typeof col === "number"
+    ? `62
+7`
+    : `62
+256
+420
+${colorToInteger(col)}`
+}
+100
+AcDbLine
+10
+${dxfRound(vecStart.x)}
+20
+${dxfRound(vecStart.y)}
+30
+${dxfRound(vecStart.z)}
+11
+${dxfRound(vecEnd.x)}
+21
+${dxfRound(vecEnd.y)}
+31
+${dxfRound(vecEnd.z)}
+`;
 }
 
 export const dxfHeader = (bounds: Bounds3, center: Vec3, blockId: string, size: Vec3): string =>
