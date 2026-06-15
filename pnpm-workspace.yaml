@@ -6,10 +6,6 @@ allowBuilds:
   husky: false
 
 minimumReleaseAgeExclude:
-  - abstract-3d@2.0.10
-  - abstract-chart@12.0.52
-  - abstract-document@19.1.7
-  - abstract-image@13.0.38
   - abstract-sheet@1.1.23
   - handlebars-xml@0.4.5
   - abstract-3d@2.0.12
