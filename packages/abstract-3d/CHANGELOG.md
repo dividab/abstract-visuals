@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v2.1.0
+
+- Made dxf exporter use LINE and POLYLINE instead of 3DFACE for the lines and polylines
+
 ## v2.0.9
 
 - Made Text only front sided
