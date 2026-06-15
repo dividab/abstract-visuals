@@ -589,7 +589,11 @@ function stripBlocks(blocks: string, blocksToStrip: ReadonlyArray<string>): stri
   }
 
   if (currentBlockName && !s.has(currentBlockName)) {
-    validBlocks.push(...currentBlock);
+
+    //since currentBlock can be huge, spreading should NOT be done
+    for(const item of currentBlock) {
+      validBlocks.push(item);
+    }
   }
 
   return validBlocks.join("\n");

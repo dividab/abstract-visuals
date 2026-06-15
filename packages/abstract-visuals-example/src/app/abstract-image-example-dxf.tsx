@@ -27,8 +27,13 @@ import {
   magenta,
 } from "../../../abstract-image/src/index.js";
 import { dynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
+import { AbstractImage } from "abstract-image";
+
+const hrImage: { image: AbstractImage; imageDataByUrl: Record<string, AbstractImage | `data:application/dxf,${string}`> } = await (await fetch("./hr.json")).json();
 
 export function AbstractImageExampleDxf(): React.JSX.Element {
+
+
   const components = [
     createLine(createPoint(200, 0), createPoint(200, 400), green, 1),
     createLine(createPoint(0, 200), createPoint(400, 200), green, 1),
@@ -85,6 +90,11 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
       : undefined;
   const dxfUrl2 = dxf2 ? toDataUrl("text/plain", dxf2) : undefined;
 
+  const dxf3 = dxf2dExportImage(hrImage.image, {
+    imageDataByUrl: hrImage.imageDataByUrl,
+  });
+  const dxfUrl3 = dxf3 ? toDataUrl("text/plain", dxf3) : undefined;
+
   return (
     <div>
       <h1>DXF</h1>
@@ -92,6 +102,11 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
       <div>
         <a href={dxfUrl2} download={"abstract_image_demo2.dxf"}>
           Download DXF 2
+        </a>
+      </div>
+      <div>
+        <a href={dxfUrl3} download={"abstract_image_demo2.dxf"}>
+          Download DXF 3
         </a>
       </div>
       <a href={dxfUrl} download={"abstract_image_demo1.dxf"}>
