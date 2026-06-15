@@ -1,7 +1,6 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import {
   vec2,
-  vec3Scale,
   Scene,
   View,
   Vec3,
@@ -23,6 +22,10 @@ import {
   vec2Zero,
   vec3Sub,
   vec3Flip,
+  vec3Add,
+  vec2Add,
+  vec2Scale,
+  vec2Sub,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -97,8 +100,8 @@ function renderInternal(
   };
   const baseRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
   const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
-  const unitCenter = scene.center_deprecated ?? vec3Zero;
-  const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, scene.center_deprecated ?? vec3Zero, unitRot);
+  const unitCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, unitRot);
+  const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
   const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
   const svgCenter = vec2(offset.x + opts.stroke_thickness * 0.75, offset.y + opts.stroke_thickness * 0.75);
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
