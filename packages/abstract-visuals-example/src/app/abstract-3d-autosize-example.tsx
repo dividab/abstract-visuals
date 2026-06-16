@@ -12,15 +12,56 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
     : undefined;
   console.log(hovered, group, popover);
 
+  const controlsHelper: React3Js.ControlsHelper = {
+    type: "Viewcube",
+    props: { alignment: "top-right", margin: [63, 55] },
+    viewcubeProps: {
+      resetZoomAndPanOnClick: true,
+      color: "#ffffff",
+      font: "700 30px Inter, Arial, sans-serif",
+      // onClick: (e: any): null => {
+      //   // eslint-disable-next-line no-console
+      //   console.log("Clicked");
+      //   //e.stopPropagation();
+      //   return null;
+      // },
+      strokeColor: "#112b31",
+      textColor: "#112b31",
+      hoverColor: "#558592",
+      opacity: 0.8,
+    },
+  };
+
+  const orbitContolProps = {
+    enableDamping: true,
+    zoomToCursor: false,
+
+    dampingFactor: 0.3,
+    minDistance: 100,
+    maxDistance: 12000,
+    zoomSpeed: 1.5,
+  };
+
   return (
     <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
       <React3Js.render
-        selectedIds={selected ? { [selected]: true } : undefined}
-        onClickGroup={(id) => setSelected(id)}
-        createGroupId={(g) => g.data?.id ?? ""}
-        scene={vortice}
-        orbitContolsProps={{ enableDamping: false }}
+        sceneFallback={<div>Loading</div>}
+        useAlphaTest={false}
+        selectedIds={{}}
+        scene={systemair}
+        showDimensions={true}
         camera={camera}
+        controlsHelper={controlsHelper}
+        orbitContolsProps={orbitContolProps}
+        canvasProps={{}}
+        useAnimations={true}
+        onClickHotSpot={undefined}
+        onClickGroup={undefined}
+        // onHoverGroup={(id) => console.log("hovering", id)}
+        onContextMenuGroup={undefined}
+        createGroupKey={undefined}
+        createGroupId={undefined}
+        useOldMode={true} // Disables SSAO
       />
     </div>
   );
