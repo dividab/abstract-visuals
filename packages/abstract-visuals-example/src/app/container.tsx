@@ -10,6 +10,7 @@ import { AbstractDocumentXMLExample2 } from "./abstract-document-xml-example-2.j
 import { AbstractSheetExample } from "./abstract-sheet-example.js";
 import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
 import { DynamicImage } from "./dynamic-image.js";
+import { Abstract3DAutoSizeExample } from "./abstract-3d-autosize-example.js";
 
 type Example = (typeof examples)[number];
 
@@ -22,6 +23,7 @@ const examples = [
   "AbstractDocumentXML",
   "AbstractDocumentXML2",
   "Abstract3D",
+  "Abstract3DAutoSize",
   "AbstractSheet",
   "AbstractSheetXML",
   "DynamicImage",
@@ -66,6 +68,8 @@ export function Container(): React.JSX.Element {
             return <AbstractDocumentXMLExample2 />;
           case "Abstract3D":
             return <Abstract3DExample />;
+          case "Abstract3DAutoSize":
+            return <Abstract3DAutoSizeExample />;
           case "AbstractSheet":
             return <AbstractSheetExample />;
           case "AbstractSheetXML":
