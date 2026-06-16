@@ -1,16 +1,26 @@
 import React from "react";
 import * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
 import { systemair } from "./systemair.js";
-import { vortice } from "./vortice.js";
 
 export function Abstract3DAutoSizeExample(): React.ReactNode {
-  const [selected, setSelected] = React.useState<string | undefined>(undefined);
-  const [hovered, setHovered] = React.useState<string | undefined>(undefined);
-  const group = systemair.groups.find((g) => g.data?.id === hovered);
-  const popover: React3Js.ReactPopover | undefined = group
-    ? { id: "popover", pos: { ...group.pos, y: group.pos.y - 300 }, content: "Hej" }
-    : undefined;
-  console.log(hovered, group, popover);
+  const [cameraType, setCameraType] = React.useState<"Perspective" | "Orthographic">("Perspective");
+
+  const camera = React.useMemo((): React3Js.Camera => {
+    if (cameraType === "Orthographic") {
+      return {
+        type: "Orthographic",
+        near: 100,
+        far: 50000,
+      };
+    }
+
+    return {
+      type: "Perspective",
+      near: 100,
+      far: 50000,
+      fov: 50,
+    };
+  }, [cameraType]);
 
   const controlsHelper: React3Js.ControlsHelper = {
     type: "Viewcube",
@@ -19,12 +29,6 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
       resetZoomAndPanOnClick: true,
       color: "#ffffff",
       font: "700 30px Inter, Arial, sans-serif",
-      // onClick: (e: any): null => {
-      //   // eslint-disable-next-line no-console
-      //   console.log("Clicked");
-      //   //e.stopPropagation();
-      //   return null;
-      // },
       strokeColor: "#112b31",
       textColor: "#112b31",
       hoverColor: "#558592",
@@ -35,7 +39,6 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   const orbitContolProps = {
     enableDamping: true,
     zoomToCursor: false,
-
     dampingFactor: 0.3,
     minDistance: 100,
     maxDistance: 12000,
@@ -43,7 +46,28 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   };
 
   return (
-    <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div style={{ padding: 8 }}>
+        <label>
+          Camera:
+          <select
+            value={cameraType}
+            onChange={(e) => setCameraType(e.target.value as "Perspective" | "Orthographic")}
+            style={{ marginLeft: 8 }}
+          >
+            <option value="Perspective">Perspective</option>
+            <option value="Orthographic">Orthographic</option>
+          </select>
+        </label>
+      </div>
+
       <React3Js.render
         sceneFallback={<div>Loading</div>}
         useAlphaTest={false}
@@ -57,14 +81,11 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         useAnimations={true}
         onClickHotSpot={undefined}
         onClickGroup={undefined}
-        // onHoverGroup={(id) => console.log("hovering", id)}
         onContextMenuGroup={undefined}
         createGroupKey={undefined}
         createGroupId={undefined}
-        useOldMode={true} // Disables SSAO
+        useOldMode={true}
       />
     </div>
   );
 }
-
-const camera: React3Js.Camera = { type: "Perspective", near: 100, far: 19000, fov: 60 };

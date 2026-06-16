@@ -52,19 +52,27 @@ export function ReactCamera({
 
   const initialDistRef = useRef<number | null>(null);
   const initialTargetRef = useRef(new Vector3());
+  const initialFovRef = useRef<number | null>(null);
 
   const viewPortAspect = useThree(({ viewport: { aspect } }) => aspect);
   const { invalidate } = useThree();
 
   const resetZoomOnGizmoClick = (): void => {
-    if (!controls || initialDistRef.current == null || !perspectiveRef.current) return;
+    if (!controls || initialDistRef.current == null || (!perspectiveRef.current && !orthographicRef.current)) {
+      return;
+    }
 
-    const camera = perspectiveRef.current;
+    const newCamera = camera.type === "Perspective" ? perspectiveRef.current : orthographicRef.current;
     const target = initialTargetRef.current.clone();
+
     controls.target.copy(target);
+
     const dist = initialDistRef.current;
-    const dir = camera.position.clone().sub(target).normalize();
-    camera.position.copy(target.clone().add(dir.multiplyScalar(dist)));
+    const dir = newCamera.position.clone().sub(target).normalize();
+    newCamera.fov = initialFovRef.current;
+    newCamera.zoom = 1;
+    newCamera.position.copy(target.clone().add(dir.multiplyScalar(dist)));
+    newCamera.updateProjectionMatrix();
 
     controls.update();
     invalidate();
@@ -116,6 +124,7 @@ export function ReactCamera({
 
     const dist = cameraDist(size, camera.type === "Perspective" ? camera.fov ?? 45 : 45);
     initialDistRef.current = dist;
+    initialFovRef.current = camera.type === "Perspective" ? camera.fov ?? 45 : null;
 
     if (camera.type === "Orthographic" && orthographicRef.current) {
       const [left, right, top, bottom] =
