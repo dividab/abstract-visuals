@@ -13,7 +13,7 @@ import {
 } from "@react-three/drei";
 import { type ThreeEvent, useThree } from "@react-three/fiber";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import type { Vector3 } from "three";
+import { Vector3 } from "three";
 import { View, Scene, Vec3, vec3 } from "../../abstract-3d.js";
 
 export type Camera = A3dPerspectiveCamera | A3dOrthographicCamera;
@@ -49,7 +49,26 @@ export function ReactCamera({
   const [controls, setControls] = useState<any | null>(null);
   const perspectiveRef = useRef<any | undefined>(undefined);
   const orthographicRef = useRef<any | undefined>(undefined);
+
+  const initialDistRef = useRef<number | null>(null);
+  const initialTargetRef = useRef(new Vector3());
+
   const viewPortAspect = useThree(({ viewport: { aspect } }) => aspect);
+  const { invalidate } = useThree();
+
+  const resetZoomOnGizmoClick = () => {
+    if (!controls || initialDistRef.current == null || !perspectiveRef.current) return;
+
+    const camera = perspectiveRef.current;
+    const target = initialTargetRef.current.clone();
+    controls.target.copy(target);
+    const dist = initialDistRef.current;
+    const dir = camera.position.clone().sub(target).normalize();
+    camera.position.copy(target.clone().add(dir.multiplyScalar(dist)));
+
+    controls.update();
+    invalidate();
+  };
 
   useLayoutEffect(() => {
     const [posX, posY, posZ, size, sceneAspect] = (() => {
@@ -96,24 +115,21 @@ export function ReactCamera({
     })();
 
     const dist = cameraDist(size, camera.type === "Perspective" ? camera.fov ?? 45 : 45);
+    initialDistRef.current = dist;
 
     if (camera.type === "Orthographic" && orthographicRef.current) {
       const [left, right, top, bottom] =
         sceneAspect > viewPortAspect
           ? [-size.x / 2, size.x / 2, size.x / 2 / viewPortAspect, -size.x / 2 / viewPortAspect]
           : [(-viewPortAspect * size.y) / 2, (viewPortAspect * size.y) / 2, size.y / 2, -size.y / 2];
-      orthographicRef.current.position.setX(posX * dist);
-      orthographicRef.current.position.setY(posY * dist);
-      orthographicRef.current.position.setZ(posZ * dist);
+      orthographicRef.current.position.set(posX * dist, posY * dist, posZ * dist);
       orthographicRef.current.left = left;
       orthographicRef.current.right = right;
       orthographicRef.current.bottom = bottom;
       orthographicRef.current.top = top;
       orthographicRef.current.updateProjectionMatrix();
     } else if (camera.type === "Perspective" && perspectiveRef.current) {
-      perspectiveRef.current.position.setX(posX * dist);
-      perspectiveRef.current.position.setY(posY * dist);
-      perspectiveRef.current.position.setZ(posZ * dist);
+      perspectiveRef.current.position.set(posX * dist, posY * dist, posZ * dist);
       perspectiveRef.current.updateProjectionMatrix();
     }
   }, [camera, viewPortAspect]);
@@ -152,32 +168,49 @@ export function ReactCamera({
         manual={true}
         makeDefault={camera.type === "Orthographic"}
       />
-      <ControlsWrapper {...orbitContolsProps} setControls={(c) => setControls(c.current)} />
+
+      <ControlsWrapper
+        {...orbitContolsProps}
+        setControls={(c) => {
+          setControls(c);
+        }}
+      />
+
       {(() => {
         switch (controlsHelper?.type) {
           case "Viewcube":
             return (
               <GizmoHelper
                 {...controlsHelper.props}
-                onTarget={() => controls?.target as Vector3}
+                onTarget={() => {
+                  if (controlsHelper.viewcubeProps.resetZoomAndPanOnClick) {
+                    resetZoomOnGizmoClick();
+                  }
+                  return controls?.target as Vector3;
+                }}
                 onUpdate={() => controls?.update?.()}
               >
-                <GizmoViewcube {...(controlsHelper.viewcubeProps as any)} />
+                <GizmoViewcube {...controlsHelper.viewcubeProps} />
               </GizmoHelper>
             );
           case "Viewport":
             return (
               <GizmoHelper
                 {...controlsHelper.props}
-                onTarget={() => controls?.target as Vector3}
+                onTarget={() => {
+                  if (controlsHelper.viewportProps.resetZoomAndPanOnClick) {
+                    resetZoomOnGizmoClick();
+                  }
+                  return controls?.target as Vector3;
+                }}
                 onUpdate={() => controls?.update?.()}
               >
-                <GizmoViewport {...(controlsHelper.viewportProps as any)} />
+                <GizmoViewport {...controlsHelper.viewportProps} />
               </GizmoHelper>
             );
           case undefined:
           default:
-            return <></>;
+            return null;
         }
       })()}
     </>
@@ -185,23 +218,24 @@ export function ReactCamera({
 }
 
 const ControlsWrapper = (
-  props: OrbitControlsProps & { readonly setControls: (r: React.MutableRefObject<any>) => void }
+  props: OrbitControlsProps & {
+    setControls: (controls: any) => void;
+  }
 ): React.JSX.Element => {
-  const ref = useRef<any>(undefined!);
+  const ref = useRef<any>(null);
 
   useLayoutEffect(() => {
     if (!ref.current) {
       return;
     }
     props.setControls(ref.current);
-  }, [ref.current]);
+  });
   return <OrbitControls {...props} makeDefault ref={ref} />;
 };
-
 type GizmoViewportProps = React.JSX.IntrinsicElements["group"] & {
-  readonly axisColors?: readonly [string, string, string];
-  readonly axisScale?: readonly [number, number, number];
-  readonly labels?: readonly [string, string, string];
+  readonly axisColors?: [string, string, string];
+  readonly axisScale?: [number, number, number];
+  readonly labels?: [string, string, string];
   readonly axisHeadScale?: number;
   readonly labelColor?: string;
   readonly hideNegativeAxes?: boolean;
@@ -209,6 +243,7 @@ type GizmoViewportProps = React.JSX.IntrinsicElements["group"] & {
   readonly disabled?: boolean;
   readonly font?: string;
   readonly onClick?: (e: ThreeEvent<MouseEvent>) => null;
+  readonly resetZoomAndPanOnClick?: boolean;
 };
 
 type GenericProps = {
@@ -219,7 +254,8 @@ type GenericProps = {
   readonly textColor?: string;
   readonly strokeColor?: string;
   readonly onClick?: (e: ThreeEvent<MouseEvent>) => null;
-  readonly faces?: ReadonlyArray<string>;
+  readonly faces?: Array<string>;
+  readonly resetZoomAndPanOnClick?: boolean;
 };
 
 export const cameraDist = (size: Vec3, fov: number): number =>
