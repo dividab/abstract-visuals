@@ -203,7 +203,7 @@ export function ReactCamera({
       perspectiveRef.current.updateProjectionMatrix();
     }
     //}, [camera, viewPortAspect, canvasSize, bufferZones, view, scene, fitPadding]);
-  }, [camera, viewPortAspect, canvasSize, bufferZones, view, fitPadding]);
+  }, [camera, viewPortAspect]);
 
   return (
     <>
