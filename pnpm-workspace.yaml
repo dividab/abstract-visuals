@@ -8,14 +8,10 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - abstract-sheet@1.1.23
   - handlebars-xml@0.4.5
-  - abstract-3d@2.2.1
   - abstract-chart@12.0.55
   - abstract-document@19.1.12
   - abstract-image@13.0.41
-  - abstract-3d@2.2.1
-  - abstract-chart@12.0.55
-  - abstract-document@19.1.12
-  - abstract-image@13.0.41
+  - abstract-3d@2.2.2
 
 overrides:
   three-stdlib: "^2.36.0"

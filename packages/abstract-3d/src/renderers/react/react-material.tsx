@@ -15,7 +15,22 @@ import { shade } from "../../utils.js";
 
 const decreasedOpacity = 0.125;
 
-export type TextureFilter = "Nearest" | "Linear";
+export enum MinificationFilter {
+  Nearest = 1003,
+  Linear = 1006,
+  LinearMipmap = 1008,
+};
+
+export enum MagnificationFilter {
+  Nearest = 1003,
+  Linear = 1006,
+}
+
+export type TextureFilter = {
+  readonly min: MinificationFilter;
+  readonly mag: MagnificationFilter;
+}
+
 export type MaterialState = "Accept" | "Error" | "Warning";
 export const ERROR_IMG_KEY = "error";
 
@@ -74,6 +89,7 @@ export function ReactMaterial({
         color={color}
         material={mat}
         useAlphaTest={useAlphaTest}
+        filter={{ mag: MagnificationFilter.Linear, min: MinificationFilter.LinearMipmap }}
       />
     );
   }
@@ -126,7 +142,10 @@ function TextureMaterial({
   color,
   material,
   useAlphaTest = true,
-  filter = "Linear",
+  filter = {
+    min: MinificationFilter.LinearMipmap,
+    mag: MagnificationFilter.Linear
+  },
 }: {
   readonly url: string;
   readonly color: string | Color | undefined;
@@ -140,10 +159,12 @@ function TextureMaterial({
         url,
         (data) => {
           data.colorSpace = SRGBColorSpace;
-          if (filter === "Nearest") {
-            data.minFilter = 1003;
-            data.magFilter = 1003;
+          data.minFilter = filter.min;
+          data.magFilter = filter.mag;
+          if(filter.min === MinificationFilter.LinearMipmap) {
+            data.generateMipmaps = true;
           }
+          data.anisotropy = 4;
           res(data);
         },
         undefined,
