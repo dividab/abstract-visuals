@@ -85,7 +85,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         controlsHelper={controlsHelper}
         orbitContolsProps={orbitContolProps}
         canvasProps={{ style: { backgroundColor: "#ccc" } }}
-        newZoomLogic={newZoomLogic}
+        //newZoomLogic={newZoomLogic}
         useAnimations={true}
         onClickHotSpot={undefined}
         onClickGroup={undefined}
