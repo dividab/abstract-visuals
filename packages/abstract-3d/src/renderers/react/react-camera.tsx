@@ -79,48 +79,7 @@ export function ReactCamera({
   };
 
   useLayoutEffect(() => {
-    const [posX, posY, posZ, size, sceneAspect] = (() => {
-      switch (view) {
-        case "front":
-          return [0, 0, 1, scene.size_deprecated, scene.size_deprecated.x / scene.size_deprecated.y];
-        case "back":
-          return [0, 0, -1, scene.size_deprecated, scene.size_deprecated.x / scene.size_deprecated.y];
-        case "top":
-          return [
-            0,
-            1,
-            0,
-            vec3(scene.size_deprecated.x, scene.size_deprecated.z, scene.size_deprecated.y),
-            scene.size_deprecated.x / scene.size_deprecated.z,
-          ];
-        case "bottom":
-          return [
-            0,
-            -1,
-            0,
-            vec3(scene.size_deprecated.x, scene.size_deprecated.z, scene.size_deprecated.y),
-            scene.size_deprecated.x / scene.size_deprecated.z,
-          ];
-        case "right":
-          return [
-            1,
-            0,
-            0,
-            vec3(scene.size_deprecated.z, scene.size_deprecated.y, scene.size_deprecated.x),
-            scene.size_deprecated.z / scene.size_deprecated.y,
-          ];
-        case "left":
-          return [
-            -1,
-            0,
-            0,
-            vec3(scene.size_deprecated.z, scene.size_deprecated.y, scene.size_deprecated.x),
-            scene.size_deprecated.z / scene.size_deprecated.y,
-          ];
-        default:
-          return exhaustiveCheck(view);
-      }
-    })();
+    const [posX, posY, posZ, size, sceneAspect] = getViewTransform(view, scene, vec3);
 
     const dist = cameraDist(size, camera.type === "Perspective" ? camera.fov ?? 45 : 45);
     initialDistRef.current = dist;
@@ -269,3 +228,30 @@ type GenericProps = {
 
 export const cameraDist = (size: Vec3, fov: number): number =>
   size.z * 0.5 + (size.x > size.y ? size.x : size.y) / (1 / 2 / Math.tan((Math.PI * fov) / 180 / 2));
+
+function getViewTransform(view: View, scene: any, vec3: any) {
+  const size = scene.size_deprecated;
+
+  switch (view) {
+    case "front":
+      return [0, 0, 1, size, size.x / size.y] as const;
+
+    case "back":
+      return [0, 0, -1, size, size.x / size.y] as const;
+
+    case "top":
+      return [0, 1, 0, vec3(size.x, size.z, size.y), size.x / size.z] as const;
+
+    case "bottom":
+      return [0, -1, 0, vec3(size.x, size.z, size.y), size.x / size.z] as const;
+
+    case "right":
+      return [1, 0, 0, vec3(size.z, size.y, size.x), size.z / size.y] as const;
+
+    case "left":
+      return [-1, 0, 0, vec3(size.z, size.y, size.x), size.z / size.y] as const;
+
+    default:
+      return exhaustiveCheck(view);
+  }
+}
