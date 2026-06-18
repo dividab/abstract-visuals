@@ -79,8 +79,8 @@ export function ReactCamera({
   };
 
   useLayoutEffect(() => {
-    const [posX, posY, posZ, size, sceneAspect] = getViewTransform(view, scene, vec3);
-
+    const [posX, posY, posZ, size, sceneAspect] = getViewTransform(view, scene);
+    // --------------------------------------------------------------
     const dist = cameraDist(size, camera.type === "Perspective" ? camera.fov ?? 45 : 45);
     initialDistRef.current = dist;
     initialFovRef.current = camera.type === "Perspective" ? camera.fov ?? 45 : null;
@@ -101,22 +101,7 @@ export function ReactCamera({
       perspectiveRef.current.updateProjectionMatrix();
     }
   }, [camera, viewPortAspect]);
-  // const prevScene = React.useRef(scene)
-  // useEffect(() => {
-  //   prevScene.current = scene;
-  // }, [scene]);
-
-  // useFrame(() => {
-  // if (useAnimations && camera && prevScene.current !== scene) {
-  //   const [, , z] = cameraDist(scene);
-  //   vector3.set(camera.position.x, camera.position.y, z);
-  //   camera.position.lerp(vector3, 0.12);
-  //   ref.current.enabled = false;
-  //   invalidate();
-  // } else {
-  //   ref.current.enabled = true;
-  // }
-  // });
+  // --------------------------------------------------------------
   return (
     <>
       <PerspectiveCamera
@@ -229,7 +214,8 @@ type GenericProps = {
 export const cameraDist = (size: Vec3, fov: number): number =>
   size.z * 0.5 + (size.x > size.y ? size.x : size.y) / (1 / 2 / Math.tan((Math.PI * fov) / 180 / 2));
 
-function getViewTransform(view: View, scene: any, vec3: any) {
+type ViewTransform = readonly [number, number, number, Vec3, number];
+function getViewTransform(view: View, scene: Scene): ViewTransform {
   const size = scene.size_deprecated;
 
   switch (view) {
