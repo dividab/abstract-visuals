@@ -4,6 +4,7 @@ import { systemair } from "./systemair.js";
 
 export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [cameraType, setCameraType] = React.useState<"Perspective" | "Orthographic">("Perspective");
+  const [newZoomLogic, setZoomLogic] = React.useState<boolean>(false);
 
   const camera = React.useMemo((): React3Js.Camera => {
     if (cameraType === "Orthographic") {
@@ -67,6 +68,12 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
           </select>
         </label>
       </div>
+      <div style={{ padding: 8 }}>
+        <label>
+          Use New Zoom logic:
+          <input type="checkbox" checked={newZoomLogic} onChange={() => setZoomLogic(!newZoomLogic)} />
+        </label>
+      </div>
 
       <React3Js.render
         sceneFallback={<div>Loading</div>}
@@ -77,7 +84,8 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         camera={camera}
         controlsHelper={controlsHelper}
         orbitContolsProps={orbitContolProps}
-        canvasProps={{}}
+        canvasProps={{ style: { backgroundColor: "#ccc" } }}
+        newZoomLogic={newZoomLogic}
         useAnimations={true}
         onClickHotSpot={undefined}
         onClickGroup={undefined}
