@@ -22,7 +22,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
 
     return {
       type: "Perspective",
-      near: 100,
+      near: 90,
       far: 50000,
       fov: 50,
     };
