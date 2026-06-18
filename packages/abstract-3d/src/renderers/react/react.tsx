@@ -4,7 +4,7 @@ import { Html, Stats, type OrbitControlsProps } from "@react-three/drei";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { ReactPopover, ReactScene } from "./react-scene.js";
 import { Scene, View, Group } from "../../abstract-3d.js";
-import { ReactCamera, ControlsHelper, Camera } from "./react-camera.js";
+import { ReactCamera, ControlsHelper, Camera, BufferZones } from "./react-camera.js";
 import { HotSpotInfo } from "./react-hotspot.js";
 import { MaterialState } from "./react-material.js";
 
@@ -28,6 +28,8 @@ type ReactProps = {
   readonly materialStateImages?: Record<string, string>;
   readonly sceneFallback?: React.JSX.Element;
   readonly useOldMode?: boolean;
+  readonly bufferZones?: BufferZones;
+  readonly fitPadding?: number;
   readonly onClickGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
@@ -80,12 +82,16 @@ export const render = memo(
     onClickHotSpot,
     createGroupKey,
     createGroupId,
+    bufferZones,
+    fitPadding,
   }: ReactProps): React.JSX.Element => {
     const intensity = useOldMode ? 2 : 0.4;
     return scene ? (
       <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
         <React.Suspense fallback={<Html center>{sceneFallback ?? <></>}</Html>}>
           <ReactCamera
+            bufferZones={bufferZones}
+            fitPadding={fitPadding}
             scene={scene}
             useAnimations={useAnimations}
             camera={camera}
