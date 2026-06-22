@@ -100,7 +100,7 @@ function renderInternal(
   };
   const baseRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
   const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
-  const unitCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, unitRot);
+  const unitCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, rotationForCameraPos(opts.view));
   const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
   const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
   const svgCenter = vec2(offset.x + opts.stroke_thickness * 0.75, offset.y + opts.stroke_thickness * 0.75);

@@ -78,7 +78,7 @@ function svgStrokedHoles(
 
   let svgHoles = "";
   for (const hole of holes) {
-    const matrix = svgTrsMatrix(vec2Add(pos, hole.pos), rot);
+    const matrix = svgTrsMatrix(vec2Add(pos, vec2(-hole.pos.x, hole.pos.y)), rot);
     switch (hole.type) {
       case "RoundHole": {
         svgHoles += `<circle
@@ -138,7 +138,7 @@ function svgHoleMask(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): [string
 function svgMaskHoles(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string {
   const holeMasks: Array<string> = [];
   for (const hole of holes) {
-    const holePosRotated = vec3Rot(vec3(hole.pos.x, hole.pos.y, 0), vec3Zero, rot);
+    const holePosRotated = vec3Rot(vec3(hole.pos.x, -hole.pos.y, 0), vec3Zero, rot);
     const holePos = vec2Add(holePosRotated, vec2Scale(size, 0.5));
     switch (hole.type) {
       case "RoundHole": {
