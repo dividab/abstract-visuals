@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { suspend } from "suspend-react";
 import {
   BackSide,
+  CanvasTexture,
   type Color,
   DoubleSide,
   FrontSide,
@@ -12,6 +13,7 @@ import {
 } from "three";
 import { Material } from "../../abstract-3d.js";
 import { shade } from "../../utils.js";
+import { mx_gradient_float } from "three/src/nodes/materialx/lib/mx_noise.js";
 
 const decreasedOpacity = 0.125;
 
@@ -153,27 +155,7 @@ function TextureMaterial({
   readonly useAlphaTest?: boolean;
   readonly filter?: TextureFilter;
 }): React.JSX.Element {
-  const texture = suspend(
-    new Promise((res) =>
-      textureLoader.load(
-        url,
-        (data) => {
-          data.colorSpace = SRGBColorSpace;
-          data.minFilter = filter.min;
-          data.magFilter = filter.mag;
-          if(filter.min === MinificationFilter.LinearMipmap) {
-            data.generateMipmaps = true;
-          }
-          data.anisotropy = 4;
-          res(data);
-        },
-        undefined,
-        () => res(null)
-      )
-    ),
-    [url]
-  ) as Texture | null;
-
+  const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter) : loadNormal(url, filter), [url]) as Texture | null;
   useEffect(() => {
     return () => {
       if (texture) {
@@ -191,6 +173,68 @@ function TextureMaterial({
       {...(material.opacity !== undefined && material.opacity < 1 ? { opacity: material.opacity } : materialDefaults)}
       transparent
     />
+  );
+}
+
+function urlIsSvg(url: string): boolean {
+  return url.startsWith("data:image/svg+xml") || url.endsWith(".svg") || url.includes(".svg?");
+}
+
+function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
+  const maxSize = 4096;
+  
+  return new Promise((res) => {
+    const img = new Image();
+
+    // eslint-disable-next-line consistent-return
+    img.onload = ((): void => {
+      const canvas = document.createElement("canvas");
+      const imgW = img.naturalWidth;
+      const imgH = img.naturalHeight;
+      const width = imgW >= imgH ? maxSize : (maxSize * (imgW / imgH));
+      const height = imgH >= imgW ? maxSize : (maxSize * (imgH / imgW));
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        return res(null);
+      }
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const texture = new CanvasTexture(canvas);
+      texture.colorSpace = SRGBColorSpace;
+      texture.minFilter = filter.min;
+      texture.magFilter = filter.mag;
+      texture.generateMipmaps = filter.min === MinificationFilter.LinearMipmap;
+      texture.anisotropy = 4;
+      texture.needsUpdate = true;
+
+      res(texture);
+    });
+
+    img.onerror = () => res(null);
+    img.src = url;
+  });
+}
+
+function loadNormal(url: string, filter: TextureFilter): Promise<Texture | null> {
+  return new Promise((res) =>
+    textureLoader.load(
+      url,
+      (data) => {
+        data.colorSpace = SRGBColorSpace;
+        data.minFilter = filter.min;
+        data.magFilter = filter.mag;
+        data.generateMipmaps = filter.min === MinificationFilter.LinearMipmap;
+        data.anisotropy = 4;
+        res(data);
+      },
+      undefined,
+      () => res(null)
+    )
   );
 }
 
