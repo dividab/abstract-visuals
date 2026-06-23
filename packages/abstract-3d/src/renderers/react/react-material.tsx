@@ -202,6 +202,9 @@ function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
         return res(null);
       }
 
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
       ctx.drawImage(img, 0, 0, width, height);
 
       const texture = new CanvasTexture(canvas);
