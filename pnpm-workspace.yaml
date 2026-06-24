@@ -18,6 +18,7 @@ minimumReleaseAgeExclude:
   - abstract-3d@2.3.10
   - abstract-3d@2.3.11
   - abstract-3d@2.3.12
+  - abstract-3d@2.3.13
 
 overrides:
   three-stdlib: "^2.36.0"
