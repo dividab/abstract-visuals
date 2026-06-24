@@ -51,7 +51,7 @@ export function ImageMesh({
       ? `data:image/svg+xml,${createSVG(image.image.image)}`
       : image.image.url;
   const color = getColor(selectedIds, id, hoveredId, material);
-  const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter, color) : loadNormal(url, filter), [
+  const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter) : loadNormal(url, filter), [
     url,
     color,
   ]) as Texture | null;
@@ -88,7 +88,7 @@ function urlIsSvg(url: string): boolean {
   return url.startsWith("data:image/svg+xml") || url.endsWith(".svg") || url.includes(".svg?");
 }
 
-function loadSvg(url: string, filter: TextureFilter, color: string | undefined): Promise<Texture | null> {
+function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
   const maxSize = 4096;
 
   return new Promise((res) => {
@@ -111,10 +111,6 @@ function loadSvg(url: string, filter: TextureFilter, color: string | undefined):
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       ctx.drawImage(img, 0, 0, width, height);
