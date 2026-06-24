@@ -149,6 +149,8 @@ export function createPolyLine(
   };
 }
 
+export type LineJoin = "miter" | "round" | "bevel";
+
 export interface Polygon {
   readonly type: "polygon";
   readonly points: Array<Point>;
@@ -157,6 +159,7 @@ export interface Polygon {
   readonly strokeDashStyle: DashStyle;
   readonly fillColor: Color;
   readonly id: string | undefined;
+  readonly strokeLineJoin?: LineJoin;
 }
 
 export function createPolygon(
@@ -165,7 +168,8 @@ export function createPolygon(
   strokeThickness: number,
   fillColor: Color,
   id?: string,
-  strokeDashStyle: DashStyle = solidLine
+  strokeDashStyle: DashStyle = solidLine,
+  strokeLineJoin?: LineJoin
 ): Polygon {
   return {
     type: "polygon",
@@ -175,6 +179,7 @@ export function createPolygon(
     strokeDashStyle: strokeDashStyle,
     fillColor: fillColor,
     id: id,
+    strokeLineJoin: strokeLineJoin,
   };
 }
 

@@ -240,6 +240,7 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
           strokeWidth: component.strokeThickness.toString(),
           fill: colorToRgb(component.fillColor),
           fillOpacity: colorToOpacity(component.fillColor),
+          ...(component.strokeLineJoin ? { strokeLinejoin: component.strokeLineJoin } : {}),
           ...dashStyle,
         },
         []
