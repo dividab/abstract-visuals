@@ -44,6 +44,8 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 import { ImageMesh, planeGeometry } from "./react-image.js";
 import { MaterialState } from "./react-material.js";
 
+// dummy
+
 extend({
   SphereGeometry,
   PlaneGeometry,
