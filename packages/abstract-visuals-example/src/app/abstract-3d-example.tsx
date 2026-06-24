@@ -146,7 +146,7 @@ export function Abstract3DExample(): React.ReactNode {
               scene={systemair}
               orbitContolsProps={{ enableDamping: false }}
               camera={camera}
-              onHoverGroup={(id) => setHovered(id)}
+              //onHoverGroup={(id) => setHovered(id)}
               popovers={popover ? [popover] : undefined}
             />
           </div>

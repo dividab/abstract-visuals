@@ -24,6 +24,7 @@ export type TextureFilter = {
 };
 
 const filter: TextureFilter = { min: MinificationFilter.LinearMipmap, mag: MagnificationFilter.Linear };
+const textureCache: Map<string, Texture | null> = new Map();
 
 export function ImageMaterial({
   image,
@@ -53,15 +54,7 @@ export function ImageMaterial({
   const color = getColor(selectedIds, id, hoveredId, material);
   const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter) : loadNormal(url, filter), [
     url,
-    color,
   ]) as Texture | null;
-  useEffect(() => {
-    return () => {
-      if (texture) {
-        texture.dispose();
-      }
-    };
-  }, [texture]);
 
   return (
     <meshBasicMaterial
@@ -80,9 +73,13 @@ function urlIsSvg(url: string): boolean {
 }
 
 function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
-  const maxSize = 4096;
+  
+  if (textureCache.has(url)) {
+    return Promise.resolve(textureCache.get(url) ?? null);
+  }
 
   return new Promise((res) => {
+    const maxSize = 4096;
     const img = new Image();
 
     // eslint-disable-next-line consistent-return
@@ -115,6 +112,7 @@ function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
       texture.needsUpdate = true;
 
       res(texture);
+      textureCache.set(url, texture);
     };
 
     img.onerror = () => res(null);
