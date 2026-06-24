@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "abstract-visuals-example",
-  "version": "16.1.5",
+  "version": "16.1.6",
   "description": "abstract-visuals-example",
   "repository": "https://github.com/dividab/abstract-visuals",
   "main": "lib/index.js",
@@ -9,7 +9,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "abstract-3d": "^2.3.5",
+    "abstract-3d": "^2.3.6",
     "abstract-chart": "^12.0.55",
     "abstract-document": "^19.1.12",
     "abstract-image": "^13.0.41",
