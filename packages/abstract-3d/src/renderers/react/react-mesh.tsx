@@ -41,7 +41,7 @@ import {
   equals,
 } from "../../abstract-3d.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import { ImageMesh, planeGeometry } from "./react-image.js";
+import { ImageMaterial, planeGeometry } from "./react-image-material.js";
 import { MaterialState } from "./react-material.js";
 
 // dummy
@@ -76,21 +76,9 @@ export const quaternion = new Quaternion();
 export function ReactMesh({
   mesh,
   children,
-  id,
-  hoveredId,
-  selectedIds,
-  materialStateImages,
-  materialState,
-  useAlphaTest,
 }: {
   readonly mesh: Mesh;
   readonly children?: React.JSX.Element;
-  readonly id?: string | undefined;
-  readonly hoveredId?: string | undefined;
-  readonly selectedIds?: Record<string, boolean> | undefined;
-  readonly materialStateImages?: Record<string, string> | undefined;
-  readonly materialState?: MaterialState | undefined;
-  readonly useAlphaTest?: boolean | undefined;
 }): React.JSX.Element {
   switch (mesh.geometry.type) {
     case "Box": {
@@ -202,16 +190,16 @@ export function ReactMesh({
     }
     case "Image":
       return (
-        <ImageMesh
-          image={mesh.geometry}
-          materialStateImages={materialStateImages}
-          useAlphaTest={useAlphaTest}
-          id={id}
-          hoveredId={hoveredId}
-          selectedIds={selectedIds}
-          materialState={materialState}
-          material={mesh.material}
-        />
+        <mesh
+          geometry={planeGeometry}
+          scale={[mesh.geometry.size.x, mesh.geometry.size.y, 1]}
+          position={[mesh.geometry.pos.x, mesh.geometry.pos.y, mesh.geometry.pos.z]}
+          rotation={[mesh.geometry.rot?.x ?? 0, mesh.geometry.rot?.y ?? 0, mesh.geometry.rot?.z ?? 0]}
+          castShadow
+          receiveShadow
+        >
+          {children}
+        </mesh>
       );
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;

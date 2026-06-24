@@ -52,7 +52,7 @@ export type Group = {
 
 export type Mesh = {
   readonly material: Material;
-  readonly geometry: Cylinder | Cone | Box | Line | Text | Polygon | Plane | Tube | Sphere | Shape | Image;
+  readonly geometry: Cylinder | Cone | Box | Line | Text | Polygon | Plane | Tube | Sphere | Shape | ImageMesh;
 };
 
 export type Material = {
@@ -62,21 +62,23 @@ export type Material = {
   readonly roughness?: number;
 };
 
-export type Image = {
+export type ImageMesh = {
   readonly type: "Image";
   readonly pos: Vec3;
   readonly rot?: Vec3;
   readonly size: Vec2;
-  readonly image:
-    | {
-        readonly type: "AbstractImage";
-        readonly image: AbstractImage;
-      }
-    | {
-        readonly type: "Url";
-        readonly url: string;
-      };
+  readonly image: Image;
 };
+
+export type Image =
+  | {
+      readonly type: "AbstractImage";
+      readonly image: AbstractImage;
+    }
+  | {
+      readonly type: "Url";
+      readonly url: string;
+    };
 
 export type Cylinder = {
   readonly type: "Cylinder";
@@ -789,7 +791,7 @@ export const box = (
 export const image = (
   size: Vec3,
   material: Material,
-  image: Image["image"],
+  image: ImageMesh["image"],
   pos: Vec3 = vec3Zero,
   rot: Vec3 = vec3Zero
 ): Mesh => ({

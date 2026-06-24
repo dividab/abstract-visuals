@@ -4,6 +4,7 @@ import type { Group } from "three";
 import { Group as Group_1 } from "../../abstract-3d.js";
 import { MaterialState, ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
+import { ImageMaterial } from "./react-image-material.js";
 
 export function ReactGroup({
   g,
@@ -128,17 +129,19 @@ export function ReactGroup({
       {g.meshes?.map((m, i) => {
         const hoveredIdFinal = hoveredId || hoveredIdExternal;
         return (
-          <ReactMesh
-            key={`mesh_${i}`}
-            mesh={m}
-            materialStateImages={materialStateImages}
-            useAlphaTest={useAlphaTest}
-            id={id}
-            hoveredId={hoveredIdFinal}
-            materialState={materialState}
-            selectedIds={selectedIds}
-          >
-            {m.geometry.type === "Image" ? undefined : (
+          <ReactMesh key={`mesh_${i}`} mesh={m}>
+            {m.geometry.type === "Image" ? (
+              <ImageMaterial
+                image={m.geometry.image}
+                materialStateImages={materialStateImages}
+                material={m.material}
+                useAlphaTest={useAlphaTest}
+                id={id}
+                hoveredId={hoveredIdFinal}
+                materialState={materialState}
+                selectedIds={selectedIds}
+              />
+            ) : (
               <ReactMaterial
                 material={m.material}
                 id={id}

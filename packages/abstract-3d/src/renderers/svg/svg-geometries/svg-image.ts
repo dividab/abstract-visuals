@@ -1,11 +1,20 @@
 import { createSVG } from "abstract-image";
-import { Image, Vec2, Vec3, vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
+import {
+  ImageMesh,
+  Vec2,
+  Vec3,
+  vec2Scale,
+  vec3TransRot,
+  vec3RotCombine,
+  vec3Zero,
+  vec3,
+} from "../../../abstract-3d.js";
 import { zElem, zOrderElement, SvgOptions } from "./shared.js";
 import { EmbededImage, rawSvgPrefix, svgImage } from "../svg-encoding.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 
 export function image(
-  i: Image,
+  i: ImageMesh,
   point: (x: number, y: number) => Vec2,
   opts: SvgOptions,
   parentPos: Vec3,

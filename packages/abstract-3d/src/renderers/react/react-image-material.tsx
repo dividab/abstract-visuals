@@ -25,7 +25,7 @@ export type TextureFilter = {
 
 const filter: TextureFilter = { min: MinificationFilter.LinearMipmap, mag: MagnificationFilter.Linear };
 
-export function ImageMesh({
+export function ImageMaterial({
   image,
   materialStateImages,
   material,
@@ -47,9 +47,9 @@ export function ImageMesh({
   const url =
     materialState === "Error" && materialStateImages?.[ERROR_IMG_KEY]
       ? materialStateImages[ERROR_IMG_KEY]
-      : image.image.type === "AbstractImage"
-      ? `data:image/svg+xml,${createSVG(image.image.image)}`
-      : image.image.url;
+      : image.type === "AbstractImage"
+      ? `data:image/svg+xml,${createSVG(image.image)}`
+      : image.url;
   const color = getColor(selectedIds, id, hoveredId, material);
   const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter) : loadNormal(url, filter), [
     url,
@@ -64,23 +64,14 @@ export function ImageMesh({
   }, [texture]);
 
   return (
-    <mesh
-      geometry={planeGeometry}
-      scale={[image.size.x, image.size.y, 1]}
-      position={[image.pos.x, image.pos.y, image.pos.z]}
-      rotation={[image.rot?.x ?? 0, image.rot?.y ?? 0, image.rot?.z ?? 0]}
-      castShadow
-      receiveShadow
-    >
-      <meshBasicMaterial
-        color={color}
-        side={DoubleSide}
-        alphaTest={useAlphaTest ?? true ? 0.8 : undefined}
-        map={texture}
-        {...(material.opacity !== undefined && material.opacity < 1 ? { opacity: material.opacity } : materialDefaults)}
-        transparent
-      />
-    </mesh>
+    <meshBasicMaterial
+      color={color}
+      side={DoubleSide}
+      alphaTest={useAlphaTest ?? true ? 0.8 : undefined}
+      map={texture}
+      {...(material.opacity !== undefined && material.opacity < 1 ? { opacity: material.opacity } : materialDefaults)}
+      transparent
+    />
   );
 }
 

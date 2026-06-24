@@ -1,6 +1,6 @@
 import type { AbstractImage, Color, Component } from "abstract-image";
 import {
-  Image,
+  ImageMesh,
   Vec3,
   vec2Scale,
   vec3TransRot,
@@ -13,7 +13,7 @@ import {
 import { DEFAULT_CIRCLE_SIDE_COUNT, DxfDynamicColor, dxfLine, dxfPolyline, Handle } from "../dxf-encoding.js";
 // dummy
 
-export function dxfImage(i: Image, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
+export function dxfImage(i: ImageMesh, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const half = vec2Scale(i.size, 0.5);
   const offset = vec3Rot(vec3(-half.x, half.y, 0), vec3Zero, i.rot ?? vec3Zero);
   const pos = vec3TransRot(vec3Add(i.pos, offset), parentPos, parentRot);
