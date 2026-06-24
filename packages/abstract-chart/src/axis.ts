@@ -254,8 +254,7 @@ export function axisMax(axis: Axis): number {
     case "discrete":
       return axis.points.at(-1)?.value ?? 0;
     default:
-      exhaustiveCheck(axis);
-      return 0;
+      return exhaustiveCheck(axis);
   }
 }
 
