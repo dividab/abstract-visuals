@@ -190,9 +190,9 @@ export const svgImage = (
     : "";
   const content =
     data.type === "url"
-      ? `<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/>`
-      : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}">${data.svg}</svg>`;
-  return `<g transform="${matrix}">${bg}${content}</g>`;
+      ? `${bg}<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/>`
+      : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}">${bg}${data.svg}</svg>`;
+  return `<g transform="${matrix}">${content}</g>`;
 };
 
 const counter = (() => {
