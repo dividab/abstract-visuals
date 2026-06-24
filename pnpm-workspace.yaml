@@ -5,6 +5,8 @@ allowBuilds:
   esbuild: false
   husky: false
 
+trustLockfile: true
+
 minimumReleaseAgeExclude:
   - abstract-sheet@1.1.23
   - handlebars-xml@0.4.5
