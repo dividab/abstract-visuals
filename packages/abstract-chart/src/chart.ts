@@ -1446,10 +1446,10 @@ export function generateYAxisLabel(
 }
 
 function formatNumber(n: number): string {
-  if (n >= 10000000) {
+  if (Math.abs(n) >= 10000000) {
     return numberToString(n / 1000000) + "m";
   }
-  if (n >= 10000) {
+  if (Math.abs(n) >= 10000) {
     return numberToString(n / 1000) + "k";
   }
   return numberToString(n);
