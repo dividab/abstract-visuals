@@ -1,8 +1,7 @@
 import React from "react";
-import { createSVG } from "abstract-image";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import type { Group } from "three";
-import { Group as Group_1, Material, Mesh } from "../../abstract-3d.js";
+import { Group as Group_1 } from "../../abstract-3d.js";
 import { MaterialState, ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
 
@@ -126,40 +125,33 @@ export function ReactGroup({
           useAlphaTest={useAlphaTest}
         />
       ))}
-      {g.meshes?.map((m, i) => (
-        <ReactMesh key={`mesh_${i}`} mesh={m}>
-          <ReactMaterial
-            material={getMaterial(m)}
-            id={id}
-            selectedIds={selectedIds}
-            isText={m.geometry.type === "Text"}
-            hoveredId={hoveredId || hoveredIdExternal}
+      {g.meshes?.map((m, i) => {
+        const hoveredIdFinal = hoveredId || hoveredIdExternal;
+        return (
+          <ReactMesh
+            key={`mesh_${i}`}
+            mesh={m}
             materialStateImages={materialStateImages}
-            disabled={disabled}
-            state={materialState}
             useAlphaTest={useAlphaTest}
-          />
-        </ReactMesh>
-      ))}
+            id={id}
+            hoveredId={hoveredIdFinal}
+            materialState={materialState}
+            selectedIds={selectedIds}
+          >
+            {m.geometry.type === "Image" ? undefined : (
+              <ReactMaterial
+                material={m.material}
+                id={id}
+                selectedIds={selectedIds}
+                isText={m.geometry.type === "Text"}
+                hoveredId={hoveredIdFinal}
+                disabled={disabled}
+                materialState={materialState}
+              />
+            )}
+          </ReactMesh>
+        );
+      })}
     </group>
   );
-}
-
-function getMaterial(mesh: Mesh): Material {
-  if(mesh.geometry.type !== "Image") {
-    return mesh.material;
-  }
-
-  switch(mesh.geometry.image.type) {
-    case "AbstractImage": {
-      const svg = createSVG(mesh.geometry.image.image);
-      const svgUrl = `data:image/svg+xml,${svg}`;
-      return {
-        ...mesh.material,
-        imageUrl: svgUrl,
-      };
-    }
-    default:
-      return mesh.material;
-  }
 }

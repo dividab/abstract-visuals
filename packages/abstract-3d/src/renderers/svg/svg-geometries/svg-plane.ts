@@ -12,7 +12,7 @@ import {
   Hole,
 } from "../../../abstract-3d.js";
 import { gray, black, zElem, zOrderElement, SvgOptions } from "./shared.js";
-import { EmbededImage, svgImage, svgPolygon } from "../svg-encoding.js";
+import { svgPolygon } from "../svg-encoding.js";
 import { rgbGrayScale } from "../../../utils.js";
 
 export function plane(
@@ -34,24 +34,6 @@ export function plane(
   const v3 = vec3tr(half.x, half.y);
   const v4 = vec3tr(-half.x, half.y);
 
-  const imageData = material.imageUrl ? opts.imageDataByUrl?.[material.imageUrl] : undefined;
-  const image: EmbededImage | undefined = imageData?.startsWith(rawSvgPrefix)
-    ? {
-        type: "svg",
-        svg: decodeURIComponent(imageData.slice(rawSvgPrefix.length)).replace(
-          /^\s*(<\?xml[^>]*\?>\s*)?(<!DOCTYPE[^>]*>\s*)?/i,
-          ""
-        ),
-      }
-    : material.imageUrl
-    ? { type: "url", url: imageData ?? material.imageUrl }
-    : undefined;
-
-  if (image) {
-    const img = svgImage(point(v4.x, v4.y), p.size, rot, image, opts.background);
-    return [zElem(img, (v2.z + v4.z) / 2)];
-  }
-
   const points = [point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)];
 
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
@@ -64,5 +46,3 @@ export function plane(
     ),
   ];
 }
-
-const rawSvgPrefix = "data:image/svg+xml,";

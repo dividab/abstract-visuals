@@ -41,6 +41,8 @@ import {
   equals,
 } from "../../abstract-3d.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
+import { ImageMesh, planeGeometry } from "./react-image.js";
+import { MaterialState } from "./react-material.js";
 
 extend({
   SphereGeometry,
@@ -64,7 +66,6 @@ const boxGeometry = new BoxGeometry();
 const cylinderGeometry = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1);
 const cylinderGeometryOpen = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1, true);
 const coneGeometry = new ConeGeometry(1, 1, 16, 1);
-const planeGeometry = new PlaneGeometry();
 const sphereGeometry = new SphereGeometry(1, 12, 12);
 export const euler = new Euler();
 export const vector3 = new Vector3();
@@ -73,9 +74,21 @@ export const quaternion = new Quaternion();
 export function ReactMesh({
   mesh,
   children,
+  id,
+  hoveredId,
+  selectedIds,
+  materialStateImages,
+  materialState,
+  useAlphaTest,
 }: {
   readonly mesh: Mesh;
   readonly children?: React.JSX.Element;
+  readonly id?: string | undefined;
+  readonly hoveredId?: string | undefined;
+  readonly selectedIds?: Record<string, boolean> | undefined;
+  readonly materialStateImages?: Record<string, string> | undefined;
+  readonly materialState?: MaterialState | undefined;
+  readonly useAlphaTest?: boolean | undefined;
 }): React.JSX.Element {
   switch (mesh.geometry.type) {
     case "Box": {
@@ -185,21 +198,19 @@ export function ReactMesh({
         );
       }
     }
-    case "Image": {
-      const { pos, size, rot } = mesh.geometry;
+    case "Image":
       return (
-        <mesh
-          geometry={planeGeometry}
-          scale={[size.x, size.y, 1]}
-          position={[pos.x, pos.y, pos.z]}
-          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
-          castShadow
-          receiveShadow
-        >
-          {children}
-        </mesh>
+        <ImageMesh
+          image={mesh.geometry}
+          materialStateImages={materialStateImages}
+          useAlphaTest={useAlphaTest}
+          id={id}
+          hoveredId={hoveredId}
+          selectedIds={selectedIds}
+          materialState={materialState}
+          material={mesh.material}
+        />
       );
-    }
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;
       const filteredHoles = holes?.filter((h) => !holeIsZero(h));

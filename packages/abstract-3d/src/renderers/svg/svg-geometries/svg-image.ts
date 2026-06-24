@@ -1,7 +1,7 @@
 import { createSVG } from "abstract-image";
 import { Image, Vec2, Vec3, vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import { zElem, zOrderElement, SvgOptions } from "./shared.js";
-import { svgImage } from "../svg-encoding.js";
+import { EmbededImage, rawSvgPrefix, svgImage } from "../svg-encoding.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 
 export function image(
@@ -29,7 +29,27 @@ export function image(
       const img = svgImage(point(v4.x, v4.y), i.size, rot, { type: "svg", svg }, opts.background, scale);
       return [zElem(img, (v2.z + v4.z) / 2)];
     }
+    case "Url": {
+      const imageData = opts.imageDataByUrl?.[i.image.url];
+      const image: EmbededImage | undefined = imageData?.startsWith(rawSvgPrefix)
+        ? {
+            type: "svg",
+            svg: decodeURIComponent(imageData.slice(rawSvgPrefix.length)).replace(
+              /^\s*(<\?xml[^>]*\?>\s*)?(<!DOCTYPE[^>]*>\s*)?/i,
+              ""
+            ),
+          }
+        : i.image.url
+        ? { type: "url", url: imageData ?? i.image.url }
+        : undefined;
+
+      if (image) {
+        const img = svgImage(point(v4.x, v4.y), i.size, rot, image, opts.background);
+        return [zElem(img, (v2.z + v4.z) / 2)];
+      }
+      return [];
+    }
     default:
-      return exhaustiveCheck(i.image.type);
+      return exhaustiveCheck(i.image);
   }
 }

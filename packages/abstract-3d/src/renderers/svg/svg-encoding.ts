@@ -173,6 +173,8 @@ export type EmbededImage =
   | { readonly type: "url"; readonly url: string }
   | { readonly type: "svg"; readonly svg: string };
 
+export const rawSvgPrefix = "data:image/svg+xml,";
+
 export const svgImage = (
   p: Vec2,
   size: Vec2,
@@ -183,11 +185,11 @@ export const svgImage = (
 ): string => {
   const matrix = svgTrsMatrix(p, rot, scale);
 
-  return `<g transform="${matrix}">${
+  return `<g transform="${matrix}">
+  ${background ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>` : ""}
+  ${
     data.type === "url"
-      ? `${
-          background ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>` : ""
-        }<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/>`
+      ? `<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/>`
       : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}">${data.svg}</svg>`
   }</g>`;
 };

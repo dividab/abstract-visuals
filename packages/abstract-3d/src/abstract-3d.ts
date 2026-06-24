@@ -60,7 +60,6 @@ export type Material = {
   readonly opacity?: number;
   readonly metalness?: number;
   readonly roughness?: number;
-  readonly imageUrl?: string;
 };
 
 export type Image = {
@@ -68,10 +67,15 @@ export type Image = {
   readonly pos: Vec3;
   readonly rot?: Vec3;
   readonly size: Vec2;
-  readonly image: {
-    readonly type: "AbstractImage";
-    readonly image: AbstractImage;
-  };
+  readonly image:
+    | {
+        readonly type: "AbstractImage";
+        readonly image: AbstractImage;
+      }
+    | {
+        readonly type: "Url";
+        readonly url: string;
+      };
 };
 
 export type Cylinder = {
