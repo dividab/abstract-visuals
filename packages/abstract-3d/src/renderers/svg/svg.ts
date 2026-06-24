@@ -97,6 +97,7 @@ function renderInternal(
     font: options?.font ?? "",
     imageDataByUrl: options?.imageDataByUrl ?? {},
     rotation: options?.rotation ?? 0,
+    imageBg: options?.imageBg ?? false,
   };
   const baseRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
   const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;

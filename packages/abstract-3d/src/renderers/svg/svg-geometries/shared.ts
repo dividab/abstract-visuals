@@ -23,6 +23,7 @@ export type SvgOptions = {
   readonly gray_scale: boolean;
   readonly background: string;
   readonly rotation: number;
+  readonly imageBg: boolean;
 
   readonly font: string;
   readonly imageDataByUrl: Record<string, ImageDataUri>;
@@ -49,8 +50,8 @@ export function svgTrsMatrix(translation: Vec2, rotation: Vec3, scale?: Vec2): s
 }
 
 const svgNum = (num: number): string => {
-  if(Math.abs(num) < 1e-9) {
+  if (Math.abs(num) < 1e-9) {
     return "0";
   }
   return num.toFixed(6);
-}
+};

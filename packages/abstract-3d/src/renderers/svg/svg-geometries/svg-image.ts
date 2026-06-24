@@ -53,7 +53,7 @@ export function image(
         : undefined;
 
       if (image) {
-        const img = svgImage(point(v4.x, v4.y), i.size, rot, image, opts.background);
+        const img = svgImage(point(v4.x, v4.y), i.size, rot, image, opts.imageBg ? opts.background : undefined);
         return [zElem(img, (v2.z + v4.z) / 2)];
       }
       return [];
