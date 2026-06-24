@@ -11,6 +11,7 @@ import {
   vec3Add,
 } from "../../../abstract-3d.js";
 import { DEFAULT_CIRCLE_SIDE_COUNT, DxfDynamicColor, dxfLine, dxfPolyline, Handle } from "../dxf-encoding.js";
+// dummy
 
 export function dxfImage(i: Image, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const half = vec2Scale(i.size, 0.5);
@@ -33,33 +34,32 @@ export function dxfImage(i: Image, parentPos: Vec3, parentRot: Vec3, handleRef: 
 
 function abstractImageToDxf3D(image: AbstractImage, pos: Vec3, rot: Vec3, scale: Vec3, handleRef: Handle): string {
   const strokeScale = Math.max(scale.x, scale.y, scale.z);
-  return image.components.map(
-    (comp) =>
-      abstractImageComponentToDxf3D(comp, pos, rot, scale, strokeScale, handleRef)
-  ).join("");
+  return image.components
+    .map((comp) => abstractImageComponentToDxf3D(comp, pos, rot, scale, strokeScale, handleRef))
+    .join("");
 }
 
-function abstractImageComponentToDxf3D(comp: Component, pos: Vec3, rot: Vec3, scale: Vec3, strokeScale: number, handleRef: Handle): string {
+function abstractImageComponentToDxf3D(
+  comp: Component,
+  pos: Vec3,
+  rot: Vec3,
+  scale: Vec3,
+  strokeScale: number,
+  handleRef: Handle
+): string {
   const vec3tr = (x: number, y: number): Vec3 => vec3TransRot(vec3(x * scale.x, y * scale.y, 0), pos, rot);
   const strokeColor: DxfDynamicColor = 7;
 
   let dxf = "";
   switch (comp.type) {
     case "group": {
-      dxf += comp.children.map(
-        (child) =>
-          abstractImageComponentToDxf3D(child, pos, rot, scale, strokeScale, handleRef)
-      ).join("");
+      dxf += comp.children
+        .map((child) => abstractImageComponentToDxf3D(child, pos, rot, scale, strokeScale, handleRef))
+        .join("");
       break;
-
     }
     case "line": {
-      dxf += dxfLine(
-        vec3tr(comp.start.x, comp.start.y),
-        vec3tr(comp.end.x, comp.end.y),
-        strokeColor,
-        handleRef
-      );
+      dxf += dxfLine(vec3tr(comp.start.x, comp.start.y), vec3tr(comp.end.x, comp.end.y), strokeColor, handleRef);
       break;
     }
     case "polyline": {
@@ -88,9 +88,10 @@ function abstractImageComponentToDxf3D(comp: Component, pos: Vec3, rot: Vec3, sc
     case "rectangle": {
       const size = {
         x: comp.bottomRight.x - comp.topLeft.x,
-        y: comp.bottomRight.y - comp.topLeft.y
+        y: comp.bottomRight.y - comp.topLeft.y,
       };
-      const points = [ //these points form a loop
+      const points = [
+        //these points form a loop
         vec3tr(0, 0),
         vec3tr(size.x, 0),
         vec3tr(size.x, size.y),
