@@ -185,14 +185,23 @@ export const svgImage = (
 ): string => {
   const matrix = svgTrsMatrix(p, rot, scale);
 
-  const bg = background
-    ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>`
-    : "";
-  const content =
-    data.type === "url"
-      ? `${bg}<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/>`
-      : `<svg width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}">${bg}${data.svg}</svg>`;
-  return `<g transform="${matrix}">${content}</g>`;
+  if (data.type === "url") {
+    const bg = background
+      ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>`
+      : "";
+    return `<g transform="${matrix}">${bg}<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${
+      data.url
+    }"/></g>`;
+  }
+
+  // scale maps image-space coords → world coords, so the wrapper SVG and rect
+  // must use image-space dimensions: imgW * scale.x = size.x (the desired world size).
+  const imgW = scale ? size.x / scale.x : size.x;
+  const imgH = scale ? size.y / scale.y : size.y;
+  const bg = background ? `<rect width="${imgW.toFixed(0)}" height="${imgH.toFixed(0)}" fill="${background}"/>` : "";
+  return `<g transform="${matrix}"><svg width="${imgW.toFixed(0)}" height="${imgH.toFixed(0)}">${bg}${
+    data.svg
+  }</svg></g>`;
 };
 
 const counter = (() => {
