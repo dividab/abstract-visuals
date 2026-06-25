@@ -52,9 +52,7 @@ export function ImageMaterial({
       ? `data:image/svg+xml,${createSVG(image.image)}`
       : image.url;
   const color = getColor(selectedIds, id, hoveredId, material);
-  const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter) : loadNormal(url, filter), [
-    url,
-  ]) as Texture | null;
+  const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter) : loadNormal(url, filter), [url]) as Texture | null;
 
   return (
     <meshBasicMaterial
@@ -73,13 +71,12 @@ function urlIsSvg(url: string): boolean {
 }
 
 function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
-  
   if (textureCache.has(url)) {
     return Promise.resolve(textureCache.get(url) ?? null);
   }
 
   return new Promise((res) => {
-    const maxSize = 4096;
+    const maxSize = 1024;
     const img = new Image();
 
     // eslint-disable-next-line consistent-return
