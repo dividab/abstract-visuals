@@ -10,7 +10,31 @@ import {
   transformPoint,
   DiscreteAxisPoint,
 } from "./axis.js";
-import { AbstractImage, black, Color, Component, createAbstractImage, createEllipse, createGroup, createLine, createPoint, createPolygon, createPolyLine, createRectangle, createSize, createText, gray, GrowthDirection, lightGray, Point, Polygon, Size, solidLine, transparent, white } from "abstract-image";
+import {
+  AbstractImage,
+  black,
+  Color,
+  Component,
+  createAbstractImage,
+  createEllipse,
+  createGroup,
+  createLine,
+  createPoint,
+  createPolygon,
+  createPolyLine,
+  createRectangle,
+  createSize,
+  createText,
+  gray,
+  GrowthDirection,
+  lightGray,
+  Point,
+  Polygon,
+  Size,
+  solidLine,
+  transparent,
+  white,
+} from "abstract-image";
 
 // tslint:disable:max-file-line-count
 
@@ -529,13 +553,7 @@ export function renderChart(chart: Chart): AbstractImage {
 }
 
 export function generateBackground(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): Component {
-  return createRectangle(
-    createPoint(xMin, yMax),
-    createPoint(xMax, yMin),
-    transparent,
-    0,
-    chart.backgroundColor
-  );
+  return createRectangle(createPoint(xMin, yMax), createPoint(xMax, yMin), transparent, 0, chart.backgroundColor);
 }
 
 export function xAxises(
@@ -1068,14 +1086,7 @@ function isInside(xMin: number, xMax: number, yMin: number, yMax: number, p: Poi
   return p.x >= xMin && p.x <= xMax && p.y <= yMin && p.y >= yMax;
 }
 
-function moveInside(
-  xMin: number,
-  xMax: number,
-  yMin: number,
-  yMax: number,
-  inside: Point,
-  outside: Point
-): Point {
+function moveInside(xMin: number, xMax: number, yMin: number, yMax: number, inside: Point, outside: Point): Point {
   const xMinYMin = createPoint(xMin, yMin);
   const xMinYMax = createPoint(xMin, yMax);
   const xMaxYMin = createPoint(xMax, yMin);
