@@ -131,16 +131,18 @@ export function ReactGroup({
         return (
           <ReactMesh key={`mesh_${i}`} mesh={m}>
             {m.geometry.type === "Image" ? (
-              <ImageMaterial
-                image={m.geometry.image}
-                materialStateImages={materialStateImages}
-                material={m.material}
-                useAlphaTest={useAlphaTest}
-                id={id}
-                hoveredId={hoveredIdFinal}
-                materialState={materialState}
-                selectedIds={selectedIds}
-              />
+              <React.Suspense fallback={null}>
+                <ImageMaterial
+                  image={m.geometry.image}
+                  materialStateImages={materialStateImages}
+                  material={m.material}
+                  useAlphaTest={useAlphaTest}
+                  id={id}
+                  hoveredId={hoveredIdFinal}
+                  materialState={materialState}
+                  selectedIds={selectedIds}
+                />
+              </React.Suspense>
             ) : (
               <ReactMaterial
                 material={m.material}
