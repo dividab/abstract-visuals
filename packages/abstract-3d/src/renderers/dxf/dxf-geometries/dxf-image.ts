@@ -86,16 +86,12 @@ function abstractImageComponentToDxf3D(
       break;
     }
     case "rectangle": {
-      const size = {
-        x: comp.bottomRight.x - comp.topLeft.x,
-        y: comp.bottomRight.y - comp.topLeft.y,
-      };
       const points = [
-        //these points form a loop
-        vec3tr(0, 0),
-        vec3tr(size.x, 0),
-        vec3tr(size.x, size.y),
-        vec3tr(0, size.y),
+          //these points form a loop
+          vec3tr(comp.topLeft.x, comp.topLeft.y),
+          vec3tr(comp.bottomRight.x, comp.topLeft.y),
+          vec3tr(comp.bottomRight.x, comp.bottomRight.y),
+          vec3tr(comp.topLeft.x, comp.bottomRight.y),
       ];
       dxf += dxfPolyline(points, strokeColor, true, handleRef);
       break;
