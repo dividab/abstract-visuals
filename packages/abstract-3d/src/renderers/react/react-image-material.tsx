@@ -76,7 +76,7 @@ function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
   }
 
   return new Promise((res) => {
-    const maxSize = 1024;
+    const maxSize = 512;
     const img = new Image();
 
     // eslint-disable-next-line consistent-return
