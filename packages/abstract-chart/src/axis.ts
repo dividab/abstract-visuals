@@ -3,6 +3,8 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 
 export type Axis = LinearAxis | LogarithmicAxis | DiscreteAxis;
 
+export type NumberFormat = "compact" | "scientific" | "none";
+
 export type AxisBase = {
   readonly label?: string;
   readonly labelRotation?: number;
@@ -15,6 +17,7 @@ export type AxisBase = {
   readonly axisFontSize?: number;
   readonly id?: string;
   readonly noTicks?: boolean;
+  readonly numberFormat?: NumberFormat;
 };
 
 export type LinearAxis = AxisBase & { readonly type: "linear"; readonly min: number; readonly max: number };
@@ -29,7 +32,8 @@ export function createLinearAxis(
   thickness?: number,
   axisColor?: Color,
   id?: string,
-  noTicks?: boolean
+  noTicks?: boolean,
+  numberFormat?: NumberFormat
 ): LinearAxis {
   return {
     type: "linear",
@@ -43,6 +47,7 @@ export function createLinearAxis(
     axisColor,
     id,
     noTicks,
+    numberFormat,
   };
 }
 

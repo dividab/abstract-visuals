@@ -9,6 +9,7 @@ import {
   transformValue,
   transformPoint,
   DiscreteAxisPoint,
+  NumberFormat,
 } from "./axis.js";
 import {
   AbstractImage,
@@ -764,7 +765,7 @@ export function generateDataAxisesX(
           createLine(start, end, chart.xGrid.color, chart.xGrid.thickness),
           createText(
             textPos,
-            formatNumber(y),
+            formatNumber(y, axis.numberFormat),
             chart.font,
             axis.tickFontSize ?? chart.fontSize,
             axis.labelColor ?? black,
@@ -874,7 +875,7 @@ export function generateDataAxisesY(
           createLine(start, end, chart.xGrid.color, chart.xGrid.thickness),
           createText(
             textPos,
-            formatNumber(y),
+            formatNumber(y, axis.numberFormat),
             chart.font,
             axis.tickFontSize ?? chart.fontSize,
             axis.labelColor ?? black,
@@ -1312,7 +1313,7 @@ export function generateXAxisLabels(
     const position = createPoint(transformValue(l.value, xMin, xMax, axis), y);
     return createText(
       position,
-      l.label ?? formatNumber(l.value),
+      l.label ?? formatNumber(l.value, axis.numberFormat),
       chart.font,
       axis.tickFontSize ?? chart.fontSize,
       axis.labelColor ?? black,
@@ -1400,7 +1401,7 @@ export function generateYAxisLabels(
     const position = createPoint(x, transformValue(l.value, yMin, yMax, yAxis));
     return createText(
       position,
-      l.label ?? formatNumber(l.value),
+      l.label ?? formatNumber(l.value, yAxis.numberFormat),
       chart.font,
       yAxis.tickFontSize ?? chart.fontSize,
       yAxis.labelColor ?? black,
@@ -1445,14 +1446,23 @@ export function generateYAxisLabel(
   );
 }
 
-function formatNumber(n: number): string {
-  if (Math.abs(n) >= 10000000) {
-    return numberToString(n / 1000000) + "m";
+function formatNumber(n: number, format: NumberFormat = "compact"): string {
+  switch (format) {
+    case "compact":
+      if (Math.abs(n) >= 10000000) {
+        return numberToString(n / 1000000) + "m";
+      }
+      if (Math.abs(n) >= 10000) {
+        return numberToString(n / 1000) + "k";
+      }
+      return numberToString(n);
+    case "scientific":
+      return parseFloat(n.toPrecision(5)).toExponential();
+    case "none":
+      return numberToString(n);
+    default:
+      return exhaustiveCheck(format);
   }
-  if (Math.abs(n) >= 10000) {
-    return numberToString(n / 1000) + "k";
-  }
-  return numberToString(n);
 }
 
 function numberToString(n: number): string {
