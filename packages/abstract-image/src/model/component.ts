@@ -101,6 +101,7 @@ export interface Line {
   readonly strokeColor: Color;
   readonly strokeThickness: number;
   readonly strokeDashStyle: DashStyle;
+  readonly strokeLineCap?: LineCap;
   readonly id: string | undefined;
 }
 
@@ -110,7 +111,8 @@ export function createLine(
   strokeColor: Color,
   strokeThickness: number,
   id?: string,
-  strokeDashStyle: DashStyle = solidLine
+  strokeDashStyle: DashStyle = solidLine,
+  strokeLineCap?: LineCap
 ): Line {
   return {
     type: "line",
@@ -119,6 +121,7 @@ export function createLine(
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
     strokeDashStyle: strokeDashStyle,
+    strokeLineCap: strokeLineCap,
     id: id,
   };
 }

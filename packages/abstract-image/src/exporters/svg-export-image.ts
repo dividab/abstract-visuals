@@ -91,6 +91,7 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
           stroke: colorToRgb(component.strokeColor),
           strokeOpacity: colorToOpacity(component.strokeColor),
           strokeWidth: component.strokeThickness.toString(),
+          ...(component.strokeLineCap ? { strokeLinecap: component.strokeLineCap } : {}),
           ...dashStyle,
         },
         []
