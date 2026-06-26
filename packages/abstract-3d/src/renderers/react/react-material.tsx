@@ -10,9 +10,8 @@ export const ERROR_IMG_KEY = "error";
 
 export function ReactMaterial({
   material,
-  id = "",
-  selectedIds,
-  hoveredId,
+  selected,
+  hovered,
   disabled,
   materialState,
   isText,
@@ -20,9 +19,8 @@ export function ReactMaterial({
   drawBackOnly,
 }: {
   readonly material: Material;
-  readonly id?: string;
-  readonly hoveredId?: string | undefined;
-  readonly selectedIds?: Record<string, boolean> | undefined;
+  readonly hovered?: boolean | undefined;
+  readonly selected?: boolean;
   readonly disabled?: boolean;
   readonly materialState?: MaterialState | undefined;
   readonly isText: boolean;
@@ -36,20 +34,13 @@ export function ReactMaterial({
     : materialState === "Error"
     ? errorMar
     : warningMat;
-  const color = getColor(selectedIds, id, hoveredId, mat);
-  const colorText = selectedIds?.[id]
-    ? hoveredId === id
-      ? shade(-0.4, textSelectMat.normal)
-      : textSelectMat.normal
-    : hoveredId === id
-    ? shade(-0.4, mat.normal)
-    : mat.normal;
+
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
   if (isText) {
     return (
       <meshBasicMaterial
         key={`mesh_material_text}`}
-        color={colorText}
+        color={getColor(selected, hovered, mat, textSelectMat)}
         side={FrontSide}
         transparent
         {...(opacity < 1 ? { opacity } : materialDefaults)}
@@ -60,7 +51,7 @@ export function ReactMaterial({
     return (
       <meshBasicMaterial
         key="mesh_material_hotspot"
-        color={color}
+        color={getColor(selected, hovered, mat, selectMat)}
         side={drawBackOnly === true ? BackSide : DoubleSide}
         depthTest={true}
         depthWrite={true}
@@ -72,7 +63,7 @@ export function ReactMaterial({
   return (
     <meshStandardMaterial
       key={`mesh_material_standard_${mat.normal}_${mat.metalness}_${mat.opacity}_${mat.roughness}`}
-      color={color}
+      color={getColor(selected, hovered, mat, selectMat)}
       roughness={mat.roughness}
       metalness={mat.metalness}
       side={DoubleSide}
@@ -96,22 +87,22 @@ export const materialDefaults: MaterialParameters = {
 };
 
 const acceptMat: Material = { normal: "rgb(0,148,91)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
-const selectMat: Material = { normal: "rgb(14,82,184)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
+export const selectMat: Material = { normal: "rgb(14,82,184)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 const textSelectMat: Material = { normal: "rgb(0, 26, 65)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 const errorMar: Material = { normal: "#b82f3a", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 const warningMat: Material = { normal: "rgb(240, 197, 48)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 
 export function getColor(
-  selectedIds: Record<string, boolean> | undefined,
-  id: string | undefined,
-  hoveredId: string | undefined,
-  mat: Material
+  selected: boolean | undefined,
+  hovered: boolean | undefined,
+  mat: Material,
+  selectedMat: Material
 ): string | undefined {
-  return selectedIds?.[id ?? ""]
-    ? hoveredId === id
-      ? shade(-0.4, selectMat.normal)
-      : selectMat.normal
-    : hoveredId === id
+  return selected
+    ? hovered
+      ? shade(-0.4, selectedMat.normal)
+      : selectedMat.normal
+    : hovered
     ? shade(-0.4, mat.normal)
     : mat.normal;
 }

@@ -20,18 +20,14 @@ export const ReactHotSpots = React.memo(
     hotSpotTexts,
     hotSpotZAdjPos,
     activeHotSpots,
-    hoveredId,
     onClickHotSpot,
-    setHoveredId,
   }: {
     readonly hotSpots?: ReadonlyArray<HotSpot>;
     readonly showHotSpotTexts: boolean;
     readonly hotSpotZAdjPos: number;
     readonly hotSpotTexts?: Record<string, string>;
     readonly activeHotSpots: Record<string, HotSpotInfo> | undefined;
-    readonly hoveredId: string | undefined;
     readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
-    readonly setHoveredId: (id: string | undefined) => void;
   }): React.JSX.Element => {
     return (
       <>
@@ -42,9 +38,7 @@ export const ReactHotSpots = React.memo(
             hotSpotZAdjPos={hotSpotZAdjPos}
             activeHotSpots={activeHotSpots}
             hotSpotTexts={hotSpotTexts}
-            hoveredId={hoveredId}
             onClickHotSpot={onClickHotSpot}
-            setHoveredId={setHoveredId}
             showHotSpotTexts={showHotSpotTexts}
           />
         ))}
@@ -59,19 +53,16 @@ export function ReactHotSpot({
   showHotSpotTexts,
   hotSpotTexts,
   activeHotSpots,
-  hoveredId,
   onClickHotSpot,
-  setHoveredId,
 }: {
   readonly h: HotSpot;
   readonly hotSpotZAdjPos: number;
   readonly showHotSpotTexts: boolean;
   readonly hotSpotTexts?: Record<string, string>;
   readonly activeHotSpots: Record<string, HotSpotInfo> | undefined;
-  readonly hoveredId: string | undefined;
   readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
-  readonly setHoveredId: (id: string | undefined) => void;
 }): React.JSX.Element {
+  const [hovered, setHovered] = React.useState<boolean>(false);
   const hotSpot = activeHotSpots ? activeHotSpots[h.id] : undefined;
   const hsPos = h.mesh.geometry.type === "Box" ? h.mesh.geometry.pos : vec3Zero;
   const text = hotSpotTexts?.[h.id];
@@ -90,11 +81,11 @@ export function ReactHotSpot({
           onPointerOver: (e) => {
             e.stopPropagation();
             document.body.style.cursor = "pointer";
-            setHoveredId(h.id);
+            setHovered(true);
           },
           onPointerOut: (_e) => {
             document.body.style.cursor = "auto";
-            setHoveredId(undefined);
+            setHovered(false);
           },
           onContextMenu: (e) => {
             e.stopPropagation();
@@ -102,10 +93,16 @@ export function ReactHotSpot({
         })}
       >
         <ReactMesh mesh={h.mesh}>
-          <ReactMaterial id={h.id} isText={false} isHotSpot={true} material={h.mesh.material} hoveredId={hoveredId} />
+          <ReactMaterial isText={false} isHotSpot={true} material={h.mesh.material} hovered={hovered} />
         </ReactMesh>
         <ReactMesh mesh={{ ...h.mesh, geometry: { ...geo, size: vec3Scale(geo.size, 1.0125) } }}>
-          <ReactMaterial id={h.id} isText={false} isHotSpot={true} drawBackOnly={true} material={{ normal: "rgb(0, 0, 0)", opacity: 1.0 }} hoveredId={hoveredId} />
+          <ReactMaterial
+            isText={false}
+            isHotSpot={true}
+            drawBackOnly={true}
+            material={{ normal: "rgb(0, 0, 0)", opacity: 1.0 }}
+            hovered={hovered}
+          />
         </ReactMesh>
       </group>
       {hotSpotTexts && text && (

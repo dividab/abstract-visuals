@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { suspend } from "suspend-react";
 import { createSVG } from "abstract-image";
 import { CanvasTexture, DoubleSide, PlaneGeometry, SRGBColorSpace, type Texture, TextureLoader } from "three";
 import { Material, Image as A3dImage } from "../../abstract-3d.js";
-import { ERROR_IMG_KEY, getColor, materialDefaults, MaterialState } from "./react-material.js";
+import { ERROR_IMG_KEY, getColor, materialDefaults, MaterialState, selectMat } from "./react-material.js";
 
 export const planeGeometry = new PlaneGeometry();
 
@@ -30,18 +30,16 @@ export function ImageMaterial({
   image,
   materialStateImages,
   material,
-  id,
   useAlphaTest,
-  hoveredId,
-  selectedIds,
+  hovered,
+  selected,
   materialState,
 }: {
   readonly image: A3dImage;
   readonly material: Material;
-  readonly id: string | undefined;
   readonly materialStateImages: Record<string, string> | undefined;
-  readonly hoveredId: string | undefined;
-  readonly selectedIds: Record<string, boolean> | undefined;
+  readonly hovered: boolean;
+  readonly selected: boolean | undefined;
   readonly useAlphaTest: boolean | undefined;
   readonly materialState: MaterialState | undefined;
 }): React.JSX.Element {
@@ -51,12 +49,11 @@ export function ImageMaterial({
       : image.type === "AbstractImage"
       ? `data:image/svg+xml,${createSVG(image.image)}`
       : image.url;
-  const color = getColor(selectedIds, id, hoveredId, material);
   const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter) : loadNormal(url, filter), [url]) as Texture | null;
 
   return (
     <meshBasicMaterial
-      color={color}
+      color={getColor(selected, hovered, material, selectMat)}
       side={DoubleSide}
       alphaTest={useAlphaTest ?? true ? 0.8 : undefined}
       map={texture}

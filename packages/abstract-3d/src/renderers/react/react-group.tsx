@@ -9,7 +9,6 @@ import { ImageMaterial } from "./react-image-material.js";
 export function ReactGroup({
   g,
   materialStateImages,
-  hoveredId,
   hoveredIdExternal,
   selectedIds,
   hotSpotsActive,
@@ -24,7 +23,6 @@ export function ReactGroup({
 }: {
   readonly g: Group_1;
   readonly materialStateImages?: Record<string, string>;
-  readonly hoveredId: string | undefined;
   readonly hoveredIdExternal: string | undefined;
   readonly selectedIds: Record<string, boolean> | undefined;
   readonly hotSpotsActive: boolean;
@@ -38,7 +36,7 @@ export function ReactGroup({
     data: Record<string, string> | undefined,
     e: ThreeEvent<MouseEvent>
   ) => void;
-  readonly onHoverGroup: (
+  readonly onHoverGroup?: (
     id: string | undefined,
     rootData: Record<string, string> | undefined,
     data: Record<string, string> | undefined,
@@ -75,6 +73,10 @@ export function ReactGroup({
       ref.current.position.z = g.pos.z;
     }
   });
+  const [hovered, setHovered] = React.useState<boolean>(false);
+  const hoveredFinal = hovered || hoveredIdExternal === id;
+  const selected = selectedIds?.[id ?? ""];
+
   const materialState = activeComponents?.[id ?? ""];
   const disabled = hotSpotsActive && materialState !== "Accept";
   return (
@@ -93,11 +95,17 @@ export function ReactGroup({
           onPointerOver: (e) => {
             e.stopPropagation();
             document.body.style.cursor = "pointer";
-            onHoverGroup(id, rootData, g.data, e);
+            if (onHoverGroup) {
+              onHoverGroup(id, rootData, g.data, e);
+            }
+            setHovered(true);
           },
           onPointerOut: (e) => {
             document.body.style.cursor = "auto";
-            onHoverGroup(undefined, undefined, undefined, e);
+            setHovered(false);
+            if (onHoverGroup) {
+              onHoverGroup(undefined, undefined, undefined, e);
+            }
           },
           onContextMenu: (e) => {
             if (onContextMenuGroup) {
@@ -115,7 +123,6 @@ export function ReactGroup({
           hotSpotsActive={hotSpotsActive}
           activeComponents={activeComponents}
           materialStateImages={materialStateImages}
-          hoveredId={hoveredId}
           hoveredIdExternal={hoveredIdExternal}
           onClickGroup={onClickGroup}
           onHoverGroup={onHoverGroup}
@@ -126,35 +133,30 @@ export function ReactGroup({
           useAlphaTest={useAlphaTest}
         />
       ))}
-      {g.meshes?.map((m, i) => {
-        const hoveredIdFinal = hoveredId || hoveredIdExternal;
-        return (
-          <ReactMesh key={`mesh_${i}`} mesh={m}>
-            {m.geometry.type === "Image" ? (
-              <ImageMaterial
-                image={m.geometry.image}
-                materialStateImages={materialStateImages}
-                material={m.material}
-                useAlphaTest={useAlphaTest}
-                id={id}
-                hoveredId={hoveredIdFinal}
-                materialState={materialState}
-                selectedIds={selectedIds}
-              />
-            ) : (
-              <ReactMaterial
-                material={m.material}
-                id={id}
-                selectedIds={selectedIds}
-                isText={m.geometry.type === "Text"}
-                hoveredId={hoveredIdFinal}
-                disabled={disabled}
-                materialState={materialState}
-              />
-            )}
-          </ReactMesh>
-        );
-      })}
+      {g.meshes?.map((m, i) => (
+        <ReactMesh key={`mesh_${i}`} mesh={m}>
+          {m.geometry.type === "Image" ? (
+            <ImageMaterial
+              image={m.geometry.image}
+              materialStateImages={materialStateImages}
+              material={m.material}
+              useAlphaTest={useAlphaTest}
+              hovered={hoveredFinal}
+              materialState={materialState}
+              selected={selected}
+            />
+          ) : (
+            <ReactMaterial
+              material={m.material}
+              selected={selected}
+              isText={m.geometry.type === "Text"}
+              hovered={hoveredFinal}
+              disabled={disabled}
+              materialState={materialState}
+            />
+          )}
+        </ReactMesh>
+      ))}
     </group>
   );
 }

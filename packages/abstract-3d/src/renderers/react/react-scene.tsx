@@ -68,7 +68,6 @@ export function ReactScene({
   readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
   readonly createGroupId?: (g: Group) => string;
 }): React.JSX.Element {
-  const [hoveredId, setHoveredId] = React.useState<string | undefined>(undefined);
   return (
     <group
       rotation={[
@@ -92,15 +91,9 @@ export function ReactScene({
             hotSpotsActive={activeHotSpots !== undefined}
             activeComponents={activeComponents}
             materialStateImages={materialStateImages}
-            hoveredId={hoveredId}
             hoveredIdExternal={hoveredIdExternal}
             onClickGroup={onClickGroup}
-            onHoverGroup={(id, rootData, data, e) => {
-              setHoveredId(id);
-              if (onHoverGroup) {
-                onHoverGroup(id, rootData, data, e);
-              }
-            }}
+            onHoverGroup={onHoverGroup}
             onContextMenuGroup={onContextMenuGroup}
             createGroupKey={createGroupKey}
             id={id}
@@ -120,9 +113,7 @@ export function ReactScene({
         hotSpotZAdjPos={scene.size_deprecated.z / 2}
         activeHotSpots={activeHotSpots}
         hotSpotTexts={hotSpotTexts}
-        hoveredId={hoveredId}
         onClickHotSpot={onClickHotSpot}
-        setHoveredId={setHoveredId}
         showHotSpotTexts={showHotSpotTexts}
       />
       {reactPopovers?.map((p) => (
