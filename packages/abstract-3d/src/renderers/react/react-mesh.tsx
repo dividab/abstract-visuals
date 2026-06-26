@@ -190,16 +190,18 @@ export function ReactMesh({
     }
     case "Image":
       return (
-        <mesh
-          geometry={planeGeometry}
-          scale={[mesh.geometry.size.x, mesh.geometry.size.y, 1]}
-          position={[mesh.geometry.pos.x, mesh.geometry.pos.y, mesh.geometry.pos.z]}
-          rotation={[mesh.geometry.rot?.x ?? 0, mesh.geometry.rot?.y ?? 0, mesh.geometry.rot?.z ?? 0]}
-          castShadow
-          receiveShadow
-        >
-          {children}
-        </mesh>
+        <React.Suspense fallback={null}>
+          <mesh
+            geometry={planeGeometry}
+            scale={[mesh.geometry.size.x, mesh.geometry.size.y, 1]}
+            position={[mesh.geometry.pos.x, mesh.geometry.pos.y, mesh.geometry.pos.z]}
+            rotation={[mesh.geometry.rot?.x ?? 0, mesh.geometry.rot?.y ?? 0, mesh.geometry.rot?.z ?? 0]}
+            castShadow
+            receiveShadow
+          >
+            {children}
+          </mesh>
+        </React.Suspense>
       );
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;
@@ -234,21 +236,23 @@ export function ReactMesh({
     case "Text": {
       const { pos, rot, text, fontSize } = mesh.geometry;
       return (
-        <Text
-          position={[pos.x, pos.y, pos.z]}
-          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
-          fontSize={fontSize}
-          textAlign="center"
-          letterSpacing={0.001}
-          lineHeight={1.5}
-          // outlineColor="rgb(255,255,255)"
-          // depthOffset={10}
-          // outlineWidth={3}
-          // outlineOpacity={1}
-        >
-          {children}
-          {text}
-        </Text>
+        <React.Suspense fallback={null}>
+          <Text
+            position={[pos.x, pos.y, pos.z]}
+            rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+            fontSize={fontSize}
+            textAlign="center"
+            letterSpacing={0.001}
+            lineHeight={1.5}
+            // outlineColor="rgb(255,255,255)"
+            // depthOffset={10}
+            // outlineWidth={3}
+            // outlineOpacity={1}
+          >
+            {children}
+            {text}
+          </Text>
+        </React.Suspense>
       );
     }
     case "Line": {
