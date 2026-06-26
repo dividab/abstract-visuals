@@ -130,6 +130,7 @@ export interface PolyLine {
   readonly strokeThickness: number;
   readonly strokeDashStyle: DashStyle;
   readonly strokeLineJoin?: LineJoin;
+  readonly strokeLineCap?: LineCap;
   readonly id: string | undefined;
 }
 
@@ -139,7 +140,8 @@ export function createPolyLine(
   strokeThickness: number,
   id?: string,
   strokeDashStyle: DashStyle = solidLine,
-  strokeLineJoin?: LineJoin
+  strokeLineJoin?: LineJoin,
+  strokeLineCap?: LineCap
 ): PolyLine {
   return {
     type: "polyline",
@@ -148,11 +150,13 @@ export function createPolyLine(
     strokeThickness: strokeThickness,
     strokeDashStyle: strokeDashStyle,
     strokeLineJoin: strokeLineJoin,
+    strokeLineCap: strokeLineCap,
     id: id,
   };
 }
 
 export type LineJoin = "miter" | "round" | "bevel";
+export type LineCap = "butt" | "round" | "square";
 
 export interface Polygon {
   readonly type: "polygon";
