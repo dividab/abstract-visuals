@@ -129,9 +129,7 @@ export function ReactGroup({
           hoveredParent={hoveredFinal}
           onClickGroup={onClickGroup}
           onHoverGroup={(hId, rData, data, e) => {
-            if (hId === id) {
-              setHovered(hId !== undefined);
-            }
+            setHovered(hId !== undefined);
             onHoverGroup?.(hId, rData, data, e);
           }}
           onContextMenuGroup={onContextMenuGroup}
