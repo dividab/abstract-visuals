@@ -300,8 +300,8 @@ importers:
         specifier: ^2.3.26
         version: 2.3.26(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       abstract-chart:
-        specifier: ^12.0.56
-        version: 12.0.56(react@19.2.6)
+        specifier: ^12.0.57
+        version: 12.0.57(react@19.2.6)
       abstract-document:
         specifier: ^19.1.13
         version: 19.1.13(react@19.2.6)
@@ -2199,8 +2199,8 @@ packages:
     peerDependencies:
       react: ^19.2.0
 
-  abstract-chart@12.0.56:
-    resolution: {integrity: sha512-/MZ7/mZXcjype8Qgwy32dYiThk12bQ8tp0aJRtPFEhoLOyeH/+URcO+mv1DnMP2Lagy1mCEbb3obj6E1Zh5h1g==}
+  abstract-chart@12.0.57:
+    resolution: {integrity: sha512-PRuPbuEbj2XOGMM/YQzGaVMoljRRxx8Xjoj4juu0gZRwCX2dbVfvKisOkG4TpxNO03ou7bKTNig10MPI8Ov5EQ==}
 
   abstract-document@19.1.13:
     resolution: {integrity: sha512-wy+0qNpQf2+oDRxfkitpQ1Rh1/30aJIlx1il80SWZ8Kw1E9qtrddK9n6F6k/+vkTO18zOKcg/3Qqaeh4fREelg==}
@@ -9234,7 +9234,7 @@ snapshots:
       - react-dom
       - react-native
 
-  abstract-chart@12.0.56(react@19.2.6):
+  abstract-chart@12.0.57(react@19.2.6):
     dependencies:
       abstract-image: 13.0.42(react@19.2.6)
       ts-exhaustive-check: 1.0.0
