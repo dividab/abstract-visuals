@@ -129,6 +129,7 @@ export interface PolyLine {
   readonly strokeColor: Color;
   readonly strokeThickness: number;
   readonly strokeDashStyle: DashStyle;
+  readonly strokeLineJoin?: LineJoin;
   readonly id: string | undefined;
 }
 
@@ -137,7 +138,8 @@ export function createPolyLine(
   strokeColor: Color,
   strokeThickness: number,
   id?: string,
-  strokeDashStyle: DashStyle = solidLine
+  strokeDashStyle: DashStyle = solidLine,
+  strokeLineJoin?: LineJoin
 ): PolyLine {
   return {
     type: "polyline",
@@ -145,6 +147,7 @@ export function createPolyLine(
     strokeColor: strokeColor,
     strokeThickness: strokeThickness,
     strokeDashStyle: strokeDashStyle,
+    strokeLineJoin: strokeLineJoin,
     id: id,
   };
 }

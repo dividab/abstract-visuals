@@ -236,6 +236,7 @@ function JsxComponent({
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
+          strokeLinejoin={component.strokeLineJoin}
           strokeDasharray={strokeDasharray}
           strokeDashoffset={strokeDashoffset}
           fill="none"
