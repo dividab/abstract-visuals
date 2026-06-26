@@ -9,8 +9,33 @@ import {
   transformValue,
   transformPoint,
   DiscreteAxisPoint,
+  NumberFormat,
 } from "./axis.js";
-import { AbstractImage, black, Color, Component, createAbstractImage, createEllipse, createGroup, createLine, createPoint, createPolygon, createPolyLine, createRectangle, createSize, createText, gray, GrowthDirection, lightGray, Point, Polygon, Size, solidLine, transparent, white } from "abstract-image";
+import {
+  AbstractImage,
+  black,
+  Color,
+  Component,
+  createAbstractImage,
+  createEllipse,
+  createGroup,
+  createLine,
+  createPoint,
+  createPolygon,
+  createPolyLine,
+  createRectangle,
+  createSize,
+  createText,
+  gray,
+  GrowthDirection,
+  lightGray,
+  Point,
+  Polygon,
+  Size,
+  solidLine,
+  transparent,
+  white,
+} from "abstract-image";
 
 // tslint:disable:max-file-line-count
 
@@ -529,13 +554,7 @@ export function renderChart(chart: Chart): AbstractImage {
 }
 
 export function generateBackground(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): Component {
-  return createRectangle(
-    createPoint(xMin, yMax),
-    createPoint(xMax, yMin),
-    transparent,
-    0,
-    chart.backgroundColor
-  );
+  return createRectangle(createPoint(xMin, yMax), createPoint(xMax, yMin), transparent, 0, chart.backgroundColor);
 }
 
 export function xAxises(
@@ -746,7 +765,7 @@ export function generateDataAxisesX(
           createLine(start, end, chart.xGrid.color, chart.xGrid.thickness),
           createText(
             textPos,
-            formatNumber(y),
+            formatNumber(y, axis.numberFormat),
             chart.font,
             axis.tickFontSize ?? chart.fontSize,
             axis.labelColor ?? black,
@@ -856,7 +875,7 @@ export function generateDataAxisesY(
           createLine(start, end, chart.xGrid.color, chart.xGrid.thickness),
           createText(
             textPos,
-            formatNumber(y),
+            formatNumber(y, axis.numberFormat),
             chart.font,
             axis.tickFontSize ?? chart.fontSize,
             axis.labelColor ?? black,
@@ -1068,14 +1087,7 @@ function isInside(xMin: number, xMax: number, yMin: number, yMax: number, p: Poi
   return p.x >= xMin && p.x <= xMax && p.y <= yMin && p.y >= yMax;
 }
 
-function moveInside(
-  xMin: number,
-  xMax: number,
-  yMin: number,
-  yMax: number,
-  inside: Point,
-  outside: Point
-): Point {
+function moveInside(xMin: number, xMax: number, yMin: number, yMax: number, inside: Point, outside: Point): Point {
   const xMinYMin = createPoint(xMin, yMin);
   const xMinYMax = createPoint(xMin, yMax);
   const xMaxYMin = createPoint(xMax, yMin);
@@ -1301,7 +1313,7 @@ export function generateXAxisLabels(
     const position = createPoint(transformValue(l.value, xMin, xMax, axis), y);
     return createText(
       position,
-      l.label ?? formatNumber(l.value),
+      l.label ?? formatNumber(l.value, axis.numberFormat),
       chart.font,
       axis.tickFontSize ?? chart.fontSize,
       axis.labelColor ?? black,
@@ -1389,7 +1401,7 @@ export function generateYAxisLabels(
     const position = createPoint(x, transformValue(l.value, yMin, yMax, yAxis));
     return createText(
       position,
-      l.label ?? formatNumber(l.value),
+      l.label ?? formatNumber(l.value, yAxis.numberFormat),
       chart.font,
       yAxis.tickFontSize ?? chart.fontSize,
       yAxis.labelColor ?? black,
@@ -1434,14 +1446,23 @@ export function generateYAxisLabel(
   );
 }
 
-function formatNumber(n: number): string {
-  if (n >= 10000000) {
-    return numberToString(n / 1000000) + "m";
+function formatNumber(n: number, format: NumberFormat = "compact"): string {
+  switch (format) {
+    case "compact":
+      if (Math.abs(n) >= 10000000) {
+        return numberToString(n / 1000000) + "m";
+      }
+      if (Math.abs(n) >= 10000) {
+        return numberToString(n / 1000) + "k";
+      }
+      return numberToString(n);
+    case "scientific":
+      return parseFloat(n.toPrecision(5)).toExponential();
+    case "none":
+      return numberToString(n);
+    default:
+      return exhaustiveCheck(format);
   }
-  if (n >= 10000) {
-    return numberToString(n / 1000) + "k";
-  }
-  return numberToString(n);
 }
 
 function numberToString(n: number): string {
