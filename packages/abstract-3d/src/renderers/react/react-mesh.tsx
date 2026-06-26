@@ -418,13 +418,16 @@ function Polygon({
       ]);
     }
 
-    const arr = new Float32Array(9);
-    polygon.points.forEach((p, i) => {
-      arr[i * 3 + 0] = p.x;
-      arr[i * 3 + 1] = p.y;
-      arr[i * 3 + 2] = p.z;
-    });
-    return arr;
+    const flattenedPoints: Array<number> = [];
+    for(const point of polygon.points) {
+      flattenedPoints.push(point.x, point.y, point.z);
+    }
+    const vertexCount = Math.floor(flattenedPoints.length / 3) * 3;
+    const vertices = new Float32Array(vertexCount);
+    for(let i = 0; i < vertexCount; i++) {
+      vertices[i] = flattenedPoints[i] ?? 0.0;
+    }
+    return vertices;
   }, [polygon]);
 
   return (
