@@ -234,23 +234,21 @@ export function ReactMesh({
     case "Text": {
       const { pos, rot, text, fontSize } = mesh.geometry;
       return (
-        <React.Suspense fallback={null}>
-          <Text
-            position={[pos.x, pos.y, pos.z]}
-            rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
-            fontSize={fontSize}
-            textAlign="center"
-            letterSpacing={0.001}
-            lineHeight={1.5}
-            // outlineColor="rgb(255,255,255)"
-            // depthOffset={10}
-            // outlineWidth={3}
-            // outlineOpacity={1}
-          >
-            {children}
-            {text}
-          </Text>
-        </React.Suspense>
+        <Text
+          position={[pos.x, pos.y, pos.z]}
+          rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
+          fontSize={fontSize}
+          textAlign="center"
+          letterSpacing={0.001}
+          lineHeight={1.5}
+          // outlineColor="rgb(255,255,255)"
+          // depthOffset={10}
+          // outlineWidth={3}
+          // outlineOpacity={1}
+        >
+          {children}
+          {text}
+        </Text>
       );
     }
     case "Line": {
