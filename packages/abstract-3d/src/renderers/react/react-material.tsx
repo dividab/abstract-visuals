@@ -39,7 +39,7 @@ export function ReactMaterial({
   if (isText) {
     return (
       <meshBasicMaterial
-        key={`mesh_material_text}`}
+        key={`mesh_material_text`}
         color={getColor(selected, hovered, mat, textSelectMat)}
         side={FrontSide}
         transparent

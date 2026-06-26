@@ -16,6 +16,7 @@ export function ReactGroup({
   useAlphaTest,
   id,
   rootData,
+  hoveredParent,
   onClickGroup,
   onHoverGroup,
   onContextMenuGroup,
@@ -24,6 +25,7 @@ export function ReactGroup({
   readonly g: Group_1;
   readonly materialStateImages?: Record<string, string>;
   readonly hoveredIdExternal: string | undefined;
+  readonly hoveredParent?: boolean;
   readonly selectedIds: Record<string, boolean> | undefined;
   readonly hotSpotsActive: boolean;
   readonly useAlphaTest?: boolean;
@@ -74,7 +76,7 @@ export function ReactGroup({
     }
   });
   const [hovered, setHovered] = React.useState<boolean>(false);
-  const hoveredFinal = hovered || hoveredIdExternal === id;
+  const hoveredFinal = hovered || hoveredIdExternal === id || !!hoveredParent;
   const selected = selectedIds?.[id ?? ""];
 
   const materialState = activeComponents?.[id ?? ""];
@@ -124,8 +126,12 @@ export function ReactGroup({
           activeComponents={activeComponents}
           materialStateImages={materialStateImages}
           hoveredIdExternal={hoveredIdExternal}
+          hoveredParent={hoveredFinal}
           onClickGroup={onClickGroup}
-          onHoverGroup={onHoverGroup}
+          onHoverGroup={(hId, rData, data, e) => {
+            setHovered(hId !== undefined);
+            onHoverGroup?.(hId, rData, data, e);
+          }}
           onContextMenuGroup={onContextMenuGroup}
           id={id}
           rootData={rootData}
