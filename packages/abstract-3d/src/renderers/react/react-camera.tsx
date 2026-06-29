@@ -74,7 +74,7 @@ export function ReactCamera({
 
   const viewPortAspect = useThree(({ viewport: { aspect } }) => aspect);
   const canvasSize = useThree(({ size }) => size);
-  const { invalidate } = useThree();
+  const invalidate = useThree(({ invalidate }) => invalidate);
 
   const resetZoomOnGizmoClick = (): void => {
     if (!controls || initialDistRef.current == null || (!perspectiveRef.current && !orthographicRef.current)) {
