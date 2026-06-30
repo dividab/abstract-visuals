@@ -4,6 +4,7 @@ packages:
 allowBuilds:
   esbuild: false
   husky: false
+  nx: set this to true or false
 
 trustLockfile: true
 
