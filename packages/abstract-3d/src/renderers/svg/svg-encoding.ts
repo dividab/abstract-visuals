@@ -48,7 +48,7 @@ export function svgPolygon(
   return (
     mask +
     pol +
-    svgStrokedHoles(parentPos ?? pos, rot, holes ?? [], stroke, strokeWidth)
+    svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth)
   );
 }
 
@@ -91,7 +91,7 @@ function svgStrokedHoles(
   for (const hole of holes) {
     const localSvg = vec3(hole.pos.x, -hole.pos.y, 0);
     const rotated = vec3Rot(localSvg, vec3Zero, rot);
-    const holeCenter = vec2Add(vec2(pos.x, -pos.y), vec2(rotated.x, rotated.y));
+    const holeCenter = vec2Add(vec2(pos.x, pos.y), vec2(rotated.x, rotated.y));
     switch (hole.type) {
       case "RoundHole": {
         const matrix = svgTrsMatrix(holeCenter, vec3Zero);
