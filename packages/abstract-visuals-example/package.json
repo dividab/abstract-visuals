@@ -9,7 +9,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "abstract-3d": "^2.5.0",
+    "abstract-3d": "^2.4.0",
     "abstract-chart": "^12.0.60",
     "abstract-document": "^19.1.16",
     "abstract-image": "^13.0.45",
