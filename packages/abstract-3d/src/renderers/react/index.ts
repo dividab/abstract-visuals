@@ -1,4 +1,5 @@
 export * from "./react.js";
+export * from "./react-types.js";
 export type { SceneMouseEvent } from "./react-scene.js";
 export type { HotSpotInfo } from "./react-hotspot.js";
 export type { CameraType, Camera, ControlsHelper } from "./react-camera.js";

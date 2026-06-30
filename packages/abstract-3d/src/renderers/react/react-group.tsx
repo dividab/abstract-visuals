@@ -6,6 +6,7 @@ import { MaterialState, ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
 import { ImageMaterial } from "./react-image-material.js";
 import { Html } from "@react-three/drei";
+import { ReactPopover } from "./react-types.js";
 
 export function ReactGroup({
   g,
@@ -22,6 +23,7 @@ export function ReactGroup({
   onHoverGroup,
   onContextMenuGroup,
   createGroupKey,
+  getTooltips,
 }: {
   readonly g: Group_1;
   readonly materialStateImages?: Record<string, string>;
@@ -53,6 +55,7 @@ export function ReactGroup({
     top: number,
     e: ThreeEvent<MouseEvent>
   ) => void;
+  readonly getTooltips?: (id: string) => ReadonlyArray<ReactPopover>;
   readonly createGroupKey?: (
     g: Group_1,
     idx: number,
@@ -134,6 +137,7 @@ export function ReactGroup({
             onHoverGroup?.(hId, rData, data, e);
           }}
           onContextMenuGroup={onContextMenuGroup}
+          getTooltips={getTooltips}
           id={id}
           rootData={rootData}
           createGroupKey={createGroupKey}
@@ -165,7 +169,9 @@ export function ReactGroup({
         </ReactMesh>
       ))}
       {hovered &&
-        g.tooltips?.map((p) => (
+        id &&
+        getTooltips &&
+        getTooltips(id).map((p) => (
           <Html key={p.id} position={[p.pos.x, p.pos.y, p.pos.z]} center pointerEvents="none">
             {p.content}
           </Html>

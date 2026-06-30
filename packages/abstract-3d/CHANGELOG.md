@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## v2.4.0
 
-- Added support for tooltips on Groups.
+- Added support for tooltips.
 
 ## v2.2.0
 

@@ -1,11 +1,12 @@
 import React from "react";
-import { Scene, Group, ReactPopover } from "../../abstract-3d.js";
+import { Scene, Group } from "../../abstract-3d.js";
 import { HotSpotInfo, ReactHotSpots } from "./react-hotspot.js";
 import { ReactDimensions } from "./react-dimension.js";
 import { ReactGroup } from "./react-group.js";
 import { MaterialState } from "./react-material.js";
 import { Html } from "@react-three/drei";
 import { ThreeEvent } from "@react-three/fiber";
+import { ReactPopover } from "./react-types.js";
 
 export type SceneMouseEvent = ThreeEvent<MouseEvent>;
 
@@ -24,6 +25,7 @@ export function ReactScene({
   onClickGroup,
   onHoverGroup,
   onContextMenuGroup,
+  getTooltips,
   onClickHotSpot,
   createGroupKey,
   createGroupId,
@@ -59,6 +61,7 @@ export function ReactScene({
     top: number,
     e: SceneMouseEvent
   ) => void;
+  readonly getTooltips?: (id: string) => ReadonlyArray<ReactPopover>;
   readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: SceneMouseEvent) => void;
   readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
   readonly createGroupId?: (g: Group) => string;
@@ -90,6 +93,7 @@ export function ReactScene({
             onClickGroup={onClickGroup}
             onHoverGroup={onHoverGroup}
             onContextMenuGroup={onContextMenuGroup}
+            getTooltips={getTooltips}
             createGroupKey={createGroupKey}
             id={id}
             useAlphaTest={useAlphaTest}

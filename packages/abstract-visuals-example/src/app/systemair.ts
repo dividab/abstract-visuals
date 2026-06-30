@@ -15049,13 +15049,6 @@ export const systemair = {
         id: "be0885b4-3498-4897-804f-0f2b9a1eeb7c",
         box: "box",
       },
-      tooltips: [
-        {
-          id: "test",
-          pos: { x: 0, y: 0, z: 0 },
-          content: "Hej",
-        },
-      ],
       groups: [
         {
           meshes: [

@@ -3,10 +3,11 @@ import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
 import { Html, Stats, type OrbitControlsProps } from "@react-three/drei";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { ReactScene } from "./react-scene.js";
-import { Scene, View, Group, ReactPopover } from "../../abstract-3d.js";
+import { Scene, View, Group, Vec3 } from "../../abstract-3d.js";
 import { ReactCamera, ControlsHelper, Camera, BufferZones } from "./react-camera.js";
 import { HotSpotInfo } from "./react-hotspot.js";
 import { MaterialState } from "./react-material.js";
+import { ReactPopover } from "./react-types.js";
 
 type ReactProps = {
   readonly scene: Scene | undefined; // undefined to allow for simple early loadign the js when lazy loading the React3Js renderer
@@ -50,6 +51,7 @@ type ReactProps = {
     top: number,
     e: ThreeEvent<MouseEvent>
   ) => void;
+  readonly getTooltips?: (id: string) => ReadonlyArray<ReactPopover>;
   readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
   readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
   readonly createGroupId?: (g: Group) => string;
@@ -79,6 +81,7 @@ export const render = memo(
     onClickGroup,
     onHoverGroup,
     onContextMenuGroup,
+    getTooltips,
     onClickHotSpot,
     createGroupKey,
     createGroupId,
@@ -155,6 +158,7 @@ export const render = memo(
             onClickGroup={onClickGroup}
             onHoverGroup={onHoverGroup}
             onContextMenuGroup={onContextMenuGroup}
+            getTooltips={getTooltips}
             onClickHotSpot={onClickHotSpot}
             createGroupKey={createGroupKey}
             createGroupId={createGroupId}

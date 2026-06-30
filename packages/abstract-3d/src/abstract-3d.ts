@@ -49,14 +49,7 @@ export type Group = {
   readonly meshes?: ReadonlyArray<Mesh>;
   readonly data?: Record<string, string>;
   readonly animation?: Animation;
-  readonly tooltips?: ReadonlyArray<ReactPopover>;
 };
-
-export interface ReactPopover {
-  readonly id: string;
-  readonly pos: Vec3;
-  readonly content: ReactNode | string;
-}
 
 export type Mesh = {
   readonly material: Material;
