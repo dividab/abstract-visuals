@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
+// dummy
 export function parseRgb(color: string): { readonly r: number; readonly g: number; readonly b: number } {
   const parts = color.split("(")[1]?.slice(0, -1).split(",");
   const rgb = { r: Number(parts?.[0] ?? 0), g: Number(parts?.[1] ?? 0), b: Number(parts?.[2] ?? 0) };
