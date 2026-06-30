@@ -44,8 +44,6 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 import { ImageMaterial, planeGeometry } from "./react-image-material.js";
 import { MaterialState } from "./react-material.js";
 
-// dummy
-
 extend({
   SphereGeometry,
   PlaneGeometry,
@@ -419,12 +417,12 @@ function Polygon({
     }
 
     const flattenedPoints: Array<number> = [];
-    for(const point of polygon.points) {
+    for (const point of polygon.points) {
       flattenedPoints.push(point.x, point.y, point.z);
     }
     const vertexCount = Math.floor(flattenedPoints.length / 3) * 3;
     const vertices = new Float32Array(vertexCount);
-    for(let i = 0; i < vertexCount; i++) {
+    for (let i = 0; i < vertexCount; i++) {
       vertices[i] = flattenedPoints[i] ?? 0.0;
     }
     return vertices;
