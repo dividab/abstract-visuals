@@ -42,7 +42,6 @@ export function box(
     frontMean > backMean
       ? [[point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)], frontMean]
       : [[point(v5.x, v5.y), point(v6.x, v6.y), point(v7.x, v7.y), point(v8.x, v8.y)], backMean];
-
   const topMean = vec3ZMean(v8, v7, v3, v4);
   const botMean = vec3ZMean(v5, v6, v2, v1);
   const [topBotPoints, topBotMean] =
@@ -64,7 +63,7 @@ export function box(
     : [black, opts.gray_scale ? rgbGrayScale(color) : color, 0];
 
   return [
-    zElem(svgPolygon(rot, frontBackPoints, fill, opacity, strokeColor, strokeUse, b.holes), frontBackMean),
+    zElem(svgPolygon(rot, frontBackPoints, fill, opacity, strokeColor, strokeUse, b.holes, parentPos), frontBackMean),
     zElem(svgPolygon(rot, topBotPoints, fill, opacity, strokeColor, strokeUse), topBotMean),
     zElem(svgPolygon(rot, rightLeftPoints, fill, opacity, strokeColor, strokeUse), rightLeftMean),
   ];

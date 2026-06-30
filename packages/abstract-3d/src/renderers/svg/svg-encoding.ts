@@ -10,6 +10,8 @@ import {
   vec3,
   Vec3,
   vec3Rot,
+  vec3RotCombine,
+  vec3TransRot,
   vec3Zero,
 } from "../../abstract-3d.js";
 import { svgTrsMatrix } from "./svg-geometries/shared.js";
@@ -31,7 +33,8 @@ export function svgPolygon(
   opacity: number,
   stroke: string,
   strokeWidth: number,
-  holes?: ReadonlyArray<Hole>
+  holes?: ReadonlyArray<Hole>,
+  parentPos?: Vec3,
 ): string {
   const bounds = bounds2FromVec2Array(points);
   const size = vec2Sub(bounds.max, bounds.min);
@@ -42,7 +45,11 @@ export function svgPolygon(
     .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(
     1
   )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
-  return mask + pol + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
+  return (
+    mask +
+    pol +
+    svgStrokedHoles(parentPos ?? pos, rot, holes ?? [], stroke, strokeWidth)
+  );
 }
 
 export function svgCircle(
@@ -62,7 +69,11 @@ export function svgCircle(
   )}" fill="${fill}" fill-opacity="${opacity.toFixed(
     1
   )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
-  return mask + cir + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
+  return (
+    mask +
+    cir +
+    svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth)
+  );
 }
 
 function svgStrokedHoles(
@@ -78,9 +89,12 @@ function svgStrokedHoles(
 
   let svgHoles = "";
   for (const hole of holes) {
-    const matrix = svgTrsMatrix(vec2Add(pos, vec2(-hole.pos.x, hole.pos.y)), rot);
+    const localSvg = vec3(hole.pos.x, -hole.pos.y, 0);
+    const rotated = vec3Rot(localSvg, vec3Zero, rot);
+    const holeCenter = vec2Add(vec2(pos.x, -pos.y), vec2(rotated.x, rotated.y));
     switch (hole.type) {
       case "RoundHole": {
+        const matrix = svgTrsMatrix(holeCenter, vec3Zero);
         svgHoles += `<circle
           r="${hole.radius.toFixed(0)}"
           transform="${matrix}"
@@ -93,10 +107,18 @@ function svgStrokedHoles(
 
       case "SquareHole": {
         const half = vec2Scale(hole.size, 0.5);
-        const points = [vec2(-half.x, half.y), vec2(half.x, half.y), vec2(half.x, -half.y), vec2(-half.x, -half.y)]
+        const points = [
+          vec2(-half.x, -half.y),
+          vec2(half.x, -half.y),
+          vec2(half.x, half.y),
+          vec2(-half.x, half.y),
+        ]
           .map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`)
           .join(" ");
-        svgHoles += `<polygon 
+
+        const matrix = svgTrsMatrix(holeCenter, rot);
+
+        svgHoles += `<polygon
           points="${points}"
           transform="${matrix}"
           fill="none"
@@ -138,7 +160,7 @@ function svgHoleMask(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): [string
 function svgMaskHoles(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string {
   const holeMasks: Array<string> = [];
   for (const hole of holes) {
-    const holePosRotated = vec3Rot(vec3(hole.pos.x, -hole.pos.y, 0), vec3Zero, rot);
+    const holePosRotated = vec3Rot(vec3(hole.pos.x, hole.pos.y, 0), vec3Zero, rot);
     const holePos = vec2Add(holePosRotated, vec2Scale(size, 0.5));
     switch (hole.type) {
       case "RoundHole": {
