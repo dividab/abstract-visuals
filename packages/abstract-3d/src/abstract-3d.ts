@@ -1,4 +1,5 @@
 import type { AbstractImage } from "abstract-image";
+import type { ReactNode } from "react";
 
 export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??
@@ -48,7 +49,14 @@ export type Group = {
   readonly meshes?: ReadonlyArray<Mesh>;
   readonly data?: Record<string, string>;
   readonly animation?: Animation;
+  readonly tooltips?: ReadonlyArray<ReactPopover>;
 };
+
+export interface ReactPopover {
+  readonly id: string;
+  readonly pos: Vec3;
+  readonly content: ReactNode | string;
+}
 
 export type Mesh = {
   readonly material: Material;

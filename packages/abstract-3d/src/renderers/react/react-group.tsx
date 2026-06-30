@@ -5,6 +5,7 @@ import { Group as Group_1 } from "../../abstract-3d.js";
 import { MaterialState, ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
 import { ImageMaterial } from "./react-image-material.js";
+import { Html } from "@react-three/drei";
 
 export function ReactGroup({
   g,
@@ -163,6 +164,12 @@ export function ReactGroup({
           )}
         </ReactMesh>
       ))}
+      {hovered &&
+        g.tooltips?.map((p) => (
+          <Html key={p.id} position={[p.pos.x, p.pos.y, p.pos.z]} center pointerEvents="none">
+            {p.content}
+          </Html>
+        ))}
     </group>
   );
 }

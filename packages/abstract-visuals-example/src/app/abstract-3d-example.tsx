@@ -12,13 +12,13 @@ import { createSVG } from "../../../abstract-image/src/exporters/svg-export-imag
 import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
 import { componentGeometries } from "./double-view-component-geometries.js";
 import { templateScene } from "./template-scene.js";
-import { Scene } from "../../../abstract-3d/src/abstract-3d.js";
+import { Scene, ReactPopover } from "../../../abstract-3d/src/abstract-3d.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
   const [hovered, setHovered] = React.useState<string | undefined>(undefined);
   const group = systemair.groups.find((g) => g.data?.id === hovered);
-  const popover: React3Js.ReactPopover | undefined = group
+  const popover: ReactPopover | undefined = group
     ? { id: "popover", pos: { ...group.pos, y: group.pos.y - 300 }, content: "Hej" }
     : undefined;
   console.log(hovered, group, popover);
