@@ -172,7 +172,13 @@ export function ReactGroup({
         id &&
         getTooltips &&
         getTooltips(id).map((p) => (
-          <Html key={p.id} position={[p.pos.x, p.pos.y, p.pos.z]} center pointerEvents="none">
+          <Html
+            key={p.id}
+            position={[p.pos.x, p.pos.y, p.pos.z]}
+            center
+            pointerEvents="none"
+            style={{ pointerEvents: "none" }}
+          >
             {p.content}
           </Html>
         ))}
