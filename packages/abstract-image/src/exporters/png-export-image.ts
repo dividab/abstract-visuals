@@ -1,5 +1,7 @@
 import { AbstractImage } from "../model/abstract-image.js";
 
+//dummy
+
 export function createPNG(image: AbstractImage): Uint8Array {
   if (image.components.length !== 1) {
     throw new Error("Not supported!");
