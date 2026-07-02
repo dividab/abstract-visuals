@@ -30,7 +30,7 @@
     "!/**/__tests__"
   ],
   "dependencies": {
-    "abstract-image": "^13.0.45",
+    "abstract-image": "^13.0.44",
     "docx": "^6.0.3",
     "fast-xml-parser": "^4.5.0",
     "handlebars": "4.7.8",
