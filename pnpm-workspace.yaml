@@ -10,6 +10,10 @@ trustLockfile: true
 
 minimumReleaseAgeExclude:
   - abstract-sheet@1.1.23
+  - abstract-3d@2.6.1
+  - abstract-chart@12.0.61
+  - abstract-document@19.1.17
+  - abstract-image@13.0.46
 
 overrides:
   three-stdlib: "^2.36.0"

@@ -73,17 +73,17 @@ export function AbstractChartExample(): React.JSX.Element {
     readonly height?: string;
   }): React.JSX.Element {
     const ac = renderChart(chart);
-    // const svg = createSVG(ac);
+    const svg = createSVG(ac);
     return (
       <>
         <h1 style={{ display: "flex", gap: "6px", alignItems: "center" }}>{name}</h1>
         {children}
         <div style={{ display: "flex", gap: "10px" }}>
-          {/* <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h4>React</h4>
             <ReactSvg image={ac} callbacks={callbacks} />
-          </div> */}
-          {/* <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h4 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               Svg
               <button onClick={() => FileSaver.saveAs(new Blob([svg], { type: "text/plain" }), `chart.svg`)}>
@@ -91,7 +91,7 @@ export function AbstractChartExample(): React.JSX.Element {
               </button>
             </h4>
             <img width={width} height={height} src={`data:image/svg+xml;,${svg}`} />
-          </div> */}
+          </div>
         </div>
       </>
     );

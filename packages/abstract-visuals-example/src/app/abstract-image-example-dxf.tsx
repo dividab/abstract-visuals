@@ -91,10 +91,10 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
       : undefined;
   const dxfUrl2 = dxf2 ? toDataUrl("text/plain", dxf2) : undefined;
 
-  // const dxf3 = dxf2dExportImage(hrImage.image, {
-  //   imageDataByUrl: hrImage.imageDataByUrl,
-  // });
-  // const dxfUrl3 = dxf3 ? toDataUrl("text/plain", dxf3) : undefined;
+  const dxf3 = dxf2dExportImage(hrImage.image, {
+    imageDataByUrl: hrImage.imageDataByUrl,
+  });
+  const dxfUrl3 = dxf3 ? toDataUrl("text/plain", dxf3) : undefined;
 
   return (
     <div>
@@ -105,11 +105,11 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
           Download DXF 2
         </a>
       </div>
-      {/* <div>
+      <div>
         <a href={dxfUrl3} download={"abstract_image_demo2.dxf"}>
           Download DXF 3
         </a>
-      </div> */}
+      </div>
       <a href={dxfUrl} download={"abstract_image_demo1.dxf"}>
         Download DXF
       </a>

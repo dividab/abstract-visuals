@@ -113,16 +113,16 @@ function abstractComponentToPdf(
       }
       break;
     case "subimage": {
-      // const scaleX = component.size.width / (component.image.size.width || 1);
-      // const scaleY = component.size.height / (component.image.size.height || 1);
-      // const scale = Math.min(scaleX, scaleY);
+      const scaleX = component.size.width / (component.image.size.width || 1);
+      const scaleY = component.size.height / (component.image.size.height || 1);
+      const scale = Math.min(scaleX, scaleY);
 
-      // pdf.save();
-      // pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
-      // component.image.components.forEach((c) =>
-      //   abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale * scale)
-      // );
-      // pdf.restore();
+      pdf.save();
+      pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
+      component.image.components.forEach((c) =>
+        abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale * scale)
+      );
+      pdf.restore();
       break;
     }
     case "line":

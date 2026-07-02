@@ -140,7 +140,7 @@ export function AbstractDocumentExample(): React.JSX.Element {
     }),
   });
 
-  // const image = createAbstractImage();
+  const image = createAbstractImage();
 
   const doc = AbstractDocJsx.render(
     <AbstractDocJsx.AbstractDoc styles={{}}>
@@ -495,11 +495,11 @@ export function AbstractDocumentExample(): React.JSX.Element {
           <AbstractDocJsx.TextRun text="A nice image" />
         </AbstractDocJsx.Paragraph>
         <AbstractDocJsx.Paragraph>
-          {/* <AbstractDocJsx.Image
+          <AbstractDocJsx.Image
             width={image.abstractImage.size.width}
             height={image.abstractImage.size.height}
             imageResource={image}
-          /> */}
+          />
         </AbstractDocJsx.Paragraph>
       </AbstractDocJsx.Section>
       <AbstractDocJsx.Section page={page} id="chapter3">
@@ -529,16 +529,16 @@ async function generatePDF(doc: AbstractDoc.AbstractDoc.AbstractDoc): Promise<vo
   window.open(objectURL);
 }
 
-// function createAbstractImage(): AbstractDoc.ImageResource.ImageResource {
-//   const components = [
-//     createLine(createPoint(25, 125), createPoint(280, 125), red, 2, undefined, createDashStyle([10, 5])),
-//     createLine(createPoint(25, 100), createPoint(280, 100), red, 2, undefined, createDashStyle([10, 5], 5)),
-//     createRectangle(createPoint(10, 10), createPoint(300, 135), blue, 2, fromArgb(100, 0, 0, 0)),
-//   ];
-//   const image = createAbstractImage_1(createPoint(0, 0), createSize(300, 135), white, components);
-//   const imageResource = AbstractDoc.ImageResource.create({
-//     id: "test",
-//     abstractImage: image,
-//   });
-//   return imageResource;
-// }
+function createAbstractImage(): AbstractDoc.ImageResource.ImageResource {
+  const components = [
+    createLine(createPoint(25, 125), createPoint(280, 125), red, 2, undefined, createDashStyle([10, 5])),
+    createLine(createPoint(25, 100), createPoint(280, 100), red, 2, undefined, createDashStyle([10, 5], 5)),
+    createRectangle(createPoint(10, 10), createPoint(300, 135), blue, 2, fromArgb(100, 0, 0, 0)),
+  ];
+  const image = createAbstractImage_1(createPoint(0, 0), createSize(300, 135), white, components);
+  const imageResource = AbstractDoc.ImageResource.create({
+    id: "test",
+    abstractImage: image,
+  });
+  return imageResource;
+}
