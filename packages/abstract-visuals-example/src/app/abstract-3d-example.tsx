@@ -57,7 +57,7 @@ export function Abstract3DExample(): React.ReactNode {
     `}
       </style>
       <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
-        <button
+        {/* <button
           onClick={() =>
             FileSaver.saveAs(
               new Blob([dxf2dExportImage(ai, { imageDataByUrl: imageDataByUrlDxf, useColor: true })], {
@@ -68,8 +68,8 @@ export function Abstract3DExample(): React.ReactNode {
           }
         >
           DXF double
-        </button>
-        <button
+        </button> */}
+        {/* <button
           onClick={() =>
             FileSaver.saveAs(
               new Blob([dxf2dExportImage(ai, { imageDataByUrl: imageDataByUrlDxf2, useColor: true })], {
@@ -80,7 +80,7 @@ export function Abstract3DExample(): React.ReactNode {
           }
         >
           DXF single
-        </button>
+        </button> */}
         <button
           onClick={() =>
             FileSaver.saveAs(
@@ -133,7 +133,7 @@ export function Abstract3DExample(): React.ReactNode {
           style={{ width: "200px", height: "200px", minWidth: "200px" }}
           dangerouslySetInnerHTML={{ __html: templateImage }}
         />
-        <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} />
+        {/* <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} /> */}
         {svgs.map((svg, i) => (
           <img key={i} src={svg} width="200px" style={{ height: "max-content" }} />
         ))}
