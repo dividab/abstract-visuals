@@ -81,7 +81,8 @@ export const Text = (props: TextComponent): TextComponent =>
     props.italic,
     props.id
   );
-export const SubImage = (props: SubImageComponent): SubImageComponent => createSubImage(props.topLeft, props.image);
+export const SubImage = (props: SubImageComponent): SubImageComponent =>
+  createSubImage(props.topLeft, props.size, props.image);
 
 export function render(element: any): any {
   if (typeof element.type !== "function") {

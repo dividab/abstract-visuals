@@ -107,12 +107,16 @@ function JsxComponent({
       const height = component.bottomRight.y - component.topLeft.y;
       const id = makeIdAttr(component.id);
       if (component.data.type === "url") {
-        const imageData = options.imageDataByUrl[component.data.url];
-        if (imageData !== undefined && typeof imageData !== "string") {
-          return <ReactSvg image={imageData} options={{ imageDataByUrl: options.imageDataByUrl }} />;
+        const data = options.imageDataByUrl[component.data.url];
+        if (typeof data === "string" || data === undefined) {
+          return <image x={x} y={y} width={width} height={height} id={id} href={data ?? component.data.url} />;
         }
-        const url = imageData ?? component.data.url;
-        return <image x={x} y={y} width={width} height={height} id={id} href={url} />;
+        const scale = Math.min(width / (data.size.width || 1), height / (data.size.height || 1));
+        return (
+          <g transform={`translate(${x}, ${y}) scale(${scale})`}>
+            <ReactSvg image={data} options={{ imageDataByUrl: options.imageDataByUrl }} />
+          </g>
+        );
       } else if (component.format === "png") {
         const base64 = fromByteArray(component.data.bytes);
         return <image x={x} y={y} width={width} height={height} id={id} href={`data:image/png;base64,${base64}`} />;
@@ -126,6 +130,18 @@ function JsxComponent({
         return <image x={x} y={y} width={width} height={height} id={id} href={`data:image/svg+xml;base64,${base64}`} />;
       }
       return <></>;
+    }
+    case "subimage": {
+      return (
+        <g
+          transform={`translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${Math.min(
+            component.size.width / (component.image.size.width || 1),
+            component.size.height / (component.image.size.height || 1)
+          )})`}
+        >
+          <ReactSvg image={component.image} options={options} />
+        </g>
+      );
     }
     case "line": {
       const strokeDasharray =

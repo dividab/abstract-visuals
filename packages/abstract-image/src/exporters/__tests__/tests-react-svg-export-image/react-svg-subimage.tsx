@@ -2,7 +2,7 @@ import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import * as AbstractImage from "../../../index.js";
 
-const subImage = AbstractImage.createText(
+const subImageText = AbstractImage.createText(
   AbstractImage.createPoint(10, 10),
   "",
   "Arial",
@@ -18,7 +18,16 @@ const subImage = AbstractImage.createText(
   false
 );
 
-const components = [AbstractImage.createSubImage(AbstractImage.createPoint(10, 10), subImage)];
+const subImage = AbstractImage.createAbstractImage(
+  AbstractImage.createPoint(0, 0),
+  AbstractImage.createSize(100, 100),
+  AbstractImage.white,
+  [subImageText]
+);
+
+const components = [
+  AbstractImage.createSubImage(AbstractImage.createPoint(10, 10), AbstractImage.createSize(100, 100), subImage),
+];
 
 const image = AbstractImage.createAbstractImage(
   AbstractImage.createPoint(0, 0),
@@ -33,5 +42,5 @@ export const testReactSvgSubImage: ExportTestDef = {
   name: "react svg subimage",
   abstractImage: svg,
   expectedSerializedJsx:
-    '{"key":null,"props":{"image":{"topLeft":{"x":0,"y":0},"size":{"width":400,"height":400},"backgroundColor":{"a":255,"r":255,"g":255,"b":255},"components":[{"type":"subimage","topLeft":{"x":10,"y":10},"image":{"type":"text","position":{"x":10,"y":10},"text":"","fontFamily":"Arial","fontSize":12,"textColor":{"a":255,"r":0,"g":0,"b":0},"fontWeight":"bold","clockwiseRotationDegrees":0,"textAlignment":"center","horizontalGrowthDirection":"right","verticalGrowthDirection":"down","strokeThickness":2,"strokeColor":{"a":255,"r":255,"g":0,"b":0},"italic":false}}]}},"_owner":null,"_store":{}}',
+    '{"key":null,"props":{"image":{"topLeft":{"x":0,"y":0},"size":{"width":400,"height":400},"backgroundColor":{"a":255,"r":255,"g":255,"b":255},"components":[{"type":"subimage","topLeft":{"x":10,"y":10},"size":{"width":100,"height":100},"image":{"topLeft":{"x":0,"y":0},"size":{"width":100,"height":100},"backgroundColor":{"a":255,"r":255,"g":255,"b":255},"components":[{"type":"text","position":{"x":10,"y":10},"text":"","fontFamily":"Arial","fontSize":12,"textColor":{"a":255,"r":0,"g":0,"b":0},"fontWeight":"bold","clockwiseRotationDegrees":0,"textAlignment":"center","horizontalGrowthDirection":"right","verticalGrowthDirection":"down","strokeThickness":2,"strokeColor":{"a":255,"r":255,"g":0,"b":0},"italic":false}]}}]},"_owner":null,"_store":{}}',
 };

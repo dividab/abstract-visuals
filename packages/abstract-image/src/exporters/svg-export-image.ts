@@ -49,14 +49,16 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
       const height = (component.bottomRight.y - component.topLeft.y).toString();
 
       if (component.data.type === "url") {
-        const imageData = options.imageDataByUrl[component.data.url];
-        const url =
-          imageData === undefined
-            ? component.data.url
-            : typeof imageData === "string"
-            ? imageData
-            : SVG_DATA_URL + encodeURIComponent(createSVG(imageData, options));
-        return createElement("image", { x, y, width, height, href: url }, []);
+        const data = options.imageDataByUrl[component.data.url];
+        if (typeof data === "string" || data === undefined) {
+          return createElement("image", { x, y, width, height, href: data ?? component.data.url }, []);
+        }
+
+        const scale = Math.min(
+          (component.bottomRight.x - component.topLeft.x) / (data.size.width || 1),
+          (component.bottomRight.y - component.topLeft.y) / (data.size.height || 1)
+        );
+        return createElement("g", { transform: `translate(${x}, ${y}) scale(${scale})` }, [createSVG(data, options)]);
       } else if (component.format === "png") {
         const base64 = fromByteArray(component.data.bytes);
         return createElement("image", { x, y, width, height, href: `data:image/png;base64,${base64}` }, []);
@@ -71,8 +73,17 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
       }
       return "";
     }
-    case "subimage":
-      return "";
+    case "subimage": {
+      const scale = Math.min(
+        component.size.width / (component.image.size.width || 1),
+        component.size.height / (component.image.size.height || 1)
+      );
+      return createElement(
+        "g",
+        { transform: `translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})` },
+        [createSVG(component.image, options)]
+      );
+    }
     case "line": {
       const dashStyle: Attributes =
         component.strokeDashStyle.dashes.length > 0

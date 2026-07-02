@@ -1,6 +1,8 @@
 import { Point, createPoint } from "./point.js";
 import { Color } from "./color.js";
 import { DashStyle, solidLine } from "./dash-style.js";
+import { AbstractImage } from "./abstract-image.js";
+import { Size } from "./size.js";
 
 export type Component = BinaryImage | Ellipse | Line | PolyLine | Polygon | Rectangle | Text | SubImage | Group;
 
@@ -299,9 +301,10 @@ export function createText(
 export interface SubImage {
   readonly type: "subimage";
   readonly topLeft: Point;
-  readonly image: Component;
+  readonly size: Size;
+  readonly image: AbstractImage;
 }
 
-export function createSubImage(topLeft: Point, image: Component): SubImage {
-  return { type: "subimage", topLeft, image };
+export function createSubImage(topLeft: Point, size: Size, image: AbstractImage): SubImage {
+  return { type: "subimage", topLeft, size, image };
 }
