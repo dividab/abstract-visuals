@@ -20,7 +20,7 @@
     "README.md"
   ],
   "dependencies": {
-    "abstract-image": "^13.0.44",
+    "abstract-image": "^13.0.45",
     "ts-exhaustive-check": "^1.0.0"
   },
   "gitHead": "17921b59da5eee6cc446fd37a2134165af4d1901"
