@@ -18,7 +18,8 @@ export function createSVG(image: AbstractImage, options?: Optional<SvgOptions>):
     pixelWidth: options?.pixelWidth || image.size.width,
     pixelHeight: options?.pixelHeight || image.size.height,
   };
-  const imageElements = image.components.map((c: Component) => abstractComponentToSVG(c, opts));
+  const subOptions: SvgOptions = { ...opts, pixelWidth: 0, pixelHeight: 0 };
+  const imageElements = image.components.map((c: Component) => abstractComponentToSVG(c, subOptions));
 
   return createElement(
     "svg",
@@ -81,7 +82,7 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
       return createElement(
         "g",
         { transform: `translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})` },
-        [createSVG(component.image, options)]
+        [createSVG(component.image, { ...options, pixelWidth: undefined, pixelHeight: undefined })]
       );
     }
     case "line": {
