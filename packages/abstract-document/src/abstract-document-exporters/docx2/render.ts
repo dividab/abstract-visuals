@@ -300,7 +300,7 @@ function renderTable(
         style: BorderStyle.NONE,
       },
     },
-    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
+    rows: table.headerRows.concat(table.children).map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
   });
 }
 
