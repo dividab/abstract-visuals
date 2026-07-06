@@ -74,6 +74,9 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
   const pageContentMargins = AD.LayoutFoundation.orDefault(section.page.style.contentMargins);
 
+  const hasFrontHeader = section.page.frontHeader !== undefined && section.page.frontHeader.length !== 0;
+  const hasFrontFooter = section.page.frontFooter !== undefined && section.page.frontFooter.length !== 0;
+  
   const contentAvailableWidth =
     pageWidth - (pageContentMargins.left + pageContentMargins.right);
 
@@ -84,12 +87,20 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
     return sofar;
   }, [] as Array<Paragraph | Table>);
 
-  const footerChildren = [
-    ...section.page.footer.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-      return sofar;
-    }, [] as Array<Paragraph | Table>),
-  ];
+  const firstpageHeaderChildren = hasFrontHeader ? section.page.frontHeader.reduce((sofar, c) => {
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    return sofar;
+  }, [] as Array<Paragraph | Table>) : [];
+
+  const footerChildren = section.page.footer.reduce((sofar, c) => {
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    return sofar;
+  }, [] as Array<Paragraph | Table>);
+
+  const firstPageFooterChildren = hasFrontFooter ? section.page.frontFooter.reduce((sofar, c) => {
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    return sofar;
+  }, [] as Array<Paragraph | Table>) : [];
 
   const contentChildren = [
     new Paragraph({
@@ -109,6 +120,7 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
 
   return {
     properties: {
+      titlePage: hasFrontHeader || hasFrontFooter,
       page: {
         size: {
           //DOC JS does the orientation after the width and height are set
@@ -131,11 +143,17 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
       default: new Header({
         children: headerChildren,
       }),
+      first: hasFrontHeader ? new Header({
+        children: firstpageHeaderChildren
+      }) : undefined
     },
     footers: {
       default: new Footer({
-        children: footerChildren,
+        children: footerChildren
       }),
+      first: hasFrontFooter ? new Footer({
+        children: firstPageFooterChildren
+      }) : undefined
     },
     children: contentChildren,
   };
