@@ -324,6 +324,8 @@ function renderCell(
   width: number,
   keepNext: boolean
 ): TableCell {
+  const abstractDocPxCellWidth = width / abstractDocPixelToDocxDXARatio;
+  
   const style = AD.Resources.getStyle(
     tableCellStyle,
     cell.style,
@@ -381,7 +383,7 @@ function renderCell(
     },
 
     children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, width, keepNext));
+      sofar.push(...renderSectionElement(c, resources, abstractDocPxCellWidth, keepNext));
       return sofar;
     }, [] as Array<Paragraph | Table>),
   });
