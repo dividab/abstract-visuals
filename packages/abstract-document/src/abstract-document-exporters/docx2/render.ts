@@ -72,6 +72,8 @@ function createDocument(doc: AD.AbstractDoc.AbstractDoc): Document {
 function renderSection(section: AD.Section.Section, parentResources: AD.Resources.Resources): ISectionOptions {
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
+  const pageHeaderMargins = AD.LayoutFoundation.orDefault(section.page.style.headerMargins)
+  const pageFooterMargins = AD.LayoutFoundation.orDefault(section.page.style.footerMargins)
   const pageContentMargins = AD.LayoutFoundation.orDefault(section.page.style.contentMargins);
 
   const hasFrontHeader = section.page.frontHeader !== undefined && section.page.frontHeader.length !== 0;
@@ -134,8 +136,8 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
           top: pageContentMargins.top * abstractDocPixelToDocxDXARatio,
           right: pageContentMargins.right * abstractDocPixelToDocxDXARatio,
           left: pageContentMargins.left * abstractDocPixelToDocxDXARatio,
-          header: pageContentMargins.top * abstractDocPixelToDocxDXARatio,
-          footer: pageContentMargins.bottom * abstractDocPixelToDocxDXARatio,
+          header: pageHeaderMargins.top * abstractDocPixelToDocxDXARatio,
+          footer: pageFooterMargins.bottom * abstractDocPixelToDocxDXARatio,
         },
       },
     },
