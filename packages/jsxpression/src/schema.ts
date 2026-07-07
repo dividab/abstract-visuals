@@ -36,6 +36,13 @@ export type ObjectPropertySchema = {
   shape: Record<string, PropertySchema>;
 };
 
+export type RecordPropertySchema = {
+  type: "record";
+  description?: string;
+  required?: boolean;
+  shape: PropertySchema;
+};
+
 export type UnionPropertySchema = {
   type: "union";
   description?: string;
@@ -56,6 +63,7 @@ export type PropertySchema =
   | BooleanPropertySchema
   | FunctionPropertySchema
   | ObjectPropertySchema
+  | RecordPropertySchema
   | ArrayPropertySchema
   | UnionPropertySchema;
 
