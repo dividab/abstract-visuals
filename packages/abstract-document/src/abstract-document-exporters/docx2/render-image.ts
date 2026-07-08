@@ -37,6 +37,7 @@ function abstractComponentToDocX(
       const transformation: IMediaTransformation = { width: rectWidth, height: rectHeight };
       if (component.data.type === "bytes" && (format === "png" || format === "jpg")) {
         return new ImageRun({
+          type: format,
           data: Buffer.from(
             component.data.bytes.buffer,
             component.data.bytes.byteOffset,
@@ -59,7 +60,7 @@ function abstractComponentToDocX(
         }
         const match = /^data:.+?;base64,(.*)$/.exec(component.data.url);
         if (match) {
-          return new ImageRun({ data: fromBase64(match[1]), transformation });
+          return new ImageRun({ type: "png", data: fromBase64(match[1]), transformation });
         }
       }
       break;

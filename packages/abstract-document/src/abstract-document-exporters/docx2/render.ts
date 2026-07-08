@@ -170,12 +170,12 @@ function renderHyperLink(
     text: hyperLink.text,
     font: style.fontFamily || "Helvetica",
     size: fontSize,
-    color: style.color || "blue",
+    color: style.color || "#0000ff",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-        color: style.color || "blue",
+        color: style.color || "#0000ff",
         type: UnderlineType.SINGLE,
       }
       : undefined,
@@ -184,12 +184,12 @@ function renderHyperLink(
   if (hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=")) {
     return new InternalHyperlink({
       anchor: hyperLink.target,
-      child: textRun,
+      children: [textRun],
     });
   } else {
     return new ExternalHyperlink({
       link: hyperLink.target,
-      child: textRun,
+      children: [textRun],
     });
   }
 }
@@ -270,32 +270,32 @@ function renderTable(
     },
     borders: {
       top: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       right: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       bottom: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       left: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       insideHorizontal: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       insideVertical: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
@@ -361,22 +361,22 @@ function renderCell(
     },
     borders: {
       top: {
-        color: style.borderColor ?? "",
+        color: style.borderColor ?? undefined,
         size: styleBorders.top,
         style: styleBorders.top ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       right: {
-        color: style.borderColor ?? "",
+        color: style.borderColor ?? undefined,
         size: styleBorders.right,
         style: styleBorders.right ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       bottom: {
-        color: style.borderColor ?? "",
+        color: style.borderColor ?? undefined,
         size: styleBorders.bottom,
         style: styleBorders.bottom ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       left: {
-        color: style.borderColor ?? "",
+        color: style.borderColor ?? undefined,
         size: styleBorders.left,
         style: styleBorders.left ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
@@ -468,7 +468,7 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
   return new TextRun({
     font: style.fontFamily || "Helvetica",
     size: fontSize,
-    color: style.color || "black",
+    color: style.color || "#000000",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
@@ -486,7 +486,7 @@ function renderTotalPages(style: AD.TextStyle.TextStyle): TextRun {
   return new TextRun({
     font: style.fontFamily || "Helvetica",
     size: fontSize,
-    color: style.color || "black",
+    color: style.color || "#000000",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
@@ -506,7 +506,7 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
     text: text,
     font: style.fontFamily || "Helvetica",
     size: fontSize,
-    color: style.color || "black",
+    color: style.color || "#000000",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
