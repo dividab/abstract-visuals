@@ -19,6 +19,11 @@ minimumReleaseAgeExclude:
   - abstract-document@19.1.20
   - abstract-image@13.0.48
   - jsxpression@0.1.35
+  - abstract-3d@2.6.4
+  - abstract-chart@12.0.64
+  - abstract-document@19.1.21
+  - abstract-image@13.0.49
+  - jsxpression@0.1.36
 
 overrides:
   three-stdlib: "^2.36.0"
