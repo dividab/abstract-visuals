@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type StringPropertySchema = {
   type: "string";
   format?: "color";
@@ -89,6 +91,80 @@ export interface Schema {
   data?: Record<string, PropertySchema>;
   elements?: Record<string, ElementSchema>;
   functions?: Record<string, FunctionSchema>;
+}
+
+export function serializePropertySchemaToJson(schema: PropertySchema): string {
+  return JSON.stringify(schema, null, 2);
+}
+
+export function deserializePropertySchemaFromJson(json: string): PropertySchema | undefined {
+  const zodSchema: z.ZodType<PropertySchema> = z.lazy(() =>
+    z.discriminatedUnion("type", [
+      z.object({
+        type: z.literal("string"),
+        format: z.literal("color").optional(),
+        description: z.string().optional(),
+        required: z.boolean().optional(),
+        default: z.string().optional(),
+        enum: z.array(z.string()).optional(),
+      }),
+      z.object({
+        type: z.literal("number"),
+        description: z.string().optional(),
+        required: z.boolean().optional(),
+        default: z.number().optional(),
+        enum: z.array(z.number()).optional(),
+      }),
+      z.object({
+        type: z.literal("boolean"),
+        description: z.string().optional(),
+        required: z.boolean().optional(),
+        default: z.boolean().optional(),
+        enum: z.array(z.boolean()).optional(),
+      }),
+      z.object({
+        type: z.literal("function"),
+        description: z.string().optional(),
+        required: z.boolean().optional(),
+      }),
+      z.object({
+        type: z.literal("object"),
+        description: z.string().optional(),
+        required: z.boolean().optional(),
+        shape: z.record(z.string(), zodSchema),
+      }),
+      z.object({
+        type: z.literal("record"),
+        description: z.string().optional(),
+        required: z.boolean().optional(),
+        shape: zodSchema,
+      }),
+      z.object({
+        type: z.literal("array"),
+        description: z.string().optional(),
+        required: z.boolean().optional(),
+        shape: zodSchema,
+      }),
+      z.object({
+        type: z.literal("union"),
+        description: z.string(),
+        required: z.boolean(),
+        shape: z.array(zodSchema),
+      }),
+    ])
+  );
+
+  let parsed = {};
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    return undefined;
+  }
+  const validated = zodSchema.safeParse(parsed);
+  if(!validated.success) {
+    return undefined;
+  }
+  return validated.data;
 }
 
 export function isElementAllowed(schema: Schema, tagName: string): boolean {

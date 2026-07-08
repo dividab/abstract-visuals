@@ -1,4 +1,10 @@
-export type { Schema, PropertySchema, FunctionSchema } from "./schema.js";
+export {
+  type Schema,
+  type PropertySchema,
+  type FunctionSchema,
+  serializePropertySchemaToJson,
+  deserializePropertySchemaFromJson
+} from "./schema.js";
 
 export { ParseError } from "./parse/index.js";
 export { CompilationError } from "./compile/index.js";

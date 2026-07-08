@@ -24,7 +24,8 @@
   "dependencies": {
     "acorn": "8.15.0",
     "acorn-typescript": "1.4.13",
-    "acorn-walk": "8.3.4"
+    "acorn-walk": "8.3.4",
+    "zod": "^4.4.3"
   },
   "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2"
 }
