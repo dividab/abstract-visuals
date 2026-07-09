@@ -154,7 +154,7 @@ export const testSimpleTableColSpanAndRowSpan: ExportTestDef = {
             </w:trPr>
             <w:tc>
               <w:tcPr>
-                <w:tcW w:type="dxa" w:w="3000"/>
+                <w:tcW w:type="dxa" w:w="5000"/>
                 <w:gridSpan w:val="2"/>
                 <w:tcBorders>
                   <w:top w:val="none" w:sz="0"/>
@@ -193,7 +193,7 @@ export const testSimpleTableColSpanAndRowSpan: ExportTestDef = {
             </w:tc>
             <w:tc>
               <w:tcPr>
-                <w:tcW w:type="dxa" w:w="2000"/>
+                <w:tcW w:type="dxa" w:w="1000"/>
                 <w:gridSpan w:val="1"/>
                 <w:vMerge w:val="restart"/>
                 <w:tcBorders>
@@ -412,7 +412,7 @@ export const testSimpleTableColSpanAndRowSpan: ExportTestDef = {
             </w:trPr>
             <w:tc>
               <w:tcPr>
-                <w:tcW w:type="dxa" w:w="3000"/>
+                <w:tcW w:type="dxa" w:w="5000"/>
                 <w:gridSpan w:val="2"/>
                 <w:vMerge w:val="restart"/>
                 <w:tcBorders>
@@ -452,7 +452,7 @@ export const testSimpleTableColSpanAndRowSpan: ExportTestDef = {
             </w:tc>
             <w:tc>
               <w:tcPr>
-                <w:tcW w:type="dxa" w:w="2000"/>
+                <w:tcW w:type="dxa" w:w="1000"/>
                 <w:gridSpan w:val="1"/>
                 <w:tcBorders>
                   <w:top w:val="none" w:sz="0"/>

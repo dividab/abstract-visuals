@@ -311,9 +311,28 @@ function renderRow(
   columnWidths: ReadonlyArray<number>,
   keepNext: boolean
 ): TableRow {
+  const children = row.children.reduce(
+    (acc, cell) => {
+      const span = cell.columnSpan ?? 1;
+
+      const width = columnWidths
+        .slice(acc.columnIndex, acc.columnIndex + span)
+        .reduce((a, b) => a + b, 0);
+
+      return {
+        columnIndex: acc.columnIndex + span,
+        children: [
+          ...acc.children,
+          renderCell(cell, resources, tableCellStyle, width, keepNext),
+        ],
+      };
+    },
+    { columnIndex: 0, children: [] as TableCell[] }
+  ).children;
+
   return new TableRow({
     cantSplit: true,
-    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix], keepNext)),
+    children: children,
   });
 }
 
