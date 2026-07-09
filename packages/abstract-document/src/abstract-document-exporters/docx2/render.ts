@@ -34,6 +34,7 @@ import { Readable } from "stream";
 
 const abstractDocToDocxFontRatio = 2;
 const abstractDocPixelToDocxDXARatio = 20;
+const abstractDocBorderToDocxBorderSizeRatio = 8;
 
 export function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc): Promise<Blob> {
   return new Promise((resolve) => {
@@ -381,22 +382,22 @@ function renderCell(
     borders: {
       top: {
         color: style.borderColor ?? undefined,
-        size: styleBorders.top,
+        size: styleBorders.top * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.top ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       right: {
         color: style.borderColor ?? undefined,
-        size: styleBorders.right,
+        size: styleBorders.right * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.right ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       bottom: {
         color: style.borderColor ?? undefined,
-        size: styleBorders.bottom,
+        size: styleBorders.bottom * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.bottom ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       left: {
         color: style.borderColor ?? undefined,
-        size: styleBorders.left,
+        size: styleBorders.left * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.left ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
     },
