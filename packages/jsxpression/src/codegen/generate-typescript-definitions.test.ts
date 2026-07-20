@@ -152,6 +152,25 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("const rec: Record<string, number>;");
     });
 
+    it("should generate element with record that has record as value", () => {
+      const schema: Schema = {
+        data: {
+          rec: {
+            type: "record",
+            shape: {
+              type: "record",
+              shape: {
+                type: "number"
+              }
+            }
+          },
+        },
+        elements: {}
+      };
+      const result = generateTypeScriptDefinitions(schema);
+      expect(result).toContain("const rec: Record<string, Record<string, number>>;");
+    });
+
     it("should generate element with array prop", () => {
       const schema: Schema = {
         data: {},
