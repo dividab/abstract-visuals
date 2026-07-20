@@ -1,6 +1,6 @@
 {
   "name": "abstract-image",
-  "version": "13.0.49",
+  "version": "13.0.50",
   "description": "Dynamically create images using code or JSX and render to any format",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-image",
   "main": "lib/index.js",
@@ -26,7 +26,7 @@
     "fast-xml-parser": "^4.5.0",
     "handlebars": "4.7.8",
     "handlebars-xml": "^0.4.5",
-    "jsxpression": "^0.1.36"
+    "jsxpression": "^0.1.37"
   },
   "peerDependencies": {
     "react": ">=17.0.0 <20.0.0"
