@@ -163,6 +163,9 @@ declare global {
     value: T;
   }
 
+  type Record<K extends keyof any, T> = {
+    [P in K]: T;
+  };
 `;
 
   for (const [namespace, schema] of Object.entries(builtins)) {
