@@ -132,7 +132,7 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
         []
       );
     }
-    case "text":
+    case "text": {
       if (!component.text) {
         return "";
       }
@@ -184,11 +184,11 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
                   "font-size": (component.fontSize * 0.8).toString(),
                   "alignment-baseline": alignmentBaseline,
                 },
-                [st]
+                [escapeXml(st)]
               )
             );
           } else {
-            tags.push(createElement("tspan", { "alignment-baseline": alignmentBaseline }, [st]));
+            tags.push(createElement("tspan", { "alignment-baseline": alignmentBaseline }, [escapeXml(st)]));
           }
           inside = !inside;
         }
@@ -209,6 +209,7 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
       }
       cs.push(createElement("text", { style: objectToAttributeValue(style), transform: transform }, tSpans));
       return cs.join();
+    }
     case "ellipse": {
       const dashStyle: Attributes =
         component.strokeDashStyle.dashes.length > 0
@@ -381,4 +382,13 @@ function colorToRgb(color: Color): string {
 
 function colorToOpacity(color: Color): string {
   return (color.a / 255).toString();
+}
+
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;") // the '&' must be replaced first
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
