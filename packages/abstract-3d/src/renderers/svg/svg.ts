@@ -2,7 +2,6 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 import {
   vec2,
   Scene,
-  View,
   Vec3,
   Mesh,
   vec3Rot,
@@ -20,12 +19,8 @@ import {
   bounds2ToSize,
   bounds2Merge,
   vec2Zero,
-  vec3Sub,
   vec3Flip,
-  vec3Add,
   vec2Add,
-  vec2Scale,
-  vec2Sub,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -114,9 +109,8 @@ function renderInternal(
   }
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
-  const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, unitRot);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
-    if (flipViews(d.views[0], cameraPos) === opts.view) {
+    if (d.views[0] === opts.view) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
@@ -180,22 +174,3 @@ function svgMesh(
       return exhaustiveCheck(mesh.geometry);
   }
 }
-
-const flipViews = (v: View | undefined, pos: Vec3): View | undefined => {
-  switch (v) {
-    case "front":
-      return pos.z < 0 ? "back" : "front";
-    case "back":
-      return pos.z < 0 ? "front" : "back";
-    case "right":
-      return pos.x < 0 ? "left" : "right";
-    case "left":
-      return pos.x < 0 ? "right" : "left";
-    case "top":
-      return pos.y < 0 ? "bottom" : "top";
-    case "bottom":
-      return pos.y < 0 ? "top" : "bottom";
-    default:
-      return v;
-  }
-};

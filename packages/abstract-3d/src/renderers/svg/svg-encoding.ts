@@ -1,6 +1,5 @@
 import {
   bounds2FromVec2Array,
-  equals,
   Hole,
   vec2,
   Vec2,
@@ -10,8 +9,6 @@ import {
   vec3,
   Vec3,
   vec3Rot,
-  vec3RotCombine,
-  vec3TransRot,
   vec3Zero,
 } from "../../abstract-3d.js";
 import { svgTrsMatrix } from "./svg-geometries/shared.js";

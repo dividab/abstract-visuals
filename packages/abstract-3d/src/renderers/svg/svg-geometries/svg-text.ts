@@ -12,8 +12,7 @@ export function text(
   parentRot: Vec3
 ): ReadonlyArray<zOrderElement> {
   const pos = vec3TransRot(t.pos, parentPos, parentRot);
-  const flippedViewRot = vec3Flip(rotationForCameraPos(opts.view));
-  const rot = vec3RotCombine(vec3RotCombine(parentRot, t.rot ?? vec3Zero), flippedViewRot);
+  const rot = vec3RotCombine(parentRot, t.rot ?? vec3Zero);
   const texts = Array<zOrderElement>();
   const fontSize = t.fontSize;
   const strings = t.text.split("\n");
