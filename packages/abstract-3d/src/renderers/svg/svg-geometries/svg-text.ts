@@ -1,4 +1,4 @@
-import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d.js";
+import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3, View } from "../../../abstract-3d.js";
 import { svgTrsMatrix, SvgOptions, zElem, zOrderElement } from "./shared.js";
 import { svgText } from "../svg-encoding.js";
 
@@ -18,10 +18,21 @@ export function text(
   const strings = t.text.split("\n");
   let posY = strings.length === 1 ? 0 : (fontSize * strings.length - fontSize) / 2;
   for (const s of strings) {
-    const matrix = svgTrsMatrix(point(pos.x, pos.y + posY), rot);
+    const matrix = svgTrsMatrix(point(pos.x, pos.y + posY), vec3RotCombine(rot, textViewRotation(opts.view)));
     texts.push(zElem(svgText(s, matrix, fill, opts.font, fontSize), pos.z));
     posY -= fontSize * 1.2;
   }
 
   return texts;
+}
+
+function textViewRotation(view: View): Vec3 {
+  switch(view) {
+    case "top":
+    case "right":
+    case "back":
+      return vec3(0, Math.PI, 0);
+    default:
+      return vec3Zero;
+  }
 }
