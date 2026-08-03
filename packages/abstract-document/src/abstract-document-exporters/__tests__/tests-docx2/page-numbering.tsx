@@ -1,4 +1,3 @@
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun, TextField } from "../../../abstract-document-jsx/index.js";
 

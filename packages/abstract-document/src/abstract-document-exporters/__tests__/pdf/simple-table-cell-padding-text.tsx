@@ -1,4 +1,3 @@
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
@@ -29,34 +28,34 @@ export const testSimpleTableCellPaddingText: ExportTestDef = {
         >
           <TableRow>
             <TableCell style={TableCellStyle.create({ padding: { left: 21, bottom: 0, right: 0, top: 0 } })}>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })}>
                 <TextRun text="LeftPadding" />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ padding: { left: 0, bottom: 21, right: 0, top: 21 } })}>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })}>
                 <TextRun text="TopBottomPadding" />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ padding: { left: 0, bottom: 0, right: 21, top: 0 } })}>
-              <Paragraph style={ParagraphStyle.create({ alignment: "End" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "End" })}>
                 <TextRun text="RightPadding" />
               </Paragraph>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })}>
                 <TextRun text="NoPadding" />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })}>
                 <TextRun text="NoPadding" />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "End" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "End" })}>
                 <TextRun text="NoPadding" />
               </Paragraph>
             </TableCell>

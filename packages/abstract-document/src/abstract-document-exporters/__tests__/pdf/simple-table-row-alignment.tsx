@@ -1,4 +1,3 @@
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
@@ -30,24 +29,22 @@ export const testSimpleTableRowAlignment: ExportTestDef = {
         >
           <TableRow>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
-                <TextRun
-                  text="Multiple lines to visualize other cells."
-                />
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })}>
+                <TextRun text="Multiple lines to visualize other cells." />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ verticalAlignment: "Top" })}>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })}>
                 <TextRun text="Top" />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ verticalAlignment: "Middle" })}>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })}>
                 <TextRun text="Middle" />
               </Paragraph>
             </TableCell>
             <TableCell style={TableCellStyle.create({ verticalAlignment: "Bottom" })}>
-              <Paragraph style={ParagraphStyle.create({ alignment: "End" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "End" })}>
                 <TextRun text="Bottom" />
               </Paragraph>
             </TableCell>

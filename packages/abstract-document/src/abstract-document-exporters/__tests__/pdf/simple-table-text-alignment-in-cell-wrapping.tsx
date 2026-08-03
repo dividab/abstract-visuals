@@ -1,4 +1,3 @@
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
@@ -29,24 +28,22 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
         >
           <TableRow>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Start" })}>
                 <TextRun text="Left placed text that wraps" />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })}>
                 <TextRun text="Center placed text that wraps" />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Justify" })} >
-                <TextRun
-                  text="Justify text to fill cell that wraps and fills two ligns"
-                />
+              <Paragraph style={ParagraphStyle.create({ alignment: "Justify" })}>
+                <TextRun text="Justify text to fill cell that wraps and fills two ligns" />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "End" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "End" })}>
                 <TextRun text="Right placed text that wraps" />
               </Paragraph>
             </TableCell>
@@ -76,57 +73,57 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
             y: 2.846,
             w: 3,
             l: 3.125,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 9.2,
             y: 0.044,
             w: 3,
             l: 3.163,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 12.344,
             y: 2.846,
             w: 3,
             l: 6.25,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 12.281,
             y: 0.044,
             w: 3,
             l: 6.331,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 18.594,
             y: 2.846,
             w: 3,
             l: 6.25,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 18.531,
             y: 0.044,
             w: 3,
             l: 6.331,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 24.844,
             y: 2.846,
             w: 3,
             l: 3.125,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 24.781,
             y: 0.044,
             w: 3,
             l: 3.206,
-            oc: "#000000"
-          }
+            oc: "#000000",
+          },
         ],
         VLines: [
           {
@@ -134,57 +131,57 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
             y: 0,
             w: 3,
             l: 2.909,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 9.262,
             y: 0,
             w: 3,
             l: 2.909,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 18.594,
             y: 0,
             w: 3,
             l: 2.909,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 12.344,
             y: 0,
             w: 3,
             l: 2.909,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 24.844,
             y: 0,
             w: 3,
             l: 2.909,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 18.594,
             y: 0,
             w: 3,
             l: 2.909,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 27.925,
             y: 0,
             w: 3,
             l: 2.909,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 24.844,
             y: 0,
             w: 3,
             l: 2.909,
-            oc: "#000000"
-          }
+            oc: "#000000",
+          },
         ],
         Fills: [],
         Texts: [
@@ -198,15 +195,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "Left%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 8.969,
@@ -218,15 +210,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "placed%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 8.969,
@@ -238,15 +225,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "text%20that%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 8.969,
@@ -258,15 +240,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "wraps",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 12.605,
@@ -278,15 +255,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "Center%20placed%20text%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 13.78,
@@ -298,15 +270,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "that%20wraps",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 18.344,
@@ -318,15 +285,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "Justify",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 20.466,
@@ -338,15 +300,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "text",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 21.818,
@@ -358,15 +315,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "to",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 22.703,
@@ -378,15 +330,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "fill",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 23.656,
@@ -398,15 +345,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "cell",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 18.344,
@@ -418,15 +360,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "that",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 19.92,
@@ -438,15 +375,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "wraps",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 22.115,
@@ -458,15 +390,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "and",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 23.691,
@@ -478,15 +405,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "fills",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 18.344,
@@ -498,15 +420,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "two",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 19.484,
@@ -518,15 +435,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "ligns",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 26.26,
@@ -538,15 +450,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "Right",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 25.878,
@@ -558,15 +465,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "placed",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 25.514,
@@ -578,15 +480,10 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "text%20that",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 26.058,
@@ -598,20 +495,15 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
               {
                 T: "wraps",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
-          }
+            oc: undefined,
+          },
         ],
         Fields: [],
-        Boxsets: []
-      }
+        Boxsets: [],
+      },
     ],
   },
 };

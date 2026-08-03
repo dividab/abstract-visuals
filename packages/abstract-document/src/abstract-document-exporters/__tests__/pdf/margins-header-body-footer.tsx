@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import * as AD from "../../../index.js";
 import { Paragraph, AbstractDoc, Section, TextRun, render } from "../../../abstract-document-jsx/index.js";
@@ -85,15 +84,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20header%20with%20padding.%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20(%20)%20%3D%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -105,15 +99,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -125,15 +114,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20footer%20with%20padding.%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -145,15 +129,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -165,15 +144,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -185,15 +159,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -205,15 +174,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -225,15 +189,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -245,15 +204,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -265,15 +219,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -285,15 +234,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -305,15 +249,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -325,15 +264,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -345,15 +279,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -365,15 +294,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -385,15 +309,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -405,15 +324,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -425,15 +339,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -445,15 +354,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -465,15 +369,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -485,15 +384,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -505,15 +399,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -525,15 +414,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -545,15 +429,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -565,15 +444,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -585,15 +459,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -605,15 +474,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -625,15 +489,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -645,15 +504,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -665,15 +519,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -685,15 +534,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -705,15 +549,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -725,15 +564,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -745,15 +579,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -765,15 +594,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -785,15 +609,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -805,15 +624,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -825,15 +639,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -845,15 +654,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -865,15 +669,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -885,15 +684,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -905,15 +699,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -925,15 +714,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -945,15 +729,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -965,19 +744,14 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
-          }
+            oc: undefined,
+          },
         ],
         Fields: [],
-        Boxsets: []
+        Boxsets: [],
       },
       {
         Width: 37.188,
@@ -996,15 +770,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20header%20with%20padding.%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20(%20)%20%3D%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1016,15 +785,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1036,15 +800,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20footer%20with%20padding.%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1056,15 +815,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1076,15 +830,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1096,15 +845,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1116,15 +860,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1136,15 +875,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1156,15 +890,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1176,15 +905,10 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "I%20am%20a%20body%20and%20I%20have%20padding%20a%20b%20c%20d%20e%20f%20g%20h%20i%20j%20k%20l%20m%20n%20o%20p%20q%20r%20s%20t%20u%20v%20x%20y%20z%20%C3%A5%20%C3%A4%20%C3%B6%201%202%203%204%205%206%207%208%209%200%20!%20%23%20%C2%A4%20%25%20%26%20%2F%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.875,
@@ -1196,20 +920,15 @@ export const testMarginsHeaderBodyFooter: ExportTestDef = {
               {
                 T: "(%20)%20%3D%20%3F",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
-          }
+            oc: undefined,
+          },
         ],
         Fields: [],
-        Boxsets: []
-      }
+        Boxsets: [],
+      },
     ],
   },
 };

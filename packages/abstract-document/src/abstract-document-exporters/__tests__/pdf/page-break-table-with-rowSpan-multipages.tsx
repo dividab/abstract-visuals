@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/comma-spacing */
 /* eslint-disable max-lines */
 /* eslint-disable functional/no-let */
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,

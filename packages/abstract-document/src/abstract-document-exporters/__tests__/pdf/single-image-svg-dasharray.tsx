@@ -1,4 +1,3 @@
-import React from "react";
 import * as AI from "abstract-image";
 import { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, Image } from "../../../abstract-document-jsx/index.js";

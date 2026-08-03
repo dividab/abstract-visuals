@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import {
   AbstractDoc as AbstractDoc1,
   Section as Section1,

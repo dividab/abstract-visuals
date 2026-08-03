@@ -1,4 +1,3 @@
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import { AbstractDoc, Section, Table, TableRow, TableCell } from "../../../abstract-document-jsx/index.js";
 import * as TableCellStyle from "../../../abstract-document/styles/table-cell-style.js";

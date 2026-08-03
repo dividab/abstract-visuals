@@ -1,5 +1,5 @@
 import { fromByteArray } from "base64-js";
-import React from "react";
+import type React from "react";
 import { AbstractImage } from "../model/abstract-image.js";
 import { createPoint, Point } from "../model/point.js";
 import { AbstractFontWeight, Component, GrowthDirection } from "../model/component.js";

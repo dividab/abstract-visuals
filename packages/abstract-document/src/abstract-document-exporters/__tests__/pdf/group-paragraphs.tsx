@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 

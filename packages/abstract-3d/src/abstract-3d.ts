@@ -1,5 +1,4 @@
 import type { AbstractImage } from "abstract-image";
-import type { ReactNode } from "react";
 
 export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??

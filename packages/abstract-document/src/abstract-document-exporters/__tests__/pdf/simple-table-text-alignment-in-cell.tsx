@@ -1,4 +1,3 @@
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
@@ -34,17 +33,17 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Center" })}>
                 <TextRun text="Center" />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "Justify" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "Justify" })}>
                 <TextRun text="Justify text to fill cell." />
               </Paragraph>
             </TableCell>
             <TableCell>
-              <Paragraph style={ParagraphStyle.create({ alignment: "End" })} >
+              <Paragraph style={ParagraphStyle.create({ alignment: "End" })}>
                 <TextRun text="Right" />
               </Paragraph>
             </TableCell>
@@ -74,57 +73,57 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
             y: 0.679,
             w: 3,
             l: 3.125,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 9.2,
             y: 0.044,
             w: 3,
             l: 3.163,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 12.344,
             y: 0.679,
             w: 3,
             l: 6.25,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 12.281,
             y: 0.044,
             w: 3,
             l: 6.331,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 18.594,
             y: 0.679,
             w: 3,
             l: 6.25,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 18.531,
             y: 0.044,
             w: 3,
             l: 6.331,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 24.844,
             y: 0.679,
             w: 3,
             l: 3.125,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 24.781,
             y: 0.044,
             w: 3,
             l: 3.206,
-            oc: "#000000"
-          }
+            oc: "#000000",
+          },
         ],
         VLines: [
           {
@@ -132,57 +131,57 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
             y: 0,
             w: 3,
             l: 0.741,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 9.262,
             y: 0,
             w: 3,
             l: 0.741,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 18.594,
             y: 0,
             w: 3,
             l: 0.741,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 12.344,
             y: 0,
             w: 3,
             l: 0.741,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 24.844,
             y: 0,
             w: 3,
             l: 0.741,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 18.594,
             y: 0,
             w: 3,
             l: 0.741,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 27.925,
             y: 0,
             w: 3,
             l: 0.741,
-            oc: "#000000"
+            oc: "#000000",
           },
           {
             x: 24.844,
             y: 0,
             w: 3,
             l: 0.741,
-            oc: "#000000"
-          }
+            oc: "#000000",
+          },
         ],
         Fills: [],
         Texts: [
@@ -196,15 +195,10 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               {
                 T: "Left",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 14.281,
@@ -216,15 +210,10 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               {
                 T: "Center",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 18.344,
@@ -236,15 +225,10 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               {
                 T: "Justify",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 20.276,
@@ -256,15 +240,10 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               {
                 T: "text",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 21.439,
@@ -276,15 +255,10 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               {
                 T: "to",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 22.134,
@@ -296,15 +270,10 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               {
                 T: "fill",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 22.897,
@@ -316,15 +285,10 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               {
                 T: "cell.",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 26.26,
@@ -336,20 +300,15 @@ export const testSimpleTableTextAlignmentInCell: ExportTestDef = {
               {
                 T: "Right",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
-          }
+            oc: undefined,
+          },
         ],
         Fields: [],
-        Boxsets: []
-      }
+        Boxsets: [],
+      },
     ],
   },
 };

@@ -1,4 +1,3 @@
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import * as AD from "../../../index.js";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../abstract-document-jsx/index.js";
@@ -43,15 +42,10 @@ export const testSingleTextRunWithAlignmentThatLinebreaks: ExportTestDef = {
               {
                 T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 12.793,
@@ -63,20 +57,15 @@ export const testSingleTextRunWithAlignmentThatLinebreaks: ExportTestDef = {
               {
                 T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20%20",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
-          }
+            oc: undefined,
+          },
         ],
         Fields: [],
-        Boxsets: []
-      }
+        Boxsets: [],
+      },
     ],
   },
 };

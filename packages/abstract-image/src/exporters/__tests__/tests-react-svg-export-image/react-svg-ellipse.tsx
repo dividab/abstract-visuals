@@ -1,4 +1,3 @@
-import * as React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import * as AbstractImage from "../../../index.js";
 

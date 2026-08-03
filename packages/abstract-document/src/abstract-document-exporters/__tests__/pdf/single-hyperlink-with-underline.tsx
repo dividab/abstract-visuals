@@ -1,4 +1,3 @@
-import React from "react";
 import * as AD from "../../../index.js";
 import { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, HyperLink } from "../../../abstract-document-jsx/index.js";

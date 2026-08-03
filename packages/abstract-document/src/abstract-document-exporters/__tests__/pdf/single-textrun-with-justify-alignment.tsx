@@ -1,4 +1,3 @@
-import React from "react";
 import { ExportTestDef } from "./_export-test-def.js";
 import * as AD from "../../../index.js";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../abstract-document-jsx/index.js";
@@ -43,15 +42,10 @@ export const testSingleTextRunWithJustifyAlignment: ExportTestDef = {
               {
                 T: "This",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 1.073,
@@ -63,15 +57,10 @@ export const testSingleTextRunWithJustifyAlignment: ExportTestDef = {
               {
                 T: "is",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 1.698,
@@ -83,15 +72,10 @@ export const testSingleTextRunWithJustifyAlignment: ExportTestDef = {
               {
                 T: "a",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
+            oc: undefined,
           },
           {
             x: 2.219,
@@ -103,20 +87,15 @@ export const testSingleTextRunWithJustifyAlignment: ExportTestDef = {
               {
                 T: "text",
                 S: -1,
-                TS: [
-                  0,
-                  13,
-                  0,
-                  0
-                ]
-              }
+                TS: [0, 13, 0, 0],
+              },
             ],
-            oc: undefined
-          }
+            oc: undefined,
+          },
         ],
         Fields: [],
-        Boxsets: []
-      }
+        Boxsets: [],
+      },
     ],
   },
 };
