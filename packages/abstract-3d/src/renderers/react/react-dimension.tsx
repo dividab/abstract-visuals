@@ -65,7 +65,7 @@ export function ReactDimension({
         };
         return d.views.every((cp) => cameraPositions[cp]);
       })();
-  });
+  }); 
   return (
     <group ref={ref} position={[d.pos.x, d.pos.y, d.pos.z]} rotation={[d.rot.x, d.rot.y, d.rot.z]}>
       <DimensionMeshes meshes={d.meshes}>{children}</DimensionMeshes>
