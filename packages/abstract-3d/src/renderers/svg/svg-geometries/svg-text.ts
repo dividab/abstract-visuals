@@ -1,6 +1,9 @@
-import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3, View, vec3Flip, rotationForCameraPos } from "../../../abstract-3d.js";
+import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3, View, vec3Flip, rotationForCameraPos, vec3Dot } from "../../../abstract-3d.js";
 import { svgTrsMatrix, SvgOptions, zElem, zOrderElement } from "./shared.js";
 import { svgText } from "../svg-encoding.js";
+
+const SVG_FORWARD: Vec3 = vec3(0.0, 0.0, 1.0);
+const SVG_DOT_OPPOSITE_THRESHOLD: number = -0.9;
 
 // dummy
 export function text(
@@ -13,6 +16,18 @@ export function text(
 ): ReadonlyArray<zOrderElement> {
   const pos = vec3TransRot(t.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, t.rot ?? vec3Zero);
+
+  const textForward = vec3TransRot(
+      { x: 0, y: 0, z: 1 },
+      vec3Zero,
+      rot,
+  );
+
+  //discard texts that are pointing away
+  if(vec3Dot(textForward, SVG_FORWARD) <= SVG_DOT_OPPOSITE_THRESHOLD) {
+    return [];
+  }
+
   const texts = Array<zOrderElement>();
   const fontSize = t.fontSize;
   const strings = t.text.split("\n");

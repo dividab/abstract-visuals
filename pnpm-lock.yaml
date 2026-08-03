@@ -122,8 +122,8 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4(@react-three/fiber@9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.184.0))(@types/three@0.180.0)(react@19.2.6)(three@0.184.0)
       abstract-image:
-        specifier: ^13.0.52
-        version: 13.0.52(react@19.2.6)
+        specifier: ^13.0.53
+        version: 13.0.53(react@19.2.6)
       suspend-react:
         specifier: ^0.1.3
         version: 0.1.3(react@19.2.6)
@@ -150,8 +150,8 @@ importers:
   packages/abstract-chart:
     dependencies:
       abstract-image:
-        specifier: ^13.0.52
-        version: 13.0.52(react@19.2.6)
+        specifier: ^13.0.53
+        version: 13.0.53(react@19.2.6)
       ts-exhaustive-check:
         specifier: ^1.0.0
         version: 1.0.0
@@ -159,8 +159,8 @@ importers:
   packages/abstract-document:
     dependencies:
       abstract-image:
-        specifier: ^13.0.52
-        version: 13.0.52(react@19.2.6)
+        specifier: ^13.0.53
+        version: 13.0.53(react@19.2.6)
       docx:
         specifier: ^6.0.3
         version: 6.0.3
@@ -297,17 +297,17 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^2.6.10
-        version: 2.6.10(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: ^2.6.11
+        version: 2.6.11(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       abstract-chart:
-        specifier: ^12.0.67
-        version: 12.0.67(react@19.2.6)
+        specifier: ^12.0.68
+        version: 12.0.68(react@19.2.6)
       abstract-document:
-        specifier: ^19.1.24
-        version: 19.1.24(react@19.2.6)
+        specifier: ^19.1.25
+        version: 19.1.25(react@19.2.6)
       abstract-image:
-        specifier: ^13.0.52
-        version: 13.0.52(react@19.2.6)
+        specifier: ^13.0.53
+        version: 13.0.53(react@19.2.6)
       abstract-sheet:
         specifier: ^1.1.23
         version: 1.1.23(react@19.2.6)
@@ -2198,21 +2198,21 @@ packages:
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
 
-  abstract-3d@2.6.10:
-    resolution: {integrity: sha512-A3LhRz+u02fLHQtEi9lfwRTu6XJCXcXBpLbQ3ad0jyVxO0AHSTqgB4TstX3Jep44JaInBqGlFdxdWg10EJjhTw==}
+  abstract-3d@2.6.11:
+    resolution: {integrity: sha512-U7n+uwR9LYpDPHLTEkqCUSNFXS7vAx3kljYozRYUz3qDNJfnX9z6v0VOrJH5wpE2fInF189qAnLevIw/iw61rQ==}
     peerDependencies:
       react: ^19.2.0
 
-  abstract-chart@12.0.67:
-    resolution: {integrity: sha512-tm+Rjx5OUD3vikQJG9p+cGI01qZ6wLydGK5YV+Q4Myapk/tCHpkAgK033X0dSXoFFey7yAGiFrcywQ2WmILO4g==}
+  abstract-chart@12.0.68:
+    resolution: {integrity: sha512-RKmjTYzCQe51yMnow3OxzT21gxHGb1FX4uBuR6P/WC7SxbgrtWkK3VgX9HVeq0M9pBhPwoTLG77fa0r4cjAWMQ==}
 
-  abstract-document@19.1.24:
-    resolution: {integrity: sha512-Fd4IOd/zE1p9ogg0bbGB+q1SmtrLWhyxdTdG7/mXMKDruiKZuxmTeEJNDRIZnGfyJdIPTvWqOT1IgMjhBZfkPA==}
+  abstract-document@19.1.25:
+    resolution: {integrity: sha512-bkzdjoSaZxI8Ac5liSckTYxh0cMYlISbcMzAvmFsoPd79/RPxF35/FyvbUwFyEhLTw2qyC866Y/kota1eYEblA==}
     peerDependencies:
       react: '>=17.0.0 <20.0.0'
 
-  abstract-image@13.0.52:
-    resolution: {integrity: sha512-ceUYcV3rYagbJxHPy2N6FgG8PfMexyz6GFo5Di7IRlkCxwhCPuREubZqC8qPERqjeXwW5CcTCgFhyZG3r86Jmw==}
+  abstract-image@13.0.53:
+    resolution: {integrity: sha512-myGRYOkQeX06ZM6S8aY2hLwaPvJLJoxD6ckeGwaugSSo1M29ZKhBMHqdwoD8KzPoPFSojMyePaycTgkeQjXUJw==}
     peerDependencies:
       react: '>=17.0.0 <20.0.0'
 
@@ -9490,12 +9490,12 @@ snapshots:
 
   abbrev@1.1.1: {}
 
-  abstract-3d@2.6.10(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  abstract-3d@2.6.11(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
       '@react-three/drei': 10.7.7(@react-three/fiber@9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.184.0))(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.184.0)
       '@react-three/fiber': 9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.184.0)
       '@react-three/postprocessing': 3.0.4(@react-three/fiber@9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.184.0))(@types/three@0.180.0)(react@19.2.6)(three@0.184.0)
-      abstract-image: 13.0.52(react@19.2.6)
+      abstract-image: 13.0.53(react@19.2.6)
       react: 19.2.6
       suspend-react: 0.1.3(react@19.2.6)
       three: 0.184.0
@@ -9511,16 +9511,16 @@ snapshots:
       - react-dom
       - react-native
 
-  abstract-chart@12.0.67(react@19.2.6):
+  abstract-chart@12.0.68(react@19.2.6):
     dependencies:
-      abstract-image: 13.0.52(react@19.2.6)
+      abstract-image: 13.0.53(react@19.2.6)
       ts-exhaustive-check: 1.0.0
     transitivePeerDependencies:
       - react
 
-  abstract-document@19.1.24(react@19.2.6):
+  abstract-document@19.1.25(react@19.2.6):
     dependencies:
-      abstract-image: 13.0.52(react@19.2.6)
+      abstract-image: 13.0.53(react@19.2.6)
       docx: 6.0.3
       fast-xml-parser: 4.5.0
       handlebars: 4.7.8
@@ -9534,7 +9534,7 @@ snapshots:
       ts-exhaustive-check: 1.0.0
       unified: 6.2.0
 
-  abstract-image@13.0.52(react@19.2.6):
+  abstract-image@13.0.53(react@19.2.6):
     dependencies:
       base64-js: 1.5.1
       fast-xml-parser: 4.5.0
