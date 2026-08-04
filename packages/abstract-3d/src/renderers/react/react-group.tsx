@@ -11,7 +11,7 @@ import { ReactPopover } from "./react-types.js";
 export function ReactGroup({
   g,
   materialStateImages,
-  hoveredIdExternal,
+  hoveredIdsExternal,
   selectedIds,
   hotSpotsActive,
   activeComponents,
@@ -27,7 +27,7 @@ export function ReactGroup({
 }: {
   readonly g: Group_1;
   readonly materialStateImages?: Record<string, string>;
-  readonly hoveredIdExternal: string | undefined;
+  readonly hoveredIdsExternal: ReadonlyArray<string> | undefined;
   readonly hoveredParent?: boolean;
   readonly selectedIds: Record<string, boolean> | undefined;
   readonly hotSpotsActive: boolean;
@@ -80,7 +80,7 @@ export function ReactGroup({
     }
   });
   const [hovered, setHovered] = React.useState<boolean>(false);
-  const hoveredFinal = hovered || hoveredIdExternal === id || !!hoveredParent;
+  const hoveredFinal = hovered || (id && hoveredIdsExternal?.includes(id)) || !!hoveredParent;
   const selected = selectedIds?.[id ?? ""];
 
   const materialState = activeComponents?.[id ?? ""];
@@ -129,7 +129,7 @@ export function ReactGroup({
           hotSpotsActive={hotSpotsActive}
           activeComponents={activeComponents}
           materialStateImages={materialStateImages}
-          hoveredIdExternal={hoveredIdExternal}
+          hoveredIdsExternal={hoveredIdsExternal}
           hoveredParent={hoveredFinal}
           onClickGroup={onClickGroup}
           onHoverGroup={(hId, rData, data, e) => {

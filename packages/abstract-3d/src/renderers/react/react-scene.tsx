@@ -13,7 +13,7 @@ export type SceneMouseEvent = ThreeEvent<MouseEvent>;
 export function ReactScene({
   scene,
   selectedIds,
-  hoveredIdExternal,
+  hoveredIdsExternal,
   activeHotSpots,
   activeComponents,
   hotSpotTexts,
@@ -32,7 +32,7 @@ export function ReactScene({
 }: {
   readonly scene: Scene;
   readonly selectedIds: Record<string, boolean> | undefined;
-  readonly hoveredIdExternal: string | undefined;
+  readonly hoveredIdsExternal: ReadonlyArray<string> | undefined;
   readonly activeHotSpots: Record<string, HotSpotInfo> | undefined;
   readonly activeComponents: Record<string, MaterialState> | undefined;
   readonly showHotSpotTexts: boolean;
@@ -89,7 +89,7 @@ export function ReactScene({
             hotSpotsActive={activeHotSpots !== undefined}
             activeComponents={activeComponents}
             materialStateImages={materialStateImages}
-            hoveredIdExternal={hoveredIdExternal}
+            hoveredIdsExternal={hoveredIdsExternal}
             onClickGroup={onClickGroup}
             onHoverGroup={onHoverGroup}
             onContextMenuGroup={onContextMenuGroup}
