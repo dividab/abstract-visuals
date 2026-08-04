@@ -96,8 +96,10 @@ function renderInternal(
     rotation: options?.rotation ?? 0,
     imageBg: options?.imageBg ?? false,
   };
-  const baseRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
-  const unitRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), baseRot) : baseRot;
+  const cameraRot = rotationForCameraPos(opts.view);
+  const viewRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), cameraRot) : cameraRot;
+  const unitRot = vec3RotCombine(viewRot, scene.rotation_deprecated ?? vec3Zero);
+
   const unitCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, rotationForCameraPos(opts.view));
   const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
   const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
@@ -112,14 +114,43 @@ function renderInternal(
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
 
-  const reverseSceneRot = vec3RotInverse(scene.rotation_deprecated ?? vec3Zero);
+  const cameraPositionForView = (view: View): Vec3 => {
+		switch (view) {
+			case "front":
+				return vec3(0, 0, 1);
+			case "back":
+				return vec3(0, 0, -1);
+			case "top":
+				return vec3(0, 1, 0);
+			case "bottom":
+				return vec3(0, -1, 0);
+			case "right":
+				return vec3(1, 0, 0);
+			case "left":
+				return vec3(-1, 0, 0);
+      default:
+        return vec3(0, 0, 1);
+		}
+	};
+
+	const cam = vec3Rot(
+		cameraPositionForView(opts.view),
+		vec3Zero,
+		scene.rotation_deprecated ?? vec3Zero
+	);
+
+	const visibleViews = {
+  	[cam.x >= 0 ? "right" : "left"]: opts.view === "right" || opts.view === "left",
+		[cam.y >= 0 ? "top" : "bottom"]: opts.view === "top" || opts.view === "bottom",
+		[cam.z >= 0 ? "front" : "back"]: opts.view === "front" || opts.view === "back",
+	};
+
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
-    if(d.views[0] === opts.view) {
+    if(d.views[0] && visibleViews[d.views[0]] === true) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
-      const rot = vec3RotCombine(unitRot, d.rot);
+			const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
-        const r = m.geometry.type === "Text" ? vec3RotCombine(rot, reverseSceneRot) : rot;
-        elements.push(...svgMesh(m, pos, r, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
+        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
       }
     }
   }

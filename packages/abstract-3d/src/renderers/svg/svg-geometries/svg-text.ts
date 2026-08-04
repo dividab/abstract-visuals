@@ -1,4 +1,4 @@
-import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3, View, vec3Flip, rotationForCameraPos, vec3Dot } from "../../../abstract-3d.js";
+import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3, View, vec3Flip, rotationForCameraPos, vec3Dot, vec3Rot } from "../../../abstract-3d.js";
 import { svgTrsMatrix, SvgOptions, zElem, zOrderElement } from "./shared.js";
 import { svgText } from "../svg-encoding.js";
 
@@ -17,7 +17,7 @@ export function text(
   const pos = vec3TransRot(t.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, t.rot ?? vec3Zero);
 
-  const textForward = vec3TransRot(
+  const textForward = vec3Rot(
       { x: 0, y: 0, z: 1 },
       vec3Zero,
       rot,
