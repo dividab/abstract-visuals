@@ -660,6 +660,46 @@ export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
   return vec3(Math.atan2(m32, m22), ey, 0);
 }
 
+export function vec3RotInverse(rotation: Vec3): Vec3 {
+  const c1 = Math.cos(rotation.x / 2),
+    s1 = Math.sin(rotation.x / 2);
+  const c2 = Math.cos(rotation.y / 2),
+    s2 = Math.sin(rotation.y / 2);
+  const c3 = Math.cos(rotation.z / 2),
+    s3 = Math.sin(rotation.z / 2);
+
+  // Euler -> Quaternion
+  const qx = -(s1 * c2 * c3 + c1 * s2 * s3);
+  const qy = -(c1 * s2 * c3 - s1 * c2 * s3);
+  const qz = -(c1 * c2 * s3 + s1 * s2 * c3);
+  const qw = c1 * c2 * c3 - s1 * s2 * s3;
+
+  // Quaternion -> Euler
+  const m11 = 1 - 2 * (qy * qy + qz * qz);
+  const m12 = 2 * (qx * qy - qw * qz);
+  const m13 = 2 * (qx * qz + qw * qy);
+  const m22 = 1 - 2 * (qx * qx + qz * qz);
+  const m23 = 2 * (qy * qz - qw * qx);
+  const m32 = 2 * (qy * qz + qw * qx);
+  const m33 = 1 - 2 * (qx * qx + qy * qy);
+
+  const ey = Math.asin(Math.max(-1, Math.min(1, m13)));
+
+  if (Math.abs(m13) < 0.9999999) {
+    return vec3(
+      Math.atan2(-m23, m33),
+      ey,
+      Math.atan2(-m12, m11),
+    );
+  }
+
+  return vec3(
+    Math.atan2(m32, m22),
+    ey,
+    0,
+  );
+}
+
 export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
   if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) return point;
   const c1 = Math.cos(rotation.x / 2),

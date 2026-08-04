@@ -22,6 +22,7 @@ import {
   vec3Flip,
   vec2Add,
   View,
+  vec3RotInverse,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -110,22 +111,15 @@ function renderInternal(
   }
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
-  const cameraPos = vec3Rot(vec3(1, 1, 1), vec3Zero, unitRot);
 
-  const cam = vec3TransRot(cameraPos, vec3Flip(scene.center_deprecated ?? vec3Zero), scene.rotation_deprecated ?? vec3Zero);
-  const cameraPositions = {
-    [cam.x >= 0 ? "left" : "right"]: true,
-    [cam.y >= 0 ? "top" : "bottom"]: true,
-    [cam.z >= 0 ? "front" : "back"]: true,
-  };
-
+  const reverseSceneRot = vec3RotInverse(scene.rotation_deprecated ?? vec3Zero);
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
-    if(d.views[0] && d.views[0] in cameraPositions) {
-      console.log(d.views[0], d.meshes.length);
+    if(d.views[0] === opts.view) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
-        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
+        const r = m.geometry.type === "Text" ? vec3RotCombine(rot, reverseSceneRot) : rot;
+        elements.push(...svgMesh(m, pos, r, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
       }
     }
   }
