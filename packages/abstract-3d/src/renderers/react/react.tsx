@@ -14,7 +14,7 @@ type ReactProps = {
   readonly selectedIds: Record<string, boolean> | undefined;
   readonly activeHotSpots?: Record<string, HotSpotInfo> | undefined;
   readonly activeComponents?: Record<string, MaterialState> | undefined;
-  readonly hoveredIdExternal?: string | undefined;
+  readonly hoveredIdsExternal?: ReadonlyArray<string> | undefined;
   readonly showHotSpotTexts?: boolean;
   readonly showDimensions?: boolean;
   readonly hotSpotTexts?: Record<string, string>;
@@ -64,7 +64,7 @@ export const render = memo(
     useOldMode,
     activeHotSpots,
     activeComponents,
-    hoveredIdExternal,
+    hoveredIdsExternal,
     hotSpotTexts,
     popovers: reactPopovers,
     showHotSpotTexts = false,
@@ -151,7 +151,7 @@ export const render = memo(
             activeComponents={activeComponents}
             showDimensions={showDimensions}
             showHotSpotTexts={showHotSpotTexts}
-            hoveredIdExternal={hoveredIdExternal}
+            hoveredIdsExternal={hoveredIdsExternal}
             hotSpotTexts={hotSpotTexts}
             reactPopovers={reactPopovers}
             materialStateImages={materialStateImages}
