@@ -99,6 +99,7 @@ function renderInternal(
   const cameraRot = rotationForCameraPos(opts.view);
   const viewRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), cameraRot) : cameraRot;
   const unitRot = vec3RotCombine(viewRot, scene.rotation_deprecated ?? vec3Zero);
+  const textCorrection = dimensionTextCorrection(viewRot, unitRot);
 
   const unitCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, rotationForCameraPos(opts.view));
   const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
@@ -133,6 +134,13 @@ function renderInternal(
 		}
 	};
 
+  console.log({
+    view: opts.view,
+    sceneRotation: scene.rotation_deprecated,
+    textCorrection,
+    textCorrectionDegrees: textCorrection * 180 / Math.PI,
+  });
+
 	const cam = vec3Rot(
 		cameraPositionForView(opts.view),
 		vec3Zero,
@@ -150,7 +158,7 @@ function renderInternal(
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
 			const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
-        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
+        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts, textCorrection));
       }
     }
   }
@@ -182,7 +190,8 @@ function svgMesh(
   parentRot: Vec3,
   point: (x: number, y: number) => Vec2,
   material: Material,
-  opts: SvgOptions
+  opts: SvgOptions,
+  textCorrection: number = 0
 ): ReadonlyArray<zOrderElement> {
   switch (mesh.geometry.type) {
     case "Box":
@@ -200,7 +209,7 @@ function svgMesh(
     case "Shape":
       return shape(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Text":
-      return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot);
+      return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot, textCorrection);
     case "Image":
       return image(mesh.geometry, point, opts, parentPos, parentRot);
     case "Tube":
@@ -209,4 +218,62 @@ function svgMesh(
     default:
       return exhaustiveCheck(mesh.geometry);
   }
+}
+
+function signedAngle2D(from: Vec2, to: Vec2): number {
+  const fromLength = Math.hypot(from.x, from.y);
+  const toLength = Math.hypot(to.x, to.y);
+
+  if (fromLength < 1e-6 || toLength < 1e-6) {
+    return 0;
+  }
+
+  const fromX = from.x / fromLength;
+  const fromY = from.y / fromLength;
+  const toX = to.x / toLength;
+  const toY = to.y / toLength;
+
+  const dot = fromX * toX + fromY * toY;
+  const cross = fromX * toY - fromY * toX;
+
+  return Math.atan2(cross, dot);
+}
+
+function dimensionTextCorrection(
+  viewRot: Vec3,
+  unitRot: Vec3
+): number {
+  /*
+   * Find the 3D direction that normally appears as page-up
+   * for this view.
+   *
+   * viewRot transforms it into camera-space +Y, which later
+   * becomes SVG -Y through point().
+   */
+  const pageUpInSceneSpace = vec3Rot(
+    vec3(0, 1, 0),
+    vec3Zero,
+    vec3RotInverse(viewRot)
+  );
+
+  /*
+   * Now apply the actual view + scene rotation.
+   */
+  const transformedPageUp = vec3Rot(
+    pageUpInSceneSpace,
+    vec3Zero,
+    unitRot
+  );
+
+  /*
+   * Convert to SVG coordinates. SVG Y points downward.
+   */
+  const actualSvgUp = vec2(
+    transformedPageUp.x,
+    -transformedPageUp.y
+  );
+
+  const desiredSvgUp = vec2(0, -1);
+
+  return signedAngle2D(actualSvgUp, desiredSvgUp);
 }

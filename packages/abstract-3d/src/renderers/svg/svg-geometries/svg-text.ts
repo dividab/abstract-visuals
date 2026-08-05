@@ -12,10 +12,12 @@ export function text(
   fill: string,
   opts: SvgOptions,
   parentPos: Vec3,
-  parentRot: Vec3
+  parentRot: Vec3,
+  textCorrection: number = 0,
 ): ReadonlyArray<zOrderElement> {
   const pos = vec3TransRot(t.pos, parentPos, parentRot);
-  const rot = vec3RotCombine(parentRot, t.rot ?? vec3Zero);
+  const correctonRot = vec3(0, 0, textCorrection)
+  const rot = vec3RotCombine(parentRot, vec3RotCombine(t.rot ?? vec3Zero, correctonRot));
 
   const textForward = vec3Rot(
       { x: 0, y: 0, z: 1 },
