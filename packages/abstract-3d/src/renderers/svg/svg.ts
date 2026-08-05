@@ -134,13 +134,6 @@ function renderInternal(
 		}
 	};
 
-  console.log({
-    view: opts.view,
-    sceneRotation: scene.rotation_deprecated,
-    textCorrection,
-    textCorrectionDegrees: textCorrection * 180 / Math.PI,
-  });
-
 	const cam = vec3Rot(
 		cameraPositionForView(opts.view),
 		vec3Zero,
@@ -243,31 +236,18 @@ function dimensionTextCorrection(
   viewRot: Vec3,
   unitRot: Vec3
 ): number {
-  /*
-   * Find the 3D direction that normally appears as page-up
-   * for this view.
-   *
-   * viewRot transforms it into camera-space +Y, which later
-   * becomes SVG -Y through point().
-   */
   const pageUpInSceneSpace = vec3Rot(
     vec3(0, 1, 0),
     vec3Zero,
     vec3RotInverse(viewRot)
   );
 
-  /*
-   * Now apply the actual view + scene rotation.
-   */
   const transformedPageUp = vec3Rot(
     pageUpInSceneSpace,
     vec3Zero,
     unitRot
   );
 
-  /*
-   * Convert to SVG coordinates. SVG Y points downward.
-   */
   const actualSvgUp = vec2(
     transformedPageUp.x,
     -transformedPageUp.y
