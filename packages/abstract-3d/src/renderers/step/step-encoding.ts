@@ -17,18 +17,18 @@ const mutate = (step: string, m: MutableStep): number => {
   }
 };
 
-const stepNumber = (num: number): string => {
+const stepNumber = (num: number): number => {
   const absNum = Math.abs(num);
   if(absNum < STEP_NUMBER_EPSILON) {
-    return "0.0";
+    return 0.0;
   }
 
   const roundNum = Math.round(num);
   if(Math.abs(absNum - Math.abs(roundNum)) < STEP_NUMBER_EPSILON) {
-    return roundNum.toFixed(3);
+    return roundNum;
   }
 
-  return num.toFixed(3);
+  return num;
 }
 
 export const HEADER = (date: string): string =>
@@ -112,7 +112,10 @@ export const PCURVE = (
 ): number => mutate(`PCURVE('',#${CYLINDRICAL_SURFACE_or_PLANE},#${DEFINITIONAL_REPRESENTATION})`, m);
 
 export const CYLINDRICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, radius: number, m: MutableStep): number =>
-  mutate(`CYLINDRICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${radius})`, m);
+  mutate(`CYLINDRICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${stepNumber(radius)})`, m);
+
+export const CONICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, radius: number, semiAngle: number, m: MutableStep): number =>
+  mutate(`CONICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${stepNumber(radius)},${stepNumber(semiAngle)})`, m);
 
 export const DEFINITIONAL_REPRESENTATION = (LINEorCircle: number, m: MutableStep): number =>
   mutate(`DEFINITIONAL_REPRESENTATION('',(#${LINEorCircle}),#7)`, m);

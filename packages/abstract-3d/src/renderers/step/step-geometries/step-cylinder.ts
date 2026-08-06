@@ -20,6 +20,7 @@ import {
   CIRCLE,
   CLOSED_SHELL,
   COLOUR_RGB,
+  CONICAL_SURFACE,
   CURVE_STYLE,
   CYLINDRICAL_SURFACE,
   DIRECTION,
@@ -51,6 +52,7 @@ import {
 } from "../step-encoding.js";
 
 const SMALLEST_RADIUS = 1e-4;
+const GEOMETRY_EPSILON = 1e-12;
 
 export function stepCylinder(
   c: Cylinder,
@@ -60,154 +62,354 @@ export function stepCylinder(
   m: MutableStep,
   rSmall?: number
 ): void {
-  const r = c.radius;
-  const r2 = Math.max(rSmall ?? c.radius, SMALLEST_RADIUS);
   const h = c.length;
-  const pos = vec3TransRot(c.pos, parentPos, parentRot);
-  const rotation = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
 
-  const rot = (v: Vec3): Vec3 => vec3Rot(v, vec3Zero, rotation);
-  const upNormal = rot(vec3(0, 1, 0));
-  const downNormal = rot(vec3(0, -1, 0));
-  const circleTop = rot(vec3(0, h / 2, 0));
-  const circleBot = rot(vec3(0, -h / 2, 0));
-  const v1 = rot(vec3(r2, h / 2, 0));
-  const v2 = rot(vec3(r, -h / 2, 0));
+  if (h <= GEOMETRY_EPSILON) {
+    return;
+  }
+
+  const bottomRadius = Math.max(c.radius, SMALLEST_RADIUS);
+  const requestedTopRadius = Math.max(
+    rSmall ?? c.radius,
+    SMALLEST_RADIUS
+  );
+
+  const radiusTolerance =
+    GEOMETRY_EPSILON *
+    Math.max(1, bottomRadius, requestedTopRadius);
+
+  const isCylinder =
+    Math.abs(requestedTopRadius - bottomRadius) <= radiusTolerance;
+
+  const topRadius = isCylinder
+    ? bottomRadius
+    : requestedTopRadius;
+
+  const pos = vec3TransRot(c.pos, parentPos, parentRot);
+  const rotation = vec3RotCombine(
+    parentRot,
+    c.rot ?? vec3Zero
+  );
+
+  const rot = (v: Vec3): Vec3 =>
+    vec3Rot(v, vec3Zero, rotation);
+
+  const axis = rot(vec3(0, 1, 0));
+  const radial = rot(vec3(1, 0, 0));
+
+  const bottomCenter = vec3Add(
+    pos,
+    rot(vec3(0, -h / 2, 0))
+  );
+
+  const topCenter = vec3Add(
+    pos,
+    rot(vec3(0, h / 2, 0))
+  );
+
+  const bottomSeamPoint = vec3Add(
+    pos,
+    rot(vec3(bottomRadius, -h / 2, 0))
+  );
+
+  const topSeamPoint = vec3Add(
+    pos,
+    rot(vec3(topRadius, h / 2, 0))
+  );
+
+  const seamDelta = vec3(
+    topSeamPoint.x - bottomSeamPoint.x,
+    topSeamPoint.y - bottomSeamPoint.y,
+    topSeamPoint.z - bottomSeamPoint.z
+  );
+
+  const seamLength = Math.hypot(
+    seamDelta.x,
+    seamDelta.y,
+    seamDelta.z
+  );
+
+  if (seamLength <= GEOMETRY_EPSILON) {
+    return;
+  }
+
+  const seamDirection = vec3(
+    seamDelta.x / seamLength,
+    seamDelta.y / seamLength,
+    seamDelta.z / seamLength
+  );
 
   const applicationContext = APPLICATION_CONTEXT(m);
-  APPLICATION_PROTOCOL_DEFINITION(applicationContext, m);
-
-  const ecurve0 = EDGE_CURVE(
-    VERTEX_POINT(CARTESIAN_POINT(vec3Add(pos, v2), m), m),
-    VERTEX_POINT(CARTESIAN_POINT(vec3Add(pos, v1), m), m),
-    LINE(CARTESIAN_POINT(vec3Add(pos, v2), m), VECTOR(DIRECTION(upNormal, m), m), m),
-    m,
-    "T"
-  );
-
-  const ecurve1 = EDGE_CURVE(
-    VERTEX_POINT(CARTESIAN_POINT(vec3Add(pos, v2), m), m),
-    VERTEX_POINT(CARTESIAN_POINT(vec3Add(pos, v2), m), m),
-    CIRCLE(
-      AXIS2_PLACEMENT_3D(
-        CARTESIAN_POINT(vec3Add(pos, circleBot), m),
-        DIRECTION(upNormal, m),
-        DIRECTION(vec3(0, 1, 0), m),
-        m
-      ),
-      r,
-      m
-    ),
-    m,
-    "T"
-  );
-
-  const ecurve2 = EDGE_CURVE(
-    VERTEX_POINT(CARTESIAN_POINT(vec3Add(pos, v1), m), m),
-    VERTEX_POINT(CARTESIAN_POINT(vec3Add(pos, v1), m), m),
-    CIRCLE(
-      AXIS2_PLACEMENT_3D(
-        CARTESIAN_POINT(vec3Add(pos, circleTop), m),
-        DIRECTION(upNormal, m),
-        DIRECTION(vec3(0, 1, 0), m),
-        m
-      ),
-      r2,
-      m
-    ),
+  APPLICATION_PROTOCOL_DEFINITION(
+    applicationContext,
     m
+  );
+
+  const axisDirection = DIRECTION(axis, m);
+  const radialDirection = DIRECTION(radial, m);
+
+  const bottomCenterPoint = CARTESIAN_POINT(
+    bottomCenter,
+    m
+  );
+
+  const topCenterPoint = CARTESIAN_POINT(
+    topCenter,
+    m
+  );
+
+  const bottomSeamCartesianPoint = CARTESIAN_POINT(
+    bottomSeamPoint,
+    m
+  );
+
+  const topSeamCartesianPoint = CARTESIAN_POINT(
+    topSeamPoint,
+    m
+  );
+
+  const bottomVertex = VERTEX_POINT(
+    bottomSeamCartesianPoint,
+    m
+  );
+
+  const topVertex = VERTEX_POINT(
+    topSeamCartesianPoint,
+    m
+  );
+
+  const bottomPlacement = AXIS2_PLACEMENT_3D(
+    bottomCenterPoint,
+    axisDirection,
+    radialDirection,
+    m
+  );
+
+  const topPlacement = AXIS2_PLACEMENT_3D(
+    topCenterPoint,
+    axisDirection,
+    radialDirection,
+    m
+  );
+
+  const seamEdge = EDGE_CURVE(
+    bottomVertex,
+    topVertex,
+    LINE(
+      bottomSeamCartesianPoint,
+      VECTOR(
+        DIRECTION(seamDirection, m),
+        m
+      ),
+      m
+    ),
+    m,
+    "T"
+  );
+
+  const bottomCircleEdge = EDGE_CURVE(
+    bottomVertex,
+    bottomVertex,
+    CIRCLE(
+      bottomPlacement,
+      bottomRadius,
+      m
+    ),
+    m,
+    "T"
+  );
+
+  const topCircleEdge = EDGE_CURVE(
+    topVertex,
+    topVertex,
+    CIRCLE(
+      topPlacement,
+      topRadius,
+      m
+    ),
+    m,
+    "T"
+  );
+
+  const growsTowardTop =
+    topRadius >= bottomRadius;
+
+  const coneAxis = growsTowardTop
+    ? axis
+    : vec3(-axis.x, -axis.y, -axis.z);
+
+  const coneLocation = growsTowardTop
+    ? bottomCenterPoint
+    : topCenterPoint;
+
+  const coneStartRadius = Math.min(
+    bottomRadius,
+    topRadius
+  );
+
+  const semiAngle = Math.atan2(
+    Math.abs(topRadius - bottomRadius),
+    h
+  );
+
+  const conePlacement = AXIS2_PLACEMENT_3D(
+    coneLocation,
+    DIRECTION(coneAxis, m),
+    radialDirection,
+    m
+  );
+
+  const sideSurface = isCylinder
+    ? CYLINDRICAL_SURFACE(
+      bottomPlacement,
+      bottomRadius,
+      m
+    )
+    : CONICAL_SURFACE(
+      conePlacement,
+      coneStartRadius,
+      semiAngle,
+      m
+    );
+
+  const sideFace = ADVANCED_FACE(
+    FACE_BOUND(
+      EDGE_LOOP(
+        [
+          ORIENTED_EDGE(seamEdge, m, "T"),
+          ORIENTED_EDGE(topCircleEdge, m, "T"),
+          ORIENTED_EDGE(seamEdge, m, "F"),
+          ORIENTED_EDGE(bottomCircleEdge, m, "F"),
+        ],
+        m
+      ),
+      "F",
+      m
+    ),
+    sideSurface,
+    m,
+    "T"
+  );
+
+  const bottomFace = ADVANCED_FACE(
+    FACE_BOUND(
+      EDGE_LOOP(
+        [
+          ORIENTED_EDGE(
+            bottomCircleEdge,
+            m,
+            "F"
+          ),
+        ],
+        m
+      ),
+      "T",
+      m
+    ),
+    PLANE(bottomPlacement, m),
+    m,
+    "F"
+  );
+
+  const topFace = ADVANCED_FACE(
+    FACE_BOUND(
+      EDGE_LOOP(
+        [
+          ORIENTED_EDGE(
+            topCircleEdge,
+            m,
+            "F"
+          ),
+        ],
+        m
+      ),
+      "F",
+      m
+    ),
+    PLANE(topPlacement, m),
+    m,
+    "T"
   );
 
   const msb = MANIFOLD_SOLID_BREP(
     CLOSED_SHELL(
       [
-        ADVANCED_FACE(
-          FACE_BOUND(
-            EDGE_LOOP(
-              [
-                ORIENTED_EDGE(ecurve0, m, "T"),
-                ORIENTED_EDGE(ecurve2, m),
-                ORIENTED_EDGE(ecurve0, m, "F"),
-                ORIENTED_EDGE(ecurve1, m, "F"),
-              ],
-              m
-            ),
-            "F",
-            m
-          ),
-          CYLINDRICAL_SURFACE(
-            AXIS2_PLACEMENT_3D(
-              CARTESIAN_POINT(vec3(pos.x + circleTop.x, pos.y + circleTop.y, pos.z + circleTop.z), m),
-              DIRECTION(downNormal, m),
-              DIRECTION(vec3(0, -1, 0), m),
-              m
-            ),
-            r,
-            m
-          ),
-          m,
-          "T"
-        ),
-
-        ADVANCED_FACE(
-          FACE_BOUND(EDGE_LOOP([ORIENTED_EDGE(ecurve1, m, "F")], m), "T", m),
-          PLANE(
-            AXIS2_PLACEMENT_3D(
-              CARTESIAN_POINT(vec3Add(pos, circleBot), m),
-              DIRECTION(upNormal, m),
-              DIRECTION(vec3(0, 1, 0), m),
-              m
-            ),
-            m
-          ),
-          m,
-          "F"
-        ),
-
-        ADVANCED_FACE(
-          FACE_BOUND(EDGE_LOOP([ORIENTED_EDGE(ecurve2, m, "F")], m), "F", m),
-          PLANE(
-            AXIS2_PLACEMENT_3D(
-              CARTESIAN_POINT(vec3Add(pos, circleTop), m),
-              DIRECTION(upNormal, m),
-              DIRECTION(vec3(0, 1, 0), m),
-              m
-            ),
-            m
-          ),
-          m,
-          "T"
-        ),
+        sideFace,
+        bottomFace,
+        topFace,
       ],
       m
     ),
     m
   );
 
-  const absp = ADVANCED_BREP_SHAPE_REPRESENTATION(
-    AXIS2_PLACEMENT_3D(CARTESIAN_POINT(vec3Zero, m), DIRECTION(vec3(0, 0, 1), m), DIRECTION(vec3(1, 0, 0), m), m),
-    msb,
-    m.geoContext3d,
+  const absp =
+    ADVANCED_BREP_SHAPE_REPRESENTATION(
+      AXIS2_PLACEMENT_3D(
+        CARTESIAN_POINT(vec3Zero, m),
+        DIRECTION(vec3(0, 0, 1), m),
+        DIRECTION(vec3(1, 0, 0), m),
+        m
+      ),
+      msb,
+      m.geoContext3d,
+      m
+    );
+
+  const prod = PRODUCT(
+    PRODUCT_CONTEXT(applicationContext, m),
+    isCylinder ? "Cylinder" : "Cone",
     m
   );
 
-  const prod = PRODUCT(PRODUCT_CONTEXT(applicationContext, m), "Cylinder", m);
-
   SHAPE_DEFINITION_REPRESENTATION(
     PRODUCT_DEFINITION_SHAPE(
-      PRODUCT_DEFINITION(PRODUCT_DEFINITION_FORMATION(prod, m), PRODUCT_DEFINITION_CONTEXT(applicationContext, m), m),
+      PRODUCT_DEFINITION(
+        PRODUCT_DEFINITION_FORMATION(
+          prod,
+          m
+        ),
+        PRODUCT_DEFINITION_CONTEXT(
+          applicationContext,
+          m
+        ),
+        m
+      ),
       m
     ),
     absp,
     m
   );
 
-  const color = COLOUR_RGB(parseRgb(mat.normal), m);
+  const color = COLOUR_RGB(
+    parseRgb(mat.normal),
+    m
+  );
+
   MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(
     STYLED_ITEM(
       PRESENTATION_STYLE_ASSIGNMENT(
-        SURFACE_STYLE_USAGE(SURFACE_SIDE_STYLE(SURFACE_STYLE_FILL_AREA(FILL_AREA_STYLE_COLOUR(color, m), m), m), m),
-        CURVE_STYLE(DRAUGHTING_PRE_DEFINED_CURVE_FONT("continuous", m), color, m),
+        SURFACE_STYLE_USAGE(
+          SURFACE_SIDE_STYLE(
+            SURFACE_STYLE_FILL_AREA(
+              FILL_AREA_STYLE_COLOUR(
+                color,
+                m
+              ),
+              m
+            ),
+            m
+          ),
+          m
+        ),
+        CURVE_STYLE(
+          DRAUGHTING_PRE_DEFINED_CURVE_FONT(
+            "continuous",
+            m
+          ),
+          color,
+          m
+        ),
         m
       ),
       msb,
