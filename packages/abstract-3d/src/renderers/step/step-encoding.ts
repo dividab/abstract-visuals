@@ -2,6 +2,8 @@ import { Vec2, Vec3 } from "../../abstract-3d.js";
 
 export type MutableStep = { refs: Map<string, number>; step: string; geoContext3d: number; };
 
+export const STEP_NUMBER_EPSILON: number = 1e-5;
+
 const mutate = (step: string, m: MutableStep): number => {
   const prevRef = m.refs.get(step);
   if (prevRef !== undefined) {
@@ -14,6 +16,20 @@ const mutate = (step: string, m: MutableStep): number => {
     return newRef;
   }
 };
+
+const stepNumber = (num: number): string => {
+  const absNum = Math.abs(num);
+  if(absNum < STEP_NUMBER_EPSILON) {
+    return "0.0";
+  }
+
+  const roundNum = Math.round(num);
+  if(Math.abs(absNum - Math.abs(roundNum)) < STEP_NUMBER_EPSILON) {
+    return roundNum.toFixed(3);
+  }
+
+  return num.toFixed(3);
+}
 
 export const HEADER = (date: string): string =>
   `ISO-10303-21;
@@ -32,16 +48,16 @@ END-ISO-10303-21;`;
 
 export const CARTESIAN_POINT = (p: Vec3 | Vec2, m: MutableStep): number =>
   mutate(
-    `CARTESIAN_POINT('',(${p.x},${p.y}${
-      (p as Vec3)?.z !== undefined ? `,${(p as Vec3).z}` : ""
+    `CARTESIAN_POINT('',(${stepNumber(p.x)},${stepNumber(p.y)}${
+      (p as Vec3)?.z !== undefined ? `,${stepNumber((p as Vec3).z)}` : ""
     }))`,
     m
   );
 
 export const DIRECTION = (d: Vec3 | Vec2, m: MutableStep): number =>
   mutate(
-    `DIRECTION('',(${d.x},${d.y}${
-      (d as Vec3)?.z !== undefined ? `,${(d as Vec3).z}` : ""
+    `DIRECTION('',(${stepNumber(d.x)},${stepNumber(d.y)}${
+      (d as Vec3)?.z !== undefined ? `,${stepNumber((d as Vec3).z)}` : ""
     }))`,
     m
   );

@@ -11,6 +11,7 @@ import {
   vec3Sub,
   vec3Add,
   vec3Rot,
+  vec3Length,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../../utils.js";
 import {
@@ -44,6 +45,7 @@ import {
   PRODUCT_DEFINITION_FORMATION,
   PRODUCT_DEFINITION_SHAPE,
   SHAPE_DEFINITION_REPRESENTATION,
+  STEP_NUMBER_EPSILON,
   STYLED_ITEM,
   SURFACE_SIDE_STYLE,
   SURFACE_STYLE_FILL_AREA,
@@ -59,6 +61,10 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
   const rotation = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
   const color = parseRgb(mat.normal);
   const rotate = (v: Vec3): Vec3 => vec3Rot(v, vec3Zero, rotation);
+
+  if(size.x === 0.0 || size.y === 0.0 || size.z === 0.0) {
+    return;
+  }
 
   const corners = [
     vec3(0, 0, 0),
