@@ -40,8 +40,7 @@ export const testMultipleImages: ExportTestDef = {
     </AbstractDoc>
   ),
   expectedDocxZipContexts: {
-    "word/document.xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document mc:Ignorable="w14 w15 wp14"
+    "word/document.xml": `<w:document mc:Ignorable="w14 w15 wp14"
 	xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -135,7 +134,7 @@ export const testMultipleImages: ExportTestDef = {
 				<w:r>
 					<w:drawing>
 						<wp:inline distT="0" distB="0" distL="0" distR="0">
-							<wp:extent cx="2095500" cy="1524000"/>
+							<wp:extent cx="2032000" cy="1524000"/>
 							<wp:effectExtent t="0" r="0" b="0" l="0"/>
 							<wp:docPr id="1" name="" descr="" title=""/>
 							<wp:cNvGraphicFramePr>
@@ -163,7 +162,7 @@ export const testMultipleImages: ExportTestDef = {
 											<pic:spPr bwMode="auto">
 												<a:xfrm>
 													<a:off x="0" y="0"/>
-													<a:ext cx="2095500" cy="1524000"/>
+													<a:ext cx="2032000" cy="1524000"/>
 												</a:xfrm>
 												<a:prstGeom prst="rect">
 													<a:avLst/>
