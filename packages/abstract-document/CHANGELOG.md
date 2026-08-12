@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [19.2.0] - 2026-08-12
+
+- Various updates and fixes to the docx renderer including:
+  - Update docx from 6.0.3 to 9.7.1 and update tests
+  - Update image scaling and add support for SVG images
+  - Use front headers and footers
+  - Include header rows in tables
+  - Fix cell width bug by normalizing cell widths to pixels
+  - Calculate cell width together with column span
+  - Add a border size ratio to convert border sizes from AbstractDocument to DOCX sizes
+
 ## [19.1.0] - 2026-05-27
 
 - Added logic for splitting really long words that stretch longer than available width of a page or cell, etc.
