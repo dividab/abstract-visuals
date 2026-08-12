@@ -34,6 +34,7 @@ import { Readable } from "stream";
 
 const abstractDocToDocxFontRatio = 2;
 const abstractDocPixelToDocxDXARatio = 20;
+const abstractDocBorderToDocxBorderSizeRatio = 8;
 
 export function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc): Promise<Blob> {
   return new Promise((resolve) => {
@@ -72,8 +73,13 @@ function createDocument(doc: AD.AbstractDoc.AbstractDoc): Document {
 function renderSection(section: AD.Section.Section, parentResources: AD.Resources.Resources): ISectionOptions {
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
+  const pageHeaderMargins = AD.LayoutFoundation.orDefault(section.page.style.headerMargins)
+  const pageFooterMargins = AD.LayoutFoundation.orDefault(section.page.style.footerMargins)
   const pageContentMargins = AD.LayoutFoundation.orDefault(section.page.style.contentMargins);
 
+  const hasFrontHeader = section.page.frontHeader !== undefined && section.page.frontHeader.length !== 0;
+  const hasFrontFooter = section.page.frontFooter !== undefined && section.page.frontFooter.length !== 0;
+  
   const contentAvailableWidth =
     pageWidth - (pageContentMargins.left + pageContentMargins.right);
 
@@ -84,12 +90,20 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
     return sofar;
   }, [] as Array<Paragraph | Table>);
 
-  const footerChildren = [
-    ...section.page.footer.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-      return sofar;
-    }, [] as Array<Paragraph | Table>),
-  ];
+  const firstpageHeaderChildren = hasFrontHeader ? section.page.frontHeader.reduce((sofar, c) => {
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    return sofar;
+  }, [] as Array<Paragraph | Table>) : [];
+
+  const footerChildren = section.page.footer.reduce((sofar, c) => {
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    return sofar;
+  }, [] as Array<Paragraph | Table>);
+
+  const firstPageFooterChildren = hasFrontFooter ? section.page.frontFooter.reduce((sofar, c) => {
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    return sofar;
+  }, [] as Array<Paragraph | Table>) : [];
 
   const contentChildren = [
     new Paragraph({
@@ -109,6 +123,7 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
 
   return {
     properties: {
+      titlePage: hasFrontHeader || hasFrontFooter,
       page: {
         size: {
           //DOC JS does the orientation after the width and height are set
@@ -122,8 +137,8 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
           top: pageContentMargins.top * abstractDocPixelToDocxDXARatio,
           right: pageContentMargins.right * abstractDocPixelToDocxDXARatio,
           left: pageContentMargins.left * abstractDocPixelToDocxDXARatio,
-          header: pageContentMargins.top * abstractDocPixelToDocxDXARatio,
-          footer: pageContentMargins.bottom * abstractDocPixelToDocxDXARatio,
+          header: pageHeaderMargins.top * abstractDocPixelToDocxDXARatio,
+          footer: pageFooterMargins.bottom * abstractDocPixelToDocxDXARatio,
         },
       },
     },
@@ -131,11 +146,17 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
       default: new Header({
         children: headerChildren,
       }),
+      first: hasFrontHeader ? new Header({
+        children: firstpageHeaderChildren
+      }) : undefined
     },
     footers: {
       default: new Footer({
-        children: footerChildren,
+        children: footerChildren
       }),
+      first: hasFrontFooter ? new Footer({
+        children: firstPageFooterChildren
+      }) : undefined
     },
     children: contentChildren,
   };
@@ -150,12 +171,12 @@ function renderHyperLink(
     text: hyperLink.text,
     font: style.fontFamily || "Helvetica",
     size: fontSize,
-    color: style.color || "blue",
+    color: style.color || "#0000ff",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-        color: style.color || "blue",
+        color: style.color || "#0000ff",
         type: UnderlineType.SINGLE,
       }
       : undefined,
@@ -164,12 +185,12 @@ function renderHyperLink(
   if (hyperLink.target.startsWith("#") && !hyperLink.target.startsWith("#page=")) {
     return new InternalHyperlink({
       anchor: hyperLink.target,
-      child: textRun,
+      children: [textRun],
     });
   } else {
     return new ExternalHyperlink({
       link: hyperLink.target,
-      child: textRun,
+      children: [textRun],
     });
   }
 }
@@ -250,37 +271,37 @@ function renderTable(
     },
     borders: {
       top: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       right: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       bottom: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       left: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       insideHorizontal: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
       insideVertical: {
-        color: style.cellStyle.borderColor ?? "",
+        color: style.cellStyle.borderColor ?? undefined,
         size: 0,
         style: BorderStyle.NONE,
       },
     },
-    rows: table.children.map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
+    rows: table.headerRows.concat(table.children).map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
   });
 }
 
@@ -291,9 +312,28 @@ function renderRow(
   columnWidths: ReadonlyArray<number>,
   keepNext: boolean
 ): TableRow {
+  const children = row.children.reduce(
+    (acc, cell) => {
+      const span = cell.columnSpan ?? 1;
+
+      const width = columnWidths
+        .slice(acc.columnIndex, acc.columnIndex + span)
+        .reduce((a, b) => a + b, 0);
+
+      return {
+        columnIndex: acc.columnIndex + span,
+        children: [
+          ...acc.children,
+          renderCell(cell, resources, tableCellStyle, width, keepNext),
+        ],
+      };
+    },
+    { columnIndex: 0, children: [] as TableCell[] }
+  ).children;
+
   return new TableRow({
     cantSplit: true,
-    children: row.children.map((c, ix) => renderCell(c, resources, tableCellStyle, columnWidths[ix], keepNext)),
+    children: children,
   });
 }
 
@@ -304,6 +344,8 @@ function renderCell(
   width: number,
   keepNext: boolean
 ): TableCell {
+  const abstractDocPxCellWidth = width / abstractDocPixelToDocxDXARatio;
+  
   const style = AD.Resources.getStyle(
     tableCellStyle,
     cell.style,
@@ -339,29 +381,29 @@ function renderCell(
     },
     borders: {
       top: {
-        color: style.borderColor ?? "",
-        size: styleBorders.top,
+        color: style.borderColor ?? undefined,
+        size: styleBorders.top * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.top ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       right: {
-        color: style.borderColor ?? "",
-        size: styleBorders.right,
+        color: style.borderColor ?? undefined,
+        size: styleBorders.right * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.right ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       bottom: {
-        color: style.borderColor ?? "",
-        size: styleBorders.bottom,
+        color: style.borderColor ?? undefined,
+        size: styleBorders.bottom * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.bottom ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       left: {
-        color: style.borderColor ?? "",
-        size: styleBorders.left,
+        color: style.borderColor ?? undefined,
+        size: styleBorders.left * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.left ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
     },
 
     children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, width, keepNext));
+      sofar.push(...renderSectionElement(c, resources, abstractDocPxCellWidth, keepNext));
       return sofar;
     }, [] as Array<Paragraph | Table>),
   });
@@ -446,7 +488,7 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
   return new TextRun({
     font: style.fontFamily || "Helvetica",
     size: fontSize,
-    color: style.color || "black",
+    color: style.color || "#000000",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
@@ -464,7 +506,7 @@ function renderTotalPages(style: AD.TextStyle.TextStyle): TextRun {
   return new TextRun({
     font: style.fontFamily || "Helvetica",
     size: fontSize,
-    color: style.color || "black",
+    color: style.color || "#000000",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
@@ -484,7 +526,7 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
     text: text,
     font: style.fontFamily || "Helvetica",
     size: fontSize,
-    color: style.color || "black",
+    color: style.color || "#000000",
     bold: style.bold || style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline

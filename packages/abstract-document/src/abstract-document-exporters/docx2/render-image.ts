@@ -3,180 +3,350 @@ import { ImageRun, IMediaTransformation } from "docx";
 import { TextStyle } from "../../abstract-document/styles/text-style.js";
 import { Image } from "../../abstract-document/atoms/image.js";
 import { Resources } from "../../abstract-document/index.js";
-import { fromBase64 } from "../shared/base-64.js";
+import { fromBase64, rawSvgPrefix } from "../shared/base-64.js";
+import * as AD from "../../abstract-document/index.js";
 
-export function renderImage(image: Image, textStyle: TextStyle, resources: Resources.Resources): ImageRun {
+const abstractDocPointsToDocxPxRatio = 1; // Set to 1 for now to minimize impact. Can be adjusted to better match PDF image dimensions
+
+const emptyPNG =
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6pH7sAAAAASUVORK5CYII=";
+
+  const fallbackImage = {
+    type: "png" as const,
+    data: fromBase64(emptyPNG),
+  };
+
+export function renderImage(
+  image: Image,
+  textStyle: TextStyle,
+  resources: Resources.Resources
+): ImageRun {
+
   const aImage = image.imageResource.abstractImage;
-  const images = aImage.components.map((c: AbstractImage.Component) =>
-    abstractComponentToDocX(c, image.width, image.height, textStyle, resources, 0)
-  );
-  return images[0]!;
+
+  const firstComp = aImage.components[0];
+  const resource =
+    !aImage.size.width &&
+    !aImage.size.height &&
+    firstComp?.type === "binaryimage" &&
+    firstComp.data.type === "url"
+      ? resources.imageResources?.[firstComp.data.url] ?? image.imageResource
+      : image.imageResource;
+
+  const rect = resourceRect(resource, {
+    width: image.width,
+    height: image.height,
+  });
+
+  const imgW = resource.abstractImage.size.width || 1;
+  const imgH = resource.abstractImage.size.height || 1;
+
+  const scaleX = rect.width / imgW;
+  const scaleY = rect.height / imgH;
+  const scale = Math.min(scaleX, scaleY);
+
+  const drawnW = imgW * scale;
+  const drawnH = imgH * scale;
+
+  const transformation: IMediaTransformation = { width: drawnW * abstractDocPointsToDocxPxRatio, height: drawnH * abstractDocPointsToDocxPxRatio};
+
+  const directImage = tryCreateDirectImageRun(resource, transformation, resources);
+  if (directImage) {
+    return directImage;
+  }
+
+  const svg = abstractImageToSvg(resource.abstractImage, resources, textStyle);
+
+  return new ImageRun({
+    type: "svg",
+    data: Buffer.from(svg, "utf8"),
+    transformation,
+    fallback: fallbackImage,
+  });
 }
 
-function abstractComponentToDocX(
-  component: AbstractImage.Component,
-  rectWidth: number,
-  rectHeight: number,
-  _textStyle: TextStyle,
-  resources: Resources.Resources,
-  circuitBreaker: number
+function tryCreateDirectImageRun(
+  resource: AD.ImageResource.ImageResource,
+  transformation: IMediaTransformation,
+  resources: Resources.Resources
 ): ImageRun | undefined {
-  if (++circuitBreaker > 20) {
+  if (resource.abstractImage.components.length !== 1) {
     return undefined;
   }
-  switch (component.type) {
-    // case "group":
-    //   component.children.forEach((c) => abstractComponentToPdf(c, textStyle));
-    //   break;
-    case "binaryimage":
-      const format = component.format.toLowerCase();
-      // const w = component.bottomRight.x - component.topLeft.x;
-      // const h = component.bottomRight.y - component.topLeft.y;
-      // const scale = Math.min(rectWidth / (w || 1), rectHeight / (h || 1));
-      // const transformation: IMediaTransformation = { width: w * scale, height: h * scale };
-      const transformation: IMediaTransformation = { width: rectWidth, height: rectHeight };
-      if (component.data.type === "bytes" && (format === "png" || format === "jpg")) {
-        return new ImageRun({
-          data: Buffer.from(
-            component.data.bytes.buffer,
-            component.data.bytes.byteOffset,
-            component.data.bytes.byteLength
-          ),
-          transformation,
-        });
-      }
-      if (component.data.type === "url") {
-        const imageResource = resources.imageResources?.[component.data.url];
-        if (imageResource) {
-          return abstractComponentToDocX(
-            imageResource.abstractImage.components[0],
-            rectWidth,
-            rectHeight,
-            _textStyle,
-            resources,
-            circuitBreaker
-          );
-        }
-        const match = /^data:.+?;base64,(.*)$/.exec(component.data.url);
-        if (match) {
-          return new ImageRun({ data: fromBase64(match[1]), transformation });
-        }
-      }
-      break;
-    //else if (format === "svg") {
-    //   const svg = new TextDecoder().decode(component.data);
-    //   const imageWidth = component.bottomRight.x - component.topLeft.x;
-    //   const imageHeight = component.bottomRight.y - component.topLeft.y;
-    //   svgToPdfKit(pdf, svg, component.topLeft.x, component.topLeft.y, {
-    //     width: imageWidth,
-    //     height: imageHeight,
-    //     preserveAspectRatio: "xMinYMin",
-    //     //fontCallback: component.overrideSvgFont
-    //     //  ? (_family: string, _bold: boolean, _italic: boolean) => {
-    //     //      return getFontNameStyle(textStyle);
-    //     //    }
-    //     //  : undefined,
-    //     // fontCallback: (_family: string, _bold: boolean, _italic: boolean) => {
-    //     //   return getFontNameStyle(textStyle);
-    //     // }
-    //   });
-    // }
-    //break;
-    // case "subimage":
-    //   break;
-    // case "line":
-    //   pdf
-    //     .lineWidth(component.strokeThickness)
-    //     .moveTo(component.start.x, component.start.y)
-    //     .lineTo(component.end.x, component.end.y)
-    //     .strokeOpacity(colorToOpacity(component.strokeColor))
-    //     .stroke(colorToRgb(component.strokeColor));
-    //   break;
-    // case "polyline":
-    //   for (let i = 0; i < component.points.length; ++i) {
-    //     const p = component.points[i];
-    //     if (i === 0) {
-    //       pdf.moveTo(p.x, p.y);
-    //     } else {
-    //       pdf.lineTo(p.x, p.y);
-    //     }
-    //   }
-    //   pdf
-    //     .lineWidth(component.strokeThickness)
-    //     .strokeOpacity(colorToOpacity(component.strokeColor))
-    //     .stroke(colorToRgb(component.strokeColor));
-    //   break;
-    // case "text":
-    //   if (component.clockwiseRotationDegrees !== 0) {
-    //     pdf.save();
-    //     pdf.rotate(component.clockwiseRotationDegrees, {
-    //       origin: [component.position.x, component.position.y],
-    //     });
-    //   }
-    //   pdf.font(component.fontFamily).fontSize(component.fontSize);
-    //   const stringWidth = pdf.widthOfString(component.text);
-    //   const stringHeight = pdf.currentLineHeight();
-    //   const dx =
-    //     component.horizontalGrowthDirection === "left"
-    //       ? -stringWidth
-    //       : component.horizontalGrowthDirection === "uniform"
-    //       ? -stringWidth * 0.5
-    //       : 0;
-    //   const dy =
-    //     component.verticalGrowthDirection === "up"
-    //       ? -stringHeight
-    //       : component.verticalGrowthDirection === "uniform"
-    //       ? -stringHeight * 0.5
-    //       : 0;
-    //   pdf
-    //     .font(component.fontFamily)
-    //     .fontSize(component.fontSize)
-    //     .fillColor(colorToRgb(component.textColor))
-    //     .text(component.text, component.position.x + dx, component.position.y + dy, { lineBreak: false });
-    //   if (component.clockwiseRotationDegrees !== 0) {
-    //     pdf.restore();
-    //   }
-    //   break;
-    // case "ellipse":
-    //   const width = component.bottomRight.x - component.topLeft.x;
-    //   const height = component.bottomRight.y - component.topLeft.y;
-    //   const centerX = component.topLeft.x + width * 0.5;
-    //   const centerY = component.topLeft.y + height * 0.5;
-    //   pdf
-    //     .lineWidth(component.strokeThickness)
-    //     .ellipse(centerX, centerY, width * 0.5, height * 0.5)
-    //     .strokeOpacity(colorToOpacity(component.strokeColor))
-    //     .fillOpacity(colorToOpacity(component.fillColor))
-    //     .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
-    //   break;
-    // case "polygon":
-    //   pdf
-    //     .lineWidth(component.strokeThickness)
-    //     .strokeOpacity(colorToOpacity(component.strokeColor))
-    //     .fillOpacity(colorToOpacity(component.fillColor))
-    //     .polygon(...component.points.map((p) => [p.x, p.y]))
-    //     .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
-    //   break;
-    // case "rectangle":
-    //   const rWidth = component.bottomRight.x - component.topLeft.x;
-    //   const rHeight = component.bottomRight.y - component.topLeft.y;
-    //   pdf
-    //     .lineWidth(component.strokeThickness)
-    //     .strokeOpacity(colorToOpacity(component.strokeColor))
-    //     .fillOpacity(colorToOpacity(component.fillColor))
-    //     .rect(component.topLeft.x, component.topLeft.y, rWidth, rHeight)
-    //     .fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
-    //   break;
-    default:
-      return undefined;
+
+  const component = resource.abstractImage.components[0];
+  if (component.type !== "binaryimage") {
+    return undefined;
   }
+
+  return binaryImageToImageRun(component, transformation, resources);
+}
+
+function binaryImageToImageRun(
+  component: AbstractImage.BinaryImage,
+  transformation: IMediaTransformation,
+  resources: Resources.Resources
+): ImageRun | undefined {
+  const format = component.format.toLowerCase();
+
+  if (component.data.type === "bytes") {
+    if (format === "png" || format === "jpg" || format === "jpeg") {
+      return new ImageRun({
+        type: format === "png" ? "png" : "jpg",
+        data: Buffer.from(
+          component.data.bytes.buffer,
+          component.data.bytes.byteOffset,
+          component.data.bytes.byteLength
+        ),
+        transformation,
+      } as any);
+    }
+
+    if (format === "svg") {
+      return new ImageRun({
+        type: "svg",
+        data: Buffer.from(component.data.bytes),
+        transformation,
+        fallback: fallbackImage,
+      });
+    }
+  }
+
+  if (component.data.type === "url") {
+    const nestedResource = resources.imageResources?.[component.data.url];
+
+    if (nestedResource) {
+      const direct = tryCreateDirectImageRun(nestedResource, transformation, resources);
+      return direct;
+    }
+
+    if (component.data.url.startsWith(rawSvgPrefix)) {
+      const svg = decodeURIComponent(component.data.url.slice(rawSvgPrefix.length));
+
+      return new ImageRun({
+        type: "svg",
+        data: Buffer.from(svg, "utf8"),
+        transformation,
+        fallback: fallbackImage,
+      });
+    }
+
+    const match = /^data:(.+?);base64,(.*)$/.exec(component.data.url);
+    if (match) {
+      const mimeType = match[1].toLowerCase();
+      const data = fromBase64(match[2]);
+
+      if (mimeType.includes("png")) {
+        return new ImageRun({ data, transformation, type: "png" } as any);
+      }
+
+      if (mimeType.includes("jpeg") || mimeType.includes("jpg")) {
+        return new ImageRun({ data, transformation, type: "jpg" } as any);
+      }
+
+      if (mimeType.includes("svg")) {
+        return new ImageRun({ type: "svg", data, transformation, fallback: fallbackImage});
+      }
+    }
+  }
+
   return undefined;
 }
 
-// function colorToOpacity(color: AbstractImage.Color): number {
-//   return color.a / 255;
-// }
+function abstractImageToSvg(
+  image: AbstractImage.AbstractImage,
+  resources: Resources.Resources,
+  textStyle: TextStyle
+): string {
+  const width = image.size.width || 1;
+  const height = image.size.height || 1;
 
-// function colorToRgb(color: AbstractImage.Color): Array<number> {
-//   return [color.r, color.g, color.b];
-// }
+  const children = image.components
+    .map((component) => componentToSvg(component, resources, textStyle, 0))
+    .filter(Boolean)
+    .join("");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${children}</svg>`;
+}
+
+function componentToSvg(
+  component: AbstractImage.Component,
+  resources: Resources.Resources,
+  textStyle: TextStyle,
+  circuitBreaker: number
+): string {
+  if (++circuitBreaker > 20) {
+    return "";
+  }
+
+  switch (component.type) {
+    case "group":
+      return component.children
+        .map((child) => componentToSvg(child, resources, textStyle, circuitBreaker))
+        .join("");
+
+    case "subimage": {
+      const scaleX = component.size.width / (component.image.size.width || 1);
+      const scaleY = component.size.height / (component.image.size.height || 1);
+      const scale = Math.min(scaleX, scaleY);
+
+      const children = component.image.components
+        .map((child) => componentToSvg(child, resources, textStyle, circuitBreaker))
+        .join("");
+
+      return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y}) scale(${scale})">${children}</g>`;
+    }
+
+    case "binaryimage":
+      return binaryImageToSvg(component, resources, textStyle, circuitBreaker);
+
+    case "line":
+      return `<line x1="${component.start.x}" y1="${component.start.y}" x2="${component.end.x}" y2="${component.end.y}" ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+
+    case "polyline":
+      return `<polyline points="${component.points.map((p) => `${p.x},${p.y}`).join(" ")}" fill="none" ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+
+    case "polygon":
+      return `<polygon points="${component.points.map((p) => `${p.x},${p.y}`).join(" ")}" ${fillAttrs(component.fillColor)} ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+
+    case "rectangle": {
+      const width = component.bottomRight.x - component.topLeft.x;
+      const height = component.bottomRight.y - component.topLeft.y;
+
+      return `<rect x="${component.topLeft.x}" y="${component.topLeft.y}" width="${width}" height="${height}" ${fillAttrs(component.fillColor)} ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+    }
+
+    case "ellipse": {
+      const width = component.bottomRight.x - component.topLeft.x;
+      const height = component.bottomRight.y - component.topLeft.y;
+      const cx = component.topLeft.x + width * 0.5;
+      const cy = component.topLeft.y + height * 0.5;
+
+      return `<ellipse cx="${cx}" cy="${cy}" rx="${width * 0.5}" ry="${height * 0.5}" ${fillAttrs(component.fillColor)} ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+    }
+
+    case "text":
+      return textComponentToSvg(component);
+
+    default:
+      return "";
+  }
+}
+
+function binaryImageToSvg(
+  component: AbstractImage.BinaryImage,
+  resources: Resources.Resources,
+  textStyle: TextStyle,
+  circuitBreaker: number
+): string {
+  const width = component.bottomRight.x - component.topLeft.x;
+  const height = component.bottomRight.y - component.topLeft.y;
+  const format = component.format.toLowerCase();
+
+  if (component.data.type === "url") {
+    const imageResource = resources.imageResources?.[component.data.url];
+
+    if (imageResource) {
+      const scaleX = width / (imageResource.abstractImage.size.width || 1);
+      const scaleY = height / (imageResource.abstractImage.size.height || 1);
+      const scale = Math.min(scaleX, scaleY);
+
+      const children = imageResource.abstractImage.components
+        .map((child) => componentToSvg(child, resources, textStyle, circuitBreaker))
+        .join("");
+
+      return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y}) scale(${scale})">${children}</g>`;
+    }
+
+    if (component.data.url.startsWith(rawSvgPrefix)) {
+      const svg = decodeURIComponent(component.data.url.slice(rawSvgPrefix.length));
+      return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y})">${svg}</g>`;
+    }
+
+    return `<image x="${component.topLeft.x}" y="${component.topLeft.y}" width="${width}" height="${height}" href="${escapeXml(component.data.url)}" />`;
+  }
+
+  if (component.data.type === "bytes") {
+    if (format === "png" || format === "jpg" || format === "jpeg") {
+      const mime = format === "png" ? "image/png" : "image/jpeg";
+      const base64 = Buffer.from(
+        component.data.bytes.buffer,
+        component.data.bytes.byteOffset,
+        component.data.bytes.byteLength
+      ).toString("base64");
+
+      return `<image x="${component.topLeft.x}" y="${component.topLeft.y}" width="${width}" height="${height}" href="data:${mime};base64,${base64}" />`;
+    }
+
+    if (format === "svg") {
+      const svg = new TextDecoder().decode(component.data.bytes);
+      return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y})">${svg}</g>`;
+    }
+  }
+
+  return "";
+}
+
+function textComponentToSvg(component: AbstractImage.Text): string {
+  const rotation =
+    component.clockwiseRotationDegrees !== 0
+      ? ` transform="rotate(${component.clockwiseRotationDegrees} ${component.position.x} ${component.position.y})"`
+      : "";
+
+  const anchor =
+    component.horizontalGrowthDirection === "left"
+      ? "end"
+      : component.horizontalGrowthDirection === "uniform"
+      ? "middle"
+      : "start";
+
+  const dominantBaseline =
+    component.verticalGrowthDirection === "up"
+      ? "text-after-edge"
+      : component.verticalGrowthDirection === "uniform"
+      ? "middle"
+      : "text-before-edge";
+
+  return `<text x="${component.position.x}" y="${component.position.y}" font-family="${escapeXml(component.fontFamily)}" font-size="${component.fontSize}" font-weight="${component.fontWeight}" font-style="${component.italic ? "italic" : "normal"}" fill="${colorToCss(component.textColor)}" text-anchor="${anchor}" dominant-baseline="${dominantBaseline}"${rotation}>${escapeXml(component.text)}</text>`;
+}
+
+function fillAttrs(color: AbstractImage.Color): string {
+  return `fill="${colorToCss(color)}" fill-opacity="${colorToOpacity(color)}"`;
+}
+
+function strokeAttrs(
+  color: AbstractImage.Color,
+  thickness: number,
+  dashStyle: AbstractImage.DashStyle
+): string {
+  const dashArray =
+    dashStyle.dashes.length > 0
+      ? ` stroke-dasharray="${dashStyle.dashes.filter((dash) => dash !== 0).join(" ")}" stroke-dashoffset="${dashStyle.offset}"`
+      : "";
+
+  return `stroke="${colorToCss(color)}" stroke-opacity="${colorToOpacity(color)}" stroke-width="${thickness}"${dashArray}`;
+}
+
+function colorToOpacity(color: AbstractImage.Color): number {
+  return color.a / 255;
+}
+
+function colorToCss(color: AbstractImage.Color): string {
+  return `rgb(${color.r},${color.g},${color.b})`;
+}
+
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function resourceRect(resource: AD.ImageResource.ImageResource, rect: AbstractImage.Size): AbstractImage.Size {
+  const ai = resource.abstractImage;
+  const rectWidth = rect.width || ai.size.width * (rect.height / (ai.size.height || 1));
+  const rectHeight = rect.height || ai.size.height * (rect.width / (ai.size.width || 1));
+
+  return { width: rectWidth, height: rectHeight };
+}
