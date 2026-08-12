@@ -303,8 +303,8 @@ importers:
         specifier: ^12.0.68
         version: 12.0.68(react@19.2.6)
       abstract-document:
-        specifier: ^19.1.25
-        version: 19.1.25(react@19.2.6)
+        specifier: ^19.2.0
+        version: 19.2.0(react@19.2.6)
       abstract-image:
         specifier: ^13.0.53
         version: 13.0.53(react@19.2.6)
@@ -1915,19 +1915,12 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/jszip@3.4.1':
-    resolution: {integrity: sha512-TezXjmf3lj+zQ651r6hPqvSScqBLvyPI9FxdXBqpEwBijNGQ2NXpaFW/7joGzveYkKQUil7iiDHLo6LV71Pc0A==}
-    deprecated: This is a stub types definition. jszip provides its own type definitions, so you do not need this installed.
-
   '@types/minimatch@6.0.0':
     resolution: {integrity: sha512-zmPitbQ8+6zNutpwgcQuLcsEpn/Cj54Kbn7L5pX0Os5kdWplB7xPgEh/g+SWOB/qmows2gpuCaPyduq8ZZRnxA==}
     deprecated: This is a stub types definition. minimatch provides its own type definitions, so you do not need this installed.
 
   '@types/minimist@1.2.5':
     resolution: {integrity: sha512-hov8bUuiLiyFPGyFPE1lwWhmzYbirOXQNNo40+y3zow8aFVTeyn3VWL0VFFfdNddA8S4Vf0Tc062rzyNr7Paag==}
-
-  '@types/node@14.18.63':
-    resolution: {integrity: sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==}
 
   '@types/node@22.10.1':
     resolution: {integrity: sha512-qKgsUwfHZV2WCWLAnVP1JqnpE6Im6h3Y0+fYgMTasNQ7V++CBX5OT1as0g0f+OyubbFqhf6XVNIsmN4IIhEgGQ==}
@@ -2209,8 +2202,8 @@ packages:
   abstract-chart@12.0.68:
     resolution: {integrity: sha512-RKmjTYzCQe51yMnow3OxzT21gxHGb1FX4uBuR6P/WC7SxbgrtWkK3VgX9HVeq0M9pBhPwoTLG77fa0r4cjAWMQ==}
 
-  abstract-document@19.1.25:
-    resolution: {integrity: sha512-bkzdjoSaZxI8Ac5liSckTYxh0cMYlISbcMzAvmFsoPd79/RPxF35/FyvbUwFyEhLTw2qyC866Y/kota1eYEblA==}
+  abstract-document@19.2.0:
+    resolution: {integrity: sha512-xG24QBNgzps7uee7QkmJ/XbsOGYhwQrN+DyesPjMkDFw8rfIUUW5LS4ZCetyRNrHYCMLrqrnwAOGt4rFUlVeOA==}
     peerDependencies:
       react: '>=17.0.0 <20.0.0'
 
@@ -2994,6 +2987,7 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
 
   css-select@5.1.0:
     resolution: {integrity: sha512-nwoRF1rvRRnnCqqY7updORDsuqKzqYJ28+oSMaJMMgOauh3fvwHqMS7EZpIPqK8GL+g9mKxF1vP/ZjSeNjEVHg==}
@@ -3228,10 +3222,6 @@ packages:
   doctrine@3.0.0:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
-
-  docx@6.0.3:
-    resolution: {integrity: sha512-e9bLznPAnZVNZS+Vddt/atphFy1GZ/ln/Xw1lGn19MIv8HHzP2ivTUUTjGPfpZpHinHdU+zsi8y32q8V8/guow==}
-    engines: {node: '>=10'}
 
   docx@9.7.1:
     resolution: {integrity: sha512-ilXFf9Moz47ABjFpDiA5s1w9lpb4EFSp7+5iiJSbfyYDM+bpZdAgLlSr7fW4aXhVe/E+F6QCv0EvRVFEd5CsWg==}
@@ -9131,17 +9121,11 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/jszip@3.4.1':
-    dependencies:
-      jszip: 3.10.1
-
   '@types/minimatch@6.0.0':
     dependencies:
       minimatch: 10.2.5
 
   '@types/minimist@1.2.5': {}
-
-  '@types/node@14.18.63': {}
 
   '@types/node@22.10.1':
     dependencies:
@@ -9537,10 +9521,10 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  abstract-document@19.1.25(react@19.2.6):
+  abstract-document@19.2.0(react@19.2.6):
     dependencies:
       abstract-image: 13.0.53(react@19.2.6)
-      docx: 6.0.3
+      docx: 9.7.1
       fast-xml-parser: 4.5.0
       handlebars: 4.7.8
       handlebars-xml: 0.4.5
@@ -10671,15 +10655,6 @@ snapshots:
   doctrine@3.0.0:
     dependencies:
       esutils: 2.0.3
-
-  docx@6.0.3:
-    dependencies:
-      '@types/jszip': 3.4.1
-      '@types/node': 14.18.63
-      jszip: 3.10.1
-      nanoid: 3.3.8
-      xml: 1.0.1
-      xml-js: 1.6.11
 
   docx@9.7.1:
     dependencies:
