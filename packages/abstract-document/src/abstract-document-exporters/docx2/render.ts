@@ -253,6 +253,7 @@ function renderTable(
   );
 
   return new Table({
+    layout: "fixed",
     alignment:
       style.alignment === "Left"
         ? AlignmentType.LEFT
