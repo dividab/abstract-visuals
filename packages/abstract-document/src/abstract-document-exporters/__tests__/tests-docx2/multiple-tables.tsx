@@ -133,6 +133,7 @@ export const testMultipleTables: ExportTestDef = {
               <w:insideH w:val="none" w:sz="0"/>
               <w:insideV w:val="none" w:sz="0"/>
             </w:tblBorders>
+            <w:tblLayout w:type="fixed"/>
             <w:tblCellMar>
               <w:top w:type="dxa" w:w="0"/>
               <w:left w:type="dxa" w:w="0"/>
@@ -414,6 +415,7 @@ export const testMultipleTables: ExportTestDef = {
               <w:insideH w:val="none" w:sz="0"/>
               <w:insideV w:val="none" w:sz="0"/>
             </w:tblBorders>
+            <w:tblLayout w:type="fixed"/>
             <w:tblCellMar>
               <w:top w:type="dxa" w:w="0"/>
               <w:left w:type="dxa" w:w="0"/>
