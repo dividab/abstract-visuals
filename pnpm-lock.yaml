@@ -303,8 +303,8 @@ importers:
         specifier: ^12.0.68
         version: 12.0.68(react@19.2.6)
       abstract-document:
-        specifier: ^19.2.0
-        version: 19.2.0(react@19.2.6)
+        specifier: ^19.2.1
+        version: 19.2.1(react@19.2.6)
       abstract-image:
         specifier: ^13.0.53
         version: 13.0.53(react@19.2.6)
@@ -2202,8 +2202,8 @@ packages:
   abstract-chart@12.0.68:
     resolution: {integrity: sha512-RKmjTYzCQe51yMnow3OxzT21gxHGb1FX4uBuR6P/WC7SxbgrtWkK3VgX9HVeq0M9pBhPwoTLG77fa0r4cjAWMQ==}
 
-  abstract-document@19.2.0:
-    resolution: {integrity: sha512-xG24QBNgzps7uee7QkmJ/XbsOGYhwQrN+DyesPjMkDFw8rfIUUW5LS4ZCetyRNrHYCMLrqrnwAOGt4rFUlVeOA==}
+  abstract-document@19.2.1:
+    resolution: {integrity: sha512-WXGj23wE7t0taL9GwzD/r5KcZvSpkLZo2n1z/cupcjfzWWw+P+60qgUZa+LZHZWIFIR+5rXR9KetZ5X4jIZ3lA==}
     peerDependencies:
       react: '>=17.0.0 <20.0.0'
 
@@ -9521,7 +9521,7 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  abstract-document@19.2.0(react@19.2.6):
+  abstract-document@19.2.1(react@19.2.6):
     dependencies:
       abstract-image: 13.0.53(react@19.2.6)
       docx: 9.7.1
