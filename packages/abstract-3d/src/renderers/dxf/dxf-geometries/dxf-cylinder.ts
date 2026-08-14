@@ -1,15 +1,17 @@
 import {
-  Cylinder,
-  Material,
-  Vec3,
-  vec3TransRot,
-  vec3RotCombine,
-  vec3Zero,
-  vec3,
-  vec3Scale,
+  type Cylinder,
+  type Material,
+  type Vec3,
   equals,
+  vec3,
+  vec3RotCombine,
+  vec3Scale,
+  vec3TransRot,
+  vec3Zero,
 } from "../../../abstract-3d.js";
-import { dxfQuad, dxfTriangle, Handle } from "../dxf-encoding.js";
+import type { Handle } from "../dxf-encoding/dxf-common.js";
+import { dxfEncQuad } from "../dxf-encoding/dxf-quad.js";
+import { dxfEncTriangle } from "../dxf-encoding/dxf-triangle.js";
 import { dxfPlane } from "./dxf-plane.js";
 
 export function dxfCylinder(
@@ -45,10 +47,10 @@ export function dxfCylinder(
     if (i !== 0 && prevBot && prevTop) {
       if (!c.open) {
         dxfString +=
-          dxfTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
-          dxfTriangle(topPos, prevTop, currTop, m.normal, handleRef);
+          dxfEncTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
+          dxfEncTriangle(topPos, prevTop, currTop, m.normal, handleRef);
       }
-      dxfString += dxfQuad(currBot, prevBot, prevTop, currTop, m.normal, handleRef);
+      dxfString += dxfEncQuad(currBot, prevBot, prevTop, currTop, m.normal, handleRef);
     }
 
     prevBot = currBot;

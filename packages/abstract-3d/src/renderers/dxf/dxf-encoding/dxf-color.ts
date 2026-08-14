@@ -1,24 +1,21 @@
-import { Color } from "abstract-image";
-import { Vec3, vec3, vec3DistSquared } from "../../abstract-3d.js";
+import { type Vec3, vec3, vec3DistSquared } from "../../../abstract-3d.js";
 
-export function colorToInteger(color: string): number {
-  const originalColor = colorNormalToVec3Color(color);
+export type DxfDynamicColor = 7; // this color becomes white on a black background and black on a white background (therefore theme/dxf viewer dependent)
+export type DxfColor = DxfDynamicColor | string;
 
-  const colorAsInt = (originalColor.x << 16) + (originalColor.y << 8) + originalColor.z;
-  if(Number.isNaN(colorAsInt)) {
-    return 0;
-  }
-  return colorAsInt;
+export function dxfColor(color: DxfColor): string {
+  return typeof color === "number"
+      ? `62\n7`
+      : `62
+  256
+  420
+  ${dxfBitShiftColor(color)}`;
 }
 
-export function colorHexFromAbstractImageColor(color: Color): string {
-  return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
-}
-
-export function color(colorNormal: string | undefined): number {
+export function dxfApproximateAciFromRealColor(colorNormal: string | undefined): number {
     const ERROR_COLOR = 6; //magenta
     const ACI_COLOR_COUNT = 256;
-    if(ACI_COLOR_TABLE.length !== ACI_COLOR_COUNT  || colorNormal === undefined) {
+    if(DXF_ACI_COLOR_TABLE.length !== ACI_COLOR_COUNT  || colorNormal === undefined) {
       return ERROR_COLOR; //magenta 
     }
   
@@ -26,7 +23,7 @@ export function color(colorNormal: string | undefined): number {
     let closestColor = 0;
     let smallestDistance = Number.POSITIVE_INFINITY;
     for(let i = 0; i < ACI_COLOR_COUNT; i++) {
-      const color = ACI_COLOR_TABLE[i];
+      const color = DXF_ACI_COLOR_TABLE[i];
       if(color !== undefined) {
         const distance = vec3DistSquared(originalColor, color);
         if(distance < smallestDistance) {
@@ -49,16 +46,26 @@ function colorNormalToVec3Color(colorNormal: string): Vec3 {
   if(values.length < 3) {
     return errorColor;
   } 
-  const r = parseInt(values[0]!, 10);
-  const g = parseInt(values[1]!, 10);
-  const b = parseInt(values[2]!, 10);
+  const r = parseInt(values[0] ?? "", 10);
+  const g = parseInt(values[1] ?? "", 10);
+  const b = parseInt(values[2] ?? "", 10);
   if(Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
     return errorColor;
   }
   return vec3(r % 256, g % 256, b % 256);
 }
 
-export const ACI_COLOR_TABLE: ReadonlyArray<Vec3> = [
+function dxfBitShiftColor(color: string): number {
+  const originalColor = colorNormalToVec3Color(color);
+
+  const colorAsInt = (originalColor.x << 16) + (originalColor.y << 8) + originalColor.z;
+  if(Number.isNaN(colorAsInt)) {
+    return 0;
+  }
+  return colorAsInt;
+}
+
+const DXF_ACI_COLOR_TABLE: ReadonlyArray<Vec3> = [
   vec3(0, 0, 0),
   vec3(255, 0, 0),
   vec3(255, 255, 0),

@@ -1,5 +1,14 @@
-import { Cone, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
-import { dxfTriangle, Handle } from "../dxf-encoding.js";
+import {
+  type Cone,
+  type Material,
+  type Vec3,
+  vec3,
+  vec3RotCombine,
+  vec3TransRot,
+  vec3Zero,
+} from "../../../abstract-3d.js";
+import type { Handle } from "../dxf-encoding/dxf-common.js";
+import { dxfEncTriangle } from "../dxf-encoding/dxf-triangle.js";
 
 export function dxfCone(
   c: Cone,
@@ -28,8 +37,8 @@ export function dxfCone(
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
       dxfString +=
-        dxfTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
-        dxfTriangle(currBot, prevBot, topPos, m.normal, handleRef);
+        dxfEncTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
+        dxfEncTriangle(currBot, prevBot, topPos, m.normal, handleRef);
     }
     currentAngle += angleStep;
   }

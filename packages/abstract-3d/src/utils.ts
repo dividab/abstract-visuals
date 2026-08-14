@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 
+import { vec3, Vec3, vec3Rot, vec3Zero, View } from "./abstract-3d.js";
+
 // dummy
 export function parseRgb(color: string): { readonly r: number; readonly g: number; readonly b: number } {
   const parts = color.split("(")[1]?.slice(0, -1).split(",");
@@ -147,6 +149,43 @@ export function shade(p: number, from: string, to?: string): string | undefined 
       .toString(16)
       .slice(1, f[3]! > -1 || t[3]! > -1 ? undefined : -2)
   );
+}
+
+export function calculateVisibleViews(originalView: View, sceneRotation: Vec3 | undefined): Record<string, boolean> {
+  const cameraPositionForView = (view: View): Vec3 => {
+		switch (view) {
+			case "front":
+				return vec3(0, 0, 1);
+			case "back":
+				return vec3(0, 0, -1);
+			case "top":
+				return vec3(0, 1, 0);
+			case "bottom":
+				return vec3(0, -1, 0);
+			case "right":
+				return vec3(1, 0, 0);
+			case "left":
+				return vec3(-1, 0, 0);
+      default:
+        return vec3(0, 0, 1);
+		}
+	};
+
+	const cam = vec3Rot(
+		cameraPositionForView(originalView),
+		vec3Zero,
+		sceneRotation ?? vec3Zero
+	);
+
+  return {
+  	[cam.x >= 0 ? "right" : "left"]: originalView === "right" || originalView === "left",
+		[cam.y >= 0 ? "top" : "bottom"]: originalView === "top"   || originalView === "bottom",
+		[cam.z >= 0 ? "front" : "back"]: originalView === "front" || originalView === "back",
+	};
+}
+
+export function isViewVisible(view: View | undefined, visibleViews: Record<string, boolean>): boolean {
+  return view !== undefined && visibleViews[view] === true;
 }
 
 export type Optional<T> = { readonly [K in keyof T]?: T[K] };

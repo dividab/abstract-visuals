@@ -1,7 +1,7 @@
 import type { AbstractImage, Color, Component } from "abstract-image";
 import {
-  ImageMesh,
-  Vec3,
+  type ImageMesh,
+  type Vec3,
   vec2Scale,
   vec3TransRot,
   vec3RotCombine,
@@ -10,8 +10,10 @@ import {
   vec3Rot,
   vec3Add,
 } from "../../../abstract-3d.js";
-import { DEFAULT_CIRCLE_SIDE_COUNT, DxfDynamicColor, dxfLine, dxfPolyline, Handle } from "../dxf-encoding.js";
-// dummy
+import { DEFAULT_CIRCLE_SIDE_COUNT, type Handle } from "../dxf-encoding/dxf-common.js";
+import { DxfDynamicColor } from "../dxf-encoding/dxf-color.js";
+import { dxfEncPolyline } from "../dxf-encoding/dxf-polyline.js";
+import { dxfEncLine } from "../dxf-encoding/dxf-line.js";
 
 export function dxfImage(i: ImageMesh, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const half = vec2Scale(i.size, 0.5);
@@ -59,17 +61,17 @@ function abstractImageComponentToDxf3D(
       break;
     }
     case "line": {
-      dxf += dxfLine(vec3tr(comp.start.x, comp.start.y), vec3tr(comp.end.x, comp.end.y), strokeColor, handleRef);
+      dxf += dxfEncLine(vec3tr(comp.start.x, comp.start.y), vec3tr(comp.end.x, comp.end.y), strokeColor, handleRef);
       break;
     }
     case "polyline": {
       const points = comp.points.map((p) => vec3tr(p.x, p.y));
-      dxf += dxfPolyline(points, strokeColor, false, handleRef);
+      dxf += dxfEncPolyline(points, strokeColor, false, handleRef);
       break;
     }
     case "polygon": {
       const points = comp.points.map((p) => vec3tr(p.x, p.y));
-      dxf += dxfPolyline(points, strokeColor, true, handleRef);
+      dxf += dxfEncPolyline(points, strokeColor, true, handleRef);
       break;
     }
     case "ellipse": {
@@ -82,7 +84,7 @@ function abstractImageComponentToDxf3D(
         const y = comp.topLeft.y + r2 + r2 * Math.sin(t);
         points.push(vec3tr(x, y));
       }
-      dxf += dxfPolyline(points, strokeColor, true, handleRef);
+      dxf += dxfEncPolyline(points, strokeColor, true, handleRef);
       break;
     }
     case "rectangle": {
@@ -93,7 +95,7 @@ function abstractImageComponentToDxf3D(
           vec3tr(comp.bottomRight.x, comp.bottomRight.y),
           vec3tr(comp.topLeft.x, comp.bottomRight.y),
       ];
-      dxf += dxfPolyline(points, strokeColor, true, handleRef);
+      dxf += dxfEncPolyline(points, strokeColor, true, handleRef);
       break;
     }
     default:

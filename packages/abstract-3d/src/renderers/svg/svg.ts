@@ -33,7 +33,7 @@ import { shape } from "./svg-geometries/svg-shape.js";
 import { polygon } from "./svg-geometries/svg-polygon.js";
 import { text } from "./svg-geometries/svg-text.js";
 import { cone } from "./svg-geometries/svg-cone.js";
-import { Optional } from "../../utils.js";
+import { calculateVisibleViews, isViewVisible, Optional } from "../../utils.js";
 import { svg } from "./svg-encoding.js";
 import { image } from "./svg-geometries/svg-image.js";
 
@@ -113,40 +113,10 @@ function renderInternal(
   }
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
-
-  const cameraPositionForView = (view: View): Vec3 => {
-		switch (view) {
-			case "front":
-				return vec3(0, 0, 1);
-			case "back":
-				return vec3(0, 0, -1);
-			case "top":
-				return vec3(0, 1, 0);
-			case "bottom":
-				return vec3(0, -1, 0);
-			case "right":
-				return vec3(1, 0, 0);
-			case "left":
-				return vec3(-1, 0, 0);
-      default:
-        return vec3(0, 0, 1);
-		}
-	};
-
-	const cam = vec3Rot(
-		cameraPositionForView(opts.view),
-		vec3Zero,
-		scene.rotation_deprecated ?? vec3Zero
-	);
-
-	const visibleViews = {
-  	[cam.x >= 0 ? "right" : "left"]: opts.view === "right" || opts.view === "left",
-		[cam.y >= 0 ? "top" : "bottom"]: opts.view === "top" || opts.view === "bottom",
-		[cam.z >= 0 ? "front" : "back"]: opts.view === "front" || opts.view === "back",
-	};
+	const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
 
   for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
-    if(d.views[0] && visibleViews[d.views[0]] === true) {
+    if(isViewVisible(d.views[0], visibleViews)) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
 			const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {

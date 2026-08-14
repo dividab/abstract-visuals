@@ -96,7 +96,7 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Dxf.renderOld(systemair, { view: "front", origin: "Center" })], { type: "text/plain" }),
+              new Blob([Dxf.renderOld(systemair, { view: "back", origin: "Center" })], { type: "text/plain" }),
               `a3d.dxf`
             )
           }
