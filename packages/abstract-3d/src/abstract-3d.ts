@@ -766,6 +766,38 @@ export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => {
   );
 };
 
+export function vec3BasisToEuler(
+  direction: Vec3,
+  normal: Vec3
+): Vec3 {
+  const x = vec3Normalize(direction);
+  const z = vec3Normalize(normal);
+  const y = vec3Normalize(vec3Cross(z, x));
+  const xx = vec3Normalize(vec3Cross(y, z));
+
+  const m11 = xx.x;
+  const m12 = y.x;
+  const m13 = z.x;
+  //const m21 = xx.y;
+  const m22 = y.y;
+  const m23 = z.y;
+  //const m31 = xx.z;
+  const m32 = y.z;
+  const m33 = z.z;
+
+  const ry = Math.asin(Math.max(-1, Math.min(1, m13)));
+
+  let rx: number = Math.atan2(m32, m22);;
+  let rz: number = 0;
+
+  if (Math.abs(m13) < 0.9999999) {
+    rx = Math.atan2(-m23, m33);
+    rz = Math.atan2(-m12, m11);
+  }
+
+  return vec3(rx, ry, rz);
+}
+
 export function geoRot<T extends Box | Plane | Cone | Cylinder | Text | Group>(g: T, origin: Vec3, rot: Vec3): T {
   return { ...g, pos: vec3Rot(g.pos, origin, rot), rot: vec3RotCombine(rot, g.rot ?? vec3Zero) };
 }
@@ -1024,7 +1056,9 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
   meshes.push(line(ms, ls, lineThickness, material));
   meshes.push(line(me, le, lineThickness, material));
 
-  const textRot = vec3RotCombine(dimension.normal, vec3(0, 0, Math.atan2(direction.y, direction.x)));
+  const textRot2 = vec3RotCombine(dimension.normal, vec3(0, 0, Math.atan2(direction.y, direction.x)));
+
+  const textRot = vec3BasisToEuler(direction, dimension.normal);
   meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
 
   if(measurementLength > textThreshold) {
