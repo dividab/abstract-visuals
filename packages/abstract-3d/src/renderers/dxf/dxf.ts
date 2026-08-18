@@ -180,11 +180,13 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   return dxf;
 }
 
-function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, _visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): string {
+function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): string {
   if(!d || !options.showDimensions) {
    return "";
   }
-  return d.dimensions.map((d) => dxfDimension(d, parentPos, parentRot, handleRef)).join("");
+  return d.dimensions
+    .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
+    .map((d) => dxfDimension(d, parentPos, parentRot, handleRef)).join("");
 }
 
 function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {

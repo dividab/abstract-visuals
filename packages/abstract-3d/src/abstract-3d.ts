@@ -31,6 +31,7 @@ export type DimensionMesh = {
 export type DimensionAligned = {
   readonly measurementStart: Vec3;
   readonly measurementEnd: Vec3;
+  readonly normal: Vec3;
 
   /*
     any position that lies on the line that contains the number
@@ -960,12 +961,14 @@ export const alignedDimension = (
   measurementStart: Vec3,
   measurementEnd: Vec3,
   linePosition: Vec3,
+  normal: Vec3,
   text: string,
   views?: ReadonlyArray<View>
 ): DimensionAligned => ({
   measurementStart,
   measurementEnd,
   linePosition,
+  normal,
   text,
   views
 });
@@ -1020,7 +1023,9 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
 
   meshes.push(line(ms, ls, lineThickness, material));
   meshes.push(line(me, le, lineThickness, material));
-  meshes.push(text(lcDisplaced, measurement, textSize, material, vec3(0, 0, Math.atan2(direction.y, direction.x))));
+
+  const textRot = vec3RotCombine(dimension.normal, vec3(0, 0, Math.atan2(direction.y, direction.x)));
+  meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
 
   if(measurementLength > textThreshold) {
     const textWidth = Math.max(...measurementRows.map((t) => t.length)) * (textSize * fontGlyphWidthRatio);
