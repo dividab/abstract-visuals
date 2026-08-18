@@ -1056,8 +1056,6 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
   meshes.push(line(ms, ls, lineThickness, material));
   meshes.push(line(me, le, lineThickness, material));
 
-  const textRot2 = vec3RotCombine(dimension.normal, vec3(0, 0, Math.atan2(direction.y, direction.x)));
-
   const textRot = vec3BasisToEuler(direction, dimension.normal);
   meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
 
