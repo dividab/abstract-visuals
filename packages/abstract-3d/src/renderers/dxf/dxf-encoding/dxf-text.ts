@@ -18,9 +18,9 @@ export enum DxfTextHorizontalAlignment {
     the vertical alignment must be 0 to use these
     https://help.autodesk.com/view/OARX/2018/ENU/?guid=GUID-62E5383D-8A14-47B4-BFC4-35824CAE8363
   */
-  Aligned = 3,          
-  Middle = 4,         
-  Fit = 5,          
+  Aligned = 3,
+  Middle = 4,
+  Fit = 5,
 }
 
 export function dxfEncText(pos: Vec3, rot: number, text: string, fontSize: number, col: DxfColor, handleRef: Handle): string {

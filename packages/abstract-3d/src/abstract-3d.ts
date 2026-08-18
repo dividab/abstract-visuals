@@ -1,4 +1,6 @@
 import type { AbstractImage } from "abstract-image";
+import { A3D } from "./index.js";
+import { LineDashedNodeMaterial } from "three/webgpu";
 
 export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??
@@ -19,11 +21,29 @@ export type Dimensions = {
   readonly material: Material;
 };
 
-export type Dimension = {
+export type Dimension = DimensionMesh | DimensionAligned;
+
+export type DimensionMesh = {
   readonly views: ReadonlyArray<View>;
   readonly pos: Vec3;
   readonly rot: Vec3;
   readonly meshes: ReadonlyArray<Mesh>;
+};
+
+export type DimensionAligned = {
+  readonly measurementStart: Vec3;
+  readonly measurementEnd: Vec3;
+
+  /*
+    any position that lies on the line that contains the number
+  */
+  readonly linePosition: Vec3;
+
+  /*
+    the distance between the measurementStart and measurementEnd will be used if this isn't set
+  */
+  readonly text?: string;
+  readonly views?: ReadonlyArray<View>;
 };
 
 export type DimensionBounds = {
@@ -72,13 +92,13 @@ export type ImageMesh = {
 
 export type Image =
   | {
-      readonly type: "AbstractImage";
-      readonly image: AbstractImage;
-    }
+    readonly type: "AbstractImage";
+    readonly image: AbstractImage;
+  }
   | {
-      readonly type: "Url";
-      readonly url: string;
-    };
+    readonly type: "Url";
+    readonly url: string;
+  };
 
 export type Cylinder = {
   readonly type: "Cylinder";
@@ -937,6 +957,108 @@ export const circleCurve = (radius: number, angleStart: number, angleLength: num
   angleStart,
 });
 export const splineCurve = (points: ReadonlyArray<Vec3>): SplineCurve => ({ type: "SplineCurve", points });
+
+export const alignedDimension = (
+  measurementStart: Vec3,
+  measurementEnd: Vec3,
+  linePosition: Vec3,
+  text: string,
+  views?: ReadonlyArray<View>
+): DimensionAligned => ({
+  measurementStart,
+  measurementEnd,
+  linePosition,
+  text,
+  views
+});
+
+export function dimensionIsOfTypeAligned(dimension: Dimension): dimension is DimensionAligned {
+  return "measurementStart" in dimension;
+}
+
+export function dimensionIsOfTypeMesh(dimension: Dimension): dimension is DimensionMesh {
+  return "meshes" in dimension;
+}
+
+export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, material: Material = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 }): DimensionMesh {
+  if(dimensionIsOfTypeMesh(dimension)) {
+    return dimension;
+  }
+  const meshes: Array<Mesh> = [];
+  const fontGlyphWidthRatio = 0.4815;
+  const textSize = 44;
+  const textOffset = 8;
+  const textThreshold = textOffset + textSize * fontGlyphWidthRatio * 10;
+  const lineThickness = 0.5;
+  const arrowLength = 40;
+  const arrowHalfBase = 10;
+  
+  //const view = (dimension.views !== undefined ? dimension.views[0] : "front") ?? "front";
+
+  const lp = dimension.linePosition;
+  const ms = dimension.measurementStart;
+  const me = dimension.measurementEnd;
+  const measurementLength = vec3Length(vec3Sub(me, ms));
+  const measurement = dimension.text ?? measurementLength.toFixed(1).replace(/[.,]0$/, "");
+  const measurementRows = measurement.split("\n");
+  const textHeight = measurementRows.length * textSize;
+
+  //calculate the line positions
+  const direction = vec3Normalize(vec3Sub(me, ms));
+  const msToLp = vec3Sub(lp, ms);
+  const along = vec3Scale(direction, vec3Dot(msToLp, direction));
+  const projected = vec3Add(ms, along);
+  const offset = vec3Sub(lp, projected);
+  const ls = vec3Add(ms, offset);
+  const le = vec3Add(me, offset);
+  const linesDiff = vec3Sub(ls, ms);
+  const dirBetweenLines = vec3Normalize(linesDiff);
+  const measurementWidth = vec3Length(linesDiff);
+  const displacedDistance = measurementWidth - (textHeight / 2);
+  const offsetDisplaced = vec3Scale(offset, displacedDistance / measurementWidth);
+  const lsDisplaced = vec3Add(ms, offsetDisplaced);
+  const leDisplaced = vec3Add(me, offsetDisplaced);
+  const lcDisplaced = vec3Scale(vec3Add(lsDisplaced, leDisplaced), 0.5);
+
+  meshes.push(line(ms, ls, lineThickness, material));
+  meshes.push(line(me, le, lineThickness, material));
+  meshes.push(text(lcDisplaced, measurement, textSize, material, vec3(0, 0, Math.atan2(direction.y, direction.x))));
+
+  if(measurementLength > textThreshold) {
+    const textWidth = Math.max(...measurementRows.map((t) => t.length)) * (textSize * fontGlyphWidthRatio);
+    const lineDir = vec3Normalize(vec3Sub(leDisplaced, lsDisplaced));
+    const halfTextWidth = textOffset + textWidth * 0.5;
+    const leftEnd = vec3Sub(
+      lcDisplaced,
+      vec3Scale(lineDir, halfTextWidth)
+    );
+    const rightStart = vec3Add(
+      lcDisplaced,
+      vec3Scale(lineDir, halfTextWidth)
+    );
+
+    meshes.push(line(lsDisplaced, leftEnd, lineThickness, material));
+    meshes.push(line(rightStart, leDisplaced, lineThickness, material));
+
+    //arrows
+    const arrowBaseStart = vec3Add(lsDisplaced, vec3Scale(lineDir, arrowLength));
+    const arrowBaseEnd = vec3Add(leDisplaced, vec3Scale(lineDir, -arrowLength));
+    const arrowBaseStart1 = vec3Add(arrowBaseStart, vec3Scale(dirBetweenLines, arrowHalfBase));
+    const arrowBaseStart2 = vec3Add(arrowBaseStart, vec3Scale(dirBetweenLines, -arrowHalfBase));
+    const arrowBaseEnd1 = vec3Add(arrowBaseEnd, vec3Scale(dirBetweenLines, arrowHalfBase));
+    const arrowBaseEnd2 = vec3Add(arrowBaseEnd, vec3Scale(dirBetweenLines, -arrowHalfBase));
+
+    meshes.push(polygon([lsDisplaced, arrowBaseStart2, arrowBaseStart1], material));
+    meshes.push(polygon([leDisplaced, arrowBaseEnd1, arrowBaseEnd2], material));
+  }
+
+  return {
+    meshes,
+    pos: vec3Zero,
+    rot: vec3Zero,
+    views: dimension.views ?? ["front"],
+  };
+}
 
 // -- Camera
 

@@ -30,12 +30,13 @@ import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { dxfImage } from "./dxf-geometries/dxf-image.js";
 import { dxfText } from "./dxf-geometries/dxf-text.js";
 import { dxfEncLine } from "./dxf-encoding/dxf-line.js";
+import { dxfDimension } from "./dxf-geometries/dxf-dimension.js";
 
 export type DxfOptions = {
   readonly view: View;
   readonly origin: DxfOrigin;
   readonly cylinderSideCount: number;
-  //readonly showDimensions: boolean;
+  readonly showDimensions: boolean;
 };
 
 export type DxfScenesOptionsBase = Omit<DxfOptions, "origin"> & { readonly origin: Exclude<DxfOrigin, "SameAsScene"> };
@@ -179,20 +180,11 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   return dxf;
 }
 
-function dxfDimensions(_d: Dimensions | undefined, _parentPos: Vec3, _parentRot: Vec3, _visibleViews: Record<string, boolean>, _options: DxfOptions, _handleRef: Handle): string {
-  //if(!d || !options.showDimensions) {
-  //  return "";
-  //}
-
-  return "";
-
-  // const dimensionGroups = d.dimensions
-  //   .filter((dimension) => isViewVisible(dimension.views[0], visibleViews))
-  //   .map((dimension) => group(dimension.meshes, dimension.pos, dimension.rot));
-
-  // return dimensionGroups
-  //   .map((g) => dxfGroup(g, parentPos, parentRot, options, handleRef))
-  //   .join("");
+function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, _visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): string {
+  if(!d || !options.showDimensions) {
+   return "";
+  }
+  return d.dimensions.map((d) => dxfDimension(d, parentPos, parentRot, handleRef)).join("");
 }
 
 function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
@@ -200,7 +192,7 @@ function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
     view: options?.view ?? "front",
     origin: options?.origin ?? "BottomLeftFront",
     cylinderSideCount: options?.cylinderSideCount ?? DEFAULT_CIRCLE_SIDE_COUNT,
-    //showDimensions: options?.showDimensions ?? true,
+    showDimensions: options?.showDimensions ?? true,
   };
 }
 
