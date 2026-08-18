@@ -72,7 +72,7 @@ export type Group = {
 
 export type Mesh = {
   readonly material: Material;
-  readonly geometry: Cylinder | Cone | Box | Line | Text | Polygon | Plane | Tube | Sphere | Shape | ImageMesh;
+  readonly geometry: Cylinder | Cone | Box | Line | CulledLine | Text | Polygon | Plane | Tube | Sphere | Shape | ImageMesh;
 };
 
 export type Material = {
@@ -131,6 +131,18 @@ export type Line = {
   readonly start: Vec3;
   readonly end: Vec3;
   readonly thickness: number;
+};
+
+export type CulledLine = {
+  readonly type: "CulledLine";
+  readonly start: Vec3;
+  readonly end: Vec3;
+  readonly thickness: number;
+
+  /*
+    the front facing direction, the opposite side of this will be culled
+  */
+  readonly normal: Vec3; 
 };
 
 export type Tube = {
@@ -250,6 +262,7 @@ export type BoxMesh = { readonly geometry: Box; readonly material: Material };
 export type CylinderMesh = { readonly geometry: Cylinder; readonly material: Material };
 export type ConeMesh = { readonly geometry: Cone; readonly material: Material };
 export type LineMesh = { readonly geometry: Line; readonly material: Material };
+export type CulledLineMesh = { readonly geometry: CulledLine; readonly material: Material };
 export type TextMesh = { readonly geometry: Text; readonly material: Material };
 export type PolygonMesh = { readonly geometry: Polygon; readonly material: Material };
 export type TubeMesh = { readonly geometry: Tube; readonly material: Material };
@@ -972,6 +985,13 @@ export const line = (start: Vec3, end: Vec3, thickness: number, material: Materi
   material,
 });
 
+export const culledLineMesh = (culledLine: CulledLine, material: Material): Mesh => ({ geometry: culledLine, material });
+export const culledLineGeo = (start: Vec3, end: Vec3, normal: Vec3, thickness: number): CulledLine => ({ type: "CulledLine", start, end, normal, thickness });
+export const culledLine = (start: Vec3, end: Vec3, normal: Vec3, thickness: number, material: Material): CulledLineMesh => ({
+  geometry: { type: "CulledLine", start, end, normal, thickness },
+  material,
+});
+
 export const text = (pos: Vec3, text: string, fontSize: number, material: Material, rot = vec3Zero): TextMesh => ({
   geometry: { type: "Text", pos, text, fontSize, rot },
   material,
@@ -1022,12 +1042,10 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
   const fontGlyphWidthRatio = 0.4815;
   const textSize = 44;
   const textOffset = 8;
-  const textThreshold = textOffset + textSize * fontGlyphWidthRatio * 10;
+  const textThreshold = textOffset + textSize * fontGlyphWidthRatio * 5;
   const lineThickness = 0.5;
   const arrowLength = 40;
   const arrowHalfBase = 10;
-  
-  //const view = (dimension.views !== undefined ? dimension.views[0] : "front") ?? "front";
 
   const lp = dimension.linePosition;
   const ms = dimension.measurementStart;
@@ -1054,8 +1072,8 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
   const leDisplaced = vec3Add(me, offsetDisplaced);
   const lcDisplaced = vec3Scale(vec3Add(lsDisplaced, leDisplaced), 0.5);
 
-  meshes.push(line(ms, ls, lineThickness, material));
-  meshes.push(line(me, le, lineThickness, material));
+  meshes.push(culledLine(ms, ls, dimension.normal, lineThickness, material));
+  meshes.push(culledLine(me, le, dimension.normal, lineThickness, material));
 
   const textRot = vec3BasisToEuler(direction, dimension.normal);
   meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
@@ -1073,8 +1091,8 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
       vec3Scale(lineDir, halfTextWidth)
     );
 
-    meshes.push(line(lsDisplaced, leftEnd, lineThickness, material));
-    meshes.push(line(rightStart, leDisplaced, lineThickness, material));
+    meshes.push(culledLine(lsDisplaced, leftEnd, dimension.normal, lineThickness, material));
+    meshes.push(culledLine(rightStart, leDisplaced, dimension.normal, lineThickness, material));
 
     //arrows
     const arrowBaseStart = vec3Add(lsDisplaced, vec3Scale(lineDir, arrowLength));

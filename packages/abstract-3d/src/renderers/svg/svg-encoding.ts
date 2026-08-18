@@ -168,7 +168,7 @@ function svgMaskHoles(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string
         );
         break;
       }
-      case "SquareHole":
+      case "SquareHole": {
         const holeSizeRotated = vec3Rot(vec3(hole.size.x, hole.size.y, 0), vec3Zero, rot);
         const holeSize = vec2(Math.abs(holeSizeRotated.x), Math.abs(holeSizeRotated.y));
         const halfSize = vec2Scale(holeSize, 0.5);
@@ -178,6 +178,7 @@ function svgMaskHoles(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string
           }" height="${holeSize.y / size.y}" fill="black" />`
         );
         break;
+      }
       default:
         break;
     }

@@ -158,16 +158,6 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
         dxf += dxfImage(mesh.geometry, pos, rot, handleRef);
         break;
       }
-      case "Line": {
-        //const start = vec3TransRot(mesh.geometry.start, pos, rot);
-        //const end = vec3TransRot(mesh.geometry.end, pos, rot);
-        //dxf += dxfEncLine(start, end, 7, handleRef);
-        break;
-      }
-      case "Text": {
-        //dxf += dxfText(mesh.geometry, mesh.material, pos, rot, handleRef);
-        break;
-      }
       default:
         break;
     }

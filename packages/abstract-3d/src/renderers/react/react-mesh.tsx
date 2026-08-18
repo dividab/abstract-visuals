@@ -1,21 +1,26 @@
-import React from "react";
-import { extend } from "@react-three/fiber";
+import React, { useMemo } from "react";
+import { extend, useThree } from "@react-three/fiber";
 import { Text, Line } from "@react-three/drei";
 import {
   BoxGeometry,
   BufferAttribute,
+  BufferGeometry,
   CatmullRomCurve3,
+  Color,
   ConeGeometry,
   Curve,
   CylinderGeometry,
   Euler,
   ExtrudeGeometry,
+  Float32BufferAttribute,
+  FrontSide,
   Path,
   PlaneGeometry,
   Quaternion,
   Shape,
   SphereGeometry,
   TubeGeometry,
+  Vector2,
   Vector3,
 } from "three";
 import {
@@ -78,6 +83,31 @@ export function ReactMesh({
   readonly mesh: Mesh;
   readonly children?: React.JSX.Element;
 }): React.JSX.Element {
+  const culledLineGeometry = useMemo(() => {
+    const g = new BufferGeometry();
+
+    g.setAttribute(
+      "position",
+      new Float32BufferAttribute(
+        [
+          0, -1, 0,
+          0,  1, 0,
+          1, -1, 0,
+          1,  1, 0,
+        ],
+        3
+      )
+    );
+
+    g.setIndex([
+      0, 2, 1,
+      2, 3, 1,
+    ]);
+
+    return g;
+  }, []);
+  const { camera, size } = useThree();
+
   switch (mesh.geometry.type) {
     case "Box": {
       const { pos, size, rot, holes } = mesh.geometry;
@@ -267,6 +297,27 @@ export function ReactMesh({
           {children}
         </Line>
       );
+    }
+    case "CulledLine": {
+      const { start, end, normal, thickness } = mesh.geometry;
+      const color = mesh.material.normal;
+
+      return <mesh geometry={culledLineGeometry} frustumCulled={false}>
+        <shaderMaterial
+          side={FrontSide}
+          uniforms={{
+            lineStart: { value: new Vector3(start.x, start.y, start.z) },
+            lineEnd: { value: new Vector3(end.x, end.y, end.z) },
+            lineNormal: { value: new Vector3(normal.x, normal.y, normal.z) },
+            thickness: { value: thickness },
+            viewport: { value: new Vector2(size.width, size.height) },
+            nearPlane: { value: camera.near },
+            color: { value: new Color(color) },
+          }}
+          vertexShader={culledLineVertexShader}
+          fragmentShader={culledLineFragmentShader}
+        />
+      </mesh>;
     }
     case "Polygon":
       return <Polygon polygon={mesh.geometry}>{children}</Polygon>;
@@ -517,3 +568,91 @@ class CircleCurve extends Curve<Vector3> {
     );
   }
 }
+
+const culledLineVertexShader = `
+  uniform vec3 lineStart;
+  uniform vec3 lineEnd;
+  uniform vec3 lineNormal;
+
+  uniform float thickness;
+  uniform float nearPlane;
+  uniform vec2 viewport;
+
+  void main() {
+    vec3 a = (modelViewMatrix * vec4(lineStart, 1.0)).xyz;
+    vec3 b = (modelViewMatrix * vec4(lineEnd, 1.0)).xyz;
+
+    vec3 n = normalize(mat3(modelViewMatrix) * lineNormal);
+
+    // camera is at (0,0,0) in view space.
+    vec3 mid = (a + b) * 0.5;
+    vec3 toCamera = normalize(-mid);
+
+    bool frontFacing = dot(n, toCamera) > 0.0;
+
+    if(!frontFacing) {
+      // collapse all 4 vertices to one point.
+      gl_Position = vec4(0.0);
+      return;
+    }
+
+    // ---- near-plane clipping ----
+
+    float nearZ = -nearPlane;
+
+    bool aBehind = a.z > nearZ;
+    bool bBehind = b.z > nearZ;
+
+    if(aBehind && bBehind) {
+      gl_Position = vec4(0.0);
+      return;
+    }
+
+    if(aBehind) {
+      float t = (nearZ - a.z) / (b.z - a.z);
+      a = mix(a, b, t);
+    }
+
+    if(bBehind) {
+      float t = (nearZ - b.z) / (a.z - b.z);
+      b = mix(b, a, t);
+    }
+
+    vec4 ca = projectionMatrix * vec4(a, 1.0);
+    vec4 cb = projectionMatrix * vec4(b, 1.0);
+
+    vec2 aNdc = ca.xy / ca.w;
+    vec2 bNdc = cb.xy / cb.w;
+
+    vec2 aPx = aNdc * viewport * 0.5;
+    vec2 bPx = bNdc * viewport * 0.5;
+
+    vec2 delta = bPx - aPx;
+    float len = length(delta);
+
+    if(len < 0.0001) {
+      gl_Position = vec4(0.0);
+      return;
+    }
+
+    vec2 dir = delta / len;
+    vec2 perp = vec2(-dir.y, dir.x);
+
+    float endpoint = position.x;
+    float side = position.y;
+
+    vec4 clip = mix(ca, cb, endpoint);
+
+    vec2 offsetNdc = perp * side * (thickness * 0.5) * (2.0 / viewport);
+    clip.xy += offsetNdc * clip.w;
+    gl_Position = clip;
+  }
+`;
+
+const culledLineFragmentShader = `
+  uniform vec3 color;
+
+  void main() {
+    gl_FragColor = vec4(color, 1.0);
+  }
+`;

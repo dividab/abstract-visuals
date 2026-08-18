@@ -1,10 +1,10 @@
-import { Line, Vec2, Vec3, vec3TransRot, vec3ZMean } from "../../../abstract-3d.js";
+import { CulledLine, Line, Vec2, Vec3, vec3TransRot, vec3ZMean } from "../../../abstract-3d.js";
 import { SvgOptions, zElem, zOrderElement } from "./shared.js";
 import { svgLine } from "../svg-encoding.js";
 import { rgbGrayScale } from "../../../utils.js";
 
 export function line(
-  l: Line,
+  l: Line | CulledLine,
   point: (x: number, y: number) => Vec2,
   fill: string,
   opts: SvgOptions,

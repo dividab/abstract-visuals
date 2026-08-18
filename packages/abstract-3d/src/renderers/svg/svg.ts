@@ -165,6 +165,7 @@ function svgMesh(
       return cylinder(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Cone":
       return cone(mesh.geometry, point, material, opts, parentPos, parentRot);
+    case "CulledLine":
     case "Line":
       return line(mesh.geometry, point, material.normal, opts, parentPos, parentRot);
     case "Polygon":
