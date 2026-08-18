@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { AbstractImage } from "abstract-image";
 
 export type Scene = {
@@ -1083,8 +1084,17 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
     const arrowBaseEnd1 = vec3Add(arrowBaseEnd, vec3Scale(dirBetweenLines, arrowHalfBase));
     const arrowBaseEnd2 = vec3Add(arrowBaseEnd, vec3Scale(dirBetweenLines, -arrowHalfBase));
 
-    meshes.push(polygon([lsDisplaced, arrowBaseStart2, arrowBaseStart1], material));
-    meshes.push(polygon([leDisplaced, arrowBaseEnd1, arrowBaseEnd2], material));
+    //the winding order needs to be correct according to the normal
+    const polygonFacing = (a: Vec3, b: Vec3, c: Vec3): PolygonMesh => {
+      const ab = vec3Sub(b, a);
+      const ac = vec3Sub(c, a);
+      const triangleNormal = vec3Cross(ab, ac);
+      return vec3Dot(triangleNormal, dimension.normal) >= 0
+        ? polygon([a, b, c], material)
+        : polygon([a, c, b], material);
+    };
+    meshes.push(polygonFacing(lsDisplaced, arrowBaseStart2, arrowBaseStart1));
+    meshes.push(polygonFacing(leDisplaced, arrowBaseEnd1, arrowBaseEnd2));
   }
 
   return {
