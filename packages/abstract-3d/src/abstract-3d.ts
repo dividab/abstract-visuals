@@ -1,6 +1,4 @@
 import type { AbstractImage } from "abstract-image";
-import { A3D } from "./index.js";
-import { LineDashedNodeMaterial } from "three/webgpu";
 
 export type Scene = {
   readonly size_deprecated: Vec3; // Move size calculation to every renderer??
@@ -980,7 +978,7 @@ export function dimensionIsOfTypeMesh(dimension: Dimension): dimension is Dimens
   return "meshes" in dimension;
 }
 
-export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, material: Material = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 }): DimensionMesh {
+export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation: Vec3, material: Material = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 }): DimensionMesh {
   if(dimensionIsOfTypeMesh(dimension)) {
     return dimension;
   }

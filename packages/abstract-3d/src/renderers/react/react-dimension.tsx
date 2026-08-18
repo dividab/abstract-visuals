@@ -1,7 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type { Group } from "three";
-import { Dimensions, Vec3, Dimension, vec3TransRot, vec3Flip, Mesh } from "../../abstract-3d.js";
+import { Dimensions, Vec3, Dimension, vec3TransRot, vec3Flip, Mesh, dimensionConvertToTypeMesh, vec3Zero, Material } from "../../abstract-3d.js";
 import { ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
 
@@ -26,7 +26,8 @@ export const ReactDimensions = React.memo(
         {dimensions?.dimensions.map((dimension, i) => (
           <ReactDimension
             key={i}
-            d={dimension}
+            dimension={dimension}
+            material={dimensions.material}
             visible={showDimensions}
             sceneRotation={sceneRotation}
             sceneCenter={sceneCenter}
@@ -40,18 +41,21 @@ export const ReactDimensions = React.memo(
 );
 
 export function ReactDimension({
-  d,
+  dimension,
+  material,
   visible,
   children,
   sceneRotation,
   sceneCenter,
 }: {
-  readonly d: Dimension;
+  readonly dimension: Dimension;
+  readonly material: Material;
   readonly visible: boolean;
   readonly children: React.JSX.Element;
   readonly sceneRotation: Vec3 | undefined;
   readonly sceneCenter: Vec3 | undefined;
 }): React.JSX.Element {
+  const d = dimensionConvertToTypeMesh(dimension, sceneRotation ?? vec3Zero, material);
   const ref = React.useRef<Group>(undefined!);
   useFrame(({ camera }) => {
     ref.current.visible =

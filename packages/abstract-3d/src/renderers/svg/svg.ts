@@ -23,6 +23,7 @@ import {
   vec2Add,
   View,
   vec3RotInverse,
+  dimensionConvertToTypeMesh,
 } from "../../abstract-3d.js";
 import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -115,7 +116,8 @@ function renderInternal(
   elements.sort((a, b) => a.zOrder - b.zOrder);
 	const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
 
-  for (const d of scene.dimensions_deprecated?.dimensions ?? []) {
+  for (const dim of scene.dimensions_deprecated?.dimensions ?? []) {
+    const d = dimensionConvertToTypeMesh(dim, scene.rotation_deprecated ?? vec3Zero, scene.dimensions_deprecated?.material);
     if(isViewVisible(d.views[0], visibleViews)) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
 			const rot = vec3RotCombine(unitRot, d.rot);
