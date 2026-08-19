@@ -1082,20 +1082,30 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
   meshes.push(culledLine(ms, ls, basis.normal, lineThickness, material));
   meshes.push(culledLine(me, le, basis.normal, lineThickness, material));
 
-  const side = getDimensionSide(dirBetweenLines, basis);
-  const textDir = getDimensionTextDirection(side, basis);
-  const textUp = vec3Normalize(
-    vec3Cross(basis.normal, textDir)
+  const rotatedDirBetweenLines = vec3TransRot(
+    dirBetweenLines,
+    vec3Zero,
+    sceneRotation
   );
-  const rotatedTextUp = vec3TransRot(textUp, vec3Zero, sceneRotation);
-  const upsideDown = vec3Dot(rotatedTextUp, textUp) < 0;
-  const finalTextDir = upsideDown
-    ? vec3Scale(textDir, -1)
-    : textDir;
-
+  const renderedSide = getDimensionSide(
+    rotatedDirBetweenLines,
+    basis
+  );
+  const desiredRenderedTextDir = getDimensionTextDirection(renderedSide, basis);
+  const inverseSceneRotation = vec3RotInverse(sceneRotation);
+  const textDir = vec3TransRot(
+    desiredRenderedTextDir,
+    vec3Zero,
+    inverseSceneRotation
+  );
+  const textNormal = vec3TransRot(
+    basis.normal,
+    vec3Zero,
+    inverseSceneRotation
+  );
   const textRot = vec3BasisToEuler(
-    finalTextDir,
-    basis.normal
+    textDir,
+    textNormal
   );
   meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
 
