@@ -1038,7 +1038,7 @@ export function dimensionIsOfTypeMesh(dimension: Dimension): dimension is Dimens
   return "meshes" in dimension;
 }
 
-export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation: Vec3, material: Material = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 }): DimensionMesh {
+export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, material: Material = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 }): DimensionMesh {
   if(dimensionIsOfTypeMesh(dimension)) {
     return dimension;
   }
@@ -1084,8 +1084,17 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
 
   const side = getDimensionSide(dirBetweenLines, basis);
   const textDir = getDimensionTextDirection(side, basis);
+  const textUp = vec3Normalize(
+    vec3Cross(basis.normal, textDir)
+  );
+  const rotatedTextUp = vec3TransRot(textUp, vec3Zero, sceneRotation);
+  const upsideDown = vec3Dot(rotatedTextUp, textUp) < 0;
+  const finalTextDir = upsideDown
+    ? vec3Scale(textDir, -1)
+    : textDir;
+
   const textRot = vec3BasisToEuler(
-    textDir,
+    finalTextDir,
     basis.normal
   );
   meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
