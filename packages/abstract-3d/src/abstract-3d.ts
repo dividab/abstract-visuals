@@ -1087,11 +1087,17 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
     vec3Zero,
     sceneRotation
   );
+  const rotatedNormal = vec3TransRot(
+    basis.normal,
+    vec3Zero,
+    sceneRotation
+  );
+  const renderedBasis = getDimensionViewBasisFromNormal(rotatedNormal);
   const renderedSide = getDimensionSide(
     rotatedDirBetweenLines,
-    basis
+    renderedBasis
   );
-  const desiredRenderedTextDir = getDimensionTextDirection(renderedSide, basis);
+  const desiredRenderedTextDir = getDimensionTextDirection(renderedSide, renderedBasis);
   const inverseSceneRotation = vec3RotInverse(sceneRotation);
   const textDir = vec3TransRot(
     desiredRenderedTextDir,
@@ -1178,6 +1184,22 @@ function getDimensionTextDirection(
     default:
       return basis.right;
   }
+}
+
+function getDimensionViewBasisFromNormal(normal: Vec3): DimensionViewBias {
+  let bestBasis = dimensionViewBasises.front;
+  let bestDot = -Infinity;
+
+  for (const basis of Object.values(dimensionViewBasises)) {
+    const dot = vec3Dot(normal, basis.normal);
+
+    if (dot > bestDot) {
+      bestDot = dot;
+      bestBasis = basis;
+    }
+  }
+
+  return bestBasis;
 }
 
 const dimensionViewBasises: Record<View, DimensionViewBias> = {
