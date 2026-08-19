@@ -92,7 +92,7 @@ const renderInternal = (
 
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
-    dimensions: dxfDimensions(scene.dimensions_deprecated, vec3Zero, unitRot, visibleViews, options, handleRef),
+    dimensions: dxfDimensions(scene.dimensions_deprecated, pos, unitRot, visibleViews, options, handleRef),
     size,
     center: pos,
   };
