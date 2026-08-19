@@ -32,7 +32,6 @@ export type DimensionMesh = {
 export type DimensionAligned = {
   readonly measurementStart: Vec3;
   readonly measurementEnd: Vec3;
-  readonly normal: Vec3;
 
   /*
     any position that lies on the line that contains the number
@@ -44,6 +43,13 @@ export type DimensionAligned = {
   */
   readonly text?: string;
   readonly views?: ReadonlyArray<View>;
+};
+
+type DimensionSide = "top" | "bottom" | "left" | "right";
+type DimensionViewBias = {
+  readonly right: Vec3;
+  readonly up: Vec3;
+  readonly normal: Vec3;
 };
 
 export type DimensionBounds = {
@@ -1014,14 +1020,12 @@ export const alignedDimension = (
   measurementStart: Vec3,
   measurementEnd: Vec3,
   linePosition: Vec3,
-  normal: Vec3,
   text: string,
   views?: ReadonlyArray<View>
 ): DimensionAligned => ({
   measurementStart,
   measurementEnd,
   linePosition,
-  normal,
   text,
   views
 });
@@ -1055,6 +1059,9 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
   const measurementRows = measurement.split("\n");
   const textHeight = measurementRows.length * textSize;
 
+  const view = dimension.views?.[0] ?? "front";
+  const basis = dimensionViewBasises[view];
+
   //calculate the line positions
   const direction = vec3Normalize(vec3Sub(me, ms));
   const msToLp = vec3Sub(lp, ms);
@@ -1072,10 +1079,15 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
   const leDisplaced = vec3Add(me, offsetDisplaced);
   const lcDisplaced = vec3Scale(vec3Add(lsDisplaced, leDisplaced), 0.5);
 
-  meshes.push(culledLine(ms, ls, dimension.normal, lineThickness, material));
-  meshes.push(culledLine(me, le, dimension.normal, lineThickness, material));
+  meshes.push(culledLine(ms, ls, basis.normal, lineThickness, material));
+  meshes.push(culledLine(me, le, basis.normal, lineThickness, material));
 
-  const textRot = vec3BasisToEuler(direction, dimension.normal);
+  const side = getDimensionSide(dirBetweenLines, basis);
+  const textDir = getDimensionTextDirection(side, basis);
+  const textRot = vec3BasisToEuler(
+    textDir,
+    basis.normal
+  );
   meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
 
   if(measurementLength > textThreshold) {
@@ -1091,8 +1103,8 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
       vec3Scale(lineDir, halfTextWidth)
     );
 
-    meshes.push(culledLine(lsDisplaced, leftEnd, dimension.normal, lineThickness, material));
-    meshes.push(culledLine(rightStart, leDisplaced, dimension.normal, lineThickness, material));
+    meshes.push(culledLine(lsDisplaced, leftEnd, basis.normal, lineThickness, material));
+    meshes.push(culledLine(rightStart, leDisplaced, basis.normal, lineThickness, material));
 
     //arrows
     const arrowBaseStart = vec3Add(lsDisplaced, vec3Scale(lineDir, arrowLength));
@@ -1107,7 +1119,7 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
       const ab = vec3Sub(b, a);
       const ac = vec3Sub(c, a);
       const triangleNormal = vec3Cross(ab, ac);
-      return vec3Dot(triangleNormal, dimension.normal) >= 0
+      return vec3Dot(triangleNormal, basis.normal) >= 0
         ? polygon([a, b, c], material)
         : polygon([a, c, b], material);
     };
@@ -1122,6 +1134,46 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, _sceneRotation:
     views: dimension.views ?? ["front"],
   };
 }
+
+function getDimensionSide(
+  dir: Vec3,
+  basis: DimensionViewBias
+): DimensionSide {
+  const right = vec3Dot(dir, basis.right);
+  const up = vec3Dot(dir, basis.up);
+
+  if (Math.abs(right) > Math.abs(up)) {
+    return right > 0 ? "right" : "left";
+  }
+
+  return up > 0 ? "top" : "bottom";
+}
+
+function getDimensionTextDirection(
+  side: DimensionSide,
+  basis: DimensionViewBias
+): Vec3 {
+  switch (side) {
+    case "top":
+    case "bottom":
+      return basis.right;
+    case "left":
+      return basis.up;
+    case "right":
+      return vec3Scale(basis.up, -1);
+    default:
+      return basis.right;
+  }
+}
+
+const dimensionViewBasises: Record<View, DimensionViewBias> = {
+  "front":  { right: vec3(1, 0, 0), up: vec3(0, 1, 0), normal: vec3(0, 0, 1) },
+  "back":   { right: vec3(-1, 0, 0), up: vec3(0, 1, 0), normal: vec3(0, 0, -1) },
+  "left":   { right: vec3(0, 0, 1), up: vec3(0, 1, 0), normal: vec3(-1, 0, 0) },
+  "right":  { right: vec3(0, 0, -1), up: vec3(0, 1, 0), normal: vec3(1, 0, 0) },
+  "top":    { right: vec3(1, 0, 0), up: vec3(0, 0, -1), normal: vec3(0, 1, 0) },
+  "bottom": { right: vec3(1, 0, 0), up: vec3(0, 0, 1), normal: vec3(0, -1, 0) },
+};
 
 // -- Camera
 
