@@ -43,6 +43,7 @@ export type DimensionAligned = {
   */
   readonly text?: string;
   readonly views?: ReadonlyArray<View>;
+  readonly material?: Material;
 };
 
 type DimensionSide = "top" | "bottom" | "left" | "right";
@@ -1021,13 +1022,15 @@ export const alignedDimension = (
   measurementEnd: Vec3,
   linePosition: Vec3,
   text: string,
-  views?: ReadonlyArray<View>
+  views?: ReadonlyArray<View>,
+  material?: Material,
 ): DimensionAligned => ({
   measurementStart,
   measurementEnd,
   linePosition,
   text,
-  views
+  views,
+  material,
 });
 
 export function dimensionIsOfTypeAligned(dimension: Dimension): dimension is DimensionAligned {
@@ -1038,15 +1041,17 @@ export function dimensionIsOfTypeMesh(dimension: Dimension): dimension is Dimens
   return "meshes" in dimension;
 }
 
-export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, material: Material = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 }): DimensionMesh {
+export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, dimensionsMaterial?: Material): DimensionMesh {
   if(dimensionIsOfTypeMesh(dimension)) {
     return dimension;
   }
   const meshes: Array<Mesh> = [];
+  const defaultMaterial = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 };
+  const material = dimension.material ?? (dimensionsMaterial ?? defaultMaterial);
   const fontGlyphWidthRatio = 0.4815;
   const textSize = 44;
   const textOffset = 8;
-  const textThreshold = textOffset + textSize * fontGlyphWidthRatio * 5;
+  const textThreshold = textOffset + textSize * fontGlyphWidthRatio * 7;
   const lineThickness = 0.5;
   const arrowLength = 40;
   const arrowHalfBase = 10;
