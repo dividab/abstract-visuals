@@ -1098,14 +1098,9 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
     vec3Zero,
     inverseSceneRotation
   );
-  const textNormal = vec3TransRot(
-    basis.normal,
-    vec3Zero,
-    inverseSceneRotation
-  );
   const textRot = vec3BasisToEuler(
     textDir,
-    textNormal
+    basis.normal
   );
   meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
 
