@@ -28,8 +28,6 @@ import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { dxfImage } from "./dxf-geometries/dxf-image.js";
-import { dxfText } from "./dxf-geometries/dxf-text.js";
-import { dxfEncLine } from "./dxf-encoding/dxf-line.js";
 import { dxfDimension } from "./dxf-geometries/dxf-dimension.js";
 import { DxfDimensionDefinition } from "./dxf-encoding/dxf-dimension.js";
 

@@ -1,6 +1,6 @@
-import { dimensionMeshifyAlignedDimension, type Material, vec3Zero, type Vec3 } from "../../../abstract-3d.js";
+import { dimensionMeshifyAlignedDimension, type Material, vec3Zero, type Vec3, DimensionAligned, View } from "../../../abstract-3d.js";
 import { type DxfColor, dxfColor } from "./dxf-color.js";
-import { DXF_BLOCK_RECORD_HANDLE, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
+import { DXF_BLOCK_RECORD_TABLE_HANDLE, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 import { dxfEncLine } from "./dxf-line.js";
 import { DxfMTextAttachment, dxfEncMText } from "./dxf-mtext.js";
 import { dxfEncSolidTriangle } from "./dxf-triangle.js";
@@ -17,13 +17,14 @@ export function dxfEncDimension(
   linePosition: Vec3,
   text: string,
   col: DxfColor,
+  views: ReadonlyArray<View>,
   handleRef: Handle
 ): DxfDimensionDefinition {
   const blockRecordHandle = dxfHandleNext(handleRef);
   const blockName = `*D${blockRecordHandle}`;
   return {
     entity: dxfEncodeDimensionEntity(blockName, measurementStart, measurementEnd, linePosition, text, col, handleRef),
-    block: dxfEncodeDimensionBlock(blockName, blockRecordHandle, measurementStart, measurementEnd, linePosition, text, col, handleRef),
+    block: dxfEncodeDimensionBlock(blockName, blockRecordHandle, measurementStart, measurementEnd, linePosition, text, col, views, handleRef),
     blockRecord: dxfEncodeDimensionBlockRecord(blockName, blockRecordHandle)
   };
 }
@@ -108,7 +109,7 @@ BLOCK_RECORD
 5
 ${blockRecordHandle}
 330
-${DXF_BLOCK_RECORD_HANDLE}
+${DXF_BLOCK_RECORD_TABLE_HANDLE}
 100
 AcDbSymbolTableRecord
 100
@@ -126,6 +127,7 @@ function dxfEncodeDimensionBlock(
   linePosition: Vec3,
   text: string,
   col: DxfColor,
+  views: ReadonlyArray<View>,
   handleRef: Handle
 ): string {
   return `0
@@ -154,7 +156,7 @@ ${blockName}
 ${blockName}
 1
 
-${dxfEncodeDimensionGeometry(blockRecordHandle, measurementStart, measurementEnd, linePosition, text, col, handleRef)}0
+${dxfEncodeDimensionGeometry(blockRecordHandle, measurementStart, measurementEnd, linePosition, text, col, views, handleRef)}0
 ENDBLK
 5
 ${dxfHandleNext(handleRef)}
@@ -178,6 +180,7 @@ function dxfEncodeDimensionGeometry(
   linePosition: Vec3,
   text: string,
   col: DxfColor,
+  views: ReadonlyArray<View>,
   handleRef: Handle
 ): string {
   let entities = "";
@@ -191,8 +194,14 @@ function dxfEncodeDimensionGeometry(
   const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, _mat: Material): void => {
     entities += dxfEncSolidTriangle(p1, p2, p3, col, handleRef, blockRecordHandle);
   };
-
-  dimensionMeshifyAlignedDimension({linePosition, measurementEnd, measurementStart, text}, vec3Zero, onCreateLine, onCreateText, onCreatePolygon);
+  const dimension: DimensionAligned = {
+    linePosition,
+    measurementStart,
+    measurementEnd,
+    text,
+    views
+  };
+  dimensionMeshifyAlignedDimension(dimension, vec3Zero, onCreateLine, onCreateText, onCreatePolygon);
   return entities;
 }
 

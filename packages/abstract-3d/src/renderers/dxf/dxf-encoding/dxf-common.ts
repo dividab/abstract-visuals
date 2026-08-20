@@ -5,16 +5,17 @@ import { dxfEncFooter } from "./dxf-footer.js";
 import { dxfEncHeader } from "./dxf-header.js";
 
 export const DEFAULT_CIRCLE_SIDE_COUNT = 16;
-export const DXF_DEFAULT_HANDLE = 0x1000;
+export const DXF_FONT_SIZE_RATIO: number = 2.0 / 3.0;
+export const DXF_DEFAULT_START_HANDLE = 0x1000;
 export const DXF_MODEL_SPACE_HANDLE = "1D";
-export const DXF_BLOCK_RECORD_HANDLE = "1";
+export const DXF_BLOCK_RECORD_TABLE_HANDLE = "1";
 
 export type DxfOrigin = "BottomLeftFront" | "Center" | "SameAsScene";
 export type Handle = { handle: number };
 
 export function dxfHandleInit(): Handle {
   return {
-    handle: DXF_DEFAULT_HANDLE,
+    handle: DXF_DEFAULT_START_HANDLE,
   };
 }
 

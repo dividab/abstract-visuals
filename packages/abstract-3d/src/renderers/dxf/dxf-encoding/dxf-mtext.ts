@@ -1,5 +1,5 @@
 import type { Vec3 } from "../../../abstract-3d.js";
-import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
+import { DXF_FONT_SIZE_RATIO, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 
 export enum DxfMTextAttachment {
   TopLeft = 1,
@@ -33,7 +33,7 @@ ${dxfRound(pos.y)}
 30
 ${dxfRound(pos.z)}
 40
-${(fontSize * 0.75).toString()}
+${(fontSize * DXF_FONT_SIZE_RATIO).toString()}
 71
 ${attachment}
 50

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import type { Bounds3, Vec3 } from "../../../abstract-3d.js";
-import { DXF_BLOCK_RECORD_HANDLE, DXF_MODEL_SPACE_HANDLE } from "./dxf-common.js";
+import { DXF_BLOCK_RECORD_TABLE_HANDLE, DXF_MODEL_SPACE_HANDLE } from "./dxf-common.js";
 
 const DXF_MAKER = "DXF Generated from Divid Abstract 3D";
 const DXF_STANDARD = "AC1015";
@@ -1485,7 +1485,7 @@ TABLE
   2
 BLOCK_RECORD
   5
-${DXF_BLOCK_RECORD_HANDLE}
+${DXF_BLOCK_RECORD_TABLE_HANDLE}
 330
 0
 100
@@ -1497,7 +1497,7 @@ BLOCK_RECORD
   5
 ${DXF_MODEL_SPACE_HANDLE}
 330
-${DXF_BLOCK_RECORD_HANDLE}
+${DXF_BLOCK_RECORD_TABLE_HANDLE}
 100
 AcDbSymbolTableRecord
 100
@@ -1511,7 +1511,7 @@ BLOCK_RECORD
   5
 1B
 330
-${DXF_BLOCK_RECORD_HANDLE}
+${DXF_BLOCK_RECORD_TABLE_HANDLE}
 100
 AcDbSymbolTableRecord
 100
@@ -1525,7 +1525,7 @@ BLOCK_RECORD
   5
 2D
 330
-${DXF_BLOCK_RECORD_HANDLE}
+${DXF_BLOCK_RECORD_TABLE_HANDLE}
 100
 AcDbSymbolTableRecord
 100

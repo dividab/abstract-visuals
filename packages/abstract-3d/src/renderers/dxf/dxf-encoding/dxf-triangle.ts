@@ -1,7 +1,7 @@
 import type { Vec3 } from "../../../abstract-3d.js";
+import { dxfEnc3DFace } from "./dxf-3dface.js";
 import type { DxfColor } from "./dxf-color.js";
 import type { Handle } from "./dxf-common.js";
-import { dxfEnc3DFace } from "./dxf-3dface.js";
 import { dxfEncSolid } from "./dxf-solid.js";
 
 export const dxfEnc3DFaceTriangle = (

@@ -1,5 +1,5 @@
 import type { Vec3 } from "../../../abstract-3d.js";
-import { dxfColor, type DxfColor } from "./dxf-color.js";
+import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 
 export const dxfEncSolid = (

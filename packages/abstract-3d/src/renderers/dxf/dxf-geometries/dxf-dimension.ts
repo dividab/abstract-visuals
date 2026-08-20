@@ -14,5 +14,5 @@ export function dxfDimension(dimension: Dimension, parentPos: Vec3, parentRot: V
   const me = vec3TransRot(dimension.measurementEnd, parentPos, parentRot);
   const lp = vec3TransRot(dimension.linePosition, parentPos, parentRot);
   const text = dimension.text ?? `${vec3Length(vec3Sub(me, ms))}`;
-  return dxfEncDimension(ms, me, lp, text, 7, handleRef);
+  return dxfEncDimension(ms, me, lp, text, 7, dimension.views ?? ["front"], handleRef);
 }
