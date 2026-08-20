@@ -97,10 +97,9 @@ const renderInternal = (
   const pos =
     options.origin === "SameAsScene" ? vec3Zero : vec3NegateY(vec3Add(unitCenter, vec3Add(offset, dxfOriginOffset)));
   const visibleViews = calculateVisibleViews(options.view, scene.rotation_deprecated);
-
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
-    dimensions: dxfDimensions(scene.dimensions_deprecated, pos, unitRot, visibleViews, options, handleRef),
+    dimensions: dxfDimensions(scene.dimensions_deprecated, pos, unitRot, scene.rotation_deprecated ?? vec3Zero, visibleViews, options, handleRef),
     size,
     center: pos,
   };
@@ -178,7 +177,7 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   return dxf;
 }
 
-function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): DxfDimensionDefinition {
+function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, sceneRotation: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): DxfDimensionDefinition {
   if(!d || !options.showDimensions) {
    return {
     entity: "",
@@ -188,7 +187,7 @@ function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Ve
   }
   return d.dimensions
     .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
-    .map((d) => dxfDimension(d, parentPos, parentRot, handleRef))
+    .map((d) => dxfDimension(d, parentPos, parentRot, sceneRotation, handleRef))
     .reduce<DxfDimensionDefinition>((prev, curr) => ({ block: prev.block + curr.block, entity: prev.entity + curr.entity, blockRecord: prev.blockRecord + curr.blockRecord }), {block: "", entity: "", blockRecord: ""});
 }
 

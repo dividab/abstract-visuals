@@ -1,4 +1,4 @@
-import { dimensionMeshifyAlignedDimension, type Material, vec3Zero, type Vec3, DimensionAligned, View } from "../../../abstract-3d.js";
+import { dimensionMeshifyAlignedDimension, type Material, type Vec3, DimensionAligned, View } from "../../../abstract-3d.js";
 import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_BLOCK_RECORD_TABLE_HANDLE, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 import { dxfEncLine } from "./dxf-line.js";
@@ -17,6 +17,7 @@ export function dxfEncDimension(
   linePosition: Vec3,
   text: string,
   col: DxfColor,
+  sceneRotation: Vec3,
   views: ReadonlyArray<View>,
   handleRef: Handle
 ): DxfDimensionDefinition {
@@ -24,7 +25,7 @@ export function dxfEncDimension(
   const blockName = `*D${blockRecordHandle}`;
   return {
     entity: dxfEncodeDimensionEntity(blockName, measurementStart, measurementEnd, linePosition, text, col, handleRef),
-    block: dxfEncodeDimensionBlock(blockName, blockRecordHandle, measurementStart, measurementEnd, linePosition, text, col, views, handleRef),
+    block: dxfEncodeDimensionBlock(blockName, blockRecordHandle, measurementStart, measurementEnd, linePosition, text, col, sceneRotation, views, handleRef),
     blockRecord: dxfEncodeDimensionBlockRecord(blockName, blockRecordHandle)
   };
 }
@@ -54,16 +55,10 @@ AcDbDimension
 2
 ${blockName}
 10
-${dxfRound(measurementEnd.x)}
+${dxfRound(linePosition.x)}
 20
 ${dxfRound(linePosition.y)}
 30
-${dxfRound(linePosition.z)}
-11
-${dxfRound(linePosition.x)}
-21
-${dxfRound(linePosition.y)}
-31
 ${dxfRound(linePosition.z)}
 70
 33
@@ -75,14 +70,6 @@ ${encodeDxfFormattedText(text)}
 0
 3
 Standard
-53
-0
-210
-0
-220
-0
-230
-1
 100
 AcDbAlignedDimension
 13
@@ -127,6 +114,7 @@ function dxfEncodeDimensionBlock(
   linePosition: Vec3,
   text: string,
   col: DxfColor,
+  sceneRotation: Vec3,
   views: ReadonlyArray<View>,
   handleRef: Handle
 ): string {
@@ -156,7 +144,7 @@ ${blockName}
 ${blockName}
 1
 
-${dxfEncodeDimensionGeometry(blockRecordHandle, measurementStart, measurementEnd, linePosition, text, col, views, handleRef)}0
+${dxfEncodeDimensionGeometry(blockRecordHandle, measurementStart, measurementEnd, linePosition, text, col, sceneRotation, views, handleRef)}0
 ENDBLK
 5
 ${dxfHandleNext(handleRef)}
@@ -180,6 +168,7 @@ function dxfEncodeDimensionGeometry(
   linePosition: Vec3,
   text: string,
   col: DxfColor,
+  sceneRotation: Vec3,
   views: ReadonlyArray<View>,
   handleRef: Handle
 ): string {
@@ -201,7 +190,7 @@ function dxfEncodeDimensionGeometry(
     text,
     views
   };
-  dimensionMeshifyAlignedDimension(dimension, vec3Zero, onCreateLine, onCreateText, onCreatePolygon);
+  dimensionMeshifyAlignedDimension(dimension, sceneRotation, onCreateLine, onCreateText, onCreatePolygon);
   return entities;
 }
 
