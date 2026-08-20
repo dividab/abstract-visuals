@@ -2,6 +2,7 @@ import { generateUUID } from "three/src/math/MathUtils.js";
 import type { Bounds3, Vec3 } from "../../../abstract-3d.js";
 import { dxfEncFooter } from "./dxf-footer.js";
 import { dxfEncHeader } from "./dxf-header.js";
+import { DxfDimensionDefinition } from "./dxf-dimension.js";
 
 export const DEFAULT_CIRCLE_SIDE_COUNT = 16;
 export const DXF_DEFAULT_HANDLE = 0x1000;
@@ -25,7 +26,7 @@ export function dxfRound(n: number): number {
   return Math.round((n + Number.EPSILON) * 10 ** d) / 10 ** d;
 }
 
-export function dxfBuild(groups: string, dimensions: string, bounds: Bounds3, size: Vec3, center: Vec3): string {
+export function dxfBuild(groups: string, dimensions: DxfDimensionDefinition, bounds: Bounds3, size: Vec3, center: Vec3): string {
   const id = generateUUID();
-  return dxfEncHeader(bounds, center, id, size) + groups + dimensions + dxfEncFooter(id);
+  return dxfEncHeader(bounds, center, id, size, dimensions.block) + groups + dimensions.entity + dxfEncFooter(id);
 }

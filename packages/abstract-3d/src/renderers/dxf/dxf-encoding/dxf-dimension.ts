@@ -2,7 +2,28 @@ import type { Vec3 } from "../../../abstract-3d.js";
 import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 
+export type DxfDimensionDefinition = {
+  readonly entity: string;
+  readonly block: string;
+};
+
 export function dxfEncDimension(
+  measurementStart: Vec3,
+  measurementEnd: Vec3,
+  linePosition: Vec3,
+  text: string,
+  col: DxfColor,
+  handleRef: Handle
+): DxfDimensionDefinition {
+  const blockName = `*Dimension${dxfHandleNext(handleRef)}`;
+  return {
+    entity: dxfEncodeDimensionEntity(blockName, measurementStart, measurementEnd, linePosition, text, col, handleRef),
+    block: dxfEncodeDimensionBlock(blockName, measurementStart, measurementEnd, linePosition, text, col, handleRef),
+  };
+}
+
+function dxfEncodeDimensionEntity(
+  blockName: string,
   measurementStart: Vec3,
   measurementEnd: Vec3,
   linePosition: Vec3,
@@ -23,6 +44,8 @@ AcDbEntity
 ${dxfColor(col)}
 100
 AcDbDimension
+2
+${blockName}
 10
 ${dxfRound(measurementEnd.x)}
 20
@@ -68,6 +91,18 @@ ${dxfRound(measurementEnd.y)}
 34
 ${dxfRound(measurementEnd.z)}
 `;
+}
+
+function dxfEncodeDimensionBlock(
+  blockName: string,
+  measurementStart: Vec3,
+  measurementEnd: Vec3,
+  linePosition: Vec3,
+  text: string,
+  col: DxfColor,
+  handleRef: Handle
+): string {
+  return "";
 }
 
 export function encodeDxfFormattedText(text: string): string {

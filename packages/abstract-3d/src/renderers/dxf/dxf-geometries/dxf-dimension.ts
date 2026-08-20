@@ -1,10 +1,13 @@
 import { type Dimension, dimensionIsOfTypeMesh, type Vec3, vec3Length, vec3Sub, vec3TransRot } from "../../../abstract-3d.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
-import { dxfEncDimension } from "../dxf-encoding/dxf-dimension.js";
+import { type DxfDimensionDefinition, dxfEncDimension } from "../dxf-encoding/dxf-dimension.js";
 
-export function dxfDimension(dimension: Dimension, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
+export function dxfDimension(dimension: Dimension, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): DxfDimensionDefinition {
   if(dimensionIsOfTypeMesh(dimension)) {
-    return "";
+    return {
+      block: "",
+      entity: "",
+    };
   }
   const ms = vec3TransRot(dimension.measurementStart, parentPos, parentRot);
   const me = vec3TransRot(dimension.measurementEnd, parentPos, parentRot);

@@ -5,7 +5,7 @@ import { DXF_MODEL_SPACE_HANDLE } from "./dxf-common.js";
 const DXF_MAKER = "DXF Generated from Divid Abstract 3D";
 const DXF_STANDARD = "AC1015";
 
-export const dxfEncHeader = (bounds: Bounds3, center: Vec3, blockId: string, size: Vec3, dimScale: number = 44.0, dimArrowSize: number = 1.0, dimTextHeight: number = 1.0): string =>
+export const dxfEncHeader = (bounds: Bounds3, center: Vec3, blockId: string, size: Vec3, dimBlocks: string, dimScale: number = 44.0, dimArrowSize: number = 1.0, dimTextHeight: number = 1.0): string =>
   ` 999
 ${DXF_MAKER}
 0

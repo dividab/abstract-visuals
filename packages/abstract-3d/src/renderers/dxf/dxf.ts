@@ -31,6 +31,7 @@ import { dxfImage } from "./dxf-geometries/dxf-image.js";
 import { dxfText } from "./dxf-geometries/dxf-text.js";
 import { dxfEncLine } from "./dxf-encoding/dxf-line.js";
 import { dxfDimension } from "./dxf-geometries/dxf-dimension.js";
+import { DxfDimensionDefinition } from "./dxf-encoding/dxf-dimension.js";
 
 export type DxfOptions = {
   readonly view: View;
@@ -49,7 +50,11 @@ export type DxfScene = {
 
 export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Optional<DxfScenesOptionsBase>): string {
   let allGroups = "";
-  let allDimensions = "";
+  let allDimensions: DxfDimensionDefinition = {
+    block: "",
+    entity: ""
+  };
+
   const allBounds = Array<Bounds3>();
   const handle = dxfHandleInit();
   const originOffset = originOffsetFromScenes(scenes, baseOptions?.origin ?? "Center");
@@ -61,7 +66,10 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
       handle
     );
     allGroups += groups;
-    allDimensions += dimensions;
+    allDimensions = {
+      entity: allDimensions.entity + dimensions.entity,
+      block: allDimensions.block + dimensions.block,
+    };
     allBounds.push(bounds3FromPosAndSize(center, size));
   }
   const bounds = bounds3Merge(...allBounds);
@@ -80,7 +88,7 @@ const renderInternal = (
   options: DxfOptions,
   offset: Vec3,
   handleRef: Handle
-): { readonly groups: string; readonly dimensions: string; readonly size: Vec3; readonly center: Vec3 } => {
+): { readonly groups: string; readonly dimensions: DxfDimensionDefinition; readonly size: Vec3; readonly center: Vec3 } => {
   const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
   const unitCenter = scene.center_deprecated ?? vec3Zero;
   const [size] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
@@ -170,14 +178,19 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   return dxf;
 }
 
-function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): string {
+function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): DxfDimensionDefinition {
   if(!d || !options.showDimensions) {
-   return "";
+   return {
+    block: "",
+    entity: "",
+   };
   }
-  return dxfDimension({linePosition: vec3(0, 700, 0), measurementStart: vec3(-500, 600, 400), measurementEnd: vec3(500, 600, 400)}, parentPos, parentRot, handleRef);
-  // return d.dimensions
-  //   .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
-  //   .map((d) => dxfDimension({linePosition: vec3(0, 700, 0), measurementStart: vec3(-500, 600, 400), measurementEnd: vec3(500, 600, 400)}, parentPos, parentRot, handleRef)).join("");
+  //return dxfDimension({linePosition: vec3(0, 700, 0), measurementStart: vec3(-500, 600, 400), measurementEnd: vec3(500, 600, 400)}, parentPos, parentRot, handleRef);
+  
+  return d.dimensions
+    .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
+    .map((d) => dxfDimension(d, parentPos, parentRot, handleRef))
+    .reduce<DxfDimensionDefinition>((prev, curr) => ({block: prev.block + curr.block, entity: prev.block + curr.block}), {block: "", entity: ""});
 }
 
 function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
