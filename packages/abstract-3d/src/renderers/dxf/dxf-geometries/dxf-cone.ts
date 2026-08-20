@@ -8,7 +8,7 @@ import {
   vec3Zero,
 } from "../../../abstract-3d.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
-import { dxfEncTriangle } from "../dxf-encoding/dxf-triangle.js";
+import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
 
 export function dxfCone(
   c: Cone,
@@ -37,8 +37,8 @@ export function dxfCone(
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
       dxfString +=
-        dxfEncTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
-        dxfEncTriangle(currBot, prevBot, topPos, m.normal, handleRef);
+        dxfEnc3DFaceTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
+        dxfEnc3DFaceTriangle(currBot, prevBot, topPos, m.normal, handleRef);
     }
     currentAngle += angleStep;
   }

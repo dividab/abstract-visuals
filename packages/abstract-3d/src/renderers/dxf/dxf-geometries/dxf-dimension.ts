@@ -7,6 +7,7 @@ export function dxfDimension(dimension: Dimension, parentPos: Vec3, parentRot: V
     return {
       block: "",
       entity: "",
+      blockRecord: "",
     };
   }
   const ms = vec3TransRot(dimension.measurementStart, parentPos, parentRot);

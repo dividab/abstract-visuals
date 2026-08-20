@@ -2,24 +2,25 @@ import type { Vec3 } from "../../../abstract-3d.js";
 import { dxfColor, type DxfColor } from "./dxf-color.js";
 import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 
-export const dxfEncQuad = (
+export const dxfEncSolid = (
   vec1: Vec3,
   vec2: Vec3,
   vec3: Vec3,
   vec4: Vec3,
   col: DxfColor,
-  handleRef: Handle
+  handleRef: Handle,
+  blockRefHandle?: string
 ): string => `  0
-3DFACE
+SOLID
 5
 ${dxfHandleNext(handleRef)}
 330
-${DXF_MODEL_SPACE_HANDLE}
+${blockRefHandle ?? DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
 ${dxfColor(col)}
 100
-AcDbFace
+AcDbTrace
 10
 ${dxfRound(vec1.x)}
 20

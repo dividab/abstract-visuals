@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 import type { Bounds3, Vec3 } from "../../../abstract-3d.js";
-import { DXF_MODEL_SPACE_HANDLE } from "./dxf-common.js";
+import { DXF_BLOCK_RECORD_HANDLE, DXF_MODEL_SPACE_HANDLE } from "./dxf-common.js";
 
 const DXF_MAKER = "DXF Generated from Divid Abstract 3D";
 const DXF_STANDARD = "AC1015";
 
-export const dxfEncHeader = (bounds: Bounds3, center: Vec3, blockId: string, size: Vec3, dimBlocks: string, dimScale: number = 44.0, dimArrowSize: number = 1.0, dimTextHeight: number = 1.0): string =>
+export const dxfEncHeader = (bounds: Bounds3, center: Vec3, blockId: string, size: Vec3, dimBlocks: string, dimBlockRecords: string, dimScale: number = 44.0, dimArrowSize: number = 1.0, dimTextHeight: number = 1.0): string =>
   ` 999
 ${DXF_MAKER}
 0
@@ -1485,7 +1485,7 @@ TABLE
   2
 BLOCK_RECORD
   5
-1
+${DXF_BLOCK_RECORD_HANDLE}
 330
 0
 100
@@ -1497,7 +1497,7 @@ BLOCK_RECORD
   5
 ${DXF_MODEL_SPACE_HANDLE}
 330
-1
+${DXF_BLOCK_RECORD_HANDLE}
 100
 AcDbSymbolTableRecord
 100
@@ -1511,7 +1511,7 @@ BLOCK_RECORD
   5
 1B
 330
-1
+${DXF_BLOCK_RECORD_HANDLE}
 100
 AcDbSymbolTableRecord
 100
@@ -1520,12 +1520,12 @@ AcDbBlockTableRecord
 *Paper_Space
 340
 1C
-  0
+${dimBlockRecords}0
 BLOCK_RECORD
   5
 2D
 330
-1
+${DXF_BLOCK_RECORD_HANDLE}
 100
 AcDbSymbolTableRecord
 100
@@ -1628,7 +1628,7 @@ AcDbEntity
 0
 100
 AcDbBlockEnd
-  0
+${dimBlocks}0
 BLOCK
   5
 2C

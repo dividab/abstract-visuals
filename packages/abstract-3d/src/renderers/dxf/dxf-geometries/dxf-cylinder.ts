@@ -10,8 +10,8 @@ import {
   vec3Zero,
 } from "../../../abstract-3d.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
-import { dxfEncQuad } from "../dxf-encoding/dxf-quad.js";
-import { dxfEncTriangle } from "../dxf-encoding/dxf-triangle.js";
+import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
+import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
 import { dxfPlane } from "./dxf-plane.js";
 
 export function dxfCylinder(
@@ -47,10 +47,10 @@ export function dxfCylinder(
     if (i !== 0 && prevBot && prevTop) {
       if (!c.open) {
         dxfString +=
-          dxfEncTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
-          dxfEncTriangle(topPos, prevTop, currTop, m.normal, handleRef);
+          dxfEnc3DFaceTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
+          dxfEnc3DFaceTriangle(topPos, prevTop, currTop, m.normal, handleRef);
       }
-      dxfString += dxfEncQuad(currBot, prevBot, prevTop, currTop, m.normal, handleRef);
+      dxfString += dxfEnc3DFace(currBot, prevBot, prevTop, currTop, m.normal, handleRef);
     }
 
     prevBot = currBot;

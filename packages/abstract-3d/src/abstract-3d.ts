@@ -1041,11 +1041,14 @@ export function dimensionIsOfTypeMesh(dimension: Dimension): dimension is Dimens
   return "meshes" in dimension;
 }
 
-export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, dimensionsMaterial?: Material): DimensionMesh {
-  if(dimensionIsOfTypeMesh(dimension)) {
-    return dimension;
-  }
-  const meshes: Array<Mesh> = [];
+export function dimensionMeshifyAlignedDimension(
+  dimension: DimensionAligned,
+  sceneRotation: Vec3,
+  onCreateLine: (start: Vec3, end: Vec3, norm: Vec3, thickness: number, mat: Material) => void,
+  onCreateText: (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3) => void,
+  onCreatePolygon: (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material) => void,
+  dimensionsMaterial?: Material,
+): void {
   const defaultMaterial = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 };
   const material = dimension.material ?? (dimensionsMaterial ?? defaultMaterial);
   const fontGlyphWidthRatio = 0.4815;
@@ -1084,8 +1087,8 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
   const leDisplaced = vec3Add(me, offsetDisplaced);
   const lcDisplaced = vec3Scale(vec3Add(lsDisplaced, leDisplaced), 0.5);
 
-  meshes.push(culledLine(ms, ls, basis.normal, lineThickness, material));
-  meshes.push(culledLine(me, le, basis.normal, lineThickness, material));
+  onCreateLine(ms, ls, basis.normal, lineThickness, material);
+  onCreateLine(me, le, basis.normal, lineThickness, material);
 
   const rotatedDirBetweenLines = vec3TransRot(
     dirBetweenLines,
@@ -1113,7 +1116,7 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
     textDir,
     basis.normal
   );
-  meshes.push(text(lcDisplaced, measurement, textSize, material, textRot));
+  onCreateText(lcDisplaced, measurement, textSize, material, textRot)
 
   if(measurementLength > textThreshold) {
     const textWidth = Math.max(...measurementRows.map((t) => t.length)) * (textSize * fontGlyphWidthRatio);
@@ -1128,8 +1131,8 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
       vec3Scale(lineDir, halfTextWidth)
     );
 
-    meshes.push(culledLine(lsDisplaced, leftEnd, basis.normal, lineThickness, material));
-    meshes.push(culledLine(rightStart, leDisplaced, basis.normal, lineThickness, material));
+    onCreateLine(lsDisplaced, leftEnd, basis.normal, lineThickness, material);
+    onCreateLine(rightStart, leDisplaced, basis.normal, lineThickness, material);
 
     //arrows
     const arrowBaseStart = vec3Add(lsDisplaced, vec3Scale(lineDir, arrowLength));
@@ -1140,17 +1143,38 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
     const arrowBaseEnd2 = vec3Add(arrowBaseEnd, vec3Scale(dirBetweenLines, -arrowHalfBase));
 
     //the winding order needs to be correct according to the normal
-    const polygonFacing = (a: Vec3, b: Vec3, c: Vec3): PolygonMesh => {
+    const polygonFacing = (a: Vec3, b: Vec3, c: Vec3): void => {
       const ab = vec3Sub(b, a);
       const ac = vec3Sub(c, a);
       const triangleNormal = vec3Cross(ab, ac);
-      return vec3Dot(triangleNormal, basis.normal) >= 0
-        ? polygon([a, b, c], material)
-        : polygon([a, c, b], material);
+
+      if(vec3Dot(triangleNormal, basis.normal) >= 0) {
+        onCreatePolygon(a, b, c, material);
+      } else {
+        onCreatePolygon(a, c, b, material);
+      }
     };
-    meshes.push(polygonFacing(lsDisplaced, arrowBaseStart2, arrowBaseStart1));
-    meshes.push(polygonFacing(leDisplaced, arrowBaseEnd1, arrowBaseEnd2));
+    polygonFacing(lsDisplaced, arrowBaseStart2, arrowBaseStart1);
+    polygonFacing(leDisplaced, arrowBaseEnd1, arrowBaseEnd2);
   }
+}
+
+export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, dimensionsMaterial?: Material): DimensionMesh {
+  if(dimensionIsOfTypeMesh(dimension)) {
+    return dimension;
+  }
+  const meshes: Array<Mesh> = [];
+
+  const onCreateLine = (start: Vec3, end: Vec3, norm: Vec3, thickness: number, mat: Material): void => {
+    meshes.push(culledLine(start, end, norm, thickness, mat));
+  };
+  const onCreateText = (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3): void => {
+    meshes.push(text(pos, measurement, fontSize, mat, rot))
+  };
+  const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material): void => {
+    meshes.push(polygon([p1, p2, p3], mat));
+  };
+  dimensionMeshifyAlignedDimension(dimension, sceneRotation, onCreateLine, onCreateText, onCreatePolygon, dimensionsMaterial);
 
   return {
     meshes,

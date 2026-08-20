@@ -1,7 +1,7 @@
 import { type Shape, type Material, type Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
-import { dxfEncQuad } from "../dxf-encoding/dxf-quad.js";
-import { dxfEncTriangle } from "../dxf-encoding/dxf-triangle.js";
+import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
+import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
 
 const QUAD_STRIDE = 4;
 const TRIANGLE_STRIDE = 3;
@@ -19,7 +19,7 @@ export function dxfPolygon(s: Shape, m: Material, parentPos: Vec3, parentRot: Ve
       const p3 = points[i + 2];
       const p4 = points[i + 3];
       if(p1 && p2 && p3 && p4) {
-        polygonString += dxfEncQuad(p1, p2, p3, p4, m.normal, handleRef);
+        polygonString += dxfEnc3DFace(p1, p2, p3, p4, m.normal, handleRef);
       }
     }
   }
@@ -32,7 +32,7 @@ export function dxfPolygon(s: Shape, m: Material, parentPos: Vec3, parentRot: Ve
         const p2 = points[i - 1];
         const p3 = points[i];
         if(p1 && p2 && p3) {
-          polygonString += dxfEncTriangle(p1, p2, p3, m.normal, handleRef);
+          polygonString += dxfEnc3DFaceTriangle(p1, p2, p3, m.normal, handleRef);
         }
         break;
       }
@@ -41,7 +41,7 @@ export function dxfPolygon(s: Shape, m: Material, parentPos: Vec3, parentRot: Ve
         const p2 = points[i];
         const p3 = points[i + 1];
         if(p1 && p2 && p3) {
-          polygonString += dxfEncTriangle(p1, p2, p3, m.normal, handleRef);
+          polygonString += dxfEnc3DFaceTriangle(p1, p2, p3, m.normal, handleRef);
         }
         break;
       }
@@ -50,7 +50,7 @@ export function dxfPolygon(s: Shape, m: Material, parentPos: Vec3, parentRot: Ve
         const p2 = points[i + 1];
         const p3 = points[i + 2];
         if(p1 && p2 && p3) {
-          polygonString += dxfEncTriangle(p1, p2, p3, m.normal, handleRef);
+          polygonString += dxfEnc3DFaceTriangle(p1, p2, p3, m.normal, handleRef);
         }
         break;
       }

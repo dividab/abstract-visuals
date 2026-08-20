@@ -6,7 +6,8 @@ export function dxfEncPolyline(
   points: ReadonlyArray<Vec3>,
   col: DxfColor,
   closed: boolean,
-  handleRef: Handle
+  handleRef: Handle,
+  blockRefHandle?: string
 ): string {
   if (points.length < 2) {
     return "";
@@ -48,7 +49,7 @@ POLYLINE
 5
 ${polylineHandle}
 330
-${DXF_MODEL_SPACE_HANDLE}
+${blockRefHandle ?? DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
 8
