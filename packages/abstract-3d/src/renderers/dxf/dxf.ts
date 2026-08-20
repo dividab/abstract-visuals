@@ -216,6 +216,6 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
   const bounds2 = bounds3FromPosAndSize(offset, scene.size_deprecated);
   const groupRoot = group([], offset, vec3Zero, scene.groups);
   const handleRef = dxfHandleInit();
-  const dimensions = dxfDimensions(scene.dimensions_deprecated, dimensionsPos, unitRot, visibleViews, opts, handleRef);
+  const dimensions = dxfDimensions(scene.dimensions_deprecated, dimensionsPos, unitRot, scene.rotation_deprecated ?? vec3Zero, visibleViews, opts, handleRef);
   return dxfBuild(dxfGroup(groupRoot, center, unitRot, opts, handleRef), dimensions, bounds2, scene.size_deprecated, center);
 };
