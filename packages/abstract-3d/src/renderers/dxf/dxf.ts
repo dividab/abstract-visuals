@@ -188,12 +188,10 @@ function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Ve
     blockRecord: ""
    };
   }
-  return dxfDimension({linePosition: vec3(0, 700, 0), measurementStart: vec3(-500, 600, 400), measurementEnd: vec3(500, 600, 400)}, parentPos, parentRot, handleRef);
-  
-  // return d.dimensions
-  //   .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
-  //   .map((d) => dxfDimension(d, parentPos, parentRot, handleRef))
-  //   .reduce<DxfDimensionDefinition>((prev, curr) => ({block: prev.block + curr.block, entity: prev.block + curr.block}), {block: "", entity: ""});
+  return d.dimensions
+    .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
+    .map((d) => dxfDimension(d, parentPos, parentRot, handleRef))
+    .reduce<DxfDimensionDefinition>((prev, curr) => ({ block: prev.block + curr.block, entity: prev.block + curr.block, blockRecord: prev.blockRecord + curr.blockRecord }), {block: "", entity: "", blockRecord: ""});
 }
 
 function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
