@@ -10,7 +10,6 @@ export function dxfEncDimension(
   col: DxfColor,
   handleRef: Handle
 ): string {
-
   return `0
 DIMENSION
 5
@@ -24,20 +23,36 @@ AcDbEntity
 ${dxfColor(col)}
 100
 AcDbDimension
-280
-0
 10
-${dxfRound(linePosition.x)}
+${dxfRound(measurementEnd.x)}
 20
 ${dxfRound(linePosition.y)}
 30
+${dxfRound(linePosition.z)}
+11
+${dxfRound(linePosition.x)}
+21
+${dxfRound(linePosition.y)}
+31
 ${dxfRound(linePosition.z)}
 70
 33
 1
 ${encodeDxfFormattedText(text)}
+71
+5
+72
+0
 3
 Standard
+53
+0
+210
+0
+220
+0
+230
+1
 100
 AcDbAlignedDimension
 13

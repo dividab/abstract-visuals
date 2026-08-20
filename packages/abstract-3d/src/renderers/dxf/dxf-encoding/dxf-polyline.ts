@@ -13,15 +13,13 @@ export function dxfEncPolyline(
   }
 
   const polylineHandle = dxfHandleNext(handleRef);
-  const vertexHandle = dxfHandleNext(handleRef);
   const seqEndHandle = dxfHandleNext(handleRef);
   const vertices = points
     .map((p) => {
-
   return `  0
 VERTEX
 5
-${vertexHandle}
+${dxfHandleNext(handleRef)}
 330
 ${polylineHandle}
 100

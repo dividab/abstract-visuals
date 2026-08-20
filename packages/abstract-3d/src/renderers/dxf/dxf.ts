@@ -174,9 +174,10 @@ function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Ve
   if(!d || !options.showDimensions) {
    return "";
   }
-  return d.dimensions
-    .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
-    .map((d) => dxfDimension(d, parentPos, parentRot, handleRef)).join("");
+  return dxfDimension({linePosition: vec3(0, 700, 0), measurementStart: vec3(-500, 600, 400), measurementEnd: vec3(500, 600, 400)}, parentPos, parentRot, handleRef);
+  // return d.dimensions
+  //   .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
+  //   .map((d) => dxfDimension({linePosition: vec3(0, 700, 0), measurementStart: vec3(-500, 600, 400), measurementEnd: vec3(500, 600, 400)}, parentPos, parentRot, handleRef)).join("");
 }
 
 function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
