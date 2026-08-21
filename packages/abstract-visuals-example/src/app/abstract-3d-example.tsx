@@ -7,12 +7,14 @@ import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";
 import * as Svg from "../../../abstract-3d/src/renderers/svg/index.js";
 import { systemair } from "./systemair.js";
 import { vortice } from "./vortice.js";
+import { demo } from "./demo.js";
+import { demoRotated } from "./demo-rotated.js";
 import { ai } from "./double-view-ai.js";
 import { createSVG } from "../../../abstract-image/src/exporters/svg-export-image.js";
 import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
 import { componentGeometries } from "./double-view-component-geometries.js";
 import { templateScene } from "./template-scene.js";
-import { Scene } from "../../../abstract-3d/src/abstract-3d.js";
+import { Scene, vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
@@ -96,6 +98,30 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
+              new Blob([Dxf.renderScenes([{scene: demo, pos: vec3Zero}])], {
+                type: "text/plain",
+              }),
+              `a3d.dxf`
+            )
+          }
+        >
+          DXF new dims
+        </button>
+                <button
+          onClick={() =>
+            FileSaver.saveAs(
+              new Blob([Dxf.renderScenes([{scene: demoRotated, pos: vec3Zero}])], {
+                type: "text/plain",
+              }),
+              `a3d.dxf`
+            )
+          }
+        >
+          DXF new dims rotated
+        </button>
+        <button
+          onClick={() =>
+            FileSaver.saveAs(
               new Blob([Dxf.renderOld(systemair, { view: "back", origin: "Center" })], { type: "text/plain" }),
               `a3d.dxf`
             )
@@ -157,6 +183,16 @@ export function Abstract3DExample(): React.ReactNode {
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.id ?? ""}
               scene={vortice}
+              orbitContolsProps={{ enableDamping: false }}
+              camera={camera}
+            />
+          </div>
+          <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
+            <React3Js.render
+              selectedIds={selected ? { [selected]: true } : undefined}
+              onClickGroup={(id) => setSelected(id)}
+              createGroupId={(g) => g.data?.id ?? ""}
+              scene={demo as Scene}
               orbitContolsProps={{ enableDamping: false }}
               camera={camera}
             />
