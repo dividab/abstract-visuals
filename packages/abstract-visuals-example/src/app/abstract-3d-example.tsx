@@ -98,7 +98,7 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Dxf.renderScenes([{scene: demo, pos: vec3Zero}])], {
+              new Blob([Dxf.renderScenes([{scene: demo as Scene, pos: vec3Zero}])], {
                 type: "text/plain",
               }),
               `a3d.dxf`
@@ -110,7 +110,7 @@ export function Abstract3DExample(): React.ReactNode {
                 <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Dxf.renderScenes([{scene: demoRotated, pos: vec3Zero}])], {
+              new Blob([Dxf.renderScenes([{scene: demoRotated as Scene, pos: vec3Zero}])], {
                 type: "text/plain",
               }),
               `a3d.dxf`
