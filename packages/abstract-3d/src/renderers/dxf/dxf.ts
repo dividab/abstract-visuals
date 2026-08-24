@@ -178,7 +178,7 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   return dxf;
 }
 
-function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, viewRotation: Vec3, sceneRotation: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): DxfDimensionDefinition {
+function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, sceneRotation: Vec3, viewRotation: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): DxfDimensionDefinition {
   if(!d || !options.showDimensions) {
    return {
     entity: "",

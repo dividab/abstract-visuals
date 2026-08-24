@@ -1118,25 +1118,16 @@ export function dimensionMeshifyAlignedDimension(
     basis.normal
   );
 
-  const worldRot = vec3RotCombine(
-    sceneRotation,
-    viewRotation,
-  );
-  const finalRot = vec3RotCombine(
-    textRot,
-    worldRot,
-  );
-  const dir = vec3Rot(
-    vec3(1, 0, 0),
-    vec3Zero,
-    finalRot
-  );
-  const norm = vec3Rot(
-    vec3(0, 0, 1),
-    vec3Zero,
-    finalRot
-  );
-  onCreateText(lcDisplaced, measurement, textSize, material, textRot, dir, norm);
+  const finalBasis = dimensionViewBasises.front;
+	const finalSide = getDimensionSide(
+		dirBetweenLines,
+		finalBasis
+	);
+	const finalDir = getDimensionTextDirection(
+		finalSide,
+		finalBasis
+	);
+  onCreateText(lcDisplaced, measurement, textSize, material, textRot, finalDir, vec3(0, 0, 1));
 
   if(measurementLength > textThreshold) {
     const textWidth = Math.max(...measurementRows.map((t) => t.length)) * (textSize * fontGlyphWidthRatio);
