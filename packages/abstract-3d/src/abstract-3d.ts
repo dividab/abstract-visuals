@@ -1044,6 +1044,7 @@ export function dimensionIsOfTypeMesh(dimension: Dimension): dimension is Dimens
 export function dimensionMeshifyAlignedDimension(
   dimension: DimensionAligned,
   sceneRotation: Vec3,
+  viewRotation: Vec3,
   onCreateLine: (start: Vec3, end: Vec3, norm: Vec3, thickness: number, mat: Material) => void,
   onCreateText: (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3, dir: Vec3, normal: Vec3) => void,
   onCreatePolygon: (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material) => void,
@@ -1117,19 +1118,25 @@ export function dimensionMeshifyAlignedDimension(
     basis.normal
   );
 
-  const finalRot = vec3RotCombine(textRot, sceneRotation);
+  const worldRot = vec3RotCombine(
+    viewRotation,
+    sceneRotation
+  );
+  const finalRot = vec3RotCombine(
+    textRot,
+    worldRot,
+  );
   const dir = vec3Rot(
     vec3(1, 0, 0),
     vec3Zero,
     finalRot
   );
-  const dxfNormal = vec3Rot(
+  const norm = vec3Rot(
     basis.normal,
     vec3Zero,
-    sceneRotation
+    worldRot
   );
-
-  onCreateText(lcDisplaced, measurement, textSize, material, textRot, dir, dxfNormal);
+  onCreateText(lcDisplaced, measurement, textSize, material, textRot, dir, norm);
 
   if(measurementLength > textThreshold) {
     const textWidth = Math.max(...measurementRows.map((t) => t.length)) * (textSize * fontGlyphWidthRatio);
@@ -1187,7 +1194,7 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
   const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material): void => {
     meshes.push(polygon([p1, p2, p3], mat));
   };
-  dimensionMeshifyAlignedDimension(dimension, sceneRotation, onCreateLine, onCreateText, onCreatePolygon, dimensionsMaterial);
+  dimensionMeshifyAlignedDimension(dimension, sceneRotation, vec3Zero, onCreateLine, onCreateText, onCreatePolygon, dimensionsMaterial);
 
   return {
     meshes,

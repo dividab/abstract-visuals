@@ -89,7 +89,8 @@ const renderInternal = (
   offset: Vec3,
   handleRef: Handle
 ): { readonly groups: string; readonly dimensions: DxfDimensionDefinition; readonly size: Vec3; readonly center: Vec3 } => {
-  const unitRot = vec3RotCombine(rotationForCameraPos(options.view), scene.rotation_deprecated ?? vec3Zero);
+  const viewRotation = rotationForCameraPos(options.view);
+  const unitRot = vec3RotCombine(viewRotation, scene.rotation_deprecated ?? vec3Zero);
   const unitCenter = scene.center_deprecated ?? vec3Zero;
   const [size] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
   const bounds = bounds3FromPosAndSize(unitCenter, size);
@@ -99,7 +100,7 @@ const renderInternal = (
   const visibleViews = calculateVisibleViews(options.view, scene.rotation_deprecated);
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
-    dimensions: dxfDimensions(scene.dimensions_deprecated, pos, unitRot, scene.rotation_deprecated ?? vec3Zero, visibleViews, options, handleRef),
+    dimensions: dxfDimensions(scene.dimensions_deprecated, pos, unitRot, scene.rotation_deprecated ?? vec3Zero, viewRotation, visibleViews, options, handleRef),
     size,
     center: pos,
   };
@@ -177,7 +178,7 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   return dxf;
 }
 
-function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, sceneRotation: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): DxfDimensionDefinition {
+function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, viewRotation: Vec3, sceneRotation: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): DxfDimensionDefinition {
   if(!d || !options.showDimensions) {
    return {
     entity: "",
@@ -187,7 +188,7 @@ function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Ve
   }
   return d.dimensions
     .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
-    .map((d) => dxfDimension(d, parentPos, parentRot, sceneRotation, handleRef))
+    .map((d) => dxfDimension(d, parentPos, parentRot, sceneRotation, viewRotation, handleRef))
     .reduce<DxfDimensionDefinition>((prev, curr) => ({ block: prev.block + curr.block, entity: prev.entity + curr.entity, blockRecord: prev.blockRecord + curr.blockRecord }), {block: "", entity: "", blockRecord: ""});
 }
 
@@ -204,7 +205,8 @@ function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
 export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
   const center = scene.center_deprecated ?? vec3Zero;
-  const unitRot = vec3RotCombine(rotationForCameraPos(opts.view), scene.rotation_deprecated ?? vec3Zero);
+  const viewRotation = rotationForCameraPos(opts.view);
+  const unitRot = vec3RotCombine(viewRotation, scene.rotation_deprecated ?? vec3Zero);
   const bounds = bounds3FromPosAndSize(center, scene.size_deprecated);
   const offset = vec3Sub(
     opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z),
@@ -216,6 +218,6 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
   const bounds2 = bounds3FromPosAndSize(offset, scene.size_deprecated);
   const groupRoot = group([], offset, vec3Zero, scene.groups);
   const handleRef = dxfHandleInit();
-  const dimensions = dxfDimensions(scene.dimensions_deprecated, dimensionsPos, unitRot, scene.rotation_deprecated ?? vec3Zero, visibleViews, opts, handleRef);
+  const dimensions = dxfDimensions(scene.dimensions_deprecated, dimensionsPos, unitRot, scene.rotation_deprecated ?? vec3Zero, viewRotation, visibleViews, opts, handleRef);
   return dxfBuild(dxfGroup(groupRoot, center, unitRot, opts, handleRef), dimensions, bounds2, scene.size_deprecated, center);
 };
