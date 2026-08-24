@@ -1045,7 +1045,7 @@ export function dimensionMeshifyAlignedDimension(
   dimension: DimensionAligned,
   sceneRotation: Vec3,
   onCreateLine: (start: Vec3, end: Vec3, norm: Vec3, thickness: number, mat: Material) => void,
-  onCreateText: (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3) => void,
+  onCreateText: (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3, dir: Vec3, normal: Vec3) => void,
   onCreatePolygon: (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material) => void,
   dimensionsMaterial?: Material,
 ): void {
@@ -1116,7 +1116,20 @@ export function dimensionMeshifyAlignedDimension(
     textDir,
     basis.normal
   );
-  onCreateText(lcDisplaced, measurement, textSize, material, textRot)
+
+  const finalRot = vec3RotCombine(textRot, sceneRotation);
+  const dir = vec3Rot(
+    vec3(1, 0, 0),
+    vec3Zero,
+    finalRot
+  );
+  const dxfNormal = vec3Rot(
+    basis.normal,
+    vec3Zero,
+    sceneRotation
+  );
+
+  onCreateText(lcDisplaced, measurement, textSize, material, textRot, dir, dxfNormal);
 
   if(measurementLength > textThreshold) {
     const textWidth = Math.max(...measurementRows.map((t) => t.length)) * (textSize * fontGlyphWidthRatio);

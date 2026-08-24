@@ -13,7 +13,7 @@ export enum DxfMTextAttachment {
   BottomRight = 9,
 };
 
-export function dxfEncMText(pos: Vec3, text: string, rotation: number, fontSize: number, handleRef: Handle, attachment: DxfMTextAttachment = DxfMTextAttachment.MiddleCenter, blockRefHandle?: string): string {
+export function dxfEncMText(pos: Vec3, text: string, dir: Vec3, normal: Vec3, fontSize: number, handleRef: Handle, attachment: DxfMTextAttachment = DxfMTextAttachment.MiddleCenter, blockRefHandle?: string): string {
   return `0
 MTEXT
 5
@@ -36,8 +36,18 @@ ${dxfRound(pos.z)}
 ${(fontSize * DXF_FONT_SIZE_RATIO).toString()}
 71
 ${attachment}
-50
-${dxfRound((rotation / Math.PI) * 180.0)}
+11
+${dxfRound(dir.x)}
+21
+${dxfRound(dir.y)}
+31
+${dxfRound(dir.z)}
+210
+${dxfRound(normal.x)}
+220
+${dxfRound(normal.y)}
+230
+${dxfRound(normal.z)}
 1
 ${text}
 `;
