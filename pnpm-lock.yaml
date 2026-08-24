@@ -297,8 +297,8 @@ importers:
   packages/abstract-visuals-example:
     dependencies:
       abstract-3d:
-        specifier: ^2.7.17
-        version: 2.7.17(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: ^2.7.18
+        version: 2.7.18(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       abstract-chart:
         specifier: ^12.0.68
         version: 12.0.68(react@19.2.6)
@@ -2194,8 +2194,8 @@ packages:
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
 
-  abstract-3d@2.7.17:
-    resolution: {integrity: sha512-lDKideQAlO5Fs9fmde7YOne0k5vJ7GPqKiZ70uXGOs8NBv+CEXZDgf954ykPgzmdXVZ0OoGYbexZQs6jxt4dyg==}
+  abstract-3d@2.7.18:
+    resolution: {integrity: sha512-9DlqgAwoIIjsAAA6OyN5VqSkZ5LaPWamlt06T//LHkQMFtx4cs3ATLh4hp685xg2gdrAJwBh+uwzjzrUxh3GBQ==}
     peerDependencies:
       react: ^19.2.0
 
@@ -9493,7 +9493,7 @@ snapshots:
 
   abbrev@1.1.1: {}
 
-  abstract-3d@2.7.17(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  abstract-3d@2.7.18(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
       '@react-three/drei': 10.7.7(@react-three/fiber@9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.184.0))(@types/react@19.2.15)(@types/three@0.180.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.184.0)
       '@react-three/fiber': 9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.184.0)
