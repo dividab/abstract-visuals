@@ -1119,8 +1119,8 @@ export function dimensionMeshifyAlignedDimension(
   );
 
   const worldRot = vec3RotCombine(
+    sceneRotation,
     viewRotation,
-    sceneRotation
   );
   const finalRot = vec3RotCombine(
     textRot,
@@ -1132,9 +1132,9 @@ export function dimensionMeshifyAlignedDimension(
     finalRot
   );
   const norm = vec3Rot(
-    basis.normal,
+    vec3(0, 0, 1),
     vec3Zero,
-    worldRot
+    finalRot
   );
   onCreateText(lcDisplaced, measurement, textSize, material, textRot, dir, norm);
 
