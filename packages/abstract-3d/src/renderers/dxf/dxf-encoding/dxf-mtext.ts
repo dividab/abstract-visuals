@@ -49,6 +49,10 @@ ${dxfRound(normal.y)}
 230
 ${dxfRound(normal.z)}
 1
-${text}
+${encodeDxfFormattedText(text)}
 `;
+}
+
+export function encodeDxfFormattedText(text: string): string {
+  return text.replace(/\r\n|\r|\n/g, "\\P");
 }

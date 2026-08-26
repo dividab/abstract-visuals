@@ -2,7 +2,7 @@ import { dimensionMeshifyAlignedDimension, type Material, type Vec3, DimensionAl
 import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_BLOCK_RECORD_TABLE_HANDLE, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 import { dxfEncLine } from "./dxf-line.js";
-import { DxfMTextAttachment, dxfEncMText } from "./dxf-mtext.js";
+import { DxfMTextAttachment, dxfEncMText, encodeDxfFormattedText } from "./dxf-mtext.js";
 import { dxfEncSolidTriangle } from "./dxf-triangle.js";
 
 export type DxfDimensionDefinition = {
@@ -195,8 +195,4 @@ function dxfEncodeDimensionGeometry(
   };
   dimensionMeshifyAlignedDimension(dimension, sceneRotation, viewRotation, onCreateLine, onCreateText, onCreatePolygon);
   return entities;
-}
-
-export function encodeDxfFormattedText(text: string): string {
-  return text.replace(/\r\n|\r|\n/g, "\\P");
 }
