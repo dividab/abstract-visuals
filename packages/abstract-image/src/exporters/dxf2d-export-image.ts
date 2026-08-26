@@ -207,7 +207,7 @@ function componentDxf(
     return [entities, blocks, blockRecords];
   }
 
-  if (c.type == "binaryimage") {
+  if (c.type === "binaryimage") {
     if (c.data.type !== "url") {
       return [entities, blocks, blockRecords];
     }
@@ -218,7 +218,7 @@ function componentDxf(
         : typeof imageData === "string"
         ? imageData
         : DXF_DATA_URL + dxf2dExportImage(imageData, options);
-    if (!url.startsWith(DXF_DATA_URL)) {
+    if (url === undefined || typeof url !== "string" || !url.startsWith(DXF_DATA_URL)) {
       return [entities, blocks, blockRecords];
     }
 
