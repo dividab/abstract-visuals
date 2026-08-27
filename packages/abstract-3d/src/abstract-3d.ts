@@ -2,7 +2,7 @@
 import type { AbstractImage } from "abstract-image";
 
 export type Scene = {
-  readonly size_deprecated: Vec3; // Move size calculation to every renderer??
+  readonly size_deprecated: Vec3; //move size calculation to every renderer??
   readonly groups: ReadonlyArray<Group>;
   readonly data?: Record<string, string>;
   //should be removed
