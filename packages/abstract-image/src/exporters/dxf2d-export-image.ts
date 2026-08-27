@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
-import { AbstractImage } from "../model/abstract-image.js";
-import { black, Color } from "../model/color.js";
-import { BinaryImage, Component, corners } from "../model/component.js";
-import { Point } from "../model/point.js";
-import { Optional } from "../model/shared.js";
-import { Size } from "../model/size.js";
+import type { AbstractImage } from "../model/abstract-image.js";
+import type { Color } from "../model/color.js";
+import {  type BinaryImage, type Component, corners } from "../model/component.js";
+import type { Point } from "../model/point.js";
+import type { Optional } from "../model/shared.js";
+import type { Size } from "../model/size.js";
 
 export const DXF_STANDARD = "AC1015";
 export const DXF_DATA_URL = "data:application/dxf,";
@@ -107,11 +107,11 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   };
 
   let dxf = "";
-  let layer = 0;
+  const layer = 0;
 
   let entities = "";
   let blocks = "";
-  let blockRecords: Array<BlockRecord> = [];
+  const blockRecords: Array<BlockRecord> = [];
   blocks += createSpaceBlock("*Model_Space", modelSpaceHandle, newHandle);
   blocks += createSpaceBlock("*Paper_Space", paperSpaceHandle, newHandle);
   for (const component of root.components) {
@@ -162,6 +162,7 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   header += "9\n$ACADVER\n1\n" + DXF_STANDARD + "\n";
   header += "9\n$HANDSEED\n5\n" + currentHandle() + "\n"; //handseed is the last handle id?
   header += "9\n$DWGCODEPAGE\n3\nANSI_1252\n";
+  header += "9\n$DIMTIH\n70\n1\n";
   header += "9\n$INSBASE\n10\n0.0\n20\n0.0\n30\n0.0\n";
   header += "9\n$EXTMIN\n10\n0.0\n20\n0.0\n30\n-10000\n";
   header += "9\n$EXTMAX\n";
@@ -187,7 +188,7 @@ function componentDxf(
 ): readonly [string, string, ReadonlyArray<BlockRecord>] {
   let entities = "";
   let blocks = "";
-  let blockRecords: Array<BlockRecord> = [];
+  const blockRecords: Array<BlockRecord> = [];
 
   if (c.type === "group") {
     for (const child of c.children) {
@@ -696,12 +697,13 @@ function remapHandleIds(
         if (/^[0-9A-Fa-f]+$/.test(value)) {
           out.push(groupCode);
 
-          if (!initHandleMap.has(value)) {
+          const handle = initHandleMap.get(value);
+          if (handle === undefined) {
             const newId = newHandle();
             initHandleMap.set(value, newId);
             out.push(newId);
           } else {
-            out.push(initHandleMap.get(value)!);
+            out.push(handle);
           }
           i += 2;
           continue;
@@ -745,30 +747,51 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, height:
     const code = parseInt(codeLine.trim(), 10);
     let value = valueLine;
 
-    if (xCoordinateCodes.has(code)) {
-      const num = parseFloat(valueLine);
-      if (!isNaN(num)) {
-        value = (num * sx).toString();
+    switch(true) {
+      case (xCoordinateCodes.has(code)): {
+        const num = parseFloat(valueLine);
+        if (!Number.isNaN(num)) {
+          value = (num * sx).toString();
+        }
+        break;
       }
-    } else if (yCoordinateCodes.has(code)) {
-      const num = parseFloat(valueLine);
-      if (!isNaN(num)) {
-        value = (num * sy).toString();
-      }
-    } else if (code === 40 && currentAcDbEntity === "AcDbText") {
-      //font size
-      const num = parseInt(valueLine.trim(), 10);
-      if (!isNaN(num)) {
-        value = Math.round((num + 2) * Math.max(sx, sy)).toString();
-      }
-    } else if ((code === 41 || code === 40) && currentAcDbEntity === "AcDb2dPolyline") {
-      // stroke thickness
-      const num = parseInt(valueLine.trim(), 10);
-      if (!isNaN(num)) {
-        value = (num * Math.max(sx, sy)).toString();
-      }
-    }
 
+      case (yCoordinateCodes.has(code)): {
+        const num = parseFloat(valueLine);
+        if (!Number.isNaN(num)) {
+          value = (num * sy).toString();
+        }
+        break;
+      }
+
+      case (code === 40 && currentAcDbEntity === "AcDbText"): {
+        const num = parseInt(valueLine.trim(), 10);
+        if (!Number.isNaN(num)) {
+          value = Math.round((num + 2) * Math.max(sx, sy)).toString();
+        }
+        break;
+      }
+
+      case (code === 40 && currentAcDbEntity === "AcDbMText"): {
+        const num = parseInt(valueLine.trim(), 10);
+        if (!Number.isNaN(num)) {
+          value = Math.round((num) * Math.max(sx, sy)).toString();
+        }
+        break;
+      }
+
+      case ((code === 41 || code === 40) && currentAcDbEntity === "AcDb2dPolyline"): {
+        // stroke thickness
+        const num = parseInt(valueLine.trim(), 10);
+        if (!Number.isNaN(num)) {
+          value = (num * Math.max(sx, sy)).toString();
+        }
+        break;
+      }
+
+      default:
+        break;
+    }
     scaledLines.push(value);
   }
 
@@ -984,7 +1007,7 @@ function createStyleTable(newHandle: () => string): string {
   return table;
 }
 
-function createDimStyleTable(newHandle: () => string): string {
+function createDimStyleTable(newHandle: () => string, dimArrowSize: number = 1.0, dimGlobalScale: number = 1.0, dimFontSize: number = 1.0): string {
   const rootId = newHandle();
   let table = "";
   table += "0\nTABLE\n";
@@ -1002,8 +1025,8 @@ function createDimStyleTable(newHandle: () => string): string {
   table += "100\nAcDbDimStyleTableRecord\n";
   table += "2\nStandard\n";
   table += "70\n0\n";
-  table += "40\n1\n";
-  table += "41\n0.18\n";
+  table += "40\n" + dimGlobalScale + "\n";
+  table += "41\n" + dimArrowSize + "\n";
   table += "42\n0.0625\n";
   table += "43\n0.38\n";
   table += "44\n0.18\n";
@@ -1011,7 +1034,7 @@ function createDimStyleTable(newHandle: () => string): string {
   table += "46\n0\n";
   table += "47\n0\n";
   table += "48\n0\n";
-  table += "140\n0.18\n";
+  table += "140\n" + dimFontSize + "\n";
   table += "141\n0.09\n";
   table += "142\n0\n";
   table += "143\n25.4\n";

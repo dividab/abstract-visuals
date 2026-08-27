@@ -5,7 +5,7 @@ import { dxfEncFooter } from "./dxf-footer.js";
 import { dxfEncHeader } from "./dxf-header.js";
 
 export const DEFAULT_CIRCLE_SIDE_COUNT = 16;
-export const DXF_FONT_SIZE_RATIO: number = 2.0 / 3.0;
+export const DXF_FONT_SIZE_RATIO: number = 1.0 / 2.0;
 export const DXF_DEFAULT_START_HANDLE = 0x1000;
 export const DXF_MODEL_SPACE_HANDLE = "1D";
 export const DXF_BLOCK_RECORD_TABLE_HANDLE = "1";
