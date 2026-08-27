@@ -36,7 +36,9 @@ export const createComponents = (mutableImageUrls: Array<string>): Record<string
     return createGroup("", (props.children ?? []).flat().filter(Boolean));
   },
   Image: (props): BinaryImage => {
-    mutableImageUrls.push(props.src);
+    if(props.src !== undefined && typeof props.src === "string") {
+      mutableImageUrls.push(props.src);
+    }
     const x = props.x ?? 0;
     const y = props.y ?? 0;
     const width = props.width ?? 100;
