@@ -15,6 +15,7 @@ minimumReleaseAgeExclude:
   - abstract-chart@12.0.71
   - abstract-document@19.2.4
   - abstract-image@13.0.56
+  - abstract-3d@2.7.25
 
 overrides:
   three-stdlib: "^2.36.0"
