@@ -775,7 +775,7 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, height:
       case (code === 40 && currentAcDbEntity === "AcDbMText"): {
         const num = parseInt(valueLine.trim(), 10);
         if (!Number.isNaN(num)) {
-          value = Math.round((num) * Math.max(sx, sy)).toString();
+          value = ((num) * Math.max(sx, sy)).toString();
         }
         break;
       }
