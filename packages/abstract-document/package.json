@@ -1,6 +1,6 @@
 {
   "name": "abstract-document",
-  "version": "19.2.3",
+  "version": "19.2.4",
   "description": "Dynamically create documents using code or JSX and render to any format",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
   "main": "lib/index.js",
@@ -30,7 +30,7 @@
     "!/**/__tests__"
   ],
   "dependencies": {
-    "abstract-image": "^13.0.55",
+    "abstract-image": "^13.0.56",
     "docx": "^9.7.1",
     "fast-xml-parser": "^4.5.0",
     "handlebars": "4.7.8",
