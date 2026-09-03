@@ -3,7 +3,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "pnpm@12.2.1",
+  "packageManager": "pnpm@12.3.1",
   "repository": "https://github.com/dividab/abstract-visuals",
   "test": "NODE_OPTIONS='--experimental-vm-modules' jest .",
   "devDependencies": {
