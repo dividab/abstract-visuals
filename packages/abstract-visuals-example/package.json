@@ -19,7 +19,7 @@
     "handlebars": "4.7.8",
     "handlebars-xml": "^0.4.5",
     "jsxpression": "^0.1.38",
-    "pdfkit": "^0.18.0",
+    "pdfkit": "^0.20.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },

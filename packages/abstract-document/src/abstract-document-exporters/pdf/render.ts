@@ -5,6 +5,8 @@ import { paginate, Page, getHeaderAndFooter } from "./paginate.js";
 import { updatePageRefs } from "./update-refs.js";
 import { renderImage } from "./render-image.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
+import { registerDefaultStdFonts } from "./std-fonts.js";
+import { toBlob, toBytes } from "pdfkit/output";
 import { PdfKitAlignment, rowsCombineTextRuns, rowsSplit } from "./textRunRow.js";
 
 export type PdfExportOptions = {
@@ -16,12 +18,17 @@ export function exportToHTML5Blob(
   doc: AD.AbstractDoc.AbstractDoc,
   options: PdfExportOptions = { compress: false }
 ): Promise<Blob> {
-  return new Promise((resolve) => {
-    let pdf = createDocument(pdfKit, options, doc);
-    const buffers = Array<BlobPart>();
-    pdf.on("data", buffers.push.bind(buffers));
-    pdf.on("end", () => resolve(new Blob(buffers, { type: "application/pdf" })));
-  });
+  const pdf = createDocument(pdfKit, options, doc);
+  return toBlob(pdf);
+}
+
+export function exportToBytes(
+  pdfKit: PDFKit.PDFDocument,
+  doc: AD.AbstractDoc.AbstractDoc,
+  options: PdfExportOptions = { compress: false }
+): Promise<Uint8Array> {
+  const pdf = createDocument(pdfKit, options, doc);
+  return toBytes(pdf);
 }
 
 /**
@@ -47,6 +54,7 @@ function createDocument(
   options: PdfExportOptions,
   ad: AD.AbstractDoc.AbstractDoc
 ): PDFKit.PDFDocument {
+  registerDefaultStdFonts();
   const pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true });
 
   const document = preProcess(ad);
@@ -828,10 +836,8 @@ function renderCell(
     .reduce((a, b) => a + b, 0);
   const startY = finalRect.y + padding.top;
   let y = startY;
-  if (style.verticalAlignment === "Middle")
-    y += 0.5 * (availableHeight - contentHeight - padding.top - padding.bottom);
-  else if (style.verticalAlignment === "Bottom")
-    y += availableHeight - contentHeight - padding.top - padding.bottom;
+  if (style.verticalAlignment === "Middle") y += 0.5 * (availableHeight - contentHeight - padding.top - padding.bottom);
+  else if (style.verticalAlignment === "Bottom") y += availableHeight - contentHeight - padding.top - padding.bottom;
 
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);

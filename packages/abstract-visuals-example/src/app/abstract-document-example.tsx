@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
-import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
+import PDFDocument from "pdfkit";
 import { AbstractDocJsx, AbstractDoc, AbstractDocPdf } from "../../../abstract-document/src/index.js";
 import {
   createLine,

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
-import PDFDocument from "pdfkit/js/pdfkit.standalone.js";
+import PDFDocument from "pdfkit";
 import FileSaver from "file-saver";
 import { createAbstractImage, createPoint, createSize, white, createBinaryImage } from "abstract-image";
 import { renderHandlebars, validateXml, errorToReadableText } from "handlebars-xml";

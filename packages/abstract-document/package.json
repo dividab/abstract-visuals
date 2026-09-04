@@ -36,7 +36,7 @@
     "handlebars": "4.7.8",
     "handlebars-xml": "^0.4.5",
     "moment": "^2.30.1",
-    "pdfkit": "^0.18.0",
+    "pdfkit": "^0.20.2",
     "remark-parse": "^6.0.3",
     "remark-sub-super": "^1.0.19",
     "svg-to-pdfkit": "^0.1.8",
