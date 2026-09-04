@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
-import PDFDocument from "pdfkit";
 import FileSaver from "file-saver";
 import {
   createAbstractImage,
@@ -153,7 +152,7 @@ async function genereteDoc(
   const docWithResources = AbstractDoc.AbstractDoc.addResources(doc, { imageResources });
   const blob: Blob =
     format === "PDF"
-      ? await AbstractDocPdf.exportToHTML5Blob(PDFDocument, docWithResources)
+      ? await AbstractDocPdf.exportToHTML5Blob(docWithResources)
       : new Blob([await AbstractDocDocx.exportToHTML5Blob(docWithResources)], {
           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });

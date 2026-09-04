@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
-import PDFDocument from "pdfkit";
 import { AbstractDocJsx, AbstractDoc, AbstractDocPdf } from "../../../abstract-document/src/index.js";
 import {
   createLine,
@@ -524,7 +523,7 @@ export function AbstractDocumentExample(): React.JSX.Element {
 }
 
 async function generatePDF(doc: AbstractDoc.AbstractDoc.AbstractDoc): Promise<void> {
-  const blob: Blob = await AbstractDocPdf.exportToHTML5Blob(PDFDocument, doc);
+  const blob: Blob = await AbstractDocPdf.exportToHTML5Blob(doc);
   const objectURL = URL.createObjectURL(blob);
   window.open(objectURL);
 }

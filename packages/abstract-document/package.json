@@ -1,6 +1,6 @@
 {
   "name": "abstract-document",
-  "version": "19.3.0",
+  "version": "20.0.0",
   "description": "Dynamically create documents using code or JSX and render to any format",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
   "main": "lib/index.js",
@@ -18,6 +18,16 @@
       "ts": "./src/abstract-document-xml/index.ts",
       "types": "./lib/abstract-document-xml/index.d.ts",
       "import": "./lib/abstract-document-xml/index.js"
+    },
+    "./pdf": {
+      "ts": "./src/abstract-document-exporters/pdf/render.ts",
+      "types": "./lib/abstract-document-exporters/pdf/render.d.ts",
+      "import": "./lib/abstract-document-exporters/pdf/render.js"
+    },
+    "./docx": {
+      "ts": "./src/abstract-document-exporters/docx2/render.ts",
+      "types": "./lib/abstract-document-exporters/docx2/render.d.ts",
+      "import": "./lib/abstract-document-exporters/docx2/render.js"
     }
   },
   "files": [

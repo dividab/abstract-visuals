@@ -7,6 +7,7 @@ import { renderImage } from "./render-image.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 import { registerDefaultStdFonts } from "./std-fonts.js";
 import { toBlob, toBytes } from "pdfkit/output";
+import PDFDocument from "pdfkit";
 import { PdfKitAlignment, rowsCombineTextRuns, rowsSplit } from "./textRunRow.js";
 
 export type PdfExportOptions = {
@@ -14,55 +15,47 @@ export type PdfExportOptions = {
 };
 
 export function exportToHTML5Blob(
-  pdfKit: PDFKit.PDFDocument,
   doc: AD.AbstractDoc.AbstractDoc,
   options: PdfExportOptions = { compress: false }
 ): Promise<Blob> {
-  const pdf = createDocument(pdfKit, options, doc);
+  const pdf = createDocument(options, doc);
   return toBlob(pdf);
 }
 
 export function exportToBytes(
-  pdfKit: PDFKit.PDFDocument,
   doc: AD.AbstractDoc.AbstractDoc,
   options: PdfExportOptions = { compress: false }
 ): Promise<Uint8Array> {
-  const pdf = createDocument(pdfKit, options, doc);
+  const pdf = createDocument(options, doc);
   return toBytes(pdf);
 }
 
 /**
  * On the client side the stream can be a BlobStream from the blob-stream package.
  * On the server-side the stream can be a file stream from the fs package.
- * @param pdfKit
  * @param blobStream
  * @param doc
  * @param options
  */
 export function exportToStream(
-  pdfKit: PDFKit.PDFDocument,
   blobStream: any,
   doc: AD.AbstractDoc.AbstractDoc,
   options: PdfExportOptions = { compress: false }
 ): void {
-  let pdf = createDocument(pdfKit, options, doc);
+  let pdf = createDocument(options, doc);
   pdf.pipe(blobStream);
 }
 
-function createDocument(
-  pdfKit: PDFKit.PDFDocument,
-  options: PdfExportOptions,
-  ad: AD.AbstractDoc.AbstractDoc
-): PDFKit.PDFDocument {
+function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDoc): PDFKit.PDFDocument {
   registerDefaultStdFonts();
-  const pdf = new pdfKit({ ...options, autoFirstPage: false, bufferPages: true });
+  const pdf = new PDFDocument({ ...options, autoFirstPage: false, bufferPages: true });
 
   const document = preProcess(ad);
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
-  const desiredSizes = measure(pdfKit, document);
-  const pages = paginate(pdfKit, document, desiredSizes);
+  const desiredSizes = measure(PDFDocument, document);
+  const pages = paginate(PDFDocument, document, desiredSizes);
   const updatedPages = updatePageRefs(pages);
-  const pageDesiredSizes = measurePages(pdfKit, document, updatedPages);
+  const pageDesiredSizes = measurePages(PDFDocument, document, updatedPages);
 
   for (let page of updatedPages) {
     renderPage(document, pdf, pageDesiredSizes, page);
