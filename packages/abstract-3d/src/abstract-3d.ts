@@ -337,8 +337,8 @@ export const vec3DistSquared = (a: Vec3, b: Vec3): number =>
 
 export const vec3Dist = (a: Vec3, b: Vec3): number => vec3DistSquared(a, b);
 
-export const vec3Cross = (a: Vec3, b: Vec3): Vec3 =>
-  vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+export const vec3Cross = (left: Vec3, right: Vec3): Vec3 =>
+  vec3(left.y * right.z - left.z * right.y, left.z * right.x - left.x * right.z, left.x * right.y - left.y * right.x);
 
 const TOLERANCE = 0.001;
 

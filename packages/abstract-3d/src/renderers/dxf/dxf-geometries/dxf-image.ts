@@ -12,8 +12,8 @@ import {
 } from "../../../abstract-3d.js";
 import { DEFAULT_CIRCLE_SIDE_COUNT, type Handle } from "../dxf-encoding/dxf-common.js";
 import { DxfDynamicColor } from "../dxf-encoding/dxf-color.js";
-import { dxfEncPolyline } from "../dxf-encoding/dxf-polyline.js";
 import { dxfEncLine } from "../dxf-encoding/dxf-line.js";
+import { dxfEncLwPolyline } from "../dxf-encoding/dxf-lwpolyline.js";
 
 export function dxfImage(i: ImageMesh, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const half = vec2Scale(i.size, 0.5);
@@ -66,12 +66,12 @@ function abstractImageComponentToDxf3D(
     }
     case "polyline": {
       const points = comp.points.map((p) => vec3tr(p.x, p.y));
-      dxf += dxfEncPolyline(points, strokeColor, false, handleRef);
+      dxf += dxfEncLwPolyline(pos, points, strokeColor, false, handleRef) ?? "";
       break;
     }
     case "polygon": {
       const points = comp.points.map((p) => vec3tr(p.x, p.y));
-      dxf += dxfEncPolyline(points, strokeColor, true, handleRef);
+      dxf += dxfEncLwPolyline(pos, points, strokeColor, true, handleRef) ?? "";
       break;
     }
     case "ellipse": {
@@ -84,7 +84,7 @@ function abstractImageComponentToDxf3D(
         const y = comp.topLeft.y + r2 + r2 * Math.sin(t);
         points.push(vec3tr(x, y));
       }
-      dxf += dxfEncPolyline(points, strokeColor, true, handleRef);
+      dxf += dxfEncLwPolyline(pos, points, strokeColor, true, handleRef) ?? "";
       break;
     }
     case "rectangle": {
@@ -95,7 +95,7 @@ function abstractImageComponentToDxf3D(
           vec3tr(comp.bottomRight.x, comp.bottomRight.y),
           vec3tr(comp.topLeft.x, comp.bottomRight.y),
       ];
-      dxf += dxfEncPolyline(points, strokeColor, true, handleRef);
+      dxf += dxfEncLwPolyline(pos, points, strokeColor, true, handleRef) ?? "";
       break;
     }
     default:
