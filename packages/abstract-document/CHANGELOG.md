@@ -2,10 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [19.3.0] - 2026-09-04
+
+- Bumb pdfkit to 0.20.2. Manually add previously bundled Helvetica. Use new toBlob and toBytes functions.
+
 ## [19.2.1] - 2026-08-13
 
 - Add fixed table layout in an attempt to match DOCX tables with PDF table layout.
-  
+
 ## [19.2.0] - 2026-08-12
 
 - Various updates and fixes to the docx renderer including:
