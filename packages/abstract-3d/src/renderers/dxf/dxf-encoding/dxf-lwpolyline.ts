@@ -1,6 +1,6 @@
 import { vec3, vec3Cross, vec3Dot, vec3Length, vec3Normalize, vec3Sub, type Vec3 } from "../../../abstract-3d.js";
 import { type DxfColor, dxfColor } from "./dxf-color.js";
-import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfOCSXYAxis, dxfRound, type Handle } from "./dxf-common.js";
+import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfOCSXYAxis, type Handle } from "./dxf-common.js";
 
 type LwPolylinePlane = {
   readonly pos: Vec3;

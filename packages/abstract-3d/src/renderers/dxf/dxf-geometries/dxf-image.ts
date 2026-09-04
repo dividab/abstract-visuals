@@ -1,19 +1,19 @@
-import type { AbstractImage, Color, Component } from "abstract-image";
+import { DEFAULT_CIRCLE_SIDE_COUNT, type Handle } from "../dxf-encoding/dxf-common.js";
+import { dxfEncLine } from "../dxf-encoding/dxf-line.js";
+import { dxfEncLwPolyline } from "../dxf-encoding/dxf-lwpolyline.js";
+import type { AbstractImage, Component } from "abstract-image";
+import type { DxfDynamicColor } from "../dxf-encoding/dxf-color.js";
 import {
   type ImageMesh,
   type Vec3,
   vec2Scale,
-  vec3TransRot,
-  vec3RotCombine,
-  vec3Zero,
   vec3,
-  vec3Rot,
   vec3Add,
+  vec3Rot,
+  vec3RotCombine,
+  vec3TransRot,
+  vec3Zero,
 } from "../../../abstract-3d.js";
-import { DEFAULT_CIRCLE_SIDE_COUNT, type Handle } from "../dxf-encoding/dxf-common.js";
-import { DxfDynamicColor } from "../dxf-encoding/dxf-color.js";
-import { dxfEncLine } from "../dxf-encoding/dxf-line.js";
-import { dxfEncLwPolyline } from "../dxf-encoding/dxf-lwpolyline.js";
 
 export function dxfImage(i: ImageMesh, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const half = vec2Scale(i.size, 0.5);
