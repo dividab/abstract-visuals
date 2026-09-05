@@ -16,10 +16,11 @@ export default defineConfig({
     "packages/abstract-visuals-example/src/app/demo-rotated.ts",
     "packages/abstract-visuals-example/src/app/double-view-component-geometries.ts",
   ],
-  jsPlugins: [{ name: "functional", specifier: "eslint-plugin-functional" }],
   rules: {
     "functional/no-let": ["error", { allowInFunctions: true, ignoreIdentifierPattern: "^[mM]utable" }],
-    "functional/prefer-property-signatures": "error",
+    "functional/no-classes": "off",
+    "functional/no-this-expressions": "off",
+    "functional/prefer-readonly-type": "off",
 
     "typescript/prefer-readonly-parameter-types": "off",
     "typescript/explicit-module-boundary-types": "off",
