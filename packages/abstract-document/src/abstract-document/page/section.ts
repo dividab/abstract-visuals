@@ -1,6 +1,6 @@
-import { Resources } from "../resources.js";
+import type { Resources } from "../resources.js";
 import * as MasterPage from "./master-page.js";
-import { SectionElement } from "../section-elements/section-element.js";
+import type { SectionElement } from "../section-elements/section-element.js";
 
 export type Section = Resources & {
   readonly page: MasterPage.MasterPage;

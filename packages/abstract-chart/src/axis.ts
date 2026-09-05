@@ -1,4 +1,5 @@
-import { Color, createPoint, Point } from "abstract-image";
+import type { Color, Point } from "abstract-image";
+import { createPoint } from "abstract-image";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 
 export type Axis = LinearAxis | LogarithmicAxis | DiscreteAxis;
@@ -127,8 +128,7 @@ export function getTicks(desiredTicks: number, axis: Axis): ReadonlyArray<Discre
     case "discrete":
       return axis.points;
     default:
-      exhaustiveCheck(axis);
-      return [];
+      return exhaustiveCheck(axis);
   }
 }
 
@@ -210,8 +210,7 @@ export function transformValue(value: number, min: number, max: number, axis: Ax
     case "discrete":
       return min + range * linearTransform(value, axisMin(axis), axisMax(axis));
     default:
-      exhaustiveCheck(axis);
-      return 0;
+      return exhaustiveCheck(axis);
   }
 }
 
@@ -228,8 +227,7 @@ export function inverseTransformValue(value: number, min: number, max: number, a
     case "discrete":
       return inverseLinearTransform((value - min) / range, axisMin(axis), axisMax(axis));
     default:
-      exhaustiveCheck(axis);
-      return 0;
+      return exhaustiveCheck(axis);
   }
 }
 
@@ -241,8 +239,7 @@ export function axisMin(axis: Axis): number {
     case "discrete":
       return axis.points[0]?.value ?? 0;
     default:
-      exhaustiveCheck(axis);
-      return 0;
+      return exhaustiveCheck(axis);
   }
 }
 

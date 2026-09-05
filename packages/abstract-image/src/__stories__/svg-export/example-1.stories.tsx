@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Meta } from "@storybook/react";
+import type { Meta } from "@storybook/react";
 import * as AbstractImage from "../../index.js";
 
 export function SvgExportExample1(): React.ReactElement<{}> {
@@ -35,7 +35,6 @@ export function SvgExportExample1(): React.ReactElement<{}> {
   );
 }
 
-// eslint-disable-next-line import/no-default-export
 export default {
   component: SvgExportExample1,
   title: "SvgExportExample1",

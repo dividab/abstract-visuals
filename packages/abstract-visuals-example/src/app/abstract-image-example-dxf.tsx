@@ -27,7 +27,7 @@ import {
   magenta,
 } from "../../../abstract-image/src/index.js";
 import { dynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
-import { AbstractImage } from "abstract-image";
+import type { AbstractImage } from "abstract-image";
 
 const hrImage: {
   image: AbstractImage;

@@ -1,14 +1,16 @@
 import * as AD from "../../abstract-document/index.js";
 import { preProcess } from "./pre-process.js";
 import { measure, measurePages } from "./measure.js";
-import { paginate, Page, getHeaderAndFooter } from "./paginate.js";
+import type { Page } from "./paginate.js";
+import { paginate, getHeaderAndFooter } from "./paginate.js";
 import { updatePageRefs } from "./update-refs.js";
 import { renderImage } from "./render-image.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 import { registerDefaultStdFonts } from "./std-fonts.js";
 import { toBlob, toBytes } from "pdfkit/output";
 import PDFDocument from "pdfkit";
-import { PdfKitAlignment, rowsCombineTextRuns, rowsSplit } from "./textRunRow.js";
+import type { PdfKitAlignment } from "./textRunRow.js";
+import { rowsCombineTextRuns, rowsSplit } from "./textRunRow.js";
 
 export type PdfExportOptions = {
   compress: boolean;

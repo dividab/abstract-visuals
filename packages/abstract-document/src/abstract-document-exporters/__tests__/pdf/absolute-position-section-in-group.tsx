@@ -1,5 +1,5 @@
 import * as AD from "../../../index.js";
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 
 export const testAbsolutePositionSectionInGroup: ExportTestDef = {

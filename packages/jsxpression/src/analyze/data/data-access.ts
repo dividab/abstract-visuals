@@ -1,7 +1,7 @@
 import type { Program } from "acorn";
 import { traverse } from "../../traverse.js";
 import type { ArrayPropertySchema, PropertySchema, Schema } from "../../schema.js";
-import { ValidationContext } from "../validation-context.js";
+import type { ValidationContext } from "../validation-context.js";
 import { AnalysisReport } from "../analysis-report.js";
 import { isSimpleDataAccess, extractPath, validateSchemaPath } from "./utils.js";
 import { getNodeRange } from "../utils.js";

@@ -1,4 +1,4 @@
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testSimpleDocument: ExportTestDef = {
   name: "Simple document",

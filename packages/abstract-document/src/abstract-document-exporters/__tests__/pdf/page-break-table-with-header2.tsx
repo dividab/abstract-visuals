@@ -1,5 +1,4 @@
-/* eslint-disable max-lines */
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -8,7 +7,6 @@ import {
   TableRow,
   TableCell,
   TextRun,
-  Group,
   render,
 } from "../../../abstract-document-jsx/index.js";
 import * as TableStyle from "../../../abstract-document/styles/table-style.js";

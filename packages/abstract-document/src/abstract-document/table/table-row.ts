@@ -1,4 +1,4 @@
-import { TableCell } from "./table-cell.js";
+import type { TableCell } from "./table-cell.js";
 
 export interface TableRow {
   readonly children: ReadonlyArray<TableCell>;

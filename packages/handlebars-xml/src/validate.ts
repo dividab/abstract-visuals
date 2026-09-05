@@ -1,5 +1,7 @@
-import { XMLValidator, ValidationError } from "fast-xml-parser";
-import { XmlElement, parseXml, findElement } from "./parse.js";
+import type { ValidationError } from "fast-xml-parser";
+import { XMLValidator } from "fast-xml-parser";
+import type { XmlElement } from "./parse.js";
+import { parseXml, findElement } from "./parse.js";
 
 enum ErrorType {
   warning = 0,
@@ -24,7 +26,6 @@ type ErrorObject = {
 
 type ErrorOptions = {
   readonly className: string;
-  // eslint-disable-next-line functional/prefer-readonly-type
   readonly hoverMessage: Array<{
     readonly value: string;
   }>;
@@ -36,7 +37,6 @@ type XmlError = {
   readonly range: Range;
 };
 
-// eslint-disable-next-line functional/prefer-readonly-type
 export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement>): Array<ErrorObject> {
   const errors: Array<XmlError> = [];
 
@@ -120,7 +120,7 @@ function validateElements(
   const isClosed = rangeLessThan(slashPosition, closingTagPosition);
 
   const validElements = Object.values(completeSchema.children);
-  const schemaName = schemaElement?.attributes.type || tagName;
+  const schemaName = schemaElement?.attributes["type"] || tagName;
   const foundSchemaElement = findElement(validElements, schemaName);
 
   if (!foundSchemaElement) {
@@ -133,8 +133,8 @@ function validateElements(
 
   // Validate required attributes
   for (const possibleAttribute of possibleAttributes) {
-    const attributeName = possibleAttribute.attributes.name;
-    const isRequired = possibleAttribute.attributes.use;
+    const attributeName = possibleAttribute.attributes["name"];
+    const isRequired = possibleAttribute.attributes["use"];
     if (attributeName && isRequired && isRequired === "required") {
       if (element.attributes[attributeName] === undefined) {
         errors.push(createError(`"${attributeName}" is a required attribute on "${tagName}"`, ErrorType.error, range));
@@ -144,7 +144,7 @@ function validateElements(
 
   // Validate existing attributes
   for (const [attrKey, attrVal] of Object.entries(element.attributes)) {
-    const possibleAttrNames = possibleAttributes.flatMap((p) => p.attributes.name || []);
+    const possibleAttrNames = possibleAttributes.flatMap((p) => p.attributes["name"] || []);
     const attrText = typeof attrVal === "string" ? `${attrKey}="${attrVal}"` : attrKey;
     const attrRange = getRangeOfElement(attrText, false);
     if (!possibleAttrNames.includes(attrKey)) {

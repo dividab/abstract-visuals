@@ -1,6 +1,6 @@
-import { AbstractImage } from "../model/abstract-image.js";
-import { Color } from "../model/color.js";
-import { Component, Text } from "../model/component.js";
+import type { AbstractImage } from "../model/abstract-image.js";
+import type { Color } from "../model/color.js";
+import type { Component, Text } from "../model/component.js";
 
 type CharacterEncoding = "standard-encoding" | "iso-latin-1-encoding";
 

@@ -1,5 +1,5 @@
 import XLSX from "xlsx-js-style";
-import { AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
+import type { AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
 import { xlsxWorkSheet } from "./_xlsx-sheet.js";
 import { createStyle } from "./_style.js";
 

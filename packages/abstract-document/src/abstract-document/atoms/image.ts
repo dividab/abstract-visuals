@@ -1,4 +1,4 @@
-import { ImageResource } from "../primitives/image-resource.js";
+import type { ImageResource } from "../primitives/image-resource.js";
 
 export interface Image {
   readonly type: "Image";

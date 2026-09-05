@@ -1,4 +1,4 @@
-import { Schema } from "../schema.js";
+import type { Schema } from "../schema.js";
 import { declareBuiltinTypes } from "./builtins/index.js";
 import { declareComponentTypes, declareDataTypes, declareFunctionTypes } from "./schema/index.js";
 
@@ -31,5 +31,10 @@ import { declareComponentTypes, declareDataTypes, declareFunctionTypes } from ".
  * ```
  */
 export function generateTypeScriptDefinitions(schema: Schema): string {
-  return [declareBuiltinTypes(), declareComponentTypes(schema), declareDataTypes(schema), declareFunctionTypes(schema)].join("\n");
+  return [
+    declareBuiltinTypes(),
+    declareComponentTypes(schema),
+    declareDataTypes(schema),
+    declareFunctionTypes(schema),
+  ].join("\n");
 }

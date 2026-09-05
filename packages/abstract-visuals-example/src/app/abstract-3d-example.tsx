@@ -14,12 +14,13 @@ import { createSVG } from "../../../abstract-image/src/exporters/svg-export-imag
 import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
 import { componentGeometries } from "./double-view-component-geometries.js";
 import { templateScene } from "./template-scene.js";
-import { Scene, vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
+import type { Scene } from "../../../abstract-3d/src/abstract-3d.js";
+import { vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
-  const [hovered, setHovered] = React.useState<string | undefined>(undefined);
-  const group = systemair.groups.find((g) => g.data?.id === hovered);
+  const [hovered] = React.useState<string | undefined>(undefined);
+  const group = systemair.groups.find((g) => g.data?.["id"] === hovered);
   const popover: React3Js.ReactPopover | undefined = group
     ? { id: "popover", pos: { ...group.pos, y: group.pos.y - 300 }, content: "Hej" }
     : undefined;
@@ -98,7 +99,7 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Dxf.renderScenes([{scene: demo as Scene, pos: vec3Zero}], {view: "front"})], {
+              new Blob([Dxf.renderScenes([{ scene: demo as Scene, pos: vec3Zero }], { view: "front" })], {
                 type: "text/plain",
               }),
               `a3d.dxf`
@@ -107,10 +108,10 @@ export function Abstract3DExample(): React.ReactNode {
         >
           DXF new dims
         </button>
-                <button
+        <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Dxf.renderScenes([{scene: demoRotated as Scene, pos: vec3Zero}], {view: "front"})], {
+              new Blob([Dxf.renderScenes([{ scene: demoRotated as Scene, pos: vec3Zero }], { view: "front" })], {
                 type: "text/plain",
               }),
               `a3d.dxf`
@@ -168,7 +169,7 @@ export function Abstract3DExample(): React.ReactNode {
             <React3Js.render
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
-              createGroupId={(g) => g.data?.id ?? ""}
+              createGroupId={(g) => g.data?.["id"] ?? ""}
               scene={systemair}
               orbitContolsProps={{ enableDamping: false }}
               camera={camera}
@@ -181,7 +182,7 @@ export function Abstract3DExample(): React.ReactNode {
             <React3Js.render
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
-              createGroupId={(g) => g.data?.id ?? ""}
+              createGroupId={(g) => g.data?.["id"] ?? ""}
               scene={vortice}
               orbitContolsProps={{ enableDamping: false }}
               camera={camera}
@@ -191,7 +192,7 @@ export function Abstract3DExample(): React.ReactNode {
             <React3Js.render
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
-              createGroupId={(g) => g.data?.id ?? ""}
+              createGroupId={(g) => g.data?.["id"] ?? ""}
               scene={demo as Scene}
               orbitContolsProps={{ enableDamping: false }}
               camera={camera}

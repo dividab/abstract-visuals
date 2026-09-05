@@ -18,9 +18,15 @@ import {
   vec3RotCombine,
   vec3Sub,
   vec3TransRot,
-  vec3Zero
+  vec3Zero,
 } from "../../abstract-3d.js";
-import { DEFAULT_CIRCLE_SIDE_COUNT, type DxfOrigin, type Handle, dxfBuild, dxfHandleInit } from "./dxf-encoding/dxf-common.js";
+import {
+  DEFAULT_CIRCLE_SIDE_COUNT,
+  type DxfOrigin,
+  type Handle,
+  dxfBuild,
+  dxfHandleInit,
+} from "./dxf-encoding/dxf-common.js";
 import { type Optional, calculateVisibleViews } from "../../utils.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
@@ -29,7 +35,7 @@ import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 import { dxfImage } from "./dxf-geometries/dxf-image.js";
 import { dxfDimension } from "./dxf-geometries/dxf-dimension.js";
-import { DxfDimensionDefinition } from "./dxf-encoding/dxf-dimension.js";
+import type { DxfDimensionDefinition } from "./dxf-encoding/dxf-dimension.js";
 
 export type DxfOptions = {
   readonly view: View;
@@ -68,7 +74,7 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
     allDimensions = {
       entity: allDimensions.entity + dimensions.entity,
       block: allDimensions.block + dimensions.block,
-      blockRecord: allDimensions.blockRecord + dimensions.blockRecord
+      blockRecord: allDimensions.blockRecord + dimensions.blockRecord,
     };
     allBounds.push(bounds3FromPosAndSize(center, size));
   }
@@ -88,7 +94,12 @@ const renderInternal = (
   options: DxfOptions,
   offset: Vec3,
   handleRef: Handle
-): { readonly groups: string; readonly dimensions: DxfDimensionDefinition; readonly size: Vec3; readonly center: Vec3 } => {
+): {
+  readonly groups: string;
+  readonly dimensions: DxfDimensionDefinition;
+  readonly size: Vec3;
+  readonly center: Vec3;
+} => {
   const viewRotation = rotationForCameraPos(options.view);
   const unitRot = vec3RotCombine(viewRotation, scene.rotation_deprecated ?? vec3Zero);
   const unitCenter = scene.center_deprecated ?? vec3Zero;
@@ -100,7 +111,16 @@ const renderInternal = (
   const visibleViews = calculateVisibleViews(options.view, scene.rotation_deprecated);
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
-    dimensions: dxfDimensions(scene.dimensions_deprecated, pos, unitRot, scene.rotation_deprecated ?? vec3Zero, viewRotation, visibleViews, options, handleRef),
+    dimensions: dxfDimensions(
+      scene.dimensions_deprecated,
+      pos,
+      unitRot,
+      scene.rotation_deprecated ?? vec3Zero,
+      viewRotation,
+      visibleViews,
+      options,
+      handleRef
+    ),
     size,
     center: pos,
   };
@@ -178,18 +198,34 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   return dxf;
 }
 
-function dxfDimensions(d: Dimensions | undefined, parentPos: Vec3, parentRot: Vec3, sceneRotation: Vec3, viewRotation: Vec3, visibleViews: Record<string, boolean>, options: DxfOptions, handleRef: Handle): DxfDimensionDefinition {
-  if(!d || !options.showDimensions) {
-   return {
-    entity: "",
-    block: "",
-    blockRecord: ""
-   };
+function dxfDimensions(
+  d: Dimensions | undefined,
+  parentPos: Vec3,
+  parentRot: Vec3,
+  sceneRotation: Vec3,
+  viewRotation: Vec3,
+  visibleViews: Record<string, boolean>,
+  options: DxfOptions,
+  handleRef: Handle
+): DxfDimensionDefinition {
+  if (!d || !options.showDimensions) {
+    return {
+      entity: "",
+      block: "",
+      blockRecord: "",
+    };
   }
   return d.dimensions
     .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
     .map((d) => dxfDimension(d, parentPos, parentRot, sceneRotation, viewRotation, handleRef))
-    .reduce<DxfDimensionDefinition>((prev, curr) => ({ block: prev.block + curr.block, entity: prev.entity + curr.entity, blockRecord: prev.blockRecord + curr.blockRecord }), {block: "", entity: "", blockRecord: ""});
+    .reduce<DxfDimensionDefinition>(
+      (prev, curr) => ({
+        block: prev.block + curr.block,
+        entity: prev.entity + curr.entity,
+        blockRecord: prev.blockRecord + curr.blockRecord,
+      }),
+      { block: "", entity: "", blockRecord: "" }
+    );
 }
 
 function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
@@ -218,6 +254,21 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
   const bounds2 = bounds3FromPosAndSize(offset, scene.size_deprecated);
   const groupRoot = group([], offset, vec3Zero, scene.groups);
   const handleRef = dxfHandleInit();
-  const dimensions = dxfDimensions(scene.dimensions_deprecated, dimensionsPos, unitRot, scene.rotation_deprecated ?? vec3Zero, viewRotation, visibleViews, opts, handleRef);
-  return dxfBuild(dxfGroup(groupRoot, center, unitRot, opts, handleRef), dimensions, bounds2, scene.size_deprecated, center);
+  const dimensions = dxfDimensions(
+    scene.dimensions_deprecated,
+    dimensionsPos,
+    unitRot,
+    scene.rotation_deprecated ?? vec3Zero,
+    viewRotation,
+    visibleViews,
+    opts,
+    handleRef
+  );
+  return dxfBuild(
+    dxfGroup(groupRoot, center, unitRot, opts, handleRef),
+    dimensions,
+    bounds2,
+    scene.size_deprecated,
+    center
+  );
 };

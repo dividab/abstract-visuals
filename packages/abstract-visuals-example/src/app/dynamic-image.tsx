@@ -3,7 +3,7 @@ import React from "react";
 import { compileDynamicImage, renderDynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 import { generateDataSchema } from "../../../abstract-image/src/dynamic-image/utils.js";
 import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
-import type { FunctionSchema, PropertySchema } from "jsxpression";
+import type { FunctionSchema } from "jsxpression";
 import wiringPng from "../../assets/wiring.png";
 
 export function DynamicImage({}: {}): React.JSX.Element {

@@ -1,6 +1,6 @@
 import React from "react";
 import { BackSide, DoubleSide, FrontSide, type MaterialParameters } from "three";
-import { Material } from "../../abstract-3d.js";
+import type { Material } from "../../abstract-3d.js";
 import { shade } from "../../utils.js";
 
 const decreasedOpacity = 0.125;

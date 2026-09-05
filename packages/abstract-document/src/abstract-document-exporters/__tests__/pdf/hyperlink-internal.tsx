@@ -1,11 +1,10 @@
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
   Section,
   TextRun,
   PageBreak,
-  LinkTarget,
   HyperLink,
 } from "../../../abstract-document-jsx/index.js";
 

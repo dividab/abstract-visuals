@@ -1,11 +1,12 @@
 import { addResources, merge } from "../../abstract-document/abstract-doc.js";
-import { AbstractDoc } from "../../abstract-document/index.js";
+import type { AbstractDoc } from "../../abstract-document/index.js";
 import * as StyleKey from "../../abstract-document/styles/style-key.js";
-import { Resources } from "../../abstract-document/resources.js";
-import { ADCreatorFn, creators, propsCreators } from "./creator.js";
+import type { Resources } from "../../abstract-document/resources.js";
+import type { ADCreatorFn } from "./creator.js";
+import { creators, propsCreators } from "./creator.js";
 import { parseHandlebarsXml, type XmlElement } from "handlebars-xml";
 import { getFontStyleName } from "../../abstract-document-exporters/pdf/font.js";
-import { Font } from "../../abstract-document/primitives/font.js";
+import type { Font } from "../../abstract-document/primitives/font.js";
 
 export type TemplateInput = {
   readonly template: string;
@@ -72,9 +73,9 @@ function abstractDocXmlRecursive(
     const childName = childElement.tagName;
     if (childName !== undefined) {
       if (childName === "StyleNames") {
-        props.styles = abstractDocXmlRecursive(creators, childElement);
-      } else if (childName === "StyleName" && childElement.attributes && childElement.attributes.name) {
-        const styleName = StyleKey.create(childElement.attributes.type, childElement.attributes.name);
+        props["styles"] = abstractDocXmlRecursive(creators, childElement);
+      } else if (childName === "StyleName" && childElement.attributes && childElement.attributes["name"]) {
+        const styleName = StyleKey.create(childElement.attributes["type"], childElement.attributes["name"]);
         const style = abstractDocXmlRecursive(creators, childElement);
         props[styleName] = style;
       } else if (childName.startsWith(childName.charAt(0).toUpperCase())) {
@@ -85,11 +86,11 @@ function abstractDocXmlRecursive(
         // Some special keys should directly have an array of children as value instead of an object with children key
         const arrayedElements = ["header", "footer", "headerRows"];
         const childrenOnly = arrayedElements.findIndex((e) => e === childName) !== -1;
-        const differentFirstPage = childElement.attributes.differentFirstPage;
+        const differentFirstPage = childElement.attributes["differentFirstPage"];
         if (differentFirstPage === "true" && childName === "header") {
-          props.frontHeader = abstractDocXmlRecursive(creators, childElement, childrenOnly);
+          props["frontHeader"] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
         } else if (differentFirstPage === "true" && childName === "footer") {
-          props.frontFooter = abstractDocXmlRecursive(creators, childElement, childrenOnly);
+          props["frontFooter"] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
         } else {
           props[childName] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
         }
@@ -119,19 +120,19 @@ function abstractDocXmlRecursive(
   }
 
   // Elements styling needs to have style: {type= "StyleName" }. Occures when having a <style></style> element.
-  if (typeof obj.style === "object") {
-    if (obj.columnSpan) {
-      obj.style = { ...obj.style, type: "TableCellStyle" };
+  if (typeof obj["style"] === "object") {
+    if (obj["columnSpan"]) {
+      obj["style"] = { ...obj["style"], type: "TableCellStyle" };
     } else {
-      switch (obj.type) {
+      switch (obj["type"]) {
         case "page":
-          obj.style = { ...obj.style, type: "MasterPageStyle" };
+          obj["style"] = { ...obj["style"], type: "MasterPageStyle" };
           break;
         case "Group":
-          obj.style = { ...obj.style, type: "GroupStyle" };
+          obj["style"] = { ...obj["style"], type: "GroupStyle" };
           break;
         case "Table":
-          obj.style = { ...obj.style, type: "TableStyle" };
+          obj["style"] = { ...obj["style"], type: "TableStyle" };
           break;
         // Cell is missing type in abstract doc?!?!?!
         // case "TableCell":
@@ -142,12 +143,12 @@ function abstractDocXmlRecursive(
         case "TextParagraph":
         case "ImageParagraph":
         case "Paragraph":
-          obj.style = { ...obj.style, type: "ParagraphStyle" };
+          obj["style"] = { ...obj["style"], type: "ParagraphStyle" };
           break;
         case "TextField":
         case "HyperLink":
         case "TextRun":
-          obj.style = { ...obj.style, type: "TextStyle" };
+          obj["style"] = { ...obj["style"], type: "TextStyle" };
           break;
         default:
           break;
@@ -156,7 +157,7 @@ function abstractDocXmlRecursive(
   }
 
   if (children.length > 0) {
-    obj.children = children;
+    obj["children"] = children;
   }
   return obj;
 }
@@ -188,7 +189,7 @@ function extractImageFontsStyleNames(
   styleNames: Record<string, string> = {},
   images: Record<string, true> = {},
   fonts: Record<string, Partial<Record<keyof Font, boolean>>> = {},
-  currentFontFamily: string | undefined = undefined,
+  currentFontFamily: string | undefined = undefined
 ): readonly [
   imageUrls: Record<string, true>,
   fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>,
@@ -196,39 +197,39 @@ function extractImageFontsStyleNames(
 ] {
   let crFntFam = currentFontFamily;
   xmlElement.forEach((item) => {
-    if (item.tagName.startsWith("Image") && item.attributes?.src) {
-      images[item.attributes.src as string] = true;
+    if (item.tagName.startsWith("Image") && item.attributes?.["src"]) {
+      images[item.attributes["src"] as string] = true;
     } else if (item.tagName === "style") {
-      const fontFamily = crFntFam ?? styleFamilies.Default;
-      if(fontFamily) {
+      const fontFamily = crFntFam ?? styleFamilies["Default"];
+      if (fontFamily) {
         const styleName = getFontStyleName(item.attributes);
         (fonts[fontFamily] ??= {})[styleName] = true;
       }
-    } else if(item.attributes.styleName !== undefined) {
-      crFntFam = styleFamilies[item.attributes.styleName] ?? crFntFam;
-    } else if (item.attributes.styleNames !== undefined) {
-      const style = item.attributes.styleNames.split(",").find((style) => styleFamilies[style]);
-      if(style) {
+    } else if (item.attributes["styleName"] !== undefined) {
+      crFntFam = styleFamilies[item.attributes["styleName"]] ?? crFntFam;
+    } else if (item.attributes["styleNames"] !== undefined) {
+      const style = item.attributes["styleNames"].split(",").find((style) => styleFamilies[style]);
+      if (style) {
         const fontFamily = styleFamilies[style];
-        if(fontFamily) {
+        if (fontFamily) {
           crFntFam = fontFamily;
         }
       }
-    } else if (item.attributes?.fontFamily) {
+    } else if (item.attributes?.["fontFamily"]) {
       const styleName = getFontStyleName(item.attributes);
-      (fonts[item.attributes.fontFamily as string] ??= {})[styleName] = true;
-      if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
-        styleNames[item.attributes.name as string] = item.attributes.type;
+      (fonts[item.attributes["fontFamily"] as string] ??= {})[styleName] = true;
+      if (item.tagName === "StyleName" && item.attributes["name"] && item.attributes["type"]) {
+        styleNames[item.attributes["name"] as string] = item.attributes["type"];
       }
-    } else if (item.tagName === "StyleName" && item.attributes.name && item.attributes.type) {
-      styleNames[item.attributes.name as string] = item.attributes.type;
-      if(item.attributes.type === "TextStyle" && item.attributes.fontFamily) {
+    } else if (item.tagName === "StyleName" && item.attributes["name"] && item.attributes["type"]) {
+      styleNames[item.attributes["name"] as string] = item.attributes["type"];
+      if (item.attributes["type"] === "TextStyle" && item.attributes["fontFamily"]) {
         const styleName = getFontStyleName(item.attributes);
-        styleFamilies[item.attributes.name as string] = item.attributes.fontFamily;
-        (fonts[item.attributes.fontFamily] ??= {})[styleName] = true;
+        styleFamilies[item.attributes["name"] as string] = item.attributes["fontFamily"];
+        (fonts[item.attributes["fontFamily"]] ??= {})[styleName] = true;
       }
     }
-    if(item.children.length > 0) {
+    if (item.children.length > 0) {
       extractImageFontsStyleNames(item.children, styleFamilies, styleNames, images, fonts, crFntFam);
     }
   });

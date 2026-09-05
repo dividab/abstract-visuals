@@ -1,6 +1,6 @@
-import { Vec2, Vec3 } from "../../abstract-3d.js";
+import type { Vec2, Vec3 } from "../../abstract-3d.js";
 
-export type MutableStep = { refs: Map<string, number>; step: string; geoContext3d: number; };
+export type MutableStep = { refs: Map<string, number>; step: string; geoContext3d: number };
 
 export const STEP_NUMBER_EPSILON: number = 1e-5;
 
@@ -19,17 +19,17 @@ const mutate = (step: string, m: MutableStep): number => {
 
 const stepNumber = (num: number): number => {
   const absNum = Math.abs(num);
-  if(absNum < STEP_NUMBER_EPSILON) {
+  if (absNum < STEP_NUMBER_EPSILON) {
     return 0.0;
   }
 
   const roundNum = Math.round(num);
-  if(Math.abs(absNum - Math.abs(roundNum)) < STEP_NUMBER_EPSILON) {
+  if (Math.abs(absNum - Math.abs(roundNum)) < STEP_NUMBER_EPSILON) {
     return roundNum;
   }
 
   return num;
-}
+};
 
 export const HEADER = (date: string): string =>
   `ISO-10303-21;
@@ -114,8 +114,12 @@ export const PCURVE = (
 export const CYLINDRICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, radius: number, m: MutableStep): number =>
   mutate(`CYLINDRICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${stepNumber(radius)})`, m);
 
-export const CONICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, radius: number, semiAngle: number, m: MutableStep): number =>
-  mutate(`CONICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${stepNumber(radius)},${stepNumber(semiAngle)})`, m);
+export const CONICAL_SURFACE = (
+  AXIS2_PLACEMENT_3D: number,
+  radius: number,
+  semiAngle: number,
+  m: MutableStep
+): number => mutate(`CONICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${stepNumber(radius)},${stepNumber(semiAngle)})`, m);
 
 export const DEFINITIONAL_REPRESENTATION = (LINEorCircle: number, m: MutableStep): number =>
   mutate(`DEFINITIONAL_REPRESENTATION('',(#${LINEorCircle}),#7)`, m);
@@ -126,16 +130,21 @@ export const SHELL_BASED_SURFACE_MODEL = (OPEN_SHELL: number, m: MutableStep): n
 export const MANIFOLD_SURFACE_SHAPE_REPRESENTATION = (
   AXIS2_PLACEMENT_3D: number,
   CLOSED_SHELL: number,
-  GEOMETRY_CONTEXT: number, 
+  GEOMETRY_CONTEXT: number,
   m: MutableStep
-): number => mutate(`MANIFOLD_SURFACE_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${CLOSED_SHELL}),#${GEOMETRY_CONTEXT})`, m);
+): number =>
+  mutate(`MANIFOLD_SURFACE_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${CLOSED_SHELL}),#${GEOMETRY_CONTEXT})`, m);
 
 export const ADVANCED_BREP_SHAPE_REPRESENTATION = (
   AXIS2_PLACEMENT_3D: number,
   MANIFOLD_SOLID_BREP: number,
   GEOMETRY_CONTEXT: number,
   m: MutableStep
-): number => mutate(`ADVANCED_BREP_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${MANIFOLD_SOLID_BREP}),#${GEOMETRY_CONTEXT})`, m);
+): number =>
+  mutate(
+    `ADVANCED_BREP_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${MANIFOLD_SOLID_BREP}),#${GEOMETRY_CONTEXT})`,
+    m
+  );
 
 export const CLOSED_SHELL = (ADVANCED_FACE: ReadonlyArray<number>, m: MutableStep): number =>
   mutate(`CLOSED_SHELL('',(${ADVANCED_FACE.map((af) => `#${af}`).join(",")}))`, m);
@@ -153,7 +162,11 @@ export const AXIS2_PLACEMENT_3D = (
   m: MutableStep
 ): number => mutate(`AXIS2_PLACEMENT_3D('',#${CARTESIAN_POINT},#${DIRECTION_NORMAL},#${DIRECTION_PLANE_DIRECITON})`, m);
 
-export const MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION = (STYLED_ITEM: number, GEOMETRY_CONTEXT: number, m: MutableStep): number =>
+export const MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION = (
+  STYLED_ITEM: number,
+  GEOMETRY_CONTEXT: number,
+  m: MutableStep
+): number =>
   mutate(`MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(#${STYLED_ITEM}),#${GEOMETRY_CONTEXT})`, m);
 
 export const STYLED_ITEM = (
@@ -231,51 +244,37 @@ export const UNCERTAINTY_MEASURE_WITH_UNIT = (LENGTH_UNIT: number, m: MutableSte
   );
 
 export const APPLICATION_PROTOCOL_DEFINITION = (APPLICATION_CONTEXT: number, m: MutableStep): number =>
-  mutate(`APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000,#${APPLICATION_CONTEXT})`, m);
+  mutate(
+    `APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000,#${APPLICATION_CONTEXT})`,
+    m
+  );
 
 export const APPLICATION_CONTEXT = (m: MutableStep): number =>
   mutate(`APPLICATION_CONTEXT('core data for automotive mechanical design processes')`, m);
 
-
-export const SHAPE_DEFINITION_REPRESENTATION = (productDefinitionShape: number, manifoldSurfaceShapeRepr: number, m: MutableStep): number =>
-  mutate(
-    `SHAPE_DEFINITION_REPRESENTATION(#${productDefinitionShape},#${manifoldSurfaceShapeRepr})`,
-    m
-  );
+export const SHAPE_DEFINITION_REPRESENTATION = (
+  productDefinitionShape: number,
+  manifoldSurfaceShapeRepr: number,
+  m: MutableStep
+): number => mutate(`SHAPE_DEFINITION_REPRESENTATION(#${productDefinitionShape},#${manifoldSurfaceShapeRepr})`, m);
 
 export const PRODUCT_DEFINITION_SHAPE = (productDefinition: number, m: MutableStep): number =>
-  mutate(
-    `PRODUCT_DEFINITION_SHAPE('','',#${productDefinition})`,
-    m
-  )
+  mutate(`PRODUCT_DEFINITION_SHAPE('','',#${productDefinition})`, m);
 
-export const PRODUCT_DEFINITION = (productDefinitionFormation: number, productDefinitionContext: number, m: MutableStep): number =>
-  mutate(
-    `PRODUCT_DEFINITION('design',#${productDefinitionFormation},#${productDefinitionContext})`,
-    m
-  )
+export const PRODUCT_DEFINITION = (
+  productDefinitionFormation: number,
+  productDefinitionContext: number,
+  m: MutableStep
+): number => mutate(`PRODUCT_DEFINITION('design',#${productDefinitionFormation},#${productDefinitionContext})`, m);
 
 export const PRODUCT_DEFINITION_FORMATION = (product: number, m: MutableStep): number =>
-  mutate(
-    `PRODUCT_DEFINITION_FORMATION('','',#${product})`,
-    m
-  )
+  mutate(`PRODUCT_DEFINITION_FORMATION('','',#${product})`, m);
 
 export const PRODUCT = (productContext: number, name: string, m: MutableStep): number =>
-  mutate(
-    `PRODUCT('${name}','${name}','',(#${productContext}))`,
-    m
-  )
+  mutate(`PRODUCT('${name}','${name}','',(#${productContext}))`, m);
 
 export const PRODUCT_CONTEXT = (applicationContext: number, m: MutableStep): number =>
-  mutate(
-    `PRODUCT_CONTEXT('',#${applicationContext},'mechanical')`,
-    m
-  )
+  mutate(`PRODUCT_CONTEXT('',#${applicationContext},'mechanical')`, m);
 
 export const PRODUCT_DEFINITION_CONTEXT = (applicationContext: number, m: MutableStep): number =>
-  mutate(
-    `PRODUCT_DEFINITION_CONTEXT('part definition',#${applicationContext},'design')`,
-    m
-  )
-
+  mutate(`PRODUCT_DEFINITION_CONTEXT('part definition',#${applicationContext},'design')`, m);

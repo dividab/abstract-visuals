@@ -6,7 +6,6 @@ import {
   createAbstractImage,
   createSize,
   white,
-  createSVG,
   createDashStyle,
   black,
   createRectangle,

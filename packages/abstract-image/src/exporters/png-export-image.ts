@@ -1,4 +1,4 @@
-import { AbstractImage } from "../model/abstract-image.js";
+import type { AbstractImage } from "../model/abstract-image.js";
 
 //dummy
 

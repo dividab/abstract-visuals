@@ -1,4 +1,5 @@
-import { X2jOptions, XMLParser } from "fast-xml-parser";
+import type { X2jOptions } from "fast-xml-parser";
+import { XMLParser } from "fast-xml-parser";
 import Handlebars from "handlebars";
 import { helpers } from "./helpers.js";
 
@@ -54,7 +55,6 @@ function transformFXP(parsedXml: ReadonlyArray<FastXmlElement>): ReadonlyArray<X
         const key = Object.keys(c)[0];
         return key === "#text";
       })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .flatMap((t) => t["#text"] as any as string);
     const textContents = textChilds.flatMap((text) => {
       const cleaned = text.replace(/\n/g, "").replace(/\t/g, "").trim();
@@ -84,7 +84,7 @@ export function findElement(
           : childElement;
       }
     }
-    if (elem.attributes.name === elementName) {
+    if (elem.attributes["name"] === elementName) {
       return elem;
     }
   }
@@ -109,7 +109,10 @@ export function getChildren(elements: ReadonlyArray<XmlElement>): ReadonlyArray<
 
 function shouldSkipLevel(tag: XmlElement): boolean {
   return (
-    tag.tagName === "all" || tag.tagName === "sequence" || tag.tagName === "choice" || tag.attributes.name === undefined
+    tag.tagName === "all" ||
+    tag.tagName === "sequence" ||
+    tag.tagName === "choice" ||
+    tag.attributes["name"] === undefined
   );
 }
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-escape */
 export const textRow = `<xs:complexType name="TextRow">
 	<xs:annotation>
 		<xs:documentation>Shortcut to create a \\<TableRow> \\<TableCell> \\<Paragraph> \\<TextRun text="..." /> \\</Paragraph> \\</TableCell> \\</TableRow></xs:documentation>

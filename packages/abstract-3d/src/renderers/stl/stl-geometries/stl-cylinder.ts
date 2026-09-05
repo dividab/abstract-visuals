@@ -1,4 +1,5 @@
-import { Cylinder, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3, equals, vec3Scale } from "../../../abstract-3d.js";
+import type { Cylinder, Material, Vec3 } from "../../../abstract-3d.js";
+import { vec3TransRot, vec3RotCombine, vec3Zero, vec3, equals, vec3Scale } from "../../../abstract-3d.js";
 import { stlPlaneOfVertices } from "../stl-encoding.js";
 import { stlPlane } from "./stl-plane.js";
 
@@ -9,7 +10,7 @@ export function stlCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
   const vec3tr = (x: number, y: number, z: number): Vec3 => vec3TransRot(vec3(x, y, z), pos, rot);
 
   const angleStart = c.angleStart ?? 0.0;
-  const angleLength = c.angleLength ?? (Math.PI * 2);
+  const angleLength = c.angleLength ?? Math.PI * 2;
   const angleEnd = angleStart + angleLength;
   const angleStep = angleLength / sides;
   let currentAngle = angleStart;

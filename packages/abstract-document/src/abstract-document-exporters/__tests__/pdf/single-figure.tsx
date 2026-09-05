@@ -1,5 +1,5 @@
 import * as AI from "abstract-image";
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, Image } from "../../../abstract-document-jsx/index.js";
 import { Font, ImageResource } from "../../../abstract-document/index.js";
 

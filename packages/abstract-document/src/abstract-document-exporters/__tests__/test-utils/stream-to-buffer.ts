@@ -1,4 +1,4 @@
-import * as S from "stream";
+import type * as S from "stream";
 
 export async function streamToBuffer(stream: S.Stream): Promise<Buffer> {
   const chunks: Buffer[] = [];

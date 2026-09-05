@@ -1,13 +1,5 @@
-import {
-  Plane,
-  Material,
-  Vec3,
-  vec2Scale,
-  vec3TransRot,
-  vec3RotCombine,
-  vec3Zero,
-  vec3,
-} from "../../../abstract-3d.js";
+import type { Plane, Material, Vec3 } from "../../../abstract-3d.js";
+import { vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import { stlTriangle } from "../stl-encoding.js";
 
 export function stlPlane(p: Plane, _m: Material, parentPos: Vec3, parentRot: Vec3): string {

@@ -1,4 +1,5 @@
-import { Shape, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
+import type { Shape, Material, Vec3 } from "../../../abstract-3d.js";
+import { vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import { stlTriangle } from "../stl-encoding.js";
 
 const chunkSize = 3;

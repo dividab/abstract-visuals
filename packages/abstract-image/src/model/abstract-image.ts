@@ -1,7 +1,7 @@
-import { Size } from "./size.js";
-import { Color } from "./color.js";
-import { Component } from "./component.js";
-import { Point } from "./point.js";
+import type { Size } from "./size.js";
+import type { Color } from "./color.js";
+import type { Component } from "./component.js";
+import type { Point } from "./point.js";
 
 export interface AbstractImage {
   readonly topLeft: Point;

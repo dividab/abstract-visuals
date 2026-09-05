@@ -1,8 +1,8 @@
 import { fromByteArray } from "base64-js";
-import { Component, GrowthDirection } from "../model/component.js";
-import { AbstractImage } from "../model/abstract-image.js";
-import { Color } from "../model/color.js";
-import { Optional } from "../model/shared.js";
+import type { Component, GrowthDirection } from "../model/component.js";
+import type { AbstractImage } from "../model/abstract-image.js";
+import type { Color } from "../model/color.js";
+import type { Optional } from "../model/shared.js";
 
 export const SVG_DATA_URL = "data:image/svg+xml,";
 

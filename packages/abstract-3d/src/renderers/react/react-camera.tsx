@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useLayoutEffect, useRef, useState } from "react";
 import {
   type GizmoHelperProps,
@@ -14,7 +12,8 @@ import {
 import { type ThreeEvent, useThree } from "@react-three/fiber";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import { Vector3 } from "three";
-import { View, Scene, Vec3, vec3 } from "../../abstract-3d.js";
+import type { View, Scene, Vec3 } from "../../abstract-3d.js";
+import { vec3 } from "../../abstract-3d.js";
 
 export type Camera = A3dPerspectiveCamera | A3dOrthographicCamera;
 export type CameraType = Camera["type"];
@@ -46,7 +45,7 @@ type Viewcube = { readonly type: "Viewcube"; readonly viewcubeProps: GenericProp
 type Viewport = { readonly type: "Viewport"; readonly viewportProps: GizmoViewportProps };
 
 export function ReactCamera({
-  useAnimations,
+  useAnimations: _useAnimations,
   camera,
   view,
   scene,

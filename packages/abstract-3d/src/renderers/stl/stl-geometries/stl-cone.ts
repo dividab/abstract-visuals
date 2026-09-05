@@ -1,4 +1,5 @@
-import { Cone, Material, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
+import type { Cone, Material, Vec3 } from "../../../abstract-3d.js";
+import { vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import { stlPlaneOfVertices } from "../stl-encoding.js";
 
 export function stlCone(c: Cone, _m: Material, sides: number, parentPos: Vec3, parentRot: Vec3): string {

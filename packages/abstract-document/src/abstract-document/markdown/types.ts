@@ -1,4 +1,4 @@
-import * as AD from "../../abstract-document/index.js";
+import type * as AD from "../../abstract-document/index.js";
 
 export type AstChildElements =
   | AstHeading

@@ -79,7 +79,19 @@ export type Group = {
 
 export type Mesh = {
   readonly material: Material;
-  readonly geometry: Cylinder | Cone | Box | Line | CulledLine | Text | Polygon | Plane | Tube | Sphere | Shape | ImageMesh;
+  readonly geometry:
+    | Cylinder
+    | Cone
+    | Box
+    | Line
+    | CulledLine
+    | Text
+    | Polygon
+    | Plane
+    | Tube
+    | Sphere
+    | Shape
+    | ImageMesh;
 };
 
 export type Material = {
@@ -99,13 +111,13 @@ export type ImageMesh = {
 
 export type Image =
   | {
-    readonly type: "AbstractImage";
-    readonly image: AbstractImage;
-  }
+      readonly type: "AbstractImage";
+      readonly image: AbstractImage;
+    }
   | {
-    readonly type: "Url";
-    readonly url: string;
-  };
+      readonly type: "Url";
+      readonly url: string;
+    };
 
 export type Cylinder = {
   readonly type: "Cylinder";
@@ -149,7 +161,7 @@ export type CulledLine = {
   /*
     the front facing direction, the opposite side of this will be culled
   */
-  readonly normal: Vec3; 
+  readonly normal: Vec3;
 };
 
 export type Tube = {
@@ -726,18 +738,10 @@ export function vec3RotInverse(rotation: Vec3): Vec3 {
   const ey = Math.asin(Math.max(-1, Math.min(1, m13)));
 
   if (Math.abs(m13) < 0.9999999) {
-    return vec3(
-      Math.atan2(-m23, m33),
-      ey,
-      Math.atan2(-m12, m11),
-    );
+    return vec3(Math.atan2(-m23, m33), ey, Math.atan2(-m12, m11));
   }
 
-  return vec3(
-    Math.atan2(m32, m22),
-    ey,
-    0,
-  );
+  return vec3(Math.atan2(m32, m22), ey, 0);
 }
 
 export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
@@ -787,10 +791,7 @@ export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => {
   );
 };
 
-export function vec3BasisToEuler(
-  direction: Vec3,
-  normal: Vec3
-): Vec3 {
+export function vec3BasisToEuler(direction: Vec3, normal: Vec3): Vec3 {
   const x = vec3Normalize(direction);
   const z = vec3Normalize(normal);
   const y = vec3Normalize(vec3Cross(z, x));
@@ -808,7 +809,7 @@ export function vec3BasisToEuler(
 
   const ry = Math.asin(Math.max(-1, Math.min(1, m13)));
 
-  let rx: number = Math.atan2(m32, m22);;
+  let rx: number = Math.atan2(m32, m22);
   let rz: number = 0;
 
   if (Math.abs(m13) < 0.9999999) {
@@ -992,9 +993,24 @@ export const line = (start: Vec3, end: Vec3, thickness: number, material: Materi
   material,
 });
 
-export const culledLineMesh = (culledLine: CulledLine, material: Material): Mesh => ({ geometry: culledLine, material });
-export const culledLineGeo = (start: Vec3, end: Vec3, normal: Vec3, thickness: number): CulledLine => ({ type: "CulledLine", start, end, normal, thickness });
-export const culledLine = (start: Vec3, end: Vec3, normal: Vec3, thickness: number, material: Material): CulledLineMesh => ({
+export const culledLineMesh = (culledLine: CulledLine, material: Material): Mesh => ({
+  geometry: culledLine,
+  material,
+});
+export const culledLineGeo = (start: Vec3, end: Vec3, normal: Vec3, thickness: number): CulledLine => ({
+  type: "CulledLine",
+  start,
+  end,
+  normal,
+  thickness,
+});
+export const culledLine = (
+  start: Vec3,
+  end: Vec3,
+  normal: Vec3,
+  thickness: number,
+  material: Material
+): CulledLineMesh => ({
   geometry: { type: "CulledLine", start, end, normal, thickness },
   material,
 });
@@ -1023,7 +1039,7 @@ export const alignedDimension = (
   linePosition: Vec3,
   text: string,
   views?: ReadonlyArray<View>,
-  material?: Material,
+  material?: Material
 ): DimensionAligned => ({
   measurementStart,
   measurementEnd,
@@ -1044,14 +1060,22 @@ export function dimensionIsOfTypeMesh(dimension: Dimension): dimension is Dimens
 export function dimensionMeshifyAlignedDimension(
   dimension: DimensionAligned,
   sceneRotation: Vec3,
-  viewRotation: Vec3,
+  _viewRotation: Vec3,
   onCreateLine: (start: Vec3, end: Vec3, norm: Vec3, thickness: number, mat: Material) => void,
-  onCreateText: (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3, dir: Vec3, normal: Vec3) => void,
+  onCreateText: (
+    pos: Vec3,
+    measurement: string,
+    fontSize: number,
+    mat: Material,
+    rot: Vec3,
+    dir: Vec3,
+    normal: Vec3
+  ) => void,
   onCreatePolygon: (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material) => void,
-  dimensionsMaterial?: Material,
+  dimensionsMaterial?: Material
 ): void {
   const defaultMaterial = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 };
-  const material = dimension.material ?? (dimensionsMaterial ?? defaultMaterial);
+  const material = dimension.material ?? dimensionsMaterial ?? defaultMaterial;
   const fontGlyphWidthRatio = 0.4815;
   const textSize = 44;
   const textOffset = 8;
@@ -1082,7 +1106,7 @@ export function dimensionMeshifyAlignedDimension(
   const linesDiff = vec3Sub(ls, ms);
   const dirBetweenLines = vec3Normalize(linesDiff);
   const measurementWidth = vec3Length(linesDiff);
-  const displacedDistance = measurementWidth - (textHeight / 2);
+  const displacedDistance = measurementWidth - textHeight / 2;
   const offsetDisplaced = vec3Scale(offset, displacedDistance / measurementWidth);
   const lsDisplaced = vec3Add(ms, offsetDisplaced);
   const leDisplaced = vec3Add(me, offsetDisplaced);
@@ -1091,56 +1115,26 @@ export function dimensionMeshifyAlignedDimension(
   onCreateLine(ms, ls, basis.normal, lineThickness, material);
   onCreateLine(me, le, basis.normal, lineThickness, material);
 
-  const rotatedDirBetweenLines = vec3TransRot(
-    dirBetweenLines,
-    vec3Zero,
-    sceneRotation
-  );
-  const rotatedNormal = vec3TransRot(
-    basis.normal,
-    vec3Zero,
-    sceneRotation
-  );
+  const rotatedDirBetweenLines = vec3TransRot(dirBetweenLines, vec3Zero, sceneRotation);
+  const rotatedNormal = vec3TransRot(basis.normal, vec3Zero, sceneRotation);
   const renderedBasis = getDimensionViewBasisFromNormal(rotatedNormal);
-  const renderedSide = getDimensionSide(
-    rotatedDirBetweenLines,
-    renderedBasis
-  );
+  const renderedSide = getDimensionSide(rotatedDirBetweenLines, renderedBasis);
   const desiredRenderedTextDir = getDimensionTextDirection(renderedSide, renderedBasis);
   const inverseSceneRotation = vec3RotInverse(sceneRotation);
-  const textDir = vec3TransRot(
-    desiredRenderedTextDir,
-    vec3Zero,
-    inverseSceneRotation
-  );
-  const textRot = vec3BasisToEuler(
-    textDir,
-    basis.normal
-  );
+  const textDir = vec3TransRot(desiredRenderedTextDir, vec3Zero, inverseSceneRotation);
+  const textRot = vec3BasisToEuler(textDir, basis.normal);
 
   const finalBasis = dimensionViewBasises.front;
-	const finalSide = getDimensionSide(
-		dirBetweenLines,
-		finalBasis
-	);
-	const finalDir = getDimensionTextDirection(
-		finalSide,
-		finalBasis
-	);
+  const finalSide = getDimensionSide(dirBetweenLines, finalBasis);
+  const finalDir = getDimensionTextDirection(finalSide, finalBasis);
   onCreateText(lcDisplaced, measurement, textSize, material, textRot, finalDir, vec3(0, 0, 1));
 
-  if(measurementLength > textThreshold) {
+  if (measurementLength > textThreshold) {
     const textWidth = Math.max(...measurementRows.map((t) => t.length)) * (textSize * fontGlyphWidthRatio);
     const lineDir = vec3Normalize(vec3Sub(leDisplaced, lsDisplaced));
     const halfTextWidth = textOffset + textWidth * 0.5;
-    const leftEnd = vec3Sub(
-      lcDisplaced,
-      vec3Scale(lineDir, halfTextWidth)
-    );
-    const rightStart = vec3Add(
-      lcDisplaced,
-      vec3Scale(lineDir, halfTextWidth)
-    );
+    const leftEnd = vec3Sub(lcDisplaced, vec3Scale(lineDir, halfTextWidth));
+    const rightStart = vec3Add(lcDisplaced, vec3Scale(lineDir, halfTextWidth));
 
     onCreateLine(lsDisplaced, leftEnd, basis.normal, lineThickness, material);
     onCreateLine(rightStart, leDisplaced, basis.normal, lineThickness, material);
@@ -1159,7 +1153,7 @@ export function dimensionMeshifyAlignedDimension(
       const ac = vec3Sub(c, a);
       const triangleNormal = vec3Cross(ab, ac);
 
-      if(vec3Dot(triangleNormal, basis.normal) >= 0) {
+      if (vec3Dot(triangleNormal, basis.normal) >= 0) {
         onCreatePolygon(a, b, c, material);
       } else {
         onCreatePolygon(a, c, b, material);
@@ -1170,8 +1164,12 @@ export function dimensionMeshifyAlignedDimension(
   }
 }
 
-export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, dimensionsMaterial?: Material): DimensionMesh {
-  if(dimensionIsOfTypeMesh(dimension)) {
+export function dimensionConvertToTypeMesh(
+  dimension: Dimension,
+  sceneRotation: Vec3,
+  dimensionsMaterial?: Material
+): DimensionMesh {
+  if (dimensionIsOfTypeMesh(dimension)) {
     return dimension;
   }
   const meshes: Array<Mesh> = [];
@@ -1180,12 +1178,20 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
     meshes.push(culledLine(start, end, norm, thickness, mat));
   };
   const onCreateText = (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3): void => {
-    meshes.push(text(pos, measurement, fontSize, mat, rot))
+    meshes.push(text(pos, measurement, fontSize, mat, rot));
   };
   const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material): void => {
     meshes.push(polygon([p1, p2, p3], mat));
   };
-  dimensionMeshifyAlignedDimension(dimension, sceneRotation, vec3Zero, onCreateLine, onCreateText, onCreatePolygon, dimensionsMaterial);
+  dimensionMeshifyAlignedDimension(
+    dimension,
+    sceneRotation,
+    vec3Zero,
+    onCreateLine,
+    onCreateText,
+    onCreatePolygon,
+    dimensionsMaterial
+  );
 
   return {
     meshes,
@@ -1195,10 +1201,7 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
   };
 }
 
-function getDimensionSide(
-  dir: Vec3,
-  basis: DimensionViewBias
-): DimensionSide {
+function getDimensionSide(dir: Vec3, basis: DimensionViewBias): DimensionSide {
   const right = vec3Dot(dir, basis.right);
   const up = vec3Dot(dir, basis.up);
 
@@ -1209,10 +1212,7 @@ function getDimensionSide(
   return up > 0 ? "top" : "bottom";
 }
 
-function getDimensionTextDirection(
-  side: DimensionSide,
-  basis: DimensionViewBias
-): Vec3 {
+function getDimensionTextDirection(side: DimensionSide, basis: DimensionViewBias): Vec3 {
   switch (side) {
     case "top":
     case "bottom":
@@ -1243,12 +1243,12 @@ function getDimensionViewBasisFromNormal(normal: Vec3): DimensionViewBias {
 }
 
 const dimensionViewBasises: Record<View, DimensionViewBias> = {
-  "front":  { right: vec3(1, 0, 0), up: vec3(0, 1, 0), normal: vec3(0, 0, 1) },
-  "back":   { right: vec3(-1, 0, 0), up: vec3(0, 1, 0), normal: vec3(0, 0, -1) },
-  "left":   { right: vec3(0, 0, 1), up: vec3(0, 1, 0), normal: vec3(-1, 0, 0) },
-  "right":  { right: vec3(0, 0, -1), up: vec3(0, 1, 0), normal: vec3(1, 0, 0) },
-  "top":    { right: vec3(1, 0, 0), up: vec3(0, 0, -1), normal: vec3(0, 1, 0) },
-  "bottom": { right: vec3(1, 0, 0), up: vec3(0, 0, 1), normal: vec3(0, -1, 0) },
+  front: { right: vec3(1, 0, 0), up: vec3(0, 1, 0), normal: vec3(0, 0, 1) },
+  back: { right: vec3(-1, 0, 0), up: vec3(0, 1, 0), normal: vec3(0, 0, -1) },
+  left: { right: vec3(0, 0, 1), up: vec3(0, 1, 0), normal: vec3(-1, 0, 0) },
+  right: { right: vec3(0, 0, -1), up: vec3(0, 1, 0), normal: vec3(1, 0, 0) },
+  top: { right: vec3(1, 0, 0), up: vec3(0, 0, -1), normal: vec3(0, 1, 0) },
+  bottom: { right: vec3(1, 0, 0), up: vec3(0, 0, 1), normal: vec3(0, -1, 0) },
 };
 
 // -- Camera

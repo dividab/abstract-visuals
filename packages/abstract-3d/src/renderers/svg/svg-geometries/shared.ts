@@ -1,4 +1,5 @@
-import { vec2, Vec2, vec3, Vec3, vec3TransRot, vec3Zero, View } from "../../../abstract-3d.js";
+import type { Vec2, Vec3, View } from "../../../abstract-3d.js";
+import { vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 
 export type zOrderElement = { readonly element: string; readonly zOrder: number };
 export const zElem = (element: string, zOrder: number): zOrderElement => ({ element, zOrder });

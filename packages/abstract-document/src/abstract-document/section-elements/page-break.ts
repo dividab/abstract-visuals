@@ -1,4 +1,4 @@
-import { Resources } from "../resources.js";
+import type { Resources } from "../resources.js";
 
 export type PageBreak = Resources & {
   readonly type: "PageBreak";

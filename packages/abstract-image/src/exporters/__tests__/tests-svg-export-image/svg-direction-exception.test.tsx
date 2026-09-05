@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import * as AbstractImage from "../../../index.js";
 
 // describe("svg text unknown direction", () => {
 //   it("should throw an exception", () => {

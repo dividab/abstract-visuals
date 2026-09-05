@@ -1,48 +1,37 @@
-import { ExportTestDef } from "./_export-test-def.js";
-import * as AbstractImage from "../../../index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
+// import * as AbstractImage from "../../../index.js";
 // import Enzyme from "enzyme";
 
 // import Adapter from "@cfaester/enzyme-adapter-react-18";
 
 // Enzyme.configure({ adapter: new Adapter() });
 
-const components = [
-  AbstractImage.createText(
-    AbstractImage.createPoint(10, 10),
-    "Hello World",
-    "Arial",
-    12,
-    AbstractImage.black,
-    "bold",
-    0,
-    "center",
-    "right",
-    "down",
-    2,
-    AbstractImage.red,
-    false
-  ),
-];
-const image = AbstractImage.createAbstractImage(
-  AbstractImage.createPoint(0, 0),
-  AbstractImage.createSize(400, 400),
-  AbstractImage.white,
-  components
-);
+// const components = [
+//   AbstractImage.createText(
+//     AbstractImage.createPoint(10, 10),
+//     "Hello World",
+//     "Arial",
+//     12,
+//     AbstractImage.black,
+//     "bold",
+//     0,
+//     "center",
+//     "right",
+//     "down",
+//     2,
+//     AbstractImage.red,
+//     false
+//   ),
+// ];
+// const image = AbstractImage.createAbstractImage(
+//   AbstractImage.createPoint(0, 0),
+//   AbstractImage.createSize(400, 400),
+//   AbstractImage.white,
+//   components
+// );
 
 // eslint-disable-next-line functional/no-let
 let testVariable = "not clicked";
-
-const svg = (
-  <AbstractImage.ReactSvg
-    image={image}
-    callbacks={{
-      onClick: (_id: string | undefined, _point: AbstractImage.Point) => {
-        testVariable = "clicked";
-      },
-    }}
-  />
-);
 
 // const wrapper = Enzyme.shallow(svg);
 // wrapper.find("svg").simulate("click", {

@@ -1,8 +1,7 @@
 {
-  //dummy
   "extends": "../tsconfig.settings.json",
   "include": ["src"],
-  "exclude": ["src/**/*.test.ts"],
+  "exclude": ["src/**/*.test.ts", "./vite.config.ts"],
   "typeRoots": ["src/@types", "node_modules/@types"],
   "compilerOptions": {
     "outDir": "lib",

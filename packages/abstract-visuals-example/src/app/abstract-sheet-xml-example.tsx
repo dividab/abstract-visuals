@@ -1,13 +1,6 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import React from "react";
-import {
-  AbstractSheet,
-  toXlsx,
-  toCsv,
-  toReact as ToReact,
-  parsedXsd,
-  abstractSheetXml,
-} from "../../../abstract-sheet/src/index.js";
+import type { AbstractSheet } from "../../../abstract-sheet/src/index.js";
+import { toXlsx, toCsv, toReact as ToReact, parsedXsd, abstractSheetXml } from "../../../abstract-sheet/src/index.js";
 import { renderHandlebars, validateXml, errorToReadableText } from "../../../handlebars-xml/src/index.js";
 import FileSaver from "file-saver";
 

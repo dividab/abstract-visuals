@@ -1,6 +1,6 @@
 import * as LayoutFoundation from "../primitives/layout-foundation.js";
 import * as TableCellStyle from "./table-cell-style.js";
-import * as Position from "./position.js";
+import type * as Position from "./position.js";
 
 export type TableAlignment = "Left" | "Center" | "Right";
 

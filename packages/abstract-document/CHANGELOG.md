@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.0.2] - 2026-09-05
+
+- Internal: adopt `verbatimModuleSyntax` and stricter compiler/lint settings (no unused locals/params, no bracket-free index-signature access). No functional changes.
+
 ## [20.0.0] - 2026-09-04
 
 - BREAKING: `AbstractDocPdf.exportToHTML5Blob`, `exportToBytes` and `exportToStream` no longer take a `PDFDocument` class as their first argument. abstract-document now imports pdfkit itself, relying on pdfkit 0.20's conditional exports to resolve the right build for Node or the browser automatically.

@@ -5,10 +5,10 @@ import {
   getAvailableArrayMembers,
   getAvailableStringMembers,
 } from "../../builtins.js";
-import { Schema, ArrayPropertySchema, PropertySchema } from "../../schema.js";
-import { AnalysisReport } from "../analysis-report.js";
+import type { Schema } from "../../schema.js";
+import type { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
-import { ValidationContext } from "../validation-context.js";
+import type { ValidationContext } from "../validation-context.js";
 
 export function isSimpleDataAccess(node: MemberExpression, dataKeys: ReadonlySet<string>): boolean {
   if (node.computed) {

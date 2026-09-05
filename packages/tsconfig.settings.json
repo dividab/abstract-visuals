@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     // Language & Environment, to upgrade, ES vite and esbuilds need upgrade
-    "target": "ES2023",
-    "lib": ["dom", "ES2023"],
+    "target": "esnext",
+    "lib": ["dom", "esnext"],
     "jsx": "react-jsx",
 
     // Module
@@ -11,7 +11,7 @@
     "moduleDetection": "force",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
 
     // Interop
     "skipLibCheck": true,
@@ -30,11 +30,15 @@
     "useUnknownInCatchVariables": false,
 
     // Type Checking — additional strictness
+    "allowUnreachableCode": false,
+    "noUncheckedSideEffectImports": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
-    "exactOptionalPropertyTypes": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": false
   }
 }

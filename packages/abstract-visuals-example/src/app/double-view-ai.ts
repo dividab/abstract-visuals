@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { AbstractImage } from "abstract-image";
+import type { AbstractImage } from "abstract-image";
 
 export const ai = {
   topLeft: {

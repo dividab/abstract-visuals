@@ -23,19 +23,21 @@ import {
   Vector2,
   Vector3,
 } from "three";
-import {
+import type {
   Mesh,
   Box,
   Plane,
-  vec2Scale,
   Shape as Shape_1,
   Cylinder,
-  vec2Sub,
-  vec2Add,
   Polygon as A3dPolygon,
   Tube as A3dTube,
   CircleCurve as A3dCircleCurve,
   Hole,
+} from "../../abstract-3d.js";
+import {
+  vec2Scale,
+  vec2Sub,
+  vec2Add,
   isZero,
   vec3Scale,
   vec3,
@@ -46,8 +48,7 @@ import {
   equals,
 } from "../../abstract-3d.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import { ImageMaterial, planeGeometry } from "./react-image-material.js";
-import { MaterialState } from "./react-material.js";
+import { planeGeometry } from "./react-image-material.js";
 
 extend({
   SphereGeometry,
@@ -86,23 +87,9 @@ export function ReactMesh({
   const culledLineGeometry = useMemo(() => {
     const g = new BufferGeometry();
 
-    g.setAttribute(
-      "position",
-      new Float32BufferAttribute(
-        [
-          0, -1, 0,
-          0,  1, 0,
-          1, -1, 0,
-          1,  1, 0,
-        ],
-        3
-      )
-    );
+    g.setAttribute("position", new Float32BufferAttribute([0, -1, 0, 0, 1, 0, 1, -1, 0, 1, 1, 0], 3));
 
-    g.setIndex([
-      0, 2, 1,
-      2, 3, 1,
-    ]);
+    g.setIndex([0, 2, 1, 2, 3, 1]);
 
     return g;
   }, []);
@@ -302,22 +289,24 @@ export function ReactMesh({
       const { start, end, normal, thickness } = mesh.geometry;
       const color = mesh.material.normal;
 
-      return <mesh geometry={culledLineGeometry} frustumCulled={false}>
-        <shaderMaterial
-          side={FrontSide}
-          uniforms={{
-            lineStart: { value: new Vector3(start.x, start.y, start.z) },
-            lineEnd: { value: new Vector3(end.x, end.y, end.z) },
-            lineNormal: { value: new Vector3(normal.x, normal.y, normal.z) },
-            thickness: { value: thickness },
-            viewport: { value: new Vector2(size.width, size.height) },
-            nearPlane: { value: camera.near },
-            color: { value: new Color(color) },
-          }}
-          vertexShader={culledLineVertexShader}
-          fragmentShader={culledLineFragmentShader}
-        />
-      </mesh>;
+      return (
+        <mesh geometry={culledLineGeometry} frustumCulled={false}>
+          <shaderMaterial
+            side={FrontSide}
+            uniforms={{
+              lineStart: { value: new Vector3(start.x, start.y, start.z) },
+              lineEnd: { value: new Vector3(end.x, end.y, end.z) },
+              lineNormal: { value: new Vector3(normal.x, normal.y, normal.z) },
+              thickness: { value: thickness },
+              viewport: { value: new Vector2(size.width, size.height) },
+              nearPlane: { value: camera.near },
+              color: { value: new Color(color) },
+            }}
+            vertexShader={culledLineVertexShader}
+            fragmentShader={culledLineFragmentShader}
+          />
+        </mesh>
+      );
     }
     case "Polygon":
       return <Polygon polygon={mesh.geometry}>{children}</Polygon>;

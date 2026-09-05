@@ -88,7 +88,7 @@ function createH(components: ComponentDict, createElement: CreateElement, schema
 
     if (!Component) {
       if (isElementAllowed(schema, type)) {
-        const defaultComponent = (props: PropsDict): any => (canHaveChildren(schema, type) ? props.children : null);
+        const defaultComponent = (props: PropsDict): any => (canHaveChildren(schema, type) ? props["children"] : null);
         return createElement(defaultComponent, props, ...children.flat().filter(Boolean));
       }
 

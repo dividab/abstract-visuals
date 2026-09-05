@@ -1,4 +1,5 @@
-import { Scene, vec3Zero, Group, Vec3, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
+import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
+import { vec3Zero, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
 import { stlPlane } from "./stl-geometries/stl-plane.js";
 import { stlBox } from "./stl-geometries/stl-box.js";
 import { stlCylinder } from "./stl-geometries/stl-cylinder.js";

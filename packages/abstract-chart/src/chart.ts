@@ -1,21 +1,10 @@
 /* eslint-disable max-lines */
 import { exhaustiveCheck } from "ts-exhaustive-check";
+import type { Axis, AxisBase, DiscreteAxisPoint, NumberFormat } from "./axis.js";
+import { inverseTransformValue, getTicks, createLinearAxis, transformValue, transformPoint } from "./axis.js";
+import type { AbstractImage, Color, Component, GrowthDirection, Point, Polygon, Size } from "abstract-image";
 import {
-  Axis,
-  AxisBase,
-  inverseTransformValue,
-  getTicks,
-  createLinearAxis,
-  transformValue,
-  transformPoint,
-  DiscreteAxisPoint,
-  NumberFormat,
-} from "./axis.js";
-import {
-  AbstractImage,
   black,
-  Color,
-  Component,
   createAbstractImage,
   createEllipse,
   createGroup,
@@ -27,11 +16,7 @@ import {
   createSize,
   createText,
   gray,
-  GrowthDirection,
   lightGray,
-  Point,
-  Polygon,
-  Size,
   solidLine,
   transparent,
   white,
@@ -42,8 +27,6 @@ import {
 export type Partial<T> = { [P in keyof T]?: T[P] };
 
 export type LabelLayout = "original" | "end" | "center";
-
-const axisLabelPosFactor = 0.65;
 
 export interface Chart {
   readonly width: number;
@@ -1467,8 +1450,4 @@ function formatNumber(n: number, format: NumberFormat = "compact"): string {
 
 function numberToString(n: number): string {
   return parseFloat(n.toPrecision(5)).toString();
-}
-
-function labelPadding(numberOfCharacters: number, fontSize: number, characterOffset: number): number {
-  return ((numberOfCharacters + 1 + characterOffset) * fontSize * 3) / 4;
 }

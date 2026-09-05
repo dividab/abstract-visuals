@@ -1,7 +1,8 @@
 import { compile as compileInternal } from "./compile/index.js";
-import { evaluate, EvaluateOptions } from "./evaluate/evaluate.js";
+import type { EvaluateOptions } from "./evaluate/evaluate.js";
+import { evaluate } from "./evaluate/evaluate.js";
 import { parse } from "./parse/index.js";
-import { Schema } from "./schema.js";
+import type { Schema } from "./schema.js";
 import { analyze, AnalysisError } from "./analyze/index.js";
 
 /**

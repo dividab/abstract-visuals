@@ -1,16 +1,7 @@
-import { ImageProps } from "../../abstract-document/atoms/image.js";
-import {
-  TextStyle,
-  ParagraphStyle,
-  TableCellStyle,
-  TextRun,
-  Paragraph,
-  TableCell,
-  TableRow,
-  Image,
-  ImageResource,
-} from "../../abstract-document/index.js";
-import { ParagraphProps } from "../../abstract-document/section-elements/paragraph.js";
+import type { ImageProps } from "../../abstract-document/atoms/image.js";
+import type { TextStyle, ParagraphStyle, TableCellStyle } from "../../abstract-document/index.js";
+import { TextRun, Paragraph, TableCell, TableRow, Image } from "../../abstract-document/index.js";
+import type { ParagraphProps } from "../../abstract-document/section-elements/paragraph.js";
 //dummy2
 
 type StyleProps = {

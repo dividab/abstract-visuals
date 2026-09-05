@@ -1,4 +1,4 @@
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -15,11 +15,6 @@ const borders = { left: 1, bottom: 1, right: 1, top: 1 };
 const tablestyle = TableStyle.create({
   cellStyle: TableCellStyle.create({ borders: borders, borderColor: "black" }),
 });
-const tablestylemargin = TableStyle.create({
-  cellStyle: TableCellStyle.create({ borders: borders, borderColor: "black" }),
-  margins: LayoutFoundation.create({ bottom: 805 }),
-});
-
 export const testGroupTooBigForOnePage: ExportTestDef = {
   name: "Group too big for one page",
   abstractDocJsx: (

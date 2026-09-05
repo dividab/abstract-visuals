@@ -1,12 +1,12 @@
 import unified from "unified";
 import remarkParse from "remark-parse";
 import remarkSubSuper from "remark-sub-super";
-import { SectionElement } from "../section-elements/section-element.js";
+import type { SectionElement } from "../section-elements/section-element.js";
 import * as Paragraph from "../section-elements/paragraph.js";
-import * as Atom from "../atoms/atom.js";
-import * as TextRun from "../atoms/text-run.js";
+import type * as Atom from "../atoms/atom.js";
+import type * as TextRun from "../atoms/text-run.js";
 import * as Group from "../section-elements/group.js";
-import { AstElements, MarkDownProcessData, AstRoot } from "./types.js";
+import type { AstElements, MarkDownProcessData, AstRoot } from "./types.js";
 
 export interface MarkdownProps {
   readonly text: string;
@@ -33,7 +33,7 @@ function preProcessMarkdownAst(
   } // Need to convice TS that we never go below this line with a Str element.
 
   if (ast.children) {
-    ast.children.forEach((child, i) => {
+    ast.children.forEach((child) => {
       let style = styles.slice(); // create a new copy of styles
       switch (ast.type) {
         case "heading":
@@ -115,7 +115,10 @@ function preProcessMarkdownAst(
 
 export function create({ text, keepTogetherSections }: MarkdownProps): SectionElement {
   //markdown require newlines to have two spaces before them (this fixex alignment issues when using linebreaks for rows with single text runs)
-  const newlineReplacedText = text.replaceAll(/ \n/g, "\n").replaceAll(/ {2}\n/g, "\n").replaceAll(/\n/g, "  \n\r");
+  const newlineReplacedText = text
+    .replaceAll(/ \n/g, "\n")
+    .replaceAll(/ {2}\n/g, "\n")
+    .replaceAll(/\n/g, "  \n\r");
 
   const ast = unified().use(remarkParse, { commonmark: true }).use(remarkSubSuper).parse(newlineReplacedText);
   const { paragraphs } = preProcessMarkdownAst(ast as AstRoot, [], [], [], 0);

@@ -1,5 +1,5 @@
-import * as AD from "../../abstract-document/index.js";
-import { Page } from "./paginate.js";
+import type * as AD from "../../abstract-document/index.js";
+import type { Page } from "./paginate.js";
 
 export function updatePageRefs(pages: ReadonlyArray<Page>): Array<Page> {
   return pages.map((page) => updateRefsOnPage(page, pages));

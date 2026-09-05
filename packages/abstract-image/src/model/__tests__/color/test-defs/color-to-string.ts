@@ -1,4 +1,4 @@
-import { ExportTestDef } from "../export-test-def.js";
+import type { ExportTestDef } from "../export-test-def.js";
 import * as AbstractImage from "../../../../../src/index.js";
 
 const colors = [

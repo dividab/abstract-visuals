@@ -1,5 +1,7 @@
-import { Text, Vec2, Vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3, View, vec3Flip, rotationForCameraPos, vec3Dot, vec3Rot } from "../../../abstract-3d.js";
-import { svgTrsMatrix, SvgOptions, zElem, zOrderElement } from "./shared.js";
+import type { Text, Vec2, Vec3 } from "../../../abstract-3d.js";
+import { vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3Dot, vec3Rot } from "../../../abstract-3d.js";
+import type { SvgOptions, zOrderElement } from "./shared.js";
+import { svgTrsMatrix, zElem } from "./shared.js";
 import { svgText } from "../svg-encoding.js";
 
 const SVG_FORWARD: Vec3 = vec3(0.0, 0.0, 1.0);
@@ -17,14 +19,10 @@ export function text(
   const pos = vec3TransRot(t.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, t.rot ?? vec3Zero);
 
-  const textForward = vec3Rot(
-      { x: 0, y: 0, z: 1 },
-      vec3Zero,
-      rot,
-  );
+  const textForward = vec3Rot({ x: 0, y: 0, z: 1 }, vec3Zero, rot);
 
   //discard texts that are pointing away
-  if(vec3Dot(textForward, SVG_FORWARD) <= SVG_DOT_OPPOSITE_THRESHOLD) {
+  if (vec3Dot(textForward, SVG_FORWARD) <= SVG_DOT_OPPOSITE_THRESHOLD) {
     return [];
   }
 

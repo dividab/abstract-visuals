@@ -1,10 +1,11 @@
 import { fromByteArray } from "base64-js";
-import type React from "react";
-import { AbstractImage } from "../model/abstract-image.js";
-import { createPoint, Point } from "../model/point.js";
-import { AbstractFontWeight, Component, GrowthDirection } from "../model/component.js";
-import { Color } from "../model/color.js";
-import { Optional } from "../model/shared.js";
+import React from "react";
+import type { AbstractImage } from "../model/abstract-image.js";
+import type { Point } from "../model/point.js";
+import { createPoint } from "../model/point.js";
+import type { AbstractFontWeight, Component, GrowthDirection } from "../model/component.js";
+import type { Color } from "../model/color.js";
+import type { Optional } from "../model/shared.js";
 
 export interface ReactSvgCallbacks {
   readonly onClick?: MouseCallback;

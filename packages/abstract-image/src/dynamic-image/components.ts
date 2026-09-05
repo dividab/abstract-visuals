@@ -1,7 +1,17 @@
-import {
+import type {
   AbstractFontWeight,
   AbstractImage,
   BinaryImage,
+  Ellipse,
+  Group,
+  Line,
+  Point,
+  Polygon,
+  PolyLine,
+  Rectangle,
+  Text,
+} from "../model/index.js";
+import {
   black,
   createBinaryImage,
   createEllipse,
@@ -11,16 +21,8 @@ import {
   createPolyLine,
   createRectangle,
   createText,
-  Ellipse,
   fromString2,
-  Group,
-  Line,
-  Point,
-  Polygon,
-  PolyLine,
-  Rectangle,
   solidLine,
-  Text,
   transparent,
   white,
 } from "../model/index.js";
@@ -36,7 +38,7 @@ export const createComponents = (mutableImageUrls: Array<string>): Record<string
     return createGroup("", (props.children ?? []).flat().filter(Boolean));
   },
   Image: (props): BinaryImage => {
-    if(props.src !== undefined && typeof props.src === "string") {
+    if (props.src !== undefined && typeof props.src === "string") {
       mutableImageUrls.push(props.src);
     }
     const x = props.x ?? 0;

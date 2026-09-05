@@ -1,4 +1,4 @@
-import { A3D } from "../../../abstract-3d/src/index.js";
+import type { A3D } from "../../../abstract-3d/src/index.js";
 
 export const cylinderFilter = {
   center_deprecated: {

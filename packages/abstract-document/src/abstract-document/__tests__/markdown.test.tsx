@@ -1,5 +1,4 @@
 import { describe, test, expect } from "vitest";
-import { ExportTestDef } from "./test-markdown/_export-test-def.js";
 import { render } from "../../abstract-document-jsx/index.js";
 import { testMarkdownBoldItalic } from "./test-markdown/markdown-bold-italic.js";
 import { testMarkdownBold } from "./test-markdown/markdown-bold.js";

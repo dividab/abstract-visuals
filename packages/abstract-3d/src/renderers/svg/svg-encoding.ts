@@ -1,16 +1,5 @@
-import {
-  bounds2FromVec2Array,
-  Hole,
-  vec2,
-  Vec2,
-  vec2Add,
-  vec2Scale,
-  vec2Sub,
-  vec3,
-  Vec3,
-  vec3Rot,
-  vec3Zero,
-} from "../../abstract-3d.js";
+import type { Hole, Vec2, Vec3 } from "../../abstract-3d.js";
+import { bounds2FromVec2Array, vec2, vec2Add, vec2Scale, vec2Sub, vec3, vec3Rot, vec3Zero } from "../../abstract-3d.js";
 import { svgTrsMatrix } from "./svg-geometries/shared.js";
 
 export const svg = (min: Vec2, size: Vec2, children: string): string => {
@@ -31,7 +20,7 @@ export function svgPolygon(
   stroke: string,
   strokeWidth: number,
   holes?: ReadonlyArray<Hole>,
-  parentPos?: Vec3,
+  _parentPos?: Vec3
 ): string {
   const bounds = bounds2FromVec2Array(points);
   const size = vec2Sub(bounds.max, bounds.min);
@@ -42,11 +31,7 @@ export function svgPolygon(
     .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(
     1
   )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
-  return (
-    mask +
-    pol +
-    svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth)
-  );
+  return mask + pol + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
 export function svgCircle(
@@ -66,11 +51,7 @@ export function svgCircle(
   )}" fill="${fill}" fill-opacity="${opacity.toFixed(
     1
   )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
-  return (
-    mask +
-    cir +
-    svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth)
-  );
+  return mask + cir + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
 function svgStrokedHoles(
@@ -104,12 +85,7 @@ function svgStrokedHoles(
 
       case "SquareHole": {
         const half = vec2Scale(hole.size, 0.5);
-        const points = [
-          vec2(-half.x, -half.y),
-          vec2(half.x, -half.y),
-          vec2(half.x, half.y),
-          vec2(-half.x, half.y),
-        ]
+        const points = [vec2(-half.x, -half.y), vec2(half.x, -half.y), vec2(half.x, half.y), vec2(-half.x, half.y)]
           .map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`)
           .join(" ");
 
@@ -135,7 +111,7 @@ export const svgCircle2 = (
   fill: string,
   stroke: string,
   strokeWidth: number,
-  holes?: ReadonlyArray<Hole>
+  _holes?: ReadonlyArray<Hole>
 ): string =>
   `<circle r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(
     0

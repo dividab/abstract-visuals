@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import type { AbstractImage } from "../model/abstract-image.js";
 import type { Color } from "../model/color.js";
-import {  type BinaryImage, type Component, corners } from "../model/component.js";
+import { type BinaryImage, type Component, corners } from "../model/component.js";
 import type { Point } from "../model/point.js";
 import type { Optional } from "../model/shared.js";
 import type { Size } from "../model/size.js";
@@ -590,9 +590,8 @@ function stripBlocks(blocks: string, blocksToStrip: ReadonlyArray<string>): stri
   }
 
   if (currentBlockName && !s.has(currentBlockName)) {
-
     //since currentBlock can be huge, spreading should NOT be done
-    for(const item of currentBlock) {
+    for (const item of currentBlock) {
       validBlocks.push(item);
     }
   }
@@ -663,7 +662,7 @@ function remapHandleIds(
   entities: string | undefined,
   blocks: string | undefined,
   initHandleMap: Map<string, string>,
-  rootModelHandle: string,
+  _rootModelHandle: string,
   newHandle: () => string
 ): [string | undefined, string] {
   if (entities === undefined || blocks === undefined) {
@@ -719,7 +718,7 @@ function remapHandleIds(
   return [remappedEntities, remappedBlocks];
 }
 
-function scaleDxf(dxfString: string | undefined, sx: number, sy: number, height: number): string | undefined {
+function scaleDxf(dxfString: string | undefined, sx: number, sy: number, _height: number): string | undefined {
   if (!dxfString) {
     return undefined;
   }
@@ -747,8 +746,8 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, height:
     const code = parseInt(codeLine.trim(), 10);
     let value = valueLine;
 
-    switch(true) {
-      case (xCoordinateCodes.has(code)): {
+    switch (true) {
+      case xCoordinateCodes.has(code): {
         const num = parseFloat(valueLine);
         if (!Number.isNaN(num)) {
           value = (num * sx).toString();
@@ -756,7 +755,7 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, height:
         break;
       }
 
-      case (yCoordinateCodes.has(code)): {
+      case yCoordinateCodes.has(code): {
         const num = parseFloat(valueLine);
         if (!Number.isNaN(num)) {
           value = (num * sy).toString();
@@ -764,7 +763,7 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, height:
         break;
       }
 
-      case (code === 40 && currentAcDbEntity === "AcDbText"): {
+      case code === 40 && currentAcDbEntity === "AcDbText": {
         const num = parseInt(valueLine.trim(), 10);
         if (!Number.isNaN(num)) {
           value = Math.round((num + 2) * Math.max(sx, sy)).toString();
@@ -772,15 +771,15 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, height:
         break;
       }
 
-      case (code === 40 && currentAcDbEntity === "AcDbMText"): {
+      case code === 40 && currentAcDbEntity === "AcDbMText": {
         const num = parseInt(valueLine.trim(), 10);
         if (!Number.isNaN(num)) {
-          value = ((num) * Math.max(sx, sy)).toString();
+          value = (num * Math.max(sx, sy)).toString();
         }
         break;
       }
 
-      case ((code === 41 || code === 40) && currentAcDbEntity === "AcDb2dPolyline"): {
+      case (code === 41 || code === 40) && currentAcDbEntity === "AcDb2dPolyline": {
         // stroke thickness
         const num = parseInt(valueLine.trim(), 10);
         if (!Number.isNaN(num)) {
@@ -1007,7 +1006,12 @@ function createStyleTable(newHandle: () => string): string {
   return table;
 }
 
-function createDimStyleTable(newHandle: () => string, dimArrowSize: number = 1.0, dimGlobalScale: number = 1.0, dimFontSize: number = 1.0): string {
+function createDimStyleTable(
+  newHandle: () => string,
+  dimArrowSize: number = 1.0,
+  dimGlobalScale: number = 1.0,
+  dimFontSize: number = 1.0
+): string {
   const rootId = newHandle();
   let table = "";
   table += "0\nTABLE\n";

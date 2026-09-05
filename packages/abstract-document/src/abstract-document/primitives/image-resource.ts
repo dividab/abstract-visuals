@@ -1,4 +1,4 @@
-import { AbstractImage } from "abstract-image";
+import type { AbstractImage } from "abstract-image";
 
 export type Guid = string;
 

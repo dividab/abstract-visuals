@@ -1,32 +1,19 @@
 import React, { useState } from "react";
 import FileSaver from "file-saver";
+import type { Chart as Chart_1, StackPoints, Axis, ChartBars, ChartLine } from "../../../abstract-chart/src/index.js";
 import {
-  Chart as Chart_1,
   renderChart,
   createChartLine,
   createChart,
   createChartPoint,
   createChartDataAxis,
   createLinearAxis,
-  StackPoints,
   createChartStack,
   createChartStackConfig,
-  Axis,
-  ChartBars,
   createChartArea,
-  ChartLine,
 } from "../../../abstract-chart/src/index.js";
-import {
-  ReactSvgCallbacks,
-  createSVG,
-  ReactSvg,
-  red,
-  blue,
-  white,
-  fromArgb,
-  createPoint,
-  Point,
-} from "../../../abstract-image/src/index.js";
+import type { ReactSvgCallbacks, Point } from "../../../abstract-image/src/index.js";
+import { createSVG, ReactSvg, red, blue, white, fromArgb, createPoint } from "../../../abstract-image/src/index.js";
 
 export function AbstractChartExample(): React.JSX.Element {
   const [hovered, setHovered] = useState("");

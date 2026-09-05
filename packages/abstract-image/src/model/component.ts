@@ -1,8 +1,10 @@
-import { Point, createPoint } from "./point.js";
-import { Color } from "./color.js";
-import { DashStyle, solidLine } from "./dash-style.js";
-import { AbstractImage } from "./abstract-image.js";
-import { Size } from "./size.js";
+import type { Point } from "./point.js";
+import { createPoint } from "./point.js";
+import type { Color } from "./color.js";
+import type { DashStyle } from "./dash-style.js";
+import { solidLine } from "./dash-style.js";
+import type { AbstractImage } from "./abstract-image.js";
+import type { Size } from "./size.js";
 
 export type Component = BinaryImage | Ellipse | Line | PolyLine | Polygon | Rectangle | Text | SubImage | Group;
 

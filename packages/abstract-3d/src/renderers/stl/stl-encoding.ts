@@ -1,4 +1,5 @@
-import { Vec3, vec3Sub } from "../../abstract-3d.js";
+import type { Vec3 } from "../../abstract-3d.js";
+import { vec3Sub } from "../../abstract-3d.js";
 
 export const stlTriangle = (vec1: Vec3, vec2: Vec3, vec3: Vec3): string => {
   const v = vec3Sub(vec2, vec1);

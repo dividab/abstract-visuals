@@ -1,4 +1,4 @@
-import { Style } from "../abstract-sheet/abstract-sheet.js";
+import type { Style } from "../abstract-sheet/abstract-sheet.js";
 
 export function createStyle(style: Style): any {
   let s: any = {};

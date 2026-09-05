@@ -1,5 +1,5 @@
 import React from "react";
-import { AbstractSheet, BorderStyle, Style } from "../abstract-sheet/abstract-sheet.js";
+import type { AbstractSheet, BorderStyle, Style } from "../abstract-sheet/abstract-sheet.js";
 
 export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractSheet }): React.JSX.Element {
   const styles = React.useMemo(

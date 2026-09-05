@@ -1,6 +1,6 @@
 import type React from "react";
 
-import {
+import type {
   Group as GroupComponent,
   BinaryImage as BinaryImageComponent,
   Ellipse as EllipseComponent,
@@ -10,6 +10,8 @@ import {
   Rectangle as RectangleComponent,
   Text as TextComponent,
   SubImage as SubImageComponent,
+} from "../model/component.js";
+import {
   createGroup,
   createBinaryImage,
   createEllipse,

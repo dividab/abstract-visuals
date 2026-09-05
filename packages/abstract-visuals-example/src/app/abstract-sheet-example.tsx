@@ -1,6 +1,7 @@
 import React from "react";
 import FileSaver from "file-saver";
-import { AbstractSheet, toCsv, toXlsx, toReact as ToReact } from "../../../abstract-sheet/src/index.js";
+import type { AbstractSheet } from "../../../abstract-sheet/src/index.js";
+import { toCsv, toXlsx, toReact as ToReact } from "../../../abstract-sheet/src/index.js";
 
 export function AbstractSheetExample(): React.JSX.Element {
   const as: AbstractSheet = {

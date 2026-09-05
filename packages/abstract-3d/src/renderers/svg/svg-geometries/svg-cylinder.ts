@@ -1,16 +1,7 @@
-import {
-  Cylinder,
-  Vec2,
-  Vec3,
-  vec3,
-  vec3TransRot,
-  vec3RotCombine,
-  vec3Zero,
-  vec3ZMean,
-  equals,
-  Material,
-} from "../../../abstract-3d.js";
-import { gray, stBW, SvgOptions, transparent, zElem, zOrderElement } from "./shared.js";
+import type { Cylinder, Vec2, Vec3, Material } from "../../../abstract-3d.js";
+import { vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3ZMean, equals } from "../../../abstract-3d.js";
+import type { SvgOptions, zOrderElement } from "./shared.js";
+import { gray, stBW, transparent, zElem } from "./shared.js";
 import { svgCircle, svgPolygon } from "../svg-encoding.js";
 import { rgbGrayScale } from "../../../utils.js";
 

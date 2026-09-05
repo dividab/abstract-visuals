@@ -1,4 +1,4 @@
-import * as SectionElement from "../section-elements/section-element.js";
+import type * as SectionElement from "../section-elements/section-element.js";
 import * as TableCellStyle from "../styles/table-cell-style.js";
 
 export interface TableCell {

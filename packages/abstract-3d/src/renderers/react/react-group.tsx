@@ -1,12 +1,14 @@
 import React from "react";
-import { ThreeEvent, useFrame } from "@react-three/fiber";
+import type { ThreeEvent } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import type { Group } from "three";
-import { Group as Group_1 } from "../../abstract-3d.js";
-import { MaterialState, ReactMaterial } from "./react-material.js";
+import type { Group as Group_1 } from "../../abstract-3d.js";
+import type { MaterialState } from "./react-material.js";
+import { ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
 import { ImageMaterial } from "./react-image-material.js";
 import { Html } from "@react-three/drei";
-import { ReactPopover } from "./react-types.js";
+import type { ReactPopover } from "./react-types.js";
 
 export function ReactGroup({
   g,

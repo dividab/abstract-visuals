@@ -1,31 +1,22 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
+import type { Scene, Vec3, Mesh, Vec2, Group, Material, Bounds2 } from "../../abstract-3d.js";
 import {
   vec2,
-  Scene,
-  Vec3,
-  Mesh,
   vec3Rot,
   vec3Zero,
   vec3RotCombine,
   vec3,
-  Vec2,
-  Group,
   vec3TransRot,
-  Material,
   rotationForCameraPos,
   sizeBoundsForCameraPos,
-  Bounds2,
   bounds2FromPosAndSize,
   bounds2ToSize,
   bounds2Merge,
   vec2Zero,
   vec3Flip,
-  vec2Add,
-  View,
-  vec3RotInverse,
   dimensionConvertToTypeMesh,
 } from "../../abstract-3d.js";
-import { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
+import type { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
 import { cylinder } from "./svg-geometries/svg-cylinder.js";
 import { line } from "./svg-geometries/svg-line.js";
@@ -34,7 +25,8 @@ import { shape } from "./svg-geometries/svg-shape.js";
 import { polygon } from "./svg-geometries/svg-polygon.js";
 import { text } from "./svg-geometries/svg-text.js";
 import { cone } from "./svg-geometries/svg-cone.js";
-import { calculateVisibleViews, isViewVisible, Optional } from "../../utils.js";
+import type { Optional } from "../../utils.js";
+import { calculateVisibleViews, isViewVisible } from "../../utils.js";
 import { svg } from "./svg-encoding.js";
 import { image } from "./svg-geometries/svg-image.js";
 
@@ -114,13 +106,17 @@ function renderInternal(
   }
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
-	const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
+  const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
 
   for (const dim of scene.dimensions_deprecated?.dimensions ?? []) {
-    const d = dimensionConvertToTypeMesh(dim, scene.rotation_deprecated ?? vec3Zero, scene.dimensions_deprecated?.material);
-    if(isViewVisible(d.views[0], visibleViews)) {
+    const d = dimensionConvertToTypeMesh(
+      dim,
+      scene.rotation_deprecated ?? vec3Zero,
+      scene.dimensions_deprecated?.material
+    );
+    if (isViewVisible(d.views[0], visibleViews)) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
-			const rot = vec3RotCombine(unitRot, d.rot);
+      const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
         elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
       }

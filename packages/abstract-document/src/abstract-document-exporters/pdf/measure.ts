@@ -1,6 +1,7 @@
 import * as AD from "../../abstract-document/index.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import { getHeaderAndFooter, Page } from "./paginate.js";
+import type { Page } from "./paginate.js";
+import { getHeaderAndFooter } from "./paginate.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 
 //tslint:disable:no-any variable-name

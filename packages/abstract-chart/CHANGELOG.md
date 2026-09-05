@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [12.0.74] - 2026-09-05
+
+- Internal: adopt `verbatimModuleSyntax` and stricter compiler/lint settings; fixed an unreachable-code path in the axis exhaustiveness check and removed two unused internal exports. No functional changes.
+
 ## [12.0.0] - 2025-10-30
 
 ### Changed

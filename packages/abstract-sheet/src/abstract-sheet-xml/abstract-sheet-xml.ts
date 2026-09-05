@@ -1,6 +1,6 @@
-import { parseHandlebarsXml, XmlElement, parseXsd } from "handlebars-xml";
-import {
-  borderStyleRecord,
+import type { XmlElement } from "handlebars-xml";
+import { parseHandlebarsXml, parseXsd } from "handlebars-xml";
+import type {
   Cell,
   ColInfo,
   ColInfos,
@@ -12,6 +12,7 @@ import {
   Styles,
   AbstractSheet,
 } from "../abstract-sheet/abstract-sheet.js";
+import { borderStyleRecord } from "../abstract-sheet/abstract-sheet.js";
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
 
 export const abstractSheetXml = (template: string, data: any, partials: Record<string, string>): AbstractSheet =>
@@ -71,17 +72,17 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
     case "Cells":
       return children as Cells;
     case "Cell": {
-      const styles = el.attributes.styles?.split(",");
-      if (el.attributes.number !== undefined) {
-        const parsedNumber = Number(el.attributes.number);
-        const num = Number.isNaN(parsedNumber) ? el.attributes.number : parsedNumber;
+      const styles = el.attributes["styles"]?.split(",");
+      if (el.attributes["number"] !== undefined) {
+        const parsedNumber = Number(el.attributes["number"]);
+        const num = Number.isNaN(parsedNumber) ? el.attributes["number"] : parsedNumber;
         return { ...el.attributes, type: "number", value: num, styles } as Cell;
-      } else if (el.attributes.boolean !== undefined) {
-        return { ...el.attributes, type: "boolean", value: el.attributes.boolean, styles } as Cell;
-      } else if (el.attributes.date !== undefined) {
-        return { ...el.attributes, type: "date", value: el.attributes.date, styles } as Cell;
+      } else if (el.attributes["boolean"] !== undefined) {
+        return { ...el.attributes, type: "boolean", value: el.attributes["boolean"], styles } as Cell;
+      } else if (el.attributes["date"] !== undefined) {
+        return { ...el.attributes, type: "date", value: el.attributes["date"], styles } as Cell;
       } else {
-        return { ...el.attributes, type: "string", value: el.attributes.text, styles } as Cell;
+        return { ...el.attributes, type: "string", value: el.attributes["text"], styles } as Cell;
       }
     }
     case "Styles":

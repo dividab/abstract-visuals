@@ -1,12 +1,13 @@
 // import { ImageResource } from "./primitives/image-resource.js";
 // import { Numbering } from "./numberings/numbering.js";
-import { NumberingDefinition } from "./numberings/numbering-definition.js";
+import type { NumberingDefinition } from "./numberings/numbering-definition.js";
 import { create } from "./styles/style-key.js";
-import { Style, overrideWith } from "./styles/style.js";
-import { Font } from "./primitives/font.js";
-import { Indexer } from "./types.js";
+import type { Style } from "./styles/style.js";
+import { overrideWith } from "./styles/style.js";
+import type { Font } from "./primitives/font.js";
+import type { Indexer } from "./types.js";
 import { defaultAndStandardStyles } from "./default-styles.js";
-import { ImageResource } from "./primitives/image-resource.js";
+import type { ImageResource } from "./primitives/image-resource.js";
 
 export interface Resources {
   readonly fonts?: Indexer<Font>;
@@ -69,9 +70,9 @@ export function getNestedStyle(
   const namedStyle = resources.styles && resources.styles[create(type, name)];
   const nestedStyle = nestedStyleNames
     ? nestedStyleNames.reduce(
-      (sofar, name) => overrideWith(sofar, resources.styles && resources.styles[create(type, name)]),
-      namedStyle
-    )
+        (sofar, name) => overrideWith(sofar, resources.styles && resources.styles[create(type, name)]),
+        namedStyle
+      )
     : namedStyle;
   return overrideWith(
     elementStyle,

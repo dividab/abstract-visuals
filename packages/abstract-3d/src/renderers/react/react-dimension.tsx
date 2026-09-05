@@ -1,7 +1,6 @@
-import { useFrame } from "@react-three/fiber";
 import React from "react";
-import type { Group, Line } from "three";
-import { Dimensions, Vec3, Dimension, vec3TransRot, vec3Flip, Mesh, dimensionConvertToTypeMesh, vec3Zero, Material, DimensionAligned, vec3, View, DimensionMesh } from "../../abstract-3d.js";
+import type { Dimensions, Vec3, Dimension, Mesh, Material } from "../../abstract-3d.js";
+import { dimensionConvertToTypeMesh, vec3Zero } from "../../abstract-3d.js";
 import { ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
 
@@ -46,7 +45,6 @@ export function ReactDimension({
   visible,
   children,
   sceneRotation,
-  _sceneCenter
 }: {
   readonly dimension: Dimension;
   readonly material: Material;
@@ -60,7 +58,9 @@ export function ReactDimension({
     <group position={[dim.pos.x, dim.pos.y, dim.pos.z]} rotation={[dim.rot.x, dim.rot.y, dim.rot.z]}>
       <DimensionMeshes meshes={dim.meshes}>{children}</DimensionMeshes>
     </group>
-  ) : <></>;
+  ) : (
+    <></>
+  );
 }
 
 const DimensionMeshes = React.memo(

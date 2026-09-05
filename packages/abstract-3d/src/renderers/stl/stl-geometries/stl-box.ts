@@ -1,4 +1,5 @@
-import { Box, Material, Vec3, vec3Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
+import type { Box, Material, Vec3 } from "../../../abstract-3d.js";
+import { vec3Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import { stlTriangle } from "../stl-encoding.js";
 
 export function stlBox(b: Box, _m: Material, parentPos: Vec3, parentRot: Vec3): string {

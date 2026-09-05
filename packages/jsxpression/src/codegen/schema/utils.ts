@@ -60,10 +60,10 @@ export function generateObjectTypeWithJSDoc(properties: any, depth: number = 0):
 }
 
 export function generatePropertyJSDoc(
-  propertyName: string,
+  _propertyName: string,
   propertySchema: any,
   indent: string = "",
-  depth: number = 0
+  _depth: number = 0
 ): string {
   const comments: string[] = [];
 

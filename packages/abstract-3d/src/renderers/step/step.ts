@@ -1,23 +1,7 @@
+import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
+import { vec3Zero, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
+import type { MutableStep } from "./step-encoding.js";
 import {
-  Scene,
-  vec3Zero,
-  Group,
-  Vec3,
-  vec3TransRot,
-  vec3RotCombine,
-  Cylinder,
-  Material,
-  Plane,
-  Box,
-  Vec2,
-  vec3,
-  vec3Scale,
-  vec3Add,
-  vec3Sub,
-  vec3Rot,
-} from "../../abstract-3d.js";
-import {
-  MutableStep,
   GEOMETRIC_REPRESENTATION_CONTEXT_3D,
   LENGTH_UNIT,
   NAMED_UNIT,

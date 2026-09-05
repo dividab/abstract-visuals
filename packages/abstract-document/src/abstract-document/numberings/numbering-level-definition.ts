@@ -1,5 +1,5 @@
 import * as TextStyle from "../styles/text-style.js";
-import { NumberingFormat } from "./numbering-format.js";
+import type { NumberingFormat } from "./numbering-format.js";
 
 export interface NumberingLevelDefinition {
   readonly level: number;

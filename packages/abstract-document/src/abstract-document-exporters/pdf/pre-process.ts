@@ -1,7 +1,6 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import * as AD from "../../abstract-document/index.js";
 import * as TextStyle from "../../abstract-document/styles/text-style.js";
-import { checkServerIdentity } from "node:tls";
 
 const alphabet = [
   "a",
@@ -201,7 +200,7 @@ function adjustParagraph(paragraph: AD.Paragraph.Paragraph): Array<AD.SectionEle
             type: "LineBreak",
             style: child.style,
             nestedStyleNames: child.nestedStyleNames,
-            styleName: child.styleName
+            styleName: child.styleName,
           };
           newChildren.push(lineBreak);
         }

@@ -1,5 +1,5 @@
-import { Resources } from "../resources.js";
-import { SectionElement } from "./section-element.js";
+import type { Resources } from "../resources.js";
+import type { SectionElement } from "./section-element.js";
 import * as GroupStyle from "../styles/group-style.js";
 
 export const sectionType = "Group";

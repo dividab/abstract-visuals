@@ -1,7 +1,5 @@
+import type { Box, Material, Vec3 } from "../../../abstract-3d.js";
 import {
-  Box,
-  Material,
-  Vec3,
   vec3Scale,
   vec3TransRot,
   vec3RotCombine,
@@ -11,14 +9,13 @@ import {
   vec3Sub,
   vec3Add,
   vec3Rot,
-  vec3Length,
 } from "../../../abstract-3d.js";
 import { parseRgb } from "../../../utils.js";
+import type { MutableStep } from "../step-encoding.js";
 import {
   ADVANCED_BREP_SHAPE_REPRESENTATION,
   ADVANCED_FACE,
   APPLICATION_CONTEXT,
-  APPLICATION_PROTOCOL_DEFINITION,
   AXIS2_PLACEMENT_3D,
   CARTESIAN_POINT,
   CLOSED_SHELL,
@@ -34,7 +31,6 @@ import {
   LINE,
   MANIFOLD_SOLID_BREP,
   MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION,
-  MutableStep,
   ORIENTED_EDGE,
   PLANE,
   PRESENTATION_STYLE_ASSIGNMENT,
@@ -45,7 +41,6 @@ import {
   PRODUCT_DEFINITION_FORMATION,
   PRODUCT_DEFINITION_SHAPE,
   SHAPE_DEFINITION_REPRESENTATION,
-  STEP_NUMBER_EPSILON,
   STYLED_ITEM,
   SURFACE_SIDE_STYLE,
   SURFACE_STYLE_FILL_AREA,
@@ -62,7 +57,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
   const color = parseRgb(mat.normal);
   const rotate = (v: Vec3): Vec3 => vec3Rot(v, vec3Zero, rotation);
 
-  if(size.x === 0.0 || size.y === 0.0 || size.z === 0.0) {
+  if (size.x === 0.0 || size.y === 0.0 || size.z === 0.0) {
     return;
   }
 

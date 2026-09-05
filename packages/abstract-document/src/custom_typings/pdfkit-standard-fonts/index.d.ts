@@ -1,4 +1,3 @@
-/* eslint-disable import/no-default-export */
 declare module "pdfkit/standard-fonts/Helvetica" {
   const data: unknown;
   export default data;

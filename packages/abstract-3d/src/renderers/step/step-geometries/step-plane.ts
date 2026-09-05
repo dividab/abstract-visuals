@@ -1,13 +1,6 @@
-import {
-  Plane,
-  Material,
-  Vec3,
-  vec3,
-  Box,
-} from "../../../abstract-3d.js";
-import {
-  MutableStep,
-} from "../step-encoding.js";
+import type { Plane, Material, Vec3, Box } from "../../../abstract-3d.js";
+import { vec3 } from "../../../abstract-3d.js";
+import type { MutableStep } from "../step-encoding.js";
 import { stepBox } from "./step-box.js";
 
 const PLANE_THICKNESS = 1e-4;

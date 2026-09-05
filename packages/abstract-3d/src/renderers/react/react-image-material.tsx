@@ -2,8 +2,9 @@ import React from "react";
 import { suspend } from "suspend-react";
 import { createSVG } from "abstract-image";
 import { CanvasTexture, DoubleSide, PlaneGeometry, SRGBColorSpace, type Texture, TextureLoader } from "three";
-import { Material, Image as A3dImage } from "../../abstract-3d.js";
-import { ERROR_IMG_KEY, getColor, materialDefaults, MaterialState, selectMat } from "./react-material.js";
+import type { Material, Image as A3dImage } from "../../abstract-3d.js";
+import type { MaterialState } from "./react-material.js";
+import { ERROR_IMG_KEY, getColor, materialDefaults, selectMat } from "./react-material.js";
 
 export const planeGeometry = new PlaneGeometry();
 

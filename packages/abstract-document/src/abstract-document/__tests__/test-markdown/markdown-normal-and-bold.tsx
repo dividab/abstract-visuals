@@ -1,4 +1,4 @@
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import { Markdown } from "../../../abstract-document-jsx/index.js";
 
 export const testMarkdownNormalAndBold: ExportTestDef = {

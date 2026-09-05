@@ -1,13 +1,14 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
-import { AbstractDoc } from "../../abstract-document/abstract-doc.js";
-import { Resources, mergeResources } from "../../abstract-document/resources.js";
-import { Group } from "../../abstract-document/section-elements/group.js";
-import { Table } from "../../abstract-document/section-elements/table.js";
-import { SectionElement } from "../../abstract-document/section-elements/section-element.js";
-import { Paragraph } from "../../abstract-document/section-elements/paragraph.js";
-import { Section } from "../../abstract-document/page/section.js";
-import { TableRow } from "../../abstract-document/table/table-row.js";
-import { TableCell } from "../../abstract-document/table/table-cell.js";
+import type { AbstractDoc } from "../../abstract-document/abstract-doc.js";
+import type { Resources } from "../../abstract-document/resources.js";
+import { mergeResources } from "../../abstract-document/resources.js";
+import type { Group } from "../../abstract-document/section-elements/group.js";
+import type { Table } from "../../abstract-document/section-elements/table.js";
+import type { SectionElement } from "../../abstract-document/section-elements/section-element.js";
+import type { Paragraph } from "../../abstract-document/section-elements/paragraph.js";
+import type { Section } from "../../abstract-document/page/section.js";
+import type { TableRow } from "../../abstract-document/table/table-row.js";
+import type { TableCell } from "../../abstract-document/table/table-cell.js";
 
 export function getResources(doc: AbstractDoc): Resources {
   const resources = doc.children.map((s) => getResourcesSection(s));

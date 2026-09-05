@@ -1,4 +1,4 @@
-import * as AbstractImage from "abstract-image";
+import type * as AbstractImage from "abstract-image";
 import svgToPdfKit from "svg-to-pdfkit";
 import * as AD from "../../abstract-document/index.js";
 import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
@@ -230,7 +230,6 @@ function addWithSvgToPdfKit(
   let svgUpdated = svg;
   ["fill=", "stroke=", "color="].forEach((t) => {
     let index = 0;
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       index = svgUpdated.indexOf(t, index);
       if (index === -1) break;
@@ -247,7 +246,6 @@ function addWithSvgToPdfKit(
 
   ["stroke-dasharray="].forEach((t) => {
     let index = 0;
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       index = svgUpdated.indexOf(t, index);
       if (index === -1) break;

@@ -1,8 +1,18 @@
 import * as AD from "../../abstract-document/index.js";
+import type {
+  ISectionOptions,
+  ImageRun,
+  SymbolRun,
+  PageBreak,
+  SequentialIdentifier,
+  FootnoteReferenceRun,
+  InsertedTextRun,
+  DeletedTextRun,
+  Math as MathDocX,
+} from "docx";
 import {
   Packer,
   Document,
-  ISectionOptions,
   Paragraph,
   Table,
   Bookmark,
@@ -19,14 +29,6 @@ import {
   TableRow,
   TableCell,
   VerticalAlign,
-  ImageRun,
-  SymbolRun,
-  PageBreak,
-  SequentialIdentifier,
-  FootnoteReferenceRun,
-  InsertedTextRun,
-  DeletedTextRun,
-  Math as MathDocX,
   PageNumber,
 } from "docx";
 import { renderImage } from "./render-image.js";
@@ -72,16 +74,14 @@ function createDocument(doc: AD.AbstractDoc.AbstractDoc): Document {
 
 function renderSection(section: AD.Section.Section, parentResources: AD.Resources.Resources): ISectionOptions {
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
-  const pageHeight = AD.PageStyle.getHeight(section.page.style);
-  const pageHeaderMargins = AD.LayoutFoundation.orDefault(section.page.style.headerMargins)
-  const pageFooterMargins = AD.LayoutFoundation.orDefault(section.page.style.footerMargins)
+  const pageHeaderMargins = AD.LayoutFoundation.orDefault(section.page.style.headerMargins);
+  const pageFooterMargins = AD.LayoutFoundation.orDefault(section.page.style.footerMargins);
   const pageContentMargins = AD.LayoutFoundation.orDefault(section.page.style.contentMargins);
 
   const hasFrontHeader = section.page.frontHeader !== undefined && section.page.frontHeader.length !== 0;
   const hasFrontFooter = section.page.frontFooter !== undefined && section.page.frontFooter.length !== 0;
-  
-  const contentAvailableWidth =
-    pageWidth - (pageContentMargins.left + pageContentMargins.right);
+
+  const contentAvailableWidth = pageWidth - (pageContentMargins.left + pageContentMargins.right);
 
   const resources = AD.Resources.mergeResources([parentResources, section]);
 
@@ -90,20 +90,24 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
     return sofar;
   }, [] as Array<Paragraph | Table>);
 
-  const firstpageHeaderChildren = hasFrontHeader ? section.page.frontHeader.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-    return sofar;
-  }, [] as Array<Paragraph | Table>) : [];
+  const firstpageHeaderChildren = hasFrontHeader
+    ? section.page.frontHeader.reduce((sofar, c) => {
+        sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+        return sofar;
+      }, [] as Array<Paragraph | Table>)
+    : [];
 
   const footerChildren = section.page.footer.reduce((sofar, c) => {
     sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
     return sofar;
   }, [] as Array<Paragraph | Table>);
 
-  const firstPageFooterChildren = hasFrontFooter ? section.page.frontFooter.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-    return sofar;
-  }, [] as Array<Paragraph | Table>) : [];
+  const firstPageFooterChildren = hasFrontFooter
+    ? section.page.frontFooter.reduce((sofar, c) => {
+        sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+        return sofar;
+      }, [] as Array<Paragraph | Table>)
+    : [];
 
   const contentChildren = [
     new Paragraph({
@@ -146,17 +150,21 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
       default: new Header({
         children: headerChildren,
       }),
-      first: hasFrontHeader ? new Header({
-        children: firstpageHeaderChildren
-      }) : undefined
+      first: hasFrontHeader
+        ? new Header({
+            children: firstpageHeaderChildren,
+          })
+        : undefined,
     },
     footers: {
       default: new Footer({
-        children: footerChildren
+        children: footerChildren,
       }),
-      first: hasFrontFooter ? new Footer({
-        children: firstPageFooterChildren
-      }) : undefined
+      first: hasFrontFooter
+        ? new Footer({
+            children: firstPageFooterChildren,
+          })
+        : undefined,
     },
     children: contentChildren,
   };
@@ -176,9 +184,9 @@ function renderHyperLink(
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-        color: style.color || "#0000ff",
-        type: UnderlineType.SINGLE,
-      }
+          color: style.color || "#0000ff",
+          type: UnderlineType.SINGLE,
+        }
       : undefined,
   });
 
@@ -258,8 +266,8 @@ function renderTable(
       style.alignment === "Left"
         ? AlignmentType.LEFT
         : style.alignment === "Right"
-          ? AlignmentType.RIGHT
-          : AlignmentType.CENTER,
+        ? AlignmentType.RIGHT
+        : AlignmentType.CENTER,
     margins: {
       top: styleMargins.top * abstractDocPixelToDocxDXARatio,
       bottom: styleMargins.bottom * abstractDocPixelToDocxDXARatio,
@@ -302,7 +310,9 @@ function renderTable(
         style: BorderStyle.NONE,
       },
     },
-    rows: table.headerRows.concat(table.children).map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
+    rows: table.headerRows
+      .concat(table.children)
+      .map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
   });
 }
 
@@ -317,16 +327,11 @@ function renderRow(
     (acc, cell) => {
       const span = cell.columnSpan ?? 1;
 
-      const width = columnWidths
-        .slice(acc.columnIndex, acc.columnIndex + span)
-        .reduce((a, b) => a + b, 0);
+      const width = columnWidths.slice(acc.columnIndex, acc.columnIndex + span).reduce((a, b) => a + b, 0);
 
       return {
         columnIndex: acc.columnIndex + span,
-        children: [
-          ...acc.children,
-          renderCell(cell, resources, tableCellStyle, width, keepNext),
-        ],
+        children: [...acc.children, renderCell(cell, resources, tableCellStyle, width, keepNext)],
       };
     },
     { columnIndex: 0, children: [] as TableCell[] }
@@ -346,7 +351,7 @@ function renderCell(
   keepNext: boolean
 ): TableCell {
   const abstractDocPxCellWidth = width / abstractDocPixelToDocxDXARatio;
-  
+
   const style = AD.Resources.getStyle(
     tableCellStyle,
     cell.style,
@@ -363,8 +368,8 @@ function renderCell(
       (style.verticalAlignment && style.verticalAlignment === "Top"
         ? VerticalAlign.TOP
         : style.verticalAlignment === "Bottom"
-          ? VerticalAlign.BOTTOM
-          : VerticalAlign.CENTER) || undefined,
+        ? VerticalAlign.BOTTOM
+        : VerticalAlign.CENTER) || undefined,
     shading: {
       fill: style.background ? style.background : undefined,
     },
@@ -494,9 +499,9 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-        color: style.color,
-        type: UnderlineType.SINGLE,
-      }
+          color: style.color,
+          type: UnderlineType.SINGLE,
+        }
       : undefined,
     children: [PageNumber.CURRENT],
   });
@@ -512,9 +517,9 @@ function renderTotalPages(style: AD.TextStyle.TextStyle): TextRun {
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-        color: style.color,
-        type: UnderlineType.SINGLE,
-      }
+          color: style.color,
+          type: UnderlineType.SINGLE,
+        }
       : undefined,
     children: [PageNumber.TOTAL_PAGES],
   });
@@ -532,9 +537,9 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-        color: style.color,
-        type: UnderlineType.SINGLE,
-      }
+          color: style.color,
+          type: UnderlineType.SINGLE,
+        }
       : undefined,
   });
 }
@@ -576,8 +581,8 @@ function renderParagraph(
         (style.alignment === "Center"
           ? AlignmentType.CENTER
           : style.alignment === "End"
-            ? AlignmentType.END
-            : AlignmentType.START)) ||
+          ? AlignmentType.END
+          : AlignmentType.START)) ||
       undefined,
 
     spacing: {

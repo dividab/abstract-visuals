@@ -1,5 +1,4 @@
-/* eslint-disable max-lines */
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import * as AD from "../../../index.js";
 import { Paragraph, AbstractDoc, Section, TextRun, render } from "../../../abstract-document-jsx/index.js";
 import * as PageStyle from "../../../abstract-document/styles/page-style.js";

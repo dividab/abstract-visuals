@@ -1,4 +1,4 @@
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -273,7 +273,6 @@ export const testGroup: ExportTestDef = {
           <w:docGrid w:linePitch="360"/>
         </w:sectPr>
       </w:body>
-    </w:document>`
-    ,
+    </w:document>`,
   },
 };

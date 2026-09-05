@@ -1,17 +1,6 @@
-import {
-  Material,
-  Vec3,
-  vec3,
-  Cone,
-  Cylinder,
-} from "../../../abstract-3d.js";
-import {
-  MutableStep,
-} from "../step-encoding.js";
-import { stepBox } from "./step-box.js";
+import type { Material, Vec3, Cone, Cylinder } from "../../../abstract-3d.js";
+import type { MutableStep } from "../step-encoding.js";
 import { stepCylinder } from "./step-cylinder.js";
-
-const PLANE_THICKNESS = 1e-4;
 
 export function stepCone(c: Cone, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
   //convert it into a box

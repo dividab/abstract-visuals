@@ -1,5 +1,5 @@
-import { Program } from "acorn";
-import { Schema } from "../../schema.js";
+import type { Program } from "acorn";
+import type { Schema } from "../../schema.js";
 import { AnalysisReport } from "../analysis-report.js";
 import { ValidationContext } from "../validation-context.js";
 import { analyzeMethodCalls } from "./method-calls.js";

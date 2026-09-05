@@ -1,35 +1,26 @@
-import * as AbstractImage from "abstract-image";
-import { ImageRun, IMediaTransformation } from "docx";
-import { TextStyle } from "../../abstract-document/styles/text-style.js";
-import { Image } from "../../abstract-document/atoms/image.js";
-import { Resources } from "../../abstract-document/index.js";
+import type * as AbstractImage from "abstract-image";
+import type { IMediaTransformation } from "docx";
+import { ImageRun } from "docx";
+import type { TextStyle } from "../../abstract-document/styles/text-style.js";
+import type { Image } from "../../abstract-document/atoms/image.js";
 import { fromBase64, rawSvgPrefix } from "../shared/base-64.js";
-import * as AD from "../../abstract-document/index.js";
+import type * as AD from "../../abstract-document/index.js";
 
 const abstractDocPointsToDocxPxRatio = 1; // Set to 1 for now to minimize impact. Can be adjusted to better match PDF image dimensions
 
-const emptyPNG =
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6pH7sAAAAASUVORK5CYII=";
+const emptyPNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6pH7sAAAAASUVORK5CYII=";
 
-  const fallbackImage = {
-    type: "png" as const,
-    data: fromBase64(emptyPNG),
-  };
+const fallbackImage = {
+  type: "png" as const,
+  data: fromBase64(emptyPNG),
+};
 
-export function renderImage(
-  image: Image,
-  textStyle: TextStyle,
-  resources: Resources.Resources
-): ImageRun {
-
+export function renderImage(image: Image, textStyle: TextStyle, resources: AD.Resources.Resources): ImageRun {
   const aImage = image.imageResource.abstractImage;
 
   const firstComp = aImage.components[0];
   const resource =
-    !aImage.size.width &&
-    !aImage.size.height &&
-    firstComp?.type === "binaryimage" &&
-    firstComp.data.type === "url"
+    !aImage.size.width && !aImage.size.height && firstComp?.type === "binaryimage" && firstComp.data.type === "url"
       ? resources.imageResources?.[firstComp.data.url] ?? image.imageResource
       : image.imageResource;
 
@@ -48,7 +39,10 @@ export function renderImage(
   const drawnW = imgW * scale;
   const drawnH = imgH * scale;
 
-  const transformation: IMediaTransformation = { width: drawnW * abstractDocPointsToDocxPxRatio, height: drawnH * abstractDocPointsToDocxPxRatio};
+  const transformation: IMediaTransformation = {
+    width: drawnW * abstractDocPointsToDocxPxRatio,
+    height: drawnH * abstractDocPointsToDocxPxRatio,
+  };
 
   const directImage = tryCreateDirectImageRun(resource, transformation, resources);
   if (directImage) {
@@ -68,7 +62,7 @@ export function renderImage(
 function tryCreateDirectImageRun(
   resource: AD.ImageResource.ImageResource,
   transformation: IMediaTransformation,
-  resources: Resources.Resources
+  resources: AD.Resources.Resources
 ): ImageRun | undefined {
   if (resource.abstractImage.components.length !== 1) {
     return undefined;
@@ -85,7 +79,7 @@ function tryCreateDirectImageRun(
 function binaryImageToImageRun(
   component: AbstractImage.BinaryImage,
   transformation: IMediaTransformation,
-  resources: Resources.Resources
+  resources: AD.Resources.Resources
 ): ImageRun | undefined {
   const format = component.format.toLowerCase();
 
@@ -145,7 +139,7 @@ function binaryImageToImageRun(
       }
 
       if (mimeType.includes("svg")) {
-        return new ImageRun({ type: "svg", data, transformation, fallback: fallbackImage});
+        return new ImageRun({ type: "svg", data, transformation, fallback: fallbackImage });
       }
     }
   }
@@ -155,7 +149,7 @@ function binaryImageToImageRun(
 
 function abstractImageToSvg(
   image: AbstractImage.AbstractImage,
-  resources: Resources.Resources,
+  resources: AD.Resources.Resources,
   textStyle: TextStyle
 ): string {
   const width = image.size.width || 1;
@@ -171,7 +165,7 @@ function abstractImageToSvg(
 
 function componentToSvg(
   component: AbstractImage.Component,
-  resources: Resources.Resources,
+  resources: AD.Resources.Resources,
   textStyle: TextStyle,
   circuitBreaker: number
 ): string {
@@ -181,9 +175,7 @@ function componentToSvg(
 
   switch (component.type) {
     case "group":
-      return component.children
-        .map((child) => componentToSvg(child, resources, textStyle, circuitBreaker))
-        .join("");
+      return component.children.map((child) => componentToSvg(child, resources, textStyle, circuitBreaker)).join("");
 
     case "subimage": {
       const scaleX = component.size.width / (component.image.size.width || 1);
@@ -201,19 +193,33 @@ function componentToSvg(
       return binaryImageToSvg(component, resources, textStyle, circuitBreaker);
 
     case "line":
-      return `<line x1="${component.start.x}" y1="${component.start.y}" x2="${component.end.x}" y2="${component.end.y}" ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+      return `<line x1="${component.start.x}" y1="${component.start.y}" x2="${component.end.x}" y2="${
+        component.end.y
+      }" ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
 
     case "polyline":
-      return `<polyline points="${component.points.map((p) => `${p.x},${p.y}`).join(" ")}" fill="none" ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+      return `<polyline points="${component.points.map((p) => `${p.x},${p.y}`).join(" ")}" fill="none" ${strokeAttrs(
+        component.strokeColor,
+        component.strokeThickness,
+        component.strokeDashStyle
+      )} />`;
 
     case "polygon":
-      return `<polygon points="${component.points.map((p) => `${p.x},${p.y}`).join(" ")}" ${fillAttrs(component.fillColor)} ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+      return `<polygon points="${component.points.map((p) => `${p.x},${p.y}`).join(" ")}" ${fillAttrs(
+        component.fillColor
+      )} ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
 
     case "rectangle": {
       const width = component.bottomRight.x - component.topLeft.x;
       const height = component.bottomRight.y - component.topLeft.y;
 
-      return `<rect x="${component.topLeft.x}" y="${component.topLeft.y}" width="${width}" height="${height}" ${fillAttrs(component.fillColor)} ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+      return `<rect x="${component.topLeft.x}" y="${
+        component.topLeft.y
+      }" width="${width}" height="${height}" ${fillAttrs(component.fillColor)} ${strokeAttrs(
+        component.strokeColor,
+        component.strokeThickness,
+        component.strokeDashStyle
+      )} />`;
     }
 
     case "ellipse": {
@@ -222,7 +228,9 @@ function componentToSvg(
       const cx = component.topLeft.x + width * 0.5;
       const cy = component.topLeft.y + height * 0.5;
 
-      return `<ellipse cx="${cx}" cy="${cy}" rx="${width * 0.5}" ry="${height * 0.5}" ${fillAttrs(component.fillColor)} ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
+      return `<ellipse cx="${cx}" cy="${cy}" rx="${width * 0.5}" ry="${height * 0.5}" ${fillAttrs(
+        component.fillColor
+      )} ${strokeAttrs(component.strokeColor, component.strokeThickness, component.strokeDashStyle)} />`;
     }
 
     case "text":
@@ -235,7 +243,7 @@ function componentToSvg(
 
 function binaryImageToSvg(
   component: AbstractImage.BinaryImage,
-  resources: Resources.Resources,
+  resources: AD.Resources.Resources,
   textStyle: TextStyle,
   circuitBreaker: number
 ): string {
@@ -263,7 +271,9 @@ function binaryImageToSvg(
       return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y})">${svg}</g>`;
     }
 
-    return `<image x="${component.topLeft.x}" y="${component.topLeft.y}" width="${width}" height="${height}" href="${escapeXml(component.data.url)}" />`;
+    return `<image x="${component.topLeft.x}" y="${
+      component.topLeft.y
+    }" width="${width}" height="${height}" href="${escapeXml(component.data.url)}" />`;
   }
 
   if (component.data.type === "bytes") {
@@ -307,24 +317,30 @@ function textComponentToSvg(component: AbstractImage.Text): string {
       ? "middle"
       : "text-before-edge";
 
-  return `<text x="${component.position.x}" y="${component.position.y}" font-family="${escapeXml(component.fontFamily)}" font-size="${component.fontSize}" font-weight="${component.fontWeight}" font-style="${component.italic ? "italic" : "normal"}" fill="${colorToCss(component.textColor)}" text-anchor="${anchor}" dominant-baseline="${dominantBaseline}"${rotation}>${escapeXml(component.text)}</text>`;
+  return `<text x="${component.position.x}" y="${component.position.y}" font-family="${escapeXml(
+    component.fontFamily
+  )}" font-size="${component.fontSize}" font-weight="${component.fontWeight}" font-style="${
+    component.italic ? "italic" : "normal"
+  }" fill="${colorToCss(
+    component.textColor
+  )}" text-anchor="${anchor}" dominant-baseline="${dominantBaseline}"${rotation}>${escapeXml(component.text)}</text>`;
 }
 
 function fillAttrs(color: AbstractImage.Color): string {
   return `fill="${colorToCss(color)}" fill-opacity="${colorToOpacity(color)}"`;
 }
 
-function strokeAttrs(
-  color: AbstractImage.Color,
-  thickness: number,
-  dashStyle: AbstractImage.DashStyle
-): string {
+function strokeAttrs(color: AbstractImage.Color, thickness: number, dashStyle: AbstractImage.DashStyle): string {
   const dashArray =
     dashStyle.dashes.length > 0
-      ? ` stroke-dasharray="${dashStyle.dashes.filter((dash) => dash !== 0).join(" ")}" stroke-dashoffset="${dashStyle.offset}"`
+      ? ` stroke-dasharray="${dashStyle.dashes.filter((dash) => dash !== 0).join(" ")}" stroke-dashoffset="${
+          dashStyle.offset
+        }"`
       : "";
 
-  return `stroke="${colorToCss(color)}" stroke-opacity="${colorToOpacity(color)}" stroke-width="${thickness}"${dashArray}`;
+  return `stroke="${colorToCss(color)}" stroke-opacity="${colorToOpacity(
+    color
+  )}" stroke-width="${thickness}"${dashArray}`;
 }
 
 function colorToOpacity(color: AbstractImage.Color): number {
@@ -336,11 +352,7 @@ function colorToCss(color: AbstractImage.Color): string {
 }
 
 function escapeXml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 function resourceRect(resource: AD.ImageResource.ImageResource, rect: AbstractImage.Size): AbstractImage.Size {

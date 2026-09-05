@@ -1,5 +1,5 @@
 import * as AD from "../../../index.js";
-import { ExportTestDef } from "./_export-test-def.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, HyperLink } from "../../../abstract-document-jsx/index.js";
 
 export const testSingleHyperlinkWithUnderline: ExportTestDef = {
