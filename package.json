@@ -37,6 +37,7 @@
   "scripts": {
     "precommit": "lint-staged",
     "publish-npm": "run-s verify && lerna publish",
+    "version": "pnpm install --lockfile-only && git add pnpm-lock.yaml",
     "verify": "run-s lint build test",
     "updated": "lerna updated",
     "test": "vitest run",
