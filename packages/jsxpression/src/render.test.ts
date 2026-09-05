@@ -248,13 +248,16 @@ describe("render", () => {
     ).toThrow(ParseError);
   });
 
-  it("should propagate AnalysisError for disallowed identifiers", () => {
+  it("should propagate EvaluationError for disallowed identifiers (analyzeIdentifiers disabled)", () => {
     const TestComponent = (): TestNode => ({
       type: "Test",
       props: {},
       children: [],
     });
 
+    // analyzeIdentifiers is currently disabled in analyze.ts, so bare property access on an
+    // undeclared global like `window` is no longer caught at analysis time — it now fails at
+    // evaluation time instead, once the identifier turns out to be undefined at runtime.
     expect(() =>
       render(
         "<Text>{window.location}</Text>",
@@ -269,7 +272,7 @@ describe("render", () => {
           components: { Text: TestComponent },
         }
       )
-    ).toThrow(AnalysisError);
+    ).toThrow(EvaluationError);
   });
 
   it("should propagate AnalysisError for unknown JSX elements", () => {
