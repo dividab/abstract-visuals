@@ -104,7 +104,7 @@ return <AbstractImage width={600} height={260}>
     console.log(e);
   }
 
-  const schema = generateDataSchema(dataParsed as Record<string, unknown>);
+  const schema = generateDataSchema(dataParsed);
 
   const funcSchema: Record<string, FunctionSchema> = {
     test: {

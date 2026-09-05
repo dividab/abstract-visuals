@@ -1,6 +1,14 @@
 ﻿{
   "permissions": {
     "deny": ["Read(.claude/settings.json)", "Write(.claude/settings.json)"],
-    "allow": []
+    "allow": [
+      "Bash(pnpm test)",
+      "Bash(pnpm clean)",
+      "Bash(pnpm build)",
+      "Bash(pnpm cleanbuild)",
+      "Bash(pnpm fmt)",
+      "Bash(pnpm install)",
+      "Bash(pnpm clean-node-modules)"
+    ]
   }
 }

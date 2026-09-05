@@ -55,7 +55,7 @@ export interface TextStyleProps {
 export function create(props?: TextStyleProps): TextStyle {
   return {
     type: "TextStyle",
-    ...(props || {}),
+    ...props,
   };
 }
 

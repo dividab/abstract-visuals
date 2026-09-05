@@ -8,6 +8,7 @@ import { renderImage } from "./render-image.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 import { registerDefaultStdFonts } from "./std-fonts.js";
 import { toBlob, toBytes } from "pdfkit/output";
+// oxlint-disable-next-line import/no-named-as-default -- standard pdfkit import idiom
 import PDFDocument from "pdfkit";
 import type { PdfKitAlignment } from "./textRunRow.js";
 import { rowsCombineTextRuns, rowsSplit } from "./textRunRow.js";

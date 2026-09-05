@@ -9,7 +9,7 @@ export function xlsxWorkSheet(sheet: Sheet, styles: Record<string, any>): XLSX.W
     colMax = Math.max(r.length, colMax);
     for (let ci = 0; ci < r.length; ci++) {
       const c = r[ci]!;
-      let s: Object | undefined = undefined;
+      let s: Record<string, unknown> | undefined = undefined;
       if (c.styles !== undefined) {
         for (const style of c.styles) {
           s = { ...s!, ...styles[style] };

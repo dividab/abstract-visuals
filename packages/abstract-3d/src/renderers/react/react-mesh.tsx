@@ -394,7 +394,7 @@ function ExcrudeCylinder({
   return (
     // Doesn't seem to adjust for excrude z size directly???
     <mesh rotation={[cyl.rot?.x ?? 0, cyl.rot?.y ?? 0, cyl.rot?.z ?? 0]} position={[cyl.pos.x, cyl.pos.y, cyl.pos.z]}>
-      <mesh geometry={excrudeGeometry} rotation-x={Math.PI / 2} position-y={+cyl.length / 2} castShadow receiveShadow>
+      <mesh geometry={excrudeGeometry} rotation-x={Math.PI / 2} position-y={cyl.length / 2} castShadow receiveShadow>
         {children}
       </mesh>
     </mesh>

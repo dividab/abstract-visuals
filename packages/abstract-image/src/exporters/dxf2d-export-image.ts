@@ -1281,7 +1281,7 @@ function createPolygon(
   polygon += "5\n" + handle + "\n";
   polygon += "330\n" + modelSpaceHandle + "\n";
   polygon += "100\nAcDbEntity\n";
-  polygon += "8\n" + layer.toString() + "\n";
+  polygon += "8\n" + layer + "\n";
 
   if (options.useColor && !isBlack(strokeColor)) {
     polygon += "60\n0\n";
@@ -1304,7 +1304,7 @@ function createPolygon(
     polygon += "5\n" + newHandle() + "\n";
     polygon += "330\n" + handle + "\n";
     polygon += "100\nAcDbEntity\n";
-    polygon += "8\n" + layer.toString() + "\n";
+    polygon += "8\n" + layer + "\n";
     polygon += "100\nAcDbVertex\n";
     polygon += "100\nAcDb2dVertex\n";
     polygon += "70\n0\n";
@@ -1316,7 +1316,7 @@ function createPolygon(
   polygon += "0\nSEQEND\n";
   polygon += "5\n" + newHandle() + "\n";
   polygon += "100\nAcDbEntity\n";
-  polygon += "8\n" + layer.toString() + "\n";
+  polygon += "8\n" + layer + "\n";
   polygon += "330\n" + handle + "\n";
 
   return polygon;

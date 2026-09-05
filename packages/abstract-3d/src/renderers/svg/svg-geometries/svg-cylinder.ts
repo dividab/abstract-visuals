@@ -56,7 +56,7 @@ export function cylinder(
   }
   if (!c.open) {
     // Add circle if direcly facing camera
-    const circleTop = vec3tr(vec3(0, +half.y, 0));
+    const circleTop = vec3tr(vec3(0, half.y, 0));
     const circleBottom = vec3tr(vec3(0, -half.y, 0));
     if (equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1)) {
       const circlePos = circleTop.z > circleBottom.z ? circleTop : circleBottom;

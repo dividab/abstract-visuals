@@ -875,7 +875,7 @@ export const group = (
   rot = vec3Zero,
   groups: ReadonlyArray<Group> = Array<Group>(),
   data = {},
-  animation: Animation | undefined = undefined
+  animation?: Animation
 ): Group => ({ meshes, pos, rot, data, groups, animation: animation! });
 
 export const boxMesh = (box: Box, material: Material): Mesh => ({ geometry: box, material });

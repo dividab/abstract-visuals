@@ -55,13 +55,13 @@ export function analyzeIdentifiers(ast: Program, schema: Schema, validationConte
         const params =
           scopeParent.type === "ArrowFunctionExpression"
             ? arrowParamScopes.get(scopeParent)
-            : functionParamScopes.get(scopeParent as FunctionDeclaration);
+            : functionParamScopes.get(scopeParent);
         if (params?.has(name)) {
           return;
         }
 
         if (scopeParent.type === "FunctionDeclaration") {
-          const localConsts = functionLocalConsts.get(scopeParent as FunctionDeclaration);
+          const localConsts = functionLocalConsts.get(scopeParent);
           if (localConsts?.has(name)) {
             return;
           }
@@ -138,7 +138,7 @@ function getFunctionLocalConsts(ast: Program): Map<FunctionDeclaration, Set<stri
 function collectParamNames(param: AnyNode, names: Set<string>): void {
   switch (param.type) {
     case "Identifier":
-      names.add((param as Identifier).name);
+      names.add(param.name);
       break;
     case "ObjectPattern":
       for (const prop of (param as any).properties) {

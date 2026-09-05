@@ -22,7 +22,7 @@ export interface TableStyleProps {
 export function create(props?: TableStyleProps): TableStyle {
   const {
     margins = LayoutFoundation.create(),
-    alignment = undefined,
+    alignment,
     position = "relative",
     cellStyle = TableCellStyle.create(),
   } = props || {};

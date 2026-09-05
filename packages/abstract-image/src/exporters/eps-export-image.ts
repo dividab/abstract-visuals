@@ -198,19 +198,17 @@ function createIsoLatin1FontLines(root: AbstractImage): ReadonlyArray<string> {
     //
     // https://www.adobe.com/jp/print/postscript/pdfs/PLRM.pdf
     lines.push(
-      ...[
-        `/${fontFamily} findfont`,
-        "dup length dict begin",
-        "  { 1 index /FID ne",
-        "      {def}",
-        "      {pop pop}",
-        "    ifelse",
-        "  } forall",
-        "  /Encoding ISOLatin1Encoding def",
-        "  currentdict",
-        "end",
-        `/${createFontName("iso-latin-1-encoding", fontFamily)} exch definefont pop`,
-      ]
+      `/${fontFamily} findfont`,
+      "dup length dict begin",
+      "  { 1 index /FID ne",
+      "      {def}",
+      "      {pop pop}",
+      "    ifelse",
+      "  } forall",
+      "  /Encoding ISOLatin1Encoding def",
+      "  currentdict",
+      "end",
+      `/${createFontName("iso-latin-1-encoding", fontFamily)} exch definefont pop`
     );
   }
   return lines;

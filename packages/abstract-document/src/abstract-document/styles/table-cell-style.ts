@@ -23,14 +23,7 @@ export interface TableCellStyleProps {
 }
 
 export function create(props?: TableCellStyleProps): TableCellStyle {
-  const {
-    background = undefined,
-    borders = undefined,
-    borderColor = undefined,
-    borderColors = undefined,
-    padding = undefined,
-    verticalAlignment = undefined,
-  } = props || {};
+  const { background, borders, borderColor, borderColors, padding, verticalAlignment } = props || {};
   return {
     type: "TableCellStyle",
     background,

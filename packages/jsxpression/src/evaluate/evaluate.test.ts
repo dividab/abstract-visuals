@@ -60,7 +60,7 @@ describe("evaluate", () => {
       },
     });
 
-    expect(result.props!.value).toBe(15); // floor(5 * 3.14159...) = 15
+    expect(result.props.value).toBe(15); // floor(5 * 3.14159...) = 15
   });
 
   it("should throw EvaluationError for unknown component", () => {
@@ -116,7 +116,7 @@ describe("evaluate", () => {
     expect(result.type).toBe("Outer");
     expect(result.props).toEqual({ x: 10 });
     expect(result.children).toHaveLength(1);
-    const innerNode = result.children[0] as Node;
+    const innerNode = result.children[0];
     expect(innerNode.type).toBe("Inner");
     expect(innerNode.props).toEqual({ y: 20 });
     expect(innerNode.children).toEqual(["Text"]);
@@ -159,7 +159,7 @@ describe("evaluate", () => {
       },
     });
 
-    expect(result.props!.msg).toBe("visible");
+    expect(result.props.msg).toBe("visible");
   });
 
   it("should evaluate array methods on props", () => {
@@ -176,7 +176,7 @@ describe("evaluate", () => {
       },
     });
 
-    expect(result.props!.values).toEqual([6, 8, 10]);
+    expect(result.props.values).toEqual([6, 8, 10]);
   });
 
   it("should handle runtime errors gracefully", () => {
@@ -208,7 +208,7 @@ describe("evaluate", () => {
       },
     });
 
-    expect(result.props!.msg).toBe("Anonymous");
+    expect(result.props.msg).toBe("Anonymous");
   });
 
   it("should flatten and filter children correctly", () => {
@@ -269,7 +269,7 @@ describe("evaluate", () => {
       }
     );
 
-    expect(result.props!.values).toBe("6, 8, 10");
+    expect(result.props.values).toBe("6, 8, 10");
   });
 
   it("should pass correct parameters to custom createElement", () => {
@@ -295,7 +295,7 @@ describe("evaluate", () => {
       components: { Test: TestComponent },
     });
 
-    expect(result.props!.msg).toBe("Hello World");
+    expect(result.props.msg).toBe("Hello World");
   });
 
   it("should handle numeric operations", () => {
@@ -310,7 +310,7 @@ describe("evaluate", () => {
       components: { Test: TestComponent },
     });
 
-    expect(result.props!.value).toBe(11); // 5 + (3 * 2)
+    expect(result.props.value).toBe(11); // 5 + (3 * 2)
   });
 
   it("should handle data access in children", () => {
@@ -340,7 +340,7 @@ describe("evaluate", () => {
         components: { Test: TestComponent },
       });
 
-      expect(result.props!.value).toBe(42);
+      expect(result.props.value).toBe(42);
     });
 
     it("should evaluate const with computed expression", () => {
@@ -355,7 +355,7 @@ describe("evaluate", () => {
         components: { Test: TestComponent },
       });
 
-      expect(result.props!.value).toBe(8); // (3+1)*2
+      expect(result.props.value).toBe(8); // (3+1)*2
     });
 
     it("should evaluate const referencing data", () => {
@@ -370,7 +370,7 @@ describe("evaluate", () => {
         components: { Test: TestComponent },
       });
 
-      expect(result.props!.msg).toBe("Hello World");
+      expect(result.props.msg).toBe("Hello World");
     });
 
     it("should evaluate const with computed array", () => {
@@ -388,7 +388,7 @@ describe("evaluate", () => {
         }
       );
 
-      expect(result.props!.count).toBe(3);
+      expect(result.props.count).toBe(3);
     });
   });
 
@@ -425,7 +425,7 @@ describe("evaluate", () => {
         }
       );
 
-      expect(result.props!.result).toBe(10);
+      expect(result.props.result).toBe(10);
     });
 
     it("should evaluate nested user-defined components", () => {
@@ -450,8 +450,8 @@ describe("evaluate", () => {
 
       expect(result.type).toBe("Div");
       expect(result.children).toHaveLength(1);
-      expect((result.children[0] as Node).type).toBe("Span");
-      expect((result.children[0] as Node).children).toEqual(["hi"]);
+      expect(result.children[0].type).toBe("Span");
+      expect(result.children[0].children).toEqual(["hi"]);
     });
 
     it("should evaluate function with children", () => {
@@ -476,7 +476,7 @@ describe("evaluate", () => {
 
       expect(result.type).toBe("Div");
       expect(result.children).toHaveLength(1);
-      expect((result.children[0] as Node).type).toBe("Span");
+      expect(result.children[0].type).toBe("Span");
     });
 
     it("should evaluate function with default parameter values", () => {
@@ -530,7 +530,7 @@ describe("evaluate", () => {
         }
       );
 
-      expect(result.props!.result).toBe(12);
+      expect(result.props.result).toBe(12);
     });
 
     it("should evaluate function used in map with const", () => {
@@ -571,7 +571,7 @@ describe("evaluate", () => {
         components: { Test: TestComponent },
       });
 
-      expect(result.props!.value).toBe("42");
+      expect(result.props.value).toBe("42");
     });
 
     it("should evaluate String() with boolean", () => {
@@ -586,7 +586,7 @@ describe("evaluate", () => {
         components: { Test: TestComponent },
       });
 
-      expect(result.props!.value).toBe("true");
+      expect(result.props.value).toBe("true");
     });
   });
 });

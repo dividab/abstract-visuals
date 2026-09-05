@@ -96,11 +96,11 @@ export function analyzeElementChildren(
         } else if (isJsxFragment(child)) {
           // TODO: Recursively validate fragment children
           // For now, we allow fragments but should add more specific validation in the future
-        } else if (isJsxText(child)) {
-          const hasContent = child.value.trim().length > 0;
-          // eslint-disable-next-line no-empty
-          if (!hasContent) {
-          }
+          // } else if (isJsxText(child)) {
+          //   const hasContent = child.value.trim().length > 0;
+          //   // eslint-disable-next-line no-empty
+          //   if (!hasContent) {
+          //   }
         }
       }
 

@@ -26,7 +26,7 @@ function preProcessMarkdownAst(
   atoms: Array<Atom.Atom>,
   paragraphs: Array<Paragraph.Paragraph>,
   d: number,
-  listItemParams: ListItemParams | undefined = undefined
+  listItemParams?: ListItemParams
 ): MarkDownProcessData {
   if (ast.type === "text" || ast.type === "break") {
     return { atoms, paragraphs };

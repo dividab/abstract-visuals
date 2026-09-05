@@ -39,23 +39,27 @@ const abstractDocPixelToDocxDXARatio = 20;
 const abstractDocBorderToDocxBorderSizeRatio = 8;
 
 export function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc): Promise<Blob> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const docx = createDocument(doc);
-    Packer.toBlob(docx).then((blob) => {
-      resolve(blob);
-    });
+    Packer.toBlob(docx)
+      .then((blob) => {
+        resolve(blob);
+      })
+      .catch(reject);
   });
 }
 
 export function exportToStream(blobStream: NodeJS.WritableStream, doc: AD.AbstractDoc.AbstractDoc): void {
   const docx = createDocument(doc);
 
-  Packer.toBuffer(docx).then((buffer) => {
-    const readableStream = new Readable();
-    readableStream.push(buffer);
-    readableStream.push(null);
-    readableStream.pipe(blobStream);
-  });
+  Packer.toBuffer(docx)
+    .then((buffer) => {
+      const readableStream = new Readable();
+      readableStream.push(buffer);
+      readableStream.push(null);
+      readableStream.pipe(blobStream);
+    })
+    .catch((err: unknown) => blobStream.emit("error", err instanceof Error ? err : new Error(String(err))));
 }
 
 /**

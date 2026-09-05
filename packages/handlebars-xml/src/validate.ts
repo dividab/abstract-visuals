@@ -199,7 +199,7 @@ function getErrorFromException(result: ValidationError, xml: string): XmlError {
   const length = rowText.indexOf(">") - rowText.indexOf("<") || 4;
   const range = toRange(startLine, col, startLine, col + length);
 
-  return createError(msg!, ErrorType.error, range);
+  return createError(msg, ErrorType.error, range);
 }
 
 function getErrorClassNames(error: XmlError): string {
@@ -256,7 +256,7 @@ export function errorToReadableText(errors: ReadonlyArray<ErrorObject>, template
   }
   for (const error of errors) {
     const hoverErrors = error.options.hoverMessage.map((e) => e.value.replace(/\*/g, ""));
-    errorLines.push(`${hoverErrors.join("\n")}`);
+    errorLines.push(hoverErrors.join("\n"));
     errorLines.push(`On line ${error.range.startLineNumber}, column ${error.range.startColumn}\n`);
   }
 

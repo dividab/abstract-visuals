@@ -48,7 +48,7 @@ export function compile(ast: Program): string {
     if (statement.type === "VariableDeclaration") {
       parts.push(emitVariableDeclaration(statement, localFunctions));
     } else if (statement.type === "FunctionDeclaration") {
-      parts.push(emitFunctionDeclaration(statement as FunctionDeclaration, localFunctions));
+      parts.push(emitFunctionDeclaration(statement, localFunctions));
     } else if (statement.type === "ReturnStatement" && statement.argument && isJsxRoot(statement.argument)) {
       parts.push(`return ${emitJsxRoot(statement.argument, localFunctions)};`);
     } else if (!hasDeclarations && statement.type === "ExpressionStatement" && isJsxRoot(statement.expression)) {
@@ -134,7 +134,7 @@ function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[], local
       throw CompilationError.fromNode("Only simple JSX attributes allowed", attribute);
     }
 
-    const key = attribute.name?.name as string;
+    const key = attribute.name?.name;
 
     let value: string;
     if (!attribute.value) {
@@ -142,7 +142,7 @@ function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[], local
     } else if (attribute.value.type === "Literal") {
       value = JSON.stringify(attribute.value.value);
     } else if (attribute.value.type === "JSXExpressionContainer") {
-      value = emitExpression(attribute.value.expression as CompilableExpression, localFunctions);
+      value = emitExpression(attribute.value.expression, localFunctions);
     } else {
       throw CompilationError.fromNode("Unsupported attribute value", attribute.value);
     }
@@ -174,7 +174,7 @@ function emitJsxChildren(children: JSXNode[], localFunctions: Set<string>): stri
       }
     } else if (isJsxExpressionContainer(child)) {
       if (!isJsxEmptyExpression(child.expression)) {
-        result.push(emitExpression(child.expression as CompilableExpression, localFunctions));
+        result.push(emitExpression(child.expression, localFunctions));
       }
     } else if (isJsxElement(child)) {
       result.push(emitJsxElement(child, localFunctions));
@@ -226,16 +226,16 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
             return "undefined";
           }
           if (element.type === "SpreadElement") {
-            return `...${emitExpression(element.argument as CompilableExpression, localFunctions)}`;
+            return `...${emitExpression(element.argument, localFunctions)}`;
           }
-          return emitExpression(element as CompilableExpression, localFunctions);
+          return emitExpression(element, localFunctions);
         })
         .join(", ")}]`;
     case "ObjectExpression": {
       const keyValuePairs = node.properties
         .map((property) => {
           if (property.type === "SpreadElement") {
-            return `...${emitExpression(property.argument as CompilableExpression, localFunctions)}`;
+            return `...${emitExpression(property.argument, localFunctions)}`;
           }
           const key = getAstKeyString(property.key as Identifier | Literal);
           return `${key}: ${emitExpression(property.value, localFunctions)}`;
@@ -258,9 +258,9 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
       const args = node.arguments
         .map((argument) => {
           if (argument.type === "SpreadElement") {
-            return `...${emitExpression(argument.argument as CompilableExpression, localFunctions)}`;
+            return `...${emitExpression(argument.argument, localFunctions)}`;
           }
-          return emitExpression(argument as CompilableExpression, localFunctions);
+          return emitExpression(argument, localFunctions);
         })
         .join(", ");
       return `${callee}(${args})`;
@@ -287,7 +287,7 @@ function emitVariableDeclaration(node: VariableDeclaration, localFunctions: Set<
   const decls = node.declarations
     .map((d) => {
       const name = (d.id as Identifier).name;
-      const init = d.init ? emitExpression(d.init as CompilableExpression, localFunctions) : "undefined";
+      const init = d.init ? emitExpression(d.init, localFunctions) : "undefined";
       return `${name} = ${init}`;
     })
     .join(", ");
@@ -295,9 +295,9 @@ function emitVariableDeclaration(node: VariableDeclaration, localFunctions: Set<
 }
 
 function emitFunctionDeclaration(node: FunctionDeclaration, localFunctions: Set<string>): string {
-  const name = node.id!.name;
+  const name = node.id.name;
   const params = node.params.map((p) => emitParam(p, localFunctions)).join(", ");
-  const body = emitFunctionBody(node.body as BlockStatement, localFunctions);
+  const body = emitFunctionBody(node.body, localFunctions);
   return `function ${name}(${params}) ${body}`;
 }
 
@@ -312,11 +312,11 @@ function emitStatement(statement: Statement, localFunctions: Set<string>): strin
       if (!statement.argument) {
         return "return;";
       }
-      return `return ${emitExpression(statement.argument as CompilableExpression, localFunctions)};`;
+      return `return ${emitExpression(statement.argument, localFunctions)};`;
     case "VariableDeclaration":
       return emitVariableDeclaration(statement, localFunctions);
     case "ExpressionStatement":
-      return `${emitExpression(statement.expression as CompilableExpression, localFunctions)};`;
+      return `${emitExpression(statement.expression, localFunctions)};`;
     default:
       throw CompilationError.fromNode(`Unsupported statement: ${statement.type}`, statement);
   }
@@ -325,7 +325,7 @@ function emitStatement(statement: Statement, localFunctions: Set<string>): strin
 function emitParam(param: Pattern, localFunctions: Set<string>): string {
   switch (param.type) {
     case "Identifier":
-      return (param as Identifier).name;
+      return param.name;
     case "ObjectPattern": {
       const props = (param as any).properties.map((p: any) => {
         if (p.type === "RestElement") {

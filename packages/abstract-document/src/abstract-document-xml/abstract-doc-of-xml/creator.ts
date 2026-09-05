@@ -71,6 +71,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
   columnWidths: (props: { readonly columnWidths: string; readonly columnMultiplier: string }): unknown => {
     const columnWidths = (props.columnWidths ?? "")
+      // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
       .toString()
       .split(",")
       .map((item: string) => {
@@ -87,10 +88,13 @@ export const propsCreators: Record<string, ADCreatorFn> = {
       return props.paperSize;
     }
     const parts = props.paperSize.split("x");
-    return { width: Number(parts[0]) ?? 595, height: Number(parts[1]) ?? 842 };
+    const width = Number(parts[0] ?? 595);
+    const height = Number(parts[1] ?? 842);
+    return { width: Number.isNaN(width) ? 595 : width, height: Number.isNaN(height) ? 842 : height };
   },
   borders: (props: { readonly borders: string }): unknown => {
     const borders: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
+    // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
     const propBorders = props.borders.toString().split(" ");
     if (!propBorders) {
       return borders;
@@ -157,6 +161,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   padding: (props: { readonly padding: string }): unknown => {
     const padding: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
 
+    // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
     const paddings = props.padding.toString().split(" ");
     if (!paddings) {
       return padding;
@@ -222,6 +227,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
   margins: (props: { readonly margins: string }): unknown => {
     const margins: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
+    // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
     const propMargins = props.margins.toString().split(" ");
     if (!propMargins) {
       return margins;

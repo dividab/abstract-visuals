@@ -63,9 +63,9 @@ export function ReactCamera({
   readonly bufferZones?: BufferZones;
   readonly fitPadding?: number;
 }): React.JSX.Element {
-  const [controls, setControls] = useState<any | null>(null);
-  const perspectiveRef = useRef<any | undefined>(undefined);
-  const orthographicRef = useRef<any | undefined>(undefined);
+  const [controls, setControls] = useState<any>(null);
+  const perspectiveRef = useRef<any>(undefined);
+  const orthographicRef = useRef<any>(undefined);
 
   const initialDistRef = useRef<number | null>(null);
   const initialTargetRef = useRef(new Vector3());

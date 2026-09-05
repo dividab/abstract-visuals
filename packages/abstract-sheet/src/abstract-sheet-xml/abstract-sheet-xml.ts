@@ -1,11 +1,8 @@
 import type { XmlElement } from "handlebars-xml";
 import { parseHandlebarsXml, parseXsd } from "handlebars-xml";
 import type {
-  Cell,
-  ColInfo,
   ColInfos,
   Cells,
-  RowInfo,
   RowInfos,
   Sheet,
   Style,
@@ -62,35 +59,35 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
       } satisfies Sheet;
     }
     case "ColInfos":
-      return children as ColInfos;
+      return children;
     case "ColInfo":
-      return el.attributes as ColInfo;
+      return el.attributes;
     case "RowInfos":
-      return children as RowInfos;
+      return children;
     case "RowInfo":
-      return el.attributes as RowInfo;
+      return el.attributes;
     case "Cells":
-      return children as Cells;
+      return children;
     case "Cell": {
       const styles = el.attributes["styles"]?.split(",");
       if (el.attributes["number"] !== undefined) {
         const parsedNumber = Number(el.attributes["number"]);
         const num = Number.isNaN(parsedNumber) ? el.attributes["number"] : parsedNumber;
-        return { ...el.attributes, type: "number", value: num, styles } as Cell;
+        return { ...el.attributes, type: "number", value: num, styles };
       } else if (el.attributes["boolean"] !== undefined) {
-        return { ...el.attributes, type: "boolean", value: el.attributes["boolean"], styles } as Cell;
+        return { ...el.attributes, type: "boolean", value: el.attributes["boolean"], styles };
       } else if (el.attributes["date"] !== undefined) {
-        return { ...el.attributes, type: "date", value: el.attributes["date"], styles } as Cell;
+        return { ...el.attributes, type: "date", value: el.attributes["date"], styles };
       } else {
-        return { ...el.attributes, type: "string", value: el.attributes["text"], styles } as Cell;
+        return { ...el.attributes, type: "string", value: el.attributes["text"], styles };
       }
     }
     case "Styles":
-      return children as Styles;
+      return children;
     case "Style": {
       const attributes: Partial<Record<keyof Style, unknown>> = { ...el.attributes };
       if (attributes.borderStyle) {
-        const border = (attributes.borderStyle as string).toString().split(" ");
+        const border = (attributes.borderStyle as string).split(" ");
         const s0 = borderStyleRecord[border[0] ?? ""];
         const s1 = borderStyleRecord[border[1] ?? ""];
         const s2 = borderStyleRecord[border[2] ?? ""];
@@ -112,7 +109,7 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
         }
       }
       if (attributes.borderColor) {
-        const border = (attributes.borderColor as string).toString().split(" ");
+        const border = (attributes.borderColor as string).split(" ");
         const [b0, b1, b2, b3] = border;
         switch (border.length) {
           default:
@@ -130,7 +127,7 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
             break;
         }
       }
-      return attributes as Style;
+      return attributes;
     }
     default:
       throw new Error(`Could not find creator for element with name ${el.tagName}`);

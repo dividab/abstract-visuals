@@ -20,9 +20,9 @@ export const filterWall = {
         z: 0,
       },
       rot: {
-        x: -3.141592653589793,
+        x: -Math.PI,
         y: 0,
-        z: -3.141592653589793,
+        z: -Math.PI,
       },
       data: {
         id: "98b62701-f81e-4416-8c47-d186325b7022",

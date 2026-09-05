@@ -140,7 +140,7 @@ function getAttributeLiteralValue(attribute: JSXAttribute): string | number | bo
   }
 
   if (attribute.value.type === "Literal") {
-    return attribute.value.value as string | number | boolean | null | undefined;
+    return attribute.value.value;
   }
 
   if (isJsxExpressionContainer(attribute.value)) {

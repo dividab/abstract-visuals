@@ -92,7 +92,7 @@ export function render(element: any): any {
   }
   const props = element.props || {};
   const children = renderChildren(element);
-  return (element.type as any)({ ...props, children });
+  return element.type({ ...props, children });
 }
 
 function renderChildren(element: React.ReactElement<any>): any {

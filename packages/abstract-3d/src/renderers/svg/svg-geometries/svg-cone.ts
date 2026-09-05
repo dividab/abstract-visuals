@@ -50,7 +50,7 @@ export function cone(
   }
 
   // Add circle if direcly facing camera
-  const cylTop = vec3tr(vec3(0, +half.y, 0));
+  const cylTop = vec3tr(vec3(0, half.y, 0));
   const cylBottom = vec3tr(vec3(0, -half.y, 0));
   if (equals(cylTop.x, cylBottom.x, 0.1) && equals(cylTop.y, cylBottom.y, 0.1)) {
     zOrderComponents.push(

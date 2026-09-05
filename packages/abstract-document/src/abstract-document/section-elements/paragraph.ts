@@ -20,7 +20,7 @@ export type ParagraphProps = Resources & {
 };
 
 export function create(props?: ParagraphProps, children?: ReadonlyArray<Atom>): Paragraph {
-  const { styleName = "", style = ParagraphStyle.create(), numbering = undefined, ...rest } = props || {};
+  const { styleName = "", style = ParagraphStyle.create(), numbering, ...rest } = props || {};
   return {
     type: sectionType,
     styleName,

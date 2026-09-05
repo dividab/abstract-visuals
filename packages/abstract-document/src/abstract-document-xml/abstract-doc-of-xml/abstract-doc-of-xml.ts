@@ -43,7 +43,7 @@ export async function abstractDocsXml(
     const combinedReport = addResources(merge(...abstractDocs), resources);
     return { type: "Ok", value: combinedReport };
   } catch (e) {
-    return { type: "Err", error: typeof e === "string" ? e : (e as any).message };
+    return { type: "Err", error: typeof e === "string" ? e : e.message };
   }
 }
 
@@ -58,7 +58,7 @@ export function abstractDocXml(
 ] {
   const xml = parseHandlebarsXml(template, data, partials);
   const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
-  const doc = abstractDocXmlRecursive(creators(styleNames), xml[0]!);
+  const doc = abstractDocXmlRecursive(creators(styleNames), xml[0]);
   return [doc, imageUrls, fontFamilies];
 }
 
@@ -189,7 +189,7 @@ function extractImageFontsStyleNames(
   styleNames: Record<string, string> = {},
   images: Record<string, true> = {},
   fonts: Record<string, Partial<Record<keyof Font, boolean>>> = {},
-  currentFontFamily: string | undefined = undefined
+  currentFontFamily?: string
 ): readonly [
   imageUrls: Record<string, true>,
   fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>,
@@ -198,7 +198,7 @@ function extractImageFontsStyleNames(
   let crFntFam = currentFontFamily;
   xmlElement.forEach((item) => {
     if (item.tagName.startsWith("Image") && item.attributes?.["src"]) {
-      images[item.attributes["src"] as string] = true;
+      images[item.attributes["src"]] = true;
     } else if (item.tagName === "style") {
       const fontFamily = crFntFam ?? styleFamilies["Default"];
       if (fontFamily) {
@@ -217,15 +217,15 @@ function extractImageFontsStyleNames(
       }
     } else if (item.attributes?.["fontFamily"]) {
       const styleName = getFontStyleName(item.attributes);
-      (fonts[item.attributes["fontFamily"] as string] ??= {})[styleName] = true;
+      (fonts[item.attributes["fontFamily"]] ??= {})[styleName] = true;
       if (item.tagName === "StyleName" && item.attributes["name"] && item.attributes["type"]) {
-        styleNames[item.attributes["name"] as string] = item.attributes["type"];
+        styleNames[item.attributes["name"]] = item.attributes["type"];
       }
     } else if (item.tagName === "StyleName" && item.attributes["name"] && item.attributes["type"]) {
-      styleNames[item.attributes["name"] as string] = item.attributes["type"];
+      styleNames[item.attributes["name"]] = item.attributes["type"];
       if (item.attributes["type"] === "TextStyle" && item.attributes["fontFamily"]) {
         const styleName = getFontStyleName(item.attributes);
-        styleFamilies[item.attributes["name"] as string] = item.attributes["fontFamily"];
+        styleFamilies[item.attributes["name"]] = item.attributes["fontFamily"];
         (fonts[item.attributes["fontFamily"]] ??= {})[styleName] = true;
       }
     }

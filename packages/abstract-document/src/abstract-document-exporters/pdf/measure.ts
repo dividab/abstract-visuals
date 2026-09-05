@@ -1,6 +1,8 @@
 import * as AD from "../../abstract-document/index.js";
 import { exhaustiveCheck } from "ts-exhaustive-check";
+// oxlint-disable-next-line import/no-cycle -- type-only, erased at compile time
 import type { Page } from "./paginate.js";
+// oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
 import { getHeaderAndFooter } from "./paginate.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 
@@ -303,7 +305,7 @@ export function measureTable(
       return a.child.rowSpan - b.child.rowSpan;
     }
   });
-  const minRowHeights = new Array(rows.length).fill(0);
+  const minRowHeights = Array.from({ length: rows.length }, () => 0);
   for (const { child, rowIndex } of cells) {
     const rowSpan = child.rowSpan || 1;
     let currentHeight = 0;

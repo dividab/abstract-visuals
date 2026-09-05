@@ -21,7 +21,7 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
               width: "max-content",
               height: "max-content",
               border: "1px solid rgb(200,200,200)",
-              gridTemplateRows: `${(s.direction === "col" ? colArray : s.cells)
+              gridTemplateRows: (s.direction === "col" ? colArray : s.cells)
                 .map((_, ri) => {
                   const info = s.rowInfo?.[ri];
                   return info?.hidden
@@ -30,8 +30,8 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                       ? `${info.heightPixels}px`
                       : "minmax(18px, max-content)";
                 })
-                .join(" ")}`,
-              gridTemplateColumns: `${(s.direction === "col" ? s.cells : colArray)
+                .join(" "),
+              gridTemplateColumns: (s.direction === "col" ? s.cells : colArray)
                 .map((_, ci) => {
                   const co = s.colInfo?.[ci];
                   return co?.hidden
@@ -40,7 +40,7 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                       ? `${co.widthPixels}px`
                       : "minmax(64px, max-content)";
                 })
-                .join(" ")}`,
+                .join(" "),
             }}
           >
             {s.cells.map((cells, cellsIdx) => (
@@ -59,7 +59,7 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                   let s: Partial<Style> = {};
                   if (c?.styles !== undefined) {
                     for (const style of c.styles) {
-                      s = { ...s!, ...styles[style] };
+                      s = { ...s, ...styles[style] };
                     }
                   }
                   return (

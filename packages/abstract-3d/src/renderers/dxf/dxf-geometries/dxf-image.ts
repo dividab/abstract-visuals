@@ -35,29 +35,17 @@ export function dxfImage(i: ImageMesh, parentPos: Vec3, parentRot: Vec3, handleR
 }
 
 function abstractImageToDxf3D(image: AbstractImage, pos: Vec3, rot: Vec3, scale: Vec3, handleRef: Handle): string {
-  const strokeScale = Math.max(scale.x, scale.y, scale.z);
-  return image.components
-    .map((comp) => abstractImageComponentToDxf3D(comp, pos, rot, scale, strokeScale, handleRef))
-    .join("");
+  return image.components.map((comp) => abstractImageComponentToDxf3D(comp, pos, rot, scale, handleRef)).join("");
 }
 
-function abstractImageComponentToDxf3D(
-  comp: Component,
-  pos: Vec3,
-  rot: Vec3,
-  scale: Vec3,
-  strokeScale: number,
-  handleRef: Handle
-): string {
+function abstractImageComponentToDxf3D(comp: Component, pos: Vec3, rot: Vec3, scale: Vec3, handleRef: Handle): string {
   const vec3tr = (x: number, y: number): Vec3 => vec3TransRot(vec3(x * scale.x, y * scale.y, 0), pos, rot);
   const strokeColor: DxfDynamicColor = 7;
 
   let dxf = "";
   switch (comp.type) {
     case "group": {
-      dxf += comp.children
-        .map((child) => abstractImageComponentToDxf3D(child, pos, rot, scale, strokeScale, handleRef))
-        .join("");
+      dxf += comp.children.map((child) => abstractImageComponentToDxf3D(child, pos, rot, scale, handleRef)).join("");
       break;
     }
     case "line": {

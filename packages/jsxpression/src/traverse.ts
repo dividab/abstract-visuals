@@ -109,49 +109,49 @@ for (const nodeType of tsNodeTypes) {
 
 const jsxWalkers: ExtendedRecursiveVisitors = {
   JSXElement(node, state, visit) {
-    const element = node as JSXElement;
+    const element = node;
     visit(element.openingElement, state);
     for (const child of element.children) {
       if (isJsxText(child) || isJsxEmptyExpression(child)) {
         continue;
       }
-      visit(child as any, state);
+      visit(child, state);
     }
   },
 
   JSXFragment(node, state, visit) {
-    const fragment = node as JSXFragment;
+    const fragment = node;
     for (const child of fragment.children) {
       if (isJsxText(child) || isJsxEmptyExpression(child)) {
         continue;
       }
-      visit(child as any, state);
+      visit(child, state);
     }
   },
 
   JSXOpeningElement(node, state, visit) {
-    const opening = node as JSXOpeningElement;
+    const opening = node;
     for (const attr of opening.attributes) {
-      visit(attr as any, state);
+      visit(attr, state);
     }
   },
 
   JSXAttribute(node, state, visit) {
-    const attr = node as JSXAttribute;
+    const attr = node;
     if (attr.value) {
-      visit(attr.value as any, state);
+      visit(attr.value, state);
     }
   },
 
   JSXSpreadAttribute(node, state, visit) {
-    const spread = node as JSXSpreadAttribute;
-    visit(spread.argument as any, state);
+    const spread = node;
+    visit(spread.argument, state);
   },
 
   JSXExpressionContainer(node, state, visit) {
-    const container = node as JSXExpressionContainer;
+    const container = node;
     if (!isJsxEmptyExpression(container.expression)) {
-      visit(container.expression as any, state);
+      visit(container.expression, state);
     }
   },
 };

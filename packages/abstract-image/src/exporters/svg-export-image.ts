@@ -318,7 +318,7 @@ function createElement(elementName: string, attributes: Attributes, innerElement
       if (!currentValue || currentValue.length < 1) {
         return previousValue;
       } else {
-        return previousValue + `${currentValue}`;
+        return previousValue + currentValue;
       }
     }, element);
   }

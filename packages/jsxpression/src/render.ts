@@ -72,7 +72,7 @@ export function render<T = any>(
     throw AnalysisError.fromReport(report);
   }
 
-  return evaluate(compileInternal(ast), schema, options) as T;
+  return evaluate(compileInternal(ast), schema, options);
 }
 
 export function compile<T = any>(source: string, schema: Schema, { minSeverity = 3 }: RenderOptions<T> = {}): string {

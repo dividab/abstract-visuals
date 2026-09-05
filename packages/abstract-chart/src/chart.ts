@@ -913,7 +913,7 @@ export function generateDataAxisesY(
 export function generateStack(xMin: number, xMax: number, yMin: number, yMax: number, chart: Chart): Component {
   const pointsPos = chart.chartStack.points.map((stackPoint) => ({
     x: stackPoint.x,
-    ys: [...stackPoint.ys.map((y) => Math.min(0, y))],
+    ys: stackPoint.ys.map((y) => Math.min(0, y)),
   }));
 
   const stackPos = generateUnsignedStack(xMin, xMax, yMin, yMax, {
@@ -923,7 +923,7 @@ export function generateStack(xMin: number, xMax: number, yMin: number, yMax: nu
 
   const pointsNeg = chart.chartStack.points.map((stackPoint) => ({
     x: stackPoint.x,
-    ys: [...stackPoint.ys.map((y) => Math.max(0, y))],
+    ys: stackPoint.ys.map((y) => Math.max(0, y)),
   }));
 
   const stackNeg = generateUnsignedStack(xMin, xMax, yMin, yMax, {
@@ -976,7 +976,7 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
       throw new Error("Missing config for series " + index);
     }
     const color = config.color;
-    const points = [...line, ...lastLine.slice().reverse()];
+    const points = [...line, ...lastLine.toReversed()];
     lastLine = line;
     polygons.push(createPolygon(points, color, 0, color, config.id));
   });

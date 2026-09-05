@@ -1,4 +1,4 @@
-import { TextStyle } from "../index.js";
+import * as TextStyle from "../styles/text-style.js";
 
 export interface LineBreak {
   readonly type: "LineBreak";

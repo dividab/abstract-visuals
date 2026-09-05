@@ -52,11 +52,11 @@ export function ReactSvg({
   );
 }
 
-function _callback(callback: MouseCallback | undefined, rootId: string): React.MouseEventHandler<Element> | undefined {
+function _callback(callback: MouseCallback | undefined, rootId: string): React.MouseEventHandler | undefined {
   if (!callback) {
     return undefined;
   }
-  return (e: React.MouseEvent<Element>) => {
+  return (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const offsetX = e.clientX - rect.left;
     const offsetY = e.clientY - rect.top;

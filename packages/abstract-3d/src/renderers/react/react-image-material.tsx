@@ -77,8 +77,7 @@ function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
     const maxSize = 512;
     const img = new Image();
 
-    // eslint-disable-next-line consistent-return
-    img.onload = (): void => {
+    img.addEventListener("load", (): void => {
       const canvas = document.createElement("canvas");
       const imgW = img.naturalWidth;
       const imgH = img.naturalHeight;
@@ -108,9 +107,9 @@ function loadSvg(url: string, filter: TextureFilter): Promise<Texture | null> {
 
       res(texture);
       textureCache.set(url, texture);
-    };
+    });
 
-    img.onerror = () => res(null);
+    img.addEventListener("error", () => res(null));
     img.src = url;
   });
 }

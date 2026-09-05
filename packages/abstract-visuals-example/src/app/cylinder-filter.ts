@@ -20,9 +20,9 @@ export const cylinderFilter = {
         z: 0,
       },
       rot: {
-        x: -3.141592653589793,
+        x: -Math.PI,
         y: 0,
-        z: -3.141592653589793,
+        z: -Math.PI,
       },
       data: {
         id: "1b46a081-a1d2-447e-8977-173e66dfa3f6",

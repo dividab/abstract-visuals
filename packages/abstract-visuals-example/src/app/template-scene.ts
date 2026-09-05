@@ -321,7 +321,7 @@ export const templateScene = {
           rot: {
             x: 0,
             y: 1.5707963267948966,
-            z: 3.141592653589793,
+            z: Math.PI,
           },
           data: {},
           groups: [],

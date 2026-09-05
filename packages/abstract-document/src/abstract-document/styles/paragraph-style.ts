@@ -21,7 +21,7 @@ export interface ParagraphStyleProps {
 
 export function create(props?: ParagraphStyleProps): ParagraphStyle {
   const {
-    alignment = undefined,
+    alignment,
     margins = LayoutFoundation.create(),
     position = "relative",
     textStyle = TextStyle.create(),

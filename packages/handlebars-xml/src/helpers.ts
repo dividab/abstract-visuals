@@ -239,7 +239,7 @@ const sortBy: HelperFunc = {
         return 0;
       }
     };
-    return [...items].sort((a, b) =>
+    return items.toSorted((a, b) =>
       order === "desc"
         ? compare(extractStringPath(b, path), extractStringPath(a, path))
         : compare(extractStringPath(a, path), extractStringPath(b, path))

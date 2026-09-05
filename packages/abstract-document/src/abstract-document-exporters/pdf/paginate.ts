@@ -1,6 +1,7 @@
 import * as AD from "../../abstract-document/index.js";
 import { getResources } from "../shared/get_resources.js";
 import { registerFonts } from "./font.js";
+// oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
 import { measureTable } from "./measure.js";
 
 export interface PageColumn {

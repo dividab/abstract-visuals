@@ -19,6 +19,7 @@ export function create(props: TextRunProps): TextRun {
   return {
     type: "TextRun",
     styleName,
+    // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- text isn't always a string at runtime
     text: (text ?? "").toString(),
     style,
   };
