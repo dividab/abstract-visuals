@@ -61,5 +61,5 @@ function removeMetadata(xlsxBuffer: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBu
 
   const rezipped = fflate.zipSync(unzipped, { level: 9 });
 
-  return rezipped as Uint8Array<ArrayBuffer>;
+  return rezipped;
 }

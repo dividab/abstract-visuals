@@ -36,7 +36,7 @@ const pageStyle = {
 };
 
 const elementList = [];
-//eslint-disable-next-line
+//oxlint-disable-next-line
 for (let i = 0; i < 25; i++) {
   elementList.push(
     <Paragraph key={i}>

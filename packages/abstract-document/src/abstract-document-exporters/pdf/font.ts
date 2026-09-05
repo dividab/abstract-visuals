@@ -57,6 +57,7 @@ export function getFontNameStyle(textStyle: AD.TextStyle.TextStyle): string {
 
 export function getFontStyleName(attributes: Record<string, string>): keyof Font {
   const fontWeight = getFontWeightFromAttributes(attributes);
+  // oxlint-disable-next-line typescript/no-unnecessary-template-expression
   const stringifiedItalic = `${attributes["italic"]}`;
   const italic = stringifiedItalic === "true" || stringifiedItalic === "1";
   if (fontWeight === "normal") {

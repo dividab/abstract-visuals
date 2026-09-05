@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 import type { Bounds3, Vec3 } from "../../../abstract-3d.js";
 // oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
 import { DXF_BLOCK_RECORD_TABLE_HANDLE, DXF_MODEL_SPACE_HANDLE } from "./dxf-common.js";

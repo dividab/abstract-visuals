@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 
@@ -49,7 +49,7 @@ const group = (
 );
 
 const grouplist = [];
-// eslint-disable-next-line functional/no-let
+// oxlint-disable-next-line functional/no-let
 for (let i = 0; i < 6; i++) {
   grouplist.push(<Group key={i}>{group}</Group>);
 }

@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 export const demo = {
   center_deprecated: {
     x: 0,

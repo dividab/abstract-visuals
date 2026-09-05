@@ -327,6 +327,7 @@ export class XmlWriter {
     if (prefix) {
       return `${prefix}:${localName}`;
     } else {
+      // oxlint-disable-next-line typescript/no-unnecessary-template-expression
       return `${localName}`;
     }
   }

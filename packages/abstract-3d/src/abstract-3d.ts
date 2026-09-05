@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 import type { AbstractImage } from "abstract-image";
 
 export type Scene = {

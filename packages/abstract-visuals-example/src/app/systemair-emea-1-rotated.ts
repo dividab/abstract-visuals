@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 export const systemairEmea1Rotated = {
   scene: {
     center_deprecated: {

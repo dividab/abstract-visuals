@@ -1,5 +1,5 @@
-/* eslint-disable max-lines */
-/* eslint-disable functional/no-let */
+/* oxlint-disable max-lines */
+/* oxlint-disable functional/no-let */
 import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,

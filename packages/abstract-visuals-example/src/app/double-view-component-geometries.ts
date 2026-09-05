@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 export const componentGeometries = {
   "/image/component-geometry/35156100-5bba-4926-ac3f-7368c9dfe0b9/348a1ad1-5f0e-4745-8f46-be2b49e7df21?type=ComponentGeometryImage&language=en-GB&cols=0&rows=0&views=%5B%7B%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22view%22%3A%22front%22%2C%22detail_level%22%3A%22detailed%22%2C%22rotation%22%3A0%7D%2C%7B%22split_casing_layers%22%3Afalse%2C%22titles%22%3A%5B%5D%2C%22view%22%3A%22top%22%2C%22detail_level%22%3A%22detailed%22%2C%22rotation%22%3A0%7D%5D":
     {

@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
@@ -23,7 +23,7 @@ const rowsList = [
   </Table>,
 ];
 
-//eslint-disable-next-line
+//oxlint-disable-next-line
 for (let i = 1; i < 10; i++) {
   rowsList.push(
     <Table columnWidths={[100, 100, 100]} key={i}>

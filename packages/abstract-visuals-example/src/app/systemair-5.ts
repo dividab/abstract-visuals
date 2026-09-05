@@ -1,5 +1,5 @@
 import type { A3D } from "../../../abstract-3d/src/index.js";
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 export const systemair5 = {
   center_deprecated: {
     x: 0,

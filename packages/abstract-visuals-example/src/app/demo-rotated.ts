@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 export const demoRotated = {
   center_deprecated: {
     x: -2.47990976827339e-14,

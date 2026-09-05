@@ -30,7 +30,7 @@ import type { ExportTestDef } from "./_export-test-def.js";
 //   components
 // );
 
-// eslint-disable-next-line functional/no-let
+// oxlint-disable-next-line functional/no-let
 let testVariable = "not clicked";
 
 // const wrapper = Enzyme.shallow(svg);

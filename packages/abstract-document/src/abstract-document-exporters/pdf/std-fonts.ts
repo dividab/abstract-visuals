@@ -14,7 +14,7 @@ const pdfkitExports = PdfkitModule as unknown as {
   registerStdFonts?: (...fonts: ReadonlyArray<unknown>) => void;
 };
 
-// eslint-disable-next-line functional/no-let
+// oxlint-disable-next-line functional/no-let
 let registered = false;
 
 export function registerDefaultStdFonts(): void {

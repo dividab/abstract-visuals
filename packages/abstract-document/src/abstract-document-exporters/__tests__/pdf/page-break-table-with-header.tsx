@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
@@ -59,7 +59,7 @@ const header = [
 
 const rows = [];
 
-// eslint-disable-next-line functional/no-let
+// oxlint-disable-next-line functional/no-let
 for (let index = 0; index < 30; index++) {
   rows.push(
     <TableRow key={index}>

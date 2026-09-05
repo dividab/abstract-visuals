@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
+/* oxlint-disable typescript/no-misused-promises */
 import React from "react";
 import FileSaver from "file-saver";
 import { createAbstractImage, createPoint, createSize, white, createBinaryImage } from "abstract-image";

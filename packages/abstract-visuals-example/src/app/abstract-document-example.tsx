@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
+/* oxlint-disable typescript/no-misused-promises */
 import React from "react";
 import { AbstractDocJsx, AbstractDoc, AbstractDocPdf } from "../../../abstract-document/src/index.js";
 import {

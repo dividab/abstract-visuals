@@ -48,7 +48,7 @@ export function evaluate<T = any>(source: string, schema: Schema, options: Evalu
   const h = createH(components, createElement || defaultCreateElement, schema);
   const frozen = deepFreezeData(structuredClone(data));
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
+    // oxlint-disable-next-line typescript/no-implied-eval, no-new-func
     return new Function("h", "Math", ...dataKeys, ...functionKeys, source)(
       h,
       Math,

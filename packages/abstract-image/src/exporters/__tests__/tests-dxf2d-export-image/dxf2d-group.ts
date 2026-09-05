@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 import type { ExportTestDef } from "./_export-test-def.js";
 import * as AbstractImage from "../../../index.js";
 

@@ -28,6 +28,8 @@ For development of the react components, use `pnpm storybook` to start storybook
 
 For the other packages, use `pnpm test` to test them.
 
+Linting uses [oxlint](https://oxc.rs) with type-aware rules (`pnpm lint`). The [oxc VS Code extension](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) needs `"oxc.typeAware": true` and `"oxc.configPath": "./oxlint.config.js"` (set in `.vscode/settings.json`) to surface the same type-aware errors live in the editor — nested config auto-discovery doesn't reliably load the JS config file, so the path must be given explicitly.
+
 ## How to publish
 
 First update changelog.

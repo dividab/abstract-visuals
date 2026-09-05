@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 import type { A3D } from "../../../abstract-3d/src/index.js";
 
 export const vortice: A3D.Scene = {

@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 import type { AbstractImage } from "../model/abstract-image.js";
 import type { Color } from "../model/color.js";
 import { type BinaryImage, type Component, corners } from "../model/component.js";

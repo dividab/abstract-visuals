@@ -1,7 +1,7 @@
 // oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
 import { DXF_MODEL_SPACE_HANDLE } from "./dxf-common.js";
 
-/* eslint-disable max-lines */
+/* oxlint-disable max-lines */
 export const dxfEncFooter = (blockId: string): string => `  0
 ENDBLK
 5

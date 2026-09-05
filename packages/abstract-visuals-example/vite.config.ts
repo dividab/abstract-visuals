@@ -5,7 +5,6 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const analyze = process.env.ANALYZE === "1";
 
-// eslint-disable-next-line import/no-default-export
 export default defineConfig({
   plugins: [
     react(),
