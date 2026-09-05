@@ -6,6 +6,6 @@ export interface Point {
 export function createPoint(x: number, y: number): Point {
   return {
     x: x,
-    y: y
+    y: y,
   };
 }

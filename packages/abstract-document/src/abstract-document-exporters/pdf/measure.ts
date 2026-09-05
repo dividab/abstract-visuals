@@ -488,7 +488,7 @@ function measureImage(
   const firstComp = ai.components[0];
   const resource =
     !ai.size.width && !ai.size.height && firstComp?.type === "binaryimage" && firstComp.data.type === "url"
-      ? resources.imageResources?.[firstComp.data.url] ?? image.imageResource
+      ? (resources.imageResources?.[firstComp.data.url] ?? image.imageResource)
       : image.imageResource;
 
   let desiredWidth = availableSize.width;

@@ -267,6 +267,6 @@ function rangeLessThan(range1: Range, range2: Range): boolean {
   return range1.startLineNumber < range2.startLineNumber
     ? true
     : range1.startLineNumber > range2.startLineNumber
-    ? false
-    : range1.startColumn < range2.startColumn;
+      ? false
+      : range1.startColumn < range2.startColumn;
 }

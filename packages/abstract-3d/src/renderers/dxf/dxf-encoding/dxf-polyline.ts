@@ -17,7 +17,7 @@ export function dxfEncPolyline(
   const seqEndHandle = dxfHandleNext(handleRef);
   const vertices = points
     .map((p) => {
-  return `  0
+      return `  0
 VERTEX
 5
 ${dxfHandleNext(handleRef)}
@@ -42,7 +42,6 @@ ${dxfRound(p.z)}
 32`;
     })
     .join("\n");
-  
 
   return `  0
 POLYLINE

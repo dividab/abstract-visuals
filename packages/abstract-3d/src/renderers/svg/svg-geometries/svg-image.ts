@@ -50,8 +50,8 @@ export function image(
             ),
           }
         : i.image.url
-        ? { type: "url", url: imageData ?? i.image.url }
-        : undefined;
+          ? { type: "url", url: imageData ?? i.image.url }
+          : undefined;
 
       if (image) {
         const img = svgImage(point(v4.x, v4.y), i.size, rot, image, opts.imageBg ? opts.background : undefined);

@@ -173,7 +173,7 @@ export const render = memo(
         </React.Suspense>
       </Canvas>
     ) : (
-      sceneFallback ?? <></>
+      (sceneFallback ?? <></>)
     );
   }
 );

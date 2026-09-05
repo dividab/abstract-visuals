@@ -103,7 +103,7 @@ function preProcessMarkdownAst(
                 styleName: style[style.length - 1],
                 nestedStyleNames: style,
                 textProperties: {},
-              } as TextRun.TextRun)
+              }) as TextRun.TextRun
           )
         );
       }

@@ -85,28 +85,40 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
 
   const resources = AD.Resources.mergeResources([parentResources, section]);
 
-  const headerChildren = section.page.header.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-    return sofar;
-  }, [] as Array<Paragraph | Table>);
+  const headerChildren = section.page.header.reduce(
+    (sofar, c) => {
+      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+      return sofar;
+    },
+    [] as Array<Paragraph | Table>
+  );
 
   const firstpageHeaderChildren = hasFrontHeader
-    ? section.page.frontHeader.reduce((sofar, c) => {
-        sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-        return sofar;
-      }, [] as Array<Paragraph | Table>)
+    ? section.page.frontHeader.reduce(
+        (sofar, c) => {
+          sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+          return sofar;
+        },
+        [] as Array<Paragraph | Table>
+      )
     : [];
 
-  const footerChildren = section.page.footer.reduce((sofar, c) => {
-    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-    return sofar;
-  }, [] as Array<Paragraph | Table>);
+  const footerChildren = section.page.footer.reduce(
+    (sofar, c) => {
+      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+      return sofar;
+    },
+    [] as Array<Paragraph | Table>
+  );
 
   const firstPageFooterChildren = hasFrontFooter
-    ? section.page.frontFooter.reduce((sofar, c) => {
-        sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-        return sofar;
-      }, [] as Array<Paragraph | Table>)
+    ? section.page.frontFooter.reduce(
+        (sofar, c) => {
+          sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+          return sofar;
+        },
+        [] as Array<Paragraph | Table>
+      )
     : [];
 
   const contentChildren = [
@@ -119,10 +131,13 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
         }),
       ],
     }),
-    ...section.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-      return sofar;
-    }, [] as Array<Paragraph | Table>),
+    ...section.children.reduce(
+      (sofar, c) => {
+        sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+        return sofar;
+      },
+      [] as Array<Paragraph | Table>
+    ),
   ];
 
   return {
@@ -266,8 +281,8 @@ function renderTable(
       style.alignment === "Left"
         ? AlignmentType.LEFT
         : style.alignment === "Right"
-        ? AlignmentType.RIGHT
-        : AlignmentType.CENTER,
+          ? AlignmentType.RIGHT
+          : AlignmentType.CENTER,
     margins: {
       top: styleMargins.top * abstractDocPixelToDocxDXARatio,
       bottom: styleMargins.bottom * abstractDocPixelToDocxDXARatio,
@@ -368,8 +383,8 @@ function renderCell(
       (style.verticalAlignment && style.verticalAlignment === "Top"
         ? VerticalAlign.TOP
         : style.verticalAlignment === "Bottom"
-        ? VerticalAlign.BOTTOM
-        : VerticalAlign.CENTER) || undefined,
+          ? VerticalAlign.BOTTOM
+          : VerticalAlign.CENTER) || undefined,
     shading: {
       fill: style.background ? style.background : undefined,
     },
@@ -408,10 +423,13 @@ function renderCell(
       },
     },
 
-    children: cell.children.reduce((sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, abstractDocPxCellWidth, keepNext));
-      return sofar;
-    }, [] as Array<Paragraph | Table>),
+    children: cell.children.reduce(
+      (sofar, c) => {
+        sofar.push(...renderSectionElement(c, resources, abstractDocPxCellWidth, keepNext));
+        return sofar;
+      },
+      [] as Array<Paragraph | Table>
+    ),
   });
 }
 
@@ -581,8 +599,8 @@ function renderParagraph(
         (style.alignment === "Center"
           ? AlignmentType.CENTER
           : style.alignment === "End"
-          ? AlignmentType.END
-          : AlignmentType.START)) ||
+            ? AlignmentType.END
+            : AlignmentType.START)) ||
       undefined,
 
     spacing: {

@@ -115,7 +115,7 @@ export function ReactCamera({
     const screenW = size.x;
     const screenH = size.y;
 
-    const fov = camera.type === "Perspective" ? camera.fov ?? 45 : 45;
+    const fov = camera.type === "Perspective" ? (camera.fov ?? 45) : 45;
 
     // Buffer zones in CSS pixels
     const bufLeft = bufferZones.left ?? 0;

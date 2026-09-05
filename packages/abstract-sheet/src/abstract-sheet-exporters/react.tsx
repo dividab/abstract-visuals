@@ -27,8 +27,8 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                   return info?.hidden
                     ? ""
                     : info?.heightPixels !== undefined
-                    ? `${info.heightPixels}px`
-                    : "minmax(18px, max-content)";
+                      ? `${info.heightPixels}px`
+                      : "minmax(18px, max-content)";
                 })
                 .join(" ")}`,
               gridTemplateColumns: `${(s.direction === "col" ? s.cells : colArray)
@@ -37,8 +37,8 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                   return co?.hidden
                     ? ""
                     : co?.widthPixels !== undefined
-                    ? `${co.widthPixels}px`
-                    : "minmax(64px, max-content)";
+                      ? `${co.widthPixels}px`
+                      : "minmax(64px, max-content)";
                 })
                 .join(" ")}`,
             }}
@@ -73,23 +73,23 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                           s.horizontal === "right"
                             ? "end"
                             : s.horizontal === "left"
-                            ? "start"
-                            : s.horizontal === "center"
-                            ? "center"
-                            : c?.type === "number"
-                            ? "end"
-                            : "start",
+                              ? "start"
+                              : s.horizontal === "center"
+                                ? "center"
+                                : c?.type === "number"
+                                  ? "end"
+                                  : "start",
                         display: "flex",
                         alignItems:
                           s.vertical === "top"
                             ? "start"
                             : s.vertical === "bottom"
-                            ? "end"
-                            : s.vertical === "center"
-                            ? "center"
-                            : c?.type === "number"
-                            ? "end"
-                            : "center ",
+                              ? "end"
+                              : s.vertical === "center"
+                                ? "center"
+                                : c?.type === "number"
+                                  ? "end"
+                                  : "center ",
                         borderTop: `${borderWidth(
                           s.borderStyle?.top ?? (s.borderColor?.top ? "medium" : undefined)
                         )} ${borderStyle(s.borderStyle?.top)} ${
@@ -126,7 +126,7 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                           transform: s.textRotation ? `rotate(${s.textRotation})` : undefined,
                         }}
                       >
-                        {typeof c?.value === "object" ? c.value.toISOString() : c?.value ?? ""}
+                        {typeof c?.value === "object" ? c.value.toISOString() : (c?.value ?? "")}
                       </div>
                     </div>
                   );

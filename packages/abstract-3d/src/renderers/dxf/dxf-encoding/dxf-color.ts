@@ -5,51 +5,51 @@ export type DxfColor = DxfDynamicColor | string;
 
 export function dxfColor(color: DxfColor): string {
   return typeof color === "number"
-      ? `62\n7`
-      : `62
+    ? `62\n7`
+    : `62
   256
   420
   ${dxfBitShiftColor(color)}`;
 }
 
 export function dxfApproximateAciFromRealColor(colorNormal: string | undefined): number {
-    const ERROR_COLOR = 6; //magenta
-    const ACI_COLOR_COUNT = 256;
-    if(DXF_ACI_COLOR_TABLE.length !== ACI_COLOR_COUNT  || colorNormal === undefined) {
-      return ERROR_COLOR; //magenta 
-    }
-  
-    const originalColor = colorNormalToVec3Color(colorNormal);
-    let closestColor = 0;
-    let smallestDistance = Number.POSITIVE_INFINITY;
-    for(let i = 0; i < ACI_COLOR_COUNT; i++) {
-      const color = DXF_ACI_COLOR_TABLE[i];
-      if(color !== undefined) {
-        const distance = vec3DistSquared(originalColor, color);
-        if(distance < smallestDistance) {
-          smallestDistance = distance;
-          closestColor = i;
-        }
+  const ERROR_COLOR = 6; //magenta
+  const ACI_COLOR_COUNT = 256;
+  if (DXF_ACI_COLOR_TABLE.length !== ACI_COLOR_COUNT || colorNormal === undefined) {
+    return ERROR_COLOR; //magenta
+  }
+
+  const originalColor = colorNormalToVec3Color(colorNormal);
+  let closestColor = 0;
+  let smallestDistance = Number.POSITIVE_INFINITY;
+  for (let i = 0; i < ACI_COLOR_COUNT; i++) {
+    const color = DXF_ACI_COLOR_TABLE[i];
+    if (color !== undefined) {
+      const distance = vec3DistSquared(originalColor, color);
+      if (distance < smallestDistance) {
+        smallestDistance = distance;
+        closestColor = i;
       }
     }
-    return closestColor;
+  }
+  return closestColor;
 }
 
 function colorNormalToVec3Color(colorNormal: string): Vec3 {
   const errorColor = vec3(255, 0, 255); // #ff00ff, magenta
   const paranthesisRegex = /(?<=\().+?(?=\))/;
   const inside = paranthesisRegex.exec(colorNormal);
-  if(inside === null || inside.length < 1) {
+  if (inside === null || inside.length < 1) {
     return errorColor;
   }
   const values = inside[0].replaceAll(" ", "").split(",");
-  if(values.length < 3) {
+  if (values.length < 3) {
     return errorColor;
-  } 
+  }
   const r = parseInt(values[0] ?? "", 10);
   const g = parseInt(values[1] ?? "", 10);
   const b = parseInt(values[2] ?? "", 10);
-  if(Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
     return errorColor;
   }
   return vec3(r % 256, g % 256, b % 256);
@@ -59,7 +59,7 @@ function dxfBitShiftColor(color: string): number {
   const originalColor = colorNormalToVec3Color(color);
 
   const colorAsInt = (originalColor.x << 16) + (originalColor.y << 8) + originalColor.z;
-  if(Number.isNaN(colorAsInt)) {
+  if (Number.isNaN(colorAsInt)) {
     return 0;
   }
   return colorAsInt;
@@ -321,5 +321,5 @@ const DXF_ACI_COLOR_TABLE: ReadonlyArray<Vec3> = [
   vec3(128, 128, 128),
   vec3(64, 64, 64),
   vec3(0, 0, 0),
-  vec3(0, 0, 0)
+  vec3(0, 0, 0),
 ];

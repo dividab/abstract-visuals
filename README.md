@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/dividab/abstract-visuals/actions/workflows/ci.yml/badge.svg)](https://github.com/dividab/abstract-visuals/actions/workflows/ci.yml)
 [![Coverage Status][codecov-image]][codecov-url]
-[![code style: prettier][prettier-image]][prettier-url]
+[![code style: oxfmt][oxfmt-image]][oxfmt-url]
 [![types][types-image]][types-url]
 [![MIT license][license-image]][license-url]
 
@@ -44,8 +44,8 @@ It will build the packages and call `lerna publish` which will figure out which 
 [build-url]: https://github.com/dividab/abstract-visuals/actions?query=workflow%3ABuild+branch%3Amaster
 [codecov-image]: https://codecov.io/gh/dividab/abstract-visuals/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/dividab/abstract-visuals
-[prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat
-[prettier-url]: https://github.com/prettier/prettier
+[oxfmt-image]: https://img.shields.io/badge/code_style-oxfmt-ff69b4.svg?style=flat
+[oxfmt-url]: https://oxc.rs/docs/guide/usage/formatter.html
 [types-image]: https://img.shields.io/npm/types/scrub-js.svg
 [types-url]: https://www.typescriptlang.org/
 [license-image]: https://img.shields.io/github/license/dividab/abstract-visuals.svg?style=flat

@@ -206,7 +206,7 @@ return <AbstractImage width={600} height={260}>
             ))}
           </div>
         ) : (
-          rendered?.error?.message ?? ""
+          (rendered?.error?.message ?? "")
         )}
         {/* <div dangerouslySetInnerHTML={{ __html: svg }} /> */}
       </div>

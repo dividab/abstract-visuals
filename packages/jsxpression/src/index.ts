@@ -3,7 +3,7 @@ export {
   type PropertySchema,
   type FunctionSchema,
   serializePropertySchemaToJson,
-  deserializePropertySchemaFromJson
+  deserializePropertySchemaFromJson,
 } from "./schema.js";
 
 export { ParseError } from "./parse/index.js";

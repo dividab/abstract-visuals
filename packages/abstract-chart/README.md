@@ -1,7 +1,7 @@
 # abstract-chart
 
 [![npm version][version-image]][version-url]
-[![code style: prettier][prettier-image]][prettier-url]
+[![code style: oxfmt][oxfmt-image]][oxfmt-url]
 [![MIT license][license-image]][license-url]
 
 Drawing charts using multiple unit of measure axes as coordinate system
@@ -97,7 +97,7 @@ function getLineRange(
 [version-url]: https://www.npmjs.com/package/abstract-chart
 [license-image]: https://img.shields.io/github/license/dividab/abstract-visuals.svg?style=flat
 [license-url]: https://opensource.org/licenses/MIT
-[prettier-image]: https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat
-[prettier-url]: https://github.com/prettier/prettier
+[oxfmt-image]: https://img.shields.io/badge/code_style-oxfmt-ff69b4.svg?style=flat
+[oxfmt-url]: https://oxc.rs/docs/guide/usage/formatter.html
 [abstract-image]: https://www.npmjs.com/package/abstract-image
 [uom]: https://www.npmjs.com/package/uom

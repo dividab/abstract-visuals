@@ -414,8 +414,8 @@ export function renderChart(chart: Chart): AbstractImage {
 
   const xNumTicks = gridWidth / chart.xPixelsPerTick;
   const [xleft, xRight] = [
-    yAxisesLeft[0] ? yAxisesLeft[0].thickness ?? 1 : chart.xGrid.thickness / 2,
-    yAxisesRight[0] ? yAxisesRight[0].thickness ?? 1 : chart.xGrid.thickness / 2,
+    yAxisesLeft[0] ? (yAxisesLeft[0].thickness ?? 1) : chart.xGrid.thickness / 2,
+    yAxisesRight[0] ? (yAxisesRight[0].thickness ?? 1) : chart.xGrid.thickness / 2,
   ];
   const [xAxisBottom, yAxisGridBottom] = xAxises(
     "bottom",
@@ -433,8 +433,8 @@ export function renderChart(chart: Chart): AbstractImage {
 
   const yNumTicks = gridHeight / chart.yPixelsPerTick;
   const [yBottom, yTop] = [
-    xAxisesBottom[0] ? xAxisesBottom[0].thickness ?? 1 : chart.xGrid.thickness / 2,
-    xAxisesTop[0] ? xAxisesTop[0].thickness ?? 1 : chart.xGrid.thickness / 2,
+    xAxisesBottom[0] ? (xAxisesBottom[0].thickness ?? 1) : chart.xGrid.thickness / 2,
+    xAxisesTop[0] ? (xAxisesTop[0].thickness ?? 1) : chart.xGrid.thickness / 2,
   ];
 
   const [yAxisLeft, xAxisGridLeft] = yAxises(
@@ -1160,9 +1160,9 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
     const xAxis = bars.xAxis === "top" ? chart.xAxisesTop[bars.xAxisIx] : chart.xAxisesBottom[bars.xAxisIx];
     const yAxis = bars.yAxis === "right" ? chart.yAxisesRight[bars.yAxisIx] : chart.yAxisesLeft[bars.yAxisIx];
     const yMinValue =
-      yAxis?.type === "linear" || yAxis?.type === "logarithmic" ? yAxis.min : yAxis?.points[0]?.value ?? 0;
+      yAxis?.type === "linear" || yAxis?.type === "logarithmic" ? yAxis.min : (yAxis?.points[0]?.value ?? 0);
     const xMinValue =
-      xAxis?.type === "linear" || xAxis?.type === "logarithmic" ? xAxis.min : xAxis?.points[0]?.value ?? 0;
+      xAxis?.type === "linear" || xAxis?.type === "logarithmic" ? xAxis.min : (xAxis?.points[0]?.value ?? 0);
     const halfStep = bars.width / 2 + (bars.spacing ?? bars.width / 3) / 2;
     const textRot = bars.direction === "x" ? 0 : -Math.PI / 2;
 

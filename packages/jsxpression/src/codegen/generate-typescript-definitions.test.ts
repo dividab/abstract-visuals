@@ -142,11 +142,11 @@ describe("generateTypeScriptDefinitions", () => {
           rec: {
             type: "record",
             shape: {
-              type: "number"
-            }
+              type: "number",
+            },
           },
         },
-        elements: {}
+        elements: {},
       };
       const result = generateTypeScriptDefinitions(schema);
       expect(result).toContain("const rec: Record<string, number>;");
@@ -160,12 +160,12 @@ describe("generateTypeScriptDefinitions", () => {
             shape: {
               type: "record",
               shape: {
-                type: "number"
-              }
-            }
+                type: "number",
+              },
+            },
           },
         },
-        elements: {}
+        elements: {},
       };
       const result = generateTypeScriptDefinitions(schema);
       expect(result).toContain("const rec: Record<string, Record<string, number>>;");
@@ -503,9 +503,9 @@ describe("generateTypeScriptDefinitions", () => {
                     enum: ["TypeA"],
                   },
                   valueA: {
-                    type: "string"
-                  }
-                }
+                    type: "string",
+                  },
+                },
               },
               {
                 type: "object",
@@ -515,19 +515,19 @@ describe("generateTypeScriptDefinitions", () => {
                     enum: ["TypeB"],
                   },
                   valueB: {
-                    type: "number"
-                  }
-                }
-              }
-            ]
-          }
-        }
+                    type: "number",
+                  },
+                },
+              },
+            ],
+          },
+        },
       };
 
-       
-
       const result = generateTypeScriptDefinitions(schema);
-      expect(result).toContain(`id: "TypeA";\n        valueA: string;\n      } | {\n        id: "TypeB";\n        valueB: number;\n      };`);
+      expect(result).toContain(
+        `id: "TypeA";\n        valueA: string;\n      } | {\n        id: "TypeB";\n        valueB: number;\n      };`
+      );
     });
 
     it("should generate functions", () => {
@@ -542,17 +542,17 @@ describe("generateTypeScriptDefinitions", () => {
                 name: "arg1",
                 property: {
                   type: "number",
-                }
+                },
               },
               {
                 name: "arg2",
                 property: {
-                  type: "string"
-                }
-              }
-            ]
-          }
-        }
+                  type: "string",
+                },
+              },
+            ],
+          },
+        },
       };
 
       const result = generateTypeScriptDefinitions(schema);

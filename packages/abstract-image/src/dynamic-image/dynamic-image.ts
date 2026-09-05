@@ -30,7 +30,6 @@ export function dynamicImage(
   source: string,
   data: Record<string, unknown>,
   dataSchema?: Record<string, PropertySchema>,
-  // biome-ignore lint/complexity/noBannedTypes: It's needed.
   functions?: Record<string, Function>,
   funcSchema?: Record<string, FunctionSchema>
 ): DynamicImageResult {

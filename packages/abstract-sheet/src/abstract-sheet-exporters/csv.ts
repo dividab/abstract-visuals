@@ -31,7 +31,8 @@ export function toCsv(as: AbstractSheet, options?: CsvOptions): ReadonlyArray<Cs
       }
     : undefined;
 
-  return as.sheets.map(
-    (s): CsvFile => ({ name: s.name, csv: XLSX.utils.sheet_to_csv(xlsxWorkSheet(s, styles), mappedOptions) })
-  );
+  return as.sheets.map((s): CsvFile => ({
+    name: s.name,
+    csv: XLSX.utils.sheet_to_csv(xlsxWorkSheet(s, styles), mappedOptions),
+  }));
 }

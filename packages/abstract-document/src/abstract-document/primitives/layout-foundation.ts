@@ -10,7 +10,7 @@ export function create(props?: LayoutFoundation): LayoutFoundation {
     top: props?.top,
     bottom: props?.bottom,
     left: props?.left,
-    right: props?.right
+    right: props?.right,
   };
 }
 

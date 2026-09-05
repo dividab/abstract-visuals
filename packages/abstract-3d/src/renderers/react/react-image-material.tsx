@@ -48,15 +48,15 @@ export function ImageMaterial({
     materialState === "Error" && materialStateImages?.[ERROR_IMG_KEY]
       ? materialStateImages[ERROR_IMG_KEY]
       : image.type === "AbstractImage"
-      ? `data:image/svg+xml,${createSVG(image.image)}`
-      : image.url;
+        ? `data:image/svg+xml,${createSVG(image.image)}`
+        : image.url;
   const texture = suspend(urlIsSvg(url) ? loadSvg(url, filter) : loadNormal(url, filter), [url]) as Texture | null;
 
   return (
     <meshBasicMaterial
       color={getColor(selected, hovered, material, selectMat)}
       side={DoubleSide}
-      alphaTest={useAlphaTest ?? true ? 0.8 : undefined}
+      alphaTest={(useAlphaTest ?? true) ? 0.8 : undefined}
       map={texture}
       {...(material.opacity !== undefined && material.opacity < 1 ? { opacity: material.opacity } : materialDefaults)}
       transparent

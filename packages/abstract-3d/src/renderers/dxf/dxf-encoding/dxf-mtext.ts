@@ -11,9 +11,18 @@ export enum DxfMTextAttachment {
   BottomLeft = 7,
   BottomCenter = 8,
   BottomRight = 9,
-};
+}
 
-export function dxfEncMText(pos: Vec3, text: string, dir: Vec3, normal: Vec3, fontSize: number, handleRef: Handle, attachment: DxfMTextAttachment = DxfMTextAttachment.MiddleCenter, blockRefHandle?: string): string {
+export function dxfEncMText(
+  pos: Vec3,
+  text: string,
+  dir: Vec3,
+  normal: Vec3,
+  fontSize: number,
+  handleRef: Handle,
+  attachment: DxfMTextAttachment = DxfMTextAttachment.MiddleCenter,
+  blockRefHandle?: string
+): string {
   return `0
 MTEXT
 5

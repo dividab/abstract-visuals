@@ -4,7 +4,7 @@ import {
   type Vec3,
   vec3,
   vec3RotCombine,
-  vec3Scale, 
+  vec3Scale,
   vec3TransRot,
   vec3Zero,
 } from "../../../abstract-3d.js";

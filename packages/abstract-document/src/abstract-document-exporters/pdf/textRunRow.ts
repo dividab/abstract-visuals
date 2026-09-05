@@ -8,17 +8,25 @@ type LongWordSplit = {
   readonly width: number;
 };
 
-export function rowsSplit(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, availableWidth: number, desiredSizes: Map<{}, AD.Size.Size>, alignment: PdfKitAlignment, pdf: PDFKit.PDFDocument, resources: AD.Resources.Resources, defaultStyle: AD.TextStyle.TextStyle): ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> {
+export function rowsSplit(
+  rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>,
+  availableWidth: number,
+  desiredSizes: Map<{}, AD.Size.Size>,
+  alignment: PdfKitAlignment,
+  pdf: PDFKit.PDFDocument,
+  resources: AD.Resources.Resources,
+  defaultStyle: AD.TextStyle.TextStyle
+): ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> {
   const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
 
-  for(const row of rows) {
-    if(row.length < 1) {
+  for (const row of rows) {
+    if (row.length < 1) {
       newRows.push(row);
       continue;
     }
-    
+
     const width = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
-    if(width < availableWidth) {
+    if (width < availableWidth) {
       newRows.push(row);
       continue;
     }
@@ -28,45 +36,41 @@ export function rowsSplit(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, avai
     let currentWidth = 0;
     let lastWasSpace = false;
 
-    for(let i = 0; i < row.length; i++) {
+    for (let i = 0; i < row.length; i++) {
       const atom = row[i];
       const size = getDesiredSize(atom, desiredSizes);
       const width = size.width;
       const height = size.height;
 
-      if(atom.type !== "TextRun") {
+      if (atom.type !== "TextRun") {
         currentRow.push(atom);
         currentWidth += width;
         continue;
       }
 
-      
-      const isSpace = atom.text.replaceAll(/[\p{Zs}]/ug, "").length === 0;
+      const isSpace = atom.text.replaceAll(/[\p{Zs}]/gu, "").length === 0;
       const lastSpace = lastWasSpace;
       lastWasSpace = isSpace;
 
       //if the next atom is a space, we need to split this row early if it doesnt fit
       const nextAtom = row[i + 1];
-      const nextWidthIfSpace = 
-        !isSpace
-        && nextAtom
-        && nextAtom.type === "TextRun"
-        && nextAtom.text.replaceAll(/[\p{Zs}]/ug, "").length === 0
+      const nextWidthIfSpace =
+        !isSpace && nextAtom && nextAtom.type === "TextRun" && nextAtom.text.replaceAll(/[\p{Zs}]/gu, "").length === 0
           ? getDesiredSize(nextAtom, desiredSizes).width
           : 0;
 
-      if(isSpace && currentWidth === 0 && i !== 0 && (alignment === "left" || alignment === "justify")) {
+      if (isSpace && currentWidth === 0 && i !== 0 && (alignment === "left" || alignment === "justify")) {
         continue;
       }
-      
-      if((currentWidth + width + nextWidthIfSpace) < availableWidth) {
+
+      if (currentWidth + width + nextWidthIfSpace < availableWidth) {
         currentRow.push(atom);
         currentWidth += width;
         continue;
       }
 
       //was it a space??
-      if(isSpace) {
+      if (isSpace) {
         newRows.push(currentRow);
         currentRow = [];
         currentWidth = 0;
@@ -76,10 +80,10 @@ export function rowsSplit(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, avai
       //it is now longer than the remaning size
       const remSize = availableWidth - (currentWidth + nextWidthIfSpace);
       const splittedWord = splitWord(atom, remSize, availableWidth, pdf, resources, defaultStyle);
-      if(splittedWord.length > 0) {
+      if (splittedWord.length > 0) {
         const heightPerRow = height / splittedWord.length;
         const [first, ...rest] = splittedWord;
-        if(!first && !rest) {
+        if (!first && !rest) {
           continue;
         }
         //add the first to the current row
@@ -88,7 +92,7 @@ export function rowsSplit(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, avai
         currentRow.push(newFirstRowAtom);
 
         //then add new rows
-        for(const part of rest ?? []) {
+        for (const part of rest ?? []) {
           newRows.push(currentRow);
           const newAtom = { ...atom, text: part.text };
           desiredSizes.set(newAtom, { width: part.width, height: heightPerRow });
@@ -98,11 +102,15 @@ export function rowsSplit(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, avai
         continue;
       }
 
-      newRows.push((lastSpace && (alignment === "right" || alignment === "justify")) ? currentRow.slice(0, -1) : currentRow);
+      newRows.push(
+        lastSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow
+      );
       currentRow = [atom];
       currentWidth = width;
     }
-    newRows.push((lastWasSpace && (alignment === "right" || alignment === "justify")) ? currentRow.slice(0, -1) : currentRow);
+    newRows.push(
+      lastWasSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow
+    );
   }
   return newRows;
 }
@@ -110,27 +118,34 @@ export function rowsSplit(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, avai
 /*
   the first entry fits inside the current row
 */
-function splitWord(word: AD.TextRun.TextRun, firstRowRemainingWidth: number, rowWidth: number, pdf: PDFKit.PDFDocument, resources: AD.Resources.Resources, defaultStyle: AD.TextStyle.TextStyle): ReadonlyArray<LongWordSplit> {
+function splitWord(
+  word: AD.TextRun.TextRun,
+  firstRowRemainingWidth: number,
+  rowWidth: number,
+  pdf: PDFKit.PDFDocument,
+  resources: AD.Resources.Resources,
+  defaultStyle: AD.TextStyle.TextStyle
+): ReadonlyArray<LongWordSplit> {
   const strings: Array<LongWordSplit> = [];
   const totalWidth = stringWidth(word, pdf, word.text, resources, defaultStyle);
-  if(totalWidth < rowWidth) {
+  if (totalWidth < rowWidth) {
     return [];
   }
 
   let currentString = "";
   let atFirstRow = true;
-  for(const char of word.text) {
+  for (const char of word.text) {
     const remWidth = atFirstRow ? firstRowRemainingWidth : rowWidth;
     const newString = currentString + char;
     const newWidth = stringWidth(word, pdf, newString, resources, defaultStyle);
-    if(newWidth < remWidth) {
+    if (newWidth < remWidth) {
       currentString = newString;
       continue;
     }
 
     strings.push({
       text: currentString,
-      width: newWidth
+      width: newWidth,
     });
 
     //reset
@@ -139,19 +154,26 @@ function splitWord(word: AD.TextRun.TextRun, firstRowRemainingWidth: number, row
   }
 
   //add any remainder
-  if(currentString !== "") {
+  if (currentString !== "") {
     const newWidth = stringWidth(word, pdf, currentString, resources, defaultStyle);
     strings.push({
       text: currentString,
-      width: newWidth
+      width: newWidth,
     });
   }
 
   return strings;
 }
 
-export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFKit.PDFDocument, rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, desiredSizes: Map<{}, AD.Size.Size>, alignment: PdfKitAlignment, defaultStyle: AD.TextStyle.TextStyle): { newDesiredSizes: Map<{}, AD.Size.Size>; combinedRows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> } {
-  if(alignment === "justify") {
+export function rowsCombineTextRuns(
+  resources: AD.Resources.Resources,
+  pdf: PDFKit.PDFDocument,
+  rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>,
+  desiredSizes: Map<{}, AD.Size.Size>,
+  alignment: PdfKitAlignment,
+  defaultStyle: AD.TextStyle.TextStyle
+): { newDesiredSizes: Map<{}, AD.Size.Size>; combinedRows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> } {
+  if (alignment === "justify") {
     return { combinedRows: rows, newDesiredSizes: desiredSizes };
   }
 
@@ -161,31 +183,34 @@ export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFK
   let currentStyle: string = "";
 
   const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
-  for(const row of rows) {
+  for (const row of rows) {
     const newRow: Array<AD.Atom.Atom> = [];
     let isFirst = true;
 
-    for(let i = 0; i < row.length; i++) {
+    for (let i = 0; i < row.length; i++) {
       const atom = row[i];
       const isLast = i === row.length - 1;
       const measurement = getDesiredSize(atom, desiredSizes);
 
-      if(atom.type !== "TextRun") {
-        if(current !== undefined) {
+      if (atom.type !== "TextRun") {
+        if (current !== undefined) {
           const newTextRun = {
             ...current,
-            text: currentString
+            text: currentString,
           };
-          if(isFirst && alignment === "left") {
-            while(currentString.startsWith(" ")) {
+          if (isFirst && alignment === "left") {
+            while (currentString.startsWith(" ")) {
               currentString = currentString.slice(1);
             }
             isFirst = false;
-          } else if(isFirst) {
+          } else if (isFirst) {
             isFirst = false;
           }
           newRow.push(newTextRun);
-          desiredSizes.set(newTextRun, { width: stringWidth(current, pdf, currentString, resources, defaultStyle), height: currentHeight });
+          desiredSizes.set(newTextRun, {
+            width: stringWidth(current, pdf, currentString, resources, defaultStyle),
+            height: currentHeight,
+          });
           currentString = "";
           currentStyle = "";
           currentHeight = 0;
@@ -195,35 +220,40 @@ export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFK
         continue;
       }
 
-      const style = JSON.stringify(AD.Resources.getNestedStyle(
-        defaultStyle,
-        atom.style,
-        "TextStyle",
-        atom.styleName,
-        resources,
-        atom.nestedStyleNames || []
-      ));
+      const style = JSON.stringify(
+        AD.Resources.getNestedStyle(
+          defaultStyle,
+          atom.style,
+          "TextStyle",
+          atom.styleName,
+          resources,
+          atom.nestedStyleNames || []
+        )
+      );
 
-      if(current === undefined) {
+      if (current === undefined) {
         currentString = atom.text;
         current = atom;
         currentHeight = Math.max(measurement.height, currentHeight);
         currentStyle = style;
-      } else if(style !== currentStyle) {
+      } else if (style !== currentStyle) {
         const newTextRun = {
           ...current,
-          text: currentString
+          text: currentString,
         };
-        if(isFirst && alignment === "left") {
-          while(currentString.startsWith(" ")) {
+        if (isFirst && alignment === "left") {
+          while (currentString.startsWith(" ")) {
             currentString = currentString.slice(1);
           }
           isFirst = false;
-        } else if(isFirst) {
+        } else if (isFirst) {
           isFirst = false;
         }
         newRow.push(newTextRun);
-        desiredSizes.set(newTextRun, { width: stringWidth(current, pdf, currentString, resources, defaultStyle), height: currentHeight });
+        desiredSizes.set(newTextRun, {
+          width: stringWidth(current, pdf, currentString, resources, defaultStyle),
+          height: currentHeight,
+        });
         currentString = atom.text;
         currentHeight = Math.max(measurement.height, currentHeight);
         current = atom;
@@ -233,16 +263,16 @@ export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFK
         currentHeight = Math.max(measurement.height, currentHeight);
       }
 
-      if(isLast) {
-        if(current) {
+      if (isLast) {
+        if (current) {
           //does the last contain spaces at the end?
-          if(alignment === "right") {
-            while(currentString.endsWith(" ")) {
+          if (alignment === "right") {
+            while (currentString.endsWith(" ")) {
               currentString = currentString.slice(0, -1);
             }
           }
-          if(isFirst && alignment === "left") {
-            while(currentString.startsWith(" ")) {
+          if (isFirst && alignment === "left") {
+            while (currentString.startsWith(" ")) {
               currentString = currentString.slice(1);
             }
             isFirst = false;
@@ -251,9 +281,12 @@ export function rowsCombineTextRuns(resources: AD.Resources.Resources, pdf: PDFK
           const newTextRun: AD.Atom.Atom = {
             ...current,
             text: currentString,
-          }
+          };
           newRow.push(newTextRun);
-          desiredSizes.set(newTextRun, { width: stringWidth(current, pdf, currentString, resources, defaultStyle), height: currentHeight });
+          desiredSizes.set(newTextRun, {
+            width: stringWidth(current, pdf, currentString, resources, defaultStyle),
+            height: currentHeight,
+          });
         }
       }
     }
@@ -273,14 +306,15 @@ function stringWidth(
   resources: AD.Resources.Resources,
   defaultStyle: AD.TextStyle.TextStyle
 ): number {
-  const style = AD.Resources.getNestedStyle(
-    defaultStyle,
-    textRun.style,
-    "TextStyle",
-    textRun.styleName,
-    resources,
-    textRun.nestedStyleNames || []
-  ) as AD.TextStyle.TextStyle ?? defaultStyle;
+  const style =
+    (AD.Resources.getNestedStyle(
+      defaultStyle,
+      textRun.style,
+      "TextStyle",
+      textRun.styleName,
+      resources,
+      textRun.nestedStyleNames || []
+    ) as AD.TextStyle.TextStyle) ?? defaultStyle;
 
   const font = getFontNameStyle(style);
   const fontSize = AD.TextStyle.calculateFontSize(style, 10);

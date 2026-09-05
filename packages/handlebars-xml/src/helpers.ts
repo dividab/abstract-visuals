@@ -179,11 +179,11 @@ const groupBy: HelperFunc = {
     { name: "key", description: "Key or index to group by (can be a path)", type: stringOrNum },
   ],
   returnType: (...argSchemas) => ({
-      type: "object",
-      additionalProperties: {
-          type: "array",
-          items: argSchemas[0] ?? anySchema,
-      },
+    type: "object",
+    additionalProperties: {
+      type: "array",
+      items: argSchemas[0] ?? anySchema,
+    },
   }),
   func: (items: ReadonlyArray<any>, key: string | number) =>
     items.reduce((result: Record<string, Array<any>>, item) => {
@@ -222,7 +222,7 @@ const sortBy: HelperFunc = {
       },
     },
   ],
-  returnType: (...argSchemas) => (argSchemas[0] ?? arraySchema),
+  returnType: (...argSchemas) => argSchemas[0] ?? arraySchema,
   func: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
     const compare = (a: any, b: any): number => {
       if (a === null || b === null || a === undefined || b === undefined) {

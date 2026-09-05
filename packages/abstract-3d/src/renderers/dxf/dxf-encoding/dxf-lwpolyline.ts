@@ -28,18 +28,15 @@ export function dxfEncLwPolyline(
     return undefined;
   }
 
-  if(points.length === 2) {
+  if (points.length === 2) {
     const a = points[0];
     const b = points[1];
-    if(a === undefined || b === undefined) {
+    if (a === undefined || b === undefined) {
       return undefined;
     }
 
     const direction = vec3Normalize(vec3Sub(b, a));
-    const reference =
-      Math.abs(direction.z) < 0.9
-        ? vec3(0, 0, 1)
-        : vec3(0, 1, 0);
+    const reference = Math.abs(direction.z) < 0.9 ? vec3(0, 0, 1) : vec3(0, 1, 0);
     const normal = vec3Normalize(vec3Cross(direction, reference));
 
     const plane: LwPolylinePlane = {
@@ -52,13 +49,20 @@ export function dxfEncLwPolyline(
   }
 
   const plane = findPlane(planePos, points);
-  if(!plane || !isCoplanar(points, plane)) {
+  if (!plane || !isCoplanar(points, plane)) {
     return undefined;
   }
   return encodeLwPolyline(points, plane, col, closed, handleRef, blockRefHandle);
 }
 
-function encodeLwPolyline(points: ReadonlyArray<Vec3>, plane: LwPolylinePlane, col: DxfColor, closed: boolean, handleRef: Handle, blockRefHandle?: string): string {
+function encodeLwPolyline(
+  points: ReadonlyArray<Vec3>,
+  plane: LwPolylinePlane,
+  col: DxfColor,
+  closed: boolean,
+  handleRef: Handle,
+  blockRefHandle?: string
+): string {
   let dxf = "";
   const planeElevation = vec3Dot(plane.pos, plane.normal);
 
@@ -73,7 +77,7 @@ function encodeLwPolyline(points: ReadonlyArray<Vec3>, plane: LwPolylinePlane, c
   dxf += `70\n${closed ? 1 : 0}\n`;
   dxf += `38\n${planeElevation}\n`;
 
-  for(const point of points) {
+  for (const point of points) {
     dxf += `10\n${vec3Dot(point, plane.xAxis)}\n`;
     dxf += `20\n${vec3Dot(point, plane.yAxis)}\n`;
   }
@@ -86,29 +90,29 @@ function encodeLwPolyline(points: ReadonlyArray<Vec3>, plane: LwPolylinePlane, c
 }
 
 function findPlane(planePos: Vec3, points: ReadonlyArray<Vec3>): LwPolylinePlane | undefined {
-  if(points.length < 3) {
+  if (points.length < 3) {
     return undefined;
   }
-  for(let i = 1; i < points.length; i++) {
+  for (let i = 1; i < points.length; i++) {
     const aRaw = points[i];
-    if(aRaw === undefined) {
+    if (aRaw === undefined) {
       continue;
     }
     const a = vec3Sub(aRaw, planePos);
-    for(let j = i + 1; j < points.length; j++) {
+    for (let j = i + 1; j < points.length; j++) {
       const bRaw = points[j];
-      if(bRaw === undefined) {
+      if (bRaw === undefined) {
         continue;
       }
       const b = vec3Sub(bRaw, planePos);
       const normal = vec3Cross(a, b);
-      if(vec3Length(normal) > EPSILON) {
+      if (vec3Length(normal) > EPSILON) {
         const normalizedNormal = vec3Normalize(normal);
         return {
           normal: normalizedNormal,
           pos: planePos,
           ...dxfOCSXYAxis(normalizedNormal),
-        }
+        };
       }
     }
   }

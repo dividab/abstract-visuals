@@ -17,7 +17,7 @@ export function renderImage(
   const firstComp = ai.components[0];
   const resource =
     !ai.size.width && !ai.size.height && firstComp?.type === "binaryimage" && firstComp.data.type === "url"
-      ? resources.imageResources?.[firstComp.data.url] ?? image.imageResource
+      ? (resources.imageResources?.[firstComp.data.url] ?? image.imageResource)
       : image.imageResource;
 
   const position = AD.Point.create(finalRect.x, finalRect.y);
@@ -37,15 +37,15 @@ export function renderImage(
     image.horizontalAlignment === "Center"
       ? (rect.width - drawnW) / 2
       : image.horizontalAlignment === "Right"
-      ? rect.width - drawnW
-      : 0;
+        ? rect.width - drawnW
+        : 0;
 
   const offsetY =
     image.verticalAlignment === "Center"
       ? (rect.height - drawnH) / 2
       : image.verticalAlignment === "Bottom"
-      ? rect.height - drawnH
-      : 0;
+        ? rect.height - drawnH
+        : 0;
 
   pdf.save();
   pdf.translate(position.x + offsetX, position.y + offsetY).scale(scale);
@@ -162,14 +162,14 @@ function abstractComponentToPdf(
         component.horizontalGrowthDirection === "left"
           ? -stringWidth
           : component.horizontalGrowthDirection === "uniform"
-          ? -stringWidth * 0.5
-          : 0;
+            ? -stringWidth * 0.5
+            : 0;
       const dy =
         component.verticalGrowthDirection === "up"
           ? -stringHeight
           : component.verticalGrowthDirection === "uniform"
-          ? -stringHeight * 0.5
-          : 0;
+            ? -stringHeight * 0.5
+            : 0;
       pdf
         .font(font)
         .fontSize(component.fontSize)

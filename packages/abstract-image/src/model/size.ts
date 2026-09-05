@@ -6,6 +6,6 @@ export interface Size {
 export function createSize(width: number, height: number): Size {
   return {
     width: width,
-    height: height
+    height: height,
   };
 }

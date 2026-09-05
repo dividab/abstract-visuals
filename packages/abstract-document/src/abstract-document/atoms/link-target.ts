@@ -10,6 +10,6 @@ export interface LinkTargetProps {
 export function create(props: LinkTargetProps): LinkTarget {
   return {
     type: "LinkTarget",
-    name: props.name
+    name: props.name,
   };
 }

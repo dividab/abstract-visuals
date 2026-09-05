@@ -161,7 +161,7 @@ export function deserializePropertySchemaFromJson(json: string): PropertySchema 
     return undefined;
   }
   const validated = zodSchema.safeParse(parsed);
-  if(!validated.success) {
+  if (!validated.success) {
     return undefined;
   }
   return validated.data;

@@ -33,16 +33,16 @@ function getFontWeightFromStyle(textStyle: AD.TextStyle.TextStyle): TextFontWeig
   return textStyle.fontWeight
     ? textStyle.fontWeight
     : textStyle.light
-    ? "light"
-    : textStyle.normal
-    ? "normal"
-    : textStyle.bold
-    ? "bold"
-    : textStyle.mediumBold
-    ? "mediumBold"
-    : textStyle.extraBold
-    ? "extraBold"
-    : "normal";
+      ? "light"
+      : textStyle.normal
+        ? "normal"
+        : textStyle.bold
+          ? "bold"
+          : textStyle.mediumBold
+            ? "mediumBold"
+            : textStyle.extraBold
+              ? "extraBold"
+              : "normal";
 }
 
 function getFontWeightFromAttributes(attribs: Record<string, string>): TextFontWeight {

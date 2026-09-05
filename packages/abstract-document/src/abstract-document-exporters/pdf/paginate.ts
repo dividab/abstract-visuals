@@ -280,12 +280,16 @@ export function getHeaderAndFooter(
       return {
         footer: normalFooter ? section.page.footer : section.page.frontFooter,
         header: normalHeader ? section.page.header : section.page.frontHeader,
-        headerMargins: AD.LayoutFoundation.orDefault(normalHeader
-          ? section.page.style.headerMargins
-          : section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins),
-        footerMargins: AD.LayoutFoundation.orDefault(normalFooter
-          ? section.page.style.footerMargins
-          : section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins),
+        headerMargins: AD.LayoutFoundation.orDefault(
+          normalHeader
+            ? section.page.style.headerMargins
+            : (section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins)
+        ),
+        footerMargins: AD.LayoutFoundation.orDefault(
+          normalFooter
+            ? section.page.style.footerMargins
+            : (section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins)
+        ),
       };
     }
     case pageNo === 0:

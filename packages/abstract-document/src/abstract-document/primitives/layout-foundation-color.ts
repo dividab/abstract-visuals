@@ -30,9 +30,9 @@ export function overrideWith(
   const a = overrider;
   const b = toOverride;
   return create({
-    top: (a?.top ?? b?.top),
-    bottom: (a?.bottom ?? b?.bottom),
-    left: (a?.left ?? b?.left),
-    right: (a?.right ?? b?.right),
+    top: a?.top ?? b?.top,
+    bottom: a?.bottom ?? b?.bottom,
+    left: a?.left ?? b?.left,
+    right: a?.right ?? b?.right,
   });
 }

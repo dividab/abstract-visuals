@@ -30,10 +30,10 @@ export function ReactMaterial({
   const mat = !materialState
     ? material
     : materialState === "Accept"
-    ? acceptMat
-    : materialState === "Error"
-    ? errorMar
-    : warningMat;
+      ? acceptMat
+      : materialState === "Error"
+        ? errorMar
+        : warningMat;
 
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
   if (isText) {
@@ -103,6 +103,6 @@ export function getColor(
       ? shade(-0.4, selectedMat.normal)
       : selectedMat.normal
     : hovered
-    ? shade(-0.4, mat.normal)
-    : mat.normal;
+      ? shade(-0.4, mat.normal)
+      : mat.normal;
 }

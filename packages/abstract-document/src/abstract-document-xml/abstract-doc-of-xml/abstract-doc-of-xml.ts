@@ -54,7 +54,7 @@ export function abstractDocXml(
 ): readonly [
   AbstractDoc.AbstractDoc,
   imageUrls: Record<string, true>,
-  fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>
+  fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>,
 ] {
   const xml = parseHandlebarsXml(template, data, partials);
   const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
@@ -193,7 +193,7 @@ function extractImageFontsStyleNames(
 ): readonly [
   imageUrls: Record<string, true>,
   fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>,
-  styleNames: Record<string, string>
+  styleNames: Record<string, string>,
 ] {
   let crFntFam = currentFontFamily;
   xmlElement.forEach((item) => {

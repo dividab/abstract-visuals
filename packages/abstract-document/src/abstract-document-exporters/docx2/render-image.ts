@@ -21,7 +21,7 @@ export function renderImage(image: Image, textStyle: TextStyle, resources: AD.Re
   const firstComp = aImage.components[0];
   const resource =
     !aImage.size.width && !aImage.size.height && firstComp?.type === "binaryimage" && firstComp.data.type === "url"
-      ? resources.imageResources?.[firstComp.data.url] ?? image.imageResource
+      ? (resources.imageResources?.[firstComp.data.url] ?? image.imageResource)
       : image.imageResource;
 
   const rect = resourceRect(resource, {
@@ -307,15 +307,15 @@ function textComponentToSvg(component: AbstractImage.Text): string {
     component.horizontalGrowthDirection === "left"
       ? "end"
       : component.horizontalGrowthDirection === "uniform"
-      ? "middle"
-      : "start";
+        ? "middle"
+        : "start";
 
   const dominantBaseline =
     component.verticalGrowthDirection === "up"
       ? "text-after-edge"
       : component.verticalGrowthDirection === "uniform"
-      ? "middle"
-      : "text-before-edge";
+        ? "middle"
+        : "text-before-edge";
 
   return `<text x="${component.position.x}" y="${component.position.y}" font-family="${escapeXml(
     component.fontFamily
