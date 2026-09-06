@@ -1,5 +1,4 @@
 import React from "react";
-
 import type { Dimensions, Vec3, Dimension, Mesh, Material } from "../../abstract-3d.js";
 import { dimensionConvertToTypeMesh, vec3Zero } from "../../abstract-3d.js";
 import { ReactMaterial } from "./react-material.js";

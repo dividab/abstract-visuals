@@ -1,7 +1,6 @@
 import { Html } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
 import React from "react";
-
 import type { Scene, Group } from "../../abstract-3d.js";
 import { ReactDimensions } from "./react-dimension.js";
 import { ReactGroup } from "./react-group.js";

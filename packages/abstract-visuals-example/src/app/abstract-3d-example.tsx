@@ -1,6 +1,5 @@
 import FileSaver from "file-saver";
 import React from "react";
-
 import type { Scene } from "../../../abstract-3d/src/abstract-3d.js";
 import { vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
 import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";

@@ -2,7 +2,6 @@ import { Html, type OrbitControlsProps } from "@react-three/drei";
 import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import React, { memo } from "react";
-
 import type { Scene, View, Group } from "../../abstract-3d.js";
 import type { ControlsHelper, Camera, BufferZones } from "./react-camera.js";
 import { ReactCamera } from "./react-camera.js";

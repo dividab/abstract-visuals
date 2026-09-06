@@ -1,5 +1,4 @@
 import type { AnyNode, ArrowFunctionExpression, FunctionDeclaration, Identifier, Program } from "acorn";
-
 import { getBuiltinGlobals } from "../../builtins.js";
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";

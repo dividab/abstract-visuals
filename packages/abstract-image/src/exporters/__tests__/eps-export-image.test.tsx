@@ -1,5 +1,4 @@
 import { describe, test, expect } from "vitest";
-
 import { testEpsEllipse } from "./tests-eps-export-image/eps-ellipse.js";
 import { testEpsEmptyText } from "./tests-eps-export-image/eps-empty-text.js";
 import { testEpsGroup } from "./tests-eps-export-image/eps-group.js";

@@ -1,5 +1,4 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
-
 import type { AbstractDoc } from "../../abstract-document/abstract-doc.js";
 import type { Section } from "../../abstract-document/page/section.js";
 import type { Resources } from "../../abstract-document/resources.js";

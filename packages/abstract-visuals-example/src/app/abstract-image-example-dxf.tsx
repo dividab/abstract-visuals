@@ -1,6 +1,5 @@
 import type { AbstractImage } from "abstract-image";
 import React from "react";
-
 import { dynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 import {
   createLine,

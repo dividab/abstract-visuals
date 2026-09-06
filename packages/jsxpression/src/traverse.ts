@@ -1,6 +1,5 @@
 import type { Program } from "acorn";
 import { base, type RecursiveVisitors, type SimpleVisitors, simple } from "acorn-walk";
-
 import {
   isJsxEmptyExpression,
   isJsxText,

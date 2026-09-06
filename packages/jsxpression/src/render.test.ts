@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-
 import { AnalysisError } from "./analyze/index.js";
 import { EvaluationError } from "./evaluate/index.js";
 import { ParseError } from "./parse/index.js";

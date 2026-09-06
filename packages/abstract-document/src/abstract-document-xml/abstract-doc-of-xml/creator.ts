@@ -1,5 +1,4 @@
 import { createAbstractImage, createBinaryImage, createPoint, createSize, white } from "abstract-image";
-
 import type { Atom, SectionElement } from "../../abstract-document/index.js";
 import {
   AbstractDoc,

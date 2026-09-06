@@ -1,5 +1,4 @@
 import { generateUUID } from "three/src/math/MathUtils.js";
-
 import { vec3, vec3Cross, vec3Normalize, type Bounds3, type Vec3 } from "../../../abstract-3d.js";
 import type { DxfDimensionDefinition } from "./dxf-dimension.js";
 // oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies

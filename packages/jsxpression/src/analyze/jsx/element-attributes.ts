@@ -1,5 +1,4 @@
 import type { Program } from "acorn";
-
 import { isJsxAttribute, isJsxExpressionContainer, type JSXAttribute } from "../../jsx.js";
 import { getAllowedAttributes, getAttributeSchema, getEnumValues, getRequiredAttributes, isAttributeAllowed, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";

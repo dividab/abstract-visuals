@@ -1,5 +1,4 @@
 import { Readable } from "stream";
-
 import type {
   ISectionOptions,
   ImageRun,
@@ -32,7 +31,6 @@ import {
   VerticalAlign,
   PageNumber,
 } from "docx";
-
 import * as AD from "../../abstract-document/index.js";
 import { renderImage } from "./render-image.js";
 

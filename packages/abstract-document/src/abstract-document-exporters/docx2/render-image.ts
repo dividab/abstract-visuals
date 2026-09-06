@@ -1,7 +1,6 @@
 import type * as AbstractImage from "abstract-image";
 import type { IMediaTransformation } from "docx";
 import { ImageRun } from "docx";
-
 import type { Image } from "../../abstract-document/atoms/image.js";
 import type * as AD from "../../abstract-document/index.js";
 import type { TextStyle } from "../../abstract-document/styles/text-style.js";

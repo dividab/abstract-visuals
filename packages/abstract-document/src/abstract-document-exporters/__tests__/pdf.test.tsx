@@ -1,9 +1,7 @@
 import path from "path";
 import * as S from "stream";
-
 import PDFParser from "pdf2json";
 import { describe, test, expect } from "vitest";
-
 import { render } from "../../abstract-document-jsx/index.js";
 import { exportToStream } from "../pdf/render.js";
 import { testAbsolutePositionGroup } from "./pdf/absolute-position-group.js";

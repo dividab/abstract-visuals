@@ -1,5 +1,4 @@
 import { describe, test, expect } from "vitest";
-
 import { testDxf2dEllipse } from "./tests-dxf2d-export-image/dxf2d-ellipse.js";
 import { testDxf2dGroup } from "./tests-dxf2d-export-image/dxf2d-group.js";
 import { testDxf2dLine } from "./tests-dxf2d-export-image/dxf2d-line.js";

@@ -1,6 +1,5 @@
 import FileSaver from "file-saver";
 import React from "react";
-
 import type { AbstractSheet } from "../../../abstract-sheet/src/index.js";
 import { toCsv, toXlsx, toReact as ToReact } from "../../../abstract-sheet/src/index.js";
 

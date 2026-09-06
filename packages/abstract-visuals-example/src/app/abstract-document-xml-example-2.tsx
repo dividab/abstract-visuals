@@ -3,7 +3,6 @@ import FileSaver from "file-saver";
 import { renderHandlebars, validateXml, errorToReadableText } from "handlebars-xml";
 /* oxlint-disable typescript/no-misused-promises */
 import React from "react";
-
 import * as AbstractDocXml from "../../../abstract-document/src/abstract-document-xml/index.js";
 import { AbstractDoc, AbstractDocDocx, AbstractDocPdf } from "../../../abstract-document/src/index.js";
 

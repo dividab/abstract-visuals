@@ -1,5 +1,4 @@
 import type { Program, Expression, Super } from "acorn";
-
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { AnalysisReport } from "../analysis-report.js";

@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-
 import { ParseError } from "./parse-error.js";
 import { parse } from "./parse.js";
 

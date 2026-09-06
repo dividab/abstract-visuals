@@ -1,5 +1,4 @@
 import type { Program } from "acorn";
-
 import type { Schema } from "../schema.js";
 import { AnalysisReport } from "./analysis-report.js";
 import { analyzeData } from "./data/index.js";

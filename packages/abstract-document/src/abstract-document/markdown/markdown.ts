@@ -1,7 +1,6 @@
 import remarkParse from "remark-parse";
 import remarkSubSuper from "remark-sub-super";
 import unified from "unified";
-
 import type * as Atom from "../atoms/atom.js";
 import type * as TextRun from "../atoms/text-run.js";
 import * as Group from "../section-elements/group.js";

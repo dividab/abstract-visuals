@@ -4,7 +4,7 @@
   "trailingComma": "es5",
   "arrowParens": "always",
   "sortPackageJson": true,
-  "sortImports": true,
+  "sortImports": { "newlinesBetween": false },
   "jsdoc": true,
   "ignorePatterns": ["packages/*/public/**", "*.html", "stats.html"]
 }

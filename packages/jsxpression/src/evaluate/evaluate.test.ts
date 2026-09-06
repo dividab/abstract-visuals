@@ -1,5 +1,4 @@
 import { describe, it, expect, vi } from "vitest";
-
 import { compile } from "../compile/index.js";
 import { parse } from "../parse/index.js";
 import type { Schema } from "../schema.js";

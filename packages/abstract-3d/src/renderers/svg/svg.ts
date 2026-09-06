@@ -1,5 +1,4 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
-
 import type { Scene, Vec3, Mesh, Vec2, Group, Material, Bounds2 } from "../../abstract-3d.js";
 import {
   vec2,

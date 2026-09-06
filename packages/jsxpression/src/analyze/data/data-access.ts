@@ -1,5 +1,4 @@
 import type { Program } from "acorn";
-
 import type { ArrayPropertySchema, PropertySchema, Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { AnalysisReport } from "../analysis-report.js";

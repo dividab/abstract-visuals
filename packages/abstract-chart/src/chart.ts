@@ -19,7 +19,6 @@ import {
 } from "abstract-image";
 /* oxlint-disable max-lines */
 import { exhaustiveCheck } from "ts-exhaustive-check";
-
 import type { Axis, AxisBase, DiscreteAxisPoint, NumberFormat } from "./axis.js";
 import { inverseTransformValue, getTicks, createLinearAxis, transformValue, transformPoint } from "./axis.js";
 

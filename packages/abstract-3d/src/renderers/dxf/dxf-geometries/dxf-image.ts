@@ -1,5 +1,4 @@
 import type { AbstractImage, Component } from "abstract-image";
-
 import { type ImageMesh, type Vec3, vec2Scale, vec3, vec3Add, vec3Rot, vec3RotCombine, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 import type { DxfDynamicColor } from "../dxf-encoding/dxf-color.js";
 import { DEFAULT_CIRCLE_SIDE_COUNT, type Handle } from "../dxf-encoding/dxf-common.js";

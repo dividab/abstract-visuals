@@ -1,5 +1,4 @@
 import { describe, test, expect } from "vitest";
-
 import { testSimpleDocument } from "./simple-document.js";
 // import { parseXml } from "../parse-xml";
 // import { abstractDocOfXml, extractImageFontsStyleNames } from "../abstract-doc-of-xml/abstract-doc-of-xml.js";

@@ -1,7 +1,6 @@
 import type { X2jOptions } from "fast-xml-parser";
 import { XMLParser } from "fast-xml-parser";
 import Handlebars from "handlebars";
-
 import { helpers } from "./helpers.js";
 
 export type XmlElement = {

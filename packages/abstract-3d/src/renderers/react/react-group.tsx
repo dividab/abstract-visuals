@@ -3,7 +3,6 @@ import type { ThreeEvent } from "@react-three/fiber";
 import { useFrame } from "@react-three/fiber";
 import React from "react";
 import type { Group } from "three";
-
 import type { Group as Group_1 } from "../../abstract-3d.js";
 import { ImageMaterial } from "./react-image-material.js";
 import type { MaterialState } from "./react-material.js";

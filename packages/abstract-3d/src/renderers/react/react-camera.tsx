@@ -12,7 +12,6 @@ import { type ThreeEvent, useThree } from "@react-three/fiber";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { Vector3 } from "three";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-
 import type { View, Scene, Vec3 } from "../../abstract-3d.js";
 import { vec3 } from "../../abstract-3d.js";
 

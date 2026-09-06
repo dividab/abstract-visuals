@@ -2,7 +2,6 @@ import { createSVG } from "abstract-image";
 import React from "react";
 import { suspend } from "suspend-react";
 import { CanvasTexture, DoubleSide, PlaneGeometry, SRGBColorSpace, type Texture, TextureLoader } from "three";
-
 import type { Material, Image as A3dImage } from "../../abstract-3d.js";
 import type { MaterialState } from "./react-material.js";
 import { ERROR_IMG_KEY, getColor, materialDefaults, selectMat } from "./react-material.js";

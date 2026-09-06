@@ -1,5 +1,4 @@
 import { fromByteArray } from "base64-js";
-
 import type { AbstractImage } from "../model/abstract-image.js";
 import type { Color } from "../model/color.js";
 import type { Component, GrowthDirection } from "../model/component.js";

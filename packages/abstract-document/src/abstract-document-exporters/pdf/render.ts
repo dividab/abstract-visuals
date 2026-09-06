@@ -1,7 +1,6 @@
 // oxlint-disable-next-line import/no-named-as-default -- standard pdfkit import idiom
 import PDFDocument from "pdfkit";
 import { toBlob, toBytes } from "pdfkit/output";
-
 import * as AD from "../../abstract-document/index.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 import { measure, measurePages } from "./measure.js";

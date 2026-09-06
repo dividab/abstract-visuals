@@ -1,5 +1,4 @@
 import type { Program } from "acorn";
-
 import { isMethodAllowed, getMethodDefinition, getMethodDisplayName } from "../../builtins.js";
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";

@@ -1,5 +1,4 @@
 import { describe, test, expect } from "vitest";
-
 import { testPngCreatePng } from "./tests-png-export-image/png-createPNG.js";
 
 describe("png-export-image", () => {

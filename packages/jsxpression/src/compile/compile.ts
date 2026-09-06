@@ -11,7 +11,6 @@ import type {
   Super,
   VariableDeclaration,
 } from "acorn";
-
 import {
   isJsxElement,
   isJsxEmptyExpression,

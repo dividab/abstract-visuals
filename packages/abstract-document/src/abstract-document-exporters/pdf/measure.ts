@@ -1,5 +1,4 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
-
 import * as AD from "../../abstract-document/index.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 // oxlint-disable-next-line import/no-cycle -- type-only, erased at compile time

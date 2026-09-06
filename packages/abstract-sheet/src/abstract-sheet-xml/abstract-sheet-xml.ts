@@ -1,6 +1,5 @@
 import type { XmlElement } from "handlebars-xml";
 import { parseHandlebarsXml, parseXsd } from "handlebars-xml";
-
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
 import type { ColInfos, Cells, RowInfos, Sheet, Style, Styles, AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
 import { borderStyleRecord } from "../abstract-sheet/abstract-sheet.js";

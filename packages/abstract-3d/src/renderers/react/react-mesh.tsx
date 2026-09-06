@@ -24,7 +24,6 @@ import {
   Vector3,
 } from "three";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-
 import type {
   Mesh,
   Box,

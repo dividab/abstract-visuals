@@ -1,6 +1,5 @@
 import FileSaver from "file-saver";
 import React, { useState } from "react";
-
 import type { Chart as Chart_1, StackPoints, Axis, ChartBars, ChartLine } from "../../../abstract-chart/src/index.js";
 import {
   renderChart,

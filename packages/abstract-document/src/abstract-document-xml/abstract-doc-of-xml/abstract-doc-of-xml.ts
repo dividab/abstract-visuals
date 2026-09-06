@@ -1,5 +1,4 @@
 import { parseHandlebarsXml, type XmlElement } from "handlebars-xml";
-
 import { getFontStyleName } from "../../abstract-document-exporters/pdf/font.js";
 import { addResources, merge } from "../../abstract-document/abstract-doc.js";
 import type { AbstractDoc } from "../../abstract-document/index.js";

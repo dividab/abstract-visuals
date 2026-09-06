@@ -1,5 +1,4 @@
 import type React from "react";
-
 import type {
   Group as GroupComponent,
   BinaryImage as BinaryImageComponent,

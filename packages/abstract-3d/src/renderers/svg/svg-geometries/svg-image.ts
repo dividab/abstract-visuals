@@ -1,6 +1,5 @@
 import { createSVG } from "abstract-image";
 import { exhaustiveCheck } from "ts-exhaustive-check";
-
 import type { ImageMesh, Vec2, Vec3 } from "../../../abstract-3d.js";
 import { vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
 import type { EmbededImage } from "../svg-encoding.js";
