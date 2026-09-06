@@ -24,6 +24,7 @@ export function Abstract3DExample(): React.ReactNode {
   const popover: React3Js.ReactPopover | undefined = group
     ? { id: "popover", pos: { ...group.pos, y: group.pos.y - 300 }, content: "Hej" }
     : undefined;
+  // oxlint-disable-next-line no-console
   console.log(hovered, group, popover);
 
   const imageDataByUrlSvg: Record<string, any> = {};

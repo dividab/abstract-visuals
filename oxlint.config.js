@@ -13,9 +13,6 @@ export default defineConfig({
     "packages/abstract-visuals-example/src/app/generated/**",
   ],
   rules: {
-    // TODO: remove once oxlint-config-divid ships this as its own default (staged locally,
-    // not yet released/bumped here - see oxlint-config-divid's index.js on disk).
-    "functional/no-let": ["error", { allowInFunctions: true, ignoreIdentifierPattern: "^[mM]utable" }],
     "functional/no-classes": "off", // 10 errors
     "functional/no-this-expressions": "off", // 142 errors
     "functional/prefer-readonly-type": "off", // 419 errors

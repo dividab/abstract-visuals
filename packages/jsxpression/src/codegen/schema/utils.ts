@@ -37,7 +37,6 @@ export function mapSchemaTypeToTypeScript(prop: any, depth: number = 0): string 
       return `${prop.shape.map((p: any) => mapSchemaTypeToTypeScript(p)).join(" | ")}`;
     }
     default:
-      console.warn(`Unknown schema type: ${prop.type}`);
       return "any";
   }
 }

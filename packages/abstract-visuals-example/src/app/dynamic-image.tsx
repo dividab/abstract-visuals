@@ -101,6 +101,7 @@ return <AbstractImage width={600} height={260}>
   try {
     dataParsed = JSON.parse(data);
   } catch (e) {
+    // oxlint-disable-next-line no-console
     console.log(e);
   }
 

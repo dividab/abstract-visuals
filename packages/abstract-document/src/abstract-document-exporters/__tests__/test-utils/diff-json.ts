@@ -78,6 +78,7 @@ function compareValues(oldValue: value, newValue: value): boolean {
     return false;
   }
   if (typeof oldValue === "string" && typeof newValue === "string" && oldValue !== newValue) {
+    // oxlint-disable-next-line no-console
     console.log(oldValue, newValue);
   }
   return oldValue !== newValue;
