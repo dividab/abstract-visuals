@@ -237,7 +237,7 @@ export class XmlWriter {
   private static generatePrefix(namespaces: XmlNamespaceDictionary): string {
     let i = 1;
     while (i < 100) {
-      if (!namespaces.hasOwnProperty("p" + i)) break;
+      if (!Object.hasOwn(namespaces, "p" + i)) break;
       i++;
     }
     return "p" + i;
