@@ -1,12 +1,12 @@
 import type { Program, Expression, Super } from "acorn";
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
-import { AnalysisReport } from "../analysis-report.js";
+import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeExpressions(ast: Program, _schema: Schema, validationContext: ValidationContext): AnalysisReport {
-  const analysisReport = new AnalysisReport();
+  const analysisReport = createAnalysisReport();
 
   traverse(ast, {
     NewExpression(node) {

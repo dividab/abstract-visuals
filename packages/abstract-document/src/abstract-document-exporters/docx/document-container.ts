@@ -1,18 +1,29 @@
-﻿import { RefContainer } from "./ref-container.js";
-import { XmlWriter } from "./xml-writer.js";
+import type { RefContainer } from "./ref-container.js";
+import { createRefContainer } from "./ref-container.js";
+import type { XmlWriter } from "./xml-writer.js";
+import { createXmlWriter } from "./xml-writer.js";
 
-//tslint:disable:no-class no-this
+export interface DocumentContainer {
+  readonly filePath: string;
+  readonly fileName: string;
+  readonly refId: string;
+  readonly contentType: string;
+  readonly references: RefContainer;
+  readonly XMLWriter: XmlWriter;
+}
 
-export class DocumentContainer {
-  readonly filePath!: string;
-  readonly fileName!: string;
-  readonly refId!: string;
-  readonly contentType!: string;
-  readonly references: RefContainer = new RefContainer();
+export function createDocumentContainer(filePath: string, fileName: string, refId: string, contentType: string): DocumentContainer {
+  const xmlWriter = createXmlWriter();
 
-  private readonly _xmlWriter: XmlWriter = new XmlWriter();
+  return {
+    filePath,
+    fileName,
+    refId,
+    contentType,
+    references: createRefContainer(),
 
-  get XMLWriter(): XmlWriter {
-    return this._xmlWriter;
-  }
+    get XMLWriter(): XmlWriter {
+      return xmlWriter;
+    },
+  };
 }

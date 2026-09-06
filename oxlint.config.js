@@ -13,7 +13,6 @@ export default defineConfig({
     "packages/abstract-visuals-example/src/app/generated/**",
   ],
   rules: {
-    "functional/no-classes": "off", // 10 errors
     "functional/no-this-expressions": "off", // 142 errors
     "functional/prefer-readonly-type": "off", // 419 errors
 

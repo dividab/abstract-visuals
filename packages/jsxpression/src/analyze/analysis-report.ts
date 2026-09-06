@@ -167,60 +167,77 @@ const ISSUES_DEFINITIONS: Record<string, IssueDefinition> = {
 
 export type IssueCode = keyof typeof ISSUES_DEFINITIONS;
 
-export class AnalysisReport {
-  readonly #issues: Array<Issue> = [];
+export interface AnalysisReport {
+  readonly issues: Array<Issue>;
+  readonly errors: Array<Issue>;
+  readonly warnings: Array<Issue>;
+  readonly infos: Array<Issue>;
+  readonly hasErrors: boolean;
+  readonly hasWarnings: boolean;
+  readonly hasInfos: boolean;
+  addIssue: (code: IssueCode, message: string, range: Range, snapshot: ValidationContextSnapshot, suggestions?: Array<string>) => void;
+  hasIssues: (minSeverity?: IssueSeverity) => boolean;
+  merge: (...analysisReports: Array<AnalysisReport>) => AnalysisReport;
+}
 
-  get issues(): Array<Issue> {
-    return this.#issues.slice();
-  }
+export function createAnalysisReport(): AnalysisReport {
+  const issues: Array<Issue> = [];
 
-  get errors(): Array<Issue> {
-    return this.#issues.filter((issue) => issue.severity === 3);
-  }
+  const self: AnalysisReport = {
+    get issues(): Array<Issue> {
+      return issues.slice();
+    },
 
-  get warnings(): Array<Issue> {
-    return this.#issues.filter((issue) => issue.severity === 2);
-  }
+    get errors(): Array<Issue> {
+      return issues.filter((issue) => issue.severity === 3);
+    },
 
-  get infos(): Array<Issue> {
-    return this.#issues.filter((issue) => issue.severity === 1);
-  }
+    get warnings(): Array<Issue> {
+      return issues.filter((issue) => issue.severity === 2);
+    },
 
-  get hasErrors(): boolean {
-    return this.errors.length > 0;
-  }
+    get infos(): Array<Issue> {
+      return issues.filter((issue) => issue.severity === 1);
+    },
 
-  get hasWarnings(): boolean {
-    return this.warnings.length > 0;
-  }
+    get hasErrors(): boolean {
+      return self.errors.length > 0;
+    },
 
-  get hasInfos(): boolean {
-    return this.infos.length > 0;
-  }
+    get hasWarnings(): boolean {
+      return self.warnings.length > 0;
+    },
 
-  addIssue(code: IssueCode, message: string, range: Range, snapshot: ValidationContextSnapshot, suggestions: Array<string> = []): void {
-    const { severity, custom } = ISSUES_DEFINITIONS[code];
-    this.#issues.push({
-      code,
-      message,
-      range,
-      snapshot,
-      suggestions,
-      severity,
-      custom,
-    });
-  }
+    get hasInfos(): boolean {
+      return self.infos.length > 0;
+    },
 
-  hasIssues(minSeverity: IssueSeverity = 3): boolean {
-    return this.#issues.some((issue) => issue.severity >= minSeverity);
-  }
+    addIssue(code: IssueCode, message: string, range: Range, snapshot: ValidationContextSnapshot, suggestions: Array<string> = []): void {
+      const { severity, custom } = ISSUES_DEFINITIONS[code];
+      issues.push({
+        code,
+        message,
+        range,
+        snapshot,
+        suggestions,
+        severity,
+        custom,
+      });
+    },
 
-  merge(...analysisReports: Array<AnalysisReport>): this {
-    for (const analysisReport of analysisReports) {
-      for (const issue of analysisReport.issues) {
-        this.addIssue(issue.code, issue.message, issue.range, issue.snapshot, issue.suggestions);
+    hasIssues(minSeverity: IssueSeverity = 3): boolean {
+      return issues.some((issue) => issue.severity >= minSeverity);
+    },
+
+    merge(...analysisReports: Array<AnalysisReport>): AnalysisReport {
+      for (const analysisReport of analysisReports) {
+        for (const issue of analysisReport.issues) {
+          self.addIssue(issue.code, issue.message, issue.range, issue.snapshot, issue.suggestions);
+        }
       }
-    }
-    return this;
-  }
+      return self;
+    },
+  };
+
+  return self;
 }

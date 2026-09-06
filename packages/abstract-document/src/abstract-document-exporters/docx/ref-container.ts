@@ -1,50 +1,57 @@
-﻿import * as DocxConstants from "./docx-constants.js";
-import { XmlWriter } from "./xml-writer.js";
+import * as DocxConstants from "./docx-constants.js";
+import type { XmlWriter } from "./xml-writer.js";
+import { createXmlWriter } from "./xml-writer.js";
 
-//tslint:disable:no-class no-this
+export interface RefContainer {
+  readonly XMLWriter: XmlWriter;
+  readonly count: number;
+  AddReference: (refId: string, filePath: string, type: string) => void;
+  AddReference2: (refId: string, filePath: string, type: string) => void;
+  finish: () => void;
+}
 
-export class RefContainer {
-  // tslint:disable-next-line:readonly-keyword
-  _references: Array<string> = [];
+export function createRefContainer(): RefContainer {
+  let references: Array<string> = [];
+  const xmlWriter = createXmlWriter();
 
-  private readonly _xmlWriter: XmlWriter = new XmlWriter();
+  xmlWriter.WriteStartDocument(true);
+  xmlWriter.WriteStartElement("Relationships", DocxConstants.RelationNamespace);
 
-  get XMLWriter(): XmlWriter {
-    return this._xmlWriter;
-  }
-
-  constructor() {
-    this.XMLWriter.WriteStartDocument(true);
-    this.XMLWriter.WriteStartElement("Relationships", DocxConstants.RelationNamespace);
-  }
-
-  AddReference(refId: string, filePath: string, type: string): void {
-    if (!filePath.startsWith("/")) {
-      filePath = "/" + filePath;
-    }
-    this.AddReference2(refId, filePath, type);
-  }
-
-  AddReference2(refId: string, filePath: string, type: string): void {
-    if (this._references.indexOf(refId) !== -1) {
+  function addReference2(refId: string, filePath: string, type: string): void {
+    if (references.indexOf(refId) !== -1) {
       return;
     }
-    this.XMLWriter.WriteStartElement("Relationship");
-    this.XMLWriter.WriteAttributeString("Type", type);
+    xmlWriter.WriteStartElement("Relationship");
+    xmlWriter.WriteAttributeString("Type", type);
     filePath = filePath.replace("\\", "/");
-    this.XMLWriter.WriteAttributeString("Target", filePath);
-    this.XMLWriter.WriteAttributeString("Id", refId);
-    this.XMLWriter.WriteEndElement();
-    this._references.push(refId);
+    xmlWriter.WriteAttributeString("Target", filePath);
+    xmlWriter.WriteAttributeString("Id", refId);
+    xmlWriter.WriteEndElement();
+    references.push(refId);
   }
 
-  get count(): number {
-    return this._references.length;
-  }
+  return {
+    get XMLWriter(): XmlWriter {
+      return xmlWriter;
+    },
 
-  finish(): void {
-    this.XMLWriter.WriteEndElement();
-    this.XMLWriter.close();
-    this._references = [];
-  }
+    get count(): number {
+      return references.length;
+    },
+
+    AddReference(refId: string, filePath: string, type: string): void {
+      if (!filePath.startsWith("/")) {
+        filePath = "/" + filePath;
+      }
+      addReference2(refId, filePath, type);
+    },
+
+    AddReference2: addReference2,
+
+    finish(): void {
+      xmlWriter.WriteEndElement();
+      xmlWriter.close();
+      references = [];
+    },
+  };
 }

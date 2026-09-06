@@ -1,5 +1,6 @@
 import type { AnalysisReport } from "./analysis-report.js";
 
+// oxlint-disable-next-line functional/no-classes -- extends Error, which requires a class
 export class AnalysisError extends Error {
   static fromReport(report: AnalysisReport): AnalysisError {
     let message: string;

@@ -4,29 +4,38 @@ export interface ValidationContextSnapshot {
   parentElements: Array<string>;
 }
 
-export class ValidationContext {
-  readonly #elements: Array<string> = [];
+export interface ValidationContext {
+  readonly currentPath: string;
+  enterElement: (element: string) => void;
+  exitElement: () => void;
+  getSnapshot: () => ValidationContextSnapshot;
+}
 
-  get currentPath(): string {
-    if (this.#elements.length > 0) {
-      return this.#elements.join(" > ");
-    }
-    return "";
-  }
+export function createValidationContext(): ValidationContext {
+  const elements: Array<string> = [];
 
-  enterElement(element: string): void {
-    this.#elements.push(element);
-  }
+  return {
+    get currentPath(): string {
+      if (elements.length > 0) {
+        return elements.join(" > ");
+      }
+      return "";
+    },
 
-  exitElement(): void {
-    this.#elements.pop();
-  }
+    enterElement(element: string): void {
+      elements.push(element);
+    },
 
-  getSnapshot(): ValidationContextSnapshot {
-    return {
-      elements: this.#elements.slice(),
-      currentElement: this.#elements[this.#elements.length - 1],
-      parentElements: this.#elements.slice(0, -1),
-    };
-  }
+    exitElement(): void {
+      elements.pop();
+    },
+
+    getSnapshot(): ValidationContextSnapshot {
+      return {
+        elements: elements.slice(),
+        currentElement: elements[elements.length - 1],
+        parentElements: elements.slice(0, -1),
+      };
+    },
+  };
 }

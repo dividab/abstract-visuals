@@ -3,6 +3,7 @@ type Loc = {
   column: number;
 };
 
+// oxlint-disable-next-line functional/no-classes -- extends Error, which requires a class
 export class ParseError extends Error {
   readonly loc?: Loc;
 

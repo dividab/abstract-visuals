@@ -2,12 +2,12 @@ import type { Program } from "acorn";
 import { isJsxElement, isJsxFragment, isJsxLeafNode, isJsxText } from "../../jsx.js";
 import { getAllowedChildren, isSelfClosing, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
-import { AnalysisReport } from "../analysis-report.js";
+import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
 import { getBestSimilarityMatcherSuggestion, getElementSimilarityMatchers, getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeElementChildren(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
-  const analysisReport = new AnalysisReport();
+  const analysisReport = createAnalysisReport();
 
   const localFunctionNames = new Set<string>();
   for (const stmt of ast.body) {

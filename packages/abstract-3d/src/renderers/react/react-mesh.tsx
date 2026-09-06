@@ -482,6 +482,7 @@ function holeIsZero(hole: Hole): boolean {
   }
 }
 
+// oxlint-disable-next-line functional/no-classes -- extends three.js Curve, which requires a class
 class CircleCurve extends Curve<Vector3> {
   radius: number;
   angleLength: number;

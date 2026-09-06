@@ -1,12 +1,12 @@
 import type { Program } from "acorn";
 import { getAllElements, isElementAllowed, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
-import { AnalysisReport } from "../analysis-report.js";
+import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
 import { getBestSimilarityMatcherSuggestion, getElementSimilarityMatchers, getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeElementTags(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
-  const analysisReport = new AnalysisReport();
+  const analysisReport = createAnalysisReport();
 
   const localFunctionNames = new Set<string>();
   for (const stmt of ast.body) {

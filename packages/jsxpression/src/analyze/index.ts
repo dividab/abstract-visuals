@@ -1,3 +1,3 @@
 export { analyze } from "./analyze.js";
 export { AnalysisError } from "./analysis-error.js";
-export { AnalysisReport } from "./analysis-report.js";
+export { type AnalysisReport, createAnalysisReport } from "./analysis-report.js";

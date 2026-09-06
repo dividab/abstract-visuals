@@ -9,6 +9,7 @@ type Loc = {
   };
 };
 
+// oxlint-disable-next-line functional/no-classes -- extends Error, which requires a class
 export class CompilationError extends Error {
   static fromNode(message: string, node: any): CompilationError {
     const loc = node.loc
