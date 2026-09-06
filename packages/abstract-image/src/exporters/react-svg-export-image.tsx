@@ -353,7 +353,7 @@ function getBaselineAdjustment(d: GrowthDirection): "baseline" | "central" | "ha
   if (d === "down") {
     return "hanging";
   }
-  throw "Unknown text alignment " + d;
+  throw new Error("Unknown text alignment " + d);
 }
 
 function getTextAnchor(d: GrowthDirection): "end" | "middle" | "start" {
@@ -366,7 +366,7 @@ function getTextAnchor(d: GrowthDirection): "end" | "middle" | "start" {
   if (d === "right") {
     return "start";
   }
-  throw "Unknown text anchor " + d;
+  throw new Error("Unknown text anchor " + d);
 }
 
 function colorToRgb(color: Color): string {

@@ -39,7 +39,6 @@ export default defineConfig({
     "no-useless-return": "off", // 5 errors
     "typescript/ban-tslint-comment": "off", // 11 errors
     "no-throw-literal": "off", // 4 errors
-    "typescript/only-throw-error": "off", // 4 errors
     "typescript/unified-signatures": "off", // 5 errors
     "no-bitwise": "off", // 38 errors
     "init-declarations": "off", // 14 errors

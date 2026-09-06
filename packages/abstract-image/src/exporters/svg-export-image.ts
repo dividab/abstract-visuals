@@ -355,7 +355,7 @@ function getBaselineAdjustment(d: GrowthDirection): "baseline" | "central" | "ha
   if (d === "down") {
     return "hanging";
   }
-  throw "Unknown text alignment " + d;
+  throw new Error("Unknown text alignment " + d);
 }
 
 function getTextAnchor(d: GrowthDirection): string {
@@ -368,7 +368,7 @@ function getTextAnchor(d: GrowthDirection): string {
   if (d === "right") {
     return "start";
   }
-  throw "Unknown text anchor " + d;
+  throw new Error("Unknown text anchor " + d);
 }
 
 function colorToRgb(color: Color): string {
