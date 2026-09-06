@@ -16,3 +16,4 @@ dist/
 storybook-static/
 tmp/
 gitleaks-report.json
+stats.html
