@@ -90,40 +90,28 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
 
   const resources = AD.Resources.mergeResources([parentResources, section]);
 
-  const headerChildren = section.page.header.reduce(
-    (sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-      return sofar;
-    },
-    [] as Array<Paragraph | Table>
-  );
+  const headerChildren = section.page.header.reduce<Array<Paragraph | Table>>((sofar, c) => {
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    return sofar;
+  }, []);
 
   const firstpageHeaderChildren = hasFrontHeader
-    ? section.page.frontHeader.reduce(
-        (sofar, c) => {
-          sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-          return sofar;
-        },
-        [] as Array<Paragraph | Table>
-      )
+    ? section.page.frontHeader.reduce<Array<Paragraph | Table>>((sofar, c) => {
+        sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+        return sofar;
+      }, [])
     : [];
 
-  const footerChildren = section.page.footer.reduce(
-    (sofar, c) => {
-      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-      return sofar;
-    },
-    [] as Array<Paragraph | Table>
-  );
+  const footerChildren = section.page.footer.reduce<Array<Paragraph | Table>>((sofar, c) => {
+    sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+    return sofar;
+  }, []);
 
   const firstPageFooterChildren = hasFrontFooter
-    ? section.page.frontFooter.reduce(
-        (sofar, c) => {
-          sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-          return sofar;
-        },
-        [] as Array<Paragraph | Table>
-      )
+    ? section.page.frontFooter.reduce<Array<Paragraph | Table>>((sofar, c) => {
+        sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+        return sofar;
+      }, [])
     : [];
 
   const contentChildren = [
@@ -136,13 +124,10 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
         }),
       ],
     }),
-    ...section.children.reduce(
-      (sofar, c) => {
-        sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
-        return sofar;
-      },
-      [] as Array<Paragraph | Table>
-    ),
+    ...section.children.reduce<Array<Paragraph | Table>>((sofar, c) => {
+      sofar.push(...renderSectionElement(c, resources, contentAvailableWidth));
+      return sofar;
+    }, []),
   ];
 
   return {
@@ -396,13 +381,10 @@ function renderCell(
       },
     },
 
-    children: cell.children.reduce(
-      (sofar, c) => {
-        sofar.push(...renderSectionElement(c, resources, abstractDocPxCellWidth, keepNext));
-        return sofar;
-      },
-      [] as Array<Paragraph | Table>
-    ),
+    children: cell.children.reduce<Array<Paragraph | Table>>((sofar, c) => {
+      sofar.push(...renderSectionElement(c, resources, abstractDocPxCellWidth, keepNext));
+      return sofar;
+    }, []),
   });
 }
 

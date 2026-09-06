@@ -194,9 +194,9 @@ export function AbstractChartExample(): React.JSX.Element {
         }
         return [negSum, posSum];
       })
-      .reduce((soFar, current) => {
+      .reduce<ReadonlyArray<number>>((soFar, current) => {
         return [...soFar, ...current];
-      }, [] as ReadonlyArray<number>);
+      }, []);
     return [Math.min(...axisValues), Math.max(...axisValues)];
   }
 
@@ -471,8 +471,8 @@ export function AbstractChartExample(): React.JSX.Element {
 function getLineRange(series: Array<ChartLine>, axisSelector: (point: Point) => number): [number, number] {
   const axisValues = series
     .map((serie) => serie.points.map(axisSelector))
-    .reduce((soFar, current) => {
+    .reduce<ReadonlyArray<number>>((soFar, current) => {
       return [...soFar, ...current];
-    }, [] as ReadonlyArray<number>);
+    }, []);
   return [Math.min(...axisValues), Math.max(...axisValues)];
 }

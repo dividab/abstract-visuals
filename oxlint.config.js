@@ -37,7 +37,6 @@ export default defineConfig({
     "init-declarations": "off", // 14 errors
     "no-restricted-properties": "off", // 8 errors
     "typescript/switch-exhaustiveness-check": "off", // 25 errors
-    "typescript/prefer-reduce-type-parameter": "off", // 8 errors
     "max-lines": ["error", 1100],
 
     // Flags React components defined inside other components, which is a normal pattern.
