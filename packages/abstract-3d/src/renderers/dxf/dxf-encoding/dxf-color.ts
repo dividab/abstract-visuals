@@ -58,6 +58,7 @@ function colorNormalToVec3Color(colorNormal: string): Vec3 {
 function dxfBitShiftColor(color: string): number {
   const originalColor = colorNormalToVec3Color(color);
 
+  // oxlint-disable-next-line no-bitwise
   const colorAsInt = (originalColor.x << 16) + (originalColor.y << 8) + originalColor.z;
   if (Number.isNaN(colorAsInt)) {
     return 0;

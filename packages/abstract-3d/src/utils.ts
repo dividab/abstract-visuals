@@ -1,3 +1,4 @@
+// oxlint-disable no-bitwise
 import type { Vec3, View } from "./abstract-3d.js";
 import { vec3, vec3Rot, vec3Zero } from "./abstract-3d.js";
 

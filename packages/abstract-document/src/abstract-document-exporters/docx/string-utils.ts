@@ -1,3 +1,4 @@
+// oxlint-disable no-bitwise
 // https://github.com/google/closure-library/blob/e877b1eac410c0d842bcda118689759512e0e26f/closure/goog/crypt/crypt.js
 
 /**

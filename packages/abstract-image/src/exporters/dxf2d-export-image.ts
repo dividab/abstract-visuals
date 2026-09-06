@@ -87,6 +87,7 @@ export function dxf2dExportImageEncoded(root: AbstractImage, options?: Optional<
 }
 
 function encodeWindows1252(str: string): Uint8Array {
+  // oxlint-disable-next-line no-bitwise
   return Uint8Array.from(str, (c) => c.charCodeAt(0) & 0xff);
 }
 
@@ -1297,6 +1298,7 @@ function isBlack(color: Color): boolean {
 }
 
 function colorToInteger(color: Color): number {
+  // oxlint-disable-next-line no-bitwise
   const colorAsInt = (color.r << 16) + (color.g << 8) + color.b;
   if (Number.isNaN(colorAsInt)) {
     return 0;
