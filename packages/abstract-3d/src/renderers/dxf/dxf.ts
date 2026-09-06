@@ -21,7 +21,8 @@ import {
   vec3Zero,
 } from "../../abstract-3d.js";
 import { type Optional, calculateVisibleViews } from "../../utils.js";
-import { DEFAULT_CIRCLE_SIDE_COUNT, type DxfOrigin, type Handle, dxfBuild, dxfHandleInit } from "./dxf-encoding/dxf-common.js";
+import { dxfBuild } from "./dxf-encoding/dxf-build.js";
+import { DEFAULT_CIRCLE_SIDE_COUNT, type DxfOrigin, type Handle, dxfHandleInit } from "./dxf-encoding/dxf-common.js";
 import type { DxfDimensionDefinition } from "./dxf-encoding/dxf-dimension.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";

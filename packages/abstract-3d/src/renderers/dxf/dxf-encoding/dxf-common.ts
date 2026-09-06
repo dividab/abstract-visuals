@@ -1,10 +1,4 @@
-import { generateUUID } from "three/src/math/MathUtils.js";
-import { vec3, vec3Cross, vec3Normalize, type Bounds3, type Vec3 } from "../../../abstract-3d.js";
-import type { DxfDimensionDefinition } from "./dxf-dimension.js";
-// oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
-import { dxfEncFooter } from "./dxf-footer.js";
-// oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
-import { dxfEncHeader } from "./dxf-header.js";
+import { vec3, vec3Cross, vec3Normalize, type Vec3 } from "../../../abstract-3d.js";
 
 export const DEFAULT_CIRCLE_SIDE_COUNT = 16;
 export const DXF_FONT_SIZE_RATIO: number = 11.0 / 20.0;
@@ -28,11 +22,6 @@ export function dxfHandleNext(handleRef: Handle): string {
 export function dxfRound(n: number): number {
   const d = 3;
   return Math.round((n + Number.EPSILON) * 10 ** d) / 10 ** d;
-}
-
-export function dxfBuild(groups: string, dimensions: DxfDimensionDefinition, bounds: Bounds3, size: Vec3, center: Vec3): string {
-  const id = generateUUID();
-  return dxfEncHeader(bounds, center, id, size, dimensions.block, dimensions.blockRecord) + groups + dimensions.entity + dxfEncFooter(id);
 }
 
 /*

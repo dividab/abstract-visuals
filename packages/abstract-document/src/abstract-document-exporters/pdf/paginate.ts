@@ -1,23 +1,9 @@
 import * as AD from "../../abstract-document/index.js";
 import { getResources } from "../shared/get_resources.js";
 import { registerFonts } from "./font.js";
-// oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
+import { getHeaderAndFooter } from "./header-footer.js";
 import { measureTable } from "./measure.js";
-
-export interface PageColumn {
-  readonly elements: ReadonlyArray<AD.SectionElement.SectionElement>;
-}
-
-export interface Page {
-  readonly pageNo: number;
-  readonly namedDestionations: ReadonlyArray<string>;
-  readonly pageOptions: PDFKit.PDFDocumentOptions;
-  readonly section: AD.Section.Section;
-  readonly contentRect: AD.Rect.Rect;
-  readonly columns: ReadonlyArray<PageColumn>;
-  readonly header: ReadonlyArray<AD.SectionElement.SectionElement>;
-  readonly footer: ReadonlyArray<AD.SectionElement.SectionElement>;
-}
+import type { Page, PageColumn } from "./page.js";
 
 export function paginate(
   pdfKit: PDFKit.PDFDocument,
@@ -248,48 +234,6 @@ function createPage(
     header: isFirst ? frontHeader : section.page.header,
     footer: isFirst ? frontFooter : section.page.footer,
   };
-}
-
-export function getHeaderAndFooter(
-  section: AD.Section.Section,
-  pageNo: number
-): {
-  readonly header: Array<AD.SectionElement.SectionElement>;
-  readonly footer: Array<AD.SectionElement.SectionElement>;
-  readonly headerMargins: Required<AD.LayoutFoundation.LayoutFoundation>;
-  readonly footerMargins: Required<AD.LayoutFoundation.LayoutFoundation>;
-} {
-  const FIRST_PAGE = 1;
-  const EVEN_PAGE = 0;
-  const ODD_PAGE = 1;
-  switch (true) {
-    //first page
-    case pageNo === FIRST_PAGE: {
-      const normalHeader = section.page.frontHeader === undefined || section.page.frontHeader.length === 0;
-      const normalFooter = section.page.frontFooter === undefined || section.page.frontFooter.length === 0;
-      return {
-        footer: normalFooter ? section.page.footer : section.page.frontFooter,
-        header: normalHeader ? section.page.header : section.page.frontHeader,
-        headerMargins: AD.LayoutFoundation.orDefault(
-          normalHeader ? section.page.style.headerMargins : (section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins)
-        ),
-        footerMargins: AD.LayoutFoundation.orDefault(
-          normalFooter ? section.page.style.footerMargins : (section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins)
-        ),
-      };
-    }
-    case pageNo === 0:
-    case pageNo % 2 === EVEN_PAGE:
-    case pageNo % 2 === ODD_PAGE:
-    default: {
-      return {
-        header: section.page.header,
-        footer: section.page.footer,
-        headerMargins: AD.LayoutFoundation.orDefault(section.page.style.headerMargins),
-        footerMargins: AD.LayoutFoundation.orDefault(section.page.style.footerMargins),
-      };
-    }
-  }
 }
 
 function getPageContentRect(desiredSizes: Map<object, AD.Size.Size>, section: AD.Section.Section, pageNo: number): AD.Rect.Rect {

@@ -1,10 +1,8 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import * as AD from "../../abstract-document/index.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
-// oxlint-disable-next-line import/no-cycle -- type-only, erased at compile time
-import type { Page } from "./paginate.js";
-// oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
-import { getHeaderAndFooter } from "./paginate.js";
+import { getHeaderAndFooter } from "./header-footer.js";
+import type { Page } from "./page.js";
 
 const widthOfStringCache = new Map<string, number>();
 const heightOfStringCache = new Map<string, number>();
