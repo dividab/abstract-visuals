@@ -37,7 +37,7 @@ export function exportToBytes(doc: AD.AbstractDoc.AbstractDoc, options: PdfExpor
  */
 export function exportToStream(blobStream: unknown, doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): void {
   const pdf = createDocument(options, doc);
-  pdf.pipe(blobStream as any);
+  pdf.pipe(blobStream as NodeJS.WritableStream);
 }
 
 function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDoc): PDFKit.PDFDocument {
@@ -66,8 +66,8 @@ function renderPage(parentResources: AD.Resources.Resources, pdfKit: PDFKit.PDFD
   const contentRect = addPage(pdfKit, page);
 
   page.namedDestionations.forEach((dest) => {
-    if ((pdfKit as any).addNamedDestination) {
-      (pdfKit as any).addNamedDestination(dest);
+    if (pdfKit.addNamedDestination) {
+      pdfKit.addNamedDestination(dest);
     }
   });
 

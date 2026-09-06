@@ -8,15 +8,15 @@ export function diffJson(oldJSON: unknown, newJSON: unknown): string {
   return message;
 }
 
-function diffObject(oldObject: any, newObject: any): [string, boolean] {
+function diffObject(oldObject: unknown, newObject: unknown): [string, boolean] {
   let message = "";
-  for (const [key, oldValue] of Object.entries(oldObject)) {
-    if (!(key in newObject)) {
+  for (const [key, oldValue] of Object.entries(oldObject as Record<string, unknown>)) {
+    if (!(key in (newObject as Record<string, unknown>))) {
       message += `\n- ${key}: ${stringify(oldValue)}`;
       continue;
     }
 
-    const newValue = newObject[key];
+    const newValue = (newObject as Record<string, unknown>)[key];
     const [newMessage, wrongKeyValues] = diffValues(oldValue, newValue);
     if (wrongKeyValues) {
       message += newMessage;
@@ -27,8 +27,8 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
     }
   }
 
-  for (const [key, newValue] of Object.entries(newObject)) {
-    if (!(key in oldObject) && newValue !== undefined) {
+  for (const [key, newValue] of Object.entries(newObject as Record<string, unknown>)) {
+    if (!(key in (oldObject as Record<string, unknown>)) && newValue !== undefined) {
       message += `\n+ ${key}: ${stringify(newValue)}`;
     }
   }
@@ -40,7 +40,7 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
   return [message, false];
 }
 
-function diffArray(oldArray: Array<any>, newArray: Array<any>): [string, boolean] {
+function diffArray(oldArray: Array<unknown>, newArray: Array<unknown>): [string, boolean] {
   let message = "";
   let hasDifference = false;
   if (oldArray.length !== newArray.length) {
@@ -63,9 +63,9 @@ function diffArray(oldArray: Array<any>, newArray: Array<any>): [string, boolean
   return [message, hasDifference];
 }
 
-function diffValues(oldValue: any, newValue: any): [string, boolean] {
+function diffValues(oldValue: unknown, newValue: unknown): [string, boolean] {
   if (Array.isArray(oldValue)) {
-    return diffArray(oldValue, newValue);
+    return diffArray(oldValue, newValue as Array<unknown>);
   } else if (typeof oldValue === "object") {
     return diffObject(oldValue, newValue);
   } else {
@@ -88,7 +88,7 @@ function appendWhitespace(message: string): string {
   return message.replace(/\n/g, "\n  ");
 }
 
-function stringify(value: any): string {
+function stringify(value: unknown): string {
   if (typeof value === "string") {
     return value;
   }

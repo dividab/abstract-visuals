@@ -12,7 +12,7 @@ type TestNode = {
 
 describe("render", () => {
   it("should render complete JSX pipeline successfully", () => {
-    const TestComponent = ({ children, ...props }: { x: number; y: number; children?: Array<any> }): TestNode => ({
+    const TestComponent = ({ children, ...props }: { x: number; y: number; children?: Array<unknown> }): TestNode => ({
       type: "TestComponent",
       props,
       children: children ?? [],
@@ -76,13 +76,13 @@ describe("render", () => {
   });
 
   it("should render nested JSX elements", () => {
-    const OuterComponent = ({ children, ...props }: { x: number; children?: Array<any> }): TestNode => ({
+    const OuterComponent = ({ children, ...props }: { x: number; children?: Array<unknown> }): TestNode => ({
       type: "OuterComponent",
       props,
       children: children ?? [],
     });
 
-    const InnerComponent = ({ children, ...props }: { y: number; children?: Array<any> }): TestNode => ({
+    const InnerComponent = ({ children, ...props }: { y: number; children?: Array<unknown> }): TestNode => ({
       type: "InnerComponent",
       props,
       children: children ?? [],

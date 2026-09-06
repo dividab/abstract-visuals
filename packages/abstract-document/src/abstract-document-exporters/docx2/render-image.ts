@@ -89,7 +89,7 @@ function binaryImageToImageRun(
         type: format === "png" ? "png" : "jpg",
         data: Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength),
         transformation,
-      } as any);
+      });
     }
 
     if (format === "svg") {
@@ -127,11 +127,11 @@ function binaryImageToImageRun(
       const data = fromBase64(match[2]);
 
       if (mimeType.includes("png")) {
-        return new ImageRun({ data, transformation, type: "png" } as any);
+        return new ImageRun({ data, transformation, type: "png" });
       }
 
       if (mimeType.includes("jpeg") || mimeType.includes("jpg")) {
-        return new ImageRun({ data, transformation, type: "jpg" } as any);
+        return new ImageRun({ data, transformation, type: "jpg" });
       }
 
       if (mimeType.includes("svg")) {

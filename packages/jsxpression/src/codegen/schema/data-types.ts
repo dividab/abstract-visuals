@@ -1,4 +1,4 @@
-import type { Schema } from "../../schema.js";
+import type { PropertySchema, Schema } from "../../schema.js";
 import { mapSchemaTypeToTypeScript } from "./utils.js";
 
 export function declareDataTypes(schema: Schema): string {
@@ -21,7 +21,7 @@ export function declareDataTypes(schema: Schema): string {
   return output;
 }
 
-function generateNestedPropertyJSDoc(propertyName: string, propertySchema: any, indent: string = ""): string {
+function generateNestedPropertyJSDoc(propertyName: string, propertySchema: PropertySchema, indent: string = ""): string {
   const comments: Array<string> = [];
 
   if (propertySchema.description) {
@@ -39,15 +39,15 @@ function generateNestedPropertyJSDoc(propertyName: string, propertySchema: any, 
   let hasNestedProperties = false;
   if (propertySchema.type === "object" && propertySchema.shape) {
     comments.push("");
-    Object.entries(propertySchema.shape).forEach(([key, value]: [string, any]) => {
+    Object.entries(propertySchema.shape).forEach(([key, value]) => {
       if (value.description) {
         comments.push(`@property ${key} ${value.description}`);
         hasNestedProperties = true;
       }
     });
-  } else if (propertySchema.type === "array" && propertySchema.shape?.type === "object" && propertySchema.shape.shape) {
+  } else if (propertySchema.type === "array" && propertySchema.shape.type === "object" && propertySchema.shape.shape) {
     comments.push("");
-    Object.entries(propertySchema.shape.shape).forEach(([key, value]: [string, any]) => {
+    Object.entries(propertySchema.shape.shape).forEach(([key, value]) => {
       if (value.description) {
         comments.push(`@property ${key} ${value.description}`);
         hasNestedProperties = true;

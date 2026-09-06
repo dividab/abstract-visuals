@@ -3,7 +3,7 @@ import { EvaluationError } from "./evaluation-error.js";
 
 export type ComponentDict = Record<string, Component>;
 
-export type CreateElement<T = any> = (type: Component, props?: PropsDict, ...children: Array<any>) => T;
+export type CreateElement<T = unknown> = (type: Component, props?: PropsDict, ...children: Array<unknown>) => T;
 
 export type PropsDict = Record<string, unknown>;
 
@@ -17,14 +17,14 @@ export type Node = {
 
 export type H = (type: string | Function, props?: PropsDict, ...children: Array<Node>) => Node;
 
-export type Component = (...args: Array<any>) => any;
+export type Component = (...args: Array<never>) => unknown;
 
 /**
  * Configuration options for evaluating JSX expressions.
  *
  * @template T - The return type of createElement function
  */
-export interface EvaluateOptions<T = any> {
+export interface EvaluateOptions<T = unknown> {
   /** Data object whose keys become top-level variables in JSX expressions */
   data?: DataDict;
   /** Map of component names to component functions used in JSX */
@@ -38,7 +38,7 @@ export interface EvaluateOptions<T = any> {
 const RESERVED_PARAMS = new Set(["h", "Math"]);
 const VALID_IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
 
-export function evaluate<T = any>(source: string, schema: Schema, options: EvaluateOptions<T>): T {
+export function evaluate<T = unknown>(source: string, schema: Schema, options: EvaluateOptions<T>): T {
   const { data = {}, components = {}, functions = {}, createElement } = options;
 
   const dataKeys = Object.keys(data);
@@ -76,22 +76,22 @@ function validateParamKeys(dataKeys: Array<string>, functionKeys: Array<string>)
 function createH(components: ComponentDict, createElement: CreateElement, schema: Schema): H {
   return function h(type, props, ...children) {
     if (typeof type === "function") {
-      return createElement(type as Component, props, ...children.flat().filter(Boolean));
+      return createElement(type as Component, props, ...children.flat().filter(Boolean)) as Node;
     }
 
     const Component = components[type];
 
     if (!Component) {
       if (isElementAllowed(schema, type)) {
-        const defaultComponent = (props: PropsDict): any => (canHaveChildren(schema, type) ? props["children"] : null);
-        return createElement(defaultComponent, props, ...children.flat().filter(Boolean));
+        const defaultComponent = (props: PropsDict): unknown => (canHaveChildren(schema, type) ? props["children"] : null);
+        return createElement(defaultComponent, props, ...children.flat().filter(Boolean)) as Node;
       }
 
       // Component not in schema - throw error
       throw new EvaluationError(`component "${type}" is not allowed`);
     }
 
-    return createElement(Component, props, ...children.flat().filter(Boolean));
+    return createElement(Component, props, ...children.flat().filter(Boolean)) as Node;
   };
 }
 
@@ -105,6 +105,6 @@ function deepFreezeData(obj: Record<string, unknown>): Record<string, unknown> {
   return obj;
 }
 
-function defaultCreateElement(Component: Component, props: PropsDict = {}, ...children: Array<any>): Node {
-  return Component({ ...props, children });
+function defaultCreateElement(Component: Component, props: PropsDict = {}, ...children: Array<unknown>): Node {
+  return (Component as (props: PropsDict & { children: Array<unknown> }) => Node)({ ...props, children });
 }

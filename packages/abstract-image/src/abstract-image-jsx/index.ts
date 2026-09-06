@@ -69,8 +69,15 @@ export const Text = (props: TextComponent): TextComponent =>
   );
 export const SubImage = (props: SubImageComponent): SubImageComponent => createSubImage(props.topLeft, props.size, props.image);
 
-export function render(element: unknown): any {
-  const el = element as any;
+// Shape actually accessed when walking the fake element tree at runtime; `type`'s props param and
+// `props` itself are a genuinely arbitrary bag of component props, not a fixed structural type.
+interface FakeElement {
+  readonly type: string | ((props: Record<string, unknown>) => unknown);
+  readonly props?: { readonly type?: unknown; readonly children?: unknown; readonly [key: string]: unknown };
+}
+
+export function render(element: unknown): unknown {
+  const el = element as FakeElement;
   if (typeof el.type !== "function") {
     return el;
   }
@@ -79,7 +86,7 @@ export function render(element: unknown): any {
   return el.type({ ...props, children });
 }
 
-function renderChildren(element: React.ReactElement<any>): any {
+function renderChildren(element: FakeElement): Array<unknown> {
   if (!element.props?.children) {
     return [];
   }
@@ -87,7 +94,7 @@ function renderChildren(element: React.ReactElement<any>): any {
   if (element.props.type === "group") {
     const children = element.props.children;
     if (Array.isArray(children)) {
-      return children.flatMap((c: any) => {
+      return children.flatMap((c: unknown) => {
         if (!c) {
           return [];
         }

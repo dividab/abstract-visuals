@@ -17,6 +17,7 @@ export const parseHandlebarsXml = (template: string, data: unknown, partials: Re
 
 export const renderHandlebars = (template: string, data: unknown, partials: Record<string, string>): string => {
   const hbs = Handlebars.create();
+  // oxlint-disable-next-line typescript/no-explicit-any -- h.func is a generic Function (each helper has a different arity/signature); bridges it to Handlebars' HelperDelegate
   helpers.forEach((h) => hbs.registerHelper(h.name, h.func as any));
   Object.entries(partials).forEach(([name, partial]) => hbs.registerPartial(name, partial));
   return hbs.compile(template, { compat: true, preventIndent: true })(data);
@@ -50,7 +51,7 @@ function transformFXP(parsedXml: ReadonlyArray<FastXmlElement>): ReadonlyArray<X
         const key = Object.keys(c)[0];
         return key === "#text";
       })
-      .flatMap((t) => t["#text"] as any as string);
+      .flatMap((t) => t["#text"] as unknown as string);
     const textContents = textChilds.flatMap((text) => {
       const cleaned = text.replace(/\n/g, "").replace(/\t/g, "").trim();
       return cleaned ? [text] : [];

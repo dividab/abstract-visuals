@@ -1,5 +1,7 @@
 import type { JSONSchema7 } from "json-schema";
 
+/* oxlint-disable typescript/no-explicit-any -- Handlebars helpers accept arbitrary user template data (see JSONSchema7 anySchema); no useful static type exists */
+
 export type HelperFunc = {
   readonly name: string;
   readonly description: string;

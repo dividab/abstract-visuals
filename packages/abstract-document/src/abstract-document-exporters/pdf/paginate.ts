@@ -11,7 +11,7 @@ export interface PageColumn {
 export interface Page {
   readonly pageNo: number;
   readonly namedDestionations: ReadonlyArray<string>;
-  readonly pageOptions: any;
+  readonly pageOptions: PDFKit.PDFDocumentOptions;
   readonly section: AD.Section.Section;
   readonly contentRect: AD.Rect.Rect;
   readonly columns: ReadonlyArray<PageColumn>;
@@ -22,7 +22,7 @@ export interface Page {
 export function paginate(
   pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
-  desiredSizes: Map<any, AD.Size.Size>
+  desiredSizes: Map<object, AD.Size.Size>
 ): ReadonlyArray<Page> {
   const resources = getResources(document);
   const pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true });
@@ -196,7 +196,7 @@ function createPage(
   const style = section.page.style;
   const pageWidth = AD.PageStyle.getWidth(style);
   const pageHeight = AD.PageStyle.getHeight(style);
-  const layout = style.orientation === "Landscape" ? "landscape" : "portrait";
+  const layout: "landscape" | "portrait" = style.orientation === "Landscape" ? "landscape" : "portrait";
   const pageOptions = {
     size: [pageWidth, pageHeight],
     layout: layout,

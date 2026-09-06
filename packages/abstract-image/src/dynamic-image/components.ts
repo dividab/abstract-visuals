@@ -27,6 +27,7 @@ import {
   white,
 } from "../model/index.js";
 
+// oxlint-disable-next-line typescript/no-explicit-any -- component functions receive arbitrary JSX-like template props (jsxpression's own Component type is likewise untyped); typing props precisely would require rewriting every component body
 export const createComponents = (mutableImageUrls: Array<string>): Record<string, (...args: Array<any>) => any> => ({
   AbstractImage: (props): AbstractImage => ({
     topLeft: { x: 0, y: 0 },
@@ -104,7 +105,7 @@ export const createComponents = (mutableImageUrls: Array<string>): Record<string
   Text: (props): Text => {
     const fontWeight = mapFontWeight(props.fontWeight);
     const children = props.children ?? [];
-    const filteredChildren = Array.isArray(children) ? children.flat().filter((c: any) => c !== null && c !== undefined) : [];
+    const filteredChildren = Array.isArray(children) ? children.flat().filter((c) => c !== null && c !== undefined) : [];
     const text = filteredChildren.length > 0 ? String(filteredChildren[0]) : "";
     return createText(
       { x: props.x ?? 0, y: props.y ?? 0 },

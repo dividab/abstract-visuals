@@ -10,7 +10,7 @@ import { creators, propsCreators } from "./creator.js";
 
 export type TemplateInput = {
   readonly template: string;
-  readonly data: any;
+  readonly data: unknown;
   readonly partials: Record<string, string>;
 };
 
@@ -53,6 +53,7 @@ export function abstractDocXml(
   return [doc, imageUrls, fontFamilies];
 }
 
+// oxlint-disable-next-line typescript/no-explicit-any -- produces whichever AD model type (or a children array) the caller expects at that recursion site; see the single external call site's tuple return, which assigns this straight to AbstractDoc.AbstractDoc
 function abstractDocXmlRecursive(creators: Record<string, ADCreatorFn>, xmlElement: XmlElement, onlyChildren: boolean = false): any {
   const children = [];
   const props: Record<string, unknown> = {};

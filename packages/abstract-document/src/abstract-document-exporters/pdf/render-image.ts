@@ -411,5 +411,5 @@ function applyStrokeDashStyle(pdf: PDFKit.PDFDocument, dashStyle: AbstractImage.
     }
   }
 
-  (pdf as { dash: (length: number | ReadonlyArray<number>, option: any) => any }).dash(dashes, { phase: phase });
+  (pdf as { dash: (length: number | ReadonlyArray<number>, option: { phase: number }) => PDFKit.PDFDocument }).dash(dashes, { phase: phase });
 }

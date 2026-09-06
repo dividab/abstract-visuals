@@ -9,7 +9,7 @@ import { getHeaderAndFooter } from "./paginate.js";
 const widthOfStringCache = new Map<string, number>();
 const heightOfStringCache = new Map<string, number>();
 
-export function measure(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc): Map<any, AD.Size.Size> {
+export function measure(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc): Map<object, AD.Size.Size> {
   const pdf = new pdfKit();
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   const result = mergeMaps(document.children.map((s) => measureSection(pdf, document, s)));
@@ -18,7 +18,11 @@ export function measure(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.Abs
   return result;
 }
 
-export function measurePages(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc, pages: ReadonlyArray<Page>): Map<any, AD.Size.Size> {
+export function measurePages(
+  pdfKit: PDFKit.PDFDocument,
+  document: AD.AbstractDoc.AbstractDoc,
+  pages: ReadonlyArray<Page>
+): Map<object, AD.Size.Size> {
   const pdf = new pdfKit();
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   return mergeMaps(
@@ -33,7 +37,7 @@ function measureSection(
   separateHeader?: ReadonlyArray<AD.SectionElement.SectionElement>,
   separateFooter?: ReadonlyArray<AD.SectionElement.SectionElement>,
   separateChildren?: ReadonlyArray<AD.SectionElement.SectionElement>
-): Map<any, AD.Size.Size> {
+): Map<object, AD.Size.Size> {
   const header = separateHeader ?? section.page.header;
   const footer = separateFooter ?? section.page.footer;
   const children = separateChildren ?? section.children;
@@ -80,7 +84,7 @@ function measureSectionElement(
   parentResources: AD.Resources.Resources,
   availableSize: AD.Size.Size,
   element: AD.SectionElement.SectionElement
-): Map<any, AD.Size.Size> {
+): Map<object, AD.Size.Size> {
   const resources = AD.Resources.mergeResources([parentResources, element]);
   switch (element.type) {
     case "Paragraph":
@@ -96,8 +100,8 @@ function measureSectionElement(
   }
 }
 
-function measurePageBreak(availableSize: AD.Size.Size, pageBreak: AD.PageBreak.PageBreak): Map<any, AD.Size.Size> {
-  const desiredSizes = new Map<any, AD.Size.Size>();
+function measurePageBreak(availableSize: AD.Size.Size, pageBreak: AD.PageBreak.PageBreak): Map<object, AD.Size.Size> {
+  const desiredSizes = new Map<object, AD.Size.Size>();
   desiredSizes.set(pageBreak, availableSize);
   return desiredSizes;
 }
@@ -107,7 +111,7 @@ function measureParagraph(
   resources: AD.Resources.Resources,
   availableSize: AD.Size.Size,
   paragraph: AD.Paragraph.Paragraph
-): Map<any, AD.Size.Size> {
+): Map<object, AD.Size.Size> {
   const style = AD.Resources.getStyle(
     undefined,
     paragraph.style,
@@ -121,7 +125,7 @@ function measureParagraph(
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, contentAvailableHeight);
 
   let paragraphHeight = styleMargins.top + styleMargins.bottom;
-  const desiredSizes = new Map<any, AD.Size.Size>();
+  const desiredSizes = new Map<object, AD.Size.Size>();
 
   const rows: Array<Array<AD.Atom.Atom>> = [];
   let currentRow: Array<AD.Atom.Atom> = [];
@@ -220,7 +224,7 @@ export function measureTable(
   resources: AD.Resources.Resources,
   availableSize: AD.Size.Size,
   table: AD.Table.Table
-): Map<any, AD.Size.Size> {
+): Map<object, AD.Size.Size> {
   const style = AD.Resources.getStyle(undefined, table.style, "TableStyle", table.styleName, resources) as AD.TableStyle.TableStyle;
   const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
   const tableAvailableWidth = availableSize.width - (styleMargins.left + styleMargins.right);
@@ -228,7 +232,7 @@ export function measureTable(
   const fixedColumnsWidth = table.columnWidths.filter((w) => Number.isFinite(w)).reduce((a, b) => a + b, 0);
   const infinityWidth = (tableAvailableWidth - fixedColumnsWidth) / numInfinityColumns;
   const columnWidths = table.columnWidths.map((w) => (Number.isFinite(w) ? w : infinityWidth));
-  const desiredSizes = new Map<any, AD.Size.Size>();
+  const desiredSizes = new Map<object, AD.Size.Size>();
   const rows = [...table.headerRows, ...table.children];
   for (const row of rows) {
     let column = 0;
@@ -321,7 +325,7 @@ function measureGroup(
   resources: AD.Resources.Resources,
   availableSize: AD.Size.Size,
   keepTogether: AD.Group.Group
-): Map<any, AD.Size.Size> {
+): Map<object, AD.Size.Size> {
   const desiredSizes = mergeMaps(keepTogether.children.map((e) => measureSectionElement(pdfKit, resources, availableSize, e)));
   const desiredHeight = keepTogether.children.reduce(
     (sum, e) => sum + (AD.Position.isPositionAbsolute(e) ? 0 : getDesiredSize(e, desiredSizes).height),
@@ -542,13 +546,13 @@ function heightOfString(pdf: PDFKit.PDFDocument, font: string, fontSize: number,
   return height;
 }
 
-function mergeMaps(maps: Array<Map<any, AD.Size.Size>>): Map<any, AD.Size.Size> {
-  const newMap = new Map<any, AD.Size.Size>();
+function mergeMaps(maps: Array<Map<object, AD.Size.Size>>): Map<object, AD.Size.Size> {
+  const newMap = new Map<object, AD.Size.Size>();
   maps.forEach((m) => m.forEach((v, k) => newMap.set(k, v)));
   return newMap;
 }
 
-function getDesiredSize(element: any, desiredSizes: Map<any, AD.Size.Size>): AD.Size.Size {
+function getDesiredSize(element: object, desiredSizes: Map<object, AD.Size.Size>): AD.Size.Size {
   const size = desiredSizes.get(element);
   if (size) {
     return size;

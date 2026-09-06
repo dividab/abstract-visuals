@@ -1,5 +1,7 @@
-export function generateDataSchema(data: Record<string, unknown>): Record<string, any> {
-  const schema: Record<string, any> = {};
+import type { PropertySchema } from "jsxpression";
+
+export function generateDataSchema(data: Record<string, unknown>): Record<string, PropertySchema> {
+  const schema: Record<string, PropertySchema> = {};
 
   for (const [key, value] of Object.entries(data)) {
     schema[key] = inferPropertySchema(value);
@@ -8,7 +10,7 @@ export function generateDataSchema(data: Record<string, unknown>): Record<string
   return schema;
 }
 
-function inferPropertySchema(value: unknown): any {
+function inferPropertySchema(value: unknown): PropertySchema {
   if (value === null || value === undefined) {
     return {
       type: "string",
@@ -40,7 +42,7 @@ function inferPropertySchema(value: unknown): any {
   }
 
   if (Array.isArray(value)) {
-    const itemSchema = value.length > 0 ? inferPropertySchema(value[0]) : { type: "string" };
+    const itemSchema: PropertySchema = value.length > 0 ? inferPropertySchema(value[0]) : { type: "string" };
     return {
       type: "array",
       shape: itemSchema,
@@ -48,7 +50,7 @@ function inferPropertySchema(value: unknown): any {
   }
 
   if (typeof value === "object") {
-    const shape: Record<string, any> = {};
+    const shape: Record<string, PropertySchema> = {};
     for (const [k, v] of Object.entries(value)) {
       shape[k] = inferPropertySchema(v);
     }

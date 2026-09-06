@@ -441,7 +441,7 @@ function Polygon({ polygon, children }: { readonly polygon: A3dPolygon; readonly
   );
 }
 
-const fakeArgs = [] as any;
+const fakeArgs = [] as unknown as ConstructorParameters<typeof BufferAttribute>;
 
 function Tube({ tube, children }: { readonly tube: A3dTube; readonly children?: React.JSX.Element }): React.JSX.Element {
   const tubeGeometry = React.useMemo(() => {

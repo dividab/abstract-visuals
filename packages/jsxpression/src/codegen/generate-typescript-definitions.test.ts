@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { Schema } from "../schema.js";
+import type { ElementSchema, Schema } from "../schema.js";
 import { generateTypeScriptDefinitions } from "./generate-typescript-definitions.js";
 
 describe("generateTypeScriptDefinitions", () => {
@@ -230,10 +230,11 @@ describe("generateTypeScriptDefinitions", () => {
       const schema: Schema = {
         data: {},
         elements: {
+          // `content` isn't part of ElementSchema; this intersection type documents that it's a legacy/unmodeled field being tested here.
           Input: {
             props: {},
             content: false,
-          } as any,
+          } as ElementSchema & { content: boolean },
         },
       };
 
@@ -606,8 +607,9 @@ describe("generateTypeScriptDefinitions", () => {
                 shape: { type: "string" },
               },
             },
+            // `content` isn't part of ElementSchema; this intersection type documents that it's a legacy/unmodeled field being tested here.
             content: false,
-          } as any,
+          } as ElementSchema & { content: boolean },
         },
       };
 

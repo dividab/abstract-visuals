@@ -1,3 +1,5 @@
+import type { Node } from "acorn";
+
 export interface RangePosition {
   line: number;
   column: number;
@@ -9,7 +11,7 @@ export interface Range {
 }
 
 export function getNodeRange(nodeParam: unknown): Range {
-  const node = nodeParam as any;
+  const node = nodeParam as Node;
   if (node.loc) {
     return {
       start: {

@@ -1,4 +1,4 @@
-import type { Program } from "acorn";
+import type { FunctionDeclaration, Program } from "acorn";
 import { isJsxRoot } from "../../jsx.js";
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
@@ -21,7 +21,9 @@ export function analyzeDeclarations(ast: Program, _schema: Schema, validationCon
       analysisReport.addIssue("EXPORT_NOT_ALLOWED", "export not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     FunctionDeclaration(node) {
-      if (!topLevelNodes.has(node as any)) {
+      // acorn-walk types this callback as FunctionDeclaration | AnonymousFunctionDeclaration, but Program-level
+      // function declarations always have an id, so the cast reflects that guarantee without changing behavior.
+      if (!topLevelNodes.has(node as FunctionDeclaration)) {
         analysisReport.addIssue(
           "FUNCTION_NOT_ALLOWED",
           "nested function declarations not allowed",

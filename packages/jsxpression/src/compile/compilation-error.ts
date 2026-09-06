@@ -1,3 +1,5 @@
+import type { Node } from "acorn";
+
 type Loc = {
   start: {
     line: number;
@@ -12,7 +14,7 @@ type Loc = {
 // oxlint-disable-next-line functional/no-classes -- extends Error, which requires a class
 export class CompilationError extends Error {
   static fromNode(message: string, nodeParam: unknown): CompilationError {
-    const node = nodeParam as any;
+    const node = nodeParam as Node;
     const loc = node.loc
       ? {
           start: {

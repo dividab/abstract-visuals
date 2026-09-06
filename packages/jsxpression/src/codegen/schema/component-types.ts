@@ -1,5 +1,12 @@
-import type { Schema } from "../../schema.js";
+import type { ElementSchema, PropertySchema, Schema } from "../../schema.js";
 import { mapSchemaTypeToTypeScript } from "./utils.js";
+
+// ElementSchema fields the generator supports that aren't (yet) part of the shared schema type.
+type ElementSchemaExtras = ElementSchema & {
+  content?: boolean;
+  doc?: string;
+  examples?: ReadonlyArray<string>;
+};
 
 export function declareComponentTypes(schema: Schema): string {
   let output = `declare global {\n`;
@@ -29,10 +36,10 @@ export function declareComponentTypes(schema: Schema): string {
   return output;
 }
 
-function generatePropsInterface(interfaceName: string, element: any, indent: string = ""): string {
+function generatePropsInterface(interfaceName: string, element: ElementSchemaExtras, indent: string = ""): string {
   let output = `${indent}interface ${interfaceName} {\n`;
 
-  Object.entries(element.props ?? {}).forEach(([propName, prop]: [string, any]) => {
+  Object.entries(element.props ?? {}).forEach(([propName, prop]) => {
     const optional = prop.required ? "" : "?";
     const type = mapSchemaTypeToTypeScript(prop);
     const comment = generatePropComment(prop, `${indent}  `);
@@ -51,7 +58,7 @@ function generatePropsInterface(interfaceName: string, element: any, indent: str
   return output;
 }
 
-function generateComponentComment(elementName: string, element: any, indent: string = ""): string {
+function generateComponentComment(elementName: string, element: ElementSchemaExtras, indent: string = ""): string {
   const comments: Array<string> = [];
 
   if (element.description) {
@@ -66,7 +73,7 @@ function generateComponentComment(elementName: string, element: any, indent: str
     comments.push("");
     comments.push(`@param props Component props`);
 
-    Object.entries(element.props).forEach(([propName, prop]: [string, any]) => {
+    Object.entries(element.props).forEach(([propName, prop]) => {
       if (prop.description) {
         comments.push(`@param props.${propName} ${prop.description}`);
       }
@@ -79,7 +86,7 @@ function generateComponentComment(elementName: string, element: any, indent: str
   if (element.examples && element.examples.length > 0) {
     comments.push("");
     comments.push("@example");
-    element.examples.forEach((example: string) => {
+    element.examples.forEach((example) => {
       comments.push(example);
     });
   }
@@ -107,19 +114,22 @@ function generateComponentComment(elementName: string, element: any, indent: str
   return output;
 }
 
-function generatePropComment(prop: any, indent: string): string {
+function generatePropComment(prop: PropertySchema, indent: string): string {
   const comments: Array<string> = [];
 
   if (prop.description) {
     comments.push(prop.description);
   }
 
-  if (prop.default !== undefined) {
+  if ((prop.type === "string" || prop.type === "number" || prop.type === "boolean") && prop.default !== undefined) {
     comments.push(`@default ${JSON.stringify(prop.default)}`);
   }
 
-  if (prop.type === "enum" && prop.values) {
-    comments.push(`@values ${prop.values.map((v: any) => `"${v}"`).join(", ")}`);
+  // oxlint-disable-next-line typescript/no-explicit-any -- "enum" isn't a PropertySchema.type variant; kept as-is rather than deleted by this type-only lint pass
+  const propAsAny = prop as any;
+  if (propAsAny.type === "enum" && propAsAny.values) {
+    // oxlint-disable-next-line typescript/no-explicit-any -- propAsAny.values is untyped ("enum" isn't a PropertySchema.type variant)
+    comments.push(`@values ${propAsAny.values.map((v: any) => `"${v}"`).join(", ")}`);
   }
 
   if (comments.length === 0) {

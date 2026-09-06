@@ -1,6 +1,6 @@
-import type { MemberExpression } from "acorn";
+import type { Expression, MemberExpression, PrivateIdentifier, Super } from "acorn";
 import { isAllowedOnArray, isAllowedOnString, getAvailableArrayMembers, getAvailableStringMembers } from "../../builtins.js";
-import type { Schema } from "../../schema.js";
+import type { PropertySchema, Schema } from "../../schema.js";
 import type { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
@@ -66,7 +66,7 @@ export function extractPath(node: MemberExpression): Array<string> {
 }
 
 export function getAvailablePropsAtPath(path: Array<string>, depth: number, schemaDataParam: unknown): Array<string> {
-  const schemaData = schemaDataParam as any;
+  const schemaData = schemaDataParam as Record<string, PropertySchema> | undefined;
   if (!schemaData || depth < 0) {
     return schemaData ? Object.keys(schemaData) : [];
   }
@@ -75,7 +75,7 @@ export function getAvailablePropsAtPath(path: Array<string>, depth: number, sche
     return Object.keys(schemaData);
   }
 
-  let current = schemaData[path[0]];
+  let current: PropertySchema | undefined = schemaData[path[0]];
 
   for (let i = 1; i <= depth; i++) {
     if (current?.type !== "object" || !current.shape) {
@@ -266,9 +266,9 @@ export function validateSchemaPath(
 
 function getElementAccessFlags(node: MemberExpression, pathLength: number): Array<boolean> {
   const flags = Array(pathLength).fill(false);
-  const segments: Array<{ property: any; computed: boolean }> = [];
+  const segments: Array<{ property: Expression | PrivateIdentifier; computed: boolean }> = [];
 
-  let current: any = node;
+  let current: Expression | Super | undefined = node;
   while (current?.type === "MemberExpression") {
     segments.unshift({ property: current.property, computed: current.computed });
     current = current.object;

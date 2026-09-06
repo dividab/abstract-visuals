@@ -1,4 +1,4 @@
-import type { Program } from "acorn";
+import type { AnyNode, ArrowFunctionExpression, CallExpression, Identifier, MemberExpression, Program } from "acorn";
 import type { ArrayPropertySchema, PropertySchema, Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
@@ -11,10 +11,10 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
 
   const dataKeys = new Set(Object.keys(schema.data ?? {}));
   const dataPaths = new Set<string>();
-  const arrowFunctionContexts = new Map<any, Map<string, any>>();
+  const arrowFunctionContexts = new Map<ArrowFunctionExpression, Map<string, PropertySchema>>();
 
   // First pass: collect all data paths and arrow function contexts (including nested ones)
-  function collectArrowFunctionContexts(node: any): void {
+  function collectArrowFunctionContexts(node: AnyNode): void {
     if (node.type === "CallExpression") {
       const { callee, arguments: args } = node;
 
@@ -35,7 +35,7 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
           const arrowFunction = args[0];
 
           if (arrayElementType && arrowFunction.params.length > 0) {
-            const parameterTypes = new Map();
+            const parameterTypes = new Map<string, PropertySchema>();
 
             // First parameter is always the array element
             if (arrowFunction.params[0].type === "Identifier") {
@@ -54,17 +54,18 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
     }
 
     // Recursively traverse all child nodes
-    for (const key of Object.keys(node)) {
-      const value = node[key];
+    const record = node as unknown as Record<string, unknown>;
+    for (const key of Object.keys(record)) {
+      const value = record[key];
       if (value && typeof value === "object") {
         if (Array.isArray(value)) {
           for (const child of value) {
-            if (child && typeof child === "object" && child.type) {
-              collectArrowFunctionContexts(child);
+            if (child && typeof child === "object" && (child as Record<string, unknown>)["type"]) {
+              collectArrowFunctionContexts(child as AnyNode);
             }
           }
-        } else if (value.type) {
-          collectArrowFunctionContexts(value);
+        } else if ((value as Record<string, unknown>)["type"]) {
+          collectArrowFunctionContexts(value as AnyNode);
         }
       }
     }
@@ -137,8 +138,11 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
   return analysisReport;
 }
 
-function findEnclosingArrowContext(targetNode: any, arrowFunctionContexts: Map<any, Map<string, any>>): Map<string, any> | null {
-  let best: { arrowFn: any; size: number } | null = null;
+function findEnclosingArrowContext(
+  targetNode: MemberExpression,
+  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, PropertySchema>>
+): Map<string, PropertySchema> | null {
+  let best: { arrowFn: ArrowFunctionExpression; size: number } | null = null;
   for (const arrowFn of arrowFunctionContexts.keys()) {
     if (targetNode.start >= arrowFn.start && targetNode.end <= arrowFn.end) {
       const size = arrowFn.end - arrowFn.start;
@@ -150,7 +154,11 @@ function findEnclosingArrowContext(targetNode: any, arrowFunctionContexts: Map<a
   return best ? (arrowFunctionContexts.get(best.arrowFn) ?? null) : null;
 }
 
-function getArrayElementTypeFromCall(node: any, schema: Schema, arrowFunctionContexts: Map<any, Map<string, any>>): any {
+function getArrayElementTypeFromCall(
+  node: CallExpression,
+  schema: Schema,
+  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, PropertySchema>>
+): PropertySchema | null {
   const { callee } = node;
   const dataKeys = new Set(Object.keys(schema.data ?? {}));
 
@@ -193,7 +201,11 @@ function getArrayElementTypeFromCall(node: any, schema: Schema, arrowFunctionCon
   return null;
 }
 
-function resolveParameterType(paramName: string, currentNode: any, arrowFunctionContexts: Map<any, Map<string, any>>): any {
+function resolveParameterType(
+  paramName: string,
+  currentNode: AnyNode,
+  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, PropertySchema>>
+): PropertySchema | undefined | null {
   // Find the arrow function that contains this node and has the parameter
   for (const [arrowFunction, parameterTypes] of arrowFunctionContexts.entries()) {
     if (parameterTypes.has(paramName)) {
@@ -206,7 +218,7 @@ function resolveParameterType(paramName: string, currentNode: any, arrowFunction
   return null;
 }
 
-function isNodeInsideArrowFunction(targetNode: any, arrowFunction: any): boolean {
+function isNodeInsideArrowFunction(targetNode: AnyNode, arrowFunction: ArrowFunctionExpression): boolean {
   // Simple check: if the target node's position is within the arrow function's range
   if (targetNode.start >= arrowFunction.start && targetNode.end <= arrowFunction.end) {
     return true;
@@ -214,9 +226,10 @@ function isNodeInsideArrowFunction(targetNode: any, arrowFunction: any): boolean
   return false;
 }
 
-function getSchemaAtPath(path: Array<string>, schema: Schema): any {
+function getSchemaAtPath(path: Array<string>, schema: Schema): PropertySchema | null | undefined {
   if (!schema.data || path.length === 0) {
-    return schema.data;
+    // oxlint-disable-next-line typescript/no-explicit-any -- this branch returns the raw schema.data record (not a PropertySchema) when no path segments remain; preserved as-is for behavior parity
+    return schema.data as any;
   }
 
   let current = schema.data[path[0]];
@@ -232,7 +245,12 @@ function getSchemaAtPath(path: Array<string>, schema: Schema): any {
   return current;
 }
 
-function validateParameterAccess(node: any, paramType: any, analysisReport: AnalysisReport, validationContext: ValidationContext): void {
+function validateParameterAccess(
+  node: MemberExpression,
+  paramType: PropertySchema,
+  analysisReport: AnalysisReport,
+  validationContext: ValidationContext
+): void {
   if (node.property.type !== "Identifier") {
     return;
   }
@@ -243,7 +261,7 @@ function validateParameterAccess(node: any, paramType: any, analysisReport: Anal
     if (!paramType.shape[propertyName]) {
       analysisReport.addIssue(
         "INVALID_PARAMETER_ACCESS",
-        `Property '${propertyName}' does not exist on parameter '${node.object.name}'`,
+        `Property '${propertyName}' does not exist on parameter '${(node.object as Identifier).name}'`,
         getNodeRange(node),
         validationContext.getSnapshot(),
         Object.keys(paramType.shape)
@@ -252,7 +270,7 @@ function validateParameterAccess(node: any, paramType: any, analysisReport: Anal
   } else {
     analysisReport.addIssue(
       "INVALID_PARAMETER_ACCESS",
-      `Cannot access property '${propertyName}' on ${paramType.type ?? "undefined"} type parameter '${node.object.name}'`,
+      `Cannot access property '${propertyName}' on ${paramType.type ?? "undefined"} type parameter '${(node.object as Identifier).name}'`,
       getNodeRange(node),
       validationContext.getSnapshot()
     );
@@ -263,22 +281,23 @@ export function getArrayElementType(schema: ArrayPropertySchema): PropertySchema
   return schema.shape || null;
 }
 
-function buildParentMap(ast: Program): Map<any, any> {
-  const map = new Map<any, any>();
-  function visit(node: any, parent: any): void {
-    if (!node || typeof node !== "object" || !node.type) {
+function buildParentMap(ast: Program): Map<AnyNode, AnyNode | null> {
+  const map = new Map<AnyNode, AnyNode | null>();
+  function visit(node: unknown, parent: AnyNode | null): void {
+    const record = node as Record<string, unknown> | null;
+    if (!record || typeof record !== "object" || !record["type"]) {
       return;
     }
-    map.set(node, parent);
-    for (const key of Object.keys(node)) {
-      const value = node[key];
+    map.set(node as AnyNode, parent);
+    for (const key of Object.keys(record)) {
+      const value = record[key];
       if (value && typeof value === "object") {
         if (Array.isArray(value)) {
           for (const child of value) {
-            visit(child, node);
+            visit(child, node as AnyNode);
           }
         } else {
-          visit(value, node);
+          visit(value, node as AnyNode);
         }
       }
     }

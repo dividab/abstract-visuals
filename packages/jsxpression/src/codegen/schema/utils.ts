@@ -1,33 +1,37 @@
-export function mapSchemaTypeToTypeScript(propParam: unknown, depth: number = 0): string {
-  const prop = propParam as any;
+import type { PropertySchema } from "../../schema.js";
+
+export function mapSchemaTypeToTypeScript(prop: PropertySchema, depth: number = 0): string {
   switch (prop.type) {
     case "string":
       if (prop.enum && Array.isArray(prop.enum)) {
-        return prop.enum.map((value: any) => `"${value}"`).join(" | ");
+        return prop.enum.map((value) => `"${value}"`).join(" | ");
       }
       return "string";
     case "number":
       if (prop.enum && Array.isArray(prop.enum)) {
-        return prop.enum.map((value: any) => String(value)).join(" | ");
+        return prop.enum.map((value) => String(value)).join(" | ");
       }
       return "number";
     case "boolean":
       if (prop.enum && Array.isArray(prop.enum)) {
-        return prop.enum.map((value: any) => String(value)).join(" | ");
+        return prop.enum.map((value) => String(value)).join(" | ");
       }
       return "boolean";
     case "array": {
       const itemType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape, depth) : "any";
       return `${itemType}[]`;
     }
-    case "object":
+    case "object": {
       if (prop.shape && typeof prop.shape === "object") {
         return generateObjectTypeWithJSDoc(prop.shape, depth);
       }
-      if (prop.properties && typeof prop.properties === "object") {
-        return generateObjectTypeWithJSDoc(prop.properties, depth);
+      // oxlint-disable-next-line typescript/no-explicit-any -- "properties" isn't an ObjectPropertySchema field; kept as a legacy fallback rather than removed by this type-only pass
+      const propAsAny = prop as any;
+      if (propAsAny.properties && typeof propAsAny.properties === "object") {
+        return generateObjectTypeWithJSDoc(propAsAny.properties, depth);
       }
       return "object";
+    }
     case "record": {
       const valueType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape) : "any";
       return `Record<string, ${valueType}>`;
@@ -35,19 +39,18 @@ export function mapSchemaTypeToTypeScript(propParam: unknown, depth: number = 0)
     case "function":
       return "(...args: any[]) => any";
     case "union": {
-      return `${prop.shape.map((p: any) => mapSchemaTypeToTypeScript(p)).join(" | ")}`;
+      return prop.shape.map((p) => mapSchemaTypeToTypeScript(p)).join(" | ");
     }
     default:
       return "any";
   }
 }
 
-export function generateObjectTypeWithJSDoc(propertiesParam: unknown, depth: number = 0): string {
-  const properties = propertiesParam as any;
+export function generateObjectTypeWithJSDoc(properties: Record<string, PropertySchema>, depth: number = 0): string {
   let result = "{\n";
 
   // Generate each property with inline JSDoc
-  Object.entries(properties).forEach(([key, value]: [string, any]) => {
+  Object.entries(properties).forEach(([key, value]) => {
     // Generate comprehensive JSDoc for this property
     const propertyJSDoc = generatePropertyJSDoc(key, value, "    ", depth);
     result += propertyJSDoc;
@@ -62,8 +65,7 @@ export function generateObjectTypeWithJSDoc(propertiesParam: unknown, depth: num
   return result;
 }
 
-export function generatePropertyJSDoc(_propertyName: string, propertySchemaParam: unknown, indent: string = "", _depth: number = 0): string {
-  const propertySchema = propertySchemaParam as any;
+export function generatePropertyJSDoc(_propertyName: string, propertySchema: PropertySchema, indent: string = "", _depth: number = 0): string {
   const comments: Array<string> = [];
 
   // Main description
@@ -75,16 +77,16 @@ export function generatePropertyJSDoc(_propertyName: string, propertySchemaParam
   let hasNestedProperties = false;
   if (propertySchema.type === "object" && propertySchema.shape) {
     comments.push("");
-    Object.entries(propertySchema.shape).forEach(([key, value]: [string, any]) => {
+    Object.entries(propertySchema.shape).forEach(([key, value]) => {
       if (value.description) {
         comments.push(`@property ${key} ${value.description}`);
         hasNestedProperties = true;
       }
     });
-  } else if (propertySchema.type === "array" && propertySchema.shape?.type === "object" && propertySchema.shape.shape) {
+  } else if (propertySchema.type === "array" && propertySchema.shape.type === "object" && propertySchema.shape.shape) {
     // For arrays of objects, document the object structure
     comments.push("");
-    Object.entries(propertySchema.shape.shape).forEach(([key, value]: [string, any]) => {
+    Object.entries(propertySchema.shape.shape).forEach(([key, value]) => {
       if (value.description) {
         comments.push(`@property ${key} ${value.description}`);
         hasNestedProperties = true;

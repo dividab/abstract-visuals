@@ -1,5 +1,5 @@
-import type { Program } from "acorn";
-import { base, type RecursiveVisitors, type SimpleVisitors, simple } from "acorn-walk";
+import type { Node, Program } from "acorn";
+import { base, type RecursiveVisitors, type SimpleVisitors, simple, type WalkerCallback } from "acorn-walk";
 import {
   isJsxEmptyExpression,
   isJsxText,
@@ -101,7 +101,7 @@ const tsNodeTypes = [
   "TSThisType",
 ] as const;
 
-const tsWalkers: Record<string, (node: any, state: any, c: any) => void> = {};
+const tsWalkers: Record<string, (node: Node, state: unknown, callback: WalkerCallback<unknown>) => void> = {};
 for (const nodeType of tsNodeTypes) {
   tsWalkers[nodeType] = () => {};
 }

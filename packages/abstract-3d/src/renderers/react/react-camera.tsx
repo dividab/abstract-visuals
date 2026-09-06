@@ -10,6 +10,7 @@ import {
 } from "@react-three/drei";
 import { type ThreeEvent, useThree } from "@react-three/fiber";
 import React, { useLayoutEffect, useRef, useState } from "react";
+import type { OrthographicCamera as ThreeOrthographicCamera, PerspectiveCamera as ThreePerspectiveCamera } from "three";
 import { Vector3 } from "three";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { View, Scene, Vec3 } from "../../abstract-3d.js";
@@ -44,6 +45,9 @@ export type ControlsHelper = (Viewcube | Viewport) & {
 type Viewcube = { readonly type: "Viewcube"; readonly viewcubeProps: GenericProps };
 type Viewport = { readonly type: "Viewport"; readonly viewportProps: GizmoViewportProps };
 
+type RefInstance<C> = C extends React.ForwardRefExoticComponent<infer P> ? (P extends React.RefAttributes<infer R> ? R : never) : never;
+type OrbitControlsInstance = RefInstance<typeof OrbitControls>;
+
 export function ReactCamera({
   useAnimations: _useAnimations,
   camera,
@@ -63,9 +67,10 @@ export function ReactCamera({
   readonly bufferZones?: BufferZones;
   readonly fitPadding?: number;
 }): React.JSX.Element {
-  const [controls, setControls] = useState<any>(null);
-  const perspectiveRef = useRef<any>(undefined);
-  const orthographicRef = useRef<any>(undefined);
+  // oxlint-disable-next-line typescript/no-redundant-type-constituents -- oxlint's type-aware checker resolves OrbitControlsInstance (a conditional type over a forward-ref component) as `any`; tsc resolves it correctly and the `| null` is not actually redundant
+  const [controls, setControls] = useState<OrbitControlsInstance | null>(null);
+  const perspectiveRef = useRef<ThreePerspectiveCamera | undefined>(undefined);
+  const orthographicRef = useRef<ThreeOrthographicCamera | undefined>(undefined);
 
   const initialDistRef = useRef<number | null>(null);
   const initialTargetRef = useRef(new Vector3());
@@ -80,14 +85,14 @@ export function ReactCamera({
       return;
     }
 
-    const newCamera = camera.type === "Perspective" ? perspectiveRef.current : orthographicRef.current;
+    const newCamera = (camera.type === "Perspective" ? perspectiveRef.current : orthographicRef.current)!;
     const target = initialTargetRef.current.clone();
 
     controls.target.copy(target);
 
     const dist = initialDistRef.current;
     const dir = newCamera.position.clone().sub(target).normalize();
-    newCamera.fov = initialFovRef.current;
+    (newCamera as ThreePerspectiveCamera).fov = initialFovRef.current!;
     newCamera.zoom = 1;
     newCamera.position.copy(target.clone().add(dir.multiplyScalar(dist)));
 
@@ -203,7 +208,7 @@ export function ReactCamera({
   return (
     <>
       <PerspectiveCamera
-        ref={perspectiveRef}
+        ref={perspectiveRef as unknown as React.RefObject<ThreePerspectiveCamera | null>}
         near={camera.near}
         far={camera.far}
         fov={camera.type === "Perspective" ? camera.fov : 75}
@@ -212,7 +217,7 @@ export function ReactCamera({
         makeDefault={camera.type === "Perspective"}
       />
       <OrthographicCamera
-        ref={orthographicRef}
+        ref={orthographicRef as unknown as React.RefObject<ThreeOrthographicCamera | null>}
         up={[0, 1, 0]}
         near={camera.near}
         far={camera.far}
@@ -270,10 +275,10 @@ export function ReactCamera({
 
 const ControlsWrapper = (
   props: OrbitControlsProps & {
-    setControls: (controls: any) => void;
+    setControls: (controls: OrbitControlsInstance) => void;
   }
 ): React.JSX.Element => {
-  const ref = useRef<any>(null);
+  const ref = useRef<OrbitControlsInstance>(null);
 
   useLayoutEffect(() => {
     if (!ref.current) {

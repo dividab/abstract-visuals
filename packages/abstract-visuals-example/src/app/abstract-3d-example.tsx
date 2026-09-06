@@ -27,23 +27,24 @@ export function Abstract3DExample(): React.ReactNode {
   // oxlint-disable-next-line no-console
   console.log(hovered, group, popover);
 
-  const imageDataByUrlSvg: Record<string, any> = {};
-  const imageDataByUrlDxf: Record<string, any> = {};
-  const imageDataByUrlDxf2: Record<string, any> = {};
+  const imageDataByUrlSvg: Record<string, `data:image/${string},${string}`> = {};
+  const imageDataByUrlDxf: Record<string, `${typeof DXF_DATA_URL}${string}`> = {};
+  const imageDataByUrlDxf2: Record<string, `${typeof DXF_DATA_URL}${string}`> = {};
 
   const svgs = Array<string>();
 
   for (const geo of Object.values(componentGeometries)) {
-    for (const s of geo.scenes as any) {
+    for (const s of geo.scenes as unknown as ReadonlyArray<Svg.SvgScene>) {
       svgs.push(`data:image/svg+xml,${encodeURIComponent(Svg.render(s.scene, s.options).image)}`);
     }
-    imageDataByUrlSvg[geo.image.url] = `data:image/svg+xml,${encodeURIComponent(Svg.renderScenes(geo.scenes as any).image)}`;
+    imageDataByUrlSvg[geo.image.url] =
+      `data:image/svg+xml,${encodeURIComponent(Svg.renderScenes(geo.scenes as unknown as ReadonlyArray<Svg.SvgScene>).image)}`;
   }
 
   for (const geo of Object.values(componentGeometries)) {
-    imageDataByUrlDxf[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes as any)}`;
+    imageDataByUrlDxf[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes as unknown as ReadonlyArray<Dxf.DxfScene>)}`;
     //imageDataByUrlDxf2[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderOld((geo.scenes[0] as any)!.scene)}`;
-    imageDataByUrlDxf2[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes.slice(0, 1) as any)}`;
+    imageDataByUrlDxf2[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes.slice(0, 1) as unknown as ReadonlyArray<Dxf.DxfScene>)}`;
   }
 
   const templateImage = Svg.render(templateScene as Scene, { stroke_thickness: 3, only_stroke: true }).image;
@@ -86,7 +87,7 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Dxf.renderScenes([Object.values(componentGeometries)[0]!.scenes[0] as any])], {
+              new Blob([Dxf.renderScenes([Object.values(componentGeometries)[0]!.scenes[0] as unknown as Dxf.DxfScene])], {
                 type: "text/plain",
               }),
               `a3d.dxf`

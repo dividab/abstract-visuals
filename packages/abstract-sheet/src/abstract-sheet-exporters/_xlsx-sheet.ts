@@ -1,7 +1,8 @@
 import XLSX from "xlsx-js-style";
 import type { CellType, Sheet } from "../abstract-sheet/abstract-sheet.js";
+import type { XlsxStyle } from "./_style.js";
 
-export function xlsxWorkSheet(sheet: Sheet, styles: Record<string, any>): XLSX.WorkSheet {
+export function xlsxWorkSheet(sheet: Sheet, styles: Record<string, XlsxStyle>): XLSX.WorkSheet {
   let colMax = -1;
   const cells: Record<string, XLSX.CellObject> = {};
   for (let ri = 0; ri < sheet.cells.length; ri++) {

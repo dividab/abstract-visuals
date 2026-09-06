@@ -131,7 +131,7 @@ function collectParamNames(param: AnyNode, names: Set<string>): void {
       names.add(param.name);
       break;
     case "ObjectPattern":
-      for (const prop of (param as any).properties) {
+      for (const prop of param.properties) {
         if (prop.type === "RestElement") {
           collectParamNames(prop.argument, names);
         } else {
@@ -140,17 +140,17 @@ function collectParamNames(param: AnyNode, names: Set<string>): void {
       }
       break;
     case "ArrayPattern":
-      for (const el of (param as any).elements) {
+      for (const el of param.elements) {
         if (el) {
           collectParamNames(el, names);
         }
       }
       break;
     case "AssignmentPattern":
-      collectParamNames((param as any).left, names);
+      collectParamNames(param.left, names);
       break;
     case "RestElement":
-      collectParamNames((param as any).argument, names);
+      collectParamNames(param.argument, names);
       break;
     default:
       break;
@@ -195,17 +195,18 @@ function findScopeParent(targetNode: AnyNode, rootNode: AnyNode): ArrowFunctionE
       found = node as ArrowFunctionExpression | FunctionDeclaration;
     }
 
-    for (const key of Object.keys(node)) {
-      const value = (node as any)[key];
+    const record = node as unknown as Record<string, unknown>;
+    for (const key of Object.keys(record)) {
+      const value = record[key];
 
       if (value && typeof value === "object") {
         if (Array.isArray(value)) {
           for (const item of value) {
-            if (item && typeof item === "object" && walk(item)) {
+            if (item && typeof item === "object" && walk(item as AnyNode)) {
               return true;
             }
           }
-        } else if (walk(value)) {
+        } else if (walk(value as AnyNode)) {
           return true;
         }
       }
@@ -222,27 +223,28 @@ function findScopeParent(targetNode: AnyNode, rootNode: AnyNode): ArrowFunctionE
   return found;
 }
 
-function buildParentMap(ast: Program): Map<any, any> {
-  const parentMap = new Map<any, any>();
+function buildParentMap(ast: Program): Map<AnyNode, AnyNode | null> {
+  const parentMap = new Map<AnyNode, AnyNode | null>();
 
-  function visit(node: any, parent: any): void {
+  function visit(node: unknown, parent: AnyNode | null): void {
     if (!node || typeof node !== "object") {
       return;
     }
-    if (node.type) {
-      parentMap.set(node, parent);
+    const record = node as Record<string, unknown>;
+    if (record["type"]) {
+      parentMap.set(node as AnyNode, parent);
     }
-    for (const key of Object.keys(node)) {
-      const value = node[key];
+    for (const key of Object.keys(record)) {
+      const value = record[key];
       if (value && typeof value === "object") {
         if (Array.isArray(value)) {
           for (const child of value) {
-            if (child && typeof child === "object" && child.type) {
-              visit(child, node);
+            if (child && typeof child === "object" && (child as Record<string, unknown>)["type"]) {
+              visit(child, node as AnyNode);
             }
           }
-        } else if (value.type) {
-          visit(value, node);
+        } else if ((value as Record<string, unknown>)["type"]) {
+          visit(value, node as AnyNode);
         }
       }
     }

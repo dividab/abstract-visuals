@@ -12,7 +12,7 @@ import type { Schema } from "./schema.js";
  *
  * @template T - The return type of createElement function
  */
-export interface RenderOptions<T = any> extends EvaluateOptions<T> {
+export interface RenderOptions<T = unknown> extends EvaluateOptions<T> {
   /** Minimum severity level that counts as a failure: 1=info, 2=warning, 3=error. */
   minSeverity?: 1 | 2 | 3;
 }
@@ -52,7 +52,7 @@ export interface RenderOptions<T = any> extends EvaluateOptions<T> {
  * @returns The rendered JSX element of type T
  * @throws {AnalysisError} When JSX contains security violations, invalid data access, or schema mismatches
  */
-export function render<T = any>(source: string, schema: Schema, { minSeverity = 3, ...options }: RenderOptions<T> = {}): T {
+export function render<T = unknown>(source: string, schema: Schema, { minSeverity = 3, ...options }: RenderOptions<T> = {}): T {
   const ast = parse(source);
   const report = analyze(ast, schema);
 
@@ -63,7 +63,7 @@ export function render<T = any>(source: string, schema: Schema, { minSeverity = 
   return evaluate(compileInternal(ast), schema, options);
 }
 
-export function compile<T = any>(source: string, schema: Schema, { minSeverity = 3 }: RenderOptions<T> = {}): string {
+export function compile<T = unknown>(source: string, schema: Schema, { minSeverity = 3 }: RenderOptions<T> = {}): string {
   const ast = parse(source);
   const report = analyze(ast, schema);
   if (report.hasIssues(minSeverity)) {

@@ -107,7 +107,7 @@ function emitJsxName(nameNode: JSXNameNode, localFunctions: Set<string>): string
       return JSON.stringify(JSON.parse(left) + "." + JSON.parse(right));
     }
     default:
-      throw CompilationError.fromNode(`Unsupported JSX name: ${(nameNode as any).type}`, nameNode);
+      throw CompilationError.fromNode(`Unsupported JSX name: ${(nameNode as { type: string }).type}`, nameNode);
   }
 }
 
@@ -318,13 +318,13 @@ function emitParam(param: Pattern, localFunctions: Set<string>): string {
     case "Identifier":
       return param.name;
     case "ObjectPattern": {
-      const props = (param as any).properties.map((p: any) => {
+      const props = param.properties.map((p) => {
         if (p.type === "RestElement") {
           return `...${emitParam(p.argument, localFunctions)}`;
         }
         const key = (p.key as Identifier).name;
         if (p.value.type === "AssignmentPattern") {
-          return `${key} = ${emitExpression(p.value.right as CompilableExpression, localFunctions)}`;
+          return `${key} = ${emitExpression(p.value.right, localFunctions)}`;
         }
         if (p.value !== p.key && p.value.type === "Identifier" && p.value.name !== key) {
           return `${key}: ${emitParam(p.value, localFunctions)}`;
@@ -334,9 +334,9 @@ function emitParam(param: Pattern, localFunctions: Set<string>): string {
       return `{ ${props.join(", ")} }`;
     }
     case "AssignmentPattern":
-      return `${emitParam((param as any).left, localFunctions)} = ${emitExpression((param as any).right as CompilableExpression, localFunctions)}`;
+      return `${emitParam(param.left, localFunctions)} = ${emitExpression(param.right, localFunctions)}`;
     case "RestElement":
-      return `...${emitParam((param as any).argument, localFunctions)}`;
+      return `...${emitParam(param.argument, localFunctions)}`;
     default:
       throw CompilationError.fromNode(`Unsupported parameter: ${param.type}`, param);
   }
