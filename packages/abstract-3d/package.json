@@ -58,12 +58,12 @@
     "ts-exhaustive-check": "^1.0.0"
   },
   "devDependencies": {
-    "@types/react": "^19.2.15",
+    "@types/react": "catalog:",
     "@types/react-reconciler": "^0.33.0",
     "@types/three": "^0.180.0",
-    "react": "^19.2.6"
+    "react": "catalog:"
   },
   "peerDependencies": {
-    "react": "^19.2.0"
+    "react": "catalog:"
   }
 }

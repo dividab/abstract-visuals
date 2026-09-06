@@ -57,13 +57,13 @@
   "devDependencies": {
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/pdfkit": "^0.17.6",
-    "@types/react": "^19.2.15",
+    "@types/react": "catalog:",
     "diff-js-xml": "^1.0.8",
     "jszip": "^3.10.1",
     "pdf2json": "2.0.1",
-    "react": "^19.2.6",
+    "react": "catalog:",
     "vite": "^6.0.1",
-    "vitest": "^2.1.6"
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "react": ">=17.0.0 <20.0.0"

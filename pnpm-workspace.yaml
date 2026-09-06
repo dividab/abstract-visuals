@@ -19,6 +19,16 @@ minimumReleaseAgeExclude:
   - abstract-document
   - oxlint-config-divid@1.0.0 || 1.0.1 || 1.0.2 || 1.0.3 || 1.0.4 || 1.1.1 || 1.1.2 || 1.2.0
 
+catalog:
+  "@vitejs/plugin-react": "^6.1.1"
+  "vite": "^8.2.2"
+  "vite-plugin-node-polyfills": "^0.28.0"
+  "@types/react": "^19.2.18"
+  "@types/react-dom": "^19.2.7"
+  "react": "^19.2.8"
+  "react-dom": "^19.2.8"
+  "vitest": "5.0.0"
+
 overrides:
   three-stdlib: "^2.36.0"
 

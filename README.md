@@ -6,7 +6,7 @@
 [![types][types-image]][types-url]
 [![MIT license][license-image]][license-url]
 
-This is a [monorepo](https://medium.com/@maoberlehner/monorepos-in-the-wild-33c6eb246cb9) managed using [lerna](https://lernajs.io/).
+This is a [monorepo](https://medium.com/@maoberlehner/monorepos-in-the-wild-33c6eb246cb9) managed using pnpm workspaces and [Changesets](https://github.com/changesets/changesets).
 
 For more information see the readme for each package:
 
@@ -30,17 +30,25 @@ For the other packages, use `pnpm test` to test them.
 
 Linting uses [oxlint](https://oxc.rs) with type-aware rules (`pnpm lint`). The [oxc VS Code extension](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) needs `"oxc.typeAware": true` and `"oxc.configPath": "./oxlint.config.js"` (set in `.vscode/settings.json`) to surface the same type-aware errors live in the editor — nested config auto-discovery doesn't reliably load the JS config file, so the path must be given explicitly.
 
-## How to publish
+## How to release
 
-First update changelog.
+The packages are published on npmjs.org, versioned independently, using [Changesets](https://github.com/changesets/changesets).
 
-The packages are published on npmjs.org. To publish run this command:
+For each PR that changes a published package, add a changeset describing the bump type and a changelog summary:
 
 ```
-pnpm publish-npm
+pnpm changeset
 ```
 
-It will build the packages and call `lerna publish` which will figure out which packages has changed, ask for new versions of them, and then publish them.
+When ready to release, run:
+
+```
+pnpm release
+```
+
+This bumps versions, updates each package's `CHANGELOG.md`, verifies (lint, build, test), commits the version bump, publishes to npm, creates git tags, and pushes the commit and tags — all in one step. Needs an npm auth token in `~/.npmrc` and, if 2FA is enabled, a one-time password: `pnpm release -- --otp=123456`.
+
+`scripts/release.sh` runs the actual publish under `pnpm@10.34.5` instead of this repo's pinned `pnpm@12.3.1` — the pinned version has a confirmed upstream bug where registry-authenticated requests (`whoami`, `publish`) fail even with a valid npm token, while `pnpm@10.34.5` works. Revisit that once it's fixed upstream.
 
 [build-image]: https://github.com/dividab/abstract-visuals/workflows/Build/badge.svg
 [build-url]: https://github.com/dividab/abstract-visuals/actions?query=workflow%3ABuild+branch%3Amaster

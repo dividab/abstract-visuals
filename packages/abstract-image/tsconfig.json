@@ -6,7 +6,8 @@
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
-    "noUncheckedIndexedAccess": false
+    "noUncheckedIndexedAccess": false,
+    "types": ["node"]
   },
   "references": [{ "path": "../handlebars-xml" }, { "path": "../jsxpression" }]
 }

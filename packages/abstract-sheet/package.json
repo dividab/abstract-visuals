@@ -31,9 +31,9 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
-    "@types/react": "^19.2.15",
+    "@types/react": "catalog:",
     "@types/xml": "^1.0.11",
-    "react": "^19.2.6"
+    "react": "catalog:"
   },
   "peerDependencies": {
     "react": ">=17.0.0 <20.0.0"
