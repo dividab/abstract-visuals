@@ -6,7 +6,7 @@ import { generateDataSchema } from "../../../abstract-image/src/dynamic-image/ut
 import { createSVG, ReactSvg } from "../../../abstract-image/src/exporters/index.js";
 import wiringPng from "../../assets/wiring.png";
 
-export function DynamicImage({}: {}): React.JSX.Element {
+export function DynamicImage(): React.JSX.Element {
   const [data, setData] = React.useState(
     JSON.stringify(
       {

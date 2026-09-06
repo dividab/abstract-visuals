@@ -6,8 +6,7 @@ export interface TableRow {
 
 export interface TableRowProps {}
 
-export function create(props?: TableRowProps, children?: ReadonlyArray<TableCell>): TableRow {
-  const {} = props || {};
+export function create(_props?: TableRowProps, children?: ReadonlyArray<TableCell>): TableRow {
   return {
     children: children || [],
   };

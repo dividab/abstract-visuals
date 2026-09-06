@@ -6,8 +6,7 @@ export type PageBreak = Resources & {
 
 export type PageBreakProps = {};
 
-export function create(props?: PageBreakProps): PageBreak {
-  const {} = props || {};
+export function create(_props?: PageBreakProps): PageBreak {
   return {
     type: "PageBreak",
   };
