@@ -207,14 +207,17 @@ function addWithSvgToPdfKit(
     let index = 0;
     while (true) {
       index = svgUpdated.indexOf(t, index);
-      if (index === -1) break;
+      if (index === -1) {
+        break;
+      }
       let indexStart = svgUpdated.indexOf('"', index);
       let indexEnd = svgUpdated.indexOf('"', indexStart + 1);
       index = indexEnd;
 
       const color = svgUpdated.substring(indexStart, indexEnd);
-      if (color !== color.toLowerCase() && color.toLowerCase().indexOf("url(") === -1)
+      if (color !== color.toLowerCase() && color.toLowerCase().indexOf("url(") === -1) {
         svgUpdated = svgUpdated.substring(0, indexStart) + color.toLowerCase() + svgUpdated.substring(indexEnd, svgUpdated.length);
+      }
     }
   });
 
@@ -222,7 +225,9 @@ function addWithSvgToPdfKit(
     let index = 0;
     while (true) {
       index = svgUpdated.indexOf(t, index);
-      if (index === -1) break;
+      if (index === -1) {
+        break;
+      }
       let indexStart = svgUpdated.indexOf('"', index) + 1;
       let indexEnd = svgUpdated.indexOf('"', indexStart);
       index = indexEnd;

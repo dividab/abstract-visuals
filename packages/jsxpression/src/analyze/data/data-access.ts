@@ -266,7 +266,9 @@ export function getArrayElementType(schema: ArrayPropertySchema): PropertySchema
 function buildParentMap(ast: Program): Map<any, any> {
   const map = new Map<any, any>();
   function visit(node: any, parent: any): void {
-    if (!node || typeof node !== "object" || !node.type) return;
+    if (!node || typeof node !== "object" || !node.type) {
+      return;
+    }
     map.set(node, parent);
     for (const key of Object.keys(node)) {
       const value = node[key];

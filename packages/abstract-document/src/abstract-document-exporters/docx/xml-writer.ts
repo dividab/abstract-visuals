@@ -144,7 +144,9 @@ export class XmlWriter {
 
   WriteElementString(localName: string, value: string, ns: string, prefix: string): void {
     this.WriteStartElement(localName, ns, prefix);
-    if (value && value.length > 0) this.WriteString(value);
+    if (value && value.length > 0) {
+      this.WriteString(value);
+    }
     this.WriteEndElement();
   }
 
@@ -189,7 +191,9 @@ export class XmlWriter {
         } else {
           // Do not indent if there is text content written since
           // the indention would be included in the actual text content
-          if (!context.contentStringWritten) this.writeIndent();
+          if (!context.contentStringWritten) {
+            this.writeIndent();
+          }
           this.write(`</${context.elementName}>`);
         }
         this._contextStack.pop();
@@ -224,7 +228,9 @@ export class XmlWriter {
   private getPrefixFromAncestors(ns: string): string | undefined {
     for (const context of this._contextStack) {
       for (const prefix of Object.keys(context.namespaces)) {
-        if (context.namespaces[prefix] === ns) return prefix;
+        if (context.namespaces[prefix] === ns) {
+          return prefix;
+        }
       }
     }
     return undefined;
@@ -237,7 +243,9 @@ export class XmlWriter {
   private static generatePrefix(namespaces: XmlNamespaceDictionary): string {
     let i = 1;
     while (i < 100) {
-      if (!Object.hasOwn(namespaces, "p" + i)) break;
+      if (!Object.hasOwn(namespaces, "p" + i)) {
+        break;
+      }
       i++;
     }
     return "p" + i;
@@ -303,7 +311,9 @@ export class XmlWriter {
           break;
         }
       }
-      if (!exists) toWrite[prefix] = namespaces[prefix];
+      if (!exists) {
+        toWrite[prefix] = namespaces[prefix];
+      }
     }
     return toWrite;
   }

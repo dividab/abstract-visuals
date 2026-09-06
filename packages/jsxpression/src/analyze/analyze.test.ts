@@ -250,7 +250,9 @@ describe("analyze - consolidated tests", () => {
 
       // Test each builtin object (Math, Array.prototype, String.prototype)
       Object.entries(builtins).forEach(([objectName, schema]) => {
-        if (!schema.methods) return;
+        if (!schema.methods) {
+          return;
+        }
 
         describe(`${objectName} methods`, () => {
           Object.entries(schema.methods!).forEach(([methodName, methodDef]) => {
@@ -380,7 +382,9 @@ describe("analyze - consolidated tests", () => {
       const builtins = getBuiltins();
 
       Object.entries(builtins).forEach(([objectName, schema]) => {
-        if (!schema.properties) return;
+        if (!schema.properties) {
+          return;
+        }
 
         describe(`${objectName} properties`, () => {
           Object.entries(schema.properties!).forEach(([propName, propDef]) => {

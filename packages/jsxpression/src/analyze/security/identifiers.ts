@@ -141,7 +141,9 @@ function collectParamNames(param: AnyNode, names: Set<string>): void {
       break;
     case "ArrayPattern":
       for (const el of (param as any).elements) {
-        if (el) collectParamNames(el, names);
+        if (el) {
+          collectParamNames(el, names);
+        }
       }
       break;
     case "AssignmentPattern":
@@ -222,7 +224,9 @@ function buildParentMap(ast: Program): Map<any, any> {
   const parentMap = new Map<any, any>();
 
   function visit(node: any, parent: any): void {
-    if (!node || typeof node !== "object") return;
+    if (!node || typeof node !== "object") {
+      return;
+    }
     if (node.type) {
       parentMap.set(node, parent);
     }

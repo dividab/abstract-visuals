@@ -2,7 +2,9 @@ import { getBuiltins } from "../../builtins.js";
 import type { BuiltinSchema, BuiltinMethodSchema, BuiltinParamSchema, BuiltinPropertySchema, BuiltinCallbackParamSchema } from "../../builtins.js";
 
 function generateJSDoc(description?: string, indent: string = ""): string {
-  if (!description) return "";
+  if (!description) {
+    return "";
+  }
   return `${indent}/**\n${indent} * ${description}\n${indent} */\n`;
 }
 
@@ -15,7 +17,9 @@ function extractGenerics(method: BuiltinMethodSchema): string {
   for (const param of method.params) {
     if (param.kind === "function") {
       const usesU = param.signature.returnType === "U" || param.signature.params.some((p) => p.type === "U");
-      if (usesU) return "<U>";
+      if (usesU) {
+        return "<U>";
+      }
     }
   }
   return "";

@@ -70,13 +70,17 @@ export function shade(p: number, from: string, to?: string): string | undefined 
 
     if (l > 9) {
       const dArr = d.split(",");
-      if (dArr.length < 3 || dArr.length > 4) return null; // ErrorCheck
+      if (dArr.length < 3 || dArr.length > 4) {
+        return null;
+      } // ErrorCheck
       RGB[0] = i(dArr[0]!.split("(")[1]!);
       RGB[1] = i(dArr[1]!);
       RGB[2] = i(dArr[2]!);
       RGB[3] = dArr[3] ? parseFloat(dArr[3]) : -1;
     } else {
-      if (l === 8 || l === 6 || l < 4) return null; // ErrorCheck
+      if (l === 8 || l === 6 || l < 4) {
+        return null;
+      } // ErrorCheck
       if (l < 6) {
         d = "#" + d[1] + d[1] + d[2] + d[2] + d[3] + d[3] + (l > 4 ? String(d[4]) + d[4] : ""); // 3 or 4 digit
       }

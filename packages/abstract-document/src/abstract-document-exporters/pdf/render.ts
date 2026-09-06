@@ -703,8 +703,11 @@ function renderTable(
   for (let [index, row] of rows.entries()) {
     const rowSize = getDesiredSize(row, desiredSizes);
     let x = finalRect.x + styleMargins.left;
-    if (style.alignment === "Center") x += 0.5 * (availableWidth - rowSize.width);
-    else if (style.alignment === "Right") x += availableWidth - rowSize.width;
+    if (style.alignment === "Center") {
+      x += 0.5 * (availableWidth - rowSize.width);
+    } else if (style.alignment === "Right") {
+      x += availableWidth - rowSize.width;
+    }
     const rowRect = AD.Rect.create(x, y, rowSize.width, rowSize.height);
     const isTop = index === 0;
     const isBottom = index === rows.length - 1;
@@ -776,8 +779,11 @@ function renderCell(
     .reduce((a, b) => a + b, 0);
   const startY = finalRect.y + padding.top;
   let y = startY;
-  if (style.verticalAlignment === "Middle") y += 0.5 * (availableHeight - contentHeight - padding.top - padding.bottom);
-  else if (style.verticalAlignment === "Bottom") y += availableHeight - contentHeight - padding.top - padding.bottom;
+  if (style.verticalAlignment === "Middle") {
+    y += 0.5 * (availableHeight - contentHeight - padding.top - padding.bottom);
+  } else if (style.verticalAlignment === "Bottom") {
+    y += availableHeight - contentHeight - padding.top - padding.bottom;
+  }
 
   for (const element of cell.children) {
     const elementSize = getDesiredSize(element, desiredSizes);

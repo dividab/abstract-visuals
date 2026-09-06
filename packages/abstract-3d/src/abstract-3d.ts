@@ -649,8 +649,12 @@ export function boundsText(t: Text, parentPos: Vec3, parentRot: Vec3): Bounds3 {
 // -- Transformations
 
 export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
-  if (inner.x === 0 && inner.y === 0 && inner.z === 0) return outer;
-  if (outer.x === 0 && outer.y === 0 && outer.z === 0) return inner;
+  if (inner.x === 0 && inner.y === 0 && inner.z === 0) {
+    return outer;
+  }
+  if (outer.x === 0 && outer.y === 0 && outer.z === 0) {
+    return inner;
+  }
   const oc1 = Math.cos(outer.x / 2),
     os1 = Math.sin(outer.x / 2);
   const oc2 = Math.cos(outer.y / 2),
@@ -722,7 +726,9 @@ export function vec3RotInverse(rotation: Vec3): Vec3 {
 }
 
 export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
-  if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) return point;
+  if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) {
+    return point;
+  }
   const c1 = Math.cos(rotation.x / 2),
     s1 = Math.sin(rotation.x / 2);
   const c2 = Math.cos(rotation.y / 2),
@@ -743,7 +749,9 @@ export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
 }
 
 export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => {
-  if (rot.x === 0 && rot.y === 0 && rot.z === 0) return vec3(p.x + pos.x, p.y + pos.y, p.z + pos.z);
+  if (rot.x === 0 && rot.y === 0 && rot.z === 0) {
+    return vec3(p.x + pos.x, p.y + pos.y, p.z + pos.z);
+  }
   const c1 = Math.cos(rot.x / 2),
     s1 = Math.sin(rot.x / 2);
   const c2 = Math.cos(rot.y / 2),

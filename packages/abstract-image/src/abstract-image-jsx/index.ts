@@ -87,8 +87,12 @@ function renderChildren(element: React.ReactElement<any>): any {
     const children = element.props.children;
     if (Array.isArray(children)) {
       return children.flatMap((c: any) => {
-        if (!c) return [];
-        if (Array.isArray(c)) return c.map(render);
+        if (!c) {
+          return [];
+        }
+        if (Array.isArray(c)) {
+          return c.map(render);
+        }
         return render(c);
       });
     } else {

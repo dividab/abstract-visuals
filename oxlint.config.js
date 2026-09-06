@@ -34,7 +34,6 @@ export default defineConfig({
     "typescript/prefer-optional-chain": "off", // 21 errors
     "typescript/no-explicit-any": "off", // 237 errors
     "typescript/no-empty-object-type": "off", // 37 errors
-    curly: "off", // 28 errors
     "default-case": "off", // 5 errors
     "typescript/array-type": "off", // 100 errors
     "typescript/no-unnecessary-condition": "off", // 164 errors

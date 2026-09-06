@@ -128,7 +128,9 @@ export function ReactCamera({
     const canvasW = canvasSize.width;
     const canvasH = canvasSize.height;
 
-    if (canvasW === 0 || canvasH === 0) return;
+    if (canvasW === 0 || canvasH === 0) {
+      return;
+    }
 
     // Usable area in CSS pixels
     const usableW = Math.max(1, canvasW - bufLeft - bufRight);
