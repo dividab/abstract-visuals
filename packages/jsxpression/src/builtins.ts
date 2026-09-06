@@ -1082,6 +1082,7 @@ export function getBuiltins(): Record<string, BuiltinSchema> {
 }
 
 export function getBuiltinGlobals(): string[] {
+  // oxlint-disable-next-line typescript/no-unnecessary-boolean-literal-compare
   return Object.keys(BUILTINS).filter((name) => BUILTINS[name].global === true);
 }
 

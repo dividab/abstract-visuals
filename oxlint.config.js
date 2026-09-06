@@ -43,7 +43,6 @@ export default defineConfig({
     "init-declarations": "off", // 14 errors
     "typescript/prefer-string-starts-ends-with": "off", // 4 errors
     "no-restricted-properties": "off", // 8 errors
-    "typescript/no-unnecessary-boolean-literal-compare": "off", // 2 errors
     "typescript/switch-exhaustiveness-check": "off", // 25 errors
     "typescript/prefer-reduce-type-parameter": "off", // 8 errors
     "one-var": "off", // 17 errors

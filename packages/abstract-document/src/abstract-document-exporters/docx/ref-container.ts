@@ -19,7 +19,7 @@ export class RefContainer {
   }
 
   AddReference(refId: string, filePath: string, type: string): void {
-    if (filePath.startsWith("/") === false) {
+    if (!filePath.startsWith("/")) {
       filePath = "/" + filePath;
     }
     this.AddReference2(refId, filePath, type);
