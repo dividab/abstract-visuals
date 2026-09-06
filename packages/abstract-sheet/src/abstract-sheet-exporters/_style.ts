@@ -1,7 +1,7 @@
 import type { Style } from "../abstract-sheet/abstract-sheet.js";
 
 export function createStyle(style: Style): any {
-  let s: any = {};
+  const s: any = {};
   if (style.vertical || style.horizontal || style.wrapText !== undefined || style.textRotation !== undefined) {
     s.alignment = {};
     if (style.vertical) {

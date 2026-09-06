@@ -34,7 +34,7 @@ function preProcessMarkdownAst(
 
   if (ast.children) {
     ast.children.forEach((child) => {
-      let style = styles.slice(); // create a new copy of styles
+      const style = styles.slice(); // create a new copy of styles
       switch (ast.type) {
         case "heading":
           style.push("H" + ast.depth);

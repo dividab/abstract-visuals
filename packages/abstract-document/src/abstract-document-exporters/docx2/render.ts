@@ -521,7 +521,7 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
 }
 
 function renderGroup(group: AD.Group.Group, resources: AD.Resources.Resources, availabelWidth: number): Array<Paragraph | Table> {
-  let sofar = Array<Paragraph | Table>();
+  const sofar = Array<Paragraph | Table>();
   let keepNext = true;
   for (let index = 0; index < group.children.length; index++) {
     if (index === group.children.length - 1) {

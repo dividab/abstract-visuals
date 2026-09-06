@@ -210,8 +210,8 @@ function addWithSvgToPdfKit(
       if (index === -1) {
         break;
       }
-      let indexStart = svgUpdated.indexOf('"', index);
-      let indexEnd = svgUpdated.indexOf('"', indexStart + 1);
+      const indexStart = svgUpdated.indexOf('"', index);
+      const indexEnd = svgUpdated.indexOf('"', indexStart + 1);
       index = indexEnd;
 
       const color = svgUpdated.substring(indexStart, indexEnd);
@@ -228,8 +228,8 @@ function addWithSvgToPdfKit(
       if (index === -1) {
         break;
       }
-      let indexStart = svgUpdated.indexOf('"', index) + 1;
-      let indexEnd = svgUpdated.indexOf('"', indexStart);
+      const indexStart = svgUpdated.indexOf('"', index) + 1;
+      const indexEnd = svgUpdated.indexOf('"', indexStart);
       index = indexEnd;
 
       let dasharray = svgUpdated.substring(indexStart, indexEnd);

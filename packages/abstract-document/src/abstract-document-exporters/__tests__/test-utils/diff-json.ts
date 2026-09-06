@@ -1,7 +1,7 @@
 type value = string | number | boolean;
 
 export function diffJson(oldJSON: any, newJSON: any): string {
-  let [message, _] = diffObject(oldJSON, newJSON);
+  let [message] = diffObject(oldJSON, newJSON);
   if (message !== "") {
     message = `\n- Expected\n+ Received${message}`;
   }
@@ -17,7 +17,7 @@ function diffObject(oldObject: any, newObject: any): [string, boolean] {
     }
 
     const newValue = newObject[key];
-    let [newMessage, wrongKeyValues] = diffValues(oldValue, newValue);
+    const [newMessage, wrongKeyValues] = diffValues(oldValue, newValue);
     if (wrongKeyValues) {
       message += newMessage;
       message += `\n- ${key}: ${stringify(oldValue)}`;
@@ -49,7 +49,7 @@ function diffArray(oldArray: Array<any>, newArray: Array<any>): [string, boolean
 
   for (const [index, oldValue] of oldArray.entries()) {
     const newValue = newArray[index];
-    let [newMessage, mismatchValues] = diffValues(oldValue, newValue);
+    const [newMessage, mismatchValues] = diffValues(oldValue, newValue);
     message += newMessage;
     if (mismatchValues) {
       hasDifference = true;

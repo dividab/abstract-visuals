@@ -29,7 +29,7 @@ export function paginate(
 
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   const pages = new Array<Page>();
-  for (let section of document.children) {
+  for (const section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
     pages.push(...paginateSection(pdfKit, document, resources, desiredSizes, previousPage, section));
   }
@@ -303,7 +303,7 @@ function getPageContentRect(desiredSizes: Map<{}, AD.Size.Size>, section: AD.Sec
   const footerHeight = footer.reduce((prev, curr) => prev + getDesiredSize(curr, desiredSizes).height, footerMargins.top + footerMargins.bottom);
 
   let headerY = headerMargins.top;
-  for (let element of header) {
+  for (const element of header) {
     const elementSize = getDesiredSize(element, desiredSizes);
     headerY += elementSize.height;
   }
@@ -450,7 +450,7 @@ function splitTableAt(
   };
 
   const availableSize = getDesiredSize(table, desiredSizes);
-  let pdf = new pdfKit();
+  const pdf = new pdfKit();
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   const headSizes = measureTable(pdf, resources, availableSize, tableHead);
   const tailSizes = measureTable(pdf, resources, availableSize, tableTail);

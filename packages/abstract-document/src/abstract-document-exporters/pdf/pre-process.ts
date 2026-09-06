@@ -71,7 +71,7 @@ function preProcessParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Re
   if (numbering === "Unordered") {
     numberText = "-";
   } else {
-    for (let levelDefinition of levelDefinitions.filter((l) => l.level > level)) {
+    for (const levelDefinition of levelDefinitions.filter((l) => l.level > level)) {
       _numberingLevelItems.delete(numbering + "_" + levelDefinition.level.toString());
     }
 
@@ -85,7 +85,7 @@ function preProcessParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Re
       _numberingLevelItems.set(key, (_numberingLevelItems.get(key) || 0) + 1);
     }
 
-    for (let levelDefinition of levelDefinitions.filter((l) => l.level <= level)) {
+    for (const levelDefinition of levelDefinitions.filter((l) => l.level <= level)) {
       const numberingLevel = numbering + "_" + levelDefinition.level.toString();
       const currentNumber = _numberingLevelItems.get(numberingLevel) || 0;
       const levelText = generateLevelText(levelDefinition.format, currentNumber);
@@ -94,8 +94,8 @@ function preProcessParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Re
     }
   }
 
-  let rows: Array<AD.TableRow.TableRow> = [];
-  let children: Array<AD.TableCell.TableCell> = [];
+  const rows: Array<AD.TableRow.TableRow> = [];
+  const children: Array<AD.TableCell.TableCell> = [];
 
   children.push(AD.TableCell.create());
 
@@ -281,7 +281,7 @@ function toChar(num: number): string {
 function preProcessTable(table: AD.Table.Table, resources: AD.Resources.Resources): AD.SectionElement.SectionElement {
   const processedHeaders = [];
   const processedChildren = [];
-  let rowSpans: Map<number, AD.TableCell.TableCell> = new Map();
+  const rowSpans: Map<number, AD.TableCell.TableCell> = new Map();
   if (table.headerRows) {
     for (const row of table.headerRows) {
       const header = preProcessTableRow(row, rowSpans, resources);

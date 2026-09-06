@@ -31,7 +31,7 @@ import type { ExportTestDef } from "./_export-test-def.js";
 // );
 
 // oxlint-disable-next-line functional/no-let
-let testVariable = "not clicked";
+const testVariable = "not clicked";
 
 // const wrapper = Enzyme.shallow(svg);
 // wrapper.find("svg").simulate("click", {

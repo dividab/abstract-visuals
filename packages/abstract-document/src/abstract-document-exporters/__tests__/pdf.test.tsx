@@ -211,7 +211,7 @@ describe("export pdf", () => {
         saveBufferInTmpDir(path.join(__dirname, "tmp"), item.name + ".pdf", pdfBuffer1);
         // Need to copy to new buffer to workaround this issue:
         // https://github.com/modesty/pdf2json/issues/163
-        let pdfBuffer2 = Buffer.alloc(pdfBuffer1.length);
+        const pdfBuffer2 = Buffer.alloc(pdfBuffer1.length);
         pdfBuffer1.copy(pdfBuffer2);
         const parsed = await getJsonFromPdf(pdfBuffer2);
         // console.log("----------");
@@ -228,7 +228,7 @@ describe("export pdf", () => {
 
 function getJsonFromPdf(pdfBuffer: Buffer): Promise<unknown> {
   return new Promise((resolve, reject) => {
-    let pdfParser = new PDFParser();
+    const pdfParser = new PDFParser();
     pdfParser.on("pdfParser_dataError", (errData: { parserError: string }) => {
       reject(errData);
     });

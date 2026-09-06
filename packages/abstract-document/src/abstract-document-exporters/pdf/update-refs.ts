@@ -23,7 +23,7 @@ function updateRefsInElements(
   pages: ReadonlyArray<Page>
 ): ReadonlyArray<AD.SectionElement.SectionElement> {
   const updatedElements = new Array<AD.SectionElement.SectionElement>();
-  for (let element of elements) {
+  for (const element of elements) {
     const updatedElement = updateRefsInElement(element, page, pages);
     updatedElements.push(updatedElement);
   }

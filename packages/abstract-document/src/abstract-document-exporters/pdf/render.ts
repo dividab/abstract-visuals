@@ -36,7 +36,7 @@ export function exportToBytes(doc: AD.AbstractDoc.AbstractDoc, options: PdfExpor
  * @param options
  */
 export function exportToStream(blobStream: any, doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): void {
-  let pdf = createDocument(options, doc);
+  const pdf = createDocument(options, doc);
   pdf.pipe(blobStream);
 }
 
@@ -51,7 +51,7 @@ function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDo
   const updatedPages = updatePageRefs(pages);
   const pageDesiredSizes = measurePages(PDFDocument, document, updatedPages);
 
-  for (let page of updatedPages) {
+  for (const page of updatedPages) {
     renderPage(document, pdf, pageDesiredSizes, page);
   }
   pdf.end();
@@ -75,7 +75,7 @@ function renderPage(parentResources: AD.Resources.Resources, pdfKit: PDFKit.PDFD
   const headerX = headerMargins.left;
   const headerStart = headerMargins.top;
   let headerY = headerStart;
-  for (let element of page.header) {
+  for (const element of page.header) {
     const elementSize = getDesiredSize(element, desiredSizes);
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
@@ -98,7 +98,7 @@ function renderPage(parentResources: AD.Resources.Resources, pdfKit: PDFKit.PDFD
   const footerX = footerMargins.left;
   const footerStart = pageHeight - (footerHeight - footerMargins.top);
   let footerY = footerStart;
-  for (let element of page.footer) {
+  for (const element of page.footer) {
     const elementSize = getDesiredSize(element, desiredSizes);
     const isAbsolute = AD.Position.isPositionAbsolute(element);
     renderSectionElement(
@@ -219,7 +219,7 @@ function renderParagraph(
   const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
   const availableWidth = finalRect.width - (styleMargins.left + styleMargins.right);
 
-  let rows: Array<Array<AD.Atom.Atom>> = [];
+  const rows: Array<Array<AD.Atom.Atom>> = [];
   let currentRow: Array<AD.Atom.Atom> = [];
   let currentWidth = 0;
   let previousAtomType: string | undefined;
@@ -706,7 +706,7 @@ function renderTable(
   const availableWidth = finalRect.width;
   let y = finalRect.y + styleMargins.top;
   const rows = [...table.headerRows, ...table.children];
-  for (let [index, row] of rows.entries()) {
+  for (const [index, row] of rows.entries()) {
     const rowSize = getDesiredSize(row, desiredSizes);
     let x = finalRect.x + styleMargins.left;
     if (style.alignment === "Center") {
@@ -778,9 +778,9 @@ function renderCell(
   const borders = AD.LayoutFoundation.orDefault(style.borders);
   const padding = AD.LayoutFoundation.orDefault(style.padding);
 
-  let x = finalRect.x + padding.left;
+  const x = finalRect.x + padding.left;
   const availableHeight = finalRect.height;
-  let contentHeight = cell.children
+  const contentHeight = cell.children
     .map((c) => (AD.Position.isPositionAbsolute(c) ? 0 : getDesiredSize(c, desiredSizes).height))
     .reduce((a, b) => a + b, 0);
   const startY = finalRect.y + padding.top;

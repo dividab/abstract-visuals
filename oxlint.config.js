@@ -29,7 +29,6 @@ export default defineConfig({
     "typescript/no-unsafe-type-assertion": "off", // 155 errors
     "no-restricted-globals": "off", // 10 errors
     "no-case-declarations": "off", // 20 errors
-    "prefer-const": "off", // 46 errors
     "typescript/prefer-nullish-coalescing": "off", // 151 errors
     "typescript/prefer-optional-chain": "off", // 21 errors
     "typescript/no-explicit-any": "off", // 237 errors

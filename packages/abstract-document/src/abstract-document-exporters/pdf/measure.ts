@@ -12,7 +12,7 @@ const widthOfStringCache = new Map<string, number>();
 const heightOfStringCache = new Map<string, number>();
 
 export function measure(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc): Map<any, AD.Size.Size> {
-  let pdf = new pdfKit();
+  const pdf = new pdfKit();
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   const result = mergeMaps(document.children.map((s) => measureSection(pdf, document, s)));
   widthOfStringCache.clear();
@@ -99,7 +99,7 @@ function measureSectionElement(
 }
 
 function measurePageBreak(availableSize: AD.Size.Size, pageBreak: AD.PageBreak.PageBreak): Map<any, AD.Size.Size> {
-  let desiredSizes = new Map<any, AD.Size.Size>();
+  const desiredSizes = new Map<any, AD.Size.Size>();
   desiredSizes.set(pageBreak, availableSize);
   return desiredSizes;
 }
@@ -123,7 +123,7 @@ function measureParagraph(
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, contentAvailableHeight);
 
   let paragraphHeight = styleMargins.top + styleMargins.bottom;
-  let desiredSizes = new Map<any, AD.Size.Size>();
+  const desiredSizes = new Map<any, AD.Size.Size>();
 
   const rows: Array<Array<AD.Atom.Atom>> = [];
   let currentRow: Array<AD.Atom.Atom> = [];
@@ -232,9 +232,9 @@ export function measureTable(
   const columnWidths = table.columnWidths.map((w) => (isFinite(w) ? w : infinityWidth));
   const desiredSizes = new Map<any, AD.Size.Size>();
   const rows = [...table.headerRows, ...table.children];
-  for (let row of rows) {
+  for (const row of rows) {
     let column = 0;
-    for (let cell of row.children) {
+    for (const cell of row.children) {
       const cellStyle = AD.Resources.getStyle(
         style.cellStyle,
         cell.style,
@@ -255,7 +255,7 @@ export function measureTable(
       const contentAvailableWidth = cellWidth - (cellStylePadding.left + cellStylePadding.right);
       let cellDesiredHeight = cellStylePadding.top + cellStylePadding.bottom;
 
-      for (let element of cell.children) {
+      for (const element of cell.children) {
         const elementAvailableSize = AD.Size.create(contentAvailableWidth, Infinity);
         const elementSizes = measureSectionElement(pdfKit, resources, elementAvailableSize, element);
         elementSizes.forEach((v, k) => desiredSizes.set(k, v));
@@ -307,7 +307,7 @@ export function measureTable(
     const rowHeight = minRowHeights[i];
     desiredHeight += rowHeight;
     desiredSizes.set(row, AD.Size.create(desiredWidth, rowHeight));
-    for (let cell of row.children) {
+    for (const cell of row.children) {
       const cellSize = desiredSizes.get(cell) || AD.Size.create(0, 0);
       desiredSizes.set(cell, AD.Size.create(cellSize.width, rowHeight));
     }
@@ -324,8 +324,8 @@ function measureGroup(
   availableSize: AD.Size.Size,
   keepTogether: AD.Group.Group
 ): Map<any, AD.Size.Size> {
-  let desiredSizes = mergeMaps(keepTogether.children.map((e) => measureSectionElement(pdfKit, resources, availableSize, e)));
-  let desiredHeight = keepTogether.children.reduce(
+  const desiredSizes = mergeMaps(keepTogether.children.map((e) => measureSectionElement(pdfKit, resources, availableSize, e)));
+  const desiredHeight = keepTogether.children.reduce(
     (sum, e) => sum + (AD.Position.isPositionAbsolute(e) ? 0 : getDesiredSize(e, desiredSizes).height),
     0.0
   );
@@ -545,7 +545,7 @@ function heightOfString(pdf: PDFKit.PDFDocument, font: string, fontSize: number,
 }
 
 function mergeMaps(maps: Array<Map<any, AD.Size.Size>>): Map<any, AD.Size.Size> {
-  let newMap = new Map<any, AD.Size.Size>();
+  const newMap = new Map<any, AD.Size.Size>();
   maps.forEach((m) => m.forEach((v, k) => newMap.set(k, v)));
   return newMap;
 }

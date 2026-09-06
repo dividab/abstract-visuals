@@ -228,7 +228,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       );
     }
     case "polyline": {
-      let linePoints = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
+      const linePoints = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
       const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
       const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
@@ -247,7 +247,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       );
     }
     case "polygon": {
-      let points = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
+      const points = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
       const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
       const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
