@@ -37,7 +37,7 @@ export function analyzeMethodCalls(ast: Program, schema: Schema, validationConte
 
         const methodDef = getMethodDefinition(method);
 
-        if (!methodDef || !methodDef.params) {
+        if (!methodDef?.params) {
           return;
         }
 

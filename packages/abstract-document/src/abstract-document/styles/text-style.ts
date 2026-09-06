@@ -102,7 +102,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
 }
 
 export function calculateFontSize(textStyle: TextStyle | undefined, defaultFontSize: number): number {
-  const fontSize = textStyle && textStyle.fontSize ? textStyle.fontSize : defaultFontSize;
-  const fontScale = textStyle && textStyle.fontScale ? textStyle.fontScale : 1.0;
+  const fontSize = textStyle?.fontSize ? textStyle.fontSize : defaultFontSize;
+  const fontScale = textStyle?.fontScale ? textStyle.fontScale : 1.0;
   return fontSize * fontScale;
 }

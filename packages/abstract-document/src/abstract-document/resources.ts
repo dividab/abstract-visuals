@@ -67,10 +67,10 @@ export function getNestedStyle(
   nestedStyleNames: ReadonlyArray<string>
 ): Style | undefined {
   const factoryDefault = defaultAndStandardStyles[create(type, "Default")];
-  const documentDefault = resources.styles && resources.styles[create(type, "Default")];
-  const namedStyle = resources.styles && resources.styles[create(type, name)];
+  const documentDefault = resources.styles?.[create(type, "Default")];
+  const namedStyle = resources.styles?.[create(type, name)];
   const nestedStyle = nestedStyleNames
-    ? nestedStyleNames.reduce((sofar, name) => overrideWith(sofar, resources.styles && resources.styles[create(type, name)]), namedStyle)
+    ? nestedStyleNames.reduce((sofar, name) => overrideWith(sofar, resources.styles?.[create(type, name)]), namedStyle)
     : namedStyle;
   return overrideWith(elementStyle, overrideWith(nestedStyle, overrideWith(parentStyle, overrideWith(documentDefault, factoryDefault))));
 }

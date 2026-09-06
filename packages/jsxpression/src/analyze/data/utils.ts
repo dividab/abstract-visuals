@@ -77,13 +77,13 @@ export function getAvailablePropsAtPath(path: Array<string>, depth: number, sche
   let current = schemaData[path[0]];
 
   for (let i = 1; i <= depth; i++) {
-    if (!current || current.type !== "object" || !current.shape) {
+    if (current?.type !== "object" || !current.shape) {
       return [];
     }
     current = current.shape[path[i]];
   }
 
-  if (current && current.type === "object" && current.shape) {
+  if (current?.type === "object" && current.shape) {
     return Object.keys(current.shape);
   }
 
@@ -268,7 +268,7 @@ function getElementAccessFlags(node: MemberExpression, pathLength: number): Arra
   const segments: Array<{ property: any; computed: boolean }> = [];
 
   let current: any = node;
-  while (current && current.type === "MemberExpression") {
+  while (current?.type === "MemberExpression") {
     segments.unshift({ property: current.property, computed: current.computed });
     current = current.object;
   }

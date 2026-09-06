@@ -197,7 +197,7 @@ export function canHaveChildren(schema: Schema, tagName: string): boolean {
 
 export function isSelfClosing(schema: Schema, tagName: string): boolean {
   const allowedChildren = getAllowedChildren(schema, tagName);
-  return allowedChildren !== undefined && allowedChildren.length === 0;
+  return allowedChildren?.length === 0;
 }
 
 export function isChildAllowed(schema: Schema, parentTag: string, childTag: string): boolean {

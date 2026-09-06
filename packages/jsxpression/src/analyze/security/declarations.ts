@@ -44,7 +44,7 @@ export function analyzeDeclarations(ast: Program, _schema: Schema, validationCon
   const hasDeclarations = ast.body.some((s) => s.type === "VariableDeclaration" || s.type === "FunctionDeclaration");
   if (hasDeclarations) {
     const lastStatement = ast.body[ast.body.length - 1];
-    if (!lastStatement || lastStatement.type !== "ReturnStatement") {
+    if (lastStatement?.type !== "ReturnStatement") {
       const isBareJsx = lastStatement?.type === "ExpressionStatement" && isJsxRoot(lastStatement.expression);
       const range = lastStatement ? getNodeRange(lastStatement) : { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } };
       analysisReport.addIssue(

@@ -79,7 +79,7 @@ export function render(element: any): any {
 }
 
 function renderChildren(element: React.ReactElement<any>): any {
-  if (!element.props || !element.props.children) {
+  if (!element.props?.children) {
     return [];
   }
 

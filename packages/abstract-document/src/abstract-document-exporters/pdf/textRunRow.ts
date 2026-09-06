@@ -55,7 +55,7 @@ export function rowsSplit(
       //if the next atom is a space, we need to split this row early if it doesnt fit
       const nextAtom = row[i + 1];
       const nextWidthIfSpace =
-        !isSpace && nextAtom && nextAtom.type === "TextRun" && nextAtom.text.replaceAll(/[\p{Zs}]/gu, "").length === 0
+        !isSpace && nextAtom?.type === "TextRun" && nextAtom.text.replaceAll(/[\p{Zs}]/gu, "").length === 0
           ? getDesiredSize(nextAtom, desiredSizes).width
           : 0;
 
