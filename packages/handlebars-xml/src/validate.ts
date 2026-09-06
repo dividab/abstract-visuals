@@ -3,8 +3,6 @@ import { XMLValidator } from "fast-xml-parser";
 import type { XmlElement } from "./parse.js";
 import { parseXml, findElement } from "./parse.js";
 
-//dummy
-
 enum ErrorType {
   warning = 0,
   error = 1,
@@ -16,6 +14,7 @@ type Range = {
   readonly endLineNumber: number;
   readonly endColumn: number;
 };
+
 type Position = {
   readonly lineNumber: number;
   readonly column: number;
