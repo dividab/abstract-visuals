@@ -67,7 +67,7 @@ export class XmlWriter {
   WriteComment(text: string): void {
     try {
       if (this._state === "Prolog" || this._state === "Content") {
-        if (text && (text.indexOf("--") >= 0 || (text.length !== 0 && text[text.length - 1] === "-"))) {
+        if (text && (text.indexOf("--") >= 0 || (text.length !== 0 && text.endsWith("-")))) {
           throw new Error("Xml_InvalidCommentChars");
         }
         text = text || "";

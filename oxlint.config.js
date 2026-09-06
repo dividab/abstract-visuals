@@ -40,7 +40,6 @@ export default defineConfig({
     "typescript/unified-signatures": "off", // 5 errors
     "no-bitwise": "off", // 38 errors
     "init-declarations": "off", // 14 errors
-    "typescript/prefer-string-starts-ends-with": "off", // 4 errors
     "no-restricted-properties": "off", // 8 errors
     "typescript/switch-exhaustiveness-check": "off", // 25 errors
     "typescript/prefer-reduce-type-parameter": "off", // 8 errors

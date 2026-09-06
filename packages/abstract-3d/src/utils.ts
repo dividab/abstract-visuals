@@ -58,7 +58,7 @@ export function shade(p: number, from: string, to?: string): string | undefined 
     p < -1 ||
     p > 1 ||
     typeof from !== "string" ||
-    (from[0] !== "r" && from[0] !== "#") ||
+    (!from.startsWith("r") && !from.startsWith("#")) ||
     (to && typeof to !== "string")
   ) {
     return undefined; // ErrorCheck
