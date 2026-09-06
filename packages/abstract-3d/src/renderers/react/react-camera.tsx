@@ -76,7 +76,7 @@ export function ReactCamera({
   const invalidate = useThree(({ invalidate }) => invalidate);
 
   const resetZoomOnGizmoClick = (): void => {
-    if (!controls || initialDistRef.current == null || (!perspectiveRef.current && !orthographicRef.current)) {
+    if (!controls || initialDistRef.current === null || (!perspectiveRef.current && !orthographicRef.current)) {
       return;
     }
 

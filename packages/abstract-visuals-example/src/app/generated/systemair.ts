@@ -1,4 +1,4 @@
-import type { A3D } from "../../../abstract-3d/src/index.js";
+import type { A3D } from "../../../../abstract-3d/src/index.js";
 
 /* oxlint-disable max-lines */
 export const systemair = {

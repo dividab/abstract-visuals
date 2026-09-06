@@ -466,11 +466,11 @@ export function xAxises(
       gridLineComponents.push(generateXAxisGridLines(xMin, xMax, lineY + dirFactor * 10, fullGrid ? yMax : lineY, xTicks, axis, chart.xGrid));
     }
     const thickness = axis.thickness ?? 1;
-    const lineDisp = ix == 0 ? (xAxis === "bottom" ? thickness / 2 : -thickness / 2) : 0;
+    const lineDisp = ix === 0 ? (xAxis === "bottom" ? thickness / 2 : -thickness / 2) : 0;
     components.push(
       createLine(
-        { x: xMin - (ix == 0 ? xMinLineThicknessAdjustment : chart.xGrid.thickness / 2), y: lineY + lineDisp },
-        { x: xMax + (ix == 0 ? xMaxLineThicknessAdjustment : chart.xGrid.thickness / 2), y: lineY + lineDisp },
+        { x: xMin - (ix === 0 ? xMinLineThicknessAdjustment : chart.xGrid.thickness / 2), y: lineY + lineDisp },
+        { x: xMax + (ix === 0 ? xMaxLineThicknessAdjustment : chart.xGrid.thickness / 2), y: lineY + lineDisp },
         axis.axisColor ?? gray,
         thickness
       )
@@ -528,11 +528,11 @@ export function yAxises(
       );
     }
     const thickness = axis.thickness ?? 1;
-    const lineDisp = ix == 0 ? (yAxis === "left" ? -thickness / 2 : thickness / 2) : 0;
+    const lineDisp = ix === 0 ? (yAxis === "left" ? -thickness / 2 : thickness / 2) : 0;
     components.push(
       createLine(
-        { x: lineX + lineDisp, y: yMin + (ix == 0 ? yMinLineThicknessAdjustment : chart.yGrid.thickness / 2) },
-        { x: lineX + lineDisp, y: yMax - (ix == 0 ? yMaxLineThicknessAdjustment : chart.yGrid.thickness / 2) },
+        { x: lineX + lineDisp, y: yMin + (ix === 0 ? yMinLineThicknessAdjustment : chart.yGrid.thickness / 2) },
+        { x: lineX + lineDisp, y: yMax - (ix === 0 ? yMaxLineThicknessAdjustment : chart.yGrid.thickness / 2) },
         axis.axisColor ?? gray,
         axis.thickness ?? 1
       )

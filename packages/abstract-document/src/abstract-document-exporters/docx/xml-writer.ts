@@ -43,7 +43,7 @@ export class XmlWriter {
       if (this._state === "Start" || this._state === "Prolog") {
         let bufBld: string = "";
         bufBld += "version=" + XmlWriter.quoteChar + "1.0" + XmlWriter.quoteChar;
-        if (this._encoding != null) {
+        if (this._encoding !== null) {
           bufBld += ` encoding=${XmlWriter.quoteChar}${this._encoding}${XmlWriter.quoteChar}`;
         }
         if (standalone) {
@@ -67,7 +67,7 @@ export class XmlWriter {
   WriteComment(text: string): void {
     try {
       if (this._state === "Prolog" || this._state === "Content") {
-        if (text && (text.indexOf("--") >= 0 || (text.length != 0 && text[text.length - 1] == "-"))) {
+        if (text && (text.indexOf("--") >= 0 || (text.length !== 0 && text[text.length - 1] === "-"))) {
           throw new Error("Xml_InvalidCommentChars");
         }
         text = text || "";
@@ -197,7 +197,7 @@ export class XmlWriter {
         this.throwInvalidState();
       }
       // Set next state
-      if (this._contextStack.length == 0) {
+      if (this._contextStack.length === 0) {
         this._state = "Closed";
       } else {
         this._state = "Content";
@@ -298,7 +298,7 @@ export class XmlWriter {
       // Don't check the current (last) context in the stack
       for (let i = 0; i < this._contextStack.length - 1; i++) {
         const context = this._contextStack[i];
-        if (context.namespaces[prefix] == namespaces[prefix]) {
+        if (context.namespaces[prefix] === namespaces[prefix]) {
           exists = true;
           break;
         }

@@ -342,7 +342,7 @@ function extractArrayPath(obj: Record<string, any>, path: ReadonlyArray<string>)
   const [first, ...rest] = path;
   if (first === undefined) {
     return obj;
-  } else if (typeof obj !== "object" || obj == null) {
+  } else if (typeof obj !== "object" || obj === null) {
     return undefined;
   } else {
     return extractArrayPath(obj[first], rest);

@@ -524,7 +524,7 @@ function renderGroup(group: AD.Group.Group, resources: AD.Resources.Resources, a
   let sofar = Array<Paragraph | Table>();
   let keepNext = true;
   for (let index = 0; index < group.children.length; index++) {
-    if (index == group.children.length - 1) {
+    if (index === group.children.length - 1) {
       keepNext = false;
     }
     sofar.push(...renderSectionElement(group.children[index], resources, availabelWidth, keepNext));

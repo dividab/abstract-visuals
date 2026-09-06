@@ -10,69 +10,57 @@ export default defineConfig({
     "**/build-storybook/**",
     "packages/*/public/**",
     // Generated 3D-scene data, not hand-written example code.
-    "packages/abstract-visuals-example/src/app/systemair*.ts",
-    "packages/abstract-visuals-example/src/app/vortice.ts",
-    "packages/abstract-visuals-example/src/app/demo.ts",
-    "packages/abstract-visuals-example/src/app/demo-rotated.ts",
-    "packages/abstract-visuals-example/src/app/double-view-component-geometries.ts",
+    "packages/abstract-visuals-example/src/app/generated/**",
   ],
   rules: {
+    // TODO: remove once oxlint-config-divid ships this as its own default (staged locally,
+    // not yet released/bumped here - see oxlint-config-divid's index.js on disk).
     "functional/no-let": ["error", { allowInFunctions: true, ignoreIdentifierPattern: "^[mM]utable" }],
-    "functional/no-classes": "off",
-    "functional/no-this-expressions": "off",
-    "functional/prefer-readonly-type": "off",
+    "functional/no-classes": "off", // 10 errors
+    "functional/no-this-expressions": "off", // 142 errors
+    "functional/prefer-readonly-type": "off", // 419 errors
 
-    "typescript/prefer-readonly-parameter-types": "off",
-    "typescript/explicit-module-boundary-types": "off",
-    "typescript/no-unsafe-assignment": "off",
-    "typescript/no-unsafe-call": "off",
-    "typescript/no-unsafe-return": "off",
-    "typescript/no-unsafe-member-access": "off",
-    "typescript/no-unsafe-type-assertion": "off",
-    "node/global-require": "off",
-    "no-restricted-globals": "off",
-    "typescript/no-require-imports": "off",
-    "typescript/dot-notation": "off",
-    "no-case-declarations": "off",
-    "prefer-const": "off",
-    "typescript/prefer-nullish-coalescing": "off",
-    "typescript/prefer-optional-chain": "off",
-    "typescript/no-explicit-any": "off",
-    "typescript/no-empty-object-type": "off",
-    "typescript/no-wrapper-object-types": "off",
-    "typescript/parameter-properties": "off",
-    curly: "off",
-    "default-case": "off",
-    "typescript/array-type": "off",
-    "typescript/no-unnecessary-condition": "off",
-    "no-useless-return": "off",
-    "typescript/ban-tslint-comment": "off",
-    eqeqeq: "off",
-    "no-throw-literal": "off",
-    "typescript/only-throw-error": "off",
-    "typescript/unified-signatures": "off",
-    "no-bitwise": "off",
-    "typescript/no-var-requires": "off",
-    "init-declarations": "off",
-    "no-shadow": "off",
-    "no-empty-pattern": "off",
-    "typescript/prefer-string-starts-ends-with": "off",
-    "no-restricted-properties": "off",
-    "no-unused-vars": "off",
-    "typescript/no-unnecessary-boolean-literal-compare": "off",
-    "typescript/switch-exhaustiveness-check": "off",
-    "typescript/prefer-reduce-type-parameter": "off",
-    "one-var": "off",
-    "no-prototype-builtins": "off",
-    "typescript/prefer-readonly": "off",
-    "no-alert": "off",
+    "typescript/prefer-readonly-parameter-types": "off", // 1120 errors
+    "typescript/explicit-module-boundary-types": "off", // 15 errors
+    "typescript/no-unsafe-assignment": "off", // 165 errors
+    "typescript/no-unsafe-call": "off", // 48 errors
+    "typescript/no-unsafe-return": "off", // 48 errors
+    "typescript/no-unsafe-member-access": "off", // 390 errors
+    "typescript/no-unsafe-type-assertion": "off", // 155 errors
+    "no-restricted-globals": "off", // 10 errors
+    "no-case-declarations": "off", // 20 errors
+    "prefer-const": "off", // 46 errors
+    "typescript/prefer-nullish-coalescing": "off", // 151 errors
+    "typescript/prefer-optional-chain": "off", // 21 errors
+    "typescript/no-explicit-any": "off", // 237 errors
+    "typescript/no-empty-object-type": "off", // 37 errors
+    curly: "off", // 28 errors
+    "default-case": "off", // 5 errors
+    "typescript/array-type": "off", // 100 errors
+    "typescript/no-unnecessary-condition": "off", // 164 errors
+    "no-useless-return": "off", // 5 errors
+    "typescript/ban-tslint-comment": "off", // 11 errors
+    "no-throw-literal": "off", // 4 errors
+    "typescript/only-throw-error": "off", // 4 errors
+    "typescript/unified-signatures": "off", // 5 errors
+    "no-bitwise": "off", // 38 errors
+    "init-declarations": "off", // 14 errors
+    "no-empty-pattern": "off", // 3 errors
+    "typescript/prefer-string-starts-ends-with": "off", // 4 errors
+    "no-restricted-properties": "off", // 8 errors
+    "typescript/no-unnecessary-boolean-literal-compare": "off", // 2 errors
+    "typescript/switch-exhaustiveness-check": "off", // 25 errors
+    "typescript/prefer-reduce-type-parameter": "off", // 8 errors
+    "one-var": "off", // 17 errors
+    "no-prototype-builtins": "off", // 1 error
+    "typescript/prefer-readonly": "off", // 2 errors
+    "no-alert": "off", // 1 error
     "max-lines": ["error", 1100],
-    "prefer-object-spread": "off",
-    "unicorn/no-array-sort": "off",
+    "unicorn/no-array-sort": "off", // 2 errors
 
     // Flags React components defined inside other components, which is a normal pattern.
-    "unicorn/consistent-function-scoping": "off",
+    "unicorn/consistent-function-scoping": "off", // 72 errors
     // False-positives on <Namespace.Component /> through an `export *` barrel.
-    "import/namespace": "off",
+    "import/namespace": "off", // 22 errors
   },
 });
