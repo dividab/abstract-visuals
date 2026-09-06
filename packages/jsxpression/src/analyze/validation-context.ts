@@ -5,7 +5,7 @@ export interface ValidationContextSnapshot {
 }
 
 export class ValidationContext {
-  #elements: string[] = [];
+  readonly #elements: string[] = [];
 
   get currentPath(): string {
     if (this.#elements.length > 0) {

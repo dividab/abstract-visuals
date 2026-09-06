@@ -35,7 +35,7 @@ export class XmlWriter {
 
   private _xml: string = "";
   private _state: XmlWriterState = "Start";
-  private _contextStack: Array<XmlElementContext> = [];
+  private readonly _contextStack: Array<XmlElementContext> = [];
 
   WriteStartDocument(standalone?: boolean): void {
     try {
