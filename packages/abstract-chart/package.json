@@ -1,6 +1,6 @@
 {
   "name": "abstract-chart",
-  "version": "12.0.76",
+  "version": "12.1.0",
   "gitHead": "17921b59da5eee6cc446fd37a2134165af4d1901",
   "description": "Drawing charts using multiple unit of measure axes as coordinate system",
   "license": "MIT",
@@ -21,7 +21,7 @@
     ".": "./lib/index.js"
   },
   "dependencies": {
-    "abstract-image": "^13.0.61",
+    "abstract-image": "workspace:^",
     "ts-exhaustive-check": "^1.0.0"
   }
 }
