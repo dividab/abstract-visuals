@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { traverse } from "./traverse.js";
+
 import { parse } from "./parse/index.js";
+import { traverse } from "./traverse.js";
 
 describe("traverse", () => {
   it("should call JSXElement visitor", () => {

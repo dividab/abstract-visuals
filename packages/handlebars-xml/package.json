@@ -1,17 +1,11 @@
 {
   "name": "handlebars-xml",
   "version": "0.4.8",
+  "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2",
   "description": "handlebars-xml",
+  "license": "MIT",
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/handlebars-xml",
-  "license": "MIT",
-  "sideEffects": false,
-  "main": "lib/index.js",
-  "type": "module",
-  "types": "lib/index",
-  "exports": {
-    ".": "./lib/index.js"
-  },
   "files": [
     "/lib",
     "/src",
@@ -19,6 +13,13 @@
     "README.md",
     "package.json"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "types": "lib/index",
+  "exports": {
+    ".": "./lib/index.js"
+  },
   "dependencies": {
     "fast-xml-parser": "^4.5.0",
     "handlebars": "4.7.8",
@@ -29,6 +30,5 @@
     "@types/json-schema": "^7.0.15",
     "@types/node": "^24.9.2",
     "@types/xml": "^1.0.11"
-  },
-  "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2"
+  }
 }

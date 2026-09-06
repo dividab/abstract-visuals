@@ -1,4 +1,5 @@
 import type { Program } from "acorn";
+
 import { isJsxRoot } from "../../jsx.js";
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";

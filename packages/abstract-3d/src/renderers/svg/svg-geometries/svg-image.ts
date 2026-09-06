@@ -1,11 +1,12 @@
 import { createSVG } from "abstract-image";
+import { exhaustiveCheck } from "ts-exhaustive-check";
+
 import type { ImageMesh, Vec2, Vec3 } from "../../../abstract-3d.js";
 import { vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from "../../../abstract-3d.js";
-import type { zOrderElement, SvgOptions } from "./shared.js";
-import { zElem } from "./shared.js";
 import type { EmbededImage } from "../svg-encoding.js";
 import { rawSvgPrefix, svgImage } from "../svg-encoding.js";
-import { exhaustiveCheck } from "ts-exhaustive-check";
+import type { zOrderElement, SvgOptions } from "./shared.js";
+import { zElem } from "./shared.js";
 
 export function image(
   i: ImageMesh,

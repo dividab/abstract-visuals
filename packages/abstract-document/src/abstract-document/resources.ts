@@ -1,19 +1,20 @@
+import { defaultAndStandardStyles } from "./default-styles.js";
 // import { ImageResource } from "./primitives/image-resource.js";
 // import { Numbering } from "./numberings/numbering.js";
 import type { NumberingDefinition } from "./numberings/numbering-definition.js";
+import type { Font } from "./primitives/font.js";
+import type { ImageResource } from "./primitives/image-resource.js";
 import { create } from "./styles/style-key.js";
 import type { Style } from "./styles/style.js";
 import { overrideWith } from "./styles/style.js";
-import type { Font } from "./primitives/font.js";
 import type { Indexer } from "./types.js";
-import { defaultAndStandardStyles } from "./default-styles.js";
-import type { ImageResource } from "./primitives/image-resource.js";
 
 export interface Resources {
   readonly fonts?: Indexer<Font>;
   readonly styles?: Indexer<Style>;
   /**
-   * Embedded image data uri are expected to have to shape: data:image/png;base64,${string}, data:image/jpeg;base64,${string} or data:image/svg+xml,${string}
+   * Embedded image data uri are expected to have to shape: data:image/png;base64,${string},
+   * data:image/jpeg;base64,${string} or data:image/svg+xml,${string}
    */
   readonly imageResources?: Record<string, ImageResource>;
   readonly numberingDefinitions?: Indexer<NumberingDefinition>;

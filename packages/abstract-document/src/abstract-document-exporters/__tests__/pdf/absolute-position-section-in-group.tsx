@@ -1,6 +1,6 @@
+import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 import * as AD from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
-import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 
 export const testAbsolutePositionSectionInGroup: ExportTestDef = {
   name: "Absolute position section in group",

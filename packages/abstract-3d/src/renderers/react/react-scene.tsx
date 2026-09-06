@@ -1,12 +1,13 @@
-import React from "react";
-import type { Scene, Group } from "../../abstract-3d.js";
-import type { HotSpotInfo } from "./react-hotspot.js";
-import { ReactHotSpots } from "./react-hotspot.js";
-import { ReactDimensions } from "./react-dimension.js";
-import { ReactGroup } from "./react-group.js";
-import type { MaterialState } from "./react-material.js";
 import { Html } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
+import React from "react";
+
+import type { Scene, Group } from "../../abstract-3d.js";
+import { ReactDimensions } from "./react-dimension.js";
+import { ReactGroup } from "./react-group.js";
+import type { HotSpotInfo } from "./react-hotspot.js";
+import { ReactHotSpots } from "./react-hotspot.js";
+import type { MaterialState } from "./react-material.js";
 import type { ReactPopover } from "./react-types.js";
 
 export type SceneMouseEvent = ThreeEvent<MouseEvent>;

@@ -1,10 +1,11 @@
-import React from "react";
 import { Html } from "@react-three/drei";
+import type { ThreeEvent } from "@react-three/fiber";
+import React from "react";
+
 import type { Box, HotSpot } from "../../abstract-3d.js";
 import { vec3Scale, vec3Zero } from "../../abstract-3d.js";
-import { ReactMesh } from "./react-mesh.js";
 import { ReactMaterial } from "./react-material.js";
-import type { ThreeEvent } from "@react-three/fiber";
+import { ReactMesh } from "./react-mesh.js";
 
 export interface HotSpotInfo {
   readonly replaceId: string;

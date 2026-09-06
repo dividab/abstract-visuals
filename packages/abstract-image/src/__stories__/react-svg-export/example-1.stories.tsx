@@ -1,5 +1,6 @@
-import * as React from "react";
 import type { Meta } from "@storybook/react";
+import * as React from "react";
+
 import * as AbstractImage from "../../index.js";
 
 export function ReactSvgExportExample1(): React.ReactElement<{}> {

@@ -1,5 +1,5 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, HyperLink, TextRun } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testMixedHyperLinkAndTextRun: ExportTestDef = {
   name: "Mixed hyperlink and textrun",

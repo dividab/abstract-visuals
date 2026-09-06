@@ -1,10 +1,11 @@
 import { fromByteArray } from "base64-js";
 import React from "react";
+
 import type { AbstractImage } from "../model/abstract-image.js";
+import type { Color } from "../model/color.js";
+import type { AbstractFontWeight, Component, GrowthDirection } from "../model/component.js";
 import type { Point } from "../model/point.js";
 import { createPoint } from "../model/point.js";
-import type { AbstractFontWeight, Component, GrowthDirection } from "../model/component.js";
-import type { Color } from "../model/color.js";
 import type { Optional } from "../model/shared.js";
 
 export interface ReactSvgCallbacks {

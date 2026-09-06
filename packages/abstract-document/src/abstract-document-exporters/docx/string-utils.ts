@@ -4,8 +4,9 @@
 
 /**
  * Converts a JS string to a UTF-8 "byte" array.
+ *
  * @param {string} str 16-bit unicode string.
- * @return {!Array<number>} UTF-8 byte array.
+ * @returns {!number[]} UTF-8 byte array.
  */
 export function stringToUtf8ByteArray(str: string): Uint8Array {
   // TODO(user): Use native implementations if/when available

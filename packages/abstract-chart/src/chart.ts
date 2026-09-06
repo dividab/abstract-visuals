@@ -1,7 +1,3 @@
-/* oxlint-disable max-lines */
-import { exhaustiveCheck } from "ts-exhaustive-check";
-import type { Axis, AxisBase, DiscreteAxisPoint, NumberFormat } from "./axis.js";
-import { inverseTransformValue, getTicks, createLinearAxis, transformValue, transformPoint } from "./axis.js";
 import type { AbstractImage, Color, Component, GrowthDirection, Point, Polygon, Size } from "abstract-image";
 import {
   black,
@@ -21,6 +17,11 @@ import {
   transparent,
   white,
 } from "abstract-image";
+/* oxlint-disable max-lines */
+import { exhaustiveCheck } from "ts-exhaustive-check";
+
+import type { Axis, AxisBase, DiscreteAxisPoint, NumberFormat } from "./axis.js";
+import { inverseTransformValue, getTicks, createLinearAxis, transformValue, transformPoint } from "./axis.js";
 
 // tslint:disable:max-file-line-count
 

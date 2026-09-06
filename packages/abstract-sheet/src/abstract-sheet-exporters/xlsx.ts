@@ -1,8 +1,9 @@
-import XLSX from "xlsx-js-style";
-import type { AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
-import { xlsxWorkSheet } from "./_xlsx-sheet.js";
-import { createStyle } from "./_style.js";
 import * as fflate from "fflate";
+import XLSX from "xlsx-js-style";
+
+import type { AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
+import { createStyle } from "./_style.js";
+import { xlsxWorkSheet } from "./_xlsx-sheet.js";
 
 export function toXlsx(as: AbstractSheet): Uint8Array<ArrayBuffer> {
   const sheets: Record<string, XLSX.WorkSheet> = {};

@@ -1,9 +1,9 @@
 import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
 import { vec3Zero, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
-import { stlPlane } from "./stl-geometries/stl-plane.js";
 import { stlBox } from "./stl-geometries/stl-box.js";
-import { stlCylinder } from "./stl-geometries/stl-cylinder.js";
 import { stlCone } from "./stl-geometries/stl-cone.js";
+import { stlCylinder } from "./stl-geometries/stl-cylinder.js";
+import { stlPlane } from "./stl-geometries/stl-plane.js";
 import { stlPolygon } from "./stl-geometries/stl-polygon.js";
 
 export const render = (scene: Scene): string =>

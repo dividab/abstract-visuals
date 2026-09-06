@@ -1,11 +1,35 @@
 {
   "private": true,
-  "type": "module",
+  "repository": "https://github.com/dividab/abstract-visuals",
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "pnpm@12.3.1",
-  "repository": "https://github.com/dividab/abstract-visuals",
+  "type": "module",
+  "scripts": {
+    "precommit": "lint-staged",
+    "publish-npm": "run-s verify && lerna publish",
+    "version": "pnpm install --lockfile-only && git add pnpm-lock.yaml",
+    "verify": "run-s lint build test",
+    "updated": "lerna updated",
+    "test": "vitest run",
+    "test-coverage": "vitest run --coverage",
+    "test:abstract-image": "vitest run --dir packages/abstract-image --silent=false",
+    "test:abstract-document": "vitest run --dir packages/abstract-document",
+    "lint": "oxlint --type-aware -c ./oxlint.config.js ./packages",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
+    "cleanbuild": "run-s clean build",
+    "build": "tsc -b packages",
+    "build-watch": "tsc -b -w --preserveWatchOutput packages",
+    "start": "cd packages/abstract-visuals-example && vite",
+    "storybook": "start-storybook -p 6006 --ci",
+    "build-storybook": "build-storybook",
+    "gen": "xsd-ts ./packages/abstract-document/src/abstract-document-xml/xsd.xml ./packages/abstract-document/src/abstract-document-xml/abstract-document.ts",
+    "clean-node-modules": "rm -rf node_modules && rm -rf ./packages/*/node_modules",
+    "prod": "vite build packages/abstract-visuals-example --config packages/abstract-visuals-example/vite.config.ts",
+    "analyze": "ANALYZE=1 vite build packages/abstract-visuals-example --config packages/abstract-visuals-example/vite.config.ts"
+  },
   "devDependencies": {
     "@storybook/addon-actions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
@@ -33,35 +57,11 @@
     "xmldom": "^0.6.0",
     "xsd-tools": "^0.2.0"
   },
-  "scripts": {
-    "precommit": "lint-staged",
-    "publish-npm": "run-s verify && lerna publish",
-    "version": "pnpm install --lockfile-only && git add pnpm-lock.yaml",
-    "verify": "run-s lint build test",
-    "updated": "lerna updated",
-    "test": "vitest run",
-    "test-coverage": "vitest run --coverage",
-    "test:abstract-image": "vitest run --dir packages/abstract-image --silent=false",
-    "test:abstract-document": "vitest run --dir packages/abstract-document",
-    "lint": "oxlint --type-aware -c ./oxlint.config.js ./packages",
-    "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check",
-    "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
-    "cleanbuild": "run-s clean build",
-    "build": "tsc -b packages",
-    "build-watch": "tsc -b -w --preserveWatchOutput packages",
-    "start": "cd packages/abstract-visuals-example && vite",
-    "storybook": "start-storybook -p 6006 --ci",
-    "build-storybook": "build-storybook",
-    "gen": "xsd-ts ./packages/abstract-document/src/abstract-document-xml/xsd.xml ./packages/abstract-document/src/abstract-document-xml/abstract-document.ts",
-    "clean-node-modules": "rm -rf node_modules && rm -rf ./packages/*/node_modules",
-    "prod": "vite build packages/abstract-visuals-example --config packages/abstract-visuals-example/vite.config.ts",
-    "analyze": "ANALYZE=1 vite build packages/abstract-visuals-example --config packages/abstract-visuals-example/vite.config.ts"
-  },
   "lint-staged": {
     "*.{ts,tsx}": "oxlint --type-aware -c ./oxlint.config.js",
     "*.{ts,tsx,js,json,css,md}": [
       "oxfmt"
     ]
-  }
+  },
+  "packageManager": "pnpm@12.3.1"
 }

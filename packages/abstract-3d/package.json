@@ -1,14 +1,21 @@
 {
   "name": "abstract-3d",
   "version": "2.7.33",
+  "gitHead": "17921b59da5eee6cc446fd37a2134165af4d1901",
   "description": "Abstract 3D",
+  "license": "MIT",
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-3d",
-  "license": "MIT",
+  "files": [
+    "/lib",
+    "/src",
+    "README.md",
+    "package.json"
+  ],
+  "type": "module",
+  "sideEffects": false,
   "main": "lib/index.js",
   "types": "lib/index",
-  "sideEffects": false,
-  "type": "module",
   "exports": {
     ".": {
       "ts": "./src/index.ts",
@@ -41,12 +48,6 @@
       "import": "./lib/renderers/svg/index.js"
     }
   },
-  "files": [
-    "/lib",
-    "/src",
-    "README.md",
-    "package.json"
-  ],
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
@@ -56,14 +57,13 @@
     "three": "^0.184.0",
     "ts-exhaustive-check": "^1.0.0"
   },
-  "peerDependencies": {
-    "react": "^19.2.0"
-  },
   "devDependencies": {
     "@types/react": "^19.2.15",
     "@types/react-reconciler": "^0.33.0",
     "@types/three": "^0.180.0",
     "react": "^19.2.6"
   },
-  "gitHead": "17921b59da5eee6cc446fd37a2134165af4d1901"
+  "peerDependencies": {
+    "react": "^19.2.0"
+  }
 }

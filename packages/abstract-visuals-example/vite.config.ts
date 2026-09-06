@@ -1,6 +1,6 @@
-import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
+import { defineConfig, type PluginOption } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const analyze = process.env.ANALYZE === "1";

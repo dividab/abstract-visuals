@@ -1,16 +1,17 @@
 import React from "react";
+
+import { Abstract3DAutoSizeExample } from "./abstract-3d-autosize-example.js";
 import { Abstract3DExample } from "./abstract-3d-example.js";
-import { AbstractImageExampleReact } from "./abstract-image-example-react.js";
-import { AbstractImageExampleDxf } from "./abstract-image-example-dxf.js";
-import { AbstractImageExampleSvg } from "./abstract-image-example-svg.js";
 import { AbstractChartExample } from "./abstract-chart-example.js";
 import { AbstractDocumentExample } from "./abstract-document-example.js";
-import { AbstractDocumentXMLExample } from "./abstract-document-xml-example.js";
 import { AbstractDocumentXMLExample2 } from "./abstract-document-xml-example-2.js";
+import { AbstractDocumentXMLExample } from "./abstract-document-xml-example.js";
+import { AbstractImageExampleDxf } from "./abstract-image-example-dxf.js";
+import { AbstractImageExampleReact } from "./abstract-image-example-react.js";
+import { AbstractImageExampleSvg } from "./abstract-image-example-svg.js";
 import { AbstractSheetExample } from "./abstract-sheet-example.js";
 import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
 import { DynamicImage } from "./dynamic-image.js";
-import { Abstract3DAutoSizeExample } from "./abstract-3d-autosize-example.js";
 
 type Example = (typeof examples)[number];
 

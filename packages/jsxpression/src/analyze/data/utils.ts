@@ -1,4 +1,5 @@
 import type { MemberExpression } from "acorn";
+
 import {
   isAllowedOnArray,
   isAllowedOnString,

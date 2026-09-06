@@ -1,9 +1,9 @@
 import type { CulledLine, Line, Vec2, Vec3 } from "../../../abstract-3d.js";
 import { vec3TransRot, vec3ZMean } from "../../../abstract-3d.js";
+import { rgbGrayScale } from "../../../utils.js";
+import { svgLine } from "../svg-encoding.js";
 import type { SvgOptions, zOrderElement } from "./shared.js";
 import { zElem } from "./shared.js";
-import { svgLine } from "../svg-encoding.js";
-import { rgbGrayScale } from "../../../utils.js";
 
 export function line(
   l: Line | CulledLine,

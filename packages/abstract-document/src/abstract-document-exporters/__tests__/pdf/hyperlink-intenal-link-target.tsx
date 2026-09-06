@@ -1,4 +1,3 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -8,6 +7,7 @@ import {
   LinkTarget,
   HyperLink,
 } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 const paragraph = (
   <Paragraph>

@@ -1,9 +1,9 @@
 import type { Cone, Vec2, Vec3, Material } from "../../../abstract-3d.js";
 import { vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3ZMean, equals } from "../../../abstract-3d.js";
+import { rgbGrayScale } from "../../../utils.js";
+import { svgCircle, svgPolygon } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
 import { gray, stBW, zElem, transparent } from "./shared.js";
-import { svgCircle, svgPolygon } from "../svg-encoding.js";
-import { rgbGrayScale } from "../../../utils.js";
 
 export function cone(
   c: Cone,

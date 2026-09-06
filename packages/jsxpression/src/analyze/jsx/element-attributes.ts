@@ -1,4 +1,5 @@
 import type { Program } from "acorn";
+
 import { isJsxAttribute, isJsxExpressionContainer, type JSXAttribute } from "../../jsx.js";
 import {
   getAllowedAttributes,

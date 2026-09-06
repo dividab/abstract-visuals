@@ -1,5 +1,6 @@
 import { Parser, type Program } from "acorn";
 import { tsPlugin } from "acorn-typescript";
+
 import { ParseError } from "./parse-error.js";
 
 // @ts-expect-error acorn-typescript jsx option types mismatch

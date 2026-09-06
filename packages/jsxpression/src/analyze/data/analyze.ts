@@ -1,9 +1,10 @@
 import type { Program } from "acorn";
+
 import type { Schema } from "../../schema.js";
 import { AnalysisReport } from "../analysis-report.js";
 import { ValidationContext } from "../validation-context.js";
-import { analyzeMethodCalls } from "./method-calls.js";
 import { analyzeDataAccess } from "./data-access.js";
+import { analyzeMethodCalls } from "./method-calls.js";
 
 export function analyzeData(ast: Program, schema: Schema): AnalysisReport {
   const validationContext = new ValidationContext();

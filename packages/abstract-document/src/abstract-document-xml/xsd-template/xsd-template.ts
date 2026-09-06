@@ -1,7 +1,8 @@
+import { parseXsd } from "handlebars-xml";
+
+import * as CustomElements from "./custom-elements.js";
 import * as Elements from "./elements.js";
 import * as Styles from "./styles.js";
-import * as CustomElements from "./custom-elements.js";
-import { parseXsd } from "handlebars-xml";
 
 const commonParts = `${Styles.layoutFoundation}
 ${Styles.pageColumnLayout}

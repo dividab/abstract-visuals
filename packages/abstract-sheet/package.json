@@ -1,17 +1,11 @@
 {
   "name": "abstract-sheet",
   "version": "1.1.26",
+  "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2",
   "description": "Abstract sheet",
+  "license": "MIT",
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-sheet",
-  "license": "MIT",
-  "main": "lib/index.js",
-  "sideEffects": false,
-  "types": "lib/index",
-  "type": "module",
-  "exports": {
-    ".": "./lib/index.js"
-  },
   "files": [
     "/lib",
     "/src",
@@ -19,6 +13,13 @@
     "README.md",
     "package.json"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "types": "lib/index",
+  "exports": {
+    ".": "./lib/index.js"
+  },
   "dependencies": {
     "fast-xml-parser": "^4.5.0",
     "fflate": "^0.8.0",
@@ -28,14 +29,13 @@
     "ts-exhaustive-check": "^1.0.0",
     "xlsx-js-style": "^1.2.0"
   },
-  "peerDependencies": {
-    "react": ">=17.0.0 <20.0.0"
-  },
   "devDependencies": {
     "@types/node": "^22.10.1",
     "@types/react": "^19.2.15",
     "@types/xml": "^1.0.11",
     "react": "^19.2.6"
   },
-  "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2"
+  "peerDependencies": {
+    "react": ">=17.0.0 <20.0.0"
+  }
 }

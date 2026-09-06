@@ -7,8 +7,8 @@ import {
   vec3Zero,
   vec3,
 } from "../../../abstract-3d.js";
-import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
+import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
 
 const QUAD_STRIDE = 4;

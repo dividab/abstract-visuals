@@ -1,21 +1,22 @@
-import React from "react";
 import FileSaver from "file-saver";
-import * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
-import * as Stl from "../../../abstract-3d/src/renderers/stl/index.js";
-import * as Step from "../../../abstract-3d/src/renderers/step/index.js";
-import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";
-import * as Svg from "../../../abstract-3d/src/renderers/svg/index.js";
-import { systemair } from "./systemair.js";
-import { vortice } from "./vortice.js";
-import { demo } from "./demo.js";
-import { demoRotated } from "./demo-rotated.js";
-import { ai } from "./double-view-ai.js";
-import { createSVG } from "../../../abstract-image/src/exporters/svg-export-image.js";
-import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
-import { componentGeometries } from "./double-view-component-geometries.js";
-import { templateScene } from "./template-scene.js";
+import React from "react";
+
 import type { Scene } from "../../../abstract-3d/src/abstract-3d.js";
 import { vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
+import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";
+import * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
+import * as Step from "../../../abstract-3d/src/renderers/step/index.js";
+import * as Stl from "../../../abstract-3d/src/renderers/stl/index.js";
+import * as Svg from "../../../abstract-3d/src/renderers/svg/index.js";
+import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
+import { createSVG } from "../../../abstract-image/src/exporters/svg-export-image.js";
+import { demoRotated } from "./demo-rotated.js";
+import { demo } from "./demo.js";
+import { ai } from "./double-view-ai.js";
+import { componentGeometries } from "./double-view-component-geometries.js";
+import { systemair } from "./systemair.js";
+import { templateScene } from "./template-scene.js";
+import { vortice } from "./vortice.js";
 
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);

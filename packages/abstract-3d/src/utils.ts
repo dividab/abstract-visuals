@@ -43,15 +43,14 @@ export function rgbGrayScale(color: string): string {
 }
 
 /**
- * This will take a HEX or RGB web color. pSBC can shade it darker or lighter,
- * or blend it with a second color, and can also pass it right thru but convert
- * from Hex to RGB (Hex2RGB) or RGB to Hex (RGB2Hex).
- * All without you even knowing what color format you are using.
+ * This will take a HEX or RGB web color. pSBC can shade it darker or lighter, or blend it with a second color, and can
+ * also pass it right thru but convert from Hex to RGB (Hex2RGB) or RGB to Hex (RGB2Hex). All without you even knowing
+ * what color format you are using.
  *
  * @param {number} p - From 0 to 1 Percentage float (Required).
  * @param {string} from - The starting color in HEX or RGB format.
  * @param {string} [to] - The ending color in HEX or RGB format, optional.
- * @returns {string|null} Either Hex or RGB color. Null if invalid color or percentage number.
+ * @returns {string | null} Either Hex or RGB color. Null if invalid color or percentage number.
  */
 
 export function shade(p: number, from: string, to?: string): string | undefined {

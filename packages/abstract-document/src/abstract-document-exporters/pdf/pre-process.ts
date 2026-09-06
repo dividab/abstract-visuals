@@ -1,4 +1,5 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
+
 import * as AD from "../../abstract-document/index.js";
 import * as TextStyle from "../../abstract-document/styles/text-style.js";
 

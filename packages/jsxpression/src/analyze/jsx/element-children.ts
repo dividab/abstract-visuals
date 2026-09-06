@@ -1,4 +1,5 @@
 import type { Program } from "acorn";
+
 import { isJsxElement, isJsxFragment, isJsxLeafNode, isJsxText } from "../../jsx.js";
 import { getAllowedChildren, isSelfClosing, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";

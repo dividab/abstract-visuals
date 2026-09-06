@@ -1,13 +1,23 @@
 {
   "name": "abstract-document",
   "version": "20.0.4",
+  "gitHead": "17921b59da5eee6cc446fd37a2134165af4d1901",
   "description": "Dynamically create documents using code or JSX and render to any format",
+  "license": "MIT",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/abstract-document",
+  "files": [
+    "/lib",
+    "/src",
+    "package.json",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "!/**/__tests__"
+  ],
+  "type": "module",
+  "sideEffects": false,
   "main": "lib/index.js",
   "types": "lib/index",
-  "sideEffects": false,
-  "type": "module",
-  "license": "MIT",
   "exports": {
     ".": {
       "ts": "./src/index.ts",
@@ -30,15 +40,6 @@
       "import": "./lib/abstract-document-exporters/docx2/render.js"
     }
   },
-  "files": [
-    "/lib",
-    "/src",
-    "package.json",
-    "CHANGELOG.md",
-    "LICENSE",
-    "README.md",
-    "!/**/__tests__"
-  ],
   "dependencies": {
     "abstract-image": "^13.0.61",
     "docx": "^9.7.1",
@@ -53,9 +54,6 @@
     "ts-exhaustive-check": "^1.0.0",
     "unified": "^6.1.6"
   },
-  "peerDependencies": {
-    "react": ">=17.0.0 <20.0.0"
-  },
   "devDependencies": {
     "@types/isomorphic-fetch": "^0.0.34",
     "@types/pdfkit": "^0.17.6",
@@ -67,5 +65,7 @@
     "vite": "^6.0.1",
     "vitest": "^2.1.6"
   },
-  "gitHead": "17921b59da5eee6cc446fd37a2134165af4d1901"
+  "peerDependencies": {
+    "react": ">=17.0.0 <20.0.0"
+  }
 }

@@ -1,5 +1,3 @@
-import type { ExportTestDef } from "./_export-test-def.js";
-import * as AD from "../../../index.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -9,6 +7,8 @@ import {
   Group,
   render,
 } from "../../../abstract-document-jsx/index.js";
+import * as AD from "../../../index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 const footerMargin = AD.AbstractDoc.LayoutFoundation.create({
   bottom: 30,

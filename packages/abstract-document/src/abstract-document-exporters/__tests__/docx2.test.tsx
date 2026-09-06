@@ -1,11 +1,13 @@
-import * as S from "stream";
 import path from "path";
+import * as S from "stream";
+
 import * as DiffJsXml from "diff-js-xml";
-import { describe, test, expect } from "vitest";
-import { saveBufferInTmpDir, streamToBuffer } from "./test-utils/index.js";
-import { exportToStream } from "../docx2/render.js";
-import { render } from "../../abstract-document-jsx/index.js";
 import jszip from "jszip";
+import { describe, test, expect } from "vitest";
+
+import { render } from "../../abstract-document-jsx/index.js";
+import { exportToStream } from "../docx2/render.js";
+import { saveBufferInTmpDir, streamToBuffer } from "./test-utils/index.js";
 import { testGroup } from "./tests-docx2/group.js";
 import { testHeaderAndFooter } from "./tests-docx2/header-and-footer.js";
 import { testHelloArialFont } from "./tests-docx2/hello-arial-font.js";
@@ -101,8 +103,8 @@ type DiffResult = {
 };
 
 /**
- * It can be very handy to compare with wildcards if for exammple you are not interested in all the data.
- * You can put an * in the first (lhs) xml file. The result of this compare will be no differences.
+ * It can be very handy to compare with wildcards if for exammple you are not interested in all the data. You can put an *
+ * in the first (lhs) xml file. The result of this compare will be no differences.
  */
 async function diffXmlStrings(lhs: string, rhs: string): Promise<ReadonlyArray<DiffResult>> {
   return new Promise((resolve) => {

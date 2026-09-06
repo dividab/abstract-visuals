@@ -1,17 +1,18 @@
+// oxlint-disable-next-line import/no-named-as-default -- standard pdfkit import idiom
+import PDFDocument from "pdfkit";
+import { toBlob, toBytes } from "pdfkit/output";
+
 import * as AD from "../../abstract-document/index.js";
-import { preProcess } from "./pre-process.js";
+import { registerFonts, getFontNameStyle } from "./font.js";
 import { measure, measurePages } from "./measure.js";
 import type { Page } from "./paginate.js";
 import { paginate, getHeaderAndFooter } from "./paginate.js";
-import { updatePageRefs } from "./update-refs.js";
+import { preProcess } from "./pre-process.js";
 import { renderImage } from "./render-image.js";
-import { registerFonts, getFontNameStyle } from "./font.js";
 import { registerDefaultStdFonts } from "./std-fonts.js";
-import { toBlob, toBytes } from "pdfkit/output";
-// oxlint-disable-next-line import/no-named-as-default -- standard pdfkit import idiom
-import PDFDocument from "pdfkit";
 import type { PdfKitAlignment } from "./textRunRow.js";
 import { rowsCombineTextRuns, rowsSplit } from "./textRunRow.js";
+import { updatePageRefs } from "./update-refs.js";
 
 export type PdfExportOptions = {
   compress: boolean;
@@ -34,8 +35,9 @@ export function exportToBytes(
 }
 
 /**
- * On the client side the stream can be a BlobStream from the blob-stream package.
- * On the server-side the stream can be a file stream from the fs package.
+ * On the client side the stream can be a BlobStream from the blob-stream package. On the server-side the stream can be
+ * a file stream from the fs package.
+ *
  * @param blobStream
  * @param doc
  * @param options

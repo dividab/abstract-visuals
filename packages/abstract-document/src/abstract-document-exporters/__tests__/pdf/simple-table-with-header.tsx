@@ -1,4 +1,3 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -9,8 +8,9 @@ import {
   TextRun,
   render,
 } from "../../../abstract-document-jsx/index.js";
-import * as TableStyle from "../../../abstract-document/styles/table-style.js";
 import * as TableCellStyle from "../../../abstract-document/styles/table-cell-style.js";
+import * as TableStyle from "../../../abstract-document/styles/table-style.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 const borders = { left: 2, bottom: 2, right: 2, top: 2 };
 const margins = { left: 5, bottom: 5, right: 5, top: 5 };

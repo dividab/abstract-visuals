@@ -1,10 +1,10 @@
-import type { Section } from "./page/section.js";
-import type { Resources } from "./resources.js";
 import type { NumberingDefinition } from "./numberings/numbering-definition.js";
-import type { Indexer } from "./types.js";
+import type { Section } from "./page/section.js";
 import type { Font } from "./primitives/font.js";
-import type { Style } from "./styles/style.js";
 import type { ImageResource } from "./primitives/image-resource.js";
+import type { Resources } from "./resources.js";
+import type { Style } from "./styles/style.js";
+import type { Indexer } from "./types.js";
 
 export type AbstractDoc = Resources & {
   readonly children: ReadonlyArray<Section>;

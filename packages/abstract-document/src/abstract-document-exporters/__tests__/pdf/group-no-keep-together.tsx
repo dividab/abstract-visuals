@@ -1,6 +1,6 @@
+import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 /* oxlint-disable max-lines */
 import type { ExportTestDef } from "./_export-test-def.js";
-import { Paragraph, AbstractDoc, Section, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 
 const fillerString = "a b c d e f g h i j k l m n o p q r s t u v x y z å ä ö 1 2 3 4 5 6 7 8 9 0 ! # ¤ % & / ( ) = ?";
 

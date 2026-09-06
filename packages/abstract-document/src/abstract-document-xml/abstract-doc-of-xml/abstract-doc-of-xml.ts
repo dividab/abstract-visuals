@@ -1,12 +1,13 @@
+import { parseHandlebarsXml, type XmlElement } from "handlebars-xml";
+
+import { getFontStyleName } from "../../abstract-document-exporters/pdf/font.js";
 import { addResources, merge } from "../../abstract-document/abstract-doc.js";
 import type { AbstractDoc } from "../../abstract-document/index.js";
-import * as StyleKey from "../../abstract-document/styles/style-key.js";
+import type { Font } from "../../abstract-document/primitives/font.js";
 import type { Resources } from "../../abstract-document/resources.js";
+import * as StyleKey from "../../abstract-document/styles/style-key.js";
 import type { ADCreatorFn } from "./creator.js";
 import { creators, propsCreators } from "./creator.js";
-import { parseHandlebarsXml, type XmlElement } from "handlebars-xml";
-import { getFontStyleName } from "../../abstract-document-exporters/pdf/font.js";
-import type { Font } from "../../abstract-document/primitives/font.js";
 
 export type TemplateInput = {
   readonly template: string;

@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
-import { extend, useThree } from "@react-three/fiber";
 import { Text, Line } from "@react-three/drei";
+import { extend, useThree } from "@react-three/fiber";
+import React, { useMemo } from "react";
 import {
   BoxGeometry,
   BufferAttribute,
@@ -23,6 +23,8 @@ import {
   Vector2,
   Vector3,
 } from "three";
+import { exhaustiveCheck } from "ts-exhaustive-check";
+
 import type {
   Mesh,
   Box,
@@ -47,7 +49,6 @@ import {
   vec3Rot,
   equals,
 } from "../../abstract-3d.js";
-import { exhaustiveCheck } from "ts-exhaustive-check";
 import { planeGeometry } from "./react-image-material.js";
 
 extend({

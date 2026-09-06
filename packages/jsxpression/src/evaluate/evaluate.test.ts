@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
-import { evaluate, type EvaluateOptions } from "./evaluate.js";
+
 import { compile } from "../compile/index.js";
 import { parse } from "../parse/index.js";
 import type { Schema } from "../schema.js";
-
+import { evaluate, type EvaluateOptions } from "./evaluate.js";
 import { EvaluationError } from "./evaluation-error.js";
 
 type Node = {

@@ -1,5 +1,5 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testLongTextRunWithSeparateAtStartAndEnd: ExportTestDef = {
   name: "Long text run with separate at start and end",

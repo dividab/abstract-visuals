@@ -1,4 +1,3 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -8,6 +7,7 @@ import {
   TableCell,
   TextRun,
 } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testSimpleTableAllAutoCellWidths: ExportTestDef = {
   name: "Simple table all auto",

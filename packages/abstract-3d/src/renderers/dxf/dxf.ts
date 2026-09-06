@@ -20,6 +20,7 @@ import {
   vec3TransRot,
   vec3Zero,
 } from "../../abstract-3d.js";
+import { type Optional, calculateVisibleViews } from "../../utils.js";
 import {
   DEFAULT_CIRCLE_SIDE_COUNT,
   type DxfOrigin,
@@ -27,15 +28,14 @@ import {
   dxfBuild,
   dxfHandleInit,
 } from "./dxf-encoding/dxf-common.js";
-import { type Optional, calculateVisibleViews } from "../../utils.js";
-import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
-import { dxfBox } from "./dxf-geometries/dxf-box.js";
-import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
-import { dxfCone } from "./dxf-geometries/dxf-cone.js";
-import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
-import { dxfImage } from "./dxf-geometries/dxf-image.js";
-import { dxfDimension } from "./dxf-geometries/dxf-dimension.js";
 import type { DxfDimensionDefinition } from "./dxf-encoding/dxf-dimension.js";
+import { dxfBox } from "./dxf-geometries/dxf-box.js";
+import { dxfCone } from "./dxf-geometries/dxf-cone.js";
+import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
+import { dxfDimension } from "./dxf-geometries/dxf-dimension.js";
+import { dxfImage } from "./dxf-geometries/dxf-image.js";
+import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
+import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
 
 export type DxfOptions = {
   readonly view: View;

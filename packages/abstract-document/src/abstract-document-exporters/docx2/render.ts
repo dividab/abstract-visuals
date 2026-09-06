@@ -1,4 +1,5 @@
-import * as AD from "../../abstract-document/index.js";
+import { Readable } from "stream";
+
 import type {
   ISectionOptions,
   ImageRun,
@@ -31,8 +32,9 @@ import {
   VerticalAlign,
   PageNumber,
 } from "docx";
+
+import * as AD from "../../abstract-document/index.js";
 import { renderImage } from "./render-image.js";
-import { Readable } from "stream";
 
 const abstractDocToDocxFontRatio = 2;
 const abstractDocPixelToDocxDXARatio = 20;
@@ -63,8 +65,9 @@ export function exportToStream(blobStream: NodeJS.WritableStream, doc: AD.Abstra
 }
 
 /**
- * On the client side the stream can be a BlobStream from the blob-stream package.
- * On the server-side the stream can be a file stream from the fs package.
+ * On the client side the stream can be a BlobStream from the blob-stream package. On the server-side the stream can be
+ * a file stream from the fs package.
+ *
  * @param blobStream
  * @param doc
  */

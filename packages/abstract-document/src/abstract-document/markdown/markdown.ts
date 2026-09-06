@@ -1,11 +1,12 @@
-import unified from "unified";
 import remarkParse from "remark-parse";
 import remarkSubSuper from "remark-sub-super";
-import type { SectionElement } from "../section-elements/section-element.js";
-import * as Paragraph from "../section-elements/paragraph.js";
+import unified from "unified";
+
 import type * as Atom from "../atoms/atom.js";
 import type * as TextRun from "../atoms/text-run.js";
 import * as Group from "../section-elements/group.js";
+import * as Paragraph from "../section-elements/paragraph.js";
+import type { SectionElement } from "../section-elements/section-element.js";
 import type { AstElements, MarkDownProcessData, AstRoot } from "./types.js";
 
 export interface MarkdownProps {

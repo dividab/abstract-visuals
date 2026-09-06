@@ -3,6 +3,8 @@
   "printWidth": 120,
   "trailingComma": "es5",
   "arrowParens": "always",
-  "sortPackageJson": false,
+  "sortPackageJson": true,
+  "sortImports": true,
+  "jsdoc": true,
   "ignorePatterns": ["packages/*/public/**", "*.html", "stats.html"]
 }

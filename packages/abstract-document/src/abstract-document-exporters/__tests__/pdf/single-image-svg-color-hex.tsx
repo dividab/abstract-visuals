@@ -1,6 +1,7 @@
 import * as AI from "abstract-image";
-import type { ExportTestDef } from "./_export-test-def.js";
+
 import { Paragraph, AbstractDoc, Section, Image } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 const svgEncoded =
   '<?xml version ="1.0" encoding="utf-8"?>' +

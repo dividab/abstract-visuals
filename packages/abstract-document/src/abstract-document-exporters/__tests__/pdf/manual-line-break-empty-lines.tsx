@@ -1,5 +1,5 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun, LineBreak } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testManualLineBreakEmptyLines: ExportTestDef = {
   name: "Manual line breaks empty lines",

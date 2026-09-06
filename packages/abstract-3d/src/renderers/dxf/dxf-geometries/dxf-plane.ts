@@ -8,8 +8,8 @@ import {
   vec3RotCombine,
   vec3Zero,
 } from "../../../abstract-3d.js";
-import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
+import type { Handle } from "../dxf-encoding/dxf-common.js";
 
 export function dxfPlane(p: Plane, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const half = vec2Scale(p.size, 0.5);

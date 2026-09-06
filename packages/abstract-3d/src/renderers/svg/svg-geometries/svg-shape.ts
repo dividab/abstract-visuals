@@ -1,9 +1,9 @@
 import type { Vec3, Vec2, Shape, Material } from "../../../abstract-3d.js";
 import { vec3ZMean, vec3TransRot, vec3RotCombine, vec3, vec3Zero } from "../../../abstract-3d.js";
+import { rgbGrayScale } from "../../../utils.js";
+import { svgPolygon } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
 import { gray, zElem, transparent } from "./shared.js";
-import { svgPolygon } from "../svg-encoding.js";
-import { rgbGrayScale } from "../../../utils.js";
 
 export function shape(
   s: Shape,

@@ -1,4 +1,3 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
 import {
   type GizmoHelperProps,
   PerspectiveCamera,
@@ -10,8 +9,10 @@ import {
   GizmoViewport,
 } from "@react-three/drei";
 import { type ThreeEvent, useThree } from "@react-three/fiber";
-import { exhaustiveCheck } from "ts-exhaustive-check";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { Vector3 } from "three";
+import { exhaustiveCheck } from "ts-exhaustive-check";
+
 import type { View, Scene, Vec3 } from "../../abstract-3d.js";
 import { vec3 } from "../../abstract-3d.js";
 

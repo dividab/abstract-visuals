@@ -1,9 +1,9 @@
 import type { Plane, Vec2, Vec3, Material, Hole } from "../../../abstract-3d.js";
 import { vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3ZMean } from "../../../abstract-3d.js";
+import { rgbGrayScale } from "../../../utils.js";
+import { svgPolygon } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
 import { gray, black, zElem } from "./shared.js";
-import { svgPolygon } from "../svg-encoding.js";
-import { rgbGrayScale } from "../../../utils.js";
 
 export function plane(
   p: Plane,

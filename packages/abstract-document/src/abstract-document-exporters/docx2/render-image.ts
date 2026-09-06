@@ -1,10 +1,11 @@
 import type * as AbstractImage from "abstract-image";
 import type { IMediaTransformation } from "docx";
 import { ImageRun } from "docx";
-import type { TextStyle } from "../../abstract-document/styles/text-style.js";
+
 import type { Image } from "../../abstract-document/atoms/image.js";
-import { fromBase64, rawSvgPrefix } from "../shared/base-64.js";
 import type * as AD from "../../abstract-document/index.js";
+import type { TextStyle } from "../../abstract-document/styles/text-style.js";
+import { fromBase64, rawSvgPrefix } from "../shared/base-64.js";
 
 const abstractDocPointsToDocxPxRatio = 1; // Set to 1 for now to minimize impact. Can be adjusted to better match PDF image dimensions
 

@@ -1,6 +1,6 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../abstract-document-jsx/index.js";
 import { TextStyle } from "../../../abstract-document/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testSingleTextRunSuperScript: ExportTestDef = {
   name: "Single textrun with super and subscripts",

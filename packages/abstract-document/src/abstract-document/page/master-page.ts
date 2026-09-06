@@ -1,5 +1,5 @@
-import * as PageStyle from "../styles/page-style.js";
 import type * as SectionElement from "../section-elements/section-element.js";
+import * as PageStyle from "../styles/page-style.js";
 
 export interface MasterPage {
   readonly style: PageStyle.PageStyle;

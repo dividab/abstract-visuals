@@ -1,5 +1,5 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { AbstractDoc, Section, Table } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testSimpleTableWithoutRows: ExportTestDef = {
   name: "Simple table without rows",

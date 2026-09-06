@@ -1,13 +1,16 @@
 {
-  "private": true,
   "name": "abstract-visuals-example",
   "version": "16.5.35",
+  "private": true,
   "description": "abstract-visuals-example",
+  "license": "MIT",
   "repository": "https://github.com/dividab/abstract-visuals",
+  "type": "module",
   "main": "lib/index.js",
   "types": "lib/index",
-  "license": "MIT",
-  "type": "module",
+  "scripts": {
+    "bundle": "vite-bundle-visualizer"
+  },
   "dependencies": {
     "abstract-3d": "^2.7.33",
     "abstract-chart": "^12.0.76",
@@ -30,8 +33,5 @@
     "@vitejs/plugin-react": "^5.1.4",
     "vite": "^7.3.1",
     "vite-plugin-node-polyfills": "^0.25.0"
-  },
-  "scripts": {
-    "bundle": "vite-bundle-visualizer"
   }
 }

@@ -1,7 +1,7 @@
-/* oxlint-disable max-lines */
-import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../abstract-document-jsx/index.js";
 import { LayoutFoundation, MasterPage, PageStyle, TextStyle } from "../../../abstract-document/index.js";
+/* oxlint-disable max-lines */
+import type { ExportTestDef } from "./_export-test-def.js";
 
 const largeStyle = TextStyle.create({ fontSize: 32 });
 const smallStyle = TextStyle.create({ fontSize: 16 });

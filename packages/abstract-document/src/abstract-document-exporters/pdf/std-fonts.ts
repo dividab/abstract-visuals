@@ -1,8 +1,8 @@
 import * as PdfkitModule from "pdfkit";
 import Helvetica from "pdfkit/standard-fonts/Helvetica";
 import HelveticaBold from "pdfkit/standard-fonts/HelveticaBold";
-import HelveticaOblique from "pdfkit/standard-fonts/HelveticaOblique";
 import HelveticaBoldOblique from "pdfkit/standard-fonts/HelveticaBoldOblique";
+import HelveticaOblique from "pdfkit/standard-fonts/HelveticaOblique";
 
 // pdfkit 0.20's browser build stopped bundling standard font data and requires
 // registering it explicitly via `registerStdFonts` before it's used, or `.font("Helvetica")`

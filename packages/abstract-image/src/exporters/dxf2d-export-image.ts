@@ -91,7 +91,8 @@ function encodeWindows1252(str: string): Uint8Array {
 }
 
 /**
- * @deprecated Use `dxf2dExportImageEncoded()` instead. Otherwise the text might not be correctly encoded in some languages.
+ * @deprecated Use `dxf2dExportImageEncoded()` instead. Otherwise the text might not be correctly encoded in some
+ *   languages.
  */
 export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOptions>): string {
   const externalCache = new Map<string, DxfInsert>();

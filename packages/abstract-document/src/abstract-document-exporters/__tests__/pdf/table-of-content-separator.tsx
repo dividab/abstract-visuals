@@ -1,5 +1,5 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, HyperLink, TocSeparator } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testTableOfContentSeparator: ExportTestDef = {
   name: "Table of content separator",

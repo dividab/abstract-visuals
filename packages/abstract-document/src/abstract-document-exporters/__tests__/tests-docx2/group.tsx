@@ -1,4 +1,3 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -9,6 +8,7 @@ import {
   TableCell,
   TableRow,
 } from "../../../abstract-document-jsx/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testGroup: ExportTestDef = {
   name: "Group",

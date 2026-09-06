@@ -1,8 +1,8 @@
 import type { Text, Vec2, Vec3 } from "../../../abstract-3d.js";
 import { vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3Dot, vec3Rot } from "../../../abstract-3d.js";
+import { svgText } from "../svg-encoding.js";
 import type { SvgOptions, zOrderElement } from "./shared.js";
 import { svgTrsMatrix, zElem } from "./shared.js";
-import { svgText } from "../svg-encoding.js";
 
 const SVG_FORWARD: Vec3 = vec3(0.0, 0.0, 1.0);
 const SVG_DOT_OPPOSITE_THRESHOLD: number = -0.9;

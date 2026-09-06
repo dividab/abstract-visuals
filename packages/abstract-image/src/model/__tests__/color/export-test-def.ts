@@ -1,6 +1,4 @@
-/**
- * Defines a data-type that represents a single test for the Docx render function
- */
+/** Defines a data-type that represents a single test for the Docx render function */
 
 import type * as AbstractImage from "../../../../src/index.js";
 

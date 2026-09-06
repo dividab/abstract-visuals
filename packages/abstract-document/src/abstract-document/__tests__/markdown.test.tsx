@@ -1,14 +1,15 @@
 import { describe, test, expect } from "vitest";
+
 import { render } from "../../abstract-document-jsx/index.js";
 import { testMarkdownBoldItalic } from "./test-markdown/markdown-bold-italic.js";
 import { testMarkdownBold } from "./test-markdown/markdown-bold.js";
-import { testMarkdownItalic } from "./test-markdown/markdown-italic.js";
 import { testEmptyKeepTogether } from "./test-markdown/markdown-empty-keepTogether.js";
 import { testMarkdownHeader } from "./test-markdown/markdown-header.js";
+import { testMarkdownItalic } from "./test-markdown/markdown-italic.js";
 import { testMarkdownKeepTogether } from "./test-markdown/markdown-keepTogether.js";
+import { testMarkdownNormalAndBold } from "./test-markdown/markdown-normal-and-bold.js";
 import { testMarkdownSubscript } from "./test-markdown/markdown-subscript.js";
 import { testMarkdownSuperscript } from "./test-markdown/markdown-superscript.js";
-import { testMarkdownNormalAndBold } from "./test-markdown/markdown-normal-and-bold.js";
 
 describe("markdown", () => {
   [

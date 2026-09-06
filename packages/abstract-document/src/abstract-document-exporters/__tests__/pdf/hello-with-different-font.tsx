@@ -1,6 +1,6 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, TextRun } from "../../../abstract-document-jsx/index.js";
 import * as AD from "../../../index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testHelloWithDifferentFont: ExportTestDef = {
   name: "hello with roman font",

@@ -1,4 +1,5 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
+
 import type { Scene, Vec3, Mesh, Vec2, Group, Material, Bounds2 } from "../../abstract-3d.js";
 import {
   vec2,
@@ -16,19 +17,19 @@ import {
   vec3Flip,
   dimensionConvertToTypeMesh,
 } from "../../abstract-3d.js";
-import type { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
-import { box } from "./svg-geometries/svg-box.js";
-import { cylinder } from "./svg-geometries/svg-cylinder.js";
-import { line } from "./svg-geometries/svg-line.js";
-import { plane } from "./svg-geometries/svg-plane.js";
-import { shape } from "./svg-geometries/svg-shape.js";
-import { polygon } from "./svg-geometries/svg-polygon.js";
-import { text } from "./svg-geometries/svg-text.js";
-import { cone } from "./svg-geometries/svg-cone.js";
 import type { Optional } from "../../utils.js";
 import { calculateVisibleViews, isViewVisible } from "../../utils.js";
 import { svg } from "./svg-encoding.js";
+import type { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
+import { box } from "./svg-geometries/svg-box.js";
+import { cone } from "./svg-geometries/svg-cone.js";
+import { cylinder } from "./svg-geometries/svg-cylinder.js";
 import { image } from "./svg-geometries/svg-image.js";
+import { line } from "./svg-geometries/svg-line.js";
+import { plane } from "./svg-geometries/svg-plane.js";
+import { polygon } from "./svg-geometries/svg-polygon.js";
+import { shape } from "./svg-geometries/svg-shape.js";
+import { text } from "./svg-geometries/svg-text.js";
 
 export type SvgScene = {
   readonly scene: Scene;

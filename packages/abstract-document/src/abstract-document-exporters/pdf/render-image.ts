@@ -1,8 +1,9 @@
 import type * as AbstractImage from "abstract-image";
 import svgToPdfKit from "svg-to-pdfkit";
+
 import * as AD from "../../abstract-document/index.js";
-import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
 import { rawSvgPrefix, toBase64 } from "../shared/base-64.js";
+import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
 
 export function renderImage(
   resources: AD.Resources.Resources,

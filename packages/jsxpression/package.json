@@ -1,13 +1,20 @@
 {
   "name": "jsxpression",
   "version": "0.1.41",
+  "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2",
   "description": "Validate and safely render JSX expressions",
+  "license": "MIT",
   "author": "Divid AB <info@divid.se>",
   "repository": "https://github.com/dividab/abstract-visuals/tree/master/packages/jsxpression",
-  "license": "MIT",
-  "main": "lib/index.js",
-  "sideEffects": false,
+  "files": [
+    "/lib",
+    "/src",
+    "README.md",
+    "package.json"
+  ],
   "type": "module",
+  "sideEffects": false,
+  "main": "lib/index.js",
   "types": "lib/index",
   "exports": {
     ".": "./lib/index.js"
@@ -15,17 +22,10 @@
   "scripts": {
     "test": "vitest run src/**/*.test.ts"
   },
-  "files": [
-    "/lib",
-    "/src",
-    "README.md",
-    "package.json"
-  ],
   "dependencies": {
     "acorn": "8.15.0",
     "acorn-typescript": "1.4.13",
     "acorn-walk": "8.3.4",
     "zod": "^4.4.3"
-  },
-  "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2"
+  }
 }

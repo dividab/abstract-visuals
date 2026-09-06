@@ -1,13 +1,14 @@
-import React, { memo } from "react";
-import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
 import { Html, type OrbitControlsProps } from "@react-three/drei";
+import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
-import { ReactScene } from "./react-scene.js";
+import React, { memo } from "react";
+
 import type { Scene, View, Group } from "../../abstract-3d.js";
 import type { ControlsHelper, Camera, BufferZones } from "./react-camera.js";
 import { ReactCamera } from "./react-camera.js";
 import type { HotSpotInfo } from "./react-hotspot.js";
 import type { MaterialState } from "./react-material.js";
+import { ReactScene } from "./react-scene.js";
 import type { ReactPopover } from "./react-types.js";
 
 type ReactProps = {

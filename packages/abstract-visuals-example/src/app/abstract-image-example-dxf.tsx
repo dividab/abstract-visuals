@@ -1,7 +1,7 @@
+import type { AbstractImage } from "abstract-image";
 import React from "react";
-import unitDxf from "../../assets/T202.dxf?raw";
-import circleDxf from "../../assets/circle-dxf.txt?raw";
-import squareDxf from "../../assets/square.dxf?raw";
+
+import { dynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
 import {
   createLine,
   createPoint,
@@ -26,8 +26,9 @@ import {
   DXF_DATA_URL,
   magenta,
 } from "../../../abstract-image/src/index.js";
-import { dynamicImage } from "../../../abstract-image/src/dynamic-image/dynamic-image.js";
-import type { AbstractImage } from "abstract-image";
+import circleDxf from "../../assets/circle-dxf.txt?raw";
+import squareDxf from "../../assets/square.dxf?raw";
+import unitDxf from "../../assets/T202.dxf?raw";
 
 const hrImage: {
   image: AbstractImage;

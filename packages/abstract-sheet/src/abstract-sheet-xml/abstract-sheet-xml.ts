@@ -1,5 +1,7 @@
 import type { XmlElement } from "handlebars-xml";
 import { parseHandlebarsXml, parseXsd } from "handlebars-xml";
+
+import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
 import type {
   ColInfos,
   Cells,
@@ -10,7 +12,6 @@ import type {
   AbstractSheet,
 } from "../abstract-sheet/abstract-sheet.js";
 import { borderStyleRecord } from "../abstract-sheet/abstract-sheet.js";
-import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
 
 export const abstractSheetXml = (template: string, data: any, partials: Record<string, string>): AbstractSheet =>
   abstractSheetXmlRecursive(parseHandlebarsXml(template, data, partials)[0]!) as AbstractSheet;

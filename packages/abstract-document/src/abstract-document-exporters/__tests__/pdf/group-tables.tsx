@@ -1,5 +1,3 @@
-/* oxlint-disable max-lines */
-import type { ExportTestDef } from "./_export-test-def.js";
 import {
   Paragraph,
   AbstractDoc,
@@ -10,6 +8,8 @@ import {
   TextRun,
   Group,
 } from "../../../abstract-document-jsx/index.js";
+/* oxlint-disable max-lines */
+import type { ExportTestDef } from "./_export-test-def.js";
 
 const rowsList = [
   <Table columnWidths={[100]} key={0}>

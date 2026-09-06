@@ -1,9 +1,9 @@
-import type { Point } from "./point.js";
-import { createPoint } from "./point.js";
+import type { AbstractImage } from "./abstract-image.js";
 import type { Color } from "./color.js";
 import type { DashStyle } from "./dash-style.js";
 import { solidLine } from "./dash-style.js";
-import type { AbstractImage } from "./abstract-image.js";
+import type { Point } from "./point.js";
+import { createPoint } from "./point.js";
 import type { Size } from "./size.js";
 
 export type Component = BinaryImage | Ellipse | Line | PolyLine | Polygon | Rectangle | Text | SubImage | Group;
@@ -22,9 +22,7 @@ export function createGroup(name: string, children: Array<Component>): Group {
   };
 }
 
-/**
- * Embed a foreign binary image in any suported format.
- */
+/** Embed a foreign binary image in any suported format. */
 
 export type BinaryFormat = "svg" | "png" | "dxf";
 

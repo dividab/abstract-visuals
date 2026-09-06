@@ -1,6 +1,6 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { Paragraph, AbstractDoc, Section, HyperLink, TextRun } from "../../../abstract-document-jsx/index.js";
 import { TextStyle } from "../../../abstract-document/index.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testMixedHyperLinkAndTextRunNoUnderline: ExportTestDef = {
   name: "Mixed hyperlink and textrun no underline",

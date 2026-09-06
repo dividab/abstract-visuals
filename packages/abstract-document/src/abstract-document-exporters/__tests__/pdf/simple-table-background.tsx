@@ -1,7 +1,7 @@
-import type { ExportTestDef } from "./_export-test-def.js";
 import { AbstractDoc, Section, Table, TableRow, TableCell } from "../../../abstract-document-jsx/index.js";
-import * as TableCellStyle from "../../../abstract-document/styles/table-cell-style.js";
 import { LayoutFoundation } from "../../../abstract-document/index.js";
+import * as TableCellStyle from "../../../abstract-document/styles/table-cell-style.js";
+import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testSimpleTableBackground: ExportTestDef = {
   name: "Simple table background",

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { parse } from "./parse.js";
+
 import { ParseError } from "./parse-error.js";
+import { parse } from "./parse.js";
 
 describe("parse", () => {
   it("should parse valid JSX element", () => {

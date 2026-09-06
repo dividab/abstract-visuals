@@ -1,6 +1,4 @@
-/**
- * @jest-environment jsdom
- */
+/** @jest-environment jsdom */
 import { describe, expect, it } from "vitest";
 
 // const components = [
