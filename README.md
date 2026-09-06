@@ -30,17 +30,15 @@ For the other packages, use `pnpm test` to test them.
 
 Linting uses [oxlint](https://oxc.rs) with type-aware rules (`pnpm lint`). The [oxc VS Code extension](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) needs `"oxc.typeAware": true` and `"oxc.configPath": "./oxlint.config.js"` (set in `.vscode/settings.json`) to surface the same type-aware errors live in the editor — nested config auto-discovery doesn't reliably load the JS config file, so the path must be given explicitly.
 
-## How to release
-
-The packages are published on npmjs.org, versioned independently, using [Changesets](https://github.com/changesets/changesets).
-
-For each PR that changes a published package, add a changeset describing the bump type and a changelog summary:
+If your PR changes a published package, add a changeset describing the bump type and a changelog summary — this is what `pnpm release` (below) turns into a version bump and changelog entry:
 
 ```
 pnpm changeset
 ```
 
-When ready to release, run:
+## How to release
+
+The packages are published on npmjs.org, versioned independently, using [Changesets](https://github.com/changesets/changesets). One command does the whole release:
 
 ```
 pnpm release
