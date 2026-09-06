@@ -52,7 +52,6 @@ export default defineConfig({
     "typescript/switch-exhaustiveness-check": "off", // 25 errors
     "typescript/prefer-reduce-type-parameter": "off", // 8 errors
     "one-var": "off", // 17 errors
-    "no-alert": "off", // 1 error
     "max-lines": ["error", 1100],
 
     // Flags React components defined inside other components, which is a normal pattern.

@@ -76,6 +76,7 @@ export function AbstractImageExampleReact(): React.JSX.Element {
         <ReactSvg
           image={image}
           callbacks={{
+            // oxlint-disable-next-line no-alert
             onClick: (id, position) => window.alert(JSON.stringify({ id, position })),
             onMouseMove: (id) => setHovered(id ?? ""),
           }}
