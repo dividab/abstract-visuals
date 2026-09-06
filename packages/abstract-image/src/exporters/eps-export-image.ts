@@ -4,8 +4,7 @@ import type { Component, Text } from "../model/component.js";
 
 type CharacterEncoding = "standard-encoding" | "iso-latin-1-encoding";
 
-export function epsExportImage(root: AbstractImage): string;
-export function epsExportImage(root: AbstractImage, characterEncoding: "standard-encoding"): string;
+export function epsExportImage(root: AbstractImage, characterEncoding?: "standard-encoding"): string;
 export function epsExportImage(root: AbstractImage, characterEncoding: "iso-latin-1-encoding"): Uint8Array;
 export function epsExportImage(root: AbstractImage, characterEncoding?: CharacterEncoding): string | Uint8Array {
   if (characterEncoding === "iso-latin-1-encoding") {

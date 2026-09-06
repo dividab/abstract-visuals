@@ -84,9 +84,6 @@ export class XmlWriter {
     }
   }
 
-  WriteStartElement(localName: string): void;
-  WriteStartElement(localName: string, ns: string): void;
-  WriteStartElement(localName: string, ns: string, prefix: string): void;
   WriteStartElement(localName: string, ns?: string, prefix?: string): void {
     try {
       if (this._state === "Start" || this._state === "Prolog" || this._state === "Element" || this._state === "Content") {
@@ -150,9 +147,6 @@ export class XmlWriter {
     this.WriteEndElement();
   }
 
-  WriteAttributeString(localName: string, value: string): void;
-  WriteAttributeString(localName: string, value: string, ns: string): void;
-  WriteAttributeString(localName: string, value: string, ns: string, prefix: string): void;
   WriteAttributeString(localName: string, value: string, ns?: string, prefix?: string): void {
     try {
       if (this._state === "Element") {
