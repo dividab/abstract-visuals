@@ -170,6 +170,8 @@ function renderSectionElement(
     case "Group":
       renderGroup(resources, pdf, desiredSizes, finalRect, element);
       return;
+    default:
+      break;
   }
 }
 
@@ -385,6 +387,8 @@ function renderAtom(
       return;
     case "LineBreak":
       return;
+    default:
+      break;
   }
 }
 
@@ -410,6 +414,8 @@ function renderTextField(
         drawText(pdfKit, finalRect, style, textField.text, alignment, isFirstAtom, isLastAtom);
       }
       return;
+    default:
+      break;
   }
 }
 

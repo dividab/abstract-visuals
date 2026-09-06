@@ -90,6 +90,8 @@ function svgStrokedHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, strok
         />`;
         break;
       }
+      default:
+        break;
     }
   }
   return svgHoles;

@@ -152,6 +152,8 @@ function collectParamNames(param: AnyNode, names: Set<string>): void {
     case "RestElement":
       collectParamNames((param as any).argument, names);
       break;
+    default:
+      break;
   }
 }
 
