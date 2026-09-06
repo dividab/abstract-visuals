@@ -24,7 +24,6 @@ export default defineConfig({
     "typescript/no-explicit-any": "off", // 237 errors
     "typescript/no-empty-object-type": "off", // 37 errors
     "typescript/no-unnecessary-condition": "off", // 164 errors
-    "typescript/ban-tslint-comment": "off", // 11 errors
     "no-bitwise": "off", // 38 errors
     "init-declarations": "off", // 14 errors
     "typescript/switch-exhaustiveness-check": "off", // 25 errors

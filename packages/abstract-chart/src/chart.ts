@@ -22,8 +22,6 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { Axis, AxisBase, DiscreteAxisPoint, NumberFormat } from "./axis.js";
 import { inverseTransformValue, getTicks, createLinearAxis, transformValue, transformPoint } from "./axis.js";
 
-// tslint:disable:max-file-line-count
-
 export type Partial<T> = { [P in keyof T]?: T[P] };
 
 export type LabelLayout = "original" | "end" | "center";

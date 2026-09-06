@@ -6,8 +6,6 @@ import type { Page } from "./paginate.js";
 // oxlint-disable-next-line import/no-cycle -- both sides only call each other from function bodies
 import { getHeaderAndFooter } from "./paginate.js";
 
-//tslint:disable:no-any variable-name
-
 const widthOfStringCache = new Map<string, number>();
 const heightOfStringCache = new Map<string, number>();
 
