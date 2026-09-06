@@ -15,9 +15,10 @@ export function mapSchemaTypeToTypeScript(prop: any, depth: number = 0): string 
         return prop.enum.map((value: any) => String(value)).join(" | ");
       }
       return "boolean";
-    case "array":
+    case "array": {
       const itemType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape, depth) : "any";
       return `${itemType}[]`;
+    }
     case "object":
       if (prop.shape && typeof prop.shape === "object") {
         return generateObjectTypeWithJSDoc(prop.shape, depth);
@@ -26,9 +27,10 @@ export function mapSchemaTypeToTypeScript(prop: any, depth: number = 0): string 
         return generateObjectTypeWithJSDoc(prop.properties, depth);
       }
       return "object";
-    case "record":
+    case "record": {
       const valueType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape) : "any";
       return `Record<string, ${valueType}>`;
+    }
     case "function":
       return "(...args: any[]) => any";
     case "union": {

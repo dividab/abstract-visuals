@@ -231,9 +231,10 @@ function renderSectionElement(
       return [renderParagraph(element, resources, keepNext)];
     case "Group":
       return [...renderGroup(element, parentResources, contentAvailableWidth)];
-    case "Table":
+    case "Table": {
       const table = renderTable(element, resources, contentAvailableWidth, keepNext);
       return table ? [table, new Paragraph({ keepNext: keepNext, children: [new TextRun({ text: ".", size: 0.000001 })] })] : [];
+    }
     case "PageBreak":
       return [
         new Paragraph({

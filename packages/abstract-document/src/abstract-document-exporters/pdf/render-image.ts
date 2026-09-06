@@ -59,7 +59,7 @@ function abstractComponentToPdf(
     case "group":
       component.children.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale));
       break;
-    case "binaryimage":
+    case "binaryimage": {
       const format = component.format.toLowerCase();
       const w = component.bottomRight.x - component.topLeft.x;
       const h = component.bottomRight.y - component.topLeft.y;
@@ -97,6 +97,7 @@ function abstractComponentToPdf(
         addWithSvgToPdfKit(new TextDecoder().decode(component.data.bytes), component, pdf, resources, textStyle);
       }
       break;
+    }
     case "subimage": {
       const scaleX = component.size.width / (component.image.size.width || 1);
       const scaleY = component.size.height / (component.image.size.height || 1);
@@ -130,7 +131,7 @@ function abstractComponentToPdf(
       applyStrokeDashStyle(pdf, component.strokeDashStyle);
       pdf.stroke(colorToRgb(component.strokeColor));
       break;
-    case "text":
+    case "text": {
       const font = getFontName(component.fontFamily, component.fontWeight, component.italic);
       if (component.clockwiseRotationDegrees !== 0) {
         pdf.save();
@@ -154,7 +155,8 @@ function abstractComponentToPdf(
         pdf.restore();
       }
       break;
-    case "ellipse":
+    }
+    case "ellipse": {
       const width = component.bottomRight.x - component.topLeft.x;
       const height = component.bottomRight.y - component.topLeft.y;
       const centerX = component.topLeft.x + width * 0.5;
@@ -167,6 +169,7 @@ function abstractComponentToPdf(
       applyStrokeDashStyle(pdf, component.strokeDashStyle);
       pdf.fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
+    }
     case "polygon":
       pdf
         .lineWidth(component.strokeThickness)
@@ -176,7 +179,7 @@ function abstractComponentToPdf(
       applyStrokeDashStyle(pdf, component.strokeDashStyle);
       pdf.fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
-    case "rectangle":
+    case "rectangle": {
       const rWidth = component.bottomRight.x - component.topLeft.x;
       const rHeight = component.bottomRight.y - component.topLeft.y;
       pdf
@@ -187,6 +190,7 @@ function abstractComponentToPdf(
       applyStrokeDashStyle(pdf, component.strokeDashStyle);
       pdf.fillAndStroke(colorToRgb(component.fillColor), colorToRgb(component.strokeColor));
       break;
+    }
     default:
       break;
   }

@@ -18,7 +18,7 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
   }
 
   switch (el.tagName) {
-    case "AbstractSheet":
+    case "AbstractSheet": {
       let styles: Styles | undefined = undefined;
       const sheets: Array<Sheet> = [];
       childElements.forEach((childEl, i) => {
@@ -29,6 +29,7 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
         }
       });
       return { styles, sheets } satisfies AbstractSheet;
+    }
     case "Sheet": {
       const cells: Array<Cells> = [];
       let colInfo: ColInfos | undefined = undefined;

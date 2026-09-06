@@ -103,7 +103,7 @@ function updateRefInTextField(textField: AD.TextField.TextField, page: Page, pag
         ...textField,
         text: pages.length.toString(),
       };
-    case "PageNumberOf":
+    case "PageNumberOf": {
       const targetPage = pages.find((p) => p.namedDestionations.some((dest) => dest === textField.target));
       if (targetPage) {
         return {
@@ -113,6 +113,7 @@ function updateRefInTextField(textField: AD.TextField.TextField, page: Page, pag
       } else {
         return textField;
       }
+    }
     default:
       return textField;
   }
