@@ -7,8 +7,8 @@
   "type": "module",
   "scripts": {
     "precommit": "lint-staged",
-    "changeset": "changeset",
-    "release": "./scripts/release.sh",
+    "publish-npm": "run-s verify && npm_config_manage_package_manager_versions=false mise x pnpm@10.34.5 -- pnpm exec lerna publish",
+    "version": "pnpm install --lockfile-only && git add pnpm-lock.yaml",
     "verify": "run-s lint build test",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
@@ -30,7 +30,6 @@
     "analyze": "ANALYZE=1 vite build packages/abstract-visuals-example --config packages/abstract-visuals-example/vite.config.ts"
   },
   "devDependencies": {
-    "@changesets/cli": "^3.0.2",
     "@storybook/addon-actions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
     "@storybook/react": "^8.1.1",
@@ -40,6 +39,7 @@
     "@vitest/coverage-v8": "5.0.0",
     "@xsd-tools/typescript": "^0.2.0",
     "husky": "^0.14.3",
+    "lerna": "^10.0.1",
     "lint-staged": "^10.5.4",
     "npm-run-all": "^4.1.5",
     "oxfmt": "^0.66.0",

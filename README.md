@@ -6,7 +6,7 @@
 [![types][types-image]][types-url]
 [![MIT license][license-image]][license-url]
 
-This is a [monorepo](https://medium.com/@maoberlehner/monorepos-in-the-wild-33c6eb246cb9) managed using pnpm workspaces and [Changesets](https://github.com/changesets/changesets).
+This is a [monorepo](https://medium.com/@maoberlehner/monorepos-in-the-wild-33c6eb246cb9) managed using pnpm workspaces and [lerna](https://lerna.js.org/).
 
 For more information see the readme for each package:
 
@@ -30,21 +30,17 @@ For the other packages, use `pnpm test` to test them.
 
 Linting uses [oxlint](https://oxc.rs) with type-aware rules (`pnpm lint`). The [oxc VS Code extension](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) needs `"oxc.typeAware": true` and `"oxc.configPath": "./oxlint.config.js"` (set in `.vscode/settings.json`) to surface the same type-aware errors live in the editor — nested config auto-discovery doesn't reliably load the JS config file, so the path must be given explicitly.
 
-If your PR changes a published package, add a changeset describing the bump type and a changelog summary — this is what `pnpm release` (below) turns into a version bump and changelog entry:
+## How to publish
+
+First update changelog.
+
+The packages are published on npmjs.org. To publish run this command:
 
 ```
-pnpm changeset
+pnpm publish-npm
 ```
 
-## How to release
-
-The packages are published on npmjs.org, versioned independently, using [Changesets](https://github.com/changesets/changesets). One command does the whole release:
-
-```
-pnpm release
-```
-
-This bumps versions, updates each package's `CHANGELOG.md`, verifies (lint, build, test), commits the version bump, publishes to npm, creates git tags, and pushes the commit and tags — all in one step. Needs an npm auth token in `~/.npmrc` and, if 2FA is enabled, a one-time password: `pnpm release -- --otp=123456`.
+It will build the packages and call `lerna publish` which will figure out which packages has changed, ask for new versions of them, and then publish them. Needs an npm auth token in `~/.npmrc` and, if 2FA is enabled, a one-time password: `pnpm publish-npm -- --otp=123456`.
 
 `scripts/release.sh` runs the actual publish under `pnpm@10.34.5` instead of this repo's pinned `pnpm@12.3.1` — the pinned version has a confirmed upstream bug where registry-authenticated requests (`whoami`, `publish`) fail even with a valid npm token, while `pnpm@10.34.5` works. Revisit that once it's fixed upstream.
 
