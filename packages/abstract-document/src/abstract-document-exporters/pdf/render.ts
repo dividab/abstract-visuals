@@ -163,13 +163,13 @@ function renderSectionElement(
   switch (element.type) {
     case "Paragraph":
       renderParagraph(resources, pdf, desiredSizes, finalRect, element);
-      return;
+      break;
     case "Table":
       renderTable(resources, pdf, desiredSizes, finalRect, element);
-      return;
+      break;
     case "Group":
       renderGroup(resources, pdf, desiredSizes, finalRect, element);
-      return;
+      break;
     default:
       break;
   }
@@ -382,11 +382,9 @@ function renderAtom(
       return;
     case "TocSeparator":
       renderTocSeparator(pdfKit, finalRect, textStyle, atom);
-      return;
+      break;
     case "LinkTarget":
-      return;
     case "LineBreak":
-      return;
     default:
       break;
   }
@@ -413,7 +411,7 @@ function renderTextField(
       if (textField.text) {
         drawText(pdfKit, finalRect, style, textField.text, alignment, isFirstAtom, isLastAtom);
       }
-      return;
+      break;
     default:
       break;
   }

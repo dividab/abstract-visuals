@@ -30,7 +30,6 @@ export default defineConfig({
     "typescript/no-explicit-any": "off", // 237 errors
     "typescript/no-empty-object-type": "off", // 37 errors
     "typescript/no-unnecessary-condition": "off", // 164 errors
-    "no-useless-return": "off", // 5 errors
     "typescript/ban-tslint-comment": "off", // 11 errors
     "typescript/unified-signatures": "off", // 5 errors
     "no-bitwise": "off", // 38 errors
