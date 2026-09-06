@@ -11,7 +11,8 @@ type Loc = {
 
 // oxlint-disable-next-line functional/no-classes -- extends Error, which requires a class
 export class CompilationError extends Error {
-  static fromNode(message: string, node: any): CompilationError {
+  static fromNode(message: string, nodeParam: unknown): CompilationError {
+    const node = nodeParam as any;
     const loc = node.loc
       ? {
           start: {

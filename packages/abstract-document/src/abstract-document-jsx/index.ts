@@ -46,13 +46,14 @@ export const TextRun = (props: TextRun1.TextRunProps): React.JSX.Element => Text
 export const PageBreak = (props: PageBreak1.PageBreakProps): React.JSX.Element => PageBreak1.create(props) as any;
 export const LineBreak = (props: LineBreak1.LineBreakProps): React.JSX.Element => LineBreak1.create(props) as any;
 
-export function render(element: any): any {
-  if (typeof element.type !== "function") {
-    return element;
+export function render(element: unknown): any {
+  const el = element as any;
+  if (typeof el.type !== "function") {
+    return el;
   }
-  const props = element.props ?? {};
-  const children = renderChildren(element);
-  return element.type({ ...props, children });
+  const props = el.props ?? {};
+  const children = renderChildren(el);
+  return el.type({ ...props, children });
 }
 
 function renderChildren(element: React.ReactElement<any>): any {

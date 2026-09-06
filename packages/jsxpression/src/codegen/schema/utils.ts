@@ -1,4 +1,5 @@
-export function mapSchemaTypeToTypeScript(prop: any, depth: number = 0): string {
+export function mapSchemaTypeToTypeScript(propParam: unknown, depth: number = 0): string {
+  const prop = propParam as any;
   switch (prop.type) {
     case "string":
       if (prop.enum && Array.isArray(prop.enum)) {
@@ -41,7 +42,8 @@ export function mapSchemaTypeToTypeScript(prop: any, depth: number = 0): string 
   }
 }
 
-export function generateObjectTypeWithJSDoc(properties: any, depth: number = 0): string {
+export function generateObjectTypeWithJSDoc(propertiesParam: unknown, depth: number = 0): string {
+  const properties = propertiesParam as any;
   let result = "{\n";
 
   // Generate each property with inline JSDoc
@@ -60,7 +62,8 @@ export function generateObjectTypeWithJSDoc(properties: any, depth: number = 0):
   return result;
 }
 
-export function generatePropertyJSDoc(_propertyName: string, propertySchema: any, indent: string = "", _depth: number = 0): string {
+export function generatePropertyJSDoc(_propertyName: string, propertySchemaParam: unknown, indent: string = "", _depth: number = 0): string {
+  const propertySchema = propertySchemaParam as any;
   const comments: Array<string> = [];
 
   // Main description

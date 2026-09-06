@@ -15,7 +15,6 @@ export default defineConfig({
     "functional/no-this-expressions": "off", // 142 errors
     "functional/prefer-readonly-type": "off", // 419 errors
     "typescript/prefer-readonly-parameter-types": "off", // 1120 errors
-    "typescript/explicit-module-boundary-types": "off", // 15 errors
     "typescript/no-unsafe-assignment": "off", // 165 errors
     "typescript/no-unsafe-call": "off", // 48 errors
     "typescript/no-unsafe-return": "off", // 48 errors

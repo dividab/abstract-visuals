@@ -35,9 +35,9 @@ export function exportToBytes(doc: AD.AbstractDoc.AbstractDoc, options: PdfExpor
  * @param doc
  * @param options
  */
-export function exportToStream(blobStream: any, doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): void {
+export function exportToStream(blobStream: unknown, doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): void {
   const pdf = createDocument(options, doc);
-  pdf.pipe(blobStream);
+  pdf.pipe(blobStream as any);
 }
 
 function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDoc): PDFKit.PDFDocument {

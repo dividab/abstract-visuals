@@ -65,7 +65,8 @@ export function extractPath(node: MemberExpression): Array<string> {
   return path;
 }
 
-export function getAvailablePropsAtPath(path: Array<string>, depth: number, schemaData: any): Array<string> {
+export function getAvailablePropsAtPath(path: Array<string>, depth: number, schemaDataParam: unknown): Array<string> {
+  const schemaData = schemaDataParam as any;
   if (!schemaData || depth < 0) {
     return schemaData ? Object.keys(schemaData) : [];
   }

@@ -4,7 +4,7 @@ import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
 import type { ColInfos, Cells, RowInfos, Sheet, Style, Styles, AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
 import { borderStyleRecord } from "../abstract-sheet/abstract-sheet.js";
 
-export const abstractSheetXml = (template: string, data: any, partials: Record<string, string>): AbstractSheet =>
+export const abstractSheetXml = (template: string, data: unknown, partials: Record<string, string>): AbstractSheet =>
   abstractSheetXmlRecursive(parseHandlebarsXml(template, data, partials)[0]!) as AbstractSheet;
 
 function abstractSheetXmlRecursive(el: XmlElement): unknown {

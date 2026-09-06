@@ -11,11 +11,11 @@ export type XmlElement = {
   readonly textContent?: string;
 };
 
-export const parseHandlebarsXml = (template: string, data: any, partials: Record<string, string>): ReadonlyArray<XmlElement> => {
+export const parseHandlebarsXml = (template: string, data: unknown, partials: Record<string, string>): ReadonlyArray<XmlElement> => {
   return parseXml(renderHandlebars(template, data, partials));
 };
 
-export const renderHandlebars = (template: string, data: any, partials: Record<string, string>): string => {
+export const renderHandlebars = (template: string, data: unknown, partials: Record<string, string>): string => {
   const hbs = Handlebars.create();
   helpers.forEach((h) => hbs.registerHelper(h.name, h.func as any));
   Object.entries(partials).forEach(([name, partial]) => hbs.registerPartial(name, partial));

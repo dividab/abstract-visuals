@@ -44,7 +44,7 @@ export async function abstractDocsXml(
 
 export function abstractDocXml(
   template: string,
-  data: any,
+  data: unknown,
   partials: Record<string, string>
 ): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>] {
   const xml = parseHandlebarsXml(template, data, partials);

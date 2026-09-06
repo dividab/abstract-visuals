@@ -8,7 +8,8 @@ export interface Range {
   end: RangePosition;
 }
 
-export function getNodeRange(node: any): Range {
+export function getNodeRange(nodeParam: unknown): Range {
+  const node = nodeParam as any;
   if (node.loc) {
     return {
       start: {

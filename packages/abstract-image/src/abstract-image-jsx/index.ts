@@ -69,13 +69,14 @@ export const Text = (props: TextComponent): TextComponent =>
   );
 export const SubImage = (props: SubImageComponent): SubImageComponent => createSubImage(props.topLeft, props.size, props.image);
 
-export function render(element: any): any {
-  if (typeof element.type !== "function") {
-    return element;
+export function render(element: unknown): any {
+  const el = element as any;
+  if (typeof el.type !== "function") {
+    return el;
   }
-  const props = element.props ?? {};
-  const children = renderChildren(element);
-  return element.type({ ...props, children });
+  const props = el.props ?? {};
+  const children = renderChildren(el);
+  return el.type({ ...props, children });
 }
 
 function renderChildren(element: React.ReactElement<any>): any {
