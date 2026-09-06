@@ -105,7 +105,7 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
   traverse(ast, {
     MemberExpression(node) {
       const parent = parentMap.get(node);
-      if (parent && parent.type === "CallExpression" && parent.callee === node) {
+      if (parent?.type === "CallExpression" && parent.callee === node) {
         return;
       }
 
@@ -181,9 +181,9 @@ function getArrayElementTypeFromCall(node: any, schema: Schema, arrowFunctionCon
       // Find the arrow function context that defines this parameter
       const parameterType = resolveParameterType(paramName, node, arrowFunctionContexts);
 
-      if (parameterType && parameterType.type === "object" && parameterType.shape) {
+      if (parameterType?.type === "object" && parameterType.shape) {
         const propertySchema = parameterType.shape[propertyName];
-        if (propertySchema && propertySchema.type === "array") {
+        if (propertySchema?.type === "array") {
           return getArrayElementType(propertySchema);
         }
       }

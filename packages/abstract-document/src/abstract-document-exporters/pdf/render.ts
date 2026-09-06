@@ -843,7 +843,7 @@ function renderCell(
 }
 
 function borderColor(style: AD.TableCellStyle.TableCellStyle, edge: "top" | "bottom" | "left" | "right"): string {
-  if (style.borderColors && style.borderColors[edge]) {
+  if (style.borderColors?.[edge]) {
     return style.borderColors[edge];
   }
   if (style.borderColor) {

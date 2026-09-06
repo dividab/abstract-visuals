@@ -180,7 +180,7 @@ function measureParagraph(
       // );
 
       const height = pdfKit.heightOfString(concatenatedText, {
-        width: textOptions && textOptions.lineBreak === false ? Infinity : availableSize.width,
+        width: textOptions?.lineBreak === false ? Infinity : availableSize.width,
         ...textOptions,
       });
       paragraphHeight += height;

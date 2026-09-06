@@ -61,7 +61,7 @@ function abstractDocXmlRecursive(creators: Record<string, ADCreatorFn>, xmlEleme
     if (childName !== undefined) {
       if (childName === "StyleNames") {
         props["styles"] = abstractDocXmlRecursive(creators, childElement);
-      } else if (childName === "StyleName" && childElement.attributes && childElement.attributes["name"]) {
+      } else if (childName === "StyleName" && childElement.attributes?.["name"]) {
         const styleName = StyleKey.create(childElement.attributes["type"], childElement.attributes["name"]);
         const style = abstractDocXmlRecursive(creators, childElement);
         props[styleName] = style;
