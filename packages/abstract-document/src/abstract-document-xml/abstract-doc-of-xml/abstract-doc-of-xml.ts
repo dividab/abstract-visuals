@@ -97,6 +97,7 @@ function abstractDocXmlRecursive(creators: Record<string, ADCreatorFn>, xmlEleme
   //
   const obj = creator(allProps, children) as { [k: string]: unknown };
 
+  // oxlint-disable-next-line unicorn/no-array-sort
   for (const propName of Object.keys(allProps).sort((a, b) => a.length - b.length)) {
     const propsCreator = allProps[propName] !== undefined && propsCreators[propName] ? propsCreators[propName] : undefined;
     if (propsCreator) {

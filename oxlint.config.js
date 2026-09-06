@@ -56,7 +56,6 @@ export default defineConfig({
     "typescript/prefer-readonly": "off", // 2 errors
     "no-alert": "off", // 1 error
     "max-lines": ["error", 1100],
-    "unicorn/no-array-sort": "off", // 2 errors
 
     // Flags React components defined inside other components, which is a normal pattern.
     "unicorn/consistent-function-scoping": "off", // 72 errors

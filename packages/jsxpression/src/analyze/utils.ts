@@ -71,19 +71,22 @@ function getSimilarityMatchers(invalid: string, available: string[], type: Simil
     return [];
   }
 
-  return available
-    .map((suggestion) => ({
-      suggestion,
-      distance: levenshteinDistance(invalid.toLowerCase(), suggestion.toLowerCase()),
-      type,
-    }))
-    .filter((similarityMatcher) => similarityMatcher.distance <= Math.max(2, Math.floor(invalid.length * 0.4)))
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 3)
-    .map((similarityMatcher) => ({
-      ...similarityMatcher,
-      confidence: 1 - similarityMatcher.distance / Math.max(invalid.length, similarityMatcher.suggestion.length),
-    }));
+  return (
+    available
+      .map((suggestion) => ({
+        suggestion,
+        distance: levenshteinDistance(invalid.toLowerCase(), suggestion.toLowerCase()),
+        type,
+      }))
+      .filter((similarityMatcher) => similarityMatcher.distance <= Math.max(2, Math.floor(invalid.length * 0.4)))
+      // oxlint-disable-next-line unicorn/no-array-sort
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 3)
+      .map((similarityMatcher) => ({
+        ...similarityMatcher,
+        confidence: 1 - similarityMatcher.distance / Math.max(invalid.length, similarityMatcher.suggestion.length),
+      }))
+  );
 }
 
 function levenshteinDistance(x: string, y: string): number {
