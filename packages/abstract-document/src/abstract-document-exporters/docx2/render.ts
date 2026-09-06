@@ -328,7 +328,7 @@ function renderRow(
         children: [...acc.children, renderCell(cell, resources, tableCellStyle, width, keepNext)],
       };
     },
-    { columnIndex: 0, children: [] as TableCell[] }
+    { columnIndex: 0, children: [] as Array<TableCell> }
   ).children;
 
   return new TableRow({

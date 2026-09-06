@@ -10,7 +10,7 @@
  */
 export function stringToUtf8ByteArray(str: string): Uint8Array {
   // TODO(user): Use native implementations if/when available
-  const out: any[] = [];
+  const out: Array<any> = [];
   let p: number = 0;
   for (let i = 0; i < str.length; i++) {
     let c = str.charCodeAt(i);

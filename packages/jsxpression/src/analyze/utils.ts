@@ -34,15 +34,15 @@ export function getNodeRange(node: any): Range {
   };
 }
 
-export function getElementSimilarityMatchers(invalid: string, available: string[]): SimilarityMatcher[] {
+export function getElementSimilarityMatchers(invalid: string, available: Array<string>): Array<SimilarityMatcher> {
   return getSimilarityMatchers(invalid, available, "element");
 }
 
-export function getAttributeSimilarityMatchers(invalid: string, available: string[]): SimilarityMatcher[] {
+export function getAttributeSimilarityMatchers(invalid: string, available: Array<string>): Array<SimilarityMatcher> {
   return getSimilarityMatchers(invalid, available, "attribute");
 }
 
-export function getBestSimilarityMatcherSuggestion(invalid: string, available: string[]): string | null {
+export function getBestSimilarityMatcherSuggestion(invalid: string, available: Array<string>): string | null {
   const similarityMatchers = getElementSimilarityMatchers(invalid, available);
 
   if (similarityMatchers.length === 0) {
@@ -66,7 +66,7 @@ interface SimilarityMatcher {
   type: SimilarityMatcherType;
 }
 
-function getSimilarityMatchers(invalid: string, available: string[], type: SimilarityMatcherType): SimilarityMatcher[] {
+function getSimilarityMatchers(invalid: string, available: Array<string>, type: SimilarityMatcherType): Array<SimilarityMatcher> {
   if (available.length === 0) {
     return [];
   }
@@ -97,7 +97,7 @@ function levenshteinDistance(x: string, y: string): number {
     return x.length;
   }
 
-  const matrix: number[][] = [];
+  const matrix: Array<Array<number>> = [];
 
   for (let i = 0; i <= y.length; i++) {
     matrix[i] = [i];

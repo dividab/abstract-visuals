@@ -7,12 +7,12 @@ import { render } from "./render.js";
 type TestNode = {
   type: string;
   props: Record<string, unknown>;
-  children: unknown[];
+  children: Array<unknown>;
 };
 
 describe("render", () => {
   it("should render complete JSX pipeline successfully", () => {
-    const TestComponent = ({ children, ...props }: { x: number; y: number; children?: any[] }): TestNode => ({
+    const TestComponent = ({ children, ...props }: { x: number; y: number; children?: Array<any> }): TestNode => ({
       type: "TestComponent",
       props,
       children: children ?? [],
@@ -76,13 +76,13 @@ describe("render", () => {
   });
 
   it("should render nested JSX elements", () => {
-    const OuterComponent = ({ children, ...props }: { x: number; children?: any[] }): TestNode => ({
+    const OuterComponent = ({ children, ...props }: { x: number; children?: Array<any> }): TestNode => ({
       type: "OuterComponent",
       props,
       children: children ?? [],
     });
 
-    const InnerComponent = ({ children, ...props }: { y: number; children?: any[] }): TestNode => ({
+    const InnerComponent = ({ children, ...props }: { y: number; children?: Array<any> }): TestNode => ({
       type: "InnerComponent",
       props,
       children: children ?? [],

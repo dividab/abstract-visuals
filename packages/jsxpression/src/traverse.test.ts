@@ -5,7 +5,7 @@ import { traverse } from "./traverse.js";
 describe("traverse", () => {
   it("should call JSXElement visitor", () => {
     const ast = parse("<Text>Hello</Text>");
-    const visits: string[] = [];
+    const visits: Array<string> = [];
 
     traverse(ast, {
       JSXElement() {
@@ -18,7 +18,7 @@ describe("traverse", () => {
 
   it("should call JSXFragment visitor", () => {
     const ast = parse("<>Fragment</>");
-    const visits: string[] = [];
+    const visits: Array<string> = [];
 
     traverse(ast, {
       JSXFragment() {
@@ -31,7 +31,7 @@ describe("traverse", () => {
 
   it("should call Identifier visitor for expressions", () => {
     const ast = parse("<Text>{props.value}</Text>");
-    const identifiers: string[] = [];
+    const identifiers: Array<string> = [];
 
     traverse(ast, {
       Identifier(node) {
@@ -57,7 +57,7 @@ describe("traverse", () => {
 
   it("should call JSXExpressionContainer visitor", () => {
     const ast = parse("<Text>{props.value}</Text>");
-    const visits: string[] = [];
+    const visits: Array<string> = [];
 
     traverse(ast, {
       JSXExpressionContainer() {
@@ -83,7 +83,7 @@ describe("traverse", () => {
 
   it("should handle multiple visitor types simultaneously", () => {
     const ast = parse("<Text x={props.value}>Hello</Text>");
-    const visits: string[] = [];
+    const visits: Array<string> = [];
 
     traverse(ast, {
       JSXElement() {

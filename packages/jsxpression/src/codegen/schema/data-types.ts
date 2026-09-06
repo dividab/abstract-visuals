@@ -22,7 +22,7 @@ export function declareDataTypes(schema: Schema): string {
 }
 
 function generateNestedPropertyJSDoc(propertyName: string, propertySchema: any, indent: string = ""): string {
-  const comments: string[] = [];
+  const comments: Array<string> = [];
 
   if (propertySchema.description) {
     comments.push(propertySchema.description);

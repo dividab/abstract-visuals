@@ -8,7 +8,7 @@ import type { Size } from "../model/size.js";
 
 export const DXF_STANDARD = "AC1015";
 export const DXF_DATA_URL = "data:application/dxf,";
-export const DXF_ENTITIES: string[] = [
+export const DXF_ENTITIES: Array<string> = [
   "3DFACE",
   "3DSOLID",
   "ACAD_PROXY_ENTITY",
@@ -652,7 +652,7 @@ function remapHandleIds(
 
   function collectAndRemap(src: string): string {
     const lines = src.split("\n");
-    const out: string[] = [];
+    const out: Array<string> = [];
     let i = 0;
     let inEntityHeader = false;
     while (i < lines.length) {
@@ -703,7 +703,7 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, _height
   const yCoordinateCodes = new Set([20, 21, 22, 23, 24, 25, 26, 27, 28]);
 
   const lines = dxfString.split(/\r?\n/);
-  const scaledLines: string[] = [];
+  const scaledLines: Array<string> = [];
 
   let currentAcDbEntity = "";
   for (let i = 0; i < lines.length; i += 2) {

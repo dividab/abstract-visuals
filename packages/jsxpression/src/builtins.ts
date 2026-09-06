@@ -13,13 +13,13 @@ interface BuiltinParamBaseSchema {
 
 export interface BuiltinPrimitiveParamSchema extends BuiltinParamBaseSchema {
   kind: "primitive";
-  types: string[];
+  types: Array<string>;
 }
 
 export interface BuiltinFunctionParamSchema extends BuiltinParamBaseSchema {
   kind: "function";
   signature: {
-    params: BuiltinCallbackParamSchema[];
+    params: Array<BuiltinCallbackParamSchema>;
     returnType: string;
   };
 }
@@ -27,7 +27,7 @@ export interface BuiltinFunctionParamSchema extends BuiltinParamBaseSchema {
 export type BuiltinParamSchema = BuiltinPrimitiveParamSchema | BuiltinFunctionParamSchema;
 
 export interface BuiltinMethodSchema {
-  params: BuiltinParamSchema[];
+  params: Array<BuiltinParamSchema>;
   returnType: string;
   description?: string;
 }
@@ -1081,7 +1081,7 @@ export function getBuiltins(): Record<string, BuiltinSchema> {
   return structuredClone(BUILTINS);
 }
 
-export function getBuiltinGlobals(): string[] {
+export function getBuiltinGlobals(): Array<string> {
   // oxlint-disable-next-line typescript/no-unnecessary-boolean-literal-compare
   return Object.keys(BUILTINS).filter((name) => BUILTINS[name].global === true);
 }
@@ -1116,14 +1116,14 @@ export function getMethodDefinition(methodName: string): BuiltinMethodSchema | n
   return null;
 }
 
-export function getAvailableArrayMembers(): string[] {
+export function getAvailableArrayMembers(): Array<string> {
   const arrayNamespace = BUILTINS[ARRAY_PROTOTYPE];
   const methods = Object.keys(arrayNamespace?.methods || {});
   const properties = Object.keys(arrayNamespace?.properties || {});
   return [...methods, ...properties];
 }
 
-export function getAvailableStringMembers(): string[] {
+export function getAvailableStringMembers(): Array<string> {
   const stringNamespace = BUILTINS[STRING_PROTOTYPE];
   const methods = Object.keys(stringNamespace?.methods || {});
   const properties = Object.keys(stringNamespace?.properties || {});

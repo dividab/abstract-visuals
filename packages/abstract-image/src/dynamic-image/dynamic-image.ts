@@ -26,7 +26,7 @@ export function dynamicImage(
   funcSchema?: Record<string, FunctionSchema>
 ): DynamicImageResult {
   try {
-    const imageUrls: string[] = [];
+    const imageUrls: Array<string> = [];
     const schema: Schema = dataSchema ? { ...baseSchema, data: dataSchema, functions: funcSchema } : baseSchema;
 
     const image = render<AbstractImage>(source, schema, {
@@ -74,7 +74,7 @@ export function compileDynamicImage(
 }
 
 export function renderDynamicImage(jsString: string, data: Record<string, unknown>, functions?: Record<string, Function>): DynamicImageResult {
-  const imageUrls: string[] = [];
+  const imageUrls: Array<string> = [];
   try {
     return {
       type: "Ok",

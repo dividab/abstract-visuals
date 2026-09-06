@@ -61,7 +61,7 @@ export function generateObjectTypeWithJSDoc(properties: any, depth: number = 0):
 }
 
 export function generatePropertyJSDoc(_propertyName: string, propertySchema: any, indent: string = "", _depth: number = 0): string {
-  const comments: string[] = [];
+  const comments: Array<string> = [];
 
   // Main description
   if (propertySchema.description) {

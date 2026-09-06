@@ -98,7 +98,7 @@ function paginateSection(
           elements.length
         );
 
-        const tableSplit: AD.Table.Table[] = [];
+        const tableSplit: Array<AD.Table.Table> = [];
         if (tableHead) {
           elements.push(tableHead);
           tableSplit.push(tableHead);
@@ -409,9 +409,9 @@ function splitTableAt(
   splitIndex: number
 ): [AD.Table.Table, AD.Table.Table] {
   //Push row/cells to head table while splitting rowspan
-  const headRows: AD.TableRow.TableRow[] = [];
+  const headRows: Array<AD.TableRow.TableRow> = [];
   for (const [rowIndex, row] of table.children.slice(0, splitIndex).entries()) {
-    const newRow: AD.TableCell.TableCell[] = [];
+    const newRow: Array<AD.TableCell.TableCell> = [];
     for (const cell of row.children) {
       //If this cell would span over the split index
       if (rowIndex + (cell.rowSpan || 1) - 1 >= splitIndex) {
@@ -428,13 +428,13 @@ function splitTableAt(
   //while keeping the remaining rowspan which was calculated
   //in the pre-process step
   const splitRow = table.children[splitIndex];
-  const firstTailRow: AD.TableCell.TableCell[] = [];
+  const firstTailRow: Array<AD.TableCell.TableCell> = [];
   for (const cell of splitRow.children) {
     firstTailRow.push({ ...cell, dummy: false });
   }
 
   // Push the rest of the rows to tail table
-  const tailRows: AD.TableRow.TableRow[] = [{ ...splitRow, children: firstTailRow }];
+  const tailRows: Array<AD.TableRow.TableRow> = [{ ...splitRow, children: firstTailRow }];
   tailRows.push(...table.children.slice(splitIndex + 1));
 
   //Create tables and remeasure them

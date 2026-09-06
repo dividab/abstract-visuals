@@ -37,8 +37,8 @@ export function isSimpleDataAccess(node: MemberExpression, dataKeys: ReadonlySet
   return false;
 }
 
-export function extractPath(node: MemberExpression): string[] {
-  const path: string[] = [];
+export function extractPath(node: MemberExpression): Array<string> {
+  const path: Array<string> = [];
 
   if (node.property.type === "Identifier") {
     path.unshift(node.property.name);
@@ -65,7 +65,7 @@ export function extractPath(node: MemberExpression): string[] {
   return path;
 }
 
-export function getAvailablePropsAtPath(path: string[], depth: number, schemaData: any): string[] {
+export function getAvailablePropsAtPath(path: Array<string>, depth: number, schemaData: any): Array<string> {
   if (!schemaData || depth < 0) {
     return schemaData ? Object.keys(schemaData) : [];
   }
@@ -91,7 +91,7 @@ export function getAvailablePropsAtPath(path: string[], depth: number, schemaDat
 }
 
 export function validateSchemaPath(
-  path: string[],
+  path: Array<string>,
   schema: Schema,
   analysisReport: AnalysisReport,
   node: MemberExpression,
@@ -263,7 +263,7 @@ export function validateSchemaPath(
   }
 }
 
-function getElementAccessFlags(node: MemberExpression, pathLength: number): boolean[] {
+function getElementAccessFlags(node: MemberExpression, pathLength: number): Array<boolean> {
   const flags = Array(pathLength).fill(false);
   const segments: Array<{ property: any; computed: boolean }> = [];
 

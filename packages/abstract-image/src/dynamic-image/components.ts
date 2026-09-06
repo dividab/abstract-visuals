@@ -27,7 +27,7 @@ import {
   white,
 } from "../model/index.js";
 
-export const createComponents = (mutableImageUrls: Array<string>): Record<string, (...args: any[]) => any> => ({
+export const createComponents = (mutableImageUrls: Array<string>): Record<string, (...args: Array<any>) => any> => ({
   AbstractImage: (props): AbstractImage => ({
     topLeft: { x: 0, y: 0 },
     size: { width: props.width ?? 800, height: props.height ?? 600 },

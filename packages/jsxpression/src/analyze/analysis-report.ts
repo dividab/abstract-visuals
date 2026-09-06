@@ -9,7 +9,7 @@ interface Issue {
   severity: IssueSeverity;
   custom: boolean;
   range: Range;
-  suggestions: string[];
+  suggestions: Array<string>;
   snapshot: ValidationContextSnapshot;
 }
 
@@ -168,21 +168,21 @@ const ISSUES_DEFINITIONS: Record<string, IssueDefinition> = {
 export type IssueCode = keyof typeof ISSUES_DEFINITIONS;
 
 export class AnalysisReport {
-  readonly #issues: Issue[] = [];
+  readonly #issues: Array<Issue> = [];
 
-  get issues(): Issue[] {
+  get issues(): Array<Issue> {
     return this.#issues.slice();
   }
 
-  get errors(): Issue[] {
+  get errors(): Array<Issue> {
     return this.#issues.filter((issue) => issue.severity === 3);
   }
 
-  get warnings(): Issue[] {
+  get warnings(): Array<Issue> {
     return this.#issues.filter((issue) => issue.severity === 2);
   }
 
-  get infos(): Issue[] {
+  get infos(): Array<Issue> {
     return this.#issues.filter((issue) => issue.severity === 1);
   }
 
@@ -198,7 +198,7 @@ export class AnalysisReport {
     return this.infos.length > 0;
   }
 
-  addIssue(code: IssueCode, message: string, range: Range, snapshot: ValidationContextSnapshot, suggestions: string[] = []): void {
+  addIssue(code: IssueCode, message: string, range: Range, snapshot: ValidationContextSnapshot, suggestions: Array<string> = []): void {
     const { severity, custom } = ISSUES_DEFINITIONS[code];
     this.#issues.push({
       code,
@@ -215,7 +215,7 @@ export class AnalysisReport {
     return this.#issues.some((issue) => issue.severity >= minSeverity);
   }
 
-  merge(...analysisReports: AnalysisReport[]): this {
+  merge(...analysisReports: Array<AnalysisReport>): this {
     for (const analysisReport of analysisReports) {
       for (const issue of analysisReport.issues) {
         this.addIssue(issue.code, issue.message, issue.range, issue.snapshot, issue.suggestions);

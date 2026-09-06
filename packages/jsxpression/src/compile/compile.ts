@@ -39,7 +39,7 @@ export function compile(ast: Program): string {
     }
   }
 
-  const parts: string[] = ['"use strict";'];
+  const parts: Array<string> = ['"use strict";'];
 
   const hasDeclarations = ast.body.some((s) => s.type === "VariableDeclaration" || s.type === "FunctionDeclaration");
 
@@ -111,9 +111,9 @@ function emitJsxName(nameNode: JSXNameNode, localFunctions: Set<string>): string
   }
 }
 
-function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[], localFunctions: Set<string>): string {
-  const parts: string[] = [];
-  let currentObj: string[] = [];
+function emitAttributes(attributes: Array<JSXAttribute | JSXSpreadAttribute>, localFunctions: Set<string>): string {
+  const parts: Array<string> = [];
+  let currentObj: Array<string> = [];
 
   const flushCurrent = (): void => {
     if (currentObj.length) {
@@ -162,8 +162,8 @@ function emitAttributes(attributes: (JSXAttribute | JSXSpreadAttribute)[], local
   return `Object.assign({}, ${parts.join(", ")})`;
 }
 
-function emitJsxChildren(children: JSXNode[], localFunctions: Set<string>): string[] {
-  const result: string[] = [];
+function emitJsxChildren(children: Array<JSXNode>, localFunctions: Set<string>): Array<string> {
+  const result: Array<string> = [];
 
   for (const child of children) {
     if (isJsxText(child)) {
@@ -194,7 +194,7 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
     case "Identifier":
       return node.name;
     case "TemplateLiteral": {
-      const bits: string[] = [];
+      const bits: Array<string> = [];
       node.quasis.forEach((quasi, index) => {
         bits.push(JSON.stringify(quasi.value.cooked ?? ""));
         if (node.expressions.length > index) {

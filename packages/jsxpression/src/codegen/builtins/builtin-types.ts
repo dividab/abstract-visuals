@@ -8,7 +8,7 @@ function generateJSDoc(description?: string, indent: string = ""): string {
   return `${indent}/**\n${indent} * ${description}\n${indent} */\n`;
 }
 
-function generateCallbackSignature(signature: { params: BuiltinCallbackParamSchema[]; returnType: string }): string {
+function generateCallbackSignature(signature: { params: Array<BuiltinCallbackParamSchema>; returnType: string }): string {
   const params = signature.params.map((p) => `${p.name}: ${p.type}`).join(", ");
   return `(${params}) => ${signature.returnType}`;
 }

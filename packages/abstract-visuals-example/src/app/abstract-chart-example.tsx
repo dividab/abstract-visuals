@@ -468,7 +468,7 @@ export function AbstractChartExample(): React.JSX.Element {
   }
 }
 
-function getLineRange(series: ChartLine[], axisSelector: (point: Point) => number): [number, number] {
+function getLineRange(series: Array<ChartLine>, axisSelector: (point: Point) => number): [number, number] {
   const axisValues = series
     .map((serie) => serie.points.map(axisSelector))
     .reduce((soFar, current) => {

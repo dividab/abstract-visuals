@@ -3,7 +3,7 @@ import { EvaluationError } from "./evaluation-error.js";
 
 export type ComponentDict = Record<string, Component>;
 
-export type CreateElement<T = any> = (type: Component, props?: PropsDict, ...children: any[]) => T;
+export type CreateElement<T = any> = (type: Component, props?: PropsDict, ...children: Array<any>) => T;
 
 export type PropsDict = Record<string, unknown>;
 
@@ -12,12 +12,12 @@ export type DataDict = Record<string, unknown>;
 export type Node = {
   type: string;
   props: PropsDict;
-  children: Node[];
+  children: Array<Node>;
 };
 
-export type H = (type: string | Function, props?: PropsDict, ...children: Node[]) => Node;
+export type H = (type: string | Function, props?: PropsDict, ...children: Array<Node>) => Node;
 
-export type Component = (...args: any[]) => any;
+export type Component = (...args: Array<any>) => any;
 
 /**
  * Configuration options for evaluating JSX expressions.
@@ -60,7 +60,7 @@ export function evaluate<T = any>(source: string, schema: Schema, options: Evalu
   }
 }
 
-function validateParamKeys(dataKeys: string[], functionKeys: string[]): void {
+function validateParamKeys(dataKeys: Array<string>, functionKeys: Array<string>): void {
   const seen = new Set<string>(RESERVED_PARAMS);
   for (const key of [...dataKeys, ...functionKeys]) {
     if (!VALID_IDENTIFIER.test(key)) {
@@ -105,6 +105,6 @@ function deepFreezeData(obj: Record<string, unknown>): Record<string, unknown> {
   return obj;
 }
 
-function defaultCreateElement(Component: Component, props: PropsDict = {}, ...children: any[]): Node {
+function defaultCreateElement(Component: Component, props: PropsDict = {}, ...children: Array<any>): Node {
   return Component({ ...props, children });
 }

@@ -292,7 +292,7 @@ interface Attributes {
   readonly [key: string]: string;
 }
 
-function createElement(elementName: string, attributes: Attributes, innerElements: string[]): string {
+function createElement(elementName: string, attributes: Attributes, innerElements: Array<string>): string {
   const formattedName = convertUpperToHyphenLower(elementName);
   let element = `<${formattedName}`;
 

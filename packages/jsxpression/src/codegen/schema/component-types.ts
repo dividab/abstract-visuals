@@ -52,7 +52,7 @@ function generatePropsInterface(interfaceName: string, element: any, indent: str
 }
 
 function generateComponentComment(elementName: string, element: any, indent: string = ""): string {
-  const comments: string[] = [];
+  const comments: Array<string> = [];
 
   if (element.description) {
     comments.push(element.description);
@@ -108,7 +108,7 @@ function generateComponentComment(elementName: string, element: any, indent: str
 }
 
 function generatePropComment(prop: any, indent: string): string {
-  const comments: string[] = [];
+  const comments: Array<string> = [];
 
   if (prop.description) {
     comments.push(prop.description);

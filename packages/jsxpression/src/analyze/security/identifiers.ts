@@ -157,8 +157,8 @@ function collectParamNames(param: AnyNode, names: Set<string>): void {
   }
 }
 
-function getTopLevelConstNames(ast: Program): string[] {
-  const names: string[] = [];
+function getTopLevelConstNames(ast: Program): Array<string> {
+  const names: Array<string> = [];
   for (const stmt of ast.body) {
     if (stmt.type === "VariableDeclaration" && stmt.kind === "const") {
       for (const decl of stmt.declarations) {
@@ -171,8 +171,8 @@ function getTopLevelConstNames(ast: Program): string[] {
   return names;
 }
 
-function getTopLevelFunctionNames(ast: Program): string[] {
-  const names: string[] = [];
+function getTopLevelFunctionNames(ast: Program): Array<string> {
+  const names: Array<string> = [];
   for (const stmt of ast.body) {
     if (stmt.type === "FunctionDeclaration" && stmt.id) {
       names.push(stmt.id.name);

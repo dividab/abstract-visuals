@@ -8,10 +8,10 @@ import { EvaluationError } from "./evaluation-error.js";
 type Node = {
   type: string;
   props: Record<string, unknown>;
-  children: Node[];
+  children: Array<Node>;
 };
 
-function createPermissiveSchema(componentNames: string[]): Schema {
+function createPermissiveSchema(componentNames: Array<string>): Schema {
   return {
     elements: Object.fromEntries(componentNames.map((name) => [name, {}])),
   };
@@ -120,7 +120,7 @@ describe("evaluate", () => {
   });
 
   it("should use custom createElement when provided", () => {
-    const customCreateElement = (type: any, props: any, ...children: any[]): Node => ({
+    const customCreateElement = (type: any, props: any, ...children: Array<any>): Node => ({
       type: type.name || "Unknown",
       props: { ...props, custom: true },
       children,

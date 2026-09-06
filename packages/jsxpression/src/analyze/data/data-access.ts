@@ -214,7 +214,7 @@ function isNodeInsideArrowFunction(targetNode: any, arrowFunction: any): boolean
   return false;
 }
 
-function getSchemaAtPath(path: string[], schema: Schema): any {
+function getSchemaAtPath(path: Array<string>, schema: Schema): any {
   if (!schema.data || path.length === 0) {
     return schema.data;
   }

@@ -6,7 +6,7 @@ export type StringPropertySchema = {
   description?: string;
   required?: boolean;
   default?: string;
-  enum?: readonly string[];
+  enum?: ReadonlyArray<string>;
 };
 
 export type NumberPropertySchema = {
@@ -14,7 +14,7 @@ export type NumberPropertySchema = {
   description?: string;
   required?: boolean;
   default?: number;
-  enum?: readonly number[];
+  enum?: ReadonlyArray<number>;
 };
 
 export type BooleanPropertySchema = {
@@ -22,7 +22,7 @@ export type BooleanPropertySchema = {
   description?: string;
   required?: boolean;
   default?: boolean;
-  enum?: readonly boolean[];
+  enum?: ReadonlyArray<boolean>;
 };
 
 export type FunctionPropertySchema = {
@@ -72,7 +72,7 @@ export type PropertySchema =
 export type ElementSchema = {
   description?: string;
   props?: Record<string, PropertySchema>;
-  allowedChildren?: string[];
+  allowedChildren?: Array<string>;
 };
 
 export type ArgumentSchema = {
@@ -175,7 +175,7 @@ export function getElementSchema(schema: Schema, tagName: string): ElementSchema
   return schema.elements?.[tagName];
 }
 
-export function getAllowedAttributes(schema: Schema, tagName: string): string[] {
+export function getAllowedAttributes(schema: Schema, tagName: string): Array<string> {
   const elementConfig = getElementSchema(schema, tagName);
   return elementConfig?.props ? Object.keys(elementConfig.props) : [];
 }
@@ -185,7 +185,7 @@ export function isAttributeAllowed(schema: Schema, tagName: string, attributeNam
   return allowedAttributes.includes(attributeName);
 }
 
-export function getAllowedChildren(schema: Schema, tagName: string): string[] | undefined {
+export function getAllowedChildren(schema: Schema, tagName: string): Array<string> | undefined {
   const elementConfig = getElementSchema(schema, tagName);
   return elementConfig?.allowedChildren;
 }
@@ -206,7 +206,7 @@ export function isChildAllowed(schema: Schema, parentTag: string, childTag: stri
 }
 
 // New schema utilities for enhanced validation
-export function getAllElements(schema: Schema): string[] {
+export function getAllElements(schema: Schema): Array<string> {
   return schema.elements ? Object.keys(schema.elements) : [];
 }
 
@@ -215,13 +215,13 @@ export function getAttributeSchema(schema: Schema, tagName: string, attributeNam
   return elementSchema?.props?.[attributeName];
 }
 
-export function getRequiredAttributes(schema: Schema, tagName: string): string[] {
+export function getRequiredAttributes(schema: Schema, tagName: string): Array<string> {
   const elementSchema = getElementSchema(schema, tagName);
   if (!elementSchema?.props) {
     return [];
   }
 
-  const required: string[] = [];
+  const required: Array<string> = [];
   for (const [attrName, attrSchema] of Object.entries(elementSchema.props)) {
     if (attrSchema.required === true) {
       required.push(attrName);
@@ -233,7 +233,7 @@ export function getRequiredAttributes(schema: Schema, tagName: string): string[]
 
 type PropertyEnumValue = string | number | boolean;
 
-export function getEnumValues(property: PropertySchema): readonly PropertyEnumValue[] | undefined {
+export function getEnumValues(property: PropertySchema): ReadonlyArray<PropertyEnumValue> | undefined {
   switch (property.type) {
     case "string":
       return property.enum;

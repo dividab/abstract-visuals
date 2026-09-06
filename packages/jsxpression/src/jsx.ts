@@ -39,7 +39,7 @@ export type JSXOpeningElement = {
   name: {
     name: string;
   };
-  attributes: (JSXAttribute | JSXSpreadAttribute)[];
+  attributes: Array<JSXAttribute | JSXSpreadAttribute>;
 };
 
 export type JSXClosingElement = {
@@ -51,12 +51,12 @@ export type JSXElement = {
   type: "JSXElement";
   openingElement: JSXOpeningElement;
   closingElement?: JSXClosingElement;
-  children: JSXNode[];
+  children: Array<JSXNode>;
 };
 
 export type JSXFragment = {
   type: "JSXFragment";
-  children: JSXNode[];
+  children: Array<JSXNode>;
 };
 
 export type JSXText = {
