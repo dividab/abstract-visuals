@@ -655,22 +655,22 @@ export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
   if (outer.x === 0 && outer.y === 0 && outer.z === 0) {
     return inner;
   }
-  const oc1 = Math.cos(outer.x / 2),
-    os1 = Math.sin(outer.x / 2);
-  const oc2 = Math.cos(outer.y / 2),
-    os2 = Math.sin(outer.y / 2);
-  const oc3 = Math.cos(outer.z / 2),
-    os3 = Math.sin(outer.z / 2);
+  const oc1 = Math.cos(outer.x / 2);
+  const os1 = Math.sin(outer.x / 2);
+  const oc2 = Math.cos(outer.y / 2);
+  const os2 = Math.sin(outer.y / 2);
+  const oc3 = Math.cos(outer.z / 2);
+  const os3 = Math.sin(outer.z / 2);
   const ax = os1 * oc2 * oc3 + oc1 * os2 * os3;
   const ay = oc1 * os2 * oc3 - os1 * oc2 * os3;
   const az = oc1 * oc2 * os3 + os1 * os2 * oc3;
   const aw = oc1 * oc2 * oc3 - os1 * os2 * os3;
-  const ic1 = Math.cos(inner.x / 2),
-    is1 = Math.sin(inner.x / 2);
-  const ic2 = Math.cos(inner.y / 2),
-    is2 = Math.sin(inner.y / 2);
-  const ic3 = Math.cos(inner.z / 2),
-    is3 = Math.sin(inner.z / 2);
+  const ic1 = Math.cos(inner.x / 2);
+  const is1 = Math.sin(inner.x / 2);
+  const ic2 = Math.cos(inner.y / 2);
+  const is2 = Math.sin(inner.y / 2);
+  const ic3 = Math.cos(inner.z / 2);
+  const is3 = Math.sin(inner.z / 2);
   const bx = is1 * ic2 * ic3 + ic1 * is2 * is3;
   const by = ic1 * is2 * ic3 - is1 * ic2 * is3;
   const bz = ic1 * ic2 * is3 + is1 * is2 * ic3;
@@ -694,12 +694,12 @@ export function vec3RotCombine(outer: Vec3, inner: Vec3): Vec3 {
 }
 
 export function vec3RotInverse(rotation: Vec3): Vec3 {
-  const c1 = Math.cos(rotation.x / 2),
-    s1 = Math.sin(rotation.x / 2);
-  const c2 = Math.cos(rotation.y / 2),
-    s2 = Math.sin(rotation.y / 2);
-  const c3 = Math.cos(rotation.z / 2),
-    s3 = Math.sin(rotation.z / 2);
+  const c1 = Math.cos(rotation.x / 2);
+  const s1 = Math.sin(rotation.x / 2);
+  const c2 = Math.cos(rotation.y / 2);
+  const s2 = Math.sin(rotation.y / 2);
+  const c3 = Math.cos(rotation.z / 2);
+  const s3 = Math.sin(rotation.z / 2);
 
   // Euler -> Quaternion
   const qx = -(s1 * c2 * c3 + c1 * s2 * s3);
@@ -729,19 +729,19 @@ export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
   if (rotation.x === 0 && rotation.y === 0 && rotation.z === 0) {
     return point;
   }
-  const c1 = Math.cos(rotation.x / 2),
-    s1 = Math.sin(rotation.x / 2);
-  const c2 = Math.cos(rotation.y / 2),
-    s2 = Math.sin(rotation.y / 2);
-  const c3 = Math.cos(rotation.z / 2),
-    s3 = Math.sin(rotation.z / 2);
+  const c1 = Math.cos(rotation.x / 2);
+  const s1 = Math.sin(rotation.x / 2);
+  const c2 = Math.cos(rotation.y / 2);
+  const s2 = Math.sin(rotation.y / 2);
+  const c3 = Math.cos(rotation.z / 2);
+  const s3 = Math.sin(rotation.z / 2);
   const qx = s1 * c2 * c3 + c1 * s2 * s3;
   const qy = c1 * s2 * c3 - s1 * c2 * s3;
   const qz = c1 * c2 * s3 + s1 * s2 * c3;
   const qw = c1 * c2 * c3 - s1 * s2 * s3;
-  const vx = point.x - origin.x,
-    vy = point.y - origin.y,
-    vz = point.z - origin.z;
+  const vx = point.x - origin.x;
+  const vy = point.y - origin.y;
+  const vz = point.z - origin.z;
   const tx = 2 * (qy * vz - qz * vy);
   const ty = 2 * (qz * vx - qx * vz);
   const tz = 2 * (qx * vy - qy * vx);
@@ -752,12 +752,12 @@ export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => {
   if (rot.x === 0 && rot.y === 0 && rot.z === 0) {
     return vec3(p.x + pos.x, p.y + pos.y, p.z + pos.z);
   }
-  const c1 = Math.cos(rot.x / 2),
-    s1 = Math.sin(rot.x / 2);
-  const c2 = Math.cos(rot.y / 2),
-    s2 = Math.sin(rot.y / 2);
-  const c3 = Math.cos(rot.z / 2),
-    s3 = Math.sin(rot.z / 2);
+  const c1 = Math.cos(rot.x / 2);
+  const s1 = Math.sin(rot.x / 2);
+  const c2 = Math.cos(rot.y / 2);
+  const s2 = Math.sin(rot.y / 2);
+  const c3 = Math.cos(rot.z / 2);
+  const s3 = Math.sin(rot.z / 2);
   const qx = s1 * c2 * c3 + c1 * s2 * s3;
   const qy = c1 * s2 * c3 - s1 * c2 * s3;
   const qz = c1 * c2 * s3 + s1 * s2 * c3;
