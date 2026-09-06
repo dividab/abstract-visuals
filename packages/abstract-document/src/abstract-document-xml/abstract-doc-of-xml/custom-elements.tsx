@@ -20,10 +20,7 @@ const stylePropsKeys: Record<string, boolean> = {
   GroupStyle: true,
 };
 
-export function extractStyleNames(
-  styleNames: string | undefined,
-  styleNameTypes: Record<string, string>
-): Partial<StyleProps> {
+export function extractStyleNames(styleNames: string | undefined, styleNameTypes: Record<string, string>): Partial<StyleProps> {
   const names = (styleNames || "").split(",");
 
   let styleNameProps = {};
@@ -102,27 +99,14 @@ export type ImageCellProps = Omit<ImageParagraphProps, "style"> & {
 };
 
 export function ImageCell(props: ImageCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
-  const {
-    imageResource,
-    width,
-    height,
-    horizontalAlignment,
-    verticalAlignment,
-    paragraphStyle,
-    style,
-    columnSpan,
-    rowSpan,
-  } = props;
+  const { imageResource, width, height, horizontalAlignment, verticalAlignment, paragraphStyle, style, columnSpan, rowSpan } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const imageElement =
-    imageResource && Image.create({ imageResource, width, height, horizontalAlignment, verticalAlignment });
+  const imageElement = imageResource && Image.create({ imageResource, width, height, horizontalAlignment, verticalAlignment });
   const pararaphProps = {
     style: paragraphStyle ? { ...paragraphStyle, type: "ParagraphStyle" } : undefined,
     styleName: styleNames.ParagraphStyle,
   } as ParagraphProps;
-  const paragraph = imageElement
-    ? Paragraph.create(pararaphProps, [imageElement])
-    : Paragraph.create(pararaphProps, [ImageMissing]);
+  const paragraph = imageElement ? Paragraph.create(pararaphProps, [imageElement]) : Paragraph.create(pararaphProps, [ImageMissing]);
   return TableCell.create({ columnSpan, rowSpan, style, styleName: styleNames.TableCellStyle }, [paragraph]);
 }
 
@@ -131,18 +115,12 @@ export type ImageParagraphProps = ImageProps & {
   readonly styleNames?: string;
 };
 
-export function ImageParagraph(
-  props: ImageParagraphProps,
-  styleNameTypes: Record<string, string>
-): Paragraph.Paragraph | undefined {
+export function ImageParagraph(props: ImageParagraphProps, styleNameTypes: Record<string, string>): Paragraph.Paragraph | undefined {
   const { imageResource, width, height, style, horizontalAlignment, verticalAlignment } = props;
   const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
-  const imageElement =
-    imageResource && Image.create({ imageResource, width, height, horizontalAlignment, verticalAlignment });
+  const imageElement = imageResource && Image.create({ imageResource, width, height, horizontalAlignment, verticalAlignment });
   const pararaphProps = { style, styleName: styleNames.ParagraphStyle };
-  return imageElement
-    ? Paragraph.create(pararaphProps, [imageElement])
-    : Paragraph.create(pararaphProps, [ImageMissing]);
+  return imageElement ? Paragraph.create(pararaphProps, [imageElement]) : Paragraph.create(pararaphProps, [ImageMissing]);
 }
 
 const ImageMissing = TextRun.create({ text: "Image missing" });

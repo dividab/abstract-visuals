@@ -42,15 +42,8 @@ export function cylinder(
       const prevBot = botVec3Array[i - 1]!;
       const prevTop = topVec3Array[i - 1]!;
 
-      const points = [
-        point(currBot.x, currBot.y),
-        point(prevBot.x, prevBot.y),
-        point(prevTop.x, prevTop.y),
-        point(currTop.x, currTop.y),
-      ];
-      zOrderComponents.push(
-        zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, currTop, prevTop))
-      );
+      const points = [point(currBot.x, currBot.y), point(prevBot.x, prevBot.y), point(prevTop.x, prevTop.y), point(currTop.x, currTop.y)];
+      zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, currTop, prevTop)));
     }
     currentAngle += angleStep;
   }
@@ -60,12 +53,7 @@ export function cylinder(
     const circleBottom = vec3tr(vec3(0, -half.y, 0));
     if (equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1)) {
       const circlePos = circleTop.z > circleBottom.z ? circleTop : circleBottom;
-      zOrderComponents.push(
-        zElem(
-          svgCircle(c.radius, rot, point(circlePos.x, circlePos.y), fill, opacity, stroke, stBW, c.holes),
-          circlePos.z
-        )
-      );
+      zOrderComponents.push(zElem(svgCircle(c.radius, rot, point(circlePos.x, circlePos.y), fill, opacity, stroke, stBW, c.holes), circlePos.z));
     }
   }
   return zOrderComponents;

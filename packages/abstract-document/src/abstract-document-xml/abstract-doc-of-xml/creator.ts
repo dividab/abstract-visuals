@@ -18,14 +18,7 @@ import {
   TocSeparator,
   ImageResource,
 } from "../../abstract-document/index.js";
-import type {
-  TextRowProps,
-  TextCellProps,
-  TextParagraphProps,
-  ImageCellProps,
-  ImageParagraphProps,
-  ImageRowProps,
-} from "./custom-elements.js";
+import type { TextRowProps, TextCellProps, TextParagraphProps, ImageCellProps, ImageParagraphProps, ImageRowProps } from "./custom-elements.js";
 import { TextRow, TextCell, TextParagraph, ImageCell, ImageParagraph, ImageRow } from "./custom-elements.js";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
@@ -40,13 +33,10 @@ export const creators: (styleNames: Record<string, string>) => Record<string, AD
     TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
     TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
     ImageRow: (props: Record<string, unknown>) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames),
-    ImageCell: (props: Record<string, unknown>) =>
-      ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames),
-    ImageParagraph: (props: Record<string, unknown>) =>
-      ImageParagraph(imageProps(props) as unknown as ImageParagraphProps, styleNames),
+    ImageCell: (props: Record<string, unknown>) => ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames),
+    ImageParagraph: (props: Record<string, unknown>) => ImageParagraph(imageProps(props) as unknown as ImageParagraphProps, styleNames),
     Image: (props: Record<string, unknown>) => Image.create(imageProps(props) as unknown as Image.ImageProps),
-    Table: (props, children: ReadonlyArray<TableRow.TableRow>) =>
-      Table.create(props as unknown as Table.TableProps, children),
+    Table: (props, children: ReadonlyArray<TableRow.TableRow>) => Table.create(props as unknown as Table.TableProps, children),
     TableRow: (props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children),
     TableCell: (props, children: ReadonlyArray<SectionElement.SectionElement>) => TableCell.create(props, children),
     TextField: (props) => TextField.create(props as unknown as TextField.TextFieldProps),
@@ -58,9 +48,7 @@ export const creators: (styleNames: Record<string, string>) => Record<string, AD
 };
 
 export const propsCreators: Record<string, ADCreatorFn> = {
-  styles: (props: {
-    readonly styles: Record<string, Record<string, string | number> & { readonly type: string }>;
-  }): unknown => {
+  styles: (props: { readonly styles: Record<string, Record<string, string | number> & { readonly type: string }> }): unknown => {
     const fixedStyles: Record<string, Record<string, string | number>> = {};
     if (props.styles) {
       Object.keys(props.styles).forEach((key: string) => {
@@ -321,22 +309,19 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   },
   borderColorBottom: (props: { readonly borderColorBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } =
-      allProps["borderColors"] ?? {};
+    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps["borderColors"] ?? {};
     boderColors.bottom = props.borderColorBottom;
     return boderColors;
   },
   borderColorLeft: (props: { readonly borderColorLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } =
-      allProps["borderColors"] ?? {};
+    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps["borderColors"] ?? {};
     boderColors.left = props.borderColorLeft;
     return boderColors;
   },
   borderColorRight: (props: { readonly borderColorRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
-    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } =
-      allProps["borderColors"] ?? {};
+    const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps["borderColors"] ?? {};
     boderColors.right = props.borderColorRight;
     return boderColors;
   },
@@ -368,8 +353,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   lineBreak: (props: { readonly lineBreak: string }): unknown => strToBool(props.lineBreak),
   mediumBold: (props: { readonly mediumBold: string }): unknown => strToBool(props.mediumBold),
   noTopBottomMargin: (props: { readonly noTopBottomMargin: string }): unknown => strToBool(props.noTopBottomMargin),
-  keepTogetherSections: (props: { readonly keepTogetherSections: string }): unknown =>
-    strToBool(props.keepTogetherSections),
+  keepTogetherSections: (props: { readonly keepTogetherSections: string }): unknown => strToBool(props.keepTogetherSections),
   keepTogether: (props: { readonly keepTogether: string }): unknown => strToBool(props.keepTogether),
   differentFirstPage: (props: { readonly differentFirstPage: string }): unknown => strToBool(props.differentFirstPage),
 };
@@ -383,9 +367,7 @@ function imageProps(props: Record<string, unknown>): Record<string, unknown> {
     height: Number(props["height"]),
     imageResource: ImageResource.create({
       id: props["src"] as string,
-      abstractImage: createAbstractImage(zero, size, white, [
-        createBinaryImage(zero, zero, "png", { type: "url", url: props["src"] as string }),
-      ]),
+      abstractImage: createAbstractImage(zero, size, white, [createBinaryImage(zero, zero, "png", { type: "url", url: props["src"] as string })]),
       renderScale: 1,
     }),
   };

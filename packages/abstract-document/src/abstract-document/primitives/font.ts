@@ -26,18 +26,7 @@ export interface FontProps {
   readonly extraBoldItalic?: FontSource;
 }
 
-export function create({
-  light,
-  normal,
-  medium,
-  bold,
-  extraBold,
-  lightItalic,
-  italic,
-  mediumItalic,
-  boldItalic,
-  extraBoldItalic,
-}: FontProps): Font {
+export function create({ light, normal, medium, bold, extraBold, lightItalic, italic, mediumItalic, boldItalic, extraBoldItalic }: FontProps): Font {
   return {
     light,
     normal,

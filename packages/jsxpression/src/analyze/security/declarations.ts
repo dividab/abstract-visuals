@@ -7,38 +7,19 @@ import { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
 
-export function analyzeDeclarations(
-  ast: Program,
-  _schema: Schema,
-  validationContext: ValidationContext
-): AnalysisReport {
+export function analyzeDeclarations(ast: Program, _schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();
   const topLevelNodes = new Set(ast.body);
 
   traverse(ast, {
     ImportDeclaration(node) {
-      analysisReport.addIssue(
-        "IMPORT_NOT_ALLOWED",
-        "import not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("IMPORT_NOT_ALLOWED", "import not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     ExportNamedDeclaration(node) {
-      analysisReport.addIssue(
-        "EXPORT_NOT_ALLOWED",
-        "export not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("EXPORT_NOT_ALLOWED", "export not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     ExportDefaultDeclaration(node) {
-      analysisReport.addIssue(
-        "EXPORT_NOT_ALLOWED",
-        "export not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("EXPORT_NOT_ALLOWED", "export not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     FunctionDeclaration(node) {
       if (!topLevelNodes.has(node as any)) {
@@ -51,23 +32,13 @@ export function analyzeDeclarations(
       }
     },
     ClassDeclaration(node) {
-      analysisReport.addIssue(
-        "CLASS_NOT_ALLOWED",
-        "classes not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("CLASS_NOT_ALLOWED", "classes not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     VariableDeclaration(node) {
       if (node.kind === "const") {
         return;
       }
-      analysisReport.addIssue(
-        "VARIABLE_NOT_ALLOWED",
-        `${node.kind} not allowed, use const`,
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("VARIABLE_NOT_ALLOWED", `${node.kind} not allowed, use const`, getNodeRange(node), validationContext.getSnapshot());
     },
   });
 
@@ -76,9 +47,7 @@ export function analyzeDeclarations(
     const lastStatement = ast.body[ast.body.length - 1];
     if (!lastStatement || lastStatement.type !== "ReturnStatement") {
       const isBareJsx = lastStatement?.type === "ExpressionStatement" && isJsxRoot(lastStatement.expression);
-      const range = lastStatement
-        ? getNodeRange(lastStatement)
-        : { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } };
+      const range = lastStatement ? getNodeRange(lastStatement) : { start: { line: 1, column: 0 }, end: { line: 1, column: 0 } };
       analysisReport.addIssue(
         "RETURN_REQUIRED",
         isBareJsx

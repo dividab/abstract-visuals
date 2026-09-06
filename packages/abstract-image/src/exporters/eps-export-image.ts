@@ -16,10 +16,9 @@ export function epsExportImage(root: AbstractImage, characterEncoding?: Characte
     ].join("\n");
     return encodeLatin1Encoding(eps);
   } else {
-    return [
-      ...createEpsHeaderLines(root),
-      ...root.components.flatMap((c) => epsExportComponent(c, root.size.height, "standard-encoding")),
-    ].join("\n");
+    return [...createEpsHeaderLines(root), ...root.components.flatMap((c) => epsExportComponent(c, root.size.height, "standard-encoding"))].join(
+      "\n"
+    );
   }
 }
 
@@ -53,12 +52,7 @@ function epsExportComponent(c: Component, height: number, characterEncoding: Cha
       const ry = 0.5 * (c.bottomRight.y - c.topLeft.y);
       return [
         ...getColored(c.fillColor, [`${cx} ${cy} ${rx} ${ry} 0 360 ellipse`, "closepath", "fill"]),
-        ...getColored(c.strokeColor, [
-          `${cx} ${cy} ${rx} ${ry} 0 360 ellipse`,
-          "closepath",
-          `${c.strokeThickness} setlinewidth`,
-          "stroke",
-        ]),
+        ...getColored(c.strokeColor, [`${cx} ${cy} ${rx} ${ry} 0 360 ellipse`, "closepath", `${c.strokeThickness} setlinewidth`, "stroke"]),
       ];
     }
     case "group": {
@@ -102,10 +96,7 @@ function epsExportComponent(c: Component, height: number, characterEncoding: Cha
       const h = c.bottomRight.y - c.topLeft.y;
       return [
         ...getColored(c.fillColor, [`${c.topLeft.x} ${height - c.bottomRight.y} ${w} ${h} rectfill`]),
-        ...getColored(c.strokeColor, [
-          `${c.strokeThickness} setlinewidth`,
-          `${c.topLeft.x} ${height - c.bottomRight.y} ${w} ${h} rectstroke`,
-        ]),
+        ...getColored(c.strokeColor, [`${c.strokeThickness} setlinewidth`, `${c.topLeft.x} ${height - c.bottomRight.y} ${w} ${h} rectstroke`]),
       ];
     }
     case "text": {

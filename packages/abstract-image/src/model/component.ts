@@ -47,13 +47,7 @@ export interface ImageUrl {
   readonly url: string;
 }
 
-export function createBinaryImage(
-  topLeft: Point,
-  bottomRight: Point,
-  format: BinaryFormat,
-  data: ImageData,
-  id?: string
-): BinaryImage {
+export function createBinaryImage(topLeft: Point, bottomRight: Point, format: BinaryFormat, data: ImageData, id?: string): BinaryImage {
   return {
     type: "binaryimage",
     topLeft: topLeft,

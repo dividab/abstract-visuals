@@ -526,9 +526,7 @@ describe("generateTypeScriptDefinitions", () => {
       };
 
       const result = generateTypeScriptDefinitions(schema);
-      expect(result).toContain(
-        `id: "TypeA";\n        valueA: string;\n      } | {\n        id: "TypeB";\n        valueB: number;\n      };`
-      );
+      expect(result).toContain(`id: "TypeA";\n        valueA: string;\n      } | {\n        id: "TypeB";\n        valueB: number;\n      };`);
     });
 
     it("should generate functions", () => {

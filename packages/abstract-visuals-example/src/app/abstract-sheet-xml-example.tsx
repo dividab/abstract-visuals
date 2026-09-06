@@ -67,9 +67,9 @@ export function AbstractSheetXMLExample(): React.JSX.Element {
   </Sheet>
 </AbstractSheet>`);
 
-  const [sheet, setSheet] = React.useState<
-    { type: "Ok"; sheet: AbstractSheet } | { type: "Err"; error: string } | undefined
-  >(createSheet(data, template));
+  const [sheet, setSheet] = React.useState<{ type: "Ok"; sheet: AbstractSheet } | { type: "Err"; error: string } | undefined>(
+    createSheet(data, template)
+  );
 
   return (
     <div style={{ display: "flex", margin: "10px 0 0 10px", gap: "10px", width: "100%", height: "calc(100% - 40px)" }}>
@@ -140,19 +140,14 @@ export function AbstractSheetXMLExample(): React.JSX.Element {
         {sheet?.type === "Err" ? (
           <h3>{sheet.error}</h3>
         ) : (
-          <div style={{ width: "100%", height: "calc(100% - 30px)" }}>
-            {sheet?.type === "Ok" ? <ToReact abstractSheet={sheet.sheet} /> : ""}
-          </div>
+          <div style={{ width: "100%", height: "calc(100% - 30px)" }}>{sheet?.type === "Ok" ? <ToReact abstractSheet={sheet.sheet} /> : ""}</div>
         )}
       </div>
     </div>
   );
 }
 
-function createSheet(
-  data: string,
-  template: string
-): { type: "Ok"; sheet: AbstractSheet } | { type: "Err"; error: string } {
+function createSheet(data: string, template: string): { type: "Ok"; sheet: AbstractSheet } | { type: "Err"; error: string } {
   let dataObject = {};
   try {
     dataObject = JSON.parse(data);

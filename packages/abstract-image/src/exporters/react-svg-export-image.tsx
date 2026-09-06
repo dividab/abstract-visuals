@@ -86,13 +86,7 @@ function getIdAttr(target: Element | undefined, rootId: string): string | undefi
   return parts[1];
 }
 
-function JsxComponent({
-  component,
-  options,
-}: {
-  readonly component: Component;
-  readonly options: ReactSvgOptions;
-}): React.JSX.Element {
+function JsxComponent({ component, options }: { readonly component: Component; readonly options: ReactSvgOptions }): React.JSX.Element {
   switch (component.type) {
     case "group":
       return (
@@ -146,10 +140,8 @@ function JsxComponent({
       );
     }
     case "line": {
-      const strokeDasharray =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <line
           id={makeIdAttr(component.id)}
@@ -206,11 +198,7 @@ function JsxComponent({
               {tSpans}
             </text>
           )}
-          <text
-            style={{ ...baseStyle, fill: colorToRgb(component.textColor) }}
-            transform={transform}
-            id={makeIdAttr(component.id)}
-          >
+          <text style={{ ...baseStyle, fill: colorToRgb(component.textColor) }} transform={transform} id={makeIdAttr(component.id)}>
             {tSpans}
           </text>
         </>
@@ -221,10 +209,8 @@ function JsxComponent({
       const ry = Math.abs(component.bottomRight.y - component.topLeft.y) * 0.5;
       const cx = (component.bottomRight.x + component.topLeft.x) * 0.5;
       const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
-      const strokeDasharray =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <ellipse
           id={makeIdAttr(component.id)}
@@ -244,10 +230,8 @@ function JsxComponent({
     }
     case "polyline": {
       let linePoints = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
-      const strokeDasharray =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <polyline
           id={makeIdAttr(component.id)}
@@ -265,10 +249,8 @@ function JsxComponent({
     }
     case "polygon": {
       let points = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
-      const strokeDasharray =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <polygon
           id={makeIdAttr(component.id)}
@@ -285,10 +267,8 @@ function JsxComponent({
       );
     }
     case "rectangle": {
-      const strokeDasharray =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset =
-        component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
+      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
       return (
         <rect
           id={makeIdAttr(component.id)}
@@ -344,12 +324,7 @@ function TSpan({
     const splitText = split[i];
     if (inside) {
       tags.push(
-        <tspan
-          key={i}
-          baselineShift="sub"
-          alignmentBaseline={alignmentBaseline}
-          style={{ fontSize: (fontSize * 0.8).toString() + "px" }}
-        >
+        <tspan key={i} baselineShift="sub" alignmentBaseline={alignmentBaseline} style={{ fontSize: (fontSize * 0.8).toString() + "px" }}>
           {splitText}
         </tspan>
       );

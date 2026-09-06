@@ -32,12 +32,7 @@ export function analyzeMethodCalls(ast: Program, schema: Schema, validationConte
         if (!isMethodAllowed(method)) {
           const methodContext = callee.object.type === "Identifier" ? `${callee.object.name}.${method}` : `.${method}`;
 
-          analysisReport.addIssue(
-            "METHOD_NOT_ALLOWED",
-            `method ${methodContext} not allowed`,
-            getNodeRange(callee),
-            validationContext.getSnapshot()
-          );
+          analysisReport.addIssue("METHOD_NOT_ALLOWED", `method ${methodContext} not allowed`, getNodeRange(callee), validationContext.getSnapshot());
           return;
         }
 
@@ -71,9 +66,7 @@ export function analyzeMethodCalls(ast: Program, schema: Schema, validationConte
           if (args.length < minParams) {
             analysisReport.addIssue(
               "INSUFFICIENT_PARAMETERS",
-              `${getMethodDisplayName(method)} expects at least ${minParams} parameter${
-                minParams !== 1 ? "s" : ""
-              }, got ${args.length}`,
+              `${getMethodDisplayName(method)} expects at least ${minParams} parameter${minParams !== 1 ? "s" : ""}, got ${args.length}`,
               getNodeRange(node),
               validationContext.getSnapshot()
             );
@@ -82,9 +75,7 @@ export function analyzeMethodCalls(ast: Program, schema: Schema, validationConte
           if (args.length > maxParams) {
             analysisReport.addIssue(
               "TOO_MANY_PARAMETERS",
-              `${getMethodDisplayName(method)} expects at most ${maxParams} parameter${
-                maxParams !== 1 ? "s" : ""
-              }, got ${args.length}`,
+              `${getMethodDisplayName(method)} expects at most ${maxParams} parameter${maxParams !== 1 ? "s" : ""}, got ${args.length}`,
               getNodeRange(node),
               validationContext.getSnapshot()
             );

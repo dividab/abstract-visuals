@@ -1,13 +1,7 @@
 import { dimensionMeshifyAlignedDimension } from "../../../abstract-3d.js";
 import type { DimensionAligned, View, Material, Vec3 } from "../../../abstract-3d.js";
 import { type DxfColor, dxfColor } from "./dxf-color.js";
-import {
-  DXF_BLOCK_RECORD_TABLE_HANDLE,
-  DXF_MODEL_SPACE_HANDLE,
-  dxfHandleNext,
-  dxfRound,
-  type Handle,
-} from "./dxf-common.js";
+import { DXF_BLOCK_RECORD_TABLE_HANDLE, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 import { dxfEncLine } from "./dxf-line.js";
 import { DxfMTextAttachment, dxfEncMText, encodeDxfFormattedText } from "./dxf-mtext.js";
 import { dxfEncSolidTriangle } from "./dxf-triangle.js";
@@ -207,25 +201,8 @@ function dxfEncodeDimensionGeometry(
   const onCreateLine = (start: Vec3, end: Vec3, _norm: Vec3, _thickness: number, _mat: Material): void => {
     entities += dxfEncLine(start, end, col, handleRef, blockRecordHandle);
   };
-  const onCreateText = (
-    pos: Vec3,
-    measurement: string,
-    fontSize: number,
-    _mat: Material,
-    _rot: Vec3,
-    dir: Vec3,
-    norm: Vec3
-  ): void => {
-    entities += dxfEncMText(
-      pos,
-      measurement,
-      dir,
-      norm,
-      fontSize,
-      handleRef,
-      DxfMTextAttachment.MiddleCenter,
-      blockRecordHandle
-    );
+  const onCreateText = (pos: Vec3, measurement: string, fontSize: number, _mat: Material, _rot: Vec3, dir: Vec3, norm: Vec3): void => {
+    entities += dxfEncMText(pos, measurement, dir, norm, fontSize, handleRef, DxfMTextAttachment.MiddleCenter, blockRecordHandle);
   };
   const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, _mat: Material): void => {
     entities += dxfEncSolidTriangle(p1, p2, p3, col, handleRef, blockRecordHandle);

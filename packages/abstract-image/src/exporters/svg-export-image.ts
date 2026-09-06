@@ -76,15 +76,10 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
       return "";
     }
     case "subimage": {
-      const scale = Math.min(
-        component.size.width / (component.image.size.width || 1),
-        component.size.height / (component.image.size.height || 1)
-      );
-      return createElement(
-        "g",
-        { transform: `translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})` },
-        [createSVG(component.image, { ...options, pixelWidth: undefined, pixelHeight: undefined })]
-      );
+      const scale = Math.min(component.size.width / (component.image.size.width || 1), component.size.height / (component.image.size.height || 1));
+      return createElement("g", { transform: `translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})` }, [
+        createSVG(component.image, { ...options, pixelWidth: undefined, pixelHeight: undefined }),
+      ]);
     }
     case "line": {
       const dashStyle: Attributes =

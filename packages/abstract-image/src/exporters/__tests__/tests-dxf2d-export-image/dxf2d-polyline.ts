@@ -8,12 +8,7 @@ const components = [
     2
   ),
 ];
-const image = AbstractImage.createAbstractImage(
-  AbstractImage.createPoint(0, 0),
-  AbstractImage.createSize(400, 400),
-  AbstractImage.white,
-  components
-);
+const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
 const dxf = AbstractImage.dxf2dExportImage(image);
 

@@ -65,13 +65,7 @@ export function ReactDimension({
 }
 
 const DimensionMeshes = React.memo(
-  ({
-    meshes,
-    children,
-  }: {
-    readonly meshes: ReadonlyArray<Mesh>;
-    readonly children: React.JSX.Element;
-  }): React.JSX.Element => (
+  ({ meshes, children }: { readonly meshes: ReadonlyArray<Mesh>; readonly children: React.JSX.Element }): React.JSX.Element => (
     <>
       {meshes.map((m, i) => (
         <ReactMesh key={i} mesh={m}>

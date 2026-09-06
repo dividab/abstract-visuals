@@ -49,12 +49,7 @@ export function evaluate<T = any>(source: string, schema: Schema, options: Evalu
   const frozen = deepFreezeData(structuredClone(data));
   try {
     // oxlint-disable-next-line typescript/no-implied-eval, no-new-func
-    return new Function("h", "Math", ...dataKeys, ...functionKeys, source)(
-      h,
-      Math,
-      ...Object.values(frozen),
-      ...Object.values(functions)
-    ) as T;
+    return new Function("h", "Math", ...dataKeys, ...functionKeys, source)(h, Math, ...Object.values(frozen), ...Object.values(functions)) as T;
   } catch (error: unknown) {
     // We may have thrown an EvaluationError from createH()
     if (error instanceof EvaluationError) {

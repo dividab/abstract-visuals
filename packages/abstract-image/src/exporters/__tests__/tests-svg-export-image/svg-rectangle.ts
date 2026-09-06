@@ -2,20 +2,9 @@ import * as AbstractImage from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 const components = [
-  AbstractImage.createRectangle(
-    AbstractImage.createPoint(10, 50),
-    AbstractImage.createPoint(50, 60),
-    AbstractImage.blue,
-    2,
-    AbstractImage.red
-  ),
+  AbstractImage.createRectangle(AbstractImage.createPoint(10, 50), AbstractImage.createPoint(50, 60), AbstractImage.blue, 2, AbstractImage.red),
 ];
-const image = AbstractImage.createAbstractImage(
-  AbstractImage.createPoint(0, 0),
-  AbstractImage.createSize(400, 400),
-  AbstractImage.white,
-  components
-);
+const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
 const svg = AbstractImage.createSVG(image);
 

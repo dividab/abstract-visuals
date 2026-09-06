@@ -1,13 +1,4 @@
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  Table,
-  TableRow,
-  TableCell,
-  TextRun,
-  Group,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, Table, TableRow, TableCell, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 /* oxlint-disable max-lines */
 import type { ExportTestDef } from "./_export-test-def.js";
 

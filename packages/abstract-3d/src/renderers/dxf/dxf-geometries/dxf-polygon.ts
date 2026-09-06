@@ -1,11 +1,4 @@
-import {
-  type Polygon,
-  type Material,
-  type Vec3,
-  vec3RotCombine,
-  vec3TransRot,
-  vec3Zero,
-} from "../../../abstract-3d.js";
+import { type Polygon, type Material, type Vec3, vec3RotCombine, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";

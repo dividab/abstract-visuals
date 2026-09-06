@@ -1,20 +1,8 @@
 import * as AbstractImage from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
-const components = [
-  AbstractImage.createLine(
-    AbstractImage.createPoint(200, 0),
-    AbstractImage.createPoint(200, 400),
-    AbstractImage.green,
-    1
-  ),
-];
-const image = AbstractImage.createAbstractImage(
-  AbstractImage.createPoint(0, 0),
-  AbstractImage.createSize(400, 400),
-  AbstractImage.white,
-  components
-);
+const components = [AbstractImage.createLine(AbstractImage.createPoint(200, 0), AbstractImage.createPoint(200, 400), AbstractImage.green, 1)];
+const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
 const dxf = AbstractImage.dxf2dExportImage(image);
 

@@ -10,12 +10,7 @@ export interface AbstractImage {
   readonly components: Array<Component>;
 }
 
-export function createAbstractImage(
-  topLeft: Point,
-  size: Size,
-  backgroundColor: Color,
-  components: Array<Component>
-): AbstractImage {
+export function createAbstractImage(topLeft: Point, size: Size, backgroundColor: Color, components: Array<Component>): AbstractImage {
   return {
     topLeft: topLeft,
     size: size,

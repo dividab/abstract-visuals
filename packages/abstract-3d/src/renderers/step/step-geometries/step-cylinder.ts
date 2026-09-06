@@ -45,14 +45,7 @@ import {
 const SMALLEST_RADIUS = 1e-4;
 const GEOMETRY_EPSILON = 1e-12;
 
-export function stepCylinder(
-  c: Cylinder,
-  mat: Material,
-  parentPos: Vec3,
-  parentRot: Vec3,
-  m: MutableStep,
-  rSmall?: number
-): void {
+export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep, rSmall?: number): void {
   const h = c.length;
 
   if (h <= GEOMETRY_EPSILON) {
@@ -84,11 +77,7 @@ export function stepCylinder(
 
   const topSeamPoint = vec3Add(pos, rot(vec3(topRadius, h / 2, 0)));
 
-  const seamDelta = vec3(
-    topSeamPoint.x - bottomSeamPoint.x,
-    topSeamPoint.y - bottomSeamPoint.y,
-    topSeamPoint.z - bottomSeamPoint.z
-  );
+  const seamDelta = vec3(topSeamPoint.x - bottomSeamPoint.x, topSeamPoint.y - bottomSeamPoint.y, topSeamPoint.z - bottomSeamPoint.z);
 
   const seamLength = Math.hypot(seamDelta.x, seamDelta.y, seamDelta.z);
 
@@ -120,13 +109,7 @@ export function stepCylinder(
 
   const topPlacement = AXIS2_PLACEMENT_3D(topCenterPoint, axisDirection, radialDirection, m);
 
-  const seamEdge = EDGE_CURVE(
-    bottomVertex,
-    topVertex,
-    LINE(bottomSeamCartesianPoint, VECTOR(DIRECTION(seamDirection, m), m), m),
-    m,
-    "T"
-  );
+  const seamEdge = EDGE_CURVE(bottomVertex, topVertex, LINE(bottomSeamCartesianPoint, VECTOR(DIRECTION(seamDirection, m), m), m), m, "T");
 
   const bottomCircleEdge = EDGE_CURVE(bottomVertex, bottomVertex, CIRCLE(bottomPlacement, bottomRadius, m), m, "T");
 
@@ -167,19 +150,9 @@ export function stepCylinder(
     "T"
   );
 
-  const bottomFace = ADVANCED_FACE(
-    FACE_BOUND(EDGE_LOOP([ORIENTED_EDGE(bottomCircleEdge, m, "F")], m), "T", m),
-    PLANE(bottomPlacement, m),
-    m,
-    "F"
-  );
+  const bottomFace = ADVANCED_FACE(FACE_BOUND(EDGE_LOOP([ORIENTED_EDGE(bottomCircleEdge, m, "F")], m), "T", m), PLANE(bottomPlacement, m), m, "F");
 
-  const topFace = ADVANCED_FACE(
-    FACE_BOUND(EDGE_LOOP([ORIENTED_EDGE(topCircleEdge, m, "F")], m), "F", m),
-    PLANE(topPlacement, m),
-    m,
-    "T"
-  );
+  const topFace = ADVANCED_FACE(FACE_BOUND(EDGE_LOOP([ORIENTED_EDGE(topCircleEdge, m, "F")], m), "F", m), PLANE(topPlacement, m), m, "T");
 
   const msb = MANIFOLD_SOLID_BREP(CLOSED_SHELL([sideFace, bottomFace, topFace], m), m);
 
@@ -193,10 +166,7 @@ export function stepCylinder(
   const prod = PRODUCT(PRODUCT_CONTEXT(applicationContext, m), isCylinder ? "Cylinder" : "Cone", m);
 
   SHAPE_DEFINITION_REPRESENTATION(
-    PRODUCT_DEFINITION_SHAPE(
-      PRODUCT_DEFINITION(PRODUCT_DEFINITION_FORMATION(prod, m), PRODUCT_DEFINITION_CONTEXT(applicationContext, m), m),
-      m
-    ),
+    PRODUCT_DEFINITION_SHAPE(PRODUCT_DEFINITION(PRODUCT_DEFINITION_FORMATION(prod, m), PRODUCT_DEFINITION_CONTEXT(applicationContext, m), m), m),
     absp,
     m
   );

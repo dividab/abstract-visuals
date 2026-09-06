@@ -102,15 +102,11 @@ export function rowsSplit(
         continue;
       }
 
-      newRows.push(
-        lastSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow
-      );
+      newRows.push(lastSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow);
       currentRow = [atom];
       currentWidth = width;
     }
-    newRows.push(
-      lastWasSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow
-    );
+    newRows.push(lastWasSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow);
   }
   return newRows;
 }
@@ -221,14 +217,7 @@ export function rowsCombineTextRuns(
       }
 
       const style = JSON.stringify(
-        AD.Resources.getNestedStyle(
-          defaultStyle,
-          atom.style,
-          "TextStyle",
-          atom.styleName,
-          resources,
-          atom.nestedStyleNames || []
-        )
+        AD.Resources.getNestedStyle(defaultStyle, atom.style, "TextStyle", atom.styleName, resources, atom.nestedStyleNames || [])
       );
 
       if (current === undefined) {

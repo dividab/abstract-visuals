@@ -3,34 +3,7 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 import * as AD from "../../abstract-document/index.js";
 import * as TextStyle from "../../abstract-document/styles/text-style.js";
 
-const alphabet = [
-  "a",
-  "b",
-  "c",
-  "d",
-  "e",
-  "f",
-  "g",
-  "h",
-  "i",
-  "j",
-  "k",
-  "l",
-  "m",
-  "n",
-  "o",
-  "p",
-  "q",
-  "r",
-  "s",
-  "t",
-  "u",
-  "v",
-  "w",
-  "x",
-  "y",
-  "z",
-];
+const alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 
 const _numberingLevelItems = new Map<string, number>();
 
@@ -85,10 +58,7 @@ function preProcessSectionElement(
   }
 }
 
-function preProcessParagraph(
-  paragraph: AD.Paragraph.Paragraph,
-  resources: AD.Resources.Resources
-): Array<AD.SectionElement.SectionElement> {
+function preProcessParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Resources.Resources): Array<AD.SectionElement.SectionElement> {
   const adjustedParagraphs = adjustParagraph(paragraph);
   if (paragraph.numbering === undefined || !resources.numberingDefinitions) {
     return adjustedParagraphs;
@@ -380,16 +350,10 @@ function preProcessTableRow(
 
 function preProcessTableCell(c: AD.TableCell.TableCell, resources: AD.Resources.Resources): AD.TableCell.TableCell {
   const children = c.children.flatMap((e) => preProcessSectionElement(e, resources));
-  return AD.TableCell.create(
-    { styleName: c.styleName, columnSpan: c.columnSpan, rowSpan: c.rowSpan, style: c.style },
-    children
-  );
+  return AD.TableCell.create({ styleName: c.styleName, columnSpan: c.columnSpan, rowSpan: c.rowSpan, style: c.style }, children);
 }
 
-function preProcessGroup(
-  group: AD.Group.Group,
-  parentResources: AD.Resources.Resources
-): Array<AD.SectionElement.SectionElement> {
+function preProcessGroup(group: AD.Group.Group, parentResources: AD.Resources.Resources): Array<AD.SectionElement.SectionElement> {
   const children = group.children.flatMap((e) => preProcessSectionElement(e, parentResources));
   if (group.keepTogether || AD.Resources.hasResources(group) || group.style.position === "absolute") {
     return [

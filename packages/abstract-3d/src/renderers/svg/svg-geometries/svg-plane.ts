@@ -29,10 +29,5 @@ export function plane(
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
     ? [opts.gray_scale ? gray : material.normal, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(material.normal) : material.normal, 0];
-  return [
-    zElem(
-      svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes),
-      vec3ZMean(v1, v2, v3, v4)
-    ),
-  ];
+  return [zElem(svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes), vec3ZMean(v1, v2, v3, v4))];
 }

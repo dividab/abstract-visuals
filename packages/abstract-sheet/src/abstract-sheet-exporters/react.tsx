@@ -3,10 +3,7 @@ import React from "react";
 import type { AbstractSheet, BorderStyle, Style } from "../abstract-sheet/abstract-sheet.js";
 
 export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractSheet }): React.JSX.Element {
-  const styles = React.useMemo(
-    () => Object.fromEntries(abstractSheet.styles?.map((s) => [s.name, s]) ?? []),
-    [abstractSheet.styles]
-  );
+  const styles = React.useMemo(() => Object.fromEntries(abstractSheet.styles?.map((s) => [s.name, s]) ?? []), [abstractSheet.styles]);
 
   return (
     <div className="abstract-sheet" style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
@@ -25,21 +22,13 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
               gridTemplateRows: (s.direction === "col" ? colArray : s.cells)
                 .map((_, ri) => {
                   const info = s.rowInfo?.[ri];
-                  return info?.hidden
-                    ? ""
-                    : info?.heightPixels !== undefined
-                      ? `${info.heightPixels}px`
-                      : "minmax(18px, max-content)";
+                  return info?.hidden ? "" : info?.heightPixels !== undefined ? `${info.heightPixels}px` : "minmax(18px, max-content)";
                 })
                 .join(" "),
               gridTemplateColumns: (s.direction === "col" ? s.cells : colArray)
                 .map((_, ci) => {
                   const co = s.colInfo?.[ci];
-                  return co?.hidden
-                    ? ""
-                    : co?.widthPixels !== undefined
-                      ? `${co.widthPixels}px`
-                      : "minmax(64px, max-content)";
+                  return co?.hidden ? "" : co?.widthPixels !== undefined ? `${co.widthPixels}px` : "minmax(64px, max-content)";
                 })
                 .join(" "),
             }}
@@ -93,24 +82,16 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                                   : "center ",
                         borderTop: `${borderWidth(
                           s.borderStyle?.top ?? (s.borderColor?.top ? "medium" : undefined)
-                        )} ${borderStyle(s.borderStyle?.top)} ${
-                          s.borderColor?.top ?? s.foreground ?? "rgb(200,200,200)"
-                        } `,
+                        )} ${borderStyle(s.borderStyle?.top)} ${s.borderColor?.top ?? s.foreground ?? "rgb(200,200,200)"} `,
                         borderRight: `${borderWidth(
                           s.borderStyle?.right ?? (s.borderColor?.right ? "medium" : undefined)
-                        )} ${borderStyle(s.borderStyle?.right)} ${
-                          s.borderColor?.right ?? s.foreground ?? "rgb(200,200,200)"
-                        } `,
+                        )} ${borderStyle(s.borderStyle?.right)} ${s.borderColor?.right ?? s.foreground ?? "rgb(200,200,200)"} `,
                         borderBottom: `${borderWidth(
                           s.borderStyle?.bottom ?? (s.borderColor?.bottom ? "medium" : undefined)
-                        )} ${borderStyle(s.borderStyle?.bottom)} ${
-                          s.borderColor?.bottom ?? s.foreground ?? "rgb(200,200,200)"
-                        } `,
+                        )} ${borderStyle(s.borderStyle?.bottom)} ${s.borderColor?.bottom ?? s.foreground ?? "rgb(200,200,200)"} `,
                         borderLeft: `${borderWidth(
                           s.borderStyle?.left ?? (s.borderColor?.left ? "medium" : undefined)
-                        )} ${borderStyle(s.borderStyle?.left)} ${
-                          s.borderColor?.left ?? s.foreground ?? "rgb(200,200,200)"
-                        } `,
+                        )} ${borderStyle(s.borderStyle?.left)} ${s.borderColor?.left ?? s.foreground ?? "rgb(200,200,200)"} `,
                       }}
                     >
                       <div

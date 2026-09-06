@@ -31,20 +31,9 @@ export function dxfRound(n: number): number {
   return Math.round((n + Number.EPSILON) * 10 ** d) / 10 ** d;
 }
 
-export function dxfBuild(
-  groups: string,
-  dimensions: DxfDimensionDefinition,
-  bounds: Bounds3,
-  size: Vec3,
-  center: Vec3
-): string {
+export function dxfBuild(groups: string, dimensions: DxfDimensionDefinition, bounds: Bounds3, size: Vec3, center: Vec3): string {
   const id = generateUUID();
-  return (
-    dxfEncHeader(bounds, center, id, size, dimensions.block, dimensions.blockRecord) +
-    groups +
-    dimensions.entity +
-    dxfEncFooter(id)
-  );
+  return dxfEncHeader(bounds, center, id, size, dimensions.block, dimensions.blockRecord) + groups + dimensions.entity + dxfEncFooter(id);
 }
 
 /*

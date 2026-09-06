@@ -7,11 +7,6 @@ export function stlPlane(p: Plane, _m: Material, parentPos: Vec3, parentRot: Vec
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
   const vec3tr = (x: number, y: number): Vec3 => vec3TransRot(vec3(x, y, 0), pos, rot);
-  const [v1, v2, v3, v4] = [
-    vec3tr(-half.x, -half.y),
-    vec3tr(half.x, -half.y),
-    vec3tr(half.x, half.y),
-    vec3tr(-half.x, half.y),
-  ];
+  const [v1, v2, v3, v4] = [vec3tr(-half.x, -half.y), vec3tr(half.x, -half.y), vec3tr(half.x, half.y), vec3tr(-half.x, half.y)];
   return stlTriangle(v1, v2, v3) + stlTriangle(v3, v4, v1);
 }

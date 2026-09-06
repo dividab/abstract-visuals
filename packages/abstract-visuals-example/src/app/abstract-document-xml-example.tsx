@@ -4,18 +4,10 @@ import React from "react";
 
 import * as AbstractDocXml from "../../../abstract-document/src/abstract-document-xml/index.js";
 import { AbstractDoc, AbstractDocDocx, AbstractDocPdf } from "../../../abstract-document/src/index.js";
-import {
-  createAbstractImage,
-  createPoint,
-  createSize,
-  white,
-  createBinaryImage,
-} from "../../../abstract-image/src/index.js";
+import { createAbstractImage, createPoint, createSize, white, createBinaryImage } from "../../../abstract-image/src/index.js";
 
 export function AbstractDocumentXMLExample(): React.JSX.Element {
-  const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
-    undefined
-  );
+  const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(undefined);
   const [data, setData] = React.useState('{ "test": "Hello world", "truthy": true, "falsy": false }');
   const [template, setTemplate] = React.useState(`<AbstractDoc>
     {{#*inline "inlinePartial"}}
@@ -56,29 +48,17 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
     <div style={{ display: "flex", margin: "10px 0 0 10px", gap: "10px", width: "100%", height: "calc(100% - 40px)" }}>
       <div style={{ display: "flex", flexDirection: "column", width: "25%", height: "100%", gap: "10px" }}>
         <span>Data</span>
-        <textarea
-          style={{ width: "100%", height: "calc(100% - 30px)" }}
-          value={data}
-          onChange={(e) => setData(e.currentTarget.value)}
-        />
+        <textarea style={{ width: "100%", height: "calc(100% - 30px)" }} value={data} onChange={(e) => setData(e.currentTarget.value)} />
       </div>
       <div style={{ display: "flex", flexDirection: "column", width: "43%", height: "100%", gap: "10px" }}>
         <span>Template</span>
         <div style={{ display: "flex", flexDirection: "row", width: "100%", height: "100%", gap: "10px" }}>
-          <textarea
-            style={{ width: "100%", height: "calc(100% - 30px)" }}
-            value={template}
-            onChange={(e) => setTemplate(e.currentTarget.value)}
-          />
+          <textarea style={{ width: "100%", height: "calc(100% - 30px)" }} value={template} onChange={(e) => setTemplate(e.currentTarget.value)} />
         </div>
 
         <span>Partial ("partial")</span>
         <div style={{ display: "flex", flexDirection: "row", width: "100%", height: "100%", gap: "10px" }}>
-          <textarea
-            style={{ width: "100%", height: "calc(100% - 30px)" }}
-            value={partial}
-            onChange={(e) => setPartial(e.currentTarget.value)}
-          />
+          <textarea style={{ width: "100%", height: "calc(100% - 30px)" }} value={partial} onChange={(e) => setPartial(e.currentTarget.value)} />
         </div>
       </div>
       <div
@@ -119,11 +99,7 @@ export function AbstractDocumentXMLExample(): React.JSX.Element {
         {pdf?.type === "Err" ? (
           <h3>{pdf.error}</h3>
         ) : (
-          <embed
-            src={pdf?.type === "Ok" ? pdf.url : undefined}
-            type="application/pdf"
-            style={{ width: "100%", height: "calc(100% - 30px)" }}
-          />
+          <embed src={pdf?.type === "Ok" ? pdf.url : undefined} type="application/pdf" style={{ width: "100%", height: "calc(100% - 30px)" }} />
         )}
       </div>
     </div>
@@ -144,11 +120,7 @@ async function genereteDoc(
   }
 
   // Fetch image and fonts once the ADXml has been parsed
-  const [doc, _ignored_imageUrls, _ignored_fontFamilies] = AbstractDocXml.abstractDocXml(
-    template,
-    dataObject,
-    partials
-  );
+  const [doc, _ignored_imageUrls, _ignored_fontFamilies] = AbstractDocXml.abstractDocXml(template, dataObject, partials);
   const docWithResources = AbstractDoc.AbstractDoc.addResources(doc, { imageResources });
   const blob: Blob =
     format === "PDF"

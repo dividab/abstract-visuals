@@ -11,9 +11,8 @@ export interface ValidateOptions {
 /**
  * Validates JSX expression syntax and schema compliance without execution.
  *
- * Performs static analysis to check if JSX source code is valid according to the schema. This includes syntax
- * validation, security constraints, JSX element/attribute validation, and data access pattern validation - all without
- * needing actual data or components.
+ * Performs static analysis to check if JSX source code is valid according to the schema. This includes syntax validation, security constraints, JSX
+ * element/attribute validation, and data access pattern validation - all without needing actual data or components.
  *
  * This function parses the source code and returns a simple ok/error result.
  *

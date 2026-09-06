@@ -3,11 +3,7 @@ import * as TableCellStyle from "./table-cell-style.js";
 import * as TableStyle from "./table-style.js";
 import * as TextStyle from "./text-style.js";
 
-export type Style =
-  | ParagraphStyle.ParagraphStyle
-  | TableCellStyle.TableCellStyle
-  | TableStyle.TableStyle
-  | TextStyle.TextStyle;
+export type Style = ParagraphStyle.ParagraphStyle | TableCellStyle.TableCellStyle | TableStyle.TableStyle | TextStyle.TextStyle;
 
 export function overrideWith(overrider: Style | undefined, toOverride: Style | undefined): Style | undefined {
   if (!overrider) {

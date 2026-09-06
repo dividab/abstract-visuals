@@ -59,12 +59,7 @@ export function ReactGroup({
     e: ThreeEvent<MouseEvent>
   ) => void;
   readonly getTooltips?: (id: string) => ReadonlyArray<ReactPopover>;
-  readonly createGroupKey?: (
-    g: Group_1,
-    idx: number,
-    rootData: Record<string, string> | undefined,
-    id: string
-  ) => string;
+  readonly createGroupKey?: (g: Group_1, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
 }): React.JSX.Element {
   const ref = React.useRef<Group>(undefined!);
   useFrame(({ invalidate }, delta) => {
@@ -175,13 +170,7 @@ export function ReactGroup({
         id &&
         getTooltips &&
         getTooltips(id).map((p) => (
-          <Html
-            key={p.id}
-            position={[p.pos.x, p.pos.y, p.pos.z]}
-            center
-            pointerEvents="none"
-            style={{ pointerEvents: "none" }}
-          >
+          <Html key={p.id} position={[p.pos.x, p.pos.y, p.pos.z]} center pointerEvents="none" style={{ pointerEvents: "none" }}>
             {p.content}
           </Html>
         ))}

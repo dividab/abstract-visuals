@@ -33,28 +33,13 @@ export const Group = (props: GroupComponent): GroupComponent => createGroup(prop
 export const BinaryImage = (props: BinaryImageComponent): BinaryImageComponent =>
   createBinaryImage(props.topLeft, props.bottomRight, props.format, props.data, props.id);
 export const Ellipse = (props: EllipseComponent): EllipseComponent =>
-  createEllipse(
-    props.topLeft,
-    props.bottomRight,
-    props.strokeColor,
-    props.strokeThickness,
-    props.fillColor,
-    props.id,
-    props.strokeDashStyle
-  );
+  createEllipse(props.topLeft, props.bottomRight, props.strokeColor, props.strokeThickness, props.fillColor, props.id, props.strokeDashStyle);
 export const Line = (props: LineComponent): LineComponent =>
   createLine(props.start, props.end, props.strokeColor, props.strokeThickness, props.id, props.strokeDashStyle);
 export const PolyLine = (props: PolyLineComponent): PolyLineComponent =>
   createPolyLine(props.points, props.strokeColor, props.strokeThickness, props.id, props.strokeDashStyle);
 export const Polygon = (props: PolygonComponent): PolygonComponent =>
-  createPolygon(
-    props.points,
-    props.strokeColor,
-    props.strokeThickness,
-    props.fillColor,
-    props.id,
-    props.strokeDashStyle
-  );
+  createPolygon(props.points, props.strokeColor, props.strokeThickness, props.fillColor, props.id, props.strokeDashStyle);
 export const Rectangle = (props: RectangleComponent): RectangleComponent =>
   createRectangle(
     props.topLeft,
@@ -83,8 +68,7 @@ export const Text = (props: TextComponent): TextComponent =>
     props.italic,
     props.id
   );
-export const SubImage = (props: SubImageComponent): SubImageComponent =>
-  createSubImage(props.topLeft, props.size, props.image);
+export const SubImage = (props: SubImageComponent): SubImageComponent => createSubImage(props.topLeft, props.size, props.image);
 
 export function render(element: any): any {
   if (typeof element.type !== "function") {

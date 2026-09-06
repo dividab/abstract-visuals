@@ -1,13 +1,4 @@
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  Table,
-  TableRow,
-  TableCell,
-  TextRun,
-  Group,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, Table, TableRow, TableCell, TextRun, Group } from "../../../abstract-document-jsx/index.js";
 import { LayoutFoundation, TableCellStyle, TableStyle } from "../../../abstract-document/index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 

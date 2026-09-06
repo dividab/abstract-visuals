@@ -36,19 +36,7 @@ import type {
   CircleCurve as A3dCircleCurve,
   Hole,
 } from "../../abstract-3d.js";
-import {
-  vec2Scale,
-  vec2Sub,
-  vec2Add,
-  isZero,
-  vec3Scale,
-  vec3,
-  vec3Add,
-  vec3RotCombine,
-  vec3Zero,
-  vec3Rot,
-  equals,
-} from "../../abstract-3d.js";
+import { vec2Scale, vec2Sub, vec2Add, isZero, vec3Scale, vec3, vec3Add, vec3RotCombine, vec3Zero, vec3Rot, equals } from "../../abstract-3d.js";
 import { planeGeometry } from "./react-image-material.js";
 
 extend({
@@ -78,13 +66,7 @@ export const euler = new Euler();
 export const vector3 = new Vector3();
 export const quaternion = new Quaternion();
 
-export function ReactMesh({
-  mesh,
-  children,
-}: {
-  readonly mesh: Mesh;
-  readonly children?: React.JSX.Element;
-}): React.JSX.Element {
+export function ReactMesh({ mesh, children }: { readonly mesh: Mesh; readonly children?: React.JSX.Element }): React.JSX.Element {
   const culledLineGeometry = useMemo(() => {
     const g = new BufferGeometry();
 
@@ -160,14 +142,8 @@ export function ReactMesh({
         const aEnd = angleEnd - Math.PI / 2;
         const plane1Rot = vec3RotCombine(rot ?? vec3Zero, vec3(0, aStart, 0));
         const plane2Rot = vec3RotCombine(rot ?? vec3Zero, vec3(0, aEnd, 0));
-        const plane1Pos = vec3Add(
-          vec3Rot(vec3Scale(vec3(Math.cos(aStart), 0, -Math.sin(aStart)), halfRadius), vec3Zero, rot ?? vec3Zero),
-          pos
-        );
-        const plane2Pos = vec3Add(
-          vec3Rot(vec3Scale(vec3(Math.cos(aEnd), 0, -Math.sin(aEnd)), halfRadius), vec3Zero, rot ?? vec3Zero),
-          pos
-        );
+        const plane1Pos = vec3Add(vec3Rot(vec3Scale(vec3(Math.cos(aStart), 0, -Math.sin(aStart)), halfRadius), vec3Zero, rot ?? vec3Zero), pos);
+        const plane2Pos = vec3Add(vec3Rot(vec3Scale(vec3(Math.cos(aEnd), 0, -Math.sin(aEnd)), halfRadius), vec3Zero, rot ?? vec3Zero), pos);
         return (
           <mesh>
             <mesh
@@ -346,13 +322,7 @@ function ExcrudeBoxPlane({
   );
 }
 
-function ExcrudeShape({
-  s,
-  children,
-}: {
-  readonly s: Shape_1;
-  readonly children?: React.JSX.Element;
-}): React.JSX.Element {
+function ExcrudeShape({ s, children }: { readonly s: Shape_1; readonly children?: React.JSX.Element }): React.JSX.Element {
   const excrudeGeometry = React.useMemo(() => {
     const shape = new Shape();
     if (s.points.length > 0) {
@@ -378,13 +348,7 @@ function ExcrudeShape({
   );
 }
 
-function ExcrudeCylinder({
-  cyl,
-  children,
-}: {
-  readonly cyl: Cylinder;
-  readonly children?: React.JSX.Element;
-}): React.JSX.Element {
+function ExcrudeCylinder({ cyl, children }: { readonly cyl: Cylinder; readonly children?: React.JSX.Element }): React.JSX.Element {
   const excrudeGeometry = React.useMemo(() => {
     const shape = new Shape();
     shape.moveTo(0, cyl.radius).absellipse(0, 0, cyl.radius, cyl.radius, 0, Math.PI * 2, true);
@@ -425,13 +389,7 @@ function holes(holes: ReadonlyArray<Hole> | undefined, shape: Shape): void {
     });
 }
 
-function Polygon({
-  polygon,
-  children,
-}: {
-  readonly polygon: A3dPolygon;
-  readonly children?: React.JSX.Element;
-}): React.JSX.Element {
+function Polygon({ polygon, children }: { readonly polygon: A3dPolygon; readonly children?: React.JSX.Element }): React.JSX.Element {
   const vertices = React.useMemo(() => {
     if (polygon.points.length === 4) {
       const [v0, v1, v2, v3] = polygon.points;
@@ -477,14 +435,7 @@ function Polygon({
       receiveShadow
     >
       <bufferGeometry key={vertices.join("")} attach="geometry" onUpdate={(self) => self.computeVertexNormals()}>
-        <bufferAttribute
-          attach="attributes-position"
-          needsUpdate={true}
-          args={fakeArgs}
-          array={vertices}
-          count={vertices.length / 3}
-          itemSize={3}
-        />
+        <bufferAttribute attach="attributes-position" needsUpdate={true} args={fakeArgs} array={vertices} count={vertices.length / 3} itemSize={3} />
       </bufferGeometry>
       {children}
     </mesh>
@@ -493,13 +444,7 @@ function Polygon({
 
 const fakeArgs = [] as any;
 
-function Tube({
-  tube,
-  children,
-}: {
-  readonly tube: A3dTube;
-  readonly children?: React.JSX.Element;
-}): React.JSX.Element {
+function Tube({ tube, children }: { readonly tube: A3dTube; readonly children?: React.JSX.Element }): React.JSX.Element {
   const tubeGeometry = React.useMemo(() => {
     return new TubeGeometry(
       tube.curve.type === "SplineCurve"

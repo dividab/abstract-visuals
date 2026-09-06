@@ -2,20 +2,9 @@ import * as AbstractImage from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 const components = [
-  AbstractImage.createEllipse(
-    AbstractImage.createPoint(50, 50),
-    AbstractImage.createPoint(100, 100),
-    AbstractImage.green,
-    2,
-    AbstractImage.yellow
-  ),
+  AbstractImage.createEllipse(AbstractImage.createPoint(50, 50), AbstractImage.createPoint(100, 100), AbstractImage.green, 2, AbstractImage.yellow),
 ];
-const image = AbstractImage.createAbstractImage(
-  AbstractImage.createPoint(0, 0),
-  AbstractImage.createSize(400, 400),
-  AbstractImage.white,
-  components
-);
+const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
 const eps = AbstractImage.epsExportImage(image);
 

@@ -1,15 +1,5 @@
 import type { Box, Material, Vec3 } from "../../../abstract-3d.js";
-import {
-  vec3Scale,
-  vec3TransRot,
-  vec3RotCombine,
-  vec3Zero,
-  vec3,
-  vec3Normalize,
-  vec3Sub,
-  vec3Add,
-  vec3Rot,
-} from "../../../abstract-3d.js";
+import { vec3Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3Normalize, vec3Sub, vec3Add, vec3Rot } from "../../../abstract-3d.js";
 import { parseRgb } from "../../../utils.js";
 import type { MutableStep } from "../step-encoding.js";
 import {
@@ -131,12 +121,7 @@ export function stepBox(b: Box, mat: Material, parentPos: Vec3, parentRot: Vec3,
   const closedShell = CLOSED_SHELL(faces, m);
   const manifoldSolidBrep = MANIFOLD_SOLID_BREP(closedShell, m);
 
-  const axisPlacement = AXIS2_PLACEMENT_3D(
-    CARTESIAN_POINT(vec3Zero, m),
-    DIRECTION(normFrontGlobal, m),
-    DIRECTION(normRightGlobal, m),
-    m
-  );
+  const axisPlacement = AXIS2_PLACEMENT_3D(CARTESIAN_POINT(vec3Zero, m), DIRECTION(normFrontGlobal, m), DIRECTION(normRightGlobal, m), m);
 
   const advBrepShapeRepr = ADVANCED_BREP_SHAPE_REPRESENTATION(axisPlacement, manifoldSolidBrep, m.geoContext3d, m);
 

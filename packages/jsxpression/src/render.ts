@@ -8,8 +8,7 @@ import type { Schema } from "./schema.js";
 /**
  * Configuration options for rendering JSX expressions.
  *
- * Extends EvaluateOptions with render-specific functionality, including control over the minimum severity threshold
- * that stops rendering.
+ * Extends EvaluateOptions with render-specific functionality, including control over the minimum severity threshold that stops rendering.
  *
  * @template T - The return type of createElement function
  */
@@ -21,8 +20,8 @@ export interface RenderOptions<T = any> extends EvaluateOptions<T> {
 /**
  * Renders a JSX expression with data validation and security constraints.
  *
- * Parses JSX source code, validates it against a schema for security and type safety, compiles it to executable code,
- * and evaluates it with the provided data and components.
+ * Parses JSX source code, validates it against a schema for security and type safety, compiles it to executable code, and evaluates it with the
+ * provided data and components.
  *
  * @example
  *   ```typescript
@@ -49,16 +48,11 @@ export interface RenderOptions<T = any> extends EvaluateOptions<T> {
  * @param options.data - Data object whose keys become top-level variables in expressions
  * @param options.components - Map of component names to component functions
  * @param options.createElement - Function to create elements (e.g., React.createElement)
- * @param options.minSeverity - Minimum severity (1=info, 2=warning, 3=error) required to abort rendering; defaults to
- *   `3`
+ * @param options.minSeverity - Minimum severity (1=info, 2=warning, 3=error) required to abort rendering; defaults to `3`
  * @returns The rendered JSX element of type T
  * @throws {AnalysisError} When JSX contains security violations, invalid data access, or schema mismatches
  */
-export function render<T = any>(
-  source: string,
-  schema: Schema,
-  { minSeverity = 3, ...options }: RenderOptions<T> = {}
-): T {
+export function render<T = any>(source: string, schema: Schema, { minSeverity = 3, ...options }: RenderOptions<T> = {}): T {
   const ast = parse(source);
   const report = analyze(ast, schema);
 

@@ -12,10 +12,7 @@ export const white = "rgb(255, 255, 255)";
 export const transparent = "rgba(255, 255, 255, 0)";
 export const black = "rgb(15, 15, 15)";
 
-export type ImageDataUri =
-  | `data:image/png;base64,${string}`
-  | `data:image/jpeg;base64,${string}`
-  | `data:image/svg+xml,${string}`;
+export type ImageDataUri = `data:image/png;base64,${string}` | `data:image/jpeg;base64,${string}` | `data:image/svg+xml,${string}`;
 
 export type SvgOptions = {
   readonly view: View;

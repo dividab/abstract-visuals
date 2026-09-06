@@ -24,12 +24,7 @@ import * as AbstractImage from "abstract-image";
 
 export function AbstractImageExample() {
   const components = [
-    AbstractImage.createLine(
-      AbstractImage.createPoint(25, 25),
-      AbstractImage.createPoint(80, 60),
-      AbstractImage.black,
-      2
-    ),
+    AbstractImage.createLine(AbstractImage.createPoint(25, 25), AbstractImage.createPoint(80, 60), AbstractImage.black, 2),
     AbstractImage.createRectangle(
       AbstractImage.createPoint(10, 50),
       AbstractImage.createPoint(40, 80),

@@ -59,12 +59,7 @@ export function generateObjectTypeWithJSDoc(properties: any, depth: number = 0):
   return result;
 }
 
-export function generatePropertyJSDoc(
-  _propertyName: string,
-  propertySchema: any,
-  indent: string = "",
-  _depth: number = 0
-): string {
+export function generatePropertyJSDoc(_propertyName: string, propertySchema: any, indent: string = "", _depth: number = 0): string {
   const comments: string[] = [];
 
   // Main description

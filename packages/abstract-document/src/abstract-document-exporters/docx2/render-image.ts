@@ -88,11 +88,7 @@ function binaryImageToImageRun(
     if (format === "png" || format === "jpg" || format === "jpeg") {
       return new ImageRun({
         type: format === "png" ? "png" : "jpg",
-        data: Buffer.from(
-          component.data.bytes.buffer,
-          component.data.bytes.byteOffset,
-          component.data.bytes.byteLength
-        ),
+        data: Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength),
         transformation,
       } as any);
     }
@@ -148,11 +144,7 @@ function binaryImageToImageRun(
   return undefined;
 }
 
-function abstractImageToSvg(
-  image: AbstractImage.AbstractImage,
-  resources: AD.Resources.Resources,
-  textStyle: TextStyle
-): string {
+function abstractImageToSvg(image: AbstractImage.AbstractImage, resources: AD.Resources.Resources, textStyle: TextStyle): string {
   const width = image.size.width || 1;
   const height = image.size.height || 1;
 
@@ -164,12 +156,7 @@ function abstractImageToSvg(
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${children}</svg>`;
 }
 
-function componentToSvg(
-  component: AbstractImage.Component,
-  resources: AD.Resources.Resources,
-  textStyle: TextStyle,
-  circuitBreaker: number
-): string {
+function componentToSvg(component: AbstractImage.Component, resources: AD.Resources.Resources, textStyle: TextStyle, circuitBreaker: number): string {
   if (++circuitBreaker > 20) {
     return "";
   }
@@ -183,9 +170,7 @@ function componentToSvg(
       const scaleY = component.size.height / (component.image.size.height || 1);
       const scale = Math.min(scaleX, scaleY);
 
-      const children = component.image.components
-        .map((child) => componentToSvg(child, resources, textStyle, circuitBreaker))
-        .join("");
+      const children = component.image.components.map((child) => componentToSvg(child, resources, textStyle, circuitBreaker)).join("");
 
       return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y}) scale(${scale})">${children}</g>`;
     }
@@ -260,9 +245,7 @@ function binaryImageToSvg(
       const scaleY = height / (imageResource.abstractImage.size.height || 1);
       const scale = Math.min(scaleX, scaleY);
 
-      const children = imageResource.abstractImage.components
-        .map((child) => componentToSvg(child, resources, textStyle, circuitBreaker))
-        .join("");
+      const children = imageResource.abstractImage.components.map((child) => componentToSvg(child, resources, textStyle, circuitBreaker)).join("");
 
       return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y}) scale(${scale})">${children}</g>`;
     }
@@ -280,11 +263,7 @@ function binaryImageToSvg(
   if (component.data.type === "bytes") {
     if (format === "png" || format === "jpg" || format === "jpeg") {
       const mime = format === "png" ? "image/png" : "image/jpeg";
-      const base64 = Buffer.from(
-        component.data.bytes.buffer,
-        component.data.bytes.byteOffset,
-        component.data.bytes.byteLength
-      ).toString("base64");
+      const base64 = Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength).toString("base64");
 
       return `<image x="${component.topLeft.x}" y="${component.topLeft.y}" width="${width}" height="${height}" href="data:${mime};base64,${base64}" />`;
     }
@@ -304,19 +283,10 @@ function textComponentToSvg(component: AbstractImage.Text): string {
       ? ` transform="rotate(${component.clockwiseRotationDegrees} ${component.position.x} ${component.position.y})"`
       : "";
 
-  const anchor =
-    component.horizontalGrowthDirection === "left"
-      ? "end"
-      : component.horizontalGrowthDirection === "uniform"
-        ? "middle"
-        : "start";
+  const anchor = component.horizontalGrowthDirection === "left" ? "end" : component.horizontalGrowthDirection === "uniform" ? "middle" : "start";
 
   const dominantBaseline =
-    component.verticalGrowthDirection === "up"
-      ? "text-after-edge"
-      : component.verticalGrowthDirection === "uniform"
-        ? "middle"
-        : "text-before-edge";
+    component.verticalGrowthDirection === "up" ? "text-after-edge" : component.verticalGrowthDirection === "uniform" ? "middle" : "text-before-edge";
 
   return `<text x="${component.position.x}" y="${component.position.y}" font-family="${escapeXml(
     component.fontFamily
@@ -334,14 +304,10 @@ function fillAttrs(color: AbstractImage.Color): string {
 function strokeAttrs(color: AbstractImage.Color, thickness: number, dashStyle: AbstractImage.DashStyle): string {
   const dashArray =
     dashStyle.dashes.length > 0
-      ? ` stroke-dasharray="${dashStyle.dashes.filter((dash) => dash !== 0).join(" ")}" stroke-dashoffset="${
-          dashStyle.offset
-        }"`
+      ? ` stroke-dasharray="${dashStyle.dashes.filter((dash) => dash !== 0).join(" ")}" stroke-dashoffset="${dashStyle.offset}"`
       : "";
 
-  return `stroke="${colorToCss(color)}" stroke-opacity="${colorToOpacity(
-    color
-  )}" stroke-width="${thickness}"${dashArray}`;
+  return `stroke="${colorToCss(color)}" stroke-opacity="${colorToOpacity(color)}" stroke-width="${thickness}"${dashArray}`;
 }
 
 function colorToOpacity(color: AbstractImage.Color): number {

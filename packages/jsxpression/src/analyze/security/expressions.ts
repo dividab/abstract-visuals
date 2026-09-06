@@ -6,53 +6,24 @@ import { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
 
-export function analyzeExpressions(
-  ast: Program,
-  _schema: Schema,
-  validationContext: ValidationContext
-): AnalysisReport {
+export function analyzeExpressions(ast: Program, _schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();
 
   traverse(ast, {
     NewExpression(node) {
-      analysisReport.addIssue(
-        "NEW_NOT_ALLOWED",
-        "new not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("NEW_NOT_ALLOWED", "new not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     ThisExpression(node) {
-      analysisReport.addIssue(
-        "THIS_NOT_ALLOWED",
-        "this not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("THIS_NOT_ALLOWED", "this not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     WithStatement(node) {
-      analysisReport.addIssue(
-        "WITH_NOT_ALLOWED",
-        "with not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("WITH_NOT_ALLOWED", "with not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     AwaitExpression(node) {
-      analysisReport.addIssue(
-        "AWAIT_NOT_ALLOWED",
-        "await not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("AWAIT_NOT_ALLOWED", "await not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     YieldExpression(node) {
-      analysisReport.addIssue(
-        "YIELD_NOT_ALLOWED",
-        "yield not allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("YIELD_NOT_ALLOWED", "yield not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
     ArrowFunctionExpression(node) {
       if (node.body.type === "BlockStatement") {
@@ -84,12 +55,7 @@ export function analyzeExpressions(
         currentNode = currentNode.object;
       }
       if (depth > 5) {
-        analysisReport.addIssue(
-          "MEMBER_CHAIN_TOO_DEEP",
-          "member chain too deep",
-          getNodeRange(node),
-          validationContext.getSnapshot()
-        );
+        analysisReport.addIssue("MEMBER_CHAIN_TOO_DEEP", "member chain too deep", getNodeRange(node), validationContext.getSnapshot());
       }
 
       if (node.computed) {
@@ -102,10 +68,7 @@ export function analyzeExpressions(
           "computed member access not allowed",
           getNodeRange(node),
           validationContext.getSnapshot(),
-          [
-            "Use dot notation: obj.prop instead of obj[prop]",
-            "For arrays, use numeric indices: array[0] instead of array[variable]",
-          ]
+          ["Use dot notation: obj.prop instead of obj[prop]", "For arrays, use numeric indices: array[0] instead of array[variable]"]
         );
       }
     },

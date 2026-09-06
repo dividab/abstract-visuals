@@ -65,15 +65,11 @@ export function create(props?: PageStyleProps): PageStyle {
 }
 
 export function getWidth(pageStyle: PageStyle): number {
-  return pageStyle.orientation === "Landscape"
-    ? getPaperHeight(pageStyle.paperSize)
-    : getPaperWidth(pageStyle.paperSize);
+  return pageStyle.orientation === "Landscape" ? getPaperHeight(pageStyle.paperSize) : getPaperWidth(pageStyle.paperSize);
 }
 
 export function getHeight(pageStyle: PageStyle): number {
-  return pageStyle.orientation === "Landscape"
-    ? getPaperWidth(pageStyle.paperSize)
-    : getPaperHeight(pageStyle.paperSize);
+  return pageStyle.orientation === "Landscape" ? getPaperWidth(pageStyle.paperSize) : getPaperHeight(pageStyle.paperSize);
 }
 
 export function getPaperWidth(ps: PaperSize): number {

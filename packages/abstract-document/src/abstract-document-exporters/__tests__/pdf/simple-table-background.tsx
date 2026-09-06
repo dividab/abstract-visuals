@@ -10,46 +10,22 @@ export const testSimpleTableBackground: ExportTestDef = {
       <Section>
         <Table columnWidths={[30, 30, 30, 30]}>
           <TableRow>
-            <TableCell
-              style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
           </TableRow>
           <TableRow>
-            <TableCell
-              style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
           </TableRow>
           <TableRow>
-            <TableCell
-              style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
-            <TableCell
-              style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}
-            ></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "yellow", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
+            <TableCell style={TableCellStyle.create({ background: "blue", padding: LayoutFoundation.create({ bottom: 30 }) })}></TableCell>
           </TableRow>
         </Table>
       </Section>

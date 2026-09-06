@@ -12,11 +12,7 @@ export type XmlElement = {
   readonly textContent?: string;
 };
 
-export const parseHandlebarsXml = (
-  template: string,
-  data: any,
-  partials: Record<string, string>
-): ReadonlyArray<XmlElement> => {
+export const parseHandlebarsXml = (template: string, data: any, partials: Record<string, string>): ReadonlyArray<XmlElement> => {
   return parseXml(renderHandlebars(template, data, partials));
 };
 
@@ -34,8 +30,7 @@ export function parseXmlCustom(text: string, options: Partial<X2jOptions>): Read
   return transformFXP(parser.parse(text));
 }
 export const parseXml = (text: string): ReadonlyArray<XmlElement> => transformFXP(xmlParser.parse(text));
-export const parseXsd = (text: string): ReadonlyArray<XmlElement> =>
-  transformFXP(xsdParser.parse(text.replace(/xs:/g, "")));
+export const parseXsd = (text: string): ReadonlyArray<XmlElement> => transformFXP(xsdParser.parse(text.replace(/xs:/g, "")));
 
 type FastXmlElement = Record<string, ReadonlyArray<FastXmlElement> | Record<string, string>>;
 
@@ -66,10 +61,7 @@ function transformFXP(parsedXml: ReadonlyArray<FastXmlElement>): ReadonlyArray<X
   });
 }
 
-export function findElement(
-  elements: ReadonlyArray<XmlElement>,
-  elementName: string | undefined
-): XmlElement | undefined {
+export function findElement(elements: ReadonlyArray<XmlElement>, elementName: string | undefined): XmlElement | undefined {
   if (!elementName) {
     return undefined;
   }
@@ -80,9 +72,7 @@ export function findElement(
     if (shouldSkipLevel(elem)) {
       const childElement = findElement(Array.from(elem.children), elementName);
       if (childElement) {
-        return shouldSkipLevel(childElement)
-          ? findElement(Array.from(childElement.children), elementName)
-          : childElement;
+        return shouldSkipLevel(childElement) ? findElement(Array.from(childElement.children), elementName) : childElement;
       }
     }
     if (elem.attributes["name"] === elementName) {
@@ -109,12 +99,7 @@ export function getChildren(elements: ReadonlyArray<XmlElement>): ReadonlyArray<
 }
 
 function shouldSkipLevel(tag: XmlElement): boolean {
-  return (
-    tag.tagName === "all" ||
-    tag.tagName === "sequence" ||
-    tag.tagName === "choice" ||
-    tag.attributes["name"] === undefined
-  );
+  return tag.tagName === "all" || tag.tagName === "sequence" || tag.tagName === "choice" || tag.attributes["name"] === undefined;
 }
 
 const xmlParser = new XMLParser({

@@ -8,11 +8,7 @@ import { stlPolygon } from "./stl-geometries/stl-polygon.js";
 
 export const render = (scene: Scene): string =>
   `solid
-` +
-  scene.groups.reduce(
-    (a, c) => a + stlGroup(c, scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero),
-    ""
-  );
+` + scene.groups.reduce((a, c) => a + stlGroup(c, scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero), "");
 
 function stlGroup(g: Group, parentPos: Vec3, parentRot: Vec3): string {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);

@@ -1,11 +1,6 @@
 import type { MemberExpression } from "acorn";
 
-import {
-  isAllowedOnArray,
-  isAllowedOnString,
-  getAvailableArrayMembers,
-  getAvailableStringMembers,
-} from "../../builtins.js";
+import { isAllowedOnArray, isAllowedOnString, getAvailableArrayMembers, getAvailableStringMembers } from "../../builtins.js";
 import type { Schema } from "../../schema.js";
 import type { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";

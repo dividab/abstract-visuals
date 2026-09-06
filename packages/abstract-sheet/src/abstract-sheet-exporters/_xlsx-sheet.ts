@@ -16,8 +16,7 @@ export function xlsxWorkSheet(sheet: Sheet, styles: Record<string, any>): XLSX.W
           s = { ...s!, ...styles[style] };
         }
       }
-      const key =
-        sheet.direction === "col" ? `${XLSX.utils.encode_col(ri)}${ci + 1}` : `${XLSX.utils.encode_col(ci)}${ri + 1}`;
+      const key = sheet.direction === "col" ? `${XLSX.utils.encode_col(ri)}${ci + 1}` : `${XLSX.utils.encode_col(ci)}${ri + 1}`;
       cells[key] = { v: c.value, t: cellObject(c.type), s };
     }
   }
@@ -25,9 +24,7 @@ export function xlsxWorkSheet(sheet: Sheet, styles: Record<string, any>): XLSX.W
   return {
     "!type": "sheet",
     "!ref": `A1:${
-      sheet.direction === "col"
-        ? `${XLSX.utils.encode_col(sheet.cells.length)}${colMax}`
-        : `${XLSX.utils.encode_col(colMax)}${sheet.cells.length}`
+      sheet.direction === "col" ? `${XLSX.utils.encode_col(sheet.cells.length)}${colMax}` : `${XLSX.utils.encode_col(colMax)}${sheet.cells.length}`
     }`,
     "!cols": sheet.colInfo?.map((i): XLSX.ColInfo => ({ wpx: i.widthPixels ?? 64, hidden: i.hidden })),
     "!rows": sheet.rowInfo?.map((i): XLSX.RowInfo => ({ hpx: i.heightPixels ?? 15, hidden: i.hidden })),

@@ -1,13 +1,4 @@
-import {
-  type Box,
-  type Material,
-  type Vec3,
-  vec3,
-  vec3RotCombine,
-  vec3Scale,
-  vec3TransRot,
-  vec3Zero,
-} from "../../../abstract-3d.js";
+import { type Box, type Material, type Vec3, vec3, vec3RotCombine, vec3Scale, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
 

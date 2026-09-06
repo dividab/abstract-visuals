@@ -35,18 +35,9 @@ export function renderImage(
   const drawnH = imgH * scale;
 
   const offsetX =
-    image.horizontalAlignment === "Center"
-      ? (rect.width - drawnW) / 2
-      : image.horizontalAlignment === "Right"
-        ? rect.width - drawnW
-        : 0;
+    image.horizontalAlignment === "Center" ? (rect.width - drawnW) / 2 : image.horizontalAlignment === "Right" ? rect.width - drawnW : 0;
 
-  const offsetY =
-    image.verticalAlignment === "Center"
-      ? (rect.height - drawnH) / 2
-      : image.verticalAlignment === "Bottom"
-        ? rect.height - drawnH
-        : 0;
+  const offsetY = image.verticalAlignment === "Center" ? (rect.height - drawnH) / 2 : image.verticalAlignment === "Bottom" ? rect.height - drawnH : 0;
 
   pdf.save();
   pdf.translate(position.x + offsetX, position.y + offsetY).scale(scale);
@@ -87,13 +78,7 @@ function abstractComponentToPdf(
           );
           pdf.restore();
         } else if (component.data.url.startsWith(rawSvgPrefix)) {
-          addWithSvgToPdfKit(
-            decodeURIComponent(component.data.url.slice(rawSvgPrefix.length)),
-            component,
-            pdf,
-            resources,
-            textStyle
-          );
+          addWithSvgToPdfKit(decodeURIComponent(component.data.url.slice(rawSvgPrefix.length)), component, pdf, resources, textStyle);
         } else {
           const match = /^data:.+?;base64,(.*)$/.exec(component.data.url);
           if (match) {
@@ -120,9 +105,7 @@ function abstractComponentToPdf(
 
       pdf.save();
       pdf.translate(component.topLeft.x, component.topLeft.y).scale(scale);
-      component.image.components.forEach((c) =>
-        abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale * scale)
-      );
+      component.image.components.forEach((c) => abstractComponentToPdf(resources, pdf, c, textStyle, circuitBreaker, accScale * scale));
       pdf.restore();
       break;
     }
@@ -160,17 +143,9 @@ function abstractComponentToPdf(
       const stringWidth = pdf.widthOfString(component.text);
       const stringHeight = pdf.currentLineHeight();
       const dx =
-        component.horizontalGrowthDirection === "left"
-          ? -stringWidth
-          : component.horizontalGrowthDirection === "uniform"
-            ? -stringWidth * 0.5
-            : 0;
+        component.horizontalGrowthDirection === "left" ? -stringWidth : component.horizontalGrowthDirection === "uniform" ? -stringWidth * 0.5 : 0;
       const dy =
-        component.verticalGrowthDirection === "up"
-          ? -stringHeight
-          : component.verticalGrowthDirection === "uniform"
-            ? -stringHeight * 0.5
-            : 0;
+        component.verticalGrowthDirection === "up" ? -stringHeight : component.verticalGrowthDirection === "uniform" ? -stringHeight * 0.5 : 0;
       pdf
         .font(font)
         .fontSize(component.fontSize)
@@ -240,8 +215,7 @@ function addWithSvgToPdfKit(
 
       const color = svgUpdated.substring(indexStart, indexEnd);
       if (color !== color.toLowerCase() && color.toLowerCase().indexOf("url(") === -1)
-        svgUpdated =
-          svgUpdated.substring(0, indexStart) + color.toLowerCase() + svgUpdated.substring(indexEnd, svgUpdated.length);
+        svgUpdated = svgUpdated.substring(0, indexStart) + color.toLowerCase() + svgUpdated.substring(indexEnd, svgUpdated.length);
     }
   });
 

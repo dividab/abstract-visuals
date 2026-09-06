@@ -2,13 +2,7 @@ import type { Vec3 } from "../../../abstract-3d.js";
 import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 
-export function dxfEncPolyline(
-  points: ReadonlyArray<Vec3>,
-  col: DxfColor,
-  closed: boolean,
-  handleRef: Handle,
-  blockRefHandle?: string
-): string {
+export function dxfEncPolyline(points: ReadonlyArray<Vec3>, col: DxfColor, closed: boolean, handleRef: Handle, blockRefHandle?: string): string {
   if (points.length < 2) {
     return "";
   }

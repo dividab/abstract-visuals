@@ -1,13 +1,4 @@
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  TextRun,
-  Group,
-  Table,
-  TableCell,
-  TableRow,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, TextRun, Group, Table, TableCell, TableRow } from "../../../abstract-document-jsx/index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testGroup: ExportTestDef = {

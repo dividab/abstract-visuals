@@ -1,12 +1,4 @@
-import {
-  AnalysisError,
-  evaluate,
-  compile,
-  render,
-  type FunctionSchema,
-  type PropertySchema,
-  type Schema,
-} from "jsxpression";
+import { AnalysisError, evaluate, compile, render, type FunctionSchema, type PropertySchema, type Schema } from "jsxpression";
 
 import type { AbstractImage } from "../model/abstract-image.js";
 import { createComponents } from "./components.js";
@@ -57,9 +49,7 @@ export function dynamicImage(
   }
 }
 
-export type CompileDynamicImageResult =
-  | { readonly type: "Ok"; value: string }
-  | { readonly type: "Err"; readonly error: DynamicImageError };
+export type CompileDynamicImageResult = { readonly type: "Ok"; value: string } | { readonly type: "Err"; readonly error: DynamicImageError };
 
 export function compileDynamicImage(
   source: string,
@@ -77,21 +67,14 @@ export function compileDynamicImage(
       error: {
         type: "RENDER_ERROR",
         message: error instanceof Error ? error.message : String(error),
-        issues:
-          error instanceof AnalysisError
-            ? error.report.issues.map((i) => ({ code: i.code, message: i.message }))
-            : undefined,
+        issues: error instanceof AnalysisError ? error.report.issues.map((i) => ({ code: i.code, message: i.message })) : undefined,
         cause: error,
       },
     };
   }
 }
 
-export function renderDynamicImage(
-  jsString: string,
-  data: Record<string, unknown>,
-  functions?: Record<string, Function>
-): DynamicImageResult {
+export function renderDynamicImage(jsString: string, data: Record<string, unknown>, functions?: Record<string, Function>): DynamicImageResult {
   const imageUrls: string[] = [];
   try {
     return {

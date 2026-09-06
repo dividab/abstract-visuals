@@ -79,19 +79,7 @@ export type Group = {
 
 export type Mesh = {
   readonly material: Material;
-  readonly geometry:
-    | Cylinder
-    | Cone
-    | Box
-    | Line
-    | CulledLine
-    | Text
-    | Polygon
-    | Plane
-    | Tube
-    | Sphere
-    | Shape
-    | ImageMesh;
+  readonly geometry: Cylinder | Cone | Box | Line | CulledLine | Text | Polygon | Plane | Tube | Sphere | Shape | ImageMesh;
 };
 
 export type Material = {
@@ -341,11 +329,9 @@ export const vec3XMean = (...v: ReadonlyArray<Vec3>): number => v.reduce((a, c) 
 export const vec3YMean = (...v: ReadonlyArray<Vec3>): number => v.reduce((a, c) => a + c.y, 0) / v.length;
 export const vec3ZMean = (...v: ReadonlyArray<Vec3>): number => v.reduce((a, c) => a + c.z, 0) / v.length;
 
-export const vec3Greater = (a: Vec3, b: Vec3): Vec3 =>
-  vec3(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z);
+export const vec3Greater = (a: Vec3, b: Vec3): Vec3 => vec3(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z);
 
-export const vec3DistSquared = (a: Vec3, b: Vec3): number =>
-  Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2);
+export const vec3DistSquared = (a: Vec3, b: Vec3): number => Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2);
 
 export const vec3Dist = (a: Vec3, b: Vec3): number => vec3DistSquared(a, b);
 
@@ -354,8 +340,7 @@ export const vec3Cross = (left: Vec3, right: Vec3): Vec3 =>
 
 const TOLERANCE = 0.001;
 
-export const equals = (num1: number, num2: number, tolerance = TOLERANCE): boolean =>
-  Math.abs(num1 - num2) <= tolerance;
+export const equals = (num1: number, num2: number, tolerance = TOLERANCE): boolean => Math.abs(num1 - num2) <= tolerance;
 export const isZero = (num: number, tolerance = TOLERANCE): boolean => Math.abs(num) <= tolerance;
 export const geq = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 >= num2 - tolerance;
 export const greater = (num1: number, num2: number, tolerance = TOLERANCE): boolean => num1 > num2 + tolerance;
@@ -374,11 +359,9 @@ export const bounds3Zero: Bounds3 = bounds3(vec3Zero, vec3Zero);
 
 export const bounds2ToSize = (bounds: Bounds2): Vec2 => vec2(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y);
 
-export const bounds2Shift = (bounds: Bounds2, offset: Vec2): Bounds2 =>
-  bounds2(vec2Add(bounds.min, offset), vec2Add(bounds.max, offset));
+export const bounds2Shift = (bounds: Bounds2, offset: Vec2): Bounds2 => bounds2(vec2Add(bounds.min, offset), vec2Add(bounds.max, offset));
 
-export const bounds3ToSize = (bounds: Bounds3): Vec3 =>
-  vec3(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y, bounds.max.z - bounds.min.z);
+export const bounds3ToSize = (bounds: Bounds3): Vec3 => vec3(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y, bounds.max.z - bounds.min.z);
 
 export const bounds3Overlap = (a: Bounds3, b: Bounds3, tolerance = TOLERANCE): boolean =>
   !(
@@ -390,12 +373,10 @@ export const bounds3Overlap = (a: Bounds3, b: Bounds3, tolerance = TOLERANCE): b
     geq(a.min.z, b.max.z, tolerance)
   );
 
-export const boundsContains = (a: Bounds, b: Bounds, tolerance = TOLERANCE): boolean =>
-  leq(a.min, b.min, tolerance) && geq(a.max, b.max, tolerance);
+export const boundsContains = (a: Bounds, b: Bounds, tolerance = TOLERANCE): boolean => leq(a.min, b.min, tolerance) && geq(a.max, b.max, tolerance);
 
 export const boundsOverlap = (a: Bounds, b: Bounds, tolerance = TOLERANCE): boolean =>
-  (greater(a.max, b.min, tolerance) && less(a.min, b.max, tolerance)) ||
-  (greater(b.max, a.min, tolerance) && less(b.min, a.max, tolerance));
+  (greater(a.max, b.min, tolerance) && less(a.min, b.max, tolerance)) || (greater(b.max, a.min, tolerance) && less(b.min, a.max, tolerance));
 
 export const bounds2OverlapY = (a: Bounds2, b: Bounds2, tolerance = TOLERANCE): boolean =>
   (greater(a.max.y, b.min.y, tolerance) && less(a.min.y, b.max.y, tolerance)) ||
@@ -406,13 +387,9 @@ export const boundsXOverlapX = (a: Bounds2, b: Bounds2, tolerance = TOLERANCE): 
   (greater(b.max.x, a.min.x, tolerance) && less(b.min.x, a.max.x, tolerance));
 
 export const bounds2Contains = (a: Bounds2, b: Bounds2, tolerance = TOLERANCE): boolean =>
-  leq(a.min.x, b.min.x, tolerance) &&
-  geq(a.max.x, b.max.x, tolerance) &&
-  leq(a.min.y, b.min.y, tolerance) &&
-  geq(a.max.y, b.max.y, tolerance);
+  leq(a.min.x, b.min.x, tolerance) && geq(a.max.x, b.max.x, tolerance) && leq(a.min.y, b.min.y, tolerance) && geq(a.max.y, b.max.y, tolerance);
 
-export const bounds2Center = (bounds: Bounds2): Vec2 =>
-  vec2((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2);
+export const bounds2Center = (bounds: Bounds2): Vec2 => vec2((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2);
 
 export const bounds3Center = (bounds: Bounds3): Vec3 =>
   vec3((bounds.min.x + bounds.max.x) / 2, (bounds.min.y + bounds.max.y) / 2, (bounds.min.z + bounds.max.z) / 2);
@@ -762,11 +739,7 @@ export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
   const tx = 2 * (qy * vz - qz * vy);
   const ty = 2 * (qz * vx - qx * vz);
   const tz = 2 * (qx * vy - qy * vx);
-  return vec3(
-    vx + qw * tx + qy * tz - qz * ty + origin.x,
-    vy + qw * ty + qz * tx - qx * tz + origin.y,
-    vz + qw * tz + qx * ty - qy * tx + origin.z
-  );
+  return vec3(vx + qw * tx + qy * tz - qz * ty + origin.x, vy + qw * ty + qz * tx - qx * tz + origin.y, vz + qw * tz + qx * ty - qy * tx + origin.z);
 }
 
 export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => {
@@ -784,11 +757,7 @@ export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => {
   const tx = 2 * (qy * p.z - qz * p.y);
   const ty = 2 * (qz * p.x - qx * p.z);
   const tz = 2 * (qx * p.y - qy * p.x);
-  return vec3(
-    p.x + qw * tx + qy * tz - qz * ty + pos.x,
-    p.y + qw * ty + qz * tx - qx * tz + pos.y,
-    p.z + qw * tz + qx * ty - qy * tx + pos.z
-  );
+  return vec3(p.x + qw * tx + qy * tz - qz * ty + pos.x, p.y + qw * ty + qz * tx - qx * tz + pos.y, p.z + qw * tz + qx * ty - qy * tx + pos.z);
 };
 
 export function vec3BasisToEuler(direction: Vec3, normal: Vec3): Vec3 {
@@ -826,11 +795,7 @@ export function geoRot<T extends Box | Plane | Cone | Cylinder | Text | Group>(g
 export function geoTrans<T extends Box | Plane | Cone | Cylinder | Text | Group>(g: T, translate: Vec3): T {
   return { ...g, pos: vec3Add(g.pos, translate) };
 }
-export function geoTransRot<T extends Box | Plane | Cone | Cylinder | Text | Group | Tube>(
-  g: T,
-  origin: Vec3,
-  rot: Vec3
-): T {
+export function geoTransRot<T extends Box | Plane | Cone | Cylinder | Text | Group | Tube>(g: T, origin: Vec3, rot: Vec3): T {
   return { ...g, pos: vec3Rot(vec3Add(g.pos, origin), origin, rot), rot: vec3RotCombine(rot, g.rot ?? vec3Zero) };
 }
 
@@ -879,35 +844,18 @@ export const group = (
 ): Group => ({ meshes, pos, rot, data, groups, animation: animation! });
 
 export const boxMesh = (box: Box, material: Material): Mesh => ({ geometry: box, material });
-export const boxGeometry = (
-  size: Vec3,
-  pos: Vec3 = vec3Zero,
-  rot = vec3Zero,
-  holes: ReadonlyArray<Hole> = []
-): Box => ({
+export const boxGeometry = (size: Vec3, pos: Vec3 = vec3Zero, rot = vec3Zero, holes: ReadonlyArray<Hole> = []): Box => ({
   type: "Box",
   pos,
   rot,
   size,
   holes,
 });
-export const box = (
-  size: Vec3,
-  material: Material,
-  pos: Vec3 = vec3Zero,
-  rot = vec3Zero,
-  holes: ReadonlyArray<Hole> = []
-): BoxMesh => ({
+export const box = (size: Vec3, material: Material, pos: Vec3 = vec3Zero, rot = vec3Zero, holes: ReadonlyArray<Hole> = []): BoxMesh => ({
   geometry: { type: "Box", pos, rot, size, holes },
   material,
 });
-export const image = (
-  size: Vec3,
-  material: Material,
-  image: ImageMesh["image"],
-  pos: Vec3 = vec3Zero,
-  rot: Vec3 = vec3Zero
-): Mesh => ({
+export const image = (size: Vec3, material: Material, image: ImageMesh["image"], pos: Vec3 = vec3Zero, rot: Vec3 = vec3Zero): Mesh => ({
   material,
   geometry: {
     type: "Image",
@@ -921,13 +869,7 @@ export const image = (
 export const roundHole = (pos: Vec2, radius: number): Hole => ({ type: "RoundHole", pos, radius });
 export const squareHole = (pos: Vec2, size: Vec2): Hole => ({ type: "SquareHole", pos, size });
 
-export const plane = (
-  pos: Vec3,
-  size: Vec2,
-  material: Material,
-  rot = vec3Zero,
-  holes: ReadonlyArray<Hole> = []
-): PlaneMesh => ({
+export const plane = (pos: Vec3, size: Vec2, material: Material, rot = vec3Zero, holes: ReadonlyArray<Hole> = []): PlaneMesh => ({
   geometry: { type: "Plane", pos, rot, size, holes },
   material,
 });
@@ -976,12 +918,7 @@ export const shape = (
   holes: ReadonlyArray<Hole> = []
 ): ShapeMesh => ({ geometry: { type: "Shape", points, pos, rot, thickness, holes }, material });
 
-export const polygon = (
-  points: ReadonlyArray<Vec3>,
-  material: Material,
-  pos = vec3Zero,
-  rot = vec3Zero
-): PolygonMesh => ({
+export const polygon = (points: ReadonlyArray<Vec3>, material: Material, pos = vec3Zero, rot = vec3Zero): PolygonMesh => ({
   geometry: { type: "Polygon", points, pos, rot },
   material,
 });
@@ -1004,13 +941,7 @@ export const culledLineGeo = (start: Vec3, end: Vec3, normal: Vec3, thickness: n
   normal,
   thickness,
 });
-export const culledLine = (
-  start: Vec3,
-  end: Vec3,
-  normal: Vec3,
-  thickness: number,
-  material: Material
-): CulledLineMesh => ({
+export const culledLine = (start: Vec3, end: Vec3, normal: Vec3, thickness: number, material: Material): CulledLineMesh => ({
   geometry: { type: "CulledLine", start, end, normal, thickness },
   material,
 });
@@ -1062,15 +993,7 @@ export function dimensionMeshifyAlignedDimension(
   sceneRotation: Vec3,
   _viewRotation: Vec3,
   onCreateLine: (start: Vec3, end: Vec3, norm: Vec3, thickness: number, mat: Material) => void,
-  onCreateText: (
-    pos: Vec3,
-    measurement: string,
-    fontSize: number,
-    mat: Material,
-    rot: Vec3,
-    dir: Vec3,
-    normal: Vec3
-  ) => void,
+  onCreateText: (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3, dir: Vec3, normal: Vec3) => void,
   onCreatePolygon: (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material) => void,
   dimensionsMaterial?: Material
 ): void {
@@ -1164,11 +1087,7 @@ export function dimensionMeshifyAlignedDimension(
   }
 }
 
-export function dimensionConvertToTypeMesh(
-  dimension: Dimension,
-  sceneRotation: Vec3,
-  dimensionsMaterial?: Material
-): DimensionMesh {
+export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, dimensionsMaterial?: Material): DimensionMesh {
   if (dimensionIsOfTypeMesh(dimension)) {
     return dimension;
   }
@@ -1183,15 +1102,7 @@ export function dimensionConvertToTypeMesh(
   const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material): void => {
     meshes.push(polygon([p1, p2, p3], mat));
   };
-  dimensionMeshifyAlignedDimension(
-    dimension,
-    sceneRotation,
-    vec3Zero,
-    onCreateLine,
-    onCreateText,
-    onCreatePolygon,
-    dimensionsMaterial
-  );
+  dimensionMeshifyAlignedDimension(dimension, sceneRotation, vec3Zero, onCreateLine, onCreateText, onCreatePolygon, dimensionsMaterial);
 
   return {
     meshes,

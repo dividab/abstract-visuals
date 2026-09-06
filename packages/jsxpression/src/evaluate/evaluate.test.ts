@@ -68,9 +68,7 @@ describe("evaluate", () => {
     const emptySchema = createPermissiveSchema([]);
 
     expect(() => evaluate(compiled, emptySchema, { components: {} })).toThrow(EvaluationError);
-    expect(() => evaluate(compiled, emptySchema, { components: {} })).toThrow(
-      'component "UnknownComponent" is not allowed'
-    );
+    expect(() => evaluate(compiled, emptySchema, { components: {} })).toThrow('component "UnknownComponent" is not allowed');
   });
 
   it("should deep-freeze props to prevent mutations", () => {
@@ -261,13 +259,10 @@ describe("evaluate", () => {
       children: [],
     });
 
-    const result = compileAndEvaluate(
-      "<Test values={items.filter(x => x > 2).map(x => x * 2).join(', ')}>Text</Test>",
-      {
-        data: { items: [1, 2, 3, 4, 5] },
-        components: { Test: TestComponent },
-      }
-    );
+    const result = compileAndEvaluate("<Test values={items.filter(x => x > 2).map(x => x * 2).join(', ')}>Text</Test>", {
+      data: { items: [1, 2, 3, 4, 5] },
+      components: { Test: TestComponent },
+    });
 
     expect(result.props.values).toBe("6, 8, 10");
   });
@@ -380,13 +375,10 @@ describe("evaluate", () => {
         children: [],
       });
 
-      const result = compileAndEvaluate(
-        "const filtered = items.filter(x => x > 2);\nreturn <Test count={filtered.length}>Text</Test>",
-        {
-          data: { items: [1, 2, 3, 4, 5] },
-          components: { Test: TestComponent },
-        }
-      );
+      const result = compileAndEvaluate("const filtered = items.filter(x => x > 2);\nreturn <Test count={filtered.length}>Text</Test>", {
+        data: { items: [1, 2, 3, 4, 5] },
+        components: { Test: TestComponent },
+      });
 
       expect(result.props.count).toBe(3);
     });
@@ -400,12 +392,9 @@ describe("evaluate", () => {
         children: props.children,
       });
 
-      const result = compileAndEvaluate(
-        'function Badge({ label }) {\n  return <Span>{label}</Span>\n}\nreturn <Badge label="hello" />',
-        {
-          components: { Span },
-        }
-      );
+      const result = compileAndEvaluate('function Badge({ label }) {\n  return <Span>{label}</Span>\n}\nreturn <Badge label="hello" />', {
+        components: { Span },
+      });
 
       expect(result.type).toBe("Span");
       expect(result.children).toEqual(["hello"]);
@@ -486,12 +475,9 @@ describe("evaluate", () => {
         children: props.children,
       });
 
-      const result = compileAndEvaluate(
-        "function Badge({ label = 'default' }) {\n  return <Span>{label}</Span>\n}\nreturn <Badge />",
-        {
-          components: { Span },
-        }
-      );
+      const result = compileAndEvaluate("function Badge({ label = 'default' }) {\n  return <Span>{label}</Span>\n}\nreturn <Badge />", {
+        components: { Span },
+      });
 
       expect(result.children).toEqual(["default"]);
     });
@@ -503,13 +489,10 @@ describe("evaluate", () => {
         children: props.children,
       });
 
-      const result = compileAndEvaluate(
-        "function Greeting() {\n  return <Span>Hello {name}</Span>\n}\nreturn <Greeting />",
-        {
-          data: { name: "World" },
-          components: { Span },
-        }
-      );
+      const result = compileAndEvaluate("function Greeting() {\n  return <Span>Hello {name}</Span>\n}\nreturn <Greeting />", {
+        data: { name: "World" },
+        components: { Span },
+      });
 
       expect(result.children).toEqual(["Hello", "World"]);
     });

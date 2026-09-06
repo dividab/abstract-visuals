@@ -47,21 +47,7 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
       type: "url",
       url: `${DXF_DATA_URL}${circleDxf}`,
     }),
-    createText(
-      createPoint(200, 200),
-      "Test",
-      "Helvetica",
-      12,
-      magenta,
-      "normal",
-      0,
-      "center",
-      "uniform",
-      "uniform",
-      0,
-      black,
-      false
-    ),
+    createText(createPoint(200, 200), "Test", "Helvetica", 12, magenta, "normal", 0, "center", "uniform", "uniform", 0, black, false),
   ];
   const image = createAbstractImage(createPoint(0, 0), createSize(400, 400), white, components);
   const svg = createSVG(image);

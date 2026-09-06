@@ -21,10 +21,5 @@ export function polygon(
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
     ? [opts.gray_scale ? gray : color, opts.background, opts.stroke_thickness]
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color, 0];
-  return [
-    zElem(
-      svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness),
-      vec3ZMean(...rotatedPoints)
-    ),
-  ];
+  return [zElem(svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness), vec3ZMean(...rotatedPoints))];
 }

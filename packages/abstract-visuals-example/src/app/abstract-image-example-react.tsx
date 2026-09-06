@@ -38,13 +38,7 @@ export function AbstractImageExampleReact(): React.JSX.Element {
     createLine(createPoint(25, 100), createPoint(280, 100), red, 2, undefined, createDashStyle([10, 5], 5)),
     createLine(createPoint(25, 25), createPoint(80, 60), black, 2),
     createRectangle(createPoint(10, 50), createPoint(40, 80), blue, 2, fromArgb(100, 0, 0, 0), "rect"),
-    createBinaryImage(
-      createPoint(150, 100),
-      createPoint(170, 130),
-      "svg",
-      { type: "bytes", bytes: subData },
-      "subImage"
-    ),
+    createBinaryImage(createPoint(150, 100), createPoint(170, 130), "svg", { type: "bytes", bytes: subData }, "subImage"),
     createBinaryImage(
       createPoint(50, 100),
       createPoint(70, 130),

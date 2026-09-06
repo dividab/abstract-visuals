@@ -3,10 +3,7 @@ import type { Font } from "../../abstract-document/primitives/font.js";
 import type { TextFontWeight } from "../../abstract-document/styles/text-style.js";
 import { getResources } from "../shared/get_resources.js";
 
-export function registerFonts(
-  registerFont: (fontName: string, fontSource: AD.Font.FontSource) => void,
-  document: AD.AbstractDoc.AbstractDoc
-): void {
+export function registerFonts(registerFont: (fontName: string, fontSource: AD.Font.FontSource) => void, document: AD.AbstractDoc.AbstractDoc): void {
   const resources = getResources(document);
   for (const [fontName, font] of Object.entries(resources.fonts ?? {})) {
     // Required
@@ -66,11 +63,7 @@ export function getFontStyleName(attributes: Record<string, string>): keyof Font
   return `${fontWeight === "mediumBold" ? "medium" : fontWeight}${italic ? "Italic" : ""}`;
 }
 
-export function getFontName(
-  fontFamily: string | undefined,
-  fontWeight: TextFontWeight,
-  italic: boolean | undefined
-): string {
+export function getFontName(fontFamily: string | undefined, fontWeight: TextFontWeight, italic: boolean | undefined): string {
   const name = fontFamily || "Helvetica";
   if (fontWeight === "light" && italic) {
     return name + "-LightOblique";

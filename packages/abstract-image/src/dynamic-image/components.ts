@@ -45,13 +45,7 @@ export const createComponents = (mutableImageUrls: Array<string>): Record<string
     const y = props.y ?? 0;
     const width = props.width ?? 100;
     const height = props.height ?? 100;
-    return createBinaryImage(
-      { x, y },
-      { x: x + width, y: y + height },
-      "png",
-      { type: "url", url: props.src },
-      undefined
-    );
+    return createBinaryImage({ x, y }, { x: x + width, y: y + height }, "png", { type: "url", url: props.src }, undefined);
   },
   Rectangle: (props): Rectangle => {
     const x = props.x ?? 0;
@@ -95,13 +89,7 @@ export const createComponents = (mutableImageUrls: Array<string>): Record<string
     );
   },
   Polyline: (props): PolyLine => {
-    return createPolyLine(
-      parsePointsString(props.points),
-      fromString2(props.stroke ?? "#000", black),
-      props.strokeWidth ?? 1,
-      undefined,
-      solidLine
-    );
+    return createPolyLine(parsePointsString(props.points), fromString2(props.stroke ?? "#000", black), props.strokeWidth ?? 1, undefined, solidLine);
   },
   Polygon: (props): Polygon => {
     return createPolygon(
@@ -116,9 +104,7 @@ export const createComponents = (mutableImageUrls: Array<string>): Record<string
   Text: (props): Text => {
     const fontWeight = mapFontWeight(props.fontWeight);
     const children = props.children ?? [];
-    const filteredChildren = Array.isArray(children)
-      ? children.flat().filter((c: any) => c !== null && c !== undefined)
-      : [];
+    const filteredChildren = Array.isArray(children) ? children.flat().filter((c: any) => c !== null && c !== undefined) : [];
     const text = filteredChildren.length > 0 ? String(filteredChildren[0]) : "";
     return createText(
       { x: props.x ?? 0, y: props.y ?? 0 },

@@ -47,11 +47,7 @@ export function AbstractSheetExample(): React.JSX.Element {
           >
             csv
           </button>
-          <button
-            onClick={() => FileSaver.saveAs(new Blob([toXlsx(as)], { type: "text/plain" }), `abstract-visuals.xlsx`)}
-          >
-            xlsx
-          </button>
+          <button onClick={() => FileSaver.saveAs(new Blob([toXlsx(as)], { type: "text/plain" }), `abstract-visuals.xlsx`)}>xlsx</button>
         </div>
       </div>
       <ToReact abstractSheet={as} />

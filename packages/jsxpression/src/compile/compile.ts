@@ -210,10 +210,7 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
       return `${node.operator}${emitExpression(node.argument, localFunctions)}`;
     case "BinaryExpression":
     case "LogicalExpression":
-      return `(${emitExpression(node.left, localFunctions)} ${node.operator} ${emitExpression(
-        node.right,
-        localFunctions
-      )})`;
+      return `(${emitExpression(node.left, localFunctions)} ${node.operator} ${emitExpression(node.right, localFunctions)})`;
     case "ConditionalExpression":
       return `(${emitExpression(node.test, localFunctions)}?${emitExpression(
         node.consequent,
@@ -266,9 +263,7 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
       return `${callee}(${args})`;
     }
     case "ArrowFunctionExpression": {
-      const params = node.params
-        .map((param) => emitExpression(param as CompilableExpression, localFunctions))
-        .join(", ");
+      const params = node.params.map((param) => emitExpression(param as CompilableExpression, localFunctions)).join(", ");
       const body = emitExpression(node.body as CompilableExpression, localFunctions);
       return `(${params}) => ${body}`;
     }
@@ -343,10 +338,7 @@ function emitParam(param: Pattern, localFunctions: Set<string>): string {
       return `{ ${props.join(", ")} }`;
     }
     case "AssignmentPattern":
-      return `${emitParam((param as any).left, localFunctions)} = ${emitExpression(
-        (param as any).right as CompilableExpression,
-        localFunctions
-      )}`;
+      return `${emitParam((param as any).left, localFunctions)} = ${emitExpression((param as any).right as CompilableExpression, localFunctions)}`;
     case "RestElement":
       return `...${emitParam((param as any).argument, localFunctions)}`;
     default:

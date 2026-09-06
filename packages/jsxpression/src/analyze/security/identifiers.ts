@@ -37,14 +37,7 @@ export function analyzeIdentifiers(ast: Program, schema: Schema, validationConte
       }
 
       const dataKeys = Object.keys(schema.data ?? {});
-      const allowedRoots = [
-        "props",
-        ...dataKeys,
-        ...getBuiltinGlobals(),
-        ...constNames,
-        ...functionNames,
-        ...schemaFunctionNames,
-      ];
+      const allowedRoots = ["props", ...dataKeys, ...getBuiltinGlobals(), ...constNames, ...functionNames, ...schemaFunctionNames];
 
       if (allowedRoots.includes(name)) {
         return;
@@ -53,10 +46,7 @@ export function analyzeIdentifiers(ast: Program, schema: Schema, validationConte
       const scopeParent = findScopeParent(node, ast);
 
       if (scopeParent) {
-        const params =
-          scopeParent.type === "ArrowFunctionExpression"
-            ? arrowParamScopes.get(scopeParent)
-            : functionParamScopes.get(scopeParent);
+        const params = scopeParent.type === "ArrowFunctionExpression" ? arrowParamScopes.get(scopeParent) : functionParamScopes.get(scopeParent);
         if (params?.has(name)) {
           return;
         }

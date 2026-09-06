@@ -32,10 +32,5 @@ import { declareComponentTypes, declareDataTypes, declareFunctionTypes } from ".
  * @returns Complete TypeScript definition file as a string
  */
 export function generateTypeScriptDefinitions(schema: Schema): string {
-  return [
-    declareBuiltinTypes(),
-    declareComponentTypes(schema),
-    declareDataTypes(schema),
-    declareFunctionTypes(schema),
-  ].join("\n");
+  return [declareBuiltinTypes(), declareComponentTypes(schema), declareDataTypes(schema), declareFunctionTypes(schema)].join("\n");
 }

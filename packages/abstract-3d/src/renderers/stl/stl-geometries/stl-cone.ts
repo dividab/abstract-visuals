@@ -22,8 +22,7 @@ export function stlCone(c: Cone, _m: Material, sides: number, parentPos: Vec3, p
 
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
-      stlString +=
-        stlPlaneOfVertices(botPos, prevBot, currBot, currBot) + stlPlaneOfVertices(currBot, prevBot, topPos, topPos);
+      stlString += stlPlaneOfVertices(botPos, prevBot, currBot, currBot) + stlPlaneOfVertices(currBot, prevBot, topPos, topPos);
     }
     currentAngle += angleStep;
   }

@@ -8,11 +8,7 @@ export const testSingleHyperLinkNoUnderline: ExportTestDef = {
     <AbstractDoc>
       <Section>
         <Paragraph>
-          <HyperLink
-            style={AD.AbstractDoc.TextStyle.create({ underline: false })}
-            text={"Hello"}
-            target="https://divid.se"
-          />
+          <HyperLink style={AD.AbstractDoc.TextStyle.create({ underline: false })} text={"Hello"} target="https://divid.se" />
         </Paragraph>
       </Section>
     </AbstractDoc>

@@ -8,9 +8,7 @@ import * as AbstractDocXml from "../../../abstract-document/src/abstract-documen
 import { AbstractDoc, AbstractDocDocx, AbstractDocPdf } from "../../../abstract-document/src/index.js";
 
 export function AbstractDocumentXMLExample2(): React.JSX.Element {
-  const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(
-    undefined
-  );
+  const [pdf, setPdf] = React.useState<{ type: "Ok"; url: string } | { type: "Err"; error: string } | undefined>(undefined);
   const [data, setData] = React.useState("{}");
   const [template, setTemplate] = React.useState(`<AbstractDoc>
     <StyleNames>
@@ -28,29 +26,17 @@ export function AbstractDocumentXMLExample2(): React.JSX.Element {
     <div style={{ display: "flex", margin: "10px 0 0 10px", gap: "10px", width: "100%", height: "calc(100% - 40px)" }}>
       <div style={{ display: "flex", flexDirection: "column", width: "25%", height: "100%", gap: "10px" }}>
         <span>Data</span>
-        <textarea
-          style={{ width: "100%", height: "calc(100% - 30px)" }}
-          value={data}
-          onChange={(e) => setData(e.currentTarget.value)}
-        />
+        <textarea style={{ width: "100%", height: "calc(100% - 30px)" }} value={data} onChange={(e) => setData(e.currentTarget.value)} />
       </div>
       <div style={{ display: "flex", flexDirection: "column", width: "43%", height: "100%", gap: "10px" }}>
         <span>Template</span>
         <div style={{ display: "flex", flexDirection: "row", width: "100%", height: "100%", gap: "10px" }}>
-          <textarea
-            style={{ width: "100%", height: "calc(100% - 30px)" }}
-            value={template}
-            onChange={(e) => setTemplate(e.currentTarget.value)}
-          />
+          <textarea style={{ width: "100%", height: "calc(100% - 30px)" }} value={template} onChange={(e) => setTemplate(e.currentTarget.value)} />
         </div>
 
         <span>Partial ("partial")</span>
         <div style={{ display: "flex", flexDirection: "row", width: "100%", height: "100%", gap: "10px" }}>
-          <textarea
-            style={{ width: "100%", height: "calc(100% - 30px)" }}
-            value={partial}
-            onChange={(e) => setPartial(e.currentTarget.value)}
-          />
+          <textarea style={{ width: "100%", height: "calc(100% - 30px)" }} value={partial} onChange={(e) => setPartial(e.currentTarget.value)} />
         </div>
       </div>
       <div
@@ -91,11 +77,7 @@ export function AbstractDocumentXMLExample2(): React.JSX.Element {
         {pdf?.type === "Err" ? (
           <h3>{pdf.error}</h3>
         ) : (
-          <embed
-            src={pdf?.type === "Ok" ? pdf.url : undefined}
-            type="application/pdf"
-            style={{ width: "100%", height: "calc(100% - 30px)" }}
-          />
+          <embed src={pdf?.type === "Ok" ? pdf.url : undefined} type="application/pdf" style={{ width: "100%", height: "calc(100% - 30px)" }} />
         )}
       </div>
     </div>

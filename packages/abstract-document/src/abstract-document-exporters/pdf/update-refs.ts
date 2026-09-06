@@ -30,11 +30,7 @@ function updateRefsInElements(
   return updatedElements;
 }
 
-function updateRefsInElement(
-  element: AD.SectionElement.SectionElement,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.SectionElement.SectionElement {
+function updateRefsInElement(element: AD.SectionElement.SectionElement, page: Page, pages: ReadonlyArray<Page>): AD.SectionElement.SectionElement {
   switch (element.type) {
     case "Paragraph":
       return updateRefsInParagraph(element, page, pages);
@@ -47,11 +43,7 @@ function updateRefsInElement(
   }
 }
 
-function updateRefsInParagraph(
-  paragraph: AD.Paragraph.Paragraph,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.SectionElement.SectionElement {
+function updateRefsInParagraph(paragraph: AD.Paragraph.Paragraph, page: Page, pages: ReadonlyArray<Page>): AD.SectionElement.SectionElement {
   const updatedChildren = paragraph.children.map((atom) => updateRefInAtom(atom, page, pages));
   return {
     ...paragraph,
@@ -59,11 +51,7 @@ function updateRefsInParagraph(
   };
 }
 
-function updateRefsInTable(
-  table: AD.Table.Table,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.SectionElement.SectionElement {
+function updateRefsInTable(table: AD.Table.Table, page: Page, pages: ReadonlyArray<Page>): AD.SectionElement.SectionElement {
   const updatedChildren = table.children.map((row) => updateRefsInTableRow(row, page, pages));
   return {
     ...table,
@@ -79,11 +67,7 @@ function updateRefsInTableRow(row: AD.TableRow.TableRow, page: Page, pages: Read
   };
 }
 
-function updateRefsInTableCell(
-  cell: AD.TableCell.TableCell,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.TableCell.TableCell {
+function updateRefsInTableCell(cell: AD.TableCell.TableCell, page: Page, pages: ReadonlyArray<Page>): AD.TableCell.TableCell {
   const updatedChildren = cell.children.map((element) => updateRefsInElement(element, page, pages));
   return {
     ...cell,
@@ -91,11 +75,7 @@ function updateRefsInTableCell(
   };
 }
 
-function updateRefsInGroup(
-  group: AD.Group.Group,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.SectionElement.SectionElement {
+function updateRefsInGroup(group: AD.Group.Group, page: Page, pages: ReadonlyArray<Page>): AD.SectionElement.SectionElement {
   const updatedChildren = group.children.map((element) => updateRefsInElement(element, page, pages));
   return {
     ...group,
@@ -111,11 +91,7 @@ function updateRefInAtom(atom: AD.Atom.Atom, page: Page, pages: ReadonlyArray<Pa
   }
 }
 
-function updateRefInTextField(
-  textField: AD.TextField.TextField,
-  page: Page,
-  pages: ReadonlyArray<Page>
-): AD.TextField.TextField {
+function updateRefInTextField(textField: AD.TextField.TextField, page: Page, pages: ReadonlyArray<Page>): AD.TextField.TextField {
   switch (textField.fieldType) {
     case "PageNumber":
       return {

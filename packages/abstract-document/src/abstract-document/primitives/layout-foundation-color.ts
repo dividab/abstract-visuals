@@ -23,10 +23,7 @@ export function orDefault(colorLayout: LayoutFoundationColor | undefined): Layou
   };
 }
 
-export function overrideWith(
-  overrider: LayoutFoundationColor | undefined,
-  toOverride: LayoutFoundationColor | undefined
-): LayoutFoundationColor {
+export function overrideWith(overrider: LayoutFoundationColor | undefined, toOverride: LayoutFoundationColor | undefined): LayoutFoundationColor {
   const a = overrider;
   const b = toOverride;
   return create({

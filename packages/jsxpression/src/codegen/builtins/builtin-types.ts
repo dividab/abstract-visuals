@@ -1,11 +1,5 @@
 import { getBuiltins } from "../../builtins.js";
-import type {
-  BuiltinSchema,
-  BuiltinMethodSchema,
-  BuiltinParamSchema,
-  BuiltinPropertySchema,
-  BuiltinCallbackParamSchema,
-} from "../../builtins.js";
+import type { BuiltinSchema, BuiltinMethodSchema, BuiltinParamSchema, BuiltinPropertySchema, BuiltinCallbackParamSchema } from "../../builtins.js";
 
 function generateJSDoc(description?: string, indent: string = ""): string {
   if (!description) return "";

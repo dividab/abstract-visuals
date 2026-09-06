@@ -24,21 +24,7 @@ export function AbstractImageExampleSvg(): React.JSX.Element {
     createLine(createPoint(25, 25), createPoint(80, 60), black, 2),
     createRectangle(createPoint(10, 50), createPoint(40, 80), blue, 2, fromArgb(100, 0, 0, 0)),
     createRectangle(createPoint(60, 50), createPoint(90, 80), blue, 2, transparent),
-    createText(
-      createPoint(60, 50),
-      "Hej<sub>12</sub>",
-      "Helvetica",
-      12,
-      black,
-      "normal",
-      0,
-      "center",
-      "uniform",
-      "uniform",
-      0,
-      black,
-      false
-    ),
+    createText(createPoint(60, 50), "Hej<sub>12</sub>", "Helvetica", 12, black, "normal", 0, "center", "uniform", "uniform", 0, black, false),
   ];
   const image = createAbstractImage(createPoint(0, 0), createSize(400, 400), white, components);
   const svg = createSVG(image);

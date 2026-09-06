@@ -495,11 +495,7 @@ export function AbstractDocumentExample(): React.JSX.Element {
           <AbstractDocJsx.TextRun text="A nice image" />
         </AbstractDocJsx.Paragraph>
         <AbstractDocJsx.Paragraph>
-          <AbstractDocJsx.Image
-            width={image.abstractImage.size.width}
-            height={image.abstractImage.size.height}
-            imageResource={image}
-          />
+          <AbstractDocJsx.Image width={image.abstractImage.size.width} height={image.abstractImage.size.height} imageResource={image} />
         </AbstractDocJsx.Paragraph>
       </AbstractDocJsx.Section>
       <AbstractDocJsx.Section page={page} id="chapter3">

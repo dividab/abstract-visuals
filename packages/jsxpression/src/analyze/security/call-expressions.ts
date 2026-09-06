@@ -7,11 +7,7 @@ import { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
 
-export function analyzeCallExpressions(
-  ast: Program,
-  schema: Schema,
-  validationContext: ValidationContext
-): AnalysisReport {
+export function analyzeCallExpressions(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();
 
   const localFunctionNames = new Set<string>();
@@ -40,21 +36,12 @@ export function analyzeCallExpressions(
       }
 
       if (callee.type === "Identifier") {
-        if (
-          localFunctionNames.has(callee.name) ||
-          schemaFunctionNames.has(callee.name) ||
-          builtinGlobals.has(callee.name)
-        ) {
+        if (localFunctionNames.has(callee.name) || schemaFunctionNames.has(callee.name) || builtinGlobals.has(callee.name)) {
           return;
         }
       }
 
-      analysisReport.addIssue(
-        "DIRECT_CALL_NOT_ALLOWED",
-        "only member calls allowed",
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
+      analysisReport.addIssue("DIRECT_CALL_NOT_ALLOWED", "only member calls allowed", getNodeRange(node), validationContext.getSnapshot());
     },
   });
 

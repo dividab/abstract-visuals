@@ -65,8 +65,8 @@ export function exportToStream(blobStream: NodeJS.WritableStream, doc: AD.Abstra
 }
 
 /**
- * On the client side the stream can be a BlobStream from the blob-stream package. On the server-side the stream can be
- * a file stream from the fs package.
+ * On the client side the stream can be a BlobStream from the blob-stream package. On the server-side the stream can be a file stream from the fs
+ * package.
  *
  * @param blobStream
  * @param doc
@@ -155,8 +155,7 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
           //DOC JS does the orientation after the width and height are set
           width: AD.PageStyle.getPaperWidth(section.page.style.paperSize) * abstractDocPixelToDocxDXARatio,
           height: AD.PageStyle.getPaperHeight(section.page.style.paperSize) * abstractDocPixelToDocxDXARatio,
-          orientation:
-            section.page.style.orientation === "Landscape" ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT,
+          orientation: section.page.style.orientation === "Landscape" ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT,
         },
         margin: {
           bottom: pageContentMargins.bottom * abstractDocPixelToDocxDXARatio,
@@ -192,10 +191,7 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
   };
 }
 
-function renderHyperLink(
-  hyperLink: AD.HyperLink.HyperLink,
-  style: AD.TextStyle.TextStyle
-): InternalHyperlink | ExternalHyperlink {
+function renderHyperLink(hyperLink: AD.HyperLink.HyperLink, style: AD.TextStyle.TextStyle): InternalHyperlink | ExternalHyperlink {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * 2;
   const textRun = new TextRun({
     text: hyperLink.text,
@@ -239,9 +235,7 @@ function renderSectionElement(
       return [...renderGroup(element, parentResources, contentAvailableWidth)];
     case "Table":
       const table = renderTable(element, resources, contentAvailableWidth, keepNext);
-      return table
-        ? [table, new Paragraph({ keepNext: keepNext, children: [new TextRun({ text: ".", size: 0.000001 })] })]
-        : [];
+      return table ? [table, new Paragraph({ keepNext: keepNext, children: [new TextRun({ text: ".", size: 0.000001 })] })] : [];
     case "PageBreak":
       return [
         new Paragraph({
@@ -253,29 +247,15 @@ function renderSectionElement(
   }
 }
 
-function renderTable(
-  table: AD.Table.Table,
-  resources: AD.Resources.Resources,
-  contentAvailableWidth: number,
-  keepNext: boolean
-): Table | undefined {
-  const style = AD.Resources.getStyle(
-    undefined,
-    table.style,
-    "TableStyle",
-    table.styleName,
-    resources
-  ) as AD.TableStyle.TableStyle;
+function renderTable(table: AD.Table.Table, resources: AD.Resources.Resources, contentAvailableWidth: number, keepNext: boolean): Table | undefined {
+  const style = AD.Resources.getStyle(undefined, table.style, "TableStyle", table.styleName, resources) as AD.TableStyle.TableStyle;
   const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
 
   if (table.children.length === 0) {
     return undefined;
   }
 
-  const tableWidthWithoutInfinity = table.columnWidths.reduce(
-    (sofar, c) => (Number.isFinite(c) ? sofar + c : sofar),
-    0
-  );
+  const tableWidthWithoutInfinity = table.columnWidths.reduce((sofar, c) => (Number.isFinite(c) ? sofar + c : sofar), 0);
   const amountOfInfinity = table.columnWidths.reduce((sofar, c) => (!Number.isFinite(c) ? sofar + 1 : sofar), 0);
   const infinityCellWidth = (contentAvailableWidth - tableWidthWithoutInfinity) / amountOfInfinity;
   const columnWidths = table.columnWidths.map((w) =>
@@ -284,12 +264,7 @@ function renderTable(
 
   return new Table({
     layout: "fixed",
-    alignment:
-      style.alignment === "Left"
-        ? AlignmentType.LEFT
-        : style.alignment === "Right"
-          ? AlignmentType.RIGHT
-          : AlignmentType.CENTER,
+    alignment: style.alignment === "Left" ? AlignmentType.LEFT : style.alignment === "Right" ? AlignmentType.RIGHT : AlignmentType.CENTER,
     margins: {
       top: styleMargins.top * abstractDocPixelToDocxDXARatio,
       bottom: styleMargins.bottom * abstractDocPixelToDocxDXARatio,
@@ -332,9 +307,7 @@ function renderTable(
         style: BorderStyle.NONE,
       },
     },
-    rows: table.headerRows
-      .concat(table.children)
-      .map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
+    rows: table.headerRows.concat(table.children).map((c) => renderRow(c, resources, style.cellStyle, columnWidths, keepNext)),
   });
 }
 
@@ -374,13 +347,7 @@ function renderCell(
 ): TableCell {
   const abstractDocPxCellWidth = width / abstractDocPixelToDocxDXARatio;
 
-  const style = AD.Resources.getStyle(
-    tableCellStyle,
-    cell.style,
-    "TableCellStyle",
-    cell.styleName,
-    resources
-  ) as AD.TableCellStyle.TableCellStyle;
+  const style = AD.Resources.getStyle(tableCellStyle, cell.style, "TableCellStyle", cell.styleName, resources) as AD.TableCellStyle.TableCellStyle;
 
   const stylePadding = AD.LayoutFoundation.orDefault(style.padding);
   const styleBorders = AD.LayoutFoundation.orDefault(style.borders);
@@ -473,18 +440,8 @@ function renderAtom(
   }
 }
 
-function renderTextField(
-  resources: AD.Resources.Resources,
-  textStyle: AD.TextStyle.TextStyle,
-  textField: AD.TextField.TextField
-): TextRun {
-  const style = AD.Resources.getStyle(
-    textStyle,
-    textField.style,
-    "TextStyle",
-    textField.styleName,
-    resources
-  ) as AD.TextStyle.TextStyle;
+function renderTextField(resources: AD.Resources.Resources, textStyle: AD.TextStyle.TextStyle, textField: AD.TextField.TextField): TextRun {
+  const style = AD.Resources.getStyle(textStyle, textField.style, "TextStyle", textField.styleName, resources) as AD.TextStyle.TextStyle;
   switch (textField.fieldType) {
     case "Date":
       return renderText(style, new Date(Date.now()).toDateString());
@@ -497,11 +454,7 @@ function renderTextField(
   }
 }
 
-function renderTextRun(
-  resources: AD.Resources.Resources,
-  textStyle: AD.TextStyle.TextStyle,
-  textRun: AD.TextRun.TextRun
-): TextRun {
+function renderTextRun(resources: AD.Resources.Resources, textStyle: AD.TextStyle.TextStyle, textRun: AD.TextRun.TextRun): TextRun {
   const style = AD.Resources.getNestedStyle(
     textStyle,
     textRun.style,
@@ -569,11 +522,7 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
   });
 }
 
-function renderGroup(
-  group: AD.Group.Group,
-  resources: AD.Resources.Resources,
-  availabelWidth: number
-): Array<Paragraph | Table> {
+function renderGroup(group: AD.Group.Group, resources: AD.Resources.Resources, availabelWidth: number): Array<Paragraph | Table> {
   let sofar = Array<Paragraph | Table>();
   let keepNext = true;
   for (let index = 0; index < group.children.length; index++) {
@@ -585,11 +534,7 @@ function renderGroup(
   return sofar;
 }
 
-function renderParagraph(
-  paragraph: AD.Paragraph.Paragraph,
-  resources: AD.Resources.Resources,
-  keepNext: boolean
-): Paragraph {
+function renderParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Resources.Resources, keepNext: boolean): Paragraph {
   const style = AD.Resources.getStyle(
     undefined,
     paragraph.style,
@@ -603,11 +548,7 @@ function renderParagraph(
     keepNext: keepNext,
     alignment:
       (style.alignment &&
-        (style.alignment === "Center"
-          ? AlignmentType.CENTER
-          : style.alignment === "End"
-            ? AlignmentType.END
-            : AlignmentType.START)) ||
+        (style.alignment === "Center" ? AlignmentType.CENTER : style.alignment === "End" ? AlignmentType.END : AlignmentType.START)) ||
       undefined,
 
     spacing: {

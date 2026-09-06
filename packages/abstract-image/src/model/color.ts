@@ -10,11 +10,7 @@ export function fromArgb(a: number, r: number, g: number, b: number): Color {
 }
 
 export function toString6Hex(color: Color): string {
-  return (
-    ("00" + color.r.toString(16)).substr(-2) +
-    ("00" + color.g.toString(16)).substr(-2) +
-    ("00" + color.b.toString(16)).substr(-2)
-  );
+  return ("00" + color.r.toString(16)).substr(-2) + ("00" + color.g.toString(16)).substr(-2) + ("00" + color.b.toString(16)).substr(-2);
 }
 
 export function fromString(s: string): Color | undefined {
@@ -37,12 +33,7 @@ export function fromString(s: string): Color | undefined {
 export function fromString2(s: string, def?: Color): Color {
   if (s.startsWith("#")) {
     if (s.length === 9) {
-      return fromArgb(
-        parseInt(s.slice(1, 3), 16),
-        parseInt(s.slice(3, 5), 16),
-        parseInt(s.slice(5, 7), 16),
-        parseInt(s.slice(7, 9), 16)
-      );
+      return fromArgb(parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16), parseInt(s.slice(7, 9), 16));
     }
     return fromArgb(255, parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16));
   }

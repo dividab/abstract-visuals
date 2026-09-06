@@ -103,8 +103,8 @@ type DiffResult = {
 };
 
 /**
- * It can be very handy to compare with wildcards if for exammple you are not interested in all the data. You can put an *
- * in the first (lhs) xml file. The result of this compare will be no differences.
+ * It can be very handy to compare with wildcards if for exammple you are not interested in all the data. You can put an * in the first (lhs) xml
+ * file. The result of this compare will be no differences.
  */
 async function diffXmlStrings(lhs: string, rhs: string): Promise<ReadonlyArray<DiffResult>> {
   return new Promise((resolve) => {

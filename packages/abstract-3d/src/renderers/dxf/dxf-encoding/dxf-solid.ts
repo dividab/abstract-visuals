@@ -2,15 +2,7 @@ import type { Vec3 } from "../../../abstract-3d.js";
 import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 
-export const dxfEncSolid = (
-  vec1: Vec3,
-  vec2: Vec3,
-  vec3: Vec3,
-  vec4: Vec3,
-  col: DxfColor,
-  handleRef: Handle,
-  blockRefHandle?: string
-): string => `  0
+export const dxfEncSolid = (vec1: Vec3, vec2: Vec3, vec3: Vec3, vec4: Vec3, col: DxfColor, handleRef: Handle, blockRefHandle?: string): string => `  0
 SOLID
 5
 ${dxfHandleNext(handleRef)}

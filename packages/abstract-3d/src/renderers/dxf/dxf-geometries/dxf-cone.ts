@@ -1,23 +1,8 @@
-import {
-  type Cone,
-  type Material,
-  type Vec3,
-  vec3,
-  vec3RotCombine,
-  vec3TransRot,
-  vec3Zero,
-} from "../../../abstract-3d.js";
+import { type Cone, type Material, type Vec3, vec3, vec3RotCombine, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
 
-export function dxfCone(
-  c: Cone,
-  m: Material,
-  sides: number,
-  parentPos: Vec3,
-  parentRot: Vec3,
-  handleRef: Handle
-): string {
+export function dxfCone(c: Cone, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   let dxfString = "";
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
@@ -37,8 +22,7 @@ export function dxfCone(
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
       dxfString +=
-        dxfEnc3DFaceTriangle(botPos, prevBot, currBot, m.normal, handleRef) +
-        dxfEnc3DFaceTriangle(currBot, prevBot, topPos, m.normal, handleRef);
+        dxfEnc3DFaceTriangle(botPos, prevBot, currBot, m.normal, handleRef) + dxfEnc3DFaceTriangle(currBot, prevBot, topPos, m.normal, handleRef);
     }
     currentAngle += angleStep;
   }

@@ -9,8 +9,5 @@ import { analyzeMethodCalls } from "./method-calls.js";
 export function analyzeData(ast: Program, schema: Schema): AnalysisReport {
   const validationContext = new ValidationContext();
 
-  return new AnalysisReport().merge(
-    analyzeMethodCalls(ast, schema, validationContext),
-    analyzeDataAccess(ast, schema, validationContext)
-  );
+  return new AnalysisReport().merge(analyzeMethodCalls(ast, schema, validationContext), analyzeDataAccess(ast, schema, validationContext));
 }

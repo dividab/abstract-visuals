@@ -157,14 +157,7 @@ export function getLinearTicks(desiredTicks: number, min: number, max: number): 
   return best ? range(0, best.ticks).map((l) => ({ value: best.min + best.step * l })) : [];
 }
 
-const logarithmicAlternatives = [
-  [0],
-  [0, 5],
-  [0, 1, 2, 5],
-  [0, 1, 2, 3, 5],
-  [0, 1, 2, 3, 5, 8],
-  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-];
+const logarithmicAlternatives = [[0], [0, 5], [0, 1, 2, 5], [0, 1, 2, 3, 5], [0, 1, 2, 3, 5, 8], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]];
 
 export function getLogarithmicTicks(desiredTicks: number, min: number, max: number): ReadonlyArray<DiscreteAxisPoint> {
   const minPow = Math.floor(Math.log10(min)) - 1;
@@ -178,9 +171,7 @@ export function getLogarithmicTicks(desiredTicks: number, min: number, max: numb
     }, []);
     return altLines.filter((l) => l.value >= min && l.value <= max);
   });
-  return alternatives.reduce((prev, alt) =>
-    Math.abs(alt.length - desiredTicks) < Math.abs(prev.length - desiredTicks) ? alt : prev
-  );
+  return alternatives.reduce((prev, alt) => (Math.abs(alt.length - desiredTicks) < Math.abs(prev.length - desiredTicks) ? alt : prev));
 }
 
 export function transformPoint(

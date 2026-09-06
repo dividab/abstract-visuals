@@ -31,9 +31,7 @@ describe("compile", () => {
   it("should compile nested ternary expressions", () => {
     const ast = parse("<div>{props.level > 2 ? 'high' : props.level > 1 ? 'medium' : 'low'}</div>");
     const result = compile(ast);
-    expect(result).toBe(
-      '"use strict";return h("div", null, ((props.level > 2)?"high":((props.level > 1)?"medium":"low")));'
-    );
+    expect(result).toBe('"use strict";return h("div", null, ((props.level > 2)?"high":((props.level > 1)?"medium":"low")));');
   });
 
   it("should compile nested JSX elements", () => {
@@ -45,9 +43,7 @@ describe("compile", () => {
   it("should compile nested array operations", () => {
     const ast = parse("<div>{props.items.map(x => x.split(',').map(y => y.trim()).join(' ')).join(' | ')}</div>");
     const result = compile(ast);
-    expect(result).toBe(
-      '"use strict";return h("div", null, props.items.map((x) => x.split(",").map((y) => y.trim()).join(" ")).join(" | "));'
-    );
+    expect(result).toBe('"use strict";return h("div", null, props.items.map((x) => x.split(",").map((y) => y.trim()).join(" ")).join(" | "));');
   });
 
   it("should compile bare expression containers", () => {
@@ -218,23 +214,17 @@ describe("compile", () => {
     it("should compile function with props parameter", () => {
       const ast = parse('function Badge({ label }) {\n  return <span>{label}</span>\n}\nreturn <Badge label="hi" />');
       const result = compile(ast);
-      expect(result).toBe(
-        '"use strict";function Badge({ label }) { return h("span", null, label); }return h(Badge, { label: "hi" });'
-      );
+      expect(result).toBe('"use strict";function Badge({ label }) { return h("span", null, label); }return h(Badge, { label: "hi" });');
     });
 
     it("should compile function with default parameter", () => {
       const ast = parse("function Badge({ label = 'default' }) {\n  return <span>{label}</span>\n}\nreturn <Badge />");
       const result = compile(ast);
-      expect(result).toBe(
-        '"use strict";function Badge({ label = "default" }) { return h("span", null, label); }return h(Badge, null);'
-      );
+      expect(result).toBe('"use strict";function Badge({ label = "default" }) { return h("span", null, label); }return h(Badge, null);');
     });
 
     it("should compile function with const inside body", () => {
-      const ast = parse(
-        "function Badge({ value }) {\n  const doubled = value * 2;\n  return <span>{doubled}</span>\n}\nreturn <Badge value={5} />"
-      );
+      const ast = parse("function Badge({ value }) {\n  const doubled = value * 2;\n  return <span>{doubled}</span>\n}\nreturn <Badge value={5} />");
       const result = compile(ast);
       expect(result).toContain("const doubled = (value * 2);");
       expect(result).toContain('return h("span", null, doubled);');
@@ -249,9 +239,7 @@ describe("compile", () => {
     });
 
     it("should compile multiple function declarations", () => {
-      const ast = parse(
-        "function A() {\n  return <span>a</span>\n}\nfunction B() {\n  return <span>b</span>\n}\nreturn <div><A /><B /></div>"
-      );
+      const ast = parse("function A() {\n  return <span>a</span>\n}\nfunction B() {\n  return <span>b</span>\n}\nreturn <div><A /><B /></div>");
       const result = compile(ast);
       expect(result).toContain("function A()");
       expect(result).toContain("function B()");
@@ -260,9 +248,7 @@ describe("compile", () => {
     });
 
     it("should compile function calling another function", () => {
-      const ast = parse(
-        "function Inner() {\n  return <span>inner</span>\n}\nfunction Outer() {\n  return <div><Inner /></div>\n}\nreturn <Outer />"
-      );
+      const ast = parse("function Inner() {\n  return <span>inner</span>\n}\nfunction Outer() {\n  return <div><Inner /></div>\n}\nreturn <Outer />");
       const result = compile(ast);
       expect(result).toContain("function Inner()");
       expect(result).toContain("function Outer()");

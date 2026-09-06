@@ -19,9 +19,7 @@ export type JSXLiteral = {
 
 export type JSXAttributeValue = JSXLiteral | JSXExpressionContainer;
 
-export type JSXNameNode =
-  | { type: "JSXIdentifier"; name: string }
-  | { type: "JSXMemberExpression"; object: JSXNameNode; property: JSXNameNode };
+export type JSXNameNode = { type: "JSXIdentifier"; name: string } | { type: "JSXMemberExpression"; object: JSXNameNode; property: JSXNameNode };
 
 export type JSXAttribute = {
   type: "JSXAttribute";

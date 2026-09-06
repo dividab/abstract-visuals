@@ -18,35 +18,25 @@ export type PdfExportOptions = {
   compress: boolean;
 };
 
-export function exportToHTML5Blob(
-  doc: AD.AbstractDoc.AbstractDoc,
-  options: PdfExportOptions = { compress: false }
-): Promise<Blob> {
+export function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): Promise<Blob> {
   const pdf = createDocument(options, doc);
   return toBlob(pdf);
 }
 
-export function exportToBytes(
-  doc: AD.AbstractDoc.AbstractDoc,
-  options: PdfExportOptions = { compress: false }
-): Promise<Uint8Array> {
+export function exportToBytes(doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): Promise<Uint8Array> {
   const pdf = createDocument(options, doc);
   return toBytes(pdf);
 }
 
 /**
- * On the client side the stream can be a BlobStream from the blob-stream package. On the server-side the stream can be
- * a file stream from the fs package.
+ * On the client side the stream can be a BlobStream from the blob-stream package. On the server-side the stream can be a file stream from the fs
+ * package.
  *
  * @param blobStream
  * @param doc
  * @param options
  */
-export function exportToStream(
-  blobStream: any,
-  doc: AD.AbstractDoc.AbstractDoc,
-  options: PdfExportOptions = { compress: false }
-): void {
+export function exportToStream(blobStream: any, doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): void {
   let pdf = createDocument(options, doc);
   pdf.pipe(blobStream);
 }
@@ -69,12 +59,7 @@ function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDo
   return pdf;
 }
 
-function renderPage(
-  parentResources: AD.Resources.Resources,
-  pdfKit: PDFKit.PDFDocument,
-  desiredSizes: Map<{}, AD.Size.Size>,
-  page: Page
-): void {
+function renderPage(parentResources: AD.Resources.Resources, pdfKit: PDFKit.PDFDocument, desiredSizes: Map<{}, AD.Size.Size>, page: Page): void {
   const section = page.section;
   const style = section.page.style;
   const resources = AD.Resources.mergeResources([parentResources, section]);
@@ -130,8 +115,7 @@ function renderPage(
   }
 
   const elementStart = contentRect.y;
-  const columnStep =
-    contentRect.width / section.page.style.columnLayout.columnCount + section.page.style.columnLayout.columnGap;
+  const columnStep = contentRect.width / section.page.style.columnLayout.columnCount + section.page.style.columnLayout.columnGap;
   for (let columnIndex = 0; columnIndex < page.columns.length; columnIndex++) {
     const x = contentRect.x + columnStep * columnIndex;
     let y = elementStart;
@@ -299,14 +283,7 @@ function renderParagraph(
   let newHeight = styleMargins.top + styleMargins.bottom;
   const alignment = parseAlignment(style.alignment);
   const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdfKit, resources, style.textStyle);
-  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(
-    resources,
-    pdfKit,
-    newRows,
-    desiredSizes,
-    alignment,
-    style.textStyle
-  );
+  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdfKit, newRows, desiredSizes, alignment, style.textStyle);
   for (let r = 0; r < combinedRows.length; r++) {
     const row = combinedRows[r];
     const isLast = r === combinedRows.length - 1;
@@ -400,17 +377,7 @@ function renderAtom(
       renderImage(resources, pdfKit, finalRect, textStyle, atom);
       return;
     case "HyperLink":
-      renderHyperLink(
-        resources,
-        pdfKit,
-        finalRect,
-        textStyle,
-        atom,
-        alignment,
-        isFirstAtom,
-        isLastAtom,
-        availableWidth
-      );
+      renderHyperLink(resources, pdfKit, finalRect, textStyle, atom, alignment, isFirstAtom, isLastAtom, availableWidth);
       return;
     case "TocSeparator":
       renderTocSeparator(pdfKit, finalRect, textStyle, atom);
@@ -432,13 +399,7 @@ function renderTextField(
   isFirstAtom: boolean,
   isLastAtom: boolean
 ): void {
-  const style = AD.Resources.getStyle(
-    textStyle,
-    textField.style,
-    "TextStyle",
-    textField.styleName,
-    resources
-  ) as AD.TextStyle.TextStyle;
+  const style = AD.Resources.getStyle(textStyle, textField.style, "TextStyle", textField.styleName, resources) as AD.TextStyle.TextStyle;
   switch (textField.fieldType) {
     case "Date":
       drawText(pdfKit, finalRect, style, new Date(Date.now()).toDateString(), alignment, isFirstAtom, isLastAtom);
@@ -485,13 +446,7 @@ function renderHyperLink(
   isLastAtom: boolean,
   availableWidth: number
 ): void {
-  const style = AD.Resources.getStyle(
-    textStyle,
-    hyperLink.style,
-    "TextStyle",
-    hyperLink.styleName,
-    resources
-  ) as AD.TextStyle.TextStyle;
+  const style = AD.Resources.getStyle(textStyle, hyperLink.style, "TextStyle", hyperLink.styleName, resources) as AD.TextStyle.TextStyle;
   drawHyperLink(pdf, finalRect, style, hyperLink, alignment, isFirstAtom, isLastAtom, availableWidth);
 }
 
@@ -741,13 +696,7 @@ function renderTable(
   finalRect: AD.Rect.Rect,
   table: AD.Table.Table
 ): void {
-  const style = AD.Resources.getStyle(
-    undefined,
-    table.style,
-    "TableStyle",
-    table.styleName,
-    resources
-  ) as AD.TableStyle.TableStyle;
+  const style = AD.Resources.getStyle(undefined, table.style, "TableStyle", table.styleName, resources) as AD.TableStyle.TableStyle;
   const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
   const availableWidth = finalRect.width;
   let y = finalRect.y + styleMargins.top;
@@ -813,13 +762,7 @@ function renderCell(
   isTop: boolean,
   isBottom: boolean
 ): void {
-  const style = AD.Resources.getStyle(
-    tableCellStyle,
-    cell.style,
-    "TableCellStyle",
-    cell.styleName,
-    resources
-  ) as AD.TableCellStyle.TableCellStyle;
+  const style = AD.Resources.getStyle(tableCellStyle, cell.style, "TableCellStyle", cell.styleName, resources) as AD.TableCellStyle.TableCellStyle;
   if (style.background) {
     pdf.rect(finalRect.x, finalRect.y, finalRect.width, finalRect.height).fill(style.background);
   }

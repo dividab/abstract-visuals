@@ -9894,8 +9894,7 @@ export const systemair = {
             dxf: "255",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/bd146d50aa33cef078add39f89cbd6b96184448a?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
+            imageUrl: "/promaster-blobs/bd146d50aa33cef078add39f89cbd6b96184448a?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
           },
         },
       ],
@@ -11446,8 +11445,7 @@ export const systemair = {
             dxf: "255",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/3b1d8658bda7de75d985095d2251ae09f096bbf8?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
+            imageUrl: "/promaster-blobs/3b1d8658bda7de75d985095d2251ae09f096bbf8?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
           },
         },
         {
@@ -12123,8 +12121,7 @@ export const systemair = {
             dxf: "255",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/bd146d50aa33cef078add39f89cbd6b96184448a?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
+            imageUrl: "/promaster-blobs/bd146d50aa33cef078add39f89cbd6b96184448a?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
           },
         },
       ],
@@ -13579,8 +13576,7 @@ export const systemair = {
             dxf: "255",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/b2e7eec358198b07819182915e6e9d3b1276f1ed?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
+            imageUrl: "/promaster-blobs/b2e7eec358198b07819182915e6e9d3b1276f1ed?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
           },
         },
       ],
@@ -13682,8 +13678,7 @@ export const systemair = {
             dxf: "255",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/4b89d06f6aee7921c6623d80eeb1b6bade31579d?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
+            imageUrl: "/promaster-blobs/4b89d06f6aee7921c6623d80eeb1b6bade31579d?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
           },
         },
       ],
@@ -14568,8 +14563,7 @@ export const systemair = {
             dxf: "255",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/ca38bd912d9e3568c51a8ef3b1e85d683a1a1526?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
+            imageUrl: "/promaster-blobs/ca38bd912d9e3568c51a8ef3b1e85d683a1a1526?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
           },
         },
       ],
@@ -15030,8 +15024,7 @@ export const systemair = {
             dxf: "255",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/4b89d06f6aee7921c6623d80eeb1b6bade31579d?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
+            imageUrl: "/promaster-blobs/4b89d06f6aee7921c6623d80eeb1b6bade31579d?database_id=628c2d04-c86d-4b85-9193-099437a1b6a9",
           },
         },
       ],

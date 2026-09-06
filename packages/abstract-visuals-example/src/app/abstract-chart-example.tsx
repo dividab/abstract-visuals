@@ -20,13 +20,7 @@ export function AbstractChartExample(): React.JSX.Element {
   const [hovered, setHovered] = useState("");
   return (
     <div>
-      <Chart
-        name="Line Chart"
-        chart={generateLineChart(hovered)}
-        callbacks={{ onMouseMove: (id) => setHovered(id ?? "") }}
-        width="950"
-        height="750"
-      >
+      <Chart name="Line Chart" chart={generateLineChart(hovered)} callbacks={{ onMouseMove: (id) => setHovered(id ?? "") }} width="950" height="750">
         <>
           <p>
             Chart of <a href="https://www.xkcd.com/1612/">XKCD 1612</a>
@@ -74,9 +68,7 @@ export function AbstractChartExample(): React.JSX.Element {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
             <h4 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               Svg
-              <button onClick={() => FileSaver.saveAs(new Blob([svg], { type: "text/plain" }), `chart.svg`)}>
-                Download
-              </button>
+              <button onClick={() => FileSaver.saveAs(new Blob([svg], { type: "text/plain" }), `chart.svg`)}>Download</button>
             </h4>
             <img width={width} height={height} src={`data:image/svg+xml;,${svg}`} />
           </div>
@@ -166,28 +158,8 @@ export function AbstractChartExample(): React.JSX.Element {
       chartDataAxisesLeft: [createChartDataAxis(dataAxisPointsSquaredY, "Y^2")],
       chartDataAxisesRight: [createChartDataAxis(dataAxisPointsCubedY, "Y^3")],
       xAxisesBottom: [
-        createLinearAxis(
-          xMin,
-          xMax,
-          "Days with cold bottom 1",
-          undefined,
-          undefined,
-          undefined,
-          2,
-          undefined,
-          "x-bottom-1"
-        ),
-        createLinearAxis(
-          xMin,
-          xMax,
-          "Days with cold bottom 2",
-          undefined,
-          undefined,
-          undefined,
-          2,
-          undefined,
-          "x-bottom-2"
-        ),
+        createLinearAxis(xMin, xMax, "Days with cold bottom 1", undefined, undefined, undefined, 2, undefined, "x-bottom-1"),
+        createLinearAxis(xMin, xMax, "Days with cold bottom 2", undefined, undefined, undefined, 2, undefined, "x-bottom-2"),
       ],
       xAxisesTop: [
         createLinearAxis(xMin, xMax, "Days with cold top 1", undefined, undefined, undefined, 2, undefined, "x-top-1"),
@@ -208,10 +180,7 @@ export function AbstractChartExample(): React.JSX.Element {
     return chart;
   }
 
-  function getStackRange(
-    points: ReadonlyArray<StackPoints>,
-    axisSelector: (point: StackPoints) => ReadonlyArray<number>
-  ): [number, number] {
+  function getStackRange(points: ReadonlyArray<StackPoints>, axisSelector: (point: StackPoints) => ReadonlyArray<number>): [number, number] {
     const axisValues = points
       .map(axisSelector)
       .map((stackedValues) => {
@@ -487,12 +456,8 @@ export function AbstractChartExample(): React.JSX.Element {
         { ...chartBase, position: 10, bars: [{ max: 8, color: fromArgb(255, 255, 0, 0) }] },
       ],
       xAxisesBottom: [xAxis],
-      xAxisesTop: [
-        { type: "linear", min: 0, max: 8, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 }, noTicks: true },
-      ],
-      yAxisesRight: [
-        { type: "linear", noTicks: true, min: 0, max: 30, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 } },
-      ],
+      xAxisesTop: [{ type: "linear", min: 0, max: 8, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 }, noTicks: true }],
+      yAxisesRight: [{ type: "linear", noTicks: true, min: 0, max: 30, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 } }],
       fontSize: 12,
       xGrid: undefined,
       yAxisesLeft: [yAxis],

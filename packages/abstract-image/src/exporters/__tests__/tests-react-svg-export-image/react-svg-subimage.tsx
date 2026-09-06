@@ -17,23 +17,13 @@ const subImageText = AbstractImage.createText(
   false
 );
 
-const subImage = AbstractImage.createAbstractImage(
-  AbstractImage.createPoint(0, 0),
-  AbstractImage.createSize(100, 100),
-  AbstractImage.white,
-  [subImageText]
-);
+const subImage = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(100, 100), AbstractImage.white, [
+  subImageText,
+]);
 
-const components = [
-  AbstractImage.createSubImage(AbstractImage.createPoint(10, 10), AbstractImage.createSize(100, 100), subImage),
-];
+const components = [AbstractImage.createSubImage(AbstractImage.createPoint(10, 10), AbstractImage.createSize(100, 100), subImage)];
 
-const image = AbstractImage.createAbstractImage(
-  AbstractImage.createPoint(0, 0),
-  AbstractImage.createSize(400, 400),
-  AbstractImage.white,
-  components
-);
+const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
 const svg = <AbstractImage.ReactSvg image={image} />;
 

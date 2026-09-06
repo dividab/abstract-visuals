@@ -37,9 +37,7 @@ export function Abstract3DExample(): React.ReactNode {
     for (const s of geo.scenes as any) {
       svgs.push(`data:image/svg+xml,${encodeURIComponent(Svg.render(s.scene, s.options).image)}`);
     }
-    imageDataByUrlSvg[geo.image.url] = `data:image/svg+xml,${encodeURIComponent(
-      Svg.renderScenes(geo.scenes as any).image
-    )}`;
+    imageDataByUrlSvg[geo.image.url] = `data:image/svg+xml,${encodeURIComponent(Svg.renderScenes(geo.scenes as any).image)}`;
   }
 
   for (const geo of Object.values(componentGeometries)) {
@@ -123,26 +121,16 @@ export function Abstract3DExample(): React.ReactNode {
         </button>
         <button
           onClick={() =>
-            FileSaver.saveAs(
-              new Blob([Dxf.renderOld(systemair, { view: "back", origin: "Center" })], { type: "text/plain" }),
-              `a3d.dxf`
-            )
+            FileSaver.saveAs(new Blob([Dxf.renderOld(systemair, { view: "back", origin: "Center" })], { type: "text/plain" }), `a3d.dxf`)
           }
         >
           DXF
         </button>
-        <button onClick={() => FileSaver.saveAs(new Blob([Stl.render(systemair)], { type: "text/plain" }), `a3d.stl`)}>
-          STL
-        </button>
-        <button onClick={() => FileSaver.saveAs(new Blob([Step.render(systemair)], { type: "text/plain" }), `a3d.stp`)}>
-          STEP
-        </button>
+        <button onClick={() => FileSaver.saveAs(new Blob([Stl.render(systemair)], { type: "text/plain" }), `a3d.stl`)}>STL</button>
+        <button onClick={() => FileSaver.saveAs(new Blob([Step.render(systemair)], { type: "text/plain" }), `a3d.stp`)}>STEP</button>
         <button
           onClick={() =>
-            FileSaver.saveAs(
-              new Blob([Svg.render(systemair, { view: "top", stroke_thickness: 2 }).image], { type: "text/plain" }),
-              `a3d.svg`
-            )
+            FileSaver.saveAs(new Blob([Svg.render(systemair, { view: "top", stroke_thickness: 2 }).image], { type: "text/plain" }), `a3d.svg`)
           }
         >
           SVG
@@ -156,11 +144,7 @@ export function Abstract3DExample(): React.ReactNode {
             Svg.render(systemair, { view: "front", stroke_thickness: 1, rotation: 0, only_stroke: false }).image
           )}`}
         />
-        <div
-          className="wrapper"
-          style={{ width: "200px", height: "200px", minWidth: "200px" }}
-          dangerouslySetInnerHTML={{ __html: templateImage }}
-        />
+        <div className="wrapper" style={{ width: "200px", height: "200px", minWidth: "200px" }} dangerouslySetInnerHTML={{ __html: templateImage }} />
         <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} />
         {svgs.map((svg, i) => (
           <img key={i} src={svg} width="200px" style={{ height: "max-content" }} />

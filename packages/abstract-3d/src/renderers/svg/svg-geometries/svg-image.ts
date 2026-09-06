@@ -30,14 +30,7 @@ export function image(
         y: i.size.y / i.image.image.size.height,
       };
       const svg = createSVG(i.image.image, opts);
-      const img = svgImage(
-        point(v4.x, v4.y),
-        i.size,
-        rot,
-        { type: "svg", svg },
-        opts.imageBg ? opts.background : undefined,
-        scale
-      );
+      const img = svgImage(point(v4.x, v4.y), i.size, rot, { type: "svg", svg }, opts.imageBg ? opts.background : undefined, scale);
       return [zElem(img, (v2.z + v4.z) / 2)];
     }
     case "Url": {
@@ -45,10 +38,7 @@ export function image(
       const image: EmbededImage | undefined = imageData?.startsWith(rawSvgPrefix)
         ? {
             type: "svg",
-            svg: decodeURIComponent(imageData.slice(rawSvgPrefix.length)).replace(
-              /^\s*(<\?xml[^>]*\?>\s*)?(<!DOCTYPE[^>]*>\s*)?/i,
-              ""
-            ),
+            svg: decodeURIComponent(imageData.slice(rawSvgPrefix.length)).replace(/^\s*(<\?xml[^>]*\?>\s*)?(<!DOCTYPE[^>]*>\s*)?/i, ""),
           }
         : i.image.url
           ? { type: "url", url: imageData ?? i.image.url }

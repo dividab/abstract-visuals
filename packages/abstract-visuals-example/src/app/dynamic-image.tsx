@@ -145,11 +145,7 @@ return <AbstractImage width={600} height={260}>
         }}
       >
         <span>Data</span>
-        <textarea
-          style={{ width: "100%", height: "calc(100% - 30px)" }}
-          value={data}
-          onChange={(e) => setData(e.currentTarget.value)}
-        />
+        <textarea style={{ width: "100%", height: "calc(100% - 30px)" }} value={data} onChange={(e) => setData(e.currentTarget.value)} />
       </div>
       <div
         style={{

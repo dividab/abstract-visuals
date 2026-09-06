@@ -1,11 +1,4 @@
-import {
-  type Dimension,
-  dimensionIsOfTypeMesh,
-  type Vec3,
-  vec3Length,
-  vec3Sub,
-  vec3TransRot,
-} from "../../../abstract-3d.js";
+import { type Dimension, dimensionIsOfTypeMesh, type Vec3, vec3Length, vec3Sub, vec3TransRot } from "../../../abstract-3d.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { type DxfDimensionDefinition, dxfEncDimension } from "../dxf-encoding/dxf-dimension.js";
 

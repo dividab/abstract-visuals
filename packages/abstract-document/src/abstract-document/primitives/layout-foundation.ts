@@ -23,10 +23,7 @@ export function orDefault(layout: LayoutFoundation | undefined): Required<Layout
   };
 }
 
-export function overrideWith(
-  overrider: LayoutFoundation | undefined,
-  toOverride: LayoutFoundation | undefined
-): LayoutFoundation {
+export function overrideWith(overrider: LayoutFoundation | undefined, toOverride: LayoutFoundation | undefined): LayoutFoundation {
   const a = overrider;
   const b = toOverride;
   return {

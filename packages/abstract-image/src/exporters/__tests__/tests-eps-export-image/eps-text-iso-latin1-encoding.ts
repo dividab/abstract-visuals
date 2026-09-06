@@ -18,12 +18,7 @@ const components = [
     false
   ),
 ];
-const image = AbstractImage.createAbstractImage(
-  AbstractImage.createPoint(0, 0),
-  AbstractImage.createSize(400, 400),
-  AbstractImage.white,
-  components
-);
+const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
 const eps = new TextDecoder("iso-8859-1").decode(AbstractImage.epsExportImage(image, "iso-latin-1-encoding"));
 

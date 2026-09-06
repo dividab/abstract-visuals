@@ -70,16 +70,8 @@ export function ReactScene({
 }): React.JSX.Element {
   return (
     <group
-      rotation={[
-        scene.rotation_deprecated?.x ?? 0,
-        scene.rotation_deprecated?.y ?? 0,
-        scene.rotation_deprecated?.z ?? 0,
-      ]}
-      position={[
-        -(scene.center_deprecated?.x ?? 0),
-        -(scene.center_deprecated?.y ?? 0),
-        -(scene.center_deprecated?.z ?? 0),
-      ]}
+      rotation={[scene.rotation_deprecated?.x ?? 0, scene.rotation_deprecated?.y ?? 0, scene.rotation_deprecated?.z ?? 0]}
+      position={[-(scene.center_deprecated?.x ?? 0), -(scene.center_deprecated?.y ?? 0), -(scene.center_deprecated?.z ?? 0)]}
     >
       {scene.groups.map((g, i) => {
         const id = createGroupId ? createGroupId(g) : "";
@@ -118,13 +110,7 @@ export function ReactScene({
         showHotSpotTexts={showHotSpotTexts}
       />
       {reactPopovers?.map((p) => (
-        <Html
-          key={p.id}
-          position={[p.pos.x, p.pos.y, p.pos.z]}
-          center
-          pointerEvents="none"
-          style={{ pointerEvents: "none" }}
-        >
+        <Html key={p.id} position={[p.pos.x, p.pos.y, p.pos.z]} center pointerEvents="none" style={{ pointerEvents: "none" }}>
           {p.content}
         </Html>
       ))}

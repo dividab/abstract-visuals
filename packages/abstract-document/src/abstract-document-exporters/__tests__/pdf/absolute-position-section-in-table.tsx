@@ -1,12 +1,4 @@
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  Table,
-  TableRow,
-  TableCell,
-  TextRun,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, Table, TableRow, TableCell, TextRun } from "../../../abstract-document-jsx/index.js";
 import * as TableCellStyle from "../../../abstract-document/styles/table-cell-style.js";
 import * as TableStyle from "../../../abstract-document/styles/table-style.js";
 import * as AD from "../../../index.js";

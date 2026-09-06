@@ -7,11 +7,7 @@ import { AnalysisReport } from "../analysis-report.js";
 import { getBestSimilarityMatcherSuggestion, getElementSimilarityMatchers, getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
 
-export function analyzeElementChildren(
-  ast: Program,
-  schema: Schema,
-  validationContext: ValidationContext
-): AnalysisReport {
+export function analyzeElementChildren(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = new AnalysisReport();
 
   const localFunctionNames = new Set<string>();

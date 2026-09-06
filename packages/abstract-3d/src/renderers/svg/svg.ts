@@ -110,11 +110,7 @@ function renderInternal(
   const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
 
   for (const dim of scene.dimensions_deprecated?.dimensions ?? []) {
-    const d = dimensionConvertToTypeMesh(
-      dim,
-      scene.rotation_deprecated ?? vec3Zero,
-      scene.dimensions_deprecated?.material
-    );
+    const d = dimensionConvertToTypeMesh(dim, scene.rotation_deprecated ?? vec3Zero, scene.dimensions_deprecated?.material);
     if (isViewVisible(d.views[0], visibleViews)) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
@@ -126,13 +122,7 @@ function renderInternal(
   return { elements, size: svgSize, center: svgCenter };
 }
 
-function svgGroup(
-  g: Group,
-  parentPos: Vec3,
-  parentRot: Vec3,
-  point: (x: number, y: number) => Vec2,
-  opts: SvgOptions
-): ReadonlyArray<zOrderElement> {
+function svgGroup(g: Group, parentPos: Vec3, parentRot: Vec3, point: (x: number, y: number) => Vec2, opts: SvgOptions): ReadonlyArray<zOrderElement> {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
   const elements = Array<zOrderElement>();

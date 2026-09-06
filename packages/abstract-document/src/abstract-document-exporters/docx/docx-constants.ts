@@ -14,8 +14,7 @@ export const RelNamespace = "http://schemas.openxmlformats.org/officeDocument/20
 export const RelPrefix = "r";
 export const PointOoXmlFactor = 20;
 
-export const ImageStyle =
-  "width:{0}pt;height:{1}pt;mso-position-horizontal-relative:char;mso-position-vertical-relative:line;v-text-anchor:middle";
+export const ImageStyle = "width:{0}pt;height:{1}pt;mso-position-horizontal-relative:char;mso-position-vertical-relative:line;v-text-anchor:middle";
 
 export const ContentTypeNamespace = "http://schemas.openxmlformats.org/package/2006/content-types.js";
 export const HeaderNamespace = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/header";

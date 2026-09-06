@@ -28,9 +28,7 @@ export function svgPolygon(
   const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
   const pol = `<polygon points="${points
     .reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "")
-    .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(
-    1
-  )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
+    .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + pol + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
@@ -46,21 +44,13 @@ export function svgCircle(
 ): string {
   const size = vec2Scale(vec2(radius, radius), 2);
   const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
-  const cir = `<circle r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(
-    0
-  )}" fill="${fill}" fill-opacity="${opacity.toFixed(
+  const cir = `<circle r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(0)}" fill="${fill}" fill-opacity="${opacity.toFixed(
     1
   )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + cir + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
-function svgStrokedHoles(
-  pos: Vec2,
-  rot: Vec3,
-  holes: ReadonlyArray<Hole>,
-  strokeColor: string,
-  strokeThickness: number
-): string {
+function svgStrokedHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, strokeColor: string, strokeThickness: number): string {
   if (strokeThickness <= Number.EPSILON) {
     return "";
   }
@@ -105,14 +95,7 @@ function svgStrokedHoles(
   return svgHoles;
 }
 
-export const svgCircle2 = (
-  radius: number,
-  pos: Vec2,
-  fill: string,
-  stroke: string,
-  strokeWidth: number,
-  _holes?: ReadonlyArray<Hole>
-): string =>
+export const svgCircle2 = (radius: number, pos: Vec2, fill: string, stroke: string, strokeWidth: number, _holes?: ReadonlyArray<Hole>): string =>
   `<circle r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(
     0
   )}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
@@ -138,9 +121,7 @@ function svgMaskHoles(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string
     switch (hole.type) {
       case "RoundHole": {
         holeMasks.push(
-          `<ellipse cx="${holePos.x / size.x}" cy="${holePos.y / size.y}" rx="${hole.radius / size.x}" ry="${
-            hole.radius / size.y
-          }" fill="black" />`
+          `<ellipse cx="${holePos.x / size.x}" cy="${holePos.y / size.y}" rx="${hole.radius / size.x}" ry="${hole.radius / size.y}" fill="black" />`
         );
         break;
       }
@@ -165,29 +146,16 @@ function svgMaskHoles(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string
 export const svgText = (text: string, matrix: string, color: string, font: string, fontSize: number): string =>
   `<text font-family="${font}" font-size="${fontSize}px" text-anchor="middle" alignment-baseline="middle" fill="${color}" transform="${matrix}">${text}</text>`;
 
-export type EmbededImage =
-  | { readonly type: "url"; readonly url: string }
-  | { readonly type: "svg"; readonly svg: string };
+export type EmbededImage = { readonly type: "url"; readonly url: string } | { readonly type: "svg"; readonly svg: string };
 
 export const rawSvgPrefix = "data:image/svg+xml,";
 
-export const svgImage = (
-  p: Vec2,
-  size: Vec2,
-  rot: Vec3,
-  data: EmbededImage,
-  background?: string,
-  scale?: Vec2
-): string => {
+export const svgImage = (p: Vec2, size: Vec2, rot: Vec3, data: EmbededImage, background?: string, scale?: Vec2): string => {
   const matrix = svgTrsMatrix(p, rot, scale);
 
   if (data.type === "url") {
-    const bg = background
-      ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>`
-      : "";
-    return `<g transform="${matrix}">${bg}<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${
-      data.url
-    }"/></g>`;
+    const bg = background ? `<rect width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" fill="${background}"/>` : "";
+    return `<g transform="${matrix}">${bg}<image width="${size.x.toFixed(0)}" height="${size.y.toFixed(0)}" href="${data.url}"/></g>`;
   }
 
   // scale maps image-space coords → world coords, so the wrapper SVG and rect
@@ -195,9 +163,7 @@ export const svgImage = (
   const imgW = scale ? size.x / scale.x : size.x;
   const imgH = scale ? size.y / scale.y : size.y;
   const bg = background ? `<rect width="${imgW.toFixed(0)}" height="${imgH.toFixed(0)}" fill="${background}"/>` : "";
-  return `<g transform="${matrix}"><svg width="${imgW.toFixed(0)}" height="${imgH.toFixed(0)}">${bg}${
-    data.svg
-  }</svg></g>`;
+  return `<g transform="${matrix}"><svg width="${imgW.toFixed(0)}" height="${imgH.toFixed(0)}">${bg}${data.svg}</svg></g>`;
 };
 
 const counter = (() => {

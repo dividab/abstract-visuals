@@ -165,14 +165,7 @@ function splitTable(
         return [undefined, table];
       }
 
-      const [newTableHead, newTableRest] = splitTableAt(
-        pdfKit,
-        document,
-        resources,
-        desiredSizes,
-        table,
-        Math.max(rowIndex, 1)
-      );
+      const [newTableHead, newTableRest] = splitTableAt(pdfKit, document, resources, desiredSizes, table, Math.max(rowIndex, 1));
 
       if (newTableHead.children.length > 0) {
         tableHead = newTableHead;
@@ -240,14 +233,10 @@ function createPage(
   const contentRect = AD.Rect.create(rect.x, rect.y - leadingSpace, rect.width, rect.height + leadingSpace);
 
   const frontHeader =
-    section.page.frontHeader === undefined || section.page.frontHeader.length === 0
-      ? section.page.header
-      : section.page.frontHeader;
+    section.page.frontHeader === undefined || section.page.frontHeader.length === 0 ? section.page.header : section.page.frontHeader;
 
   const frontFooter =
-    section.page.frontFooter === undefined || section.page.frontFooter.length === 0
-      ? section.page.footer
-      : section.page.frontFooter;
+    section.page.frontFooter === undefined || section.page.frontFooter.length === 0 ? section.page.footer : section.page.frontFooter;
 
   return {
     pageNo: pageNo,
@@ -282,14 +271,10 @@ export function getHeaderAndFooter(
         footer: normalFooter ? section.page.footer : section.page.frontFooter,
         header: normalHeader ? section.page.header : section.page.frontHeader,
         headerMargins: AD.LayoutFoundation.orDefault(
-          normalHeader
-            ? section.page.style.headerMargins
-            : (section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins)
+          normalHeader ? section.page.style.headerMargins : (section.page.style.firstPageHeaderMargins ?? section.page.style.headerMargins)
         ),
         footerMargins: AD.LayoutFoundation.orDefault(
-          normalFooter
-            ? section.page.style.footerMargins
-            : (section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins)
+          normalFooter ? section.page.style.footerMargins : (section.page.style.firstPageFooterMargins ?? section.page.style.footerMargins)
         ),
       };
     }
@@ -307,25 +292,15 @@ export function getHeaderAndFooter(
   }
 }
 
-function getPageContentRect(
-  desiredSizes: Map<{}, AD.Size.Size>,
-  section: AD.Section.Section,
-  pageNo: number
-): AD.Rect.Rect {
+function getPageContentRect(desiredSizes: Map<{}, AD.Size.Size>, section: AD.Section.Section, pageNo: number): AD.Rect.Rect {
   const style = section.page.style;
   const styleContentMargins = AD.LayoutFoundation.orDefault(style.contentMargins);
   const pageWidth = AD.PageStyle.getWidth(style);
   const pageHeight = AD.PageStyle.getHeight(style);
 
   const { header, footer, headerMargins, footerMargins } = getHeaderAndFooter(section, pageNo);
-  const headerHeight = header.reduce(
-    (prev, curr) => prev + getDesiredSize(curr, desiredSizes).height,
-    headerMargins.top + headerMargins.bottom
-  );
-  const footerHeight = footer.reduce(
-    (prev, curr) => prev + getDesiredSize(curr, desiredSizes).height,
-    footerMargins.top + footerMargins.bottom
-  );
+  const headerHeight = header.reduce((prev, curr) => prev + getDesiredSize(curr, desiredSizes).height, headerMargins.top + headerMargins.bottom);
+  const footerHeight = footer.reduce((prev, curr) => prev + getDesiredSize(curr, desiredSizes).height, footerMargins.top + footerMargins.bottom);
 
   let headerY = headerMargins.top;
   for (let element of header) {
@@ -381,10 +356,7 @@ function getSectionElementMargin(
   }
 }
 
-function getParagraphMargins(
-  resources: AD.Resources.Resources,
-  paragraph: AD.Paragraph.Paragraph
-): AD.LayoutFoundation.LayoutFoundation {
+function getParagraphMargins(resources: AD.Resources.Resources, paragraph: AD.Paragraph.Paragraph): AD.LayoutFoundation.LayoutFoundation {
   const style = AD.Resources.getStyle(
     undefined,
     paragraph.style,
@@ -395,10 +367,7 @@ function getParagraphMargins(
   return style.margins;
 }
 
-function getGroupMargins(
-  resources: AD.Resources.Resources,
-  group: AD.Group.Group
-): AD.LayoutFoundation.LayoutFoundation {
+function getGroupMargins(resources: AD.Resources.Resources, group: AD.Group.Group): AD.LayoutFoundation.LayoutFoundation {
   const first = group.children.length > 0 ? group.children[0] : undefined;
   const last = group.children.length > 0 ? group.children[group.children.length - 1] : undefined;
   const firstMargin = first && getSectionElementMargin(resources, first);
@@ -418,17 +387,8 @@ function getGroupMargins(
   }
 }
 
-function getTableMargins(
-  resources: AD.Resources.Resources,
-  table: AD.Table.Table
-): AD.LayoutFoundation.LayoutFoundation {
-  const style = AD.Resources.getStyle(
-    undefined,
-    table.style,
-    "TableStyle",
-    table.styleName,
-    resources
-  ) as AD.TableStyle.TableStyle;
+function getTableMargins(resources: AD.Resources.Resources, table: AD.Table.Table): AD.LayoutFoundation.LayoutFoundation {
+  const style = AD.Resources.getStyle(undefined, table.style, "TableStyle", table.styleName, resources) as AD.TableStyle.TableStyle;
   return style.margins;
 }
 

@@ -5946,8 +5946,7 @@ export const systemair6 = {
             normal: "rgb(255,255,255)",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/7155fd327d682385a17b07ca2718d547c80420d6?database_key=geniox&file=State=3D – Default, Type=Fan.png",
+            imageUrl: "/promaster-blobs/7155fd327d682385a17b07ca2718d547c80420d6?database_key=geniox&file=State=3D – Default, Type=Fan.png",
           },
         },
       ],
@@ -7861,8 +7860,7 @@ export const systemair6 = {
             normal: "rgb(255,255,255)",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/4bba86e55d0d5165effc3a648b11292bb8426da6?database_key=geniox&file=State=3D – Default, Type=Filter.png",
+            imageUrl: "/promaster-blobs/4bba86e55d0d5165effc3a648b11292bb8426da6?database_key=geniox&file=State=3D – Default, Type=Filter.png",
           },
         },
       ],
@@ -21674,8 +21672,7 @@ export const systemair6 = {
             normal: "rgb(255,255,255)",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/7155fd327d682385a17b07ca2718d547c80420d6?database_key=geniox&file=State=3D – Default, Type=Fan.png",
+            imageUrl: "/promaster-blobs/7155fd327d682385a17b07ca2718d547c80420d6?database_key=geniox&file=State=3D – Default, Type=Fan.png",
           },
         },
       ],
@@ -22752,8 +22749,7 @@ export const systemair6 = {
             normal: "rgb(255,255,255)",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/3c6a5503625660a4d6651300992f2900bc738bab?database_key=geniox&file=State=3D – Default, Type=Heating coil.png",
+            imageUrl: "/promaster-blobs/3c6a5503625660a4d6651300992f2900bc738bab?database_key=geniox&file=State=3D – Default, Type=Heating coil.png",
           },
         },
       ],
@@ -24074,8 +24070,7 @@ export const systemair6 = {
             normal: "rgb(255,255,255)",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/1a7e35a9ead2d5f01184179afdc930670c42a0b7?database_key=geniox&file=State=3D – Default, Type=Cooling coil.png",
+            imageUrl: "/promaster-blobs/1a7e35a9ead2d5f01184179afdc930670c42a0b7?database_key=geniox&file=State=3D – Default, Type=Cooling coil.png",
           },
         },
       ],
@@ -25564,8 +25559,7 @@ export const systemair6 = {
             normal: "rgb(255,255,255)",
             metalness: 0.4,
             roughness: 0.4,
-            imageUrl:
-              "/promaster-blobs/4bba86e55d0d5165effc3a648b11292bb8426da6?database_key=geniox&file=State=3D – Default, Type=Filter.png",
+            imageUrl: "/promaster-blobs/4bba86e55d0d5165effc3a648b11292bb8426da6?database_key=geniox&file=State=3D – Default, Type=Filter.png",
           },
         },
       ],
@@ -29745,8 +29739,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/fb78047026842b1f28befca331acbbfaeb5c3b6f?database_key=geniox&file=State=Default, Type=Change over coil.svg",
+            imageUrl: "/promaster-blobs/fb78047026842b1f28befca331acbbfaeb5c3b6f?database_key=geniox&file=State=Default, Type=Change over coil.svg",
           },
           geometry: {
             type: "Plane",
@@ -29785,8 +29778,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/899f4229fbce0cfb8d4bc872aeead2c8995dfb55?database_key=geniox&file=air_diversion_1.png",
+            imageUrl: "/promaster-blobs/899f4229fbce0cfb8d4bc872aeead2c8995dfb55?database_key=geniox&file=air_diversion_1.png",
           },
           geometry: {
             type: "Plane",
@@ -29865,8 +29857,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/ea4b6a29fa7e660d39bcd3299343605f1ba2ccee?database_key=geniox&file=State=3D – Default, Type=Panel Filter.png",
+            imageUrl: "/promaster-blobs/ea4b6a29fa7e660d39bcd3299343605f1ba2ccee?database_key=geniox&file=State=3D – Default, Type=Panel Filter.png",
           },
           geometry: {
             type: "Plane",
@@ -29885,8 +29876,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/4bba86e55d0d5165effc3a648b11292bb8426da6?database_key=geniox&file=State=3D – Default, Type=Filter.png",
+            imageUrl: "/promaster-blobs/4bba86e55d0d5165effc3a648b11292bb8426da6?database_key=geniox&file=State=3D – Default, Type=Filter.png",
           },
           geometry: {
             type: "Plane",
@@ -29905,8 +29895,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/2c60d049f3620120c68137e2b89f03eabe166ab4?database_key=geniox&file=State=3D – Default, Type=Filter.png",
+            imageUrl: "/promaster-blobs/2c60d049f3620120c68137e2b89f03eabe166ab4?database_key=geniox&file=State=3D – Default, Type=Filter.png",
           },
           geometry: {
             type: "Plane",
@@ -29925,8 +29914,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/3c6a5503625660a4d6651300992f2900bc738bab?database_key=geniox&file=State=3D – Default, Type=Heating coil.png",
+            imageUrl: "/promaster-blobs/3c6a5503625660a4d6651300992f2900bc738bab?database_key=geniox&file=State=3D – Default, Type=Heating coil.png",
           },
           geometry: {
             type: "Plane",
@@ -29964,8 +29952,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/45ed6bb34cf3d063e19d6e6cf9641846ba6aea5e?database_key=geniox&file=State=3D – Default, Type=Gas burner.png",
+            imageUrl: "/promaster-blobs/45ed6bb34cf3d063e19d6e6cf9641846ba6aea5e?database_key=geniox&file=State=3D – Default, Type=Gas burner.png",
           },
           geometry: {
             type: "Plane",
@@ -29984,8 +29971,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/b51d9ff72d57241d6d84d9e9e7469a27e7202f15?database_key=geniox&file=State=3D – Default, Type=Damper.png",
+            imageUrl: "/promaster-blobs/b51d9ff72d57241d6d84d9e9e7469a27e7202f15?database_key=geniox&file=State=3D – Default, Type=Damper.png",
           },
           geometry: {
             type: "Plane",
@@ -30004,8 +29990,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/a5093c0a23888012b5ca92f8257b2afaacd7627f?database_key=geniox&file=Default - Cooling coil.svg",
+            imageUrl: "/promaster-blobs/a5093c0a23888012b5ca92f8257b2afaacd7627f?database_key=geniox&file=Default - Cooling coil.svg",
           },
           geometry: {
             type: "Plane",
@@ -30024,8 +30009,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/1a7e35a9ead2d5f01184179afdc930670c42a0b7?database_key=geniox&file=State=3D – Default, Type=Cooling coil.png",
+            imageUrl: "/promaster-blobs/1a7e35a9ead2d5f01184179afdc930670c42a0b7?database_key=geniox&file=State=3D – Default, Type=Cooling coil.png",
           },
           geometry: {
             type: "Plane",
@@ -30121,8 +30105,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/84a1c4d6f8ec06c33648daaf40c9c10df5666a26?database_key=geniox&file=State=3D – Default, Type=Empty section.png",
+            imageUrl: "/promaster-blobs/84a1c4d6f8ec06c33648daaf40c9c10df5666a26?database_key=geniox&file=State=3D – Default, Type=Empty section.png",
           },
           geometry: {
             type: "Plane",
@@ -30161,8 +30144,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/1b90cf2786dc8ffa140f901f534679816ae57978?database_key=geniox&file=State=3D – Default, Type=Damper 2.png",
+            imageUrl: "/promaster-blobs/1b90cf2786dc8ffa140f901f534679816ae57978?database_key=geniox&file=State=3D – Default, Type=Damper 2.png",
           },
           geometry: {
             type: "Plane",
@@ -30221,8 +30203,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/8c37caaa6818ab6f32a172d12ef08befe31988f6?database_key=geniox&file=State=3D – Default, Type=Geniox HP.png",
+            imageUrl: "/promaster-blobs/8c37caaa6818ab6f32a172d12ef08befe31988f6?database_key=geniox&file=State=3D – Default, Type=Geniox HP.png",
           },
           geometry: {
             type: "Plane",
@@ -30281,8 +30262,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/7155fd327d682385a17b07ca2718d547c80420d6?database_key=geniox&file=State=3D – Default, Type=Fan.png",
+            imageUrl: "/promaster-blobs/7155fd327d682385a17b07ca2718d547c80420d6?database_key=geniox&file=State=3D – Default, Type=Fan.png",
           },
           geometry: {
             type: "Plane",
@@ -30301,8 +30281,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/2113f5f8b05556938e644f6a97c54a035aac762f?database_key=geniox&file=State=3D – Default, Type=Humidifier.png",
+            imageUrl: "/promaster-blobs/2113f5f8b05556938e644f6a97c54a035aac762f?database_key=geniox&file=State=3D – Default, Type=Humidifier.png",
           },
           geometry: {
             type: "Plane",
@@ -30321,8 +30300,7 @@ export const systemair6 = {
           material: {
             opacity: 0,
             normal: "",
-            imageUrl:
-              "/promaster-blobs/cb7766064bb5b51bfab6741daad7da0f5f58aafd?database_key=geniox&file=inspection_jpeg.jpg",
+            imageUrl: "/promaster-blobs/cb7766064bb5b51bfab6741daad7da0f5f58aafd?database_key=geniox&file=inspection_jpeg.jpg",
           },
           geometry: {
             type: "Plane",

@@ -1,14 +1,6 @@
 import * as AI from "abstract-image";
 
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  Table,
-  TableRow,
-  TableCell,
-  Image,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, Table, TableRow, TableCell, Image } from "../../../abstract-document-jsx/index.js";
 import * as TableCellStyle from "../../../abstract-document/styles/table-cell-style.js";
 import * as TableStyle from "../../../abstract-document/styles/table-style.js";
 import type { ExportTestDef } from "./_export-test-def.js";

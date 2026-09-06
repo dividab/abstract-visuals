@@ -98,13 +98,7 @@ export function ReactHotSpot({
           <ReactMaterial isText={false} isHotSpot={true} material={h.mesh.material} hovered={hovered} />
         </ReactMesh>
         <ReactMesh mesh={{ ...h.mesh, geometry: { ...geo, size: vec3Scale(geo.size, 1.0125) } }}>
-          <ReactMaterial
-            isText={false}
-            isHotSpot={true}
-            drawBackOnly={true}
-            material={{ normal: "rgb(0, 0, 0)", opacity: 1.0 }}
-            hovered={hovered}
-          />
+          <ReactMaterial isText={false} isHotSpot={true} drawBackOnly={true} material={{ normal: "rgb(0, 0, 0)", opacity: 1.0 }} hovered={hovered} />
         </ReactMesh>
       </group>
       {hotSpotTexts && text && (

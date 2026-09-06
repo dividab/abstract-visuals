@@ -33,8 +33,7 @@ export function stlCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
       const prevBot = botVec3Array[i - 1]!;
       const prevTop = topVec3Array[i - 1]!;
       if (!c.open) {
-        stlString +=
-          stlPlaneOfVertices(botPos, prevBot, currBot, currBot) + stlPlaneOfVertices(topPos, prevTop, currTop, currTop);
+        stlString += stlPlaneOfVertices(botPos, prevBot, currBot, currBot) + stlPlaneOfVertices(topPos, prevTop, currTop, currTop);
       }
       stlString += stlPlaneOfVertices(currBot, prevBot, prevTop, currTop);
     }

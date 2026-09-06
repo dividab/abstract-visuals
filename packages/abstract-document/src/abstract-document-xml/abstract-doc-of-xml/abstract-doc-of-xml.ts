@@ -23,10 +23,7 @@ export type Format = "PDF" | "DOCX";
 
 export async function abstractDocsXml(
   templateInputs: ReadonlyArray<TemplateInput>,
-  getResources: (
-    imageUrls: Record<string, true>,
-    fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>
-  ) => Promise<Resources>
+  getResources: (imageUrls: Record<string, true>, fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>) => Promise<Resources>
 ): Promise<AbstractDoxXmlsResult> {
   try {
     const abstractDocs = Array<AbstractDoc.AbstractDoc>();
@@ -36,9 +33,7 @@ export async function abstractDocsXml(
       const [ad, newImageUrls, newFontFamilies] = abstractDocXml(r.template, r.data, r.partials);
       abstractDocs.push(ad);
       imageUrls = { ...imageUrls, ...newImageUrls };
-      Object.entries(newFontFamilies).forEach(
-        ([font, types]) => (fontFamilies[font] = { ...fontFamilies[font], ...types })
-      );
+      Object.entries(newFontFamilies).forEach(([font, types]) => (fontFamilies[font] = { ...fontFamilies[font], ...types }));
     }
     const resources = await getResources(imageUrls, fontFamilies);
     const combinedReport = addResources(merge(...abstractDocs), resources);
@@ -52,22 +47,14 @@ export function abstractDocXml(
   template: string,
   data: any,
   partials: Record<string, string>
-): readonly [
-  AbstractDoc.AbstractDoc,
-  imageUrls: Record<string, true>,
-  fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>,
-] {
+): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>] {
   const xml = parseHandlebarsXml(template, data, partials);
   const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
   const doc = abstractDocXmlRecursive(creators(styleNames), xml[0]);
   return [doc, imageUrls, fontFamilies];
 }
 
-function abstractDocXmlRecursive(
-  creators: Record<string, ADCreatorFn>,
-  xmlElement: XmlElement,
-  onlyChildren: boolean = false
-): any {
+function abstractDocXmlRecursive(creators: Record<string, ADCreatorFn>, xmlElement: XmlElement, onlyChildren: boolean = false): any {
   const children = [];
   const props: Record<string, unknown> = {};
   for (const childElement of xmlElement.children ?? []) {
@@ -112,8 +99,7 @@ function abstractDocXmlRecursive(
   const obj = creator(allProps, children) as { [k: string]: unknown };
 
   for (const propName of Object.keys(allProps).sort((a, b) => a.length - b.length)) {
-    const propsCreator =
-      allProps[propName] !== undefined && propsCreators[propName] ? propsCreators[propName] : undefined;
+    const propsCreator = allProps[propName] !== undefined && propsCreators[propName] ? propsCreators[propName] : undefined;
     if (propsCreator) {
       const attributeName = getSuffixedAttributeBaseName(propsCreator.name) ?? propsCreator.name;
       obj[attributeName] = propsCreator(allProps, children);

@@ -29,12 +29,10 @@ export const AbstractDoc = (props?: AbstractDoc1.AbstractDocProps & ChildrenProp
   AbstractDoc1.create(props, props && (props.children as any)) as any;
 export const Section = (props?: Section1.SectionProps & ChildrenProp): React.JSX.Element =>
   Section1.create(props, props && (props.children as any)) as any;
-export const Group = (props: Group1.GroupProps & ChildrenProp): React.JSX.Element =>
-  Group1.create(props, props && (props.children as any)) as any;
+export const Group = (props: Group1.GroupProps & ChildrenProp): React.JSX.Element => Group1.create(props, props && (props.children as any)) as any;
 export const Paragraph = (props: Paragraph1.ParagraphProps & ChildrenProp): React.JSX.Element =>
   Paragraph1.create(props, props && (props.children as any)) as any;
-export const Table = (props: Table1.TableProps & ChildrenProp): React.JSX.Element =>
-  Table1.create(props, props && (props.children as any)) as any;
+export const Table = (props: Table1.TableProps & ChildrenProp): React.JSX.Element => Table1.create(props, props && (props.children as any)) as any;
 export const TableRow = (props: TableRow1.TableRowProps & ChildrenProp): React.JSX.Element =>
   TableRow1.create(props, props && (props.children as any)) as any;
 export const TableCell = (props: TableCell1.TableCellProps & ChildrenProp): React.JSX.Element =>
@@ -42,8 +40,7 @@ export const TableCell = (props: TableCell1.TableCellProps & ChildrenProp): Reac
 export const HyperLink = (props: HyperLink1.HyperLinkProps): React.JSX.Element => HyperLink1.create(props) as any;
 export const LinkTarget = (props: LinkTarget1.LinkTargetProps): React.JSX.Element => LinkTarget1.create(props) as any;
 export const Image = (props: Image1.ImageProps): React.JSX.Element => Image1.create(props) as any;
-export const TocSeparator = (props: TocSeparator1.TocSeparatorProps): React.JSX.Element =>
-  TocSeparator1.create(props) as any;
+export const TocSeparator = (props: TocSeparator1.TocSeparatorProps): React.JSX.Element => TocSeparator1.create(props) as any;
 export const Markdown = (props: Markdown1.MarkdownProps): React.JSX.Element => Markdown1.create(props) as any;
 export const TextField = (props: TextField1.TextFieldProps): React.JSX.Element => TextField1.create(props) as any;
 export const TextRun = (props: TextRun1.TextRunProps): React.JSX.Element => TextRun1.create(props) as any;

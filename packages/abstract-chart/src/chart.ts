@@ -299,14 +299,7 @@ export interface ChartStack {
 export type ChartStackProps = Partial<ChartStack>;
 
 export function createChartStack(props: ChartStackProps): ChartStack {
-  const {
-    points = [],
-    xAxis = "bottom",
-    xAxisIx = 0,
-    yAxis = "left",
-    yAxisIx = 0,
-    config = [createChartStackConfig({})],
-  } = props || {};
+  const { points = [], xAxis = "bottom", xAxisIx = 0, yAxis = "left", yAxisIx = 0, config = [createChartStackConfig({})] } = props || {};
   return { points, xAxis, xAxisIx, yAxis, yAxisIx, config };
 }
 
@@ -342,31 +335,14 @@ export function createChartDataAxis(
   };
 }
 
-export function inverseTransformPoint(
-  point: Point,
-  chart: Chart,
-  xAxis: XAxis,
-  xAxisIx: number,
-  yAxis: YAxis,
-  yAxisIx: number
-): Point | undefined {
+export function inverseTransformPoint(point: Point, chart: Chart, xAxis: XAxis, xAxisIx: number, yAxis: YAxis, yAxisIx: number): Point | undefined {
   const padding = finalPadding(chart);
   const xMin = padding.left;
   const xMax = chart.width - padding.right;
   const yMin = chart.height - padding.bottom;
   const yMax = padding.top;
-  const x = inverseTransformValue(
-    point.x,
-    xMin,
-    xMax,
-    xAxis === "top" ? chart.xAxisesTop[xAxisIx] : chart.xAxisesBottom[xAxisIx]
-  );
-  const y = inverseTransformValue(
-    point.y,
-    yMin,
-    yMax,
-    yAxis === "right" ? chart.yAxisesRight[yAxisIx] : chart.yAxisesLeft[yAxisIx]
-  );
+  const x = inverseTransformValue(point.x, xMin, xMax, xAxis === "top" ? chart.xAxisesTop[xAxisIx] : chart.xAxisesBottom[xAxisIx]);
+  const y = inverseTransformValue(point.y, yMin, yMax, yAxis === "right" ? chart.yAxisesRight[yAxisIx] : chart.yAxisesLeft[yAxisIx]);
   if (x === undefined || y === undefined) {
     return undefined;
   }
@@ -377,23 +353,19 @@ function finalPadding(chart: Chart): Padding {
   return {
     bottom:
       chart.padding.bottom +
-      (chart.xAxisesBottom.filter((a) => !a.noTicks || a.label).length +
-        chart.chartDataAxisesBottom.filter((a) => !a.noTicks || a.label).length) *
+      (chart.xAxisesBottom.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesBottom.filter((a) => !a.noTicks || a.label).length) *
         chart.axisWidth.bottom,
     top:
       chart.padding.top +
-      (chart.xAxisesTop.filter((a) => !a.noTicks || a.label).length +
-        chart.chartDataAxisesTop.filter((a) => !a.noTicks || a.label).length) *
+      (chart.xAxisesTop.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesTop.filter((a) => !a.noTicks || a.label).length) *
         chart.axisWidth.top,
     left:
       chart.padding.left +
-      (chart.yAxisesLeft.filter((a) => !a.noTicks || a.label).length +
-        chart.chartDataAxisesLeft.filter((a) => !a.noTicks || a.label).length) *
+      (chart.yAxisesLeft.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesLeft.filter((a) => !a.noTicks || a.label).length) *
         chart.axisWidth.left,
     right:
       chart.padding.right +
-      (chart.yAxisesRight.filter((a) => !a.noTicks || a.label).length +
-        chart.chartDataAxisesRight.filter((a) => !a.noTicks || a.label).length) *
+      (chart.yAxisesRight.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesRight.filter((a) => !a.noTicks || a.label).length) *
         chart.axisWidth.right,
   };
 }
@@ -418,18 +390,7 @@ export function renderChart(chart: Chart): AbstractImage {
     yAxisesLeft[0] ? (yAxisesLeft[0].thickness ?? 1) : chart.xGrid.thickness / 2,
     yAxisesRight[0] ? (yAxisesRight[0].thickness ?? 1) : chart.xGrid.thickness / 2,
   ];
-  const [xAxisBottom, yAxisGridBottom] = xAxises(
-    "bottom",
-    xNumTicks,
-    xAxisesBottom,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    xleft,
-    xRight,
-    chart
-  );
+  const [xAxisBottom, yAxisGridBottom] = xAxises("bottom", xNumTicks, xAxisesBottom, xMin, xMax, yMin, yMax, xleft, xRight, chart);
   const [xAxisTop, yAxisGridTop] = xAxises("top", xNumTicks, xAxisesTop, xMin, xMax, yMin, yMax, xleft, xRight, chart);
 
   const yNumTicks = gridHeight / chart.yPixelsPerTick;
@@ -438,30 +399,8 @@ export function renderChart(chart: Chart): AbstractImage {
     xAxisesTop[0] ? (xAxisesTop[0].thickness ?? 1) : chart.xGrid.thickness / 2,
   ];
 
-  const [yAxisLeft, xAxisGridLeft] = yAxises(
-    "left",
-    yNumTicks,
-    yAxisesLeft,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    yBottom,
-    yTop,
-    chart
-  );
-  const [yAxisRight, xAxisGridRight] = yAxises(
-    "right",
-    yNumTicks,
-    yAxisesRight,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    yBottom,
-    yTop,
-    chart
-  );
+  const [yAxisLeft, xAxisGridLeft] = yAxises("left", yNumTicks, yAxisesLeft, xMin, xMax, yMin, yMax, yBottom, yTop, chart);
+  const [yAxisRight, xAxisGridRight] = yAxises("right", yNumTicks, yAxisesRight, xMin, xMax, yMin, yMax, yBottom, yTop, chart);
 
   const renderedAreas = generateAreas(xMin, xMax, yMin, yMax, chart);
   const renderedPoints = generatePoints(xMin, xMax, yMin, yMax, chart);
@@ -469,48 +408,12 @@ export function renderChart(chart: Chart): AbstractImage {
   const renderedStack = generateStack(xMin, xMax, yMin, yMax, chart);
   const renderedBars = generateBars(xMin, xMax, yMin, yMax, chart);
   const dataNumTicksX = gridWidth / 70;
-  const renderedDataAxisesBottom = generateDataAxisesX(
-    "bottom",
-    chart.chartDataAxisesBottom,
-    dataNumTicksX,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    chart
-  );
-  const renderedDataAxisesTop = generateDataAxisesX(
-    "top",
-    chart.chartDataAxisesTop,
-    dataNumTicksX,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    chart
-  );
+  const renderedDataAxisesBottom = generateDataAxisesX("bottom", chart.chartDataAxisesBottom, dataNumTicksX, xMin, xMax, yMin, yMax, chart);
+  const renderedDataAxisesTop = generateDataAxisesX("top", chart.chartDataAxisesTop, dataNumTicksX, xMin, xMax, yMin, yMax, chart);
 
   const dataNumTicksY = gridHeight / 70;
-  const renderedDataAxisesLeft = generateDataAxisesY(
-    "left",
-    chart.chartDataAxisesLeft,
-    dataNumTicksY,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    chart
-  );
-  const renderedDataAxisesRight = generateDataAxisesY(
-    "right",
-    chart.chartDataAxisesRight,
-    dataNumTicksY,
-    xMin,
-    xMax,
-    yMin,
-    yMax,
-    chart
-  );
+  const renderedDataAxisesLeft = generateDataAxisesY("left", chart.chartDataAxisesLeft, dataNumTicksY, xMin, xMax, yMin, yMax, chart);
+  const renderedDataAxisesRight = generateDataAxisesY("right", chart.chartDataAxisesRight, dataNumTicksY, xMin, xMax, yMin, yMax, chart);
 
   const components = [
     renderedBackground,
@@ -561,9 +464,7 @@ export function xAxises(
     const fullGrid = ix === 0 && xAxis === "bottom";
     const xTicks = getTicks(xNumTicks, axis);
     if (chart.xGrid && !axis.noTicks) {
-      gridLineComponents.push(
-        generateXAxisGridLines(xMin, xMax, lineY + dirFactor * 10, fullGrid ? yMax : lineY, xTicks, axis, chart.xGrid)
-      );
+      gridLineComponents.push(generateXAxisGridLines(xMin, xMax, lineY + dirFactor * 10, fullGrid ? yMax : lineY, xTicks, axis, chart.xGrid));
     }
     const thickness = axis.thickness ?? 1;
     const lineDisp = ix == 0 ? (xAxis === "bottom" ? thickness / 2 : -thickness / 2) : 0;
@@ -576,9 +477,7 @@ export function xAxises(
       )
     );
     if (!axis.noTicks) {
-      components.push(
-        generateXAxisLabels(xMin, xMax, lineY + dirFactor * 12, xAxis === "bottom" ? "down" : "up", xTicks, axis, chart)
-      );
+      components.push(generateXAxisLabels(xMin, xMax, lineY + dirFactor * 12, xAxis === "bottom" ? "down" : "up", xTicks, axis, chart));
     }
 
     if (axis.label) {
@@ -586,16 +485,7 @@ export function xAxises(
 
       switch (chart.labelLayout) {
         case "original":
-          components.push(
-            generateXAxisLabel(
-              xMax + chart.padding.right,
-              lineY + (axis.tickLabelDisp ?? 10),
-              "uniform",
-              "down",
-              axis,
-              chart
-            )
-          );
+          components.push(generateXAxisLabel(xMax + chart.padding.right, lineY + (axis.tickLabelDisp ?? 10), "uniform", "down", axis, chart));
           break;
         case "end":
           components.push(generateXAxisLabel(xMax, axisLabelPosY, "left", "uniform", axis, chart));
@@ -635,16 +525,7 @@ export function yAxises(
     const yTicks = getTicks(yNumTicks, axis);
     if (chart.yGrid && !axis.noTicks) {
       gridLineComponents.push(
-        generateYAxisLines(
-          lineX + dirFactor * 10,
-          fullGrid ? xMax : lineX,
-          yMin,
-          yMax,
-          yTicks,
-          axis,
-          chart.yGrid,
-          chart.xGrid
-        )
+        generateYAxisLines(lineX + dirFactor * 10, fullGrid ? xMax : lineX, yMin, yMax, yTicks, axis, chart.yGrid, chart.xGrid)
       );
     }
     const thickness = axis.thickness ?? 1;
@@ -666,17 +547,13 @@ export function yAxises(
       const rotation = yAxis === "left" ? -90 : 90;
       switch (chart.labelLayout) {
         case "original":
-          components.push(
-            generateYAxisLabel(axisLabelPosX, yMax + 0.5 * chart.padding.bottom, rotation, "uniform", "up", axis, chart)
-          );
+          components.push(generateYAxisLabel(axisLabelPosX, yMax + 0.5 * chart.padding.bottom, rotation, "uniform", "up", axis, chart));
           break;
         case "end":
           components.push(generateYAxisLabel(axisLabelPosX, yMax, rotation, yAxis, "uniform", axis, chart));
           break;
         case "center":
-          components.push(
-            generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, rotation, "uniform", "uniform", axis, chart)
-          );
+          components.push(generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, rotation, "uniform", "uniform", axis, chart));
           break;
         default:
           return exhaustiveCheck(chart.labelLayout);
@@ -699,10 +576,7 @@ export function generateDataAxisesX(
   chart: Chart
 ): Component {
   const components = Array<Component>();
-  let lineY =
-    xAxis === "bottom"
-      ? yMin + chart.xAxisesBottom.length * chart.axisWidth.bottom
-      : yMax - chart.xAxisesTop.length * chart.axisWidth.top;
+  let lineY = xAxis === "bottom" ? yMin + chart.xAxisesBottom.length * chart.axisWidth.bottom : yMax - chart.xAxisesTop.length * chart.axisWidth.top;
   const [dirFactor, axisWidth] = xAxis === "bottom" ? [1, chart.axisWidth.bottom] : [-1, chart.axisWidth.top];
   for (const axis of axises) {
     const min = Math.min(...axis.points.map((p) => p.y));
@@ -766,23 +640,12 @@ export function generateDataAxisesX(
       })
     );
 
-    components.push(
-      createLine({ x: xMin, y: lineY }, { x: xMax, y: lineY }, axis.axisColor ?? gray, axis.thickness ?? 1)
-    );
+    components.push(createLine({ x: xMin, y: lineY }, { x: xMax, y: lineY }, axis.axisColor ?? gray, axis.thickness ?? 1));
 
     const axisLabelPosY = lineY + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
     switch (chart.labelLayout) {
       case "original":
-        components.push(
-          generateXAxisLabel(
-            xMax + chart.padding.right,
-            yMin + (axis.tickLabelDisp ?? 10),
-            "uniform",
-            "up",
-            linear,
-            chart
-          )
-        );
+        components.push(generateXAxisLabel(xMax + chart.padding.right, yMin + (axis.tickLabelDisp ?? 10), "uniform", "up", linear, chart));
         break;
       case "end":
         components.push(generateXAxisLabel(xMax, axisLabelPosY, "left", "uniform", linear, chart));
@@ -809,10 +672,7 @@ export function generateDataAxisesY(
   chart: Chart
 ): Component {
   const components = Array<Component>();
-  let lineX =
-    yAxis === "left"
-      ? xMin - chart.yAxisesLeft.length * chart.axisWidth.left
-      : xMax + chart.yAxisesRight.length * chart.axisWidth.right;
+  let lineX = yAxis === "left" ? xMin - chart.yAxisesLeft.length * chart.axisWidth.left : xMax + chart.yAxisesRight.length * chart.axisWidth.right;
   const [dirFactor, axisWidth] = yAxis === "left" ? [-1, chart.axisWidth.left] : [1, chart.axisWidth.right];
   for (const axis of axises) {
     const min = Math.min(...axis.points.map((p) => p.y));
@@ -876,32 +736,18 @@ export function generateDataAxisesY(
       })
     );
 
-    components.push(
-      createLine({ x: lineX, y: yMin }, { x: lineX, y: yMax }, axis.axisColor ?? gray, axis.thickness ?? 1)
-    );
+    components.push(createLine({ x: lineX, y: yMin }, { x: lineX, y: yMax }, axis.axisColor ?? gray, axis.thickness ?? 1));
     const rotation = yAxis === "left" ? -90 : 90;
     const axisLabelPosX = lineX + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
     switch (chart.labelLayout) {
       case "original":
-        components.push(
-          generateYAxisLabel(
-            xMax + chart.padding.right,
-            yMin + (axis.tickLabelDisp ?? 10),
-            rotation,
-            "uniform",
-            "up",
-            linear,
-            chart
-          )
-        );
+        components.push(generateYAxisLabel(xMax + chart.padding.right, yMin + (axis.tickLabelDisp ?? 10), rotation, "uniform", "up", linear, chart));
         break;
       case "end":
         components.push(generateYAxisLabel(axisLabelPosX, yMax, rotation, "left", "uniform", linear, chart));
         break;
       case "center":
-        components.push(
-          generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, rotation, "uniform", "uniform", linear, chart)
-        );
+        components.push(generateYAxisLabel(axisLabelPosX, (yMin + yMax) / 2, rotation, "uniform", "uniform", linear, chart));
         break;
       default:
         return exhaustiveCheck(chart.labelLayout);
@@ -940,14 +786,8 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
     return createGroup("stack", []);
   }
 
-  const xAxis =
-    chart.chartStack.xAxis === "top"
-      ? chart.xAxisesTop[chart.chartStack.xAxisIx]
-      : chart.xAxisesBottom[chart.chartStack.xAxisIx];
-  const yAxis =
-    chart.chartStack.yAxis === "right"
-      ? chart.yAxisesRight[chart.chartStack.yAxisIx]
-      : chart.yAxisesLeft[chart.chartStack.yAxisIx];
+  const xAxis = chart.chartStack.xAxis === "top" ? chart.xAxisesTop[chart.chartStack.xAxisIx] : chart.xAxisesBottom[chart.chartStack.xAxisIx];
+  const yAxis = chart.chartStack.yAxis === "right" ? chart.yAxisesRight[chart.chartStack.yAxisIx] : chart.yAxisesLeft[chart.chartStack.yAxisIx];
 
   const xPoints = chart.chartStack.points.map((stackPoints) => {
     let sumY = 0;
@@ -968,9 +808,7 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
   }
 
   const polygons: Array<Polygon> = [];
-  let lastLine = chart.chartStack.points.map((stackPoint) =>
-    transformPoint(createPoint(stackPoint.x, 0), xMin, xMax, yMin, yMax, xAxis, yAxis)
-  );
+  let lastLine = chart.chartStack.points.map((stackPoint) => transformPoint(createPoint(stackPoint.x, 0), xMin, xMax, yMin, yMax, xAxis, yAxis));
   lines.forEach((line, index) => {
     const config = chart.chartStack.config[index];
     if (!config) {
@@ -1160,10 +998,8 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
   for (const bars of chart.chartBars) {
     const xAxis = bars.xAxis === "top" ? chart.xAxisesTop[bars.xAxisIx] : chart.xAxisesBottom[bars.xAxisIx];
     const yAxis = bars.yAxis === "right" ? chart.yAxisesRight[bars.yAxisIx] : chart.yAxisesLeft[bars.yAxisIx];
-    const yMinValue =
-      yAxis?.type === "linear" || yAxis?.type === "logarithmic" ? yAxis.min : (yAxis?.points[0]?.value ?? 0);
-    const xMinValue =
-      xAxis?.type === "linear" || xAxis?.type === "logarithmic" ? xAxis.min : (xAxis?.points[0]?.value ?? 0);
+    const yMinValue = yAxis?.type === "linear" || yAxis?.type === "logarithmic" ? yAxis.min : (yAxis?.points[0]?.value ?? 0);
+    const xMinValue = xAxis?.type === "linear" || xAxis?.type === "logarithmic" ? xAxis.min : (xAxis?.points[0]?.value ?? 0);
     const halfStep = bars.width / 2 + (bars.spacing ?? bars.width / 3) / 2;
     const textRot = bars.direction === "x" ? 0 : -Math.PI / 2;
 
@@ -1188,16 +1024,7 @@ export function generateBars(xMin: number, xMax: number, yMin: number, yMax: num
       const topLeft = transformPoint(tl, xMin, xMax, yMin, yMax, xAxis, yAxis);
       const bottomRight = transformPoint(br, xMin, xMax, yMin, yMax, xAxis, yAxis);
       components.push(
-        createRectangle(
-          topLeft,
-          bottomRight,
-          b.strokeColor ?? transparent,
-          b.strokeThickness ?? 0,
-          b.color,
-          b.id,
-          solidLine,
-          bars.radius
-        )
+        createRectangle(topLeft, bottomRight, b.strokeColor ?? transparent, b.strokeThickness ?? 0, b.color, b.id, solidLine, bars.radius)
       );
       if (b.label) {
         components.push(

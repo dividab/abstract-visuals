@@ -13,8 +13,8 @@ export interface Resources {
   readonly fonts?: Indexer<Font>;
   readonly styles?: Indexer<Style>;
   /**
-   * Embedded image data uri are expected to have to shape: data:image/png;base64,${string},
-   * data:image/jpeg;base64,${string} or data:image/svg+xml,${string}
+   * Embedded image data uri are expected to have to shape: data:image/png;base64,${string}, data:image/jpeg;base64,${string} or
+   * data:image/svg+xml,${string}
    */
   readonly imageResources?: Record<string, ImageResource>;
   readonly numberingDefinitions?: Indexer<NumberingDefinition>;
@@ -70,13 +70,7 @@ export function getNestedStyle(
   const documentDefault = resources.styles && resources.styles[create(type, "Default")];
   const namedStyle = resources.styles && resources.styles[create(type, name)];
   const nestedStyle = nestedStyleNames
-    ? nestedStyleNames.reduce(
-        (sofar, name) => overrideWith(sofar, resources.styles && resources.styles[create(type, name)]),
-        namedStyle
-      )
+    ? nestedStyleNames.reduce((sofar, name) => overrideWith(sofar, resources.styles && resources.styles[create(type, name)]), namedStyle)
     : namedStyle;
-  return overrideWith(
-    elementStyle,
-    overrideWith(nestedStyle, overrideWith(parentStyle, overrideWith(documentDefault, factoryDefault)))
-  );
+  return overrideWith(elementStyle, overrideWith(nestedStyle, overrideWith(parentStyle, overrideWith(documentDefault, factoryDefault))));
 }

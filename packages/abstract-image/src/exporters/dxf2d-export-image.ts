@@ -116,15 +116,7 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   blocks += createSpaceBlock("*Model_Space", modelSpaceHandle, newHandle);
   blocks += createSpaceBlock("*Paper_Space", paperSpaceHandle, newHandle);
   for (const component of root.components) {
-    const [newEntities, newBlocks, newBlockRecords] = componentDxf(
-      component,
-      layer,
-      root.size,
-      modelSpaceHandle,
-      externalCache,
-      opts,
-      newHandle
-    );
+    const [newEntities, newBlocks, newBlockRecords] = componentDxf(component, layer, root.size, modelSpaceHandle, externalCache, opts, newHandle);
     entities += newEntities;
     blocks += newBlocks;
     blockRecords.push(...newBlockRecords);
@@ -193,15 +185,7 @@ function componentDxf(
 
   if (c.type === "group") {
     for (const child of c.children) {
-      const [newEntities, newBlocks, newBlockRecords] = componentDxf(
-        child,
-        layer,
-        size,
-        modelSpaceHandle,
-        externalCache,
-        options,
-        newHandle
-      );
+      const [newEntities, newBlocks, newBlockRecords] = componentDxf(child, layer, size, modelSpaceHandle, externalCache, options, newHandle);
       entities += newEntities;
       blocks += newBlocks;
       blockRecords.push(...newBlockRecords);
@@ -215,11 +199,7 @@ function componentDxf(
     }
     const imageData = options.imageDataByUrl[c.data.url];
     const url =
-      imageData === undefined
-        ? c.data.url
-        : typeof imageData === "string"
-          ? imageData
-          : DXF_DATA_URL + dxf2dExportImage(imageData, options);
+      imageData === undefined ? c.data.url : typeof imageData === "string" ? imageData : DXF_DATA_URL + dxf2dExportImage(imageData, options);
     if (url === undefined || typeof url !== "string" || !url.startsWith(DXF_DATA_URL)) {
       return [entities, blocks, blockRecords];
     }
@@ -254,9 +234,7 @@ function componentDxf(
     const externalBlockRecords = extractBlockRecords(dxfString);
 
     const newBlockRecordHandle = newHandle();
-    const newName = `EMBEDED_IMAGE_${randomID()}_${scale.x.toPrecision(4).replace(".", "_")}X${scale.y
-      .toPrecision(4)
-      .replace(".", "_")}`;
+    const newName = `EMBEDED_IMAGE_${randomID()}_${scale.x.toPrecision(4).replace(".", "_")}X${scale.y.toPrecision(4).replace(".", "_")}`;
 
     const initOldHandlesMap = new Map<string, string>();
 
@@ -449,8 +427,7 @@ function componentDxf(
   }
 
   if (c.type === "text") {
-    const horizontalAlignment =
-      c.horizontalGrowthDirection === "left" ? 2 : c.horizontalGrowthDirection === "uniform" ? 1 : 0;
+    const horizontalAlignment = c.horizontalGrowthDirection === "left" ? 2 : c.horizontalGrowthDirection === "uniform" ? 1 : 0;
     const verticalAlignment = c.verticalGrowthDirection === "up" ? 0 : c.verticalGrowthDirection === "uniform" ? 2 : 3;
     const fontSize = c.fontSize - 2;
 
@@ -619,9 +596,7 @@ function extractEntities(dxf: string): string | undefined {
 }
 
 function extractBlockRecords(dxf: string): ReadonlyArray<BlockRecord> {
-  return [
-    ...dxf.matchAll(/^\s*0\s*\n\s*BLOCK_RECORD[\s\S]*?\n\s*5\s*\n\s*([0-9A-Fa-f]+)[\s\S]*?\n\s*2\s*\n\s*([^\r\n]+)/gm),
-  ].map((match) => ({
+  return [...dxf.matchAll(/^\s*0\s*\n\s*BLOCK_RECORD[\s\S]*?\n\s*5\s*\n\s*([0-9A-Fa-f]+)[\s\S]*?\n\s*2\s*\n\s*([^\r\n]+)/gm)].map((match) => ({
     name: match[2],
     id: match[1],
   }));
@@ -817,13 +792,7 @@ function getScale(extents: DxfExtents, c: BinaryImage): { readonly x: number; re
   };
 }
 
-function createExternalInsert(
-  ins: DxfInsert,
-  c: BinaryImage,
-  size: Size,
-  modelSpaceHandle: string,
-  newHandle: () => string
-): string {
+function createExternalInsert(ins: DxfInsert, c: BinaryImage, size: Size, modelSpaceHandle: string, newHandle: () => string): string {
   const srcH = ins.extents.maxY - ins.extents.minY;
   const srcW = ins.extents.maxX - ins.extents.minX;
   const destW = c.bottomRight.x - c.topLeft.x;
@@ -1007,12 +976,7 @@ function createStyleTable(newHandle: () => string): string {
   return table;
 }
 
-function createDimStyleTable(
-  newHandle: () => string,
-  dimArrowSize: number = 1.0,
-  dimGlobalScale: number = 1.0,
-  dimFontSize: number = 1.0
-): string {
+function createDimStyleTable(newHandle: () => string, dimArrowSize: number = 1.0, dimGlobalScale: number = 1.0, dimFontSize: number = 1.0): string {
   const rootId = newHandle();
   let table = "";
   table += "0\nTABLE\n";
@@ -1130,12 +1094,7 @@ function createBlockRecordsTable(
   return table;
 }
 
-function createObjects(
-  modelSpaceHandle: string,
-  paperSpaceHandle: string,
-  root: AbstractImage,
-  newHandle: () => string
-): string {
+function createObjects(modelSpaceHandle: string, paperSpaceHandle: string, root: AbstractImage, newHandle: () => string): string {
   let objects = "";
   const rootDictId = newHandle();
   const groupDictId = newHandle();
@@ -1162,8 +1121,7 @@ function createObjects(
   objects += "0\nLAYOUT\n5\n" + layoutModelId + "\n102\n{ACAD_REACTORS\n330\n" + layoutDictId + "\n102\n}\n";
   objects += "330\n" + layoutDictId + "\n100\nAcDbPlotSettings\n1\n\n2\nnone_device\n4\n\n6\n\n";
   objects += "40\n0.0\n41\n0.0\n42\n0.0\n43\n0.0\n44\n0.0\n45\n0.0\n46\n0.0\n47\n0.0\n48\n0.0\n49\n0.0\n";
-  objects +=
-    "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n1712\n72\n0\n73\n0\n74\n0\n7\n\n75\n0\n147\n1.0\n148\n0.0\n149\n0.0\n";
+  objects += "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n1712\n72\n0\n73\n0\n74\n0\n7\n\n75\n0\n147\n1.0\n148\n0.0\n149\n0.0\n";
   objects += "100\nAcDbLayout\n1\nModel\n70\n1\n71\n0\n";
   objects += "10\n0.0\n20\n0.0\n11\n" + root.size.width + "\n21\n" + root.size.height + "\n";
   objects += "12\n0.0\n22\n0.0\n32\n0.0\n14\n0.0\n24\n0.0\n34\n0.0\n";
@@ -1175,8 +1133,7 @@ function createObjects(
   objects += "0\nLAYOUT\n5\n" + layoutPaperId + "\n102\n{ACAD_REACTORS\n330\n" + layoutDictId + "\n102\n}\n";
   objects += "330\n" + layoutDictId + "\n100\nAcDbPlotSettings\n1\n\n2\nnone_device\n4\n\n6\n\n";
   objects += "40\n0.0\n41\n0.0\n42\n0.0\n43\n0.0\n44\n0.0\n45\n0.0\n46\n0.0\n47\n0.0\n48\n0.0\n49\n0.0\n";
-  objects +=
-    "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n688\n72\n0\n73\n0\n74\n5\n7\n\n75\n16\n147\n1.0\n148\n0.0\n149\n0.0\n";
+  objects += "140\n0.0\n141\n0.0\n142\n1.0\n143\n1.0\n70\n688\n72\n0\n73\n0\n74\n5\n7\n\n75\n16\n147\n1.0\n148\n0.0\n149\n0.0\n";
   objects += "100\nAcDbLayout\n1\nLayout1\n70\n1\n71\n1\n";
   objects += "10\n0.0\n20\n0.0\n11\n" + root.size.width + "\n21\n" + root.size.height + "\n";
   objects += "12\n0.0\n22\n0.0\n32\n0.0\n14\n1.0E+20\n24\n1.0E+20\n34\n1.0E+20\n";

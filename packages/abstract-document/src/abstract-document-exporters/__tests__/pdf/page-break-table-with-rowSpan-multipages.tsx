@@ -1,12 +1,4 @@
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  Table,
-  TableRow,
-  TableCell,
-  TextRun,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, Table, TableRow, TableCell, TextRun } from "../../../abstract-document-jsx/index.js";
 import { LayoutFoundation, TableCellStyle, TableStyle } from "../../../abstract-document/index.js";
 /* oxlint-disable max-lines */
 /* oxlint-disable functional/no-let */

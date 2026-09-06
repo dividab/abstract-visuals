@@ -170,9 +170,7 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{items[variable]}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors.some((e) => e.message.includes("variable") || e.message.includes("not allowed"))).toBe(
-          true
-        );
+        expect(result.errors.some((e) => e.message.includes("variable") || e.message.includes("not allowed"))).toBe(true);
       });
 
       it("should block string-based computed access on objects", () => {
@@ -231,17 +229,13 @@ describe("analyze - consolidated tests", () => {
       });
 
       it("should handle complex nested scenarios", () => {
-        const ast = parse(
-          "<Text>{departments.map((dept) => dept.employees.map((employee) => employee.salary))}</Text>"
-        );
+        const ast = parse("<Text>{departments.map((dept) => dept.employees.map((employee) => employee.salary))}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(false);
       });
 
       it("should detect typos in complex nested scenarios", () => {
-        const ast = parse(
-          "<Text>{departments.map((dept) => dept.employees.map((employee) => employee.saladry))}</Text>"
-        );
+        const ast = parse("<Text>{departments.map((dept) => dept.employees.map((employee) => employee.saladry))}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
         expect(result.errors[0].message).toContain("Property 'saladry' does not exist on parameter 'employee'");
@@ -343,9 +337,7 @@ describe("analyze - consolidated tests", () => {
                 const ast = parse(testExpression);
                 const result = analyze(ast, baseSchema);
                 expect(result.hasWarnings).toBe(true);
-                expect(result.warnings[0].message).toContain(
-                  `${displayName} expects at least ${requiredParams.length} parameter`
-                );
+                expect(result.warnings[0].message).toContain(`${displayName} expects at least ${requiredParams.length} parameter`);
               });
             }
 

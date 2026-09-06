@@ -80,10 +80,7 @@ function generateLineChart(): AbstractChart.Chart {
   return chart;
 }
 
-function getLineRange(
-  series: AbstractChart.ChartLine[],
-  axisSelector: (point: AbstractImage.Point) => number
-): [number, number] {
+function getLineRange(series: AbstractChart.ChartLine[], axisSelector: (point: AbstractImage.Point) => number): [number, number] {
   const axisValues = series
     .map((serie) => serie.points.map(axisSelector))
     .reduce((soFar, current) => {

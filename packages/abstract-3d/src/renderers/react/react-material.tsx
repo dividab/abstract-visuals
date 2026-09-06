@@ -28,13 +28,7 @@ export function ReactMaterial({
   readonly isHotSpot?: boolean;
   readonly drawBackOnly?: boolean;
 }): React.JSX.Element {
-  const mat = !materialState
-    ? material
-    : materialState === "Accept"
-      ? acceptMat
-      : materialState === "Error"
-        ? errorMar
-        : warningMat;
+  const mat = !materialState ? material : materialState === "Accept" ? acceptMat : materialState === "Error" ? errorMar : warningMat;
 
   const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
   if (isText) {
@@ -93,17 +87,6 @@ const textSelectMat: Material = { normal: "rgb(0, 26, 65)", opacity: 1.0, metaln
 const errorMar: Material = { normal: "#b82f3a", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 const warningMat: Material = { normal: "rgb(240, 197, 48)", opacity: 1.0, metalness: 0.5, roughness: 0.5 };
 
-export function getColor(
-  selected: boolean | undefined,
-  hovered: boolean | undefined,
-  mat: Material,
-  selectedMat: Material
-): string | undefined {
-  return selected
-    ? hovered
-      ? shade(-0.4, selectedMat.normal)
-      : selectedMat.normal
-    : hovered
-      ? shade(-0.4, mat.normal)
-      : mat.normal;
+export function getColor(selected: boolean | undefined, hovered: boolean | undefined, mat: Material, selectedMat: Material): string | undefined {
+  return selected ? (hovered ? shade(-0.4, selectedMat.normal) : selectedMat.normal) : hovered ? shade(-0.4, mat.normal) : mat.normal;
 }

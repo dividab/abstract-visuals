@@ -1,12 +1,4 @@
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  TextRun,
-  PageBreak,
-  LinkTarget,
-  HyperLink,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, TextRun, PageBreak, LinkTarget, HyperLink } from "../../../abstract-document-jsx/index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 const paragraph = (

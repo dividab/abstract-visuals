@@ -1,12 +1,4 @@
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  Table,
-  TableRow,
-  TableCell,
-  TextRun,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, Table, TableRow, TableCell, TextRun } from "../../../abstract-document-jsx/index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 export const testSimpleTableMixAutoFixCellWidths: ExportTestDef = {

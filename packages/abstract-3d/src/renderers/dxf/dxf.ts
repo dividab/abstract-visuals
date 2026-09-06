@@ -21,13 +21,7 @@ import {
   vec3Zero,
 } from "../../abstract-3d.js";
 import { type Optional, calculateVisibleViews } from "../../utils.js";
-import {
-  DEFAULT_CIRCLE_SIDE_COUNT,
-  type DxfOrigin,
-  type Handle,
-  dxfBuild,
-  dxfHandleInit,
-} from "./dxf-encoding/dxf-common.js";
+import { DEFAULT_CIRCLE_SIDE_COUNT, type DxfOrigin, type Handle, dxfBuild, dxfHandleInit } from "./dxf-encoding/dxf-common.js";
 import type { DxfDimensionDefinition } from "./dxf-encoding/dxf-dimension.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
 import { dxfCone } from "./dxf-geometries/dxf-cone.js";
@@ -106,8 +100,7 @@ const renderInternal = (
   const [size] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
   const bounds = bounds3FromPosAndSize(unitCenter, size);
   const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin);
-  const pos =
-    options.origin === "SameAsScene" ? vec3Zero : vec3NegateY(vec3Add(unitCenter, vec3Add(offset, dxfOriginOffset)));
+  const pos = options.origin === "SameAsScene" ? vec3Zero : vec3NegateY(vec3Add(unitCenter, vec3Add(offset, dxfOriginOffset)));
   const visibleViews = calculateVisibleViews(options.view, scene.rotation_deprecated);
   return {
     groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
@@ -244,10 +237,7 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
   const viewRotation = rotationForCameraPos(opts.view);
   const unitRot = vec3RotCombine(viewRotation, scene.rotation_deprecated ?? vec3Zero);
   const bounds = bounds3FromPosAndSize(center, scene.size_deprecated);
-  const offset = vec3Sub(
-    opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z),
-    center
-  );
+  const offset = vec3Sub(opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z), center);
   const dimensionsPos = vec3TransRot(center, offset, unitRot);
   const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
 
@@ -264,11 +254,5 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
     opts,
     handleRef
   );
-  return dxfBuild(
-    dxfGroup(groupRoot, center, unitRot, opts, handleRef),
-    dimensions,
-    bounds2,
-    scene.size_deprecated,
-    center
-  );
+  return dxfBuild(dxfGroup(groupRoot, center, unitRot, opts, handleRef), dimensions, bounds2, scene.size_deprecated, center);
 };

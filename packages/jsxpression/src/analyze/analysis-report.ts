@@ -198,13 +198,7 @@ export class AnalysisReport {
     return this.infos.length > 0;
   }
 
-  addIssue(
-    code: IssueCode,
-    message: string,
-    range: Range,
-    snapshot: ValidationContextSnapshot,
-    suggestions: string[] = []
-  ): void {
+  addIssue(code: IssueCode, message: string, range: Range, snapshot: ValidationContextSnapshot, suggestions: string[] = []): void {
     const { severity, custom } = ISSUES_DEFINITIONS[code];
     this.#issues.push({
       code,

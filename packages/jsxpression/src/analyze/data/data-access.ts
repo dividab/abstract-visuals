@@ -138,10 +138,7 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
   return analysisReport;
 }
 
-function findEnclosingArrowContext(
-  targetNode: any,
-  arrowFunctionContexts: Map<any, Map<string, any>>
-): Map<string, any> | null {
+function findEnclosingArrowContext(targetNode: any, arrowFunctionContexts: Map<any, Map<string, any>>): Map<string, any> | null {
   let best: { arrowFn: any; size: number } | null = null;
   for (const arrowFn of arrowFunctionContexts.keys()) {
     if (targetNode.start >= arrowFn.start && targetNode.end <= arrowFn.end) {
@@ -154,11 +151,7 @@ function findEnclosingArrowContext(
   return best ? arrowFunctionContexts.get(best.arrowFn) || null : null;
 }
 
-function getArrayElementTypeFromCall(
-  node: any,
-  schema: Schema,
-  arrowFunctionContexts: Map<any, Map<string, any>>
-): any {
+function getArrayElementTypeFromCall(node: any, schema: Schema, arrowFunctionContexts: Map<any, Map<string, any>>): any {
   const { callee } = node;
   const dataKeys = new Set(Object.keys(schema.data ?? {}));
 
@@ -201,11 +194,7 @@ function getArrayElementTypeFromCall(
   return null;
 }
 
-function resolveParameterType(
-  paramName: string,
-  currentNode: any,
-  arrowFunctionContexts: Map<any, Map<string, any>>
-): any {
+function resolveParameterType(paramName: string, currentNode: any, arrowFunctionContexts: Map<any, Map<string, any>>): any {
   // Find the arrow function that contains this node and has the parameter
   for (const [arrowFunction, parameterTypes] of arrowFunctionContexts.entries()) {
     if (parameterTypes.has(paramName)) {
@@ -244,12 +233,7 @@ function getSchemaAtPath(path: string[], schema: Schema): any {
   return current;
 }
 
-function validateParameterAccess(
-  node: any,
-  paramType: any,
-  analysisReport: AnalysisReport,
-  validationContext: ValidationContext
-): void {
+function validateParameterAccess(node: any, paramType: any, analysisReport: AnalysisReport, validationContext: ValidationContext): void {
   if (node.property.type !== "Identifier") {
     return;
   }
@@ -269,9 +253,7 @@ function validateParameterAccess(
   } else {
     analysisReport.addIssue(
       "INVALID_PARAMETER_ACCESS",
-      `Cannot access property '${propertyName}' on ${paramType.type || "undefined"} type parameter '${
-        node.object.name
-      }'`,
+      `Cannot access property '${propertyName}' on ${paramType.type || "undefined"} type parameter '${node.object.name}'`,
       getNodeRange(node),
       validationContext.getSnapshot()
     );

@@ -8,10 +8,7 @@ export const testHelloWithDifferentFont: ExportTestDef = {
     <AbstractDoc>
       <Section>
         <Paragraph>
-          <TextRun
-            text="Hello This is Times-Roman font"
-            style={AD.AbstractDoc.TextStyle.create({ fontFamily: "Times-Roman" })}
-          />
+          <TextRun text="Hello This is Times-Roman font" style={AD.AbstractDoc.TextStyle.create({ fontFamily: "Times-Roman" })} />
         </Paragraph>
       </Section>
     </AbstractDoc>

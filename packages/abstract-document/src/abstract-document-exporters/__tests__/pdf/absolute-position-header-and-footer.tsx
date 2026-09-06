@@ -1,12 +1,4 @@
-import {
-  Paragraph,
-  AbstractDoc,
-  Section,
-  TextRun,
-  TextField,
-  Group,
-  render,
-} from "../../../abstract-document-jsx/index.js";
+import { Paragraph, AbstractDoc, Section, TextRun, TextField, Group, render } from "../../../abstract-document-jsx/index.js";
 import * as AD from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 

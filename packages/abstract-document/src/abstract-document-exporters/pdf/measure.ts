@@ -21,19 +21,11 @@ export function measure(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.Abs
   return result;
 }
 
-export function measurePages(
-  pdfKit: PDFKit.PDFDocument,
-  document: AD.AbstractDoc.AbstractDoc,
-  pages: ReadonlyArray<Page>
-): Map<any, AD.Size.Size> {
+export function measurePages(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc, pages: ReadonlyArray<Page>): Map<any, AD.Size.Size> {
   const pdf = new pdfKit();
   registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   return mergeMaps(
-    pages.flatMap((page) =>
-      page.columns.map(({ elements }) =>
-        measureSection(pdf, document, page.section, page.header, page.footer, elements)
-      )
-    )
+    pages.flatMap((page) => page.columns.map(({ elements }) => measureSection(pdf, document, page.section, page.header, page.footer, elements)))
   );
 }
 
@@ -72,9 +64,7 @@ function measureSection(
 
   //header and footer sizes for the first page
   const firstPageHeaderAndFooters = getHeaderAndFooter(section, 1);
-  const firstPageHeaderAndFootersExtracted: ReadonlyArray<
-    [ReadonlyArray<AD.SectionElement.SectionElement>, AD.LayoutFoundation.LayoutFoundation]
-  > = [
+  const firstPageHeaderAndFootersExtracted: ReadonlyArray<[ReadonlyArray<AD.SectionElement.SectionElement>, AD.LayoutFoundation.LayoutFoundation]> = [
     [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
     [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins],
   ];
@@ -160,14 +150,7 @@ function measureParagraph(
       if (atom.type === "Image") {
         hasAtomImage = true;
       }
-      const atomSize = measureAtom(
-        pdfKit,
-        resources,
-        style.textStyle,
-        contentAvailableSize,
-        contentAvailableSize.width - currentRowWidth,
-        atom
-      );
+      const atomSize = measureAtom(pdfKit, resources, style.textStyle, contentAvailableSize, contentAvailableSize.width - currentRowWidth, atom);
       if (atom.type === "TextRun" || atom.type === "TextField" || atom.type === "HyperLink") {
         concatenatedText += atom.text;
         textOptions = getBiggestStyle(atom, style, resources, textOptions);
@@ -241,13 +224,7 @@ export function measureTable(
   availableSize: AD.Size.Size,
   table: AD.Table.Table
 ): Map<any, AD.Size.Size> {
-  const style = AD.Resources.getStyle(
-    undefined,
-    table.style,
-    "TableStyle",
-    table.styleName,
-    resources
-  ) as AD.TableStyle.TableStyle;
+  const style = AD.Resources.getStyle(undefined, table.style, "TableStyle", table.styleName, resources) as AD.TableStyle.TableStyle;
   const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
   const tableAvailableWidth = availableSize.width - (styleMargins.left + styleMargins.right);
   const numInfinityColumns = table.columnWidths.filter((w) => !isFinite(w)).length;
@@ -348,9 +325,7 @@ function measureGroup(
   availableSize: AD.Size.Size,
   keepTogether: AD.Group.Group
 ): Map<any, AD.Size.Size> {
-  let desiredSizes = mergeMaps(
-    keepTogether.children.map((e) => measureSectionElement(pdfKit, resources, availableSize, e))
-  );
+  let desiredSizes = mergeMaps(keepTogether.children.map((e) => measureSectionElement(pdfKit, resources, availableSize, e)));
   let desiredHeight = keepTogether.children.reduce(
     (sum, e) => sum + (AD.Position.isPositionAbsolute(e) ? 0 : getDesiredSize(e, desiredSizes).height),
     0.0
@@ -433,13 +408,7 @@ function measureHyperLink(
   hyperLink: AD.HyperLink.HyperLink,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  const style = AD.Resources.getStyle(
-    textStyle,
-    hyperLink.style,
-    "TextStyle",
-    hyperLink.styleName,
-    resources
-  ) as AD.TextStyle.TextStyle;
+  const style = AD.Resources.getStyle(textStyle, hyperLink.style, "TextStyle", hyperLink.styleName, resources) as AD.TextStyle.TextStyle;
   return measureText(pdf, hyperLink.text, style, availableSize);
 }
 
@@ -450,13 +419,7 @@ function measureTextField(
   textField: AD.TextField.TextField,
   availableSize: AD.Size.Size
 ): AD.Size.Size {
-  const style = AD.Resources.getStyle(
-    textStyle,
-    textField.style,
-    "TextStyle",
-    textField.styleName,
-    resources
-  ) as AD.TextStyle.TextStyle;
+  const style = AD.Resources.getStyle(textStyle, textField.style, "TextStyle", textField.styleName, resources) as AD.TextStyle.TextStyle;
   switch (textField.fieldType) {
     case "Date":
       return measureText(pdf, new Date(Date.now()).toDateString(), style, availableSize);
@@ -482,11 +445,7 @@ function measureTocSeparator(
   };
 }
 
-function measureImage(
-  resources: AD.Resources.Resources,
-  availableSize: AD.Size.Size,
-  image: AD.Image.Image
-): AD.Size.Size {
+function measureImage(resources: AD.Resources.Resources, availableSize: AD.Size.Size, image: AD.Image.Image): AD.Size.Size {
   const ai = image.imageResource.abstractImage;
   const firstComp = ai.components[0];
   const resource =
@@ -560,13 +519,7 @@ function measureText(
   return AD.Size.create(width, height, availableSize.width);
 }
 
-function widthOfString(
-  pdf: PDFKit.PDFDocument,
-  font: string,
-  fontSize: number,
-  text: string,
-  options: PDFKit.Mixins.TextOptions
-): number {
+function widthOfString(pdf: PDFKit.PDFDocument, font: string, fontSize: number, text: string, options: PDFKit.Mixins.TextOptions): number {
   const key = JSON.stringify({ font, fontSize, text, options });
   const cached = widthOfStringCache.get(key);
   if (cached !== undefined) {
@@ -579,13 +532,7 @@ function widthOfString(
   return width;
 }
 
-function heightOfString(
-  pdf: PDFKit.PDFDocument,
-  font: string,
-  fontSize: number,
-  text: string,
-  options: PDFKit.Mixins.TextOptions
-): number {
+function heightOfString(pdf: PDFKit.PDFDocument, font: string, fontSize: number, text: string, options: PDFKit.Mixins.TextOptions): number {
   const key = JSON.stringify({ font, fontSize, text, options });
   const cached = heightOfStringCache.get(key);
   if (cached !== undefined) {

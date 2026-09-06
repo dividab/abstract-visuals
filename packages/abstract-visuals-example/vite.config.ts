@@ -24,14 +24,6 @@ export default defineConfig({
   },
   optimizeDeps: {
     // abstract-image is a depency of abstract-chart and abstract-document.
-    include: [
-      "abstract-sheet",
-      "abstract-chart",
-      "abstract-document",
-      "abstract-3d",
-      "abstract-image",
-      "handlebars-xml",
-      "jsxpression",
-    ],
+    include: ["abstract-sheet", "abstract-chart", "abstract-document", "abstract-3d", "abstract-image", "handlebars-xml", "jsxpression"],
   },
 });

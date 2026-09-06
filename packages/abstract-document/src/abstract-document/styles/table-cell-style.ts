@@ -35,10 +35,7 @@ export function create(props?: TableCellStyleProps): TableCellStyle {
   };
 }
 
-export function overrideWith(
-  overrider: TableCellStyle | undefined,
-  toOverride: TableCellStyle | undefined
-): TableCellStyle {
+export function overrideWith(overrider: TableCellStyle | undefined, toOverride: TableCellStyle | undefined): TableCellStyle {
   const a: TableCellStyleProps = overrider || {};
   const b: TableCellStyleProps = toOverride || {};
   return create({

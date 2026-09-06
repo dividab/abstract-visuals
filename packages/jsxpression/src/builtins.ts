@@ -383,8 +383,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
     generic: "<T>",
     methods: {
       map: {
-        description:
-          "Calls a defined callback function on each element of an array, and returns an array that contains the results",
+        description: "Calls a defined callback function on each element of an array, and returns an array that contains the results",
         params: [
           {
             kind: "function" as const,
@@ -470,8 +469,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
         returnType: "U",
       },
       find: {
-        description:
-          "Returns the value of the first element in the array where predicate is true, and undefined otherwise",
+        description: "Returns the value of the first element in the array where predicate is true, and undefined otherwise",
         params: [
           {
             kind: "function" as const,
@@ -569,8 +567,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             kind: "primitive" as const,
             name: "end",
             types: ["number"],
-            description:
-              "The end index of the specified portion of the array. This is exclusive of the element at the index 'end'",
+            description: "The end index of the specified portion of the array. This is exclusive of the element at the index 'end'",
             required: false,
           },
         ],
@@ -590,8 +587,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             kind: "primitive" as const,
             name: "fromIndex",
             types: ["number"],
-            description:
-              "The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0",
+            description: "The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0",
             required: false,
           },
         ],
@@ -611,8 +607,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             kind: "primitive" as const,
             name: "fromIndex",
             types: ["number"],
-            description:
-              "The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0",
+            description: "The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0",
             required: false,
           },
         ],
@@ -639,8 +634,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             kind: "primitive" as const,
             name: "index",
             types: ["number"],
-            description:
-              "The zero-based index of the desired code unit. A negative index will count back from the last item",
+            description: "The zero-based index of the desired code unit. A negative index will count back from the last item",
             required: true,
           },
         ],
@@ -688,8 +682,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
         returnType: "number",
       },
       flat: {
-        description:
-          "Returns a new array with all sub-array elements concatenated into it recursively up to the specified depth",
+        description: "Returns a new array with all sub-array elements concatenated into it recursively up to the specified depth",
         params: [
           {
             kind: "primitive" as const,
@@ -702,8 +695,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
         returnType: "T[]",
       },
       flatMap: {
-        description:
-          "Calls a defined callback function on each element of an array, then flattens the result into a new array",
+        description: "Calls a defined callback function on each element of an array, then flattens the result into a new array",
         params: [
           {
             kind: "function" as const,
@@ -769,8 +761,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             kind: "primitive" as const,
             name: "index",
             types: ["number"],
-            description:
-              "The zero-based index of the desired character. If there is no character at the specified index, NaN is returned",
+            description: "The zero-based index of the desired character. If there is no character at the specified index, NaN is returned",
             required: true,
           },
         ],
@@ -845,8 +836,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             kind: "primitive" as const,
             name: "position",
             types: ["number"],
-            description:
-              "The index at which to begin searching the String object. If omitted, search starts at the beginning of the string",
+            description: "The index at which to begin searching the String object. If omitted, search starts at the beginning of the string",
             required: false,
           },
         ],
@@ -866,8 +856,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             kind: "primitive" as const,
             name: "position",
             types: ["number"],
-            description:
-              "The index at which to begin searching. If omitted, the search begins at the end of the string",
+            description: "The index at which to begin searching. If omitted, the search begins at the end of the string",
             required: false,
           },
         ],
@@ -996,8 +985,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
             kind: "primitive" as const,
             name: "replaceValue",
             types: ["string"],
-            description:
-              "A string containing the text to replace for every successful match of searchValue in this string",
+            description: "A string containing the text to replace for every successful match of searchValue in this string",
             required: true,
           },
         ],

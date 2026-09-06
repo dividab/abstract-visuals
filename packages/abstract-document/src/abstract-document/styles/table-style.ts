@@ -20,12 +20,7 @@ export interface TableStyleProps {
 }
 
 export function create(props?: TableStyleProps): TableStyle {
-  const {
-    margins = LayoutFoundation.create(),
-    alignment,
-    position = "relative",
-    cellStyle = TableCellStyle.create(),
-  } = props || {};
+  const { margins = LayoutFoundation.create(), alignment, position = "relative", cellStyle = TableCellStyle.create() } = props || {};
   return {
     type: "TableStyle",
     position,

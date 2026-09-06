@@ -72,29 +72,17 @@ export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement
       const getRangeOfElement = (text: string, incrementPosition: boolean = true): Range => {
         if (text === undefined) {
           const monacoPosition = getPositionFromIndex(lines, pos);
-          return toRange(
-            monacoPosition.lineNumber,
-            monacoPosition.column,
-            monacoPosition.lineNumber,
-            monacoPosition.column + 5
-          );
+          return toRange(monacoPosition.lineNumber, monacoPosition.column, monacoPosition.lineNumber, monacoPosition.column + 5);
         }
         const position = cleanedXml.indexOf(text, pos);
         if (incrementPosition) {
           pos = position >= pos ? position + text.length : pos;
         }
         const monacoPosition = getPositionFromIndex(lines, position);
-        return toRange(
-          monacoPosition.lineNumber,
-          monacoPosition.column,
-          monacoPosition.lineNumber,
-          monacoPosition.column + text.length
-        );
+        return toRange(monacoPosition.lineNumber, monacoPosition.column, monacoPosition.lineNumber, monacoPosition.column + text.length);
       };
 
-      const validationErrors = entryPointXml.children.flatMap((child) =>
-        validateElements(child, undefined, entryPointSchema, getRangeOfElement)
-      );
+      const validationErrors = entryPointXml.children.flatMap((child) => validateElements(child, undefined, entryPointSchema, getRangeOfElement));
       errors.push(...validationErrors);
     } catch (e) {
       errors.push(createError(e.message, ErrorType.error, toRange(1, 1, 1, 100)));
@@ -128,9 +116,7 @@ function validateElements(
     return [createError(`"${tagName}" is not a valid element`, ErrorType.error, range)];
   }
 
-  const possibleAttributes = Array.from(foundSchemaElement.children).flatMap((c) =>
-    c.tagName === "attribute" ? c : []
-  );
+  const possibleAttributes = Array.from(foundSchemaElement.children).flatMap((c) => (c.tagName === "attribute" ? c : []));
 
   // Validate required attributes
   for (const possibleAttribute of possibleAttributes) {

@@ -91,11 +91,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
       <div style={{ padding: 8 }}>
         <label>
           Camera:
-          <select
-            value={cameraType}
-            onChange={(e) => setCameraType(e.target.value as "Perspective" | "Orthographic")}
-            style={{ marginLeft: 8 }}
-          >
+          <select value={cameraType} onChange={(e) => setCameraType(e.target.value as "Perspective" | "Orthographic")} style={{ marginLeft: 8 }}>
             <option value="Perspective">Perspective</option>
             <option value="Orthographic">Orthographic</option>
           </select>

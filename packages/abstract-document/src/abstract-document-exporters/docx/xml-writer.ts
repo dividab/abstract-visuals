@@ -89,12 +89,7 @@ export class XmlWriter {
   WriteStartElement(localName: string, ns: string, prefix: string): void;
   WriteStartElement(localName: string, ns?: string, prefix?: string): void {
     try {
-      if (
-        this._state === "Start" ||
-        this._state === "Prolog" ||
-        this._state === "Element" ||
-        this._state === "Content"
-      ) {
+      if (this._state === "Start" || this._state === "Prolog" || this._state === "Element" || this._state === "Content") {
         if (this._state === "Element") {
           // Close previous start-element
           this.completeStartElement(false, this.peekContextStack().namespaces);
