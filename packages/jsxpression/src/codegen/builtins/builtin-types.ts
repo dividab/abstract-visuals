@@ -26,16 +26,11 @@ function extractGenerics(method: BuiltinMethodSchema): string {
 }
 
 function generateParam(param: BuiltinParamSchema): string {
-  let typeStr: string;
+  let typeStr: string = param.kind === "function" ? generateCallbackSignature(param.signature) : param.types.join(" | ");
 
-  if (param.kind === "function") {
-    typeStr = generateCallbackSignature(param.signature);
-  } else {
-    typeStr = param.types.join(" | ");
-    // The type should be an array for variadic parameters
-    if (param.variadic) {
-      typeStr = `${typeStr}[]`;
-    }
+  // The type should be an array for variadic parameters
+  if (param.kind !== "function" && param.variadic) {
+    typeStr = `${typeStr}[]`;
   }
 
   const optional = param.required || param.variadic ? "" : "?";

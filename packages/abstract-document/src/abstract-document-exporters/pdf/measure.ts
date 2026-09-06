@@ -142,7 +142,7 @@ function measureParagraph(
     let currentRowHeight = 0;
     let concatenatedText = "";
     let hasAtomImage = false;
-    let textOptions;
+    let textOptions: AD.TextStyle.TextStyle | undefined = undefined;
     for (const atom of row) {
       if (atom.type === "Image") {
         hasAtomImage = true;

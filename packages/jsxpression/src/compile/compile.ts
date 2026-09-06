@@ -135,7 +135,7 @@ function emitAttributes(attributes: Array<JSXAttribute | JSXSpreadAttribute>, lo
 
     const key = attribute.name?.name;
 
-    let value: string;
+    let value: string = "";
     if (!attribute.value) {
       value = "true";
     } else if (attribute.value.type === "Literal") {
@@ -241,12 +241,9 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
     }
     case "MemberExpression": {
       const obj = emitExpression(node.object, localFunctions);
-      let prop: string;
-      if (node.computed) {
-        prop = `[${emitExpression(node.property, localFunctions)}]`;
-      } else {
-        prop = `.${getAstKeyString(node.property as Identifier | Literal)}`;
-      }
+      const prop: string = node.computed
+        ? `[${emitExpression(node.property, localFunctions)}]`
+        : `.${getAstKeyString(node.property as Identifier | Literal)}`;
       return `${obj}${prop}`;
     }
     case "CallExpression": {

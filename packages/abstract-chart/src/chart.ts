@@ -873,7 +873,7 @@ function getLineSegmentsInsideChart(
 ): ReadonlyArray<ReadonlyArray<Point>> {
   const segments: Array<ReadonlyArray<Point>> = [];
   let segment: Array<Point> = [];
-  let prev: Point | undefined;
+  let prev: Point | undefined = undefined;
   for (const point of points) {
     const prevInside = prev && isInside(xMin, xMax, yMin, yMax, prev);
     const inside = isInside(xMin, xMax, yMin, yMax, point);

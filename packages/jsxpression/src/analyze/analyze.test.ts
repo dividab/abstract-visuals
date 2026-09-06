@@ -259,7 +259,7 @@ describe("analyze - consolidated tests", () => {
             const displayName = objectName === "Math" ? `Math.${methodName}` : methodName;
 
             it(`should allow ${displayName} with valid parameters`, () => {
-              let testExpression: string;
+              let testExpression: string = "";
 
               if (objectName === "Math") {
                 // Math methods
@@ -323,7 +323,7 @@ describe("analyze - consolidated tests", () => {
 
             if (requiredParams.length > 0) {
               it(`should validate ${displayName} minimum parameters`, () => {
-                let testExpression: string;
+                let testExpression: string = "";
 
                 if (objectName === "Math") {
                   testExpression = `<Text>{Math.${methodName}()}</Text>`;
@@ -351,7 +351,7 @@ describe("analyze - consolidated tests", () => {
                   .fill("1")
                   .join(", ");
 
-                let testExpression: string;
+                let testExpression: string = "";
 
                 if (objectName === "Math") {
                   testExpression = `<Text>{Math.${methodName}(${extraParams})}</Text>`;
@@ -389,7 +389,7 @@ describe("analyze - consolidated tests", () => {
         describe(`${objectName} properties`, () => {
           Object.entries(schema.properties!).forEach(([propName, propDef]) => {
             it(`should allow ${objectName}.${propName} property access`, () => {
-              let testExpression: string;
+              let testExpression: string = "";
 
               if (objectName === "Array.prototype") {
                 testExpression = `<Text>{items.${propName}}</Text>`;

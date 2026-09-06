@@ -147,19 +147,13 @@ export function ReactCamera({
       initialDistRef.current = dist;
 
       // Fit scene into the usable area
-      let sceneHalfW: number;
-      let sceneHalfH: number;
-
       const padFactor = 1 + fitPadding;
-      if (sceneAspect > usableAspect) {
-        // Scene wider than usable area — constrain by width
-        sceneHalfW = (screenW / 2) * padFactor;
-        sceneHalfH = (screenW / 2 / usableAspect) * padFactor;
-      } else {
-        // Scene taller — constrain by height
-        sceneHalfH = (screenH / 2) * padFactor;
-        sceneHalfW = ((usableAspect * screenH) / 2) * padFactor;
-      }
+      const { sceneHalfW, sceneHalfH } =
+        sceneAspect > usableAspect
+          ? // Scene wider than usable area — constrain by width
+            { sceneHalfW: (screenW / 2) * padFactor, sceneHalfH: (screenW / 2 / usableAspect) * padFactor }
+          : // Scene taller — constrain by height
+            { sceneHalfH: (screenH / 2) * padFactor, sceneHalfW: ((usableAspect * screenH) / 2) * padFactor };
 
       // World units per CSS pixel in the usable area
       const wpp = (sceneHalfW * 2) / usableW;

@@ -222,7 +222,7 @@ function renderParagraph(
   const rows: Array<Array<AD.Atom.Atom>> = [];
   let currentRow: Array<AD.Atom.Atom> = [];
   let currentWidth = 0;
-  let previousAtomType: string | undefined;
+  let previousAtomType: string | undefined = undefined;
   for (const atom of paragraph.children) {
     if (atom.type === "LineBreak") {
       currentRow.push(atom);

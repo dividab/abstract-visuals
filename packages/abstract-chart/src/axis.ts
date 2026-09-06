@@ -139,7 +139,7 @@ interface Alternative {
 }
 
 export function getLinearTicks(desiredTicks: number, min: number, max: number): ReadonlyArray<DiscreteAxisPoint> {
-  let best: Alternative | undefined;
+  let best: Alternative | undefined = undefined;
   for (const power of linearPowers) {
     const base = 10 ** power;
     for (const multiple of linearMultiples) {
