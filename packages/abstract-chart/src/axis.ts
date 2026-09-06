@@ -141,7 +141,7 @@ interface Alternative {
 export function getLinearTicks(desiredTicks: number, min: number, max: number): ReadonlyArray<DiscreteAxisPoint> {
   let best: Alternative | undefined;
   for (const power of linearPowers) {
-    const base = Math.pow(10, power);
+    const base = 10 ** power;
     for (const multiple of linearMultiples) {
       const step = base * multiple;
       const cMin = Math.ceil(min / step);
@@ -165,7 +165,7 @@ export function getLogarithmicTicks(desiredTicks: number, min: number, max: numb
   const powers = range(0, maxPow - minPow + 1).map((p) => minPow + p);
   const alternatives = logarithmicAlternatives.map((stepAlt) => {
     const altLines = powers.reduce((lines: Array<DiscreteAxisPoint>, power: number) => {
-      const base = Math.pow(10, power);
+      const base = 10 ** power;
       const powerLines = stepAlt.map((i) => ({ value: i * base }));
       return lines.concat(powerLines);
     }, []);
@@ -265,7 +265,7 @@ export function inverseLinearTransform(value: number, min: number, max: number):
 }
 
 export function inverseLogarithmicTransform(value: number, min: number, max: number): number {
-  return Math.pow(10, value * (Math.log10(max) - Math.log10(min)) + Math.log10(min));
+  return 10 ** (value * (Math.log10(max) - Math.log10(min)) + Math.log10(min));
 }
 
 function range(from: number, to: number): ReadonlyArray<number> {

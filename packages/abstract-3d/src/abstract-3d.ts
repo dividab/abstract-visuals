@@ -312,7 +312,7 @@ export const vec3Normalize = (v: Vec3): Vec3 => vec3Scale(v, 1 / vec3Length(v));
 
 export const vec2Greater = (a: Vec2, b: Vec2): Vec2 => vec2(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
 
-export const vec2DistSquared = (a: Vec2, b: Vec2): number => Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2);
+export const vec2DistSquared = (a: Vec2, b: Vec2): number => (b.x - a.x) ** 2 + (b.y - a.y) ** 2;
 
 export const vec2Dist = (a: Vec2, b: Vec2): number => vec2DistSquared(a, b);
 
@@ -331,7 +331,7 @@ export const vec3ZMean = (...v: ReadonlyArray<Vec3>): number => v.reduce((a, c) 
 
 export const vec3Greater = (a: Vec3, b: Vec3): Vec3 => vec3(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z);
 
-export const vec3DistSquared = (a: Vec3, b: Vec3): number => Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2);
+export const vec3DistSquared = (a: Vec3, b: Vec3): number => (b.x - a.x) ** 2 + (b.y - a.y) ** 2 + (b.z - a.z) ** 2;
 
 export const vec3Dist = (a: Vec3, b: Vec3): number => vec3DistSquared(a, b);
 

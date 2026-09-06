@@ -33,7 +33,6 @@ export default defineConfig({
     "typescript/ban-tslint-comment": "off", // 11 errors
     "no-bitwise": "off", // 38 errors
     "init-declarations": "off", // 14 errors
-    "no-restricted-properties": "off", // 8 errors
     "typescript/switch-exhaustiveness-check": "off", // 25 errors
     "max-lines": ["error", 1100],
 
