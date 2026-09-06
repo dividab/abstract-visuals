@@ -23,7 +23,7 @@ export interface ChildrenProp {
   readonly children?: Child;
 }
 export type Child = React.JSX.Element | Children;
-export interface Children extends ReadonlyArray<Child> {}
+export type Children = ReadonlyArray<Child>;
 
 // These factories build a real AD tree, structurally incompatible with React.JSX.Element (the fake
 // type this JSX pragma requires). Every cast below just bridges the two via `unknown`; there's no real type fix.

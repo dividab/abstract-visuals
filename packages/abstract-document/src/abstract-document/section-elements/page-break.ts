@@ -4,7 +4,7 @@ export type PageBreak = Resources & {
   readonly type: "PageBreak";
 };
 
-export type PageBreakProps = {};
+export type PageBreakProps = object;
 
 export function create(_props?: PageBreakProps): PageBreak {
   return {

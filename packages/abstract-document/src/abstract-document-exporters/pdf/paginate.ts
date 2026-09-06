@@ -41,7 +41,7 @@ function paginateSection(
   pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
   parentResources: AD.Resources.Resources,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   previousPage: Page | undefined,
   section: AD.Section.Section
 ): Array<Page> {
@@ -140,7 +140,7 @@ function splitTable(
   pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
   resources: AD.Resources.Resources,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   table: AD.Table.Table,
   elementsHeight: number,
   availableHeight: number,
@@ -187,7 +187,7 @@ function splitTable(
 
 function createPage(
   resources: AD.Resources.Resources,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   previousPage: Page | undefined,
   section: AD.Section.Section,
   columns: ReadonlyArray<PageColumn>,
@@ -292,7 +292,7 @@ export function getHeaderAndFooter(
   }
 }
 
-function getPageContentRect(desiredSizes: Map<{}, AD.Size.Size>, section: AD.Section.Section, pageNo: number): AD.Rect.Rect {
+function getPageContentRect(desiredSizes: Map<object, AD.Size.Size>, section: AD.Section.Section, pageNo: number): AD.Rect.Rect {
   const style = section.page.style;
   const styleContentMargins = AD.LayoutFoundation.orDefault(style.contentMargins);
   const pageWidth = AD.PageStyle.getWidth(style);
@@ -392,7 +392,7 @@ function getTableMargins(resources: AD.Resources.Resources, table: AD.Table.Tabl
   return style.margins;
 }
 
-function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Size.Size {
+function getDesiredSize(element: object, desiredSizes: Map<object, AD.Size.Size>): AD.Size.Size {
   const size = desiredSizes.get(element);
   if (size) {
     return size;
@@ -404,7 +404,7 @@ function splitTableAt(
   pdfKit: PDFKit.PDFDocument,
   document: AD.AbstractDoc.AbstractDoc,
   resources: AD.Resources.Resources,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   table: AD.Table.Table,
   splitIndex: number
 ): [AD.Table.Table, AD.Table.Table] {

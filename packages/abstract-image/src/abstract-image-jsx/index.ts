@@ -26,7 +26,7 @@ export interface ChildrenProp {
   readonly children?: Child;
 }
 export type Child = React.JSX.Element | Children;
-export interface Children extends ReadonlyArray<Child> {}
+export type Children = ReadonlyArray<Child>;
 
 export const Group = (props: GroupComponent): GroupComponent => createGroup(props.name, props.children);
 export const BinaryImage = (props: BinaryImageComponent): BinaryImageComponent =>

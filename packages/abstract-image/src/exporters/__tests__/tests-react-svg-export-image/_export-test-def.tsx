@@ -4,6 +4,6 @@ import type * as React from "react";
 
 export type ExportTestDef = {
   readonly name: string;
-  readonly abstractImage: React.ReactElement<{}> | string;
+  readonly abstractImage: React.ReactElement<object> | string;
   readonly expectedSerializedJsx: string;
 };

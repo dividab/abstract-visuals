@@ -4,5 +4,5 @@ export type ExportTestDef = {
   readonly only?: boolean;
   readonly skip?: boolean;
   readonly abstractDocJsx: React.JSX.Element;
-  readonly expectedPdfJson: {};
+  readonly expectedPdfJson: object;
 };

@@ -2,7 +2,7 @@
 export type ExportTestDef = {
   readonly name: string;
   readonly abstractDocXML: string;
-  readonly images: {};
-  readonly fonts: {};
-  readonly expectedPdfJson: {};
+  readonly images: object;
+  readonly fonts: object;
+  readonly expectedPdfJson: object;
 };

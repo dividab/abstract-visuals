@@ -58,7 +58,7 @@ function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDo
   return pdf;
 }
 
-function renderPage(parentResources: AD.Resources.Resources, pdfKit: PDFKit.PDFDocument, desiredSizes: Map<{}, AD.Size.Size>, page: Page): void {
+function renderPage(parentResources: AD.Resources.Resources, pdfKit: PDFKit.PDFDocument, desiredSizes: Map<object, AD.Size.Size>, page: Page): void {
   const section = page.section;
   const style = section.page.style;
   const resources = AD.Resources.mergeResources([parentResources, section]);
@@ -155,7 +155,7 @@ function addPage(pdf: PDFKit.PDFDocument, page: Page): AD.Rect.Rect {
 function renderSectionElement(
   parentResources: AD.Resources.Resources,
   pdf: PDFKit.PDFDocument,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   element: AD.SectionElement.SectionElement
 ): void {
@@ -178,7 +178,7 @@ function renderSectionElement(
 function renderGroup(
   resources: AD.Resources.Resources,
   pdfKit: PDFKit.PDFDocument,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   group: AD.Group.Group
 ): void {
@@ -205,7 +205,7 @@ function renderGroup(
 function renderParagraph(
   resources: AD.Resources.Resources,
   pdfKit: PDFKit.PDFDocument,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   paragraph: AD.Paragraph.Paragraph
 ): void {
@@ -695,7 +695,7 @@ function drawDottedLine(
 function renderTable(
   resources: AD.Resources.Resources,
   pdf: PDFKit.PDFDocument,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   table: AD.Table.Table
 ): void {
@@ -723,7 +723,7 @@ function renderTable(
 function renderRow(
   resources: AD.Resources.Resources,
   pdf: PDFKit.PDFDocument,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   table: AD.Table.Table,
@@ -759,7 +759,7 @@ function renderRow(
 function renderCell(
   resources: AD.Resources.Resources,
   pdf: PDFKit.PDFDocument,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   finalRect: AD.Rect.Rect,
   tableCellStyle: AD.TableCellStyle.TableCellStyle,
   cell: AD.TableCell.TableCell,
@@ -852,7 +852,7 @@ function borderColor(style: AD.TableCellStyle.TableCellStyle, edge: "top" | "bot
   return "black";
 }
 
-function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Size.Size {
+function getDesiredSize(element: object, desiredSizes: Map<object, AD.Size.Size>): AD.Size.Size {
   const size = desiredSizes.get(element);
   if (size) {
     return size;

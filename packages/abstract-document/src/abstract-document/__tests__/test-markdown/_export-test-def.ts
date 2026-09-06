@@ -2,5 +2,5 @@
 export type ExportTestDef = {
   readonly name: string;
   readonly abstractDocJsx: React.JSX.Element;
-  readonly expectedMarkdown: {};
+  readonly expectedMarkdown: object;
 };

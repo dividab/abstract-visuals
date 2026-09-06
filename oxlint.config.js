@@ -20,7 +20,6 @@ export default defineConfig({
     "typescript/no-unsafe-return": "off", // 48 errors
     "typescript/no-unsafe-member-access": "off", // 390 errors
     "typescript/no-unsafe-type-assertion": "off", // 155 errors
-    "typescript/no-empty-object-type": "off", // 37 errors
     "typescript/no-unnecessary-condition": "off", // 164 errors
     "typescript/switch-exhaustiveness-check": ["error", { considerDefaultExhaustiveForUnions: true }],
     "max-lines": ["error", 1100],

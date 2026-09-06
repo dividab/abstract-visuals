@@ -11,7 +11,7 @@ type LongWordSplit = {
 export function rowsSplit(
   rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>,
   availableWidth: number,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   alignment: PdfKitAlignment,
   pdf: PDFKit.PDFDocument,
   resources: AD.Resources.Resources,
@@ -165,10 +165,10 @@ export function rowsCombineTextRuns(
   resources: AD.Resources.Resources,
   pdf: PDFKit.PDFDocument,
   rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>,
-  desiredSizes: Map<{}, AD.Size.Size>,
+  desiredSizes: Map<object, AD.Size.Size>,
   alignment: PdfKitAlignment,
   defaultStyle: AD.TextStyle.TextStyle
-): { newDesiredSizes: Map<{}, AD.Size.Size>; combinedRows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> } {
+): { newDesiredSizes: Map<object, AD.Size.Size>; combinedRows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> } {
   if (alignment === "justify") {
     return { combinedRows: rows, newDesiredSizes: desiredSizes };
   }
@@ -322,7 +322,7 @@ function stringWidth(
   return pdf.widthOfString(text, textOptions);
 }
 
-function getDesiredSize(element: {}, desiredSizes: Map<{}, AD.Size.Size>): AD.Size.Size {
+function getDesiredSize(element: object, desiredSizes: Map<object, AD.Size.Size>): AD.Size.Size {
   const size = desiredSizes.get(element);
   if (size) {
     return size;

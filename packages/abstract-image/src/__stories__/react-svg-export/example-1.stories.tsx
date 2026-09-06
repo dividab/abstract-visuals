@@ -2,7 +2,7 @@ import type { Meta } from "@storybook/react";
 import * as React from "react";
 import * as AbstractImage from "../../index.js";
 
-export function ReactSvgExportExample1(): React.ReactElement<{}> {
+export function ReactSvgExportExample1(): React.ReactElement<object> {
   const components = [
     AbstractImage.createLine(AbstractImage.createPoint(0, 200), AbstractImage.createPoint(400, 200), AbstractImage.black, 1),
     AbstractImage.createLine(AbstractImage.createPoint(200, 0), AbstractImage.createPoint(200, 400), AbstractImage.black, 1),

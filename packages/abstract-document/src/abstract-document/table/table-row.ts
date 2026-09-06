@@ -4,7 +4,7 @@ export interface TableRow {
   readonly children: ReadonlyArray<TableCell>;
 }
 
-export interface TableRowProps {}
+export type TableRowProps = object;
 
 export function create(_props?: TableRowProps, children?: ReadonlyArray<TableCell>): TableRow {
   return {
