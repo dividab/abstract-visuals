@@ -353,8 +353,8 @@ function componentDxf(
     entities += "70\n0\n";
 
     if (options.useStrokeThickness) {
-      entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
-      entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
+      entities += "40\n" + c.strokeThickness + "\n";
+      entities += "41\n" + c.strokeThickness + "\n";
     }
 
     const points: ReadonlyArray<Point> = [
@@ -402,8 +402,8 @@ function componentDxf(
     entities += "70\n0\n";
 
     if (options.useStrokeThickness) {
-      entities += "40\n" + (c.strokeThickness ?? 0) + "\n";
-      entities += "41\n" + (c.strokeThickness ?? 0) + "\n";
+      entities += "40\n" + c.strokeThickness + "\n";
+      entities += "41\n" + c.strokeThickness + "\n";
     }
 
     for (const point of c.points) {
@@ -716,9 +716,6 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, _height
     }
 
     scaledLines.push(codeLine);
-    if (valueLine === undefined) {
-      continue;
-    }
 
     const code = parseInt(codeLine.trim(), 10);
     let value = valueLine;

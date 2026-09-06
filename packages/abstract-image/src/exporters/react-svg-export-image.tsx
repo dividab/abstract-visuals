@@ -103,8 +103,8 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       const id = makeIdAttr(component.id);
       if (component.data.type === "url") {
         const data = options.imageDataByUrl[component.data.url];
-        if (typeof data === "string" || data === undefined) {
-          return <image x={x} y={y} width={width} height={height} id={id} href={data ?? component.data.url} />;
+        if (typeof data === "string") {
+          return <image x={x} y={y} width={width} height={height} id={id} href={data} />;
         }
         const scale = Math.min(width / (data.size.width || 1), height / (data.size.height || 1));
         return (
@@ -163,7 +163,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       }
       const alignmentBaseline = getBaselineAdjustment(component.verticalGrowthDirection);
       const transform = `rotate(${component.clockwiseRotationDegrees} ${component.position.x} ${component.position.y})`;
-      const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
+      const lines = component.text.split("\n");
       const tSpans = lines.map((t, i) => (
         <TSpan
           key={t}
@@ -184,7 +184,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       };
       return (
         <>
-          {component.strokeThickness > 0 && component.strokeColor && (
+          {component.strokeThickness > 0 && (
             <text
               style={{
                 ...baseStyle,

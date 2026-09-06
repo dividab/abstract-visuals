@@ -149,6 +149,6 @@ function mapFontWeight(weight?: string | number): AbstractFontWeight {
 function parsePointsString(pointsString: string): Array<Point> {
   return pointsString.split(" ").map((tuple): Point => {
     const [xString, yString] = tuple.split(",");
-    return { x: Number(xString ?? 0), y: Number(yString ?? 0) };
+    return { x: Number(xString), y: Number(yString) };
   });
 }

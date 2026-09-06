@@ -123,7 +123,7 @@ describe("evaluate", () => {
 
   it("should use custom createElement when provided", () => {
     const customCreateElement = (type: Component, props: PropsDict | undefined, ...children: Array<unknown>): Node => ({
-      type: type.name ?? "Unknown",
+      type: type.name,
       props: { ...props, custom: true },
       children: children as Array<Node>,
     });
