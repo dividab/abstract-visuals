@@ -24,6 +24,26 @@ There is also a package with examples:
 
 ## How to develop
 
+### Tools
+
+We use the tool manager [mise](https://mise.jdx.dev) to install some tools (node, pnpm — see `.tool-versions`).
+
+You will need to do a one-time installation of mise itself if you do not already have it installed:
+
+```sh
+# Install mise
+$ curl https://mise.run | sh
+$ echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
+```
+
+(use `mise activate zsh` instead if you use zsh)
+
+Then run this inside the project folder to install the pinned tools (restart your shell first if you just installed mise):
+
+```sh
+mise install
+```
+
 For development of the react components, use `pnpm storybook` to start storybook in development mode.
 
 For the other packages, use `pnpm test` to test them.
