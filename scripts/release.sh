@@ -2,6 +2,11 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+if ! ls .changeset/*.md 2>/dev/null | grep -qv '/README\.md$'; then
+  echo "No pending changesets — nothing to release."
+  exit 0
+fi
+
 pnpm exec changeset version
 pnpm install
 
