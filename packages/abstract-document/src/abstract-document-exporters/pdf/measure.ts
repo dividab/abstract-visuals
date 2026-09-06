@@ -226,10 +226,10 @@ export function measureTable(
   const style = AD.Resources.getStyle(undefined, table.style, "TableStyle", table.styleName, resources) as AD.TableStyle.TableStyle;
   const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
   const tableAvailableWidth = availableSize.width - (styleMargins.left + styleMargins.right);
-  const numInfinityColumns = table.columnWidths.filter((w) => !isFinite(w)).length;
-  const fixedColumnsWidth = table.columnWidths.filter((w) => isFinite(w)).reduce((a, b) => a + b, 0);
+  const numInfinityColumns = table.columnWidths.filter((w) => !Number.isFinite(w)).length;
+  const fixedColumnsWidth = table.columnWidths.filter((w) => Number.isFinite(w)).reduce((a, b) => a + b, 0);
   const infinityWidth = (tableAvailableWidth - fixedColumnsWidth) / numInfinityColumns;
-  const columnWidths = table.columnWidths.map((w) => (isFinite(w) ? w : infinityWidth));
+  const columnWidths = table.columnWidths.map((w) => (Number.isFinite(w) ? w : infinityWidth));
   const desiredSizes = new Map<any, AD.Size.Size>();
   const rows = [...table.headerRows, ...table.children];
   for (const row of rows) {
@@ -298,7 +298,7 @@ export function measureTable(
     }
   }
 
-  const desiredWidth = table.columnWidths.some((w) => !isFinite(w))
+  const desiredWidth = table.columnWidths.some((w) => !Number.isFinite(w))
     ? availableSize.width
     : table.columnWidths.reduce((a, b) => a + b, styleMargins.left + styleMargins.right);
   let desiredHeight = styleMargins.top + styleMargins.bottom;
@@ -453,7 +453,7 @@ function measureImage(resources: AD.Resources.Resources, availableSize: AD.Size.
       : image.imageResource;
 
   let desiredWidth = availableSize.width;
-  if (!isFinite(image.width)) {
+  if (!Number.isFinite(image.width)) {
     desiredWidth = availableSize.width;
   } else if (image.width) {
     desiredWidth = image.width;
@@ -462,7 +462,7 @@ function measureImage(resources: AD.Resources.Resources, availableSize: AD.Size.
   }
 
   let desiredHeight = availableSize.height;
-  if (!isFinite(image.height)) {
+  if (!Number.isFinite(image.height)) {
     desiredHeight = availableSize.height;
   } else if (image.height) {
     desiredHeight = image.height;

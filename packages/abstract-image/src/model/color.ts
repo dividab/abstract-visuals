@@ -23,7 +23,7 @@ export function fromString(s: string): Color | undefined {
   const g: number = parseInt(s.substring(5, 5 + 2), 16);
   const b: number = parseInt(s.substring(7, 7 + 2), 16);
 
-  if (isNaN(a) || isNaN(r) || isNaN(g) || isNaN(b)) {
+  if (Number.isNaN(a) || Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
     return undefined;
   }
 
