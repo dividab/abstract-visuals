@@ -45,7 +45,7 @@ export function evaluate<T = any>(source: string, schema: Schema, options: Evalu
   const functionKeys = Object.keys(functions);
   validateParamKeys(dataKeys, functionKeys);
 
-  const h = createH(components, createElement || defaultCreateElement, schema);
+  const h = createH(components, createElement ?? defaultCreateElement, schema);
   const frozen = deepFreezeData(structuredClone(data));
   try {
     // oxlint-disable-next-line typescript/no-implied-eval, no-new-func

@@ -29,7 +29,7 @@ export function ReactMaterial({
 }): React.JSX.Element {
   const mat = !materialState ? material : materialState === "Accept" ? acceptMat : materialState === "Error" ? errorMar : warningMat;
 
-  const opacity = material.opacity !== undefined ? material.opacity : materialDefaults.opacity!;
+  const opacity = material.opacity ?? materialDefaults.opacity!;
   if (isText) {
     return (
       <meshBasicMaterial

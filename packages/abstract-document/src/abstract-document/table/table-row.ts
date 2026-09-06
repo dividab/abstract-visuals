@@ -8,6 +8,6 @@ export interface TableRowProps {}
 
 export function create(_props?: TableRowProps, children?: ReadonlyArray<TableCell>): TableRow {
   return {
-    children: children || [],
+    children: children ?? [],
   };
 }

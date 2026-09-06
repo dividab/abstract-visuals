@@ -17,12 +17,12 @@ export type GroupProps = Resources & {
 };
 
 export function create(props?: GroupProps, children?: ReadonlyArray<SectionElement>): Group {
-  const { keepTogether = false, style = GroupStyle.create(), ...rest } = props || {};
+  const { keepTogether = false, style = GroupStyle.create(), ...rest } = props ?? {};
   return {
     type: sectionType,
     keepTogether: keepTogether,
     style,
-    children: children || [],
+    children: children ?? [],
     ...rest,
   };
 }

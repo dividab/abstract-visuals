@@ -50,7 +50,7 @@ export function render(element: any): any {
   if (typeof element.type !== "function") {
     return element;
   }
-  const props = element.props || {};
+  const props = element.props ?? {};
   const children = renderChildren(element);
   return element.type({ ...props, children });
 }

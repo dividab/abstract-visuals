@@ -42,6 +42,7 @@ const or: HelperFunc = {
     { name: "b", description: "Any value", type: anySchema },
   ],
   returnType: bool,
+  // oxlint-disable-next-line typescript/prefer-nullish-coalescing -- this implements truthy-OR semantics for template authors, not a default-value pattern
   func: (a: any, b: any): boolean => a || b,
 };
 

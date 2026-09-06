@@ -20,7 +20,7 @@ export interface TableStyleProps {
 }
 
 export function create(props?: TableStyleProps): TableStyle {
-  const { margins = LayoutFoundation.create(), alignment, position = "relative", cellStyle = TableCellStyle.create() } = props || {};
+  const { margins = LayoutFoundation.create(), alignment, position = "relative", cellStyle = TableCellStyle.create() } = props ?? {};
   return {
     type: "TableStyle",
     position,
@@ -35,7 +35,7 @@ export function overrideWith(overrider: TableStyle, toOverride: TableStyle): Tab
   const b: TableStyleProps = toOverride || {};
   return create({
     margins: LayoutFoundation.overrideWith(a.margins, b.margins),
-    alignment: a.alignment || b.alignment,
+    alignment: a.alignment ?? b.alignment,
     cellStyle: TableCellStyle.overrideWith(a.cellStyle, b.cellStyle),
   });
 }

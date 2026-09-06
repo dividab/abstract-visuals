@@ -40,12 +40,12 @@ function transformFXP(parsedXml: ReadonlyArray<FastXmlElement>): ReadonlyArray<X
     if (key === "?xml") {
       return [];
     }
-    const children = ((element[key] || []) as Array<FastXmlElement>).filter((c) => {
+    const children = ((element[key] ?? []) as Array<FastXmlElement>).filter((c) => {
       const key = Object.keys(c)[0];
       return key !== "#text" && key !== ":@";
     });
     const attributes = (element[":@"] as Record<string, string>) || {};
-    const textChilds: Array<string> = ((element[key] || []) as Array<FastXmlElement>)
+    const textChilds: Array<string> = ((element[key] ?? []) as Array<FastXmlElement>)
       .filter((c) => {
         const key = Object.keys(c)[0];
         return key === "#text";

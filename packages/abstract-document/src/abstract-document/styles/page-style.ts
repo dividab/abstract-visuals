@@ -50,7 +50,7 @@ export function create(props?: PageStyleProps): PageStyle {
       columnCount: 1,
       columnGap: 0,
     },
-  } = props || {};
+  } = props ?? {};
   return {
     headerMargins,
     footerMargins,

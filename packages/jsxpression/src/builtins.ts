@@ -1087,14 +1087,14 @@ export function getBuiltinGlobals(): Array<string> {
 }
 
 export function isAllowedOnArray(prop: string): boolean {
-  const arrayMethods = BUILTINS[ARRAY_PROTOTYPE]?.methods || {};
-  const arrayProperties = BUILTINS[ARRAY_PROTOTYPE]?.properties || {};
+  const arrayMethods = BUILTINS[ARRAY_PROTOTYPE]?.methods ?? {};
+  const arrayProperties = BUILTINS[ARRAY_PROTOTYPE]?.properties ?? {};
   return prop in arrayMethods || prop in arrayProperties;
 }
 
 export function isAllowedOnString(prop: string): boolean {
-  const stringMethods = BUILTINS[STRING_PROTOTYPE]?.methods || {};
-  const stringProperties = BUILTINS[STRING_PROTOTYPE]?.properties || {};
+  const stringMethods = BUILTINS[STRING_PROTOTYPE]?.methods ?? {};
+  const stringProperties = BUILTINS[STRING_PROTOTYPE]?.properties ?? {};
   return prop in stringMethods || prop in stringProperties;
 }
 
@@ -1118,15 +1118,15 @@ export function getMethodDefinition(methodName: string): BuiltinMethodSchema | n
 
 export function getAvailableArrayMembers(): Array<string> {
   const arrayNamespace = BUILTINS[ARRAY_PROTOTYPE];
-  const methods = Object.keys(arrayNamespace?.methods || {});
-  const properties = Object.keys(arrayNamespace?.properties || {});
+  const methods = Object.keys(arrayNamespace?.methods ?? {});
+  const properties = Object.keys(arrayNamespace?.properties ?? {});
   return [...methods, ...properties];
 }
 
 export function getAvailableStringMembers(): Array<string> {
   const stringNamespace = BUILTINS[STRING_PROTOTYPE];
-  const methods = Object.keys(stringNamespace?.methods || {});
-  const properties = Object.keys(stringNamespace?.properties || {});
+  const methods = Object.keys(stringNamespace?.methods ?? {});
+  const properties = Object.keys(stringNamespace?.properties ?? {});
   return [...methods, ...properties];
 }
 

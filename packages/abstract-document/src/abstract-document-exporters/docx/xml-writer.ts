@@ -78,7 +78,7 @@ export function createXmlWriter(): XmlWriter {
 
   function addNamespace(ns: string, prefix: string | undefined): void {
     // Make sure we don't duplicate prefixes
-    peekContextStack().namespaces[prefix || ""] = ns;
+    peekContextStack().namespaces[prefix ?? ""] = ns;
   }
 
   function writeIndent(newLine: boolean = true): void {
@@ -261,6 +261,7 @@ export function createXmlWriter(): XmlWriter {
             // (but for elements it is OK to have blank prefix)
             if (!prefix || prefix.length === 0) {
               prefix = getPrefixFromAncestors(ns);
+              // oxlint-disable-next-line typescript/prefer-nullish-coalescing -- an ancestor-registered blank prefix ("") must still be replaced here, per the comment above
               if (!prefix) {
                 prefix = generatePrefix(peekContextStack().namespaces);
               }

@@ -48,7 +48,7 @@ export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement
   // Replace matches with spaces of same length
   let cleanedXml = fullXml.replace(matchHandlebarsBrackets, (m) => " ".repeat(m.length));
   cleanedXml = cleanedXml.replace(xmlComments, (m) => {
-    const x = (m.match(/^.*$/gm) || []).map((m2) => " ".repeat(m2.length));
+    const x = (m.match(/^.*$/gm) ?? []).map((m2) => " ".repeat(m2.length));
     return x.join("\n");
   });
 
@@ -108,7 +108,7 @@ function validateElements(
   const isClosed = rangeLessThan(slashPosition, closingTagPosition);
 
   const validElements = Object.values(completeSchema.children);
-  const schemaName = schemaElement?.attributes["type"] || tagName;
+  const schemaName = schemaElement?.attributes["type"] ?? tagName;
   const foundSchemaElement = findElement(validElements, schemaName);
 
   if (!foundSchemaElement) {
@@ -130,7 +130,7 @@ function validateElements(
 
   // Validate existing attributes
   for (const [attrKey, attrVal] of Object.entries(element.attributes)) {
-    const possibleAttrNames = possibleAttributes.flatMap((p) => p.attributes["name"] || []);
+    const possibleAttrNames = possibleAttributes.flatMap((p) => p.attributes["name"] ?? []);
     const attrText = typeof attrVal === "string" ? `${attrKey}="${attrVal}"` : attrKey;
     const attrRange = getRangeOfElement(attrText, false);
     if (!possibleAttrNames.includes(attrKey)) {
@@ -181,7 +181,7 @@ function getErrorFromException(result: ValidationError, xml: string): XmlError {
   const { col, line, msg } = result.err;
   const startLine = line - 1;
   const lines = xml.split("\n");
-  const rowText = lines[startLine] || "";
+  const rowText = lines[startLine] ?? "";
   const length = rowText.indexOf(">") - rowText.indexOf("<") || 4;
   const range = toRange(startLine, col, startLine, col + length);
 

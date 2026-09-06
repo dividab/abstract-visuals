@@ -91,7 +91,7 @@ function generateNamespaceDeclaration(namespace: string, schema: BuiltinSchema):
 
   if (schema.intrinsic) {
     const interfaceName = namespace.replace(".prototype", "");
-    const genericParam = schema.generic || "";
+    const genericParam = schema.generic ?? "";
 
     result += `interface ${interfaceName}${genericParam} {\n`;
 

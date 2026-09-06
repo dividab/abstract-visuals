@@ -15,8 +15,8 @@ export type SvgOptions = {
 export function createSVG(image: AbstractImage, options?: Optional<SvgOptions>): string {
   const opts: SvgOptions = {
     imageDataByUrl: options?.imageDataByUrl ?? {},
-    pixelWidth: options?.pixelWidth || image.size.width,
-    pixelHeight: options?.pixelHeight || image.size.height,
+    pixelWidth: options?.pixelWidth ?? image.size.width,
+    pixelHeight: options?.pixelHeight ?? image.size.height,
   };
   const subOptions: SvgOptions = { ...opts, pixelWidth: 0, pixelHeight: 0 };
   const imageElements = image.components.map((c: Component) => abstractComponentToSVG(c, subOptions));

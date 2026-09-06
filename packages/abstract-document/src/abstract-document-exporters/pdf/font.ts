@@ -14,22 +14,22 @@ export function registerFonts(registerFont: (fontName: string, fontSource: AD.Fo
     registerFont(fontName + "-BoldOblique", font.boldItalic);
     registerFont(fontName + "-BoldItalic", font.boldItalic);
     // Optional
-    registerFont(fontName + "-Light", font.light || font.normal);
-    registerFont(fontName + "-Medium", font.medium || font.normal);
-    registerFont(fontName + "-ExtraBold", font.extraBold || font.bold);
-    registerFont(fontName + "-LightOblique", font.lightItalic || font.normal);
-    registerFont(fontName + "-LightItalic", font.lightItalic || font.normal);
-    registerFont(fontName + "-MediumOblique", font.mediumItalic || font.italic);
-    registerFont(fontName + "-MediumItalic", font.mediumItalic || font.italic);
-    registerFont(fontName + "-ExtraBoldItalic", font.extraBoldItalic || font.boldItalic);
-    registerFont(fontName + "-ExtraBoldOblique", font.extraBoldItalic || font.boldItalic);
+    registerFont(fontName + "-Light", font.light ?? font.normal);
+    registerFont(fontName + "-Medium", font.medium ?? font.normal);
+    registerFont(fontName + "-ExtraBold", font.extraBold ?? font.bold);
+    registerFont(fontName + "-LightOblique", font.lightItalic ?? font.normal);
+    registerFont(fontName + "-LightItalic", font.lightItalic ?? font.normal);
+    registerFont(fontName + "-MediumOblique", font.mediumItalic ?? font.italic);
+    registerFont(fontName + "-MediumItalic", font.mediumItalic ?? font.italic);
+    registerFont(fontName + "-ExtraBoldItalic", font.extraBoldItalic ?? font.boldItalic);
+    registerFont(fontName + "-ExtraBoldOblique", font.extraBoldItalic ?? font.boldItalic);
   }
 }
 
 function getFontWeightFromStyle(textStyle: AD.TextStyle.TextStyle): TextFontWeight {
-  return textStyle.fontWeight
-    ? textStyle.fontWeight
-    : textStyle.light
+  return (
+    textStyle.fontWeight ??
+    (textStyle.light
       ? "light"
       : textStyle.normal
         ? "normal"
@@ -39,7 +39,8 @@ function getFontWeightFromStyle(textStyle: AD.TextStyle.TextStyle): TextFontWeig
             ? "mediumBold"
             : textStyle.extraBold
               ? "extraBold"
-              : "normal";
+              : "normal")
+  );
 }
 
 function getFontWeightFromAttributes(attribs: Record<string, string>): TextFontWeight {
@@ -64,7 +65,7 @@ export function getFontStyleName(attributes: Record<string, string>): keyof Font
 }
 
 export function getFontName(fontFamily: string | undefined, fontWeight: TextFontWeight, italic: boolean | undefined): string {
-  const name = fontFamily || "Helvetica";
+  const name = fontFamily ?? "Helvetica";
   if (fontWeight === "light" && italic) {
     return name + "-LightOblique";
   } else if (fontWeight === "bold" && italic) {

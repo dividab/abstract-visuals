@@ -217,7 +217,7 @@ export function rowsCombineTextRuns(
       }
 
       const style = JSON.stringify(
-        AD.Resources.getNestedStyle(defaultStyle, atom.style, "TextStyle", atom.styleName, resources, atom.nestedStyleNames || [])
+        AD.Resources.getNestedStyle(defaultStyle, atom.style, "TextStyle", atom.styleName, resources, atom.nestedStyleNames ?? [])
       );
 
       if (current === undefined) {
@@ -302,7 +302,7 @@ function stringWidth(
       "TextStyle",
       textRun.styleName,
       resources,
-      textRun.nestedStyleNames || []
+      textRun.nestedStyleNames ?? []
     ) as AD.TextStyle.TextStyle) ?? defaultStyle;
 
   const font = getFontNameStyle(style);
@@ -310,11 +310,11 @@ function stringWidth(
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(style.color || "black");
+    .fillColor(style.color ?? "black");
 
   const textOptions = {
-    underline: style.underline || false,
-    indent: style.indent || 0,
+    underline: style.underline ?? false,
+    indent: style.indent ?? 0,
     lineBreak: false,
     ...(style.characterSpacing !== undefined ? { characterSpacing: style.characterSpacing } : {}),
     ...(style.lineGap !== undefined ? { lineGap: style.lineGap } : {}),

@@ -27,8 +27,8 @@ export function create(props: TableProps, children?: ReadonlyArray<TableRow.Tabl
     columnWidths,
     styleName,
     style,
-    headerRows: headerRows || [],
-    children: children || [],
+    headerRows: headerRows ?? [],
+    children: children ?? [],
     ...rest,
   };
 }

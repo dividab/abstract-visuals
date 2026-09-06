@@ -13,9 +13,9 @@ export type AbstractDoc = Resources & {
 export type AbstractDocProps = Resources & {};
 
 export function create(props?: AbstractDocProps, children?: ReadonlyArray<Section>): AbstractDoc {
-  const { ...rest } = props || {};
+  const { ...rest } = props ?? {};
   return {
-    children: children || [],
+    children: children ?? [],
     ...rest,
   };
 }

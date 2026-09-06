@@ -14,11 +14,11 @@ export type SectionProps = Resources & {
 };
 
 export function create(props?: SectionProps, children?: ReadonlyArray<SectionElement>): Section {
-  const { page = MasterPage.create(), id = "", ...rest } = props || {};
+  const { page = MasterPage.create(), id = "", ...rest } = props ?? {};
   return {
     page,
     id,
-    children: children || [],
+    children: children ?? [],
     ...rest,
   };
 }

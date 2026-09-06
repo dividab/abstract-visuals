@@ -78,20 +78,20 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
           extraBold: toOverride?.extraBold,
           fontWeight: toOverride?.fontWeight,
         };
-  const a: TextStyleProps = overrider || {};
-  const b: TextStyleProps = toOverride || {};
+  const a: TextStyleProps = overrider ?? {};
+  const b: TextStyleProps = toOverride ?? {};
   return create({
-    fontFamily: a.fontFamily || b.fontFamily,
-    color: a.color || b.color,
-    fontSize: a.fontSize || b.fontSize,
-    fontScale: a.fontScale || b.fontScale,
-    italic: a.italic || b.italic,
-    subScript: a.subScript || b.subScript,
-    superScript: a.superScript || b.superScript,
-    underline: a.underline || b.underline,
-    verticalPosition: a.verticalPosition || b.verticalPosition,
-    indent: a.indent || b.indent,
-    lineGap: a.lineGap || b.lineGap,
+    fontFamily: a.fontFamily ?? b.fontFamily,
+    color: a.color ?? b.color,
+    fontSize: a.fontSize ?? b.fontSize,
+    fontScale: a.fontScale ?? b.fontScale,
+    italic: a.italic ?? b.italic,
+    subScript: a.subScript ?? b.subScript,
+    superScript: a.superScript ?? b.superScript,
+    underline: a.underline ?? b.underline,
+    verticalPosition: a.verticalPosition ?? b.verticalPosition,
+    indent: a.indent ?? b.indent,
+    lineGap: a.lineGap ?? b.lineGap,
     lineBreak: a.lineBreak ?? b.lineBreak,
     baseline: a.baseline ?? b.baseline,
     strike: a.strike ?? b.strike,
@@ -102,7 +102,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
 }
 
 export function calculateFontSize(textStyle: TextStyle | undefined, defaultFontSize: number): number {
-  const fontSize = textStyle?.fontSize ? textStyle.fontSize : defaultFontSize;
-  const fontScale = textStyle?.fontScale ? textStyle.fontScale : 1.0;
+  const fontSize = textStyle?.fontSize ?? defaultFontSize;
+  const fontScale = textStyle?.fontScale ?? 1.0;
   return fontSize * fontScale;
 }

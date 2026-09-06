@@ -32,7 +32,7 @@ export function declareComponentTypes(schema: Schema): string {
 function generatePropsInterface(interfaceName: string, element: any, indent: string = ""): string {
   let output = `${indent}interface ${interfaceName} {\n`;
 
-  Object.entries(element.props || {}).forEach(([propName, prop]: [string, any]) => {
+  Object.entries(element.props ?? {}).forEach(([propName, prop]: [string, any]) => {
     const optional = prop.required ? "" : "?";
     const type = mapSchemaTypeToTypeScript(prop);
     const comment = generatePropComment(prop, `${indent}  `);

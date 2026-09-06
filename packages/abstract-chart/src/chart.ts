@@ -180,7 +180,7 @@ export function createChartArea(props?: ChartAreaProps): ChartArea {
     yAxis = "left",
     yAxisIx = 0,
     id,
-  } = props || {};
+  } = props ?? {};
   return {
     points,
     color,
@@ -213,7 +213,7 @@ export function createChartPoint(props?: ChartPointProps): ChartPoint {
     textColor,
     textOutlineColor,
     id,
-  } = props || {};
+  } = props ?? {};
   return {
     shape,
     position,

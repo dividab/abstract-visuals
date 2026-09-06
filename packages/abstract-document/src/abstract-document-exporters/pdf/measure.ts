@@ -36,9 +36,9 @@ function measureSection(
   separateFooter?: ReadonlyArray<AD.SectionElement.SectionElement>,
   separateChildren?: ReadonlyArray<AD.SectionElement.SectionElement>
 ): Map<any, AD.Size.Size> {
-  const header = separateHeader || section.page.header;
-  const footer = separateFooter || section.page.footer;
-  const children = separateChildren || section.children;
+  const header = separateHeader ?? section.page.header;
+  const footer = separateFooter ?? section.page.footer;
+  const children = separateChildren ?? section.children;
 
   const pageWidth = AD.PageStyle.getWidth(section.page.style);
   const pageHeight = AD.PageStyle.getHeight(section.page.style);
@@ -308,7 +308,7 @@ export function measureTable(
     desiredHeight += rowHeight;
     desiredSizes.set(row, AD.Size.create(desiredWidth, rowHeight));
     for (const cell of row.children) {
-      const cellSize = desiredSizes.get(cell) || AD.Size.create(0, 0);
+      const cellSize = desiredSizes.get(cell) ?? AD.Size.create(0, 0);
       desiredSizes.set(cell, AD.Size.create(cellSize.width, rowHeight));
     }
   }
@@ -377,7 +377,7 @@ function measureLineBreak(
     "TextStyle",
     lineBreak.styleName,
     resources,
-    lineBreak.nestedStyleNames || []
+    lineBreak.nestedStyleNames ?? []
   ) as AD.TextStyle.TextStyle;
   return measureText(pdfKit, "A", style, availableSize);
 }
@@ -395,7 +395,7 @@ function measureTextRun(
     "TextStyle",
     textRun.styleName,
     resources,
-    textRun.nestedStyleNames || []
+    textRun.nestedStyleNames ?? []
   ) as AD.TextStyle.TextStyle;
   return measureText(pdf, textRun.text, style, availableSize, true);
 }
@@ -488,11 +488,11 @@ function measureText(
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black");
+    .fillColor(textStyle.color ?? "black");
 
   const textOptions = {
-    underline: textStyle.underline || false,
-    indent: textStyle.indent || 0,
+    underline: textStyle.underline ?? false,
+    indent: textStyle.indent ?? 0,
     lineBreak: textStyle.lineBreak ?? true,
     ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
     ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),

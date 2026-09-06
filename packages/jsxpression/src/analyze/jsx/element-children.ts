@@ -55,7 +55,7 @@ export function analyzeElementChildren(ast: Program, schema: Schema, validationC
           analysisReport.addIssue(
             "SELF_CLOSING_WITH_CHILDREN",
             `Element <${parentTag}> cannot have children. It is self-closing.`,
-            getNodeRange(firstMeaningfulChild || node.children[0]),
+            getNodeRange(firstMeaningfulChild ?? node.children[0]),
             currentContext
           );
         }

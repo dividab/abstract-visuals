@@ -433,7 +433,7 @@ function renderTextRun(
     "TextStyle",
     textRun.styleName,
     resources,
-    textRun.nestedStyleNames || []
+    textRun.nestedStyleNames ?? []
   ) as AD.TextStyle.TextStyle;
   drawText(pdf, finalRect, style, textRun.text, alignment, isFirstAtom, isLastAtom);
 }
@@ -486,7 +486,7 @@ function drawHyperLink(
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "blue");
+    .fillColor(textStyle.color ?? "blue");
 
   applyTextOffset(pdf, textStyle);
 
@@ -499,25 +499,25 @@ function drawHyperLink(
       width: availableWidth,
       align: isSingleAtom ? alignment : "left",
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
-      indent: textStyle.indent || 0,
+      indent: textStyle.indent ?? 0,
       continued: alignment !== "left" ? false : !isLastAtom,
-      baseline: textStyle.baseline || "top",
+      baseline: textStyle.baseline ?? "top",
       ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
-    if (textStyle.underline === undefined ? true : textStyle.underline) {
+    if (textStyle.underline ?? true) {
       pdf.underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, { color: "blue" });
     }
   } else {
     pdf.text(hyperLink.text, {
       align: "left",
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
-      indent: textStyle.indent || 0,
+      indent: textStyle.indent ?? 0,
       continued: !isLastAtom,
       ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
       ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
     });
-    if (textStyle.underline === undefined ? true : textStyle.underline) {
+    if (textStyle.underline ?? true) {
       pdf.underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, {
         color: "blue",
       });
@@ -596,17 +596,17 @@ function drawText(
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black", textStyle.opacity ?? 1.0);
+    .fillColor(textStyle.color ?? "black", textStyle.opacity ?? 1.0);
   applyTextOffset(pdf, textStyle);
 
   switch (alignment) {
     case "justify": {
       pdf.text(text, finalRect.x, finalRect.y, {
         width: Infinity,
-        underline: textStyle.underline || false,
+        underline: textStyle.underline ?? false,
         continued: false,
-        indent: textStyle.indent || 0,
-        baseline: textStyle.baseline || "top",
+        indent: textStyle.indent ?? 0,
+        baseline: textStyle.baseline ?? "top",
         strike: textStyle.strike,
         ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
         ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
@@ -618,10 +618,10 @@ function drawText(
       if (isFirst) {
         pdf.text(text, finalRect.x, finalRect.y, {
           width: Infinity,
-          underline: textStyle.underline || false,
+          underline: textStyle.underline ?? false,
           continued: !isEnd,
-          indent: textStyle.indent || 0,
-          baseline: textStyle.baseline || "top",
+          indent: textStyle.indent ?? 0,
+          baseline: textStyle.baseline ?? "top",
           strike: textStyle.strike,
           ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
           ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
@@ -629,10 +629,10 @@ function drawText(
       } else {
         pdf.text(text, {
           width: Infinity,
-          underline: textStyle.underline || false,
+          underline: textStyle.underline ?? false,
           continued: !isEnd,
-          indent: textStyle.indent || 0,
-          baseline: textStyle.baseline || "top",
+          indent: textStyle.indent ?? 0,
+          baseline: textStyle.baseline ?? "top",
           strike: textStyle.strike,
           ...(textStyle.characterSpacing !== undefined ? { characterSpacing: textStyle.characterSpacing } : {}),
           ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
@@ -653,7 +653,7 @@ function drawDottedLine(
   const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
 
-  const charSpacing = tocSeparator.width ? tocSeparator.width : 5;
+  const charSpacing = tocSeparator.width ?? 5;
 
   const oneDotW = pdf.widthOfString(".", {
     width: finalRect.width,
@@ -674,7 +674,7 @@ function drawDottedLine(
   pdf
     .font(font)
     .fontSize(fontSize)
-    .fillColor(textStyle.color || "black");
+    .fillColor(textStyle.color ?? "black");
 
   applyTextOffset(pdf, textStyle);
 
@@ -880,6 +880,6 @@ function resetTextOffset(pdf: PDFKit.PDFDocument, textStyle: AD.TextStyle.TextSt
 
 function calculateTextOffset(textStyle: AD.TextStyle.TextStyle): number {
   const defaultPosition = textStyle.superScript ? 0.5 : textStyle.subScript ? -0.5 : 0;
-  const position = textStyle.verticalPosition !== undefined ? textStyle.verticalPosition : defaultPosition;
+  const position = textStyle.verticalPosition ?? defaultPosition;
   return position;
 }

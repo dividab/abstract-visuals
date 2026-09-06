@@ -82,12 +82,12 @@ function preProcessParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Re
     } else if (!_numberingLevelItems.has(key)) {
       _numberingLevelItems.set(key, levelDefinitions[level].start);
     } else if (append !== true) {
-      _numberingLevelItems.set(key, (_numberingLevelItems.get(key) || 0) + 1);
+      _numberingLevelItems.set(key, (_numberingLevelItems.get(key) ?? 0) + 1);
     }
 
     for (const levelDefinition of levelDefinitions.filter((l) => l.level <= level)) {
       const numberingLevel = numbering + "_" + levelDefinition.level.toString();
-      const currentNumber = _numberingLevelItems.get(numberingLevel) || 0;
+      const currentNumber = _numberingLevelItems.get(numberingLevel) ?? 0;
       const levelText = generateLevelText(levelDefinition.format, currentNumber);
       const levelKey = "%" + (levelDefinition.level + 1).toString();
       numberText = numberText.replace(levelKey, levelText);

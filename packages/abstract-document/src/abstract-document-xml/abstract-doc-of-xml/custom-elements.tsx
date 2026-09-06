@@ -21,7 +21,7 @@ const stylePropsKeys: Record<string, boolean> = {
 };
 
 export function extractStyleNames(styleNames: string | undefined, styleNameTypes: Record<string, string>): Partial<StyleProps> {
-  const names = (styleNames || "").split(",");
+  const names = (styleNames ?? "").split(",");
 
   let styleNameProps = {};
 

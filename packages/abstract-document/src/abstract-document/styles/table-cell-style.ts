@@ -23,7 +23,7 @@ export interface TableCellStyleProps {
 }
 
 export function create(props?: TableCellStyleProps): TableCellStyle {
-  const { background, borders, borderColor, borderColors, padding, verticalAlignment } = props || {};
+  const { background, borders, borderColor, borderColors, padding, verticalAlignment } = props ?? {};
   return {
     type: "TableCellStyle",
     background,
@@ -36,14 +36,14 @@ export function create(props?: TableCellStyleProps): TableCellStyle {
 }
 
 export function overrideWith(overrider: TableCellStyle | undefined, toOverride: TableCellStyle | undefined): TableCellStyle {
-  const a: TableCellStyleProps = overrider || {};
-  const b: TableCellStyleProps = toOverride || {};
+  const a: TableCellStyleProps = overrider ?? {};
+  const b: TableCellStyleProps = toOverride ?? {};
   return create({
-    background: a.background || b.background,
+    background: a.background ?? b.background,
     borders: LayoutFoundation.overrideWith(a.borders, b.borders),
-    borderColor: a.borderColor || b.borderColor,
+    borderColor: a.borderColor ?? b.borderColor,
     borderColors: LayoutFoundationColor.overrideWith(a.borderColors, b.borderColors),
     padding: LayoutFoundation.overrideWith(a.padding, b.padding),
-    verticalAlignment: a.verticalAlignment || b.verticalAlignment,
+    verticalAlignment: a.verticalAlignment ?? b.verticalAlignment,
   });
 }

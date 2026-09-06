@@ -20,7 +20,7 @@ export interface ParagraphStyleProps {
 }
 
 export function create(props?: ParagraphStyleProps): ParagraphStyle {
-  const { alignment, margins = LayoutFoundation.create(), position = "relative", textStyle = TextStyle.create() } = props || {};
+  const { alignment, margins = LayoutFoundation.create(), position = "relative", textStyle = TextStyle.create() } = props ?? {};
   return {
     type: "ParagraphStyle",
     alignment,
@@ -31,10 +31,10 @@ export function create(props?: ParagraphStyleProps): ParagraphStyle {
 }
 
 export function overrideWith(overrider: ParagraphStyle | undefined, toOverride: ParagraphStyle | undefined): ParagraphStyle {
-  const a: ParagraphStyleProps = overrider || {};
-  const b: ParagraphStyleProps = toOverride || {};
+  const a: ParagraphStyleProps = overrider ?? {};
+  const b: ParagraphStyleProps = toOverride ?? {};
   return create({
-    alignment: a.alignment || b.alignment,
+    alignment: a.alignment ?? b.alignment,
     margins: LayoutFoundation.overrideWith(a.margins, b.margins),
     textStyle: TextStyle.overrideWith(a.textStyle, b.textStyle),
   });

@@ -20,13 +20,13 @@ export type ParagraphProps = Resources & {
 };
 
 export function create(props?: ParagraphProps, children?: ReadonlyArray<Atom>): Paragraph {
-  const { styleName = "", style = ParagraphStyle.create(), numbering, ...rest } = props || {};
+  const { styleName = "", style = ParagraphStyle.create(), numbering, ...rest } = props ?? {};
   return {
     type: sectionType,
     styleName,
     style,
     numbering,
-    children: children || [],
+    children: children ?? [],
     ...rest,
   };
 }

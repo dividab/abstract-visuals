@@ -147,7 +147,7 @@ function findEnclosingArrowContext(targetNode: any, arrowFunctionContexts: Map<a
       }
     }
   }
-  return best ? arrowFunctionContexts.get(best.arrowFn) || null : null;
+  return best ? (arrowFunctionContexts.get(best.arrowFn) ?? null) : null;
 }
 
 function getArrayElementTypeFromCall(node: any, schema: Schema, arrowFunctionContexts: Map<any, Map<string, any>>): any {
@@ -252,7 +252,7 @@ function validateParameterAccess(node: any, paramType: any, analysisReport: Anal
   } else {
     analysisReport.addIssue(
       "INVALID_PARAMETER_ACCESS",
-      `Cannot access property '${propertyName}' on ${paramType.type || "undefined"} type parameter '${node.object.name}'`,
+      `Cannot access property '${propertyName}' on ${paramType.type ?? "undefined"} type parameter '${node.object.name}'`,
       getNodeRange(node),
       validationContext.getSnapshot()
     );

@@ -36,7 +36,7 @@ export function create({
     start,
     levelText,
     levelIndention,
-    numberingWidth: numberingWidth || 40,
-    style: style || TextStyle.create(),
+    numberingWidth: numberingWidth ?? 40,
+    style: style ?? TextStyle.create(),
   };
 }

@@ -19,13 +19,13 @@ export interface TableCellProps {
 }
 
 export function create(props?: TableCellProps, children?: ReadonlyArray<SectionElement.SectionElement>): TableCell {
-  const { styleName = "", columnSpan = 1, rowSpan = 1, style = TableCellStyle.create(), dummy = false } = props || {};
+  const { styleName = "", columnSpan = 1, rowSpan = 1, style = TableCellStyle.create(), dummy = false } = props ?? {};
   return {
     styleName,
     columnSpan,
     rowSpan,
     style,
     dummy,
-    children: children || [],
+    children: children ?? [],
   };
 }

@@ -18,7 +18,7 @@ export interface MasterPageProps {
 }
 
 export function create(props?: MasterPageProps): MasterPage {
-  const { style = PageStyle.create(), header = [], footer = [], frontHeader, frontFooter } = props || {};
+  const { style = PageStyle.create(), header = [], footer = [], frontHeader, frontFooter } = props ?? {};
   return {
     style,
     header,

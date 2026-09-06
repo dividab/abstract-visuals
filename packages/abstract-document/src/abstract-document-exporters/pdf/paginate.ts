@@ -148,7 +148,7 @@ function splitTable(
 ): [AD.Table.Table | undefined, AD.Table.Table | undefined] {
   let tableHead = undefined;
   let tableRest = undefined;
-  elementsHeight += table.style.margins.top || 0;
+  elementsHeight += table.style.margins.top ?? 0;
   if (table.headerRows.length > 0) {
     const headerSize = table.headerRows.reduce((acc, row) => (acc += getDesiredSize(row, desiredSizes).height), 0);
     elementsHeight += headerSize;
@@ -229,7 +229,7 @@ function createPage(
     const [columnLeadingSpace] = getLeadingAndTrailingSpace(resources, section, elements);
     leadingSpace = Math.min(leadingSpace ?? columnLeadingSpace, columnLeadingSpace);
   }
-  leadingSpace ||= 0;
+  leadingSpace ??= 0;
   const contentRect = AD.Rect.create(rect.x, rect.y - leadingSpace, rect.width, rect.height + leadingSpace);
 
   const frontHeader =

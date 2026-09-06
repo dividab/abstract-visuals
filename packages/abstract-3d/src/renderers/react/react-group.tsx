@@ -77,6 +77,7 @@ export function ReactGroup({
     }
   });
   const [hovered, setHovered] = React.useState<boolean>(false);
+  // oxlint-disable-next-line typescript/prefer-nullish-coalescing -- `id && ...includes(id)` can legitimately be `false`, which must fall through to hoveredParent
   const hoveredFinal = hovered || (id && hoveredIdsExternal?.includes(id)) || !!hoveredParent;
   const selected = selectedIds?.[id ?? ""];
 

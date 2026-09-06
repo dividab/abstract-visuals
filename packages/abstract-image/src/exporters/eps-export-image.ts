@@ -155,14 +155,14 @@ function createFontName(characterEncoding: CharacterEncoding, fontFamily: string
 function encodeLatin1Encoding(text: string): Uint8Array {
   // ISOLatin1Encoding is close to iso-8859-1 encoding (https://en.wikipedia.org/wiki/PostScript_Latin_1_Encoding)
   // Code points 0-256 returned by codePointAt() maps to iso-8859-1
-  const unknownCharacter = "?".codePointAt(0) || 32;
+  const unknownCharacter = "?".codePointAt(0) ?? 32;
   const output: Array<number> = [];
   // Array.from() to handle characters consisting of multiple code points
   for (const c of Array.from(text)) {
     if (c.length > 1) {
       output.push(unknownCharacter);
     } else {
-      const cp = c.codePointAt(0) || 32;
+      const cp = c.codePointAt(0) ?? 32;
       if (cp > 255) {
         output.push(unknownCharacter);
       }

@@ -19,7 +19,7 @@ function createPermissiveSchema(componentNames: Array<string>): Schema {
 
 describe("evaluate", () => {
   const compileAndEvaluate = (source: string, options: EvaluateOptions = {}): Node => {
-    const componentNames = Object.keys(options.components || {});
+    const componentNames = Object.keys(options.components ?? {});
     const schema = createPermissiveSchema(componentNames);
     return evaluate(compile(parse(source)), schema, options);
   };
@@ -121,7 +121,7 @@ describe("evaluate", () => {
 
   it("should use custom createElement when provided", () => {
     const customCreateElement = (type: any, props: any, ...children: Array<any>): Node => ({
-      type: type.name || "Unknown",
+      type: type.name ?? "Unknown",
       props: { ...props, custom: true },
       children,
     });

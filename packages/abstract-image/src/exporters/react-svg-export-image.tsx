@@ -32,7 +32,7 @@ export function ReactSvg({
   const opts: ReactSvgOptions = {
     imageDataByUrl: options?.imageDataByUrl ?? {},
   };
-  const cb = callbacks || {};
+  const cb = callbacks ?? {};
   const id = "ai_root";
   return (
     <svg

@@ -103,7 +103,7 @@ export function toReact({ abstractSheet }: { readonly abstractSheet: AbstractShe
                           fontSize: `${s.size ?? 11}px`,
                           lineHeight: `${s.size ?? 11}px`,
                           height: `${s.size ?? 11}px`,
-                          color: s.color ? s.color : undefined,
+                          color: s.color ?? undefined,
                           transform: s.textRotation ? `rotate(${s.textRotation})` : undefined,
                         }}
                       >

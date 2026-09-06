@@ -178,14 +178,14 @@ function renderHyperLink(hyperLink: AD.HyperLink.HyperLink, style: AD.TextStyle.
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * 2;
   const textRun = new TextRun({
     text: hyperLink.text,
-    font: style.fontFamily || "Helvetica",
+    font: style.fontFamily ?? "Helvetica",
     size: fontSize,
-    color: style.color || "#0000ff",
-    bold: style.bold || style.fontWeight === "bold",
+    color: style.color ?? "#0000ff",
+    bold: style.bold ?? style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color || "#0000ff",
+          color: style.color ?? "#0000ff",
           type: UnderlineType.SINGLE,
         }
       : undefined,
@@ -344,7 +344,7 @@ function renderCell(
           ? VerticalAlign.BOTTOM
           : VerticalAlign.CENTER) || undefined,
     shading: {
-      fill: style.background ? style.background : undefined,
+      fill: style.background ?? undefined,
     },
     columnSpan: cell.columnSpan,
     rowSpan: cell.rowSpan,
@@ -442,7 +442,7 @@ function renderTextRun(resources: AD.Resources.Resources, textStyle: AD.TextStyl
     "TextStyle",
     textRun.styleName,
     resources,
-    textRun.nestedStyleNames || []
+    textRun.nestedStyleNames ?? []
   ) as AD.TextStyle.TextStyle;
 
   return renderText(style, textRun.text);
@@ -451,10 +451,10 @@ function renderTextRun(resources: AD.Resources.Resources, textStyle: AD.TextStyl
 function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * abstractDocToDocxFontRatio;
   return new TextRun({
-    font: style.fontFamily || "Helvetica",
+    font: style.fontFamily ?? "Helvetica",
     size: fontSize,
-    color: style.color || "#000000",
-    bold: style.bold || style.fontWeight === "bold",
+    color: style.color ?? "#000000",
+    bold: style.bold ?? style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
@@ -469,10 +469,10 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
 function renderTotalPages(style: AD.TextStyle.TextStyle): TextRun {
   const fontSize = AD.TextStyle.calculateFontSize(style, 10) * abstractDocToDocxFontRatio;
   return new TextRun({
-    font: style.fontFamily || "Helvetica",
+    font: style.fontFamily ?? "Helvetica",
     size: fontSize,
-    color: style.color || "#000000",
-    bold: style.bold || style.fontWeight === "bold",
+    color: style.color ?? "#000000",
+    bold: style.bold ?? style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
@@ -489,10 +489,10 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
 
   return new TextRun({
     text: text,
-    font: style.fontFamily || "Helvetica",
+    font: style.fontFamily ?? "Helvetica",
     size: fontSize,
-    color: style.color || "#000000",
-    bold: style.bold || style.fontWeight === "bold",
+    color: style.color ?? "#000000",
+    bold: style.bold ?? style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
@@ -529,7 +529,7 @@ function renderParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Resour
     keepNext: keepNext,
     alignment:
       (style.alignment &&
-        (style.alignment === "Center" ? AlignmentType.CENTER : style.alignment === "End" ? AlignmentType.END : AlignmentType.START)) ||
+        (style.alignment === "Center" ? AlignmentType.CENTER : style.alignment === "End" ? AlignmentType.END : AlignmentType.START)) ??
       undefined,
 
     spacing: {

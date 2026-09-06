@@ -59,7 +59,7 @@ function preProcessMarkdownAst(
         child.type === "list"
           ? {
               ordered: child.ordered === true,
-              start: child.start || 1,
+              start: child.start ?? 1,
               level: listItemParams ? listItemParams.level + 1 : 0,
               firstChild: child.children[0],
             }
