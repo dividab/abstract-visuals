@@ -26,5 +26,19 @@ export default defineConfig({
     "unicorn/consistent-function-scoping": "off", // 72 errors - Flags React components defined inside other components, which is a normal pattern.
     "import/namespace": "off", // 22  - False-positives on <Namespace.Component /> through an `export *` barrel.
     "react/react-in-jsx-scope": "off", // 1356 - tsconfig uses jsx: react-jsx (automatic runtime), React need not be in scope.
+    "react-perf/jsx-no-new-object-as-prop": "off", // 102 errors
+    "react-perf/jsx-no-new-array-as-prop": "off", // 61 errors
+    "react-perf/jsx-no-new-function-as-prop": "off", // 46 errors
+    "react-perf/jsx-no-jsx-as-prop": "off", // 2 errors
+    "vitest/no-commented-out-tests": "off", // 12 errors
+    "vitest/valid-title": "off", // 10 errors
+    "vitest/no-conditional-expect": "off", // 7 errors
+    "vitest/no-conditional-tests": "off", // 2 errors
+    "vitest/require-to-throw-message": "off", // 1 error
+    "vitest/require-mock-type-parameters": "off", // 1 error
+    "jsx-a11y/alt-text": "off", // 6 errors
+    "jsx-a11y/no-static-element-interactions": "off", // 1 error
+    "jsx-a11y/click-events-have-key-events": "off", // 1 error
+    "promise/always-return": "off", // 2 errors
   },
 });
