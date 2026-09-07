@@ -39,6 +39,5 @@ export default defineConfig({
     "jsx-a11y/alt-text": "off", // 6 errors
     "jsx-a11y/no-static-element-interactions": "off", // 1 error
     "jsx-a11y/click-events-have-key-events": "off", // 1 error
-    "promise/always-return": "off", // 2 errors
   },
 });
