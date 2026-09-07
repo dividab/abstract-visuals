@@ -336,8 +336,8 @@ function ExcrudeShape({ s, children }: { readonly s: Shape_1; readonly children?
     holes(s.holes, shape);
     return new ExtrudeGeometry(shape, { depth: s.thickness, bevelEnabled: false });
   }, [s]);
-  // Doesn't seem to adjust for excrude z size directly???
   return (
+    // Doesn't seem to adjust for excrude z size directly???
     <mesh rotation={[s.rot?.x ?? 0, s.rot?.y ?? 0, s.rot?.z ?? 0]} position={[s.pos.x, s.pos.y, s.pos.z]}>
       <mesh geometry={excrudeGeometry} position-z={-s.thickness / 2} castShadow receiveShadow>
         {children}
