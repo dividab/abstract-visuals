@@ -17,6 +17,10 @@ import { systemair } from "./generated/systemair.js";
 import { vortice } from "./generated/vortice.js";
 import { templateScene } from "./template-scene.js";
 
+function getTooltips(id: string): ReadonlyArray<React3Js.ReactPopover> {
+  return [{ id, pos: vec3Zero, content: <span>{id}</span> }];
+}
+
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
   const [hovered] = React.useState<string | undefined>(undefined);
@@ -147,8 +151,8 @@ export function Abstract3DExample(): React.ReactNode {
         />
         <div className="wrapper" style={{ width: "200px", height: "200px", minWidth: "200px" }} dangerouslySetInnerHTML={{ __html: templateImage }} />
         <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} />
-        {svgs.map((svg, i) => (
-          <img key={i} src={svg} width="200px" style={{ height: "max-content" }} />
+        {svgs.map((svg) => (
+          <img key={svg} src={svg} width="200px" style={{ height: "max-content" }} />
         ))}
         <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
@@ -161,7 +165,7 @@ export function Abstract3DExample(): React.ReactNode {
               camera={camera}
               //onHoverGroup={(id) => setHovered(id)}
               popovers={undefined}
-              getTooltips={(id) => [{ id: id, pos: { x: 0, y: 0, z: 0 }, content: <span>{id}</span> }]}
+              getTooltips={getTooltips}
             />
           </div>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>

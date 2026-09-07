@@ -196,8 +196,8 @@ return <AbstractImage width={600} height={260}>
         ) : jsString.type === "Err" ? (
           <div style={{ color: "#e03131", fontSize: 13, fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
             <div style={{ fontWeight: "bold", marginBottom: 8 }}>{jsString.error.message}</div>
-            {jsString.error.issues?.map((issue, i) => (
-              <div key={i} style={{ padding: "2px 0" }}>
+            {jsString.error.issues?.map((issue) => (
+              <div key={`${issue.code}:${issue.message}`} style={{ padding: "2px 0" }}>
                 • [{issue.code}] {issue.message}
               </div>
             ))}

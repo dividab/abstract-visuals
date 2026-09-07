@@ -126,6 +126,7 @@ export function ReactCamera({
     const bufLeft = bufferZones.left ?? 0;
     const bufRight = bufferZones.right ?? 0;
     const bufTop = bufferZones.top ?? 0;
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- deps intentionally trimmed, see b290bc3e
     const bufBottom = bufferZones.bottom! ?? 0;
 
     // Canvas size in CSS pixels — use R3F's reactive size so the effect
@@ -203,6 +204,7 @@ export function ReactCamera({
       perspectiveRef.current.updateProjectionMatrix();
     }
     //}, [camera, viewPortAspect, canvasSize, bufferZones, view, scene, fitPadding]);
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- deps intentionally trimmed, see b290bc3e
   }, [camera, viewPortAspect]);
 
   return (

@@ -143,7 +143,7 @@ export function ReactGroup({
         />
       ))}
       {g.meshes?.map((m, i) => (
-        <ReactMesh key={`mesh_${i}`} mesh={m}>
+        <ReactMesh key={i} mesh={m}>
           {m.geometry.type === "Image" ? (
             <ImageMaterial
               image={m.geometry.image}

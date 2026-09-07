@@ -309,7 +309,7 @@ function ExcrudeBoxPlane({
     shape.moveTo(-half.x, -half.y).lineTo(-half.x, half.y).lineTo(half.x, half.y).lineTo(half.x, -half.y).closePath();
     holes(geo.holes, shape);
     return new ExtrudeGeometry(shape, { depth: sizeZ, bevelEnabled: false });
-  }, [geo]);
+  }, [geo, half.x, half.y, sizeZ]);
 
   return (
     // Doesn't seem to adjust for excrude z size directly???

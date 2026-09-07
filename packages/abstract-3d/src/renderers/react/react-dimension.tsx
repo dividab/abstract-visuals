@@ -18,7 +18,7 @@ export const ReactDimensions = React.memo(
   }): React.JSX.Element => {
     const dimensionMaterial = React.useMemo(
       () => (dimensions?.material ? <ReactMaterial isText={true} material={dimensions?.material} /> : <></>),
-      []
+      [dimensions?.material]
     );
     return (
       <>

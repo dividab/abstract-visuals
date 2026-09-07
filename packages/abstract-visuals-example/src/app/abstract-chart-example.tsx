@@ -15,6 +15,44 @@ import {
 import type { ReactSvgCallbacks, Point } from "../../../abstract-image/src/index.js";
 import { createSVG, ReactSvg, red, blue, white, fromArgb, createPoint } from "../../../abstract-image/src/index.js";
 
+function Chart({
+  chart,
+  name,
+  callbacks,
+  children,
+  width = "600",
+  height = "600",
+}: {
+  readonly chart: Chart_1;
+  readonly name: string;
+  readonly callbacks?: ReactSvgCallbacks;
+  readonly children?: React.JSX.Element;
+  readonly width?: string;
+  readonly height?: string;
+}): React.JSX.Element {
+  const ac = renderChart(chart);
+  const svg = createSVG(ac);
+  return (
+    <>
+      <h1 style={{ display: "flex", gap: "6px", alignItems: "center" }}>{name}</h1>
+      {children}
+      <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <h4>React</h4>
+          <ReactSvg image={ac} callbacks={callbacks} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <h4 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            Svg
+            <button onClick={() => FileSaver.saveAs(new Blob([svg], { type: "text/plain" }), `chart.svg`)}>Download</button>
+          </h4>
+          <img width={width} height={height} src={`data:image/svg+xml;,${svg}`} />
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function AbstractChartExample(): React.JSX.Element {
   const [hovered, setHovered] = useState("");
   return (
@@ -37,44 +75,6 @@ export function AbstractChartExample(): React.JSX.Element {
       <Chart chart={generateBarChart()} name="Bar chart" />
     </div>
   );
-
-  function Chart({
-    chart,
-    name,
-    callbacks,
-    children,
-    width = "600",
-    height = "600",
-  }: {
-    readonly chart: Chart_1;
-    readonly name: string;
-    readonly callbacks?: ReactSvgCallbacks;
-    readonly children?: React.JSX.Element;
-    readonly width?: string;
-    readonly height?: string;
-  }): React.JSX.Element {
-    const ac = renderChart(chart);
-    const svg = createSVG(ac);
-    return (
-      <>
-        <h1 style={{ display: "flex", gap: "6px", alignItems: "center" }}>{name}</h1>
-        {children}
-        <div style={{ display: "flex", gap: "10px" }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <h4>React</h4>
-            <ReactSvg image={ac} callbacks={callbacks} />
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <h4 style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              Svg
-              <button onClick={() => FileSaver.saveAs(new Blob([svg], { type: "text/plain" }), `chart.svg`)}>Download</button>
-            </h4>
-            <img width={width} height={height} src={`data:image/svg+xml;,${svg}`} />
-          </div>
-        </div>
-      </>
-    );
-  }
 
   function generateLineChart(hovered: string): Chart_1 {
     const series = [
