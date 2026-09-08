@@ -67,12 +67,15 @@ function measureSection(
     [firstPageHeaderAndFooters.header, firstPageHeaderAndFooters.headerMargins],
     [firstPageHeaderAndFooters.footer, firstPageHeaderAndFooters.footerMargins],
   ];
-  const firstPageHeaderAndFooterSizes = firstPageHeaderAndFootersExtracted.reduce((prev, [sections, margins]) => {
-    const defMargins = AD.LayoutFoundation.orDefault(margins);
-    const availabelWidth = pageWidth - (defMargins.left + defMargins.right);
-    const availableSizes = AD.Size.create(availabelWidth, pageHeight);
-    return [...prev, ...sections.map((e) => measureSectionElement(pdfKit, resources, availableSizes, e))];
-  }, []);
+  const firstPageHeaderAndFooterSizes = firstPageHeaderAndFootersExtracted.reduce<ReadonlyArray<Map<object, AD.Size.Size>>>(
+    (prev, [sections, margins]) => {
+      const defMargins = AD.LayoutFoundation.orDefault(margins);
+      const availabelWidth = pageWidth - (defMargins.left + defMargins.right);
+      const availableSizes = AD.Size.create(availabelWidth, pageHeight);
+      return [...prev, ...sections.map((e) => measureSectionElement(pdfKit, resources, availableSizes, e))];
+    },
+    []
+  );
 
   return mergeMaps([...sectionSizes, ...headerSizes, ...footerSizes, ...firstPageHeaderAndFooterSizes]);
 }

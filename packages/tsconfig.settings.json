@@ -24,9 +24,8 @@
     "noEmitOnError": false,
     "newLine": "LF",
 
-    // Type Checking — strict sub-options overridden to false
+    // Type Checking
     "strict": true,
-    "strictFunctionTypes": false,
 
     // Type Checking — additional strictness
     "allowUnreachableCode": false,

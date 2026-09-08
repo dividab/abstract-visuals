@@ -24,20 +24,21 @@ export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyA
 
 export const creators: (styleNames: Record<string, string>) => Record<string, ADCreatorFn> = (styleNames) => {
   return {
-    AbstractDoc: (props, children: ReadonlyArray<Section.Section>) => AbstractDoc.create(props, children),
-    Section: (props, children: ReadonlyArray<SectionElement.SectionElement>) => Section.create(props, children),
-    Paragraph: (props, children: ReadonlyArray<Atom.Atom>) => Paragraph.create(props, children),
-    TextRow: (props: TextRowProps) => TextRow(props, styleNames),
-    TextCell: (props: TextCellProps) => TextCell(props, styleNames),
-    TextParagraph: (props: TextParagraphProps) => TextParagraph(props, styleNames),
+    AbstractDoc: ((props, children: ReadonlyArray<Section.Section>) => AbstractDoc.create(props, children)) as ADCreatorFn,
+    Section: ((props, children: ReadonlyArray<SectionElement.SectionElement>) => Section.create(props, children)) as ADCreatorFn,
+    Paragraph: ((props, children: ReadonlyArray<Atom.Atom>) => Paragraph.create(props, children)) as ADCreatorFn,
+    TextRow: ((props: TextRowProps) => TextRow(props, styleNames)) as ADCreatorFn,
+    TextCell: ((props: TextCellProps) => TextCell(props, styleNames)) as ADCreatorFn,
+    TextParagraph: ((props: TextParagraphProps) => TextParagraph(props, styleNames)) as ADCreatorFn,
     TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
-    ImageRow: (props: Record<string, unknown>) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames),
-    ImageCell: (props: Record<string, unknown>) => ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames),
-    ImageParagraph: (props: Record<string, unknown>) => ImageParagraph(imageProps(props) as unknown as ImageParagraphProps, styleNames),
-    Image: (props: Record<string, unknown>) => Image.create(imageProps(props) as unknown as Image.ImageProps),
-    Table: (props, children: ReadonlyArray<TableRow.TableRow>) => Table.create(props as unknown as Table.TableProps, children),
-    TableRow: (props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children),
-    TableCell: (props, children: ReadonlyArray<SectionElement.SectionElement>) => TableCell.create(props, children),
+    ImageRow: ((props: Record<string, unknown>) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames)) as ADCreatorFn,
+    ImageCell: ((props: Record<string, unknown>) => ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames)) as ADCreatorFn,
+    ImageParagraph: ((props: Record<string, unknown>) =>
+      ImageParagraph(imageProps(props) as unknown as ImageParagraphProps, styleNames)) as ADCreatorFn,
+    Image: ((props: Record<string, unknown>) => Image.create(imageProps(props) as unknown as Image.ImageProps)) as ADCreatorFn,
+    Table: ((props, children: ReadonlyArray<TableRow.TableRow>) => Table.create(props as unknown as Table.TableProps, children)) as ADCreatorFn,
+    TableRow: ((props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children)) as ADCreatorFn,
+    TableCell: ((props, children: ReadonlyArray<SectionElement.SectionElement>) => TableCell.create(props, children)) as ADCreatorFn,
     TextField: (props) => TextField.create(props as unknown as TextField.TextFieldProps),
     Group: (props, children) => Group.create(props, children as ReadonlyArray<Group.Group>),
     PageBreak: () => PageBreak.create(),
@@ -47,7 +48,7 @@ export const creators: (styleNames: Record<string, string>) => Record<string, AD
 };
 
 export const propsCreators: Record<string, ADCreatorFn> = {
-  styles: (props: { readonly styles: Record<string, Record<string, string | number> & { readonly type: string }> }): unknown => {
+  styles: ((props: { readonly styles: Record<string, Record<string, string | number> & { readonly type: string }> }): unknown => {
     const fixedStyles: Record<string, Record<string, string | number>> = {};
     if (props.styles) {
       Object.keys(props.styles).forEach((key: string) => {
@@ -56,8 +57,8 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     }
 
     return { ...fixedStyles, ...DefaultStyles.createStandardStyles() };
-  },
-  columnWidths: (props: { readonly columnWidths: string; readonly columnMultiplier: string }): unknown => {
+  }) as ADCreatorFn,
+  columnWidths: ((props: { readonly columnWidths: string; readonly columnMultiplier: string }): unknown => {
     const columnWidths = (props.columnWidths ?? "")
       // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
       .toString()
@@ -70,8 +71,8 @@ export const propsCreators: Record<string, ADCreatorFn> = {
       return columnWidths.map((l) => l * Number(props.columnMultiplier));
     }
     return columnWidths;
-  },
-  paperSize: (props: { readonly paperSize: string }): unknown => {
+  }) as ADCreatorFn,
+  paperSize: ((props: { readonly paperSize: string }): unknown => {
     if (props.paperSize === "A4" || props.paperSize === "Letter") {
       return props.paperSize;
     }
@@ -79,8 +80,8 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     const width = Number(parts[0] ?? 595);
     const height = Number(parts[1] ?? 842);
     return { width: Number.isNaN(width) ? 595 : width, height: Number.isNaN(height) ? 842 : height };
-  },
-  borders: (props: { readonly borders: string }): unknown => {
+  }) as ADCreatorFn,
+  borders: ((props: { readonly borders: string }): unknown => {
     const borders: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
     // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
     const propBorders = props.borders.toString().split(" ");
@@ -121,32 +122,32 @@ export const propsCreators: Record<string, ADCreatorFn> = {
       }
     });
     return borders;
-  },
-  borderTop: (props: { readonly borderTop: string }): unknown => {
+  }) as ADCreatorFn,
+  borderTop: ((props: { readonly borderTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const borders: { top?: number; bottom?: number; left?: number; right?: number } = allProps["borders"] ?? {};
     borders.top = Number(props.borderTop);
     return borders;
-  },
-  borderBottom: (props: { readonly borderBottom: string }): unknown => {
+  }) as ADCreatorFn,
+  borderBottom: ((props: { readonly borderBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const borders: { top?: number; bottom?: number; left?: number; right?: number } = allProps["borders"] ?? {};
     borders.bottom = Number(props.borderBottom);
     return borders;
-  },
-  borderLeft: (props: { readonly borderLeft: string }): unknown => {
+  }) as ADCreatorFn,
+  borderLeft: ((props: { readonly borderLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const borders: { top?: number; bottom?: number; left?: number; right?: number } = allProps["borders"] ?? {};
     borders.left = Number(props.borderLeft);
     return borders;
-  },
-  borderRight: (props: { readonly borderRight: string }): unknown => {
+  }) as ADCreatorFn,
+  borderRight: ((props: { readonly borderRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const borders: { top?: number; bottom?: number; left?: number; right?: number } = allProps["borders"] ?? {};
     borders.right = Number(props.borderRight);
     return borders;
-  },
-  padding: (props: { readonly padding: string }): unknown => {
+  }) as ADCreatorFn,
+  padding: ((props: { readonly padding: string }): unknown => {
     const padding: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
 
     // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
@@ -188,32 +189,32 @@ export const propsCreators: Record<string, ADCreatorFn> = {
       }
     });
     return padding;
-  },
-  paddingTop: (props: { readonly paddingTop: string }): unknown => {
+  }) as ADCreatorFn,
+  paddingTop: ((props: { readonly paddingTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const padding: { top?: number; bottom?: number; left?: number; right?: number } = allProps["padding"] ?? {};
     padding.top = Number(props.paddingTop);
     return padding;
-  },
-  paddingBottom: (props: { readonly paddingBottom: string }): unknown => {
+  }) as ADCreatorFn,
+  paddingBottom: ((props: { readonly paddingBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const padding: { top?: number; bottom?: number; left?: number; right?: number } = allProps["padding"] ?? {};
     padding.bottom = Number(props.paddingBottom);
     return padding;
-  },
-  paddingLeft: (props: { readonly paddingLeft: string }): unknown => {
+  }) as ADCreatorFn,
+  paddingLeft: ((props: { readonly paddingLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const padding: { top?: number; bottom?: number; left?: number; right?: number } = allProps["padding"] ?? {};
     padding.left = Number(props.paddingLeft);
     return padding;
-  },
-  paddingRight: (props: { readonly paddingRight: string }): unknown => {
+  }) as ADCreatorFn,
+  paddingRight: ((props: { readonly paddingRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const padding: { top?: number; bottom?: number; left?: number; right?: number } = allProps["padding"] ?? {};
     padding.right = Number(props.paddingRight);
     return padding;
-  },
-  margins: (props: { readonly margins: string }): unknown => {
+  }) as ADCreatorFn,
+  margins: ((props: { readonly margins: string }): unknown => {
     const margins: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
     // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
     const propMargins = props.margins.toString().split(" ");
@@ -253,32 +254,32 @@ export const propsCreators: Record<string, ADCreatorFn> = {
       }
     });
     return margins;
-  },
-  marginTop: (props: { readonly marginTop: string }): unknown => {
+  }) as ADCreatorFn,
+  marginTop: ((props: { readonly marginTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const margins: { top?: number; bottom?: number; left?: number; right?: number } = allProps["margins"] ?? {};
     margins.top = Number(props.marginTop);
     return margins;
-  },
-  marginBottom: (props: { readonly marginBottom: string }): unknown => {
+  }) as ADCreatorFn,
+  marginBottom: ((props: { readonly marginBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const margins: { top?: number; bottom?: number; left?: number; right?: number } = allProps["margins"] ?? {};
     margins.bottom = Number(props.marginBottom);
     return margins;
-  },
-  marginLeft: (props: { readonly marginLeft: string }): unknown => {
+  }) as ADCreatorFn,
+  marginLeft: ((props: { readonly marginLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const margins: { top?: number; bottom?: number; left?: number; right?: number } = allProps["margins"] ?? {};
     margins.left = Number(props.marginLeft);
     return margins;
-  },
-  marginRight: (props: { readonly marginRight: string }): unknown => {
+  }) as ADCreatorFn,
+  marginRight: ((props: { readonly marginRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const margins: { top?: number; bottom?: number; left?: number; right?: number } = allProps["margins"] ?? {};
     margins.right = Number(props.marginRight);
     return margins;
-  },
-  borderColors: (props: { readonly borderColors: string }): unknown => {
+  }) as ADCreatorFn,
+  borderColors: ((props: { readonly borderColors: string }): unknown => {
     const borderColors: { [k: string]: string } = { top: "", right: "", bottom: "", left: "" };
     props.borderColors.split(" ").forEach((item: string, index) => {
       switch (index) {
@@ -299,62 +300,62 @@ export const propsCreators: Record<string, ADCreatorFn> = {
       }
     });
     return borderColors;
-  },
-  borderColorTop: (props: { readonly borderColorTop: string }): unknown => {
+  }) as ADCreatorFn,
+  borderColorTop: ((props: { readonly borderColorTop: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const margins: { top?: string; bottom?: string; left?: string; right?: string } = allProps["borderColors"] ?? {};
     margins.top = props.borderColorTop;
     return margins;
-  },
-  borderColorBottom: (props: { readonly borderColorBottom: string }): unknown => {
+  }) as ADCreatorFn,
+  borderColorBottom: ((props: { readonly borderColorBottom: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps["borderColors"] ?? {};
     boderColors.bottom = props.borderColorBottom;
     return boderColors;
-  },
-  borderColorLeft: (props: { readonly borderColorLeft: string }): unknown => {
+  }) as ADCreatorFn,
+  borderColorLeft: ((props: { readonly borderColorLeft: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps["borderColors"] ?? {};
     boderColors.left = props.borderColorLeft;
     return boderColors;
-  },
-  borderColorRight: (props: { readonly borderColorRight: string }): unknown => {
+  }) as ADCreatorFn,
+  borderColorRight: ((props: { readonly borderColorRight: string }): unknown => {
     const allProps = props as Record<string, unknown>;
     const boderColors: { top?: string; bottom?: string; left?: string; right?: string } = allProps["borderColors"] ?? {};
     boderColors.right = props.borderColorRight;
     return boderColors;
-  },
+  }) as ADCreatorFn,
 
   //decimal/integer values
-  width: (props: { readonly width: string }) => strToNum(props.width),
-  height: (props: { readonly height: string }) => strToNum(props.height),
-  rowSpan: (props: { readonly rowSpan: string }) => strToNum(props.rowSpan),
-  columnSpan: (props: { readonly columnSpan: string }) => strToNum(props.columnSpan),
-  fontScale: (props: { readonly fontScale: string }) => strToNum(props.fontScale),
-  fontSize: (props: { readonly fontSize: string }) => strToNum(props.fontSize),
-  lineGap: (props: { readonly lineGap: string }) => strToNum(props.lineGap),
-  characterSpacing: (props: { readonly characterSpacing: string }) => strToNum(props.characterSpacing),
-  verticalPosition: (props: { readonly verticalPosition: string }) => strToNum(props.verticalPosition),
-  indent: (props: { readonly indent: string }) => strToNum(props.indent),
-  top: (props: { readonly top: string }) => strToNum(props.top),
-  bottom: (props: { readonly bottom: string }) => strToNum(props.bottom),
-  left: (props: { readonly left: string }) => strToNum(props.left),
-  right: (props: { readonly right: string }) => strToNum(props.right),
-  columnCount: (props: { readonly columnCount: string }) => strToNum(props.columnCount),
-  columnGap: (props: { readonly columnGap: string }) => strToNum(props.columnGap),
+  width: ((props: { readonly width: string }) => strToNum(props.width)) as ADCreatorFn,
+  height: ((props: { readonly height: string }) => strToNum(props.height)) as ADCreatorFn,
+  rowSpan: ((props: { readonly rowSpan: string }) => strToNum(props.rowSpan)) as ADCreatorFn,
+  columnSpan: ((props: { readonly columnSpan: string }) => strToNum(props.columnSpan)) as ADCreatorFn,
+  fontScale: ((props: { readonly fontScale: string }) => strToNum(props.fontScale)) as ADCreatorFn,
+  fontSize: ((props: { readonly fontSize: string }) => strToNum(props.fontSize)) as ADCreatorFn,
+  lineGap: ((props: { readonly lineGap: string }) => strToNum(props.lineGap)) as ADCreatorFn,
+  characterSpacing: ((props: { readonly characterSpacing: string }) => strToNum(props.characterSpacing)) as ADCreatorFn,
+  verticalPosition: ((props: { readonly verticalPosition: string }) => strToNum(props.verticalPosition)) as ADCreatorFn,
+  indent: ((props: { readonly indent: string }) => strToNum(props.indent)) as ADCreatorFn,
+  top: ((props: { readonly top: string }) => strToNum(props.top)) as ADCreatorFn,
+  bottom: ((props: { readonly bottom: string }) => strToNum(props.bottom)) as ADCreatorFn,
+  left: ((props: { readonly left: string }) => strToNum(props.left)) as ADCreatorFn,
+  right: ((props: { readonly right: string }) => strToNum(props.right)) as ADCreatorFn,
+  columnCount: ((props: { readonly columnCount: string }) => strToNum(props.columnCount)) as ADCreatorFn,
+  columnGap: ((props: { readonly columnGap: string }) => strToNum(props.columnGap)) as ADCreatorFn,
 
   //boolean values
-  bold: (props: { readonly bold: string }): unknown => strToBool(props.bold),
-  italic: (props: { readonly italic: string }): unknown => strToBool(props.italic),
-  underline: (props: { readonly underline: string }): unknown => strToBool(props.underline),
-  superScript: (props: { readonly superScript: string }): unknown => strToBool(props.superScript),
-  subScript: (props: { readonly subScript: string }): unknown => strToBool(props.subScript),
-  lineBreak: (props: { readonly lineBreak: string }): unknown => strToBool(props.lineBreak),
-  mediumBold: (props: { readonly mediumBold: string }): unknown => strToBool(props.mediumBold),
-  noTopBottomMargin: (props: { readonly noTopBottomMargin: string }): unknown => strToBool(props.noTopBottomMargin),
-  keepTogetherSections: (props: { readonly keepTogetherSections: string }): unknown => strToBool(props.keepTogetherSections),
-  keepTogether: (props: { readonly keepTogether: string }): unknown => strToBool(props.keepTogether),
-  differentFirstPage: (props: { readonly differentFirstPage: string }): unknown => strToBool(props.differentFirstPage),
+  bold: ((props: { readonly bold: string }): unknown => strToBool(props.bold)) as ADCreatorFn,
+  italic: ((props: { readonly italic: string }): unknown => strToBool(props.italic)) as ADCreatorFn,
+  underline: ((props: { readonly underline: string }): unknown => strToBool(props.underline)) as ADCreatorFn,
+  superScript: ((props: { readonly superScript: string }): unknown => strToBool(props.superScript)) as ADCreatorFn,
+  subScript: ((props: { readonly subScript: string }): unknown => strToBool(props.subScript)) as ADCreatorFn,
+  lineBreak: ((props: { readonly lineBreak: string }): unknown => strToBool(props.lineBreak)) as ADCreatorFn,
+  mediumBold: ((props: { readonly mediumBold: string }): unknown => strToBool(props.mediumBold)) as ADCreatorFn,
+  noTopBottomMargin: ((props: { readonly noTopBottomMargin: string }): unknown => strToBool(props.noTopBottomMargin)) as ADCreatorFn,
+  keepTogetherSections: ((props: { readonly keepTogetherSections: string }): unknown => strToBool(props.keepTogetherSections)) as ADCreatorFn,
+  keepTogether: ((props: { readonly keepTogether: string }): unknown => strToBool(props.keepTogether)) as ADCreatorFn,
+  differentFirstPage: ((props: { readonly differentFirstPage: string }): unknown => strToBool(props.differentFirstPage)) as ADCreatorFn,
 };
 
 const zero = createPoint(0, 0);
