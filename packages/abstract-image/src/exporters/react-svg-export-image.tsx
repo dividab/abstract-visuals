@@ -35,7 +35,7 @@ export function ReactSvg({
   const cb = callbacks ?? {};
   const id = "ai_root";
   return (
-    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- rendered image/chart, click callbacks report hit coordinates rather than acting as an interactive widget
+    // oxlint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- rendered image/chart, click callbacks report hit coordinates rather than acting as an interactive widget
     <svg
       id={id}
       width={`${image.size.width}px`}
