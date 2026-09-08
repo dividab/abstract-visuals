@@ -37,7 +37,6 @@ export default defineConfig({
     "vitest/require-to-throw-message": "off", // 1 error
     "vitest/require-mock-type-parameters": "off", // 1 error
     "jsx-a11y/alt-text": "off", // 6 errors
-    "jsx-a11y/no-static-element-interactions": "off", // 1 error
     "jsx-a11y/click-events-have-key-events": "off", // 1 error
   },
 });
