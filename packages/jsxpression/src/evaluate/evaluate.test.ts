@@ -76,7 +76,7 @@ describe("evaluate", () => {
       expect(() => {
         // props.nested's shape isn't known statically; this test only cares that mutating it throws once frozen.
         (props.nested as Record<string, unknown>).value = 999;
-      }).toThrow();
+      }).toThrow(TypeError);
       return { type: "Test", props, children: [] };
     };
 
