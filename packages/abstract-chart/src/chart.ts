@@ -812,7 +812,7 @@ function generateUnsignedStack(xMin: number, xMax: number, yMin: number, yMax: n
       throw new Error("Missing config for series " + index);
     }
     const color = config.color;
-    const points = [...line, ...lastLine.toReversed()];
+    const points = [...line, ...lastLine.reverse()];
     lastLine = line;
     polygons.push(createPolygon(points, color, 0, color, config.id));
   });

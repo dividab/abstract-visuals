@@ -243,7 +243,7 @@ const sortBy: HelperFunc = {
   ],
   returnType: (...argSchemas) => argSchemas[0] ?? arraySchema,
   func: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
-    return items.toSorted((a, b) =>
+    return items.sort((a, b) =>
       order === "desc"
         ? compare(extractStringPath(b, path), extractStringPath(a, path))
         : compare(extractStringPath(a, path), extractStringPath(b, path))
