@@ -179,120 +179,6 @@ export function AbstractChartExample(): React.JSX.Element {
     return chart;
   }
 
-  function getStackRange(points: ReadonlyArray<StackPoints>, axisSelector: (point: StackPoints) => ReadonlyArray<number>): [number, number] {
-    const axisValues = points
-      .map(axisSelector)
-      .map((stackedValues) => {
-        let posSum = 0;
-        let negSum = 0;
-        for (const value of stackedValues) {
-          if (value > 0) {
-            posSum += value;
-          } else {
-            negSum += value;
-          }
-        }
-        return [negSum, posSum];
-      })
-      .reduce<ReadonlyArray<number>>((soFar, current) => {
-        return [...soFar, ...current];
-      }, []);
-    return [Math.min(...axisValues), Math.max(...axisValues)];
-  }
-
-  function generateStackedChart(): Chart_1 {
-    const stack = createChartStack({
-      points: [
-        { x: 0, ys: [0, 0] },
-        { x: 1, ys: [2, 0] },
-        { x: 2, ys: [4, 0] },
-        { x: 3, ys: [1.5, 1] },
-        { x: 4, ys: [1, 2] },
-        { x: 5, ys: [0, 3] },
-        { x: 6, ys: [0, 2.8] },
-        { x: 7, ys: [0, 2] },
-        { x: 8, ys: [0, 1.5] },
-      ],
-      xAxis: "bottom",
-      yAxis: "left",
-      config: [
-        createChartStackConfig({
-          color: { r: 255, b: 0, g: 0, a: 120 },
-          label: "How bad you feel",
-        }),
-        createChartStackConfig({
-          color: blue,
-          label: "How bad you sound \n How bad you soundn \n How bad you soundn \n How bad you soundn",
-        }),
-      ],
-    });
-
-    const [xMin, xMax] = getStackRange(stack.points, (point) => [point.x]);
-    const [yMin, yMax] = getStackRange(stack.points, (point) => point.ys);
-
-    const chart = createChart({
-      chartStack: stack,
-      xAxisesBottom: [createLinearAxis(xMin, xMax, "Days with cold")],
-      yAxisesLeft: [createLinearAxis(yMin, yMax + 1, "Badness")],
-      labelLayout: "center",
-    });
-
-    return chart;
-  }
-
-  function generateSignedStackedChart(): Chart_1 {
-    const numPoints = 100;
-    const numYs = 5;
-    const points: Array<StackPoints> = [];
-    let lastYs: Array<number> = [];
-    for (let yi = 0; yi < numYs; ++yi) {
-      lastYs[yi] = 0;
-    }
-    for (let x = 0; x < numPoints; ++x) {
-      const ys = lastYs.slice();
-      for (let yi = 0; yi < numYs; ++yi) {
-        ys[yi] = Math.sin((((x / numPoints) * (yi + 1)) / numYs) * 20);
-      }
-      points.push({ x, ys });
-      lastYs = ys;
-    }
-
-    const stack = createChartStack({
-      points,
-      xAxis: "bottom",
-      yAxis: "left",
-      config: [
-        createChartStackConfig({
-          color: fromArgb(255, 94, 91, 59),
-        }),
-        createChartStackConfig({
-          color: fromArgb(255, 125, 188, 169),
-        }),
-        createChartStackConfig({
-          color: fromArgb(255, 234, 253, 137),
-        }),
-        createChartStackConfig({
-          color: fromArgb(255, 255, 211, 124),
-        }),
-        createChartStackConfig({
-          color: fromArgb(255, 255, 155, 109),
-        }),
-      ],
-    });
-
-    const [xMin, xMax] = getStackRange(stack.points, (point) => [point.x]);
-    const [yMin, yMax] = getStackRange(stack.points, (point) => point.ys);
-
-    const chart = createChart({
-      chartStack: stack,
-      xAxisesBottom: [createLinearAxis(xMin, xMax, "Time")],
-      yAxisesLeft: [createLinearAxis(yMin * 1.1, yMax * 1.1, "Sineness")],
-      labelLayout: "center",
-    });
-
-    return chart;
-  }
-
   function generateLineChartDiscreteXAxis(): Chart_1 {
     const series = [
       createChartLine({
@@ -397,75 +283,6 @@ export function AbstractChartExample(): React.JSX.Element {
 
     return chart;
   }
-  //dummy
-  function generateBarChart(): Chart_1 {
-    const xAxis: Axis = {
-      type: "linear",
-      min: 0,
-      max: 10,
-      label: "Time",
-      labelRotation: -25,
-      tickLabelDisp: 25,
-      axisFontSize: 18,
-      thickness: 1,
-      axisColor: { r: 0, b: 0, g: 0, a: 255 },
-    };
-    const yAxis: Axis = {
-      type: "linear",
-      min: 0,
-      max: 30,
-      label: "Badness",
-      axisFontSize: 15,
-      tickFontSize: 14,
-      thickness: 1,
-      axisColor: { r: 0, b: 0, g: 0, a: 255 },
-    };
-    const chartBase: ChartBars = {
-      direction: "y",
-      width: 0.4,
-      radius: { x: 2, y: 2 },
-      xAxis: "bottom",
-      xAxisIx: 0,
-      yAxis: "left",
-      yAxisIx: 0,
-      position: 0,
-      bars: [],
-    };
-    const chart = createChart({
-      chartAreas: [
-        createChartArea({
-          points: [createPoint(3, 7), createPoint(6, 7), createPoint(6, 14), createPoint(3, 14)],
-        }),
-      ],
-      chartLines: [],
-      chartBars: [
-        {
-          ...chartBase,
-          position: 1,
-          bars: [
-            { max: 10, min: 0, color: fromArgb(255, 255, 0, 0) },
-            { max: 5, min: 0, color: fromArgb(255, 0, 0, 255) },
-            { max: 7, min: 0, color: fromArgb(255, 0, 255, 0) },
-          ],
-        },
-        { ...chartBase, position: 3, bars: [{ max: 4, color: fromArgb(255, 255, 0, 0) }] },
-        { ...chartBase, position: 4, bars: [{ max: 2, color: fromArgb(255, 255, 0, 0) }] },
-        { ...chartBase, position: 6, bars: [{ max: 4, color: fromArgb(255, 255, 0, 0) }] },
-        { ...chartBase, position: 7, bars: [{ max: 5, color: fromArgb(255, 255, 0, 0) }] },
-        { ...chartBase, position: 10, bars: [{ max: 8, color: fromArgb(255, 255, 0, 0) }] },
-      ],
-      xAxisesBottom: [xAxis],
-      xAxisesTop: [{ type: "linear", min: 0, max: 8, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 }, noTicks: true }],
-      yAxisesRight: [{ type: "linear", noTicks: true, min: 0, max: 30, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 } }],
-      fontSize: 12,
-      xGrid: undefined,
-      yAxisesLeft: [yAxis],
-      labelLayout: "center",
-      padding: { top: 10, left: 50, right: 110, bottom: 65 },
-    });
-
-    return chart;
-  }
 }
 
 function getLineRange(series: Array<ChartLine>, axisSelector: (point: Point) => number): [number, number] {
@@ -475,4 +292,187 @@ function getLineRange(series: Array<ChartLine>, axisSelector: (point: Point) => 
       return [...soFar, ...current];
     }, []);
   return [Math.min(...axisValues), Math.max(...axisValues)];
+}
+
+function getStackRange(points: ReadonlyArray<StackPoints>, axisSelector: (point: StackPoints) => ReadonlyArray<number>): [number, number] {
+  const axisValues = points
+    .map(axisSelector)
+    .map((stackedValues) => {
+      let posSum = 0;
+      let negSum = 0;
+      for (const value of stackedValues) {
+        if (value > 0) {
+          posSum += value;
+        } else {
+          negSum += value;
+        }
+      }
+      return [negSum, posSum];
+    })
+    .reduce<ReadonlyArray<number>>((soFar, current) => {
+      return [...soFar, ...current];
+    }, []);
+  return [Math.min(...axisValues), Math.max(...axisValues)];
+}
+
+function generateStackedChart(): Chart_1 {
+  const stack = createChartStack({
+    points: [
+      { x: 0, ys: [0, 0] },
+      { x: 1, ys: [2, 0] },
+      { x: 2, ys: [4, 0] },
+      { x: 3, ys: [1.5, 1] },
+      { x: 4, ys: [1, 2] },
+      { x: 5, ys: [0, 3] },
+      { x: 6, ys: [0, 2.8] },
+      { x: 7, ys: [0, 2] },
+      { x: 8, ys: [0, 1.5] },
+    ],
+    xAxis: "bottom",
+    yAxis: "left",
+    config: [
+      createChartStackConfig({
+        color: { r: 255, b: 0, g: 0, a: 120 },
+        label: "How bad you feel",
+      }),
+      createChartStackConfig({
+        color: blue,
+        label: "How bad you sound \n How bad you soundn \n How bad you soundn \n How bad you soundn",
+      }),
+    ],
+  });
+
+  const [xMin, xMax] = getStackRange(stack.points, (point) => [point.x]);
+  const [yMin, yMax] = getStackRange(stack.points, (point) => point.ys);
+
+  const chart = createChart({
+    chartStack: stack,
+    xAxisesBottom: [createLinearAxis(xMin, xMax, "Days with cold")],
+    yAxisesLeft: [createLinearAxis(yMin, yMax + 1, "Badness")],
+    labelLayout: "center",
+  });
+
+  return chart;
+}
+
+function generateSignedStackedChart(): Chart_1 {
+  const numPoints = 100;
+  const numYs = 5;
+  const points: Array<StackPoints> = [];
+  let lastYs: Array<number> = [];
+  for (let yi = 0; yi < numYs; ++yi) {
+    lastYs[yi] = 0;
+  }
+  for (let x = 0; x < numPoints; ++x) {
+    const ys = lastYs.slice();
+    for (let yi = 0; yi < numYs; ++yi) {
+      ys[yi] = Math.sin((((x / numPoints) * (yi + 1)) / numYs) * 20);
+    }
+    points.push({ x, ys });
+    lastYs = ys;
+  }
+
+  const stack = createChartStack({
+    points,
+    xAxis: "bottom",
+    yAxis: "left",
+    config: [
+      createChartStackConfig({
+        color: fromArgb(255, 94, 91, 59),
+      }),
+      createChartStackConfig({
+        color: fromArgb(255, 125, 188, 169),
+      }),
+      createChartStackConfig({
+        color: fromArgb(255, 234, 253, 137),
+      }),
+      createChartStackConfig({
+        color: fromArgb(255, 255, 211, 124),
+      }),
+      createChartStackConfig({
+        color: fromArgb(255, 255, 155, 109),
+      }),
+    ],
+  });
+
+  const [xMin, xMax] = getStackRange(stack.points, (point) => [point.x]);
+  const [yMin, yMax] = getStackRange(stack.points, (point) => point.ys);
+
+  const chart = createChart({
+    chartStack: stack,
+    xAxisesBottom: [createLinearAxis(xMin, xMax, "Time")],
+    yAxisesLeft: [createLinearAxis(yMin * 1.1, yMax * 1.1, "Sineness")],
+    labelLayout: "center",
+  });
+
+  return chart;
+}
+
+function generateBarChart(): Chart_1 {
+  const xAxis: Axis = {
+    type: "linear",
+    min: 0,
+    max: 10,
+    label: "Time",
+    labelRotation: -25,
+    tickLabelDisp: 25,
+    axisFontSize: 18,
+    thickness: 1,
+    axisColor: { r: 0, b: 0, g: 0, a: 255 },
+  };
+  const yAxis: Axis = {
+    type: "linear",
+    min: 0,
+    max: 30,
+    label: "Badness",
+    axisFontSize: 15,
+    tickFontSize: 14,
+    thickness: 1,
+    axisColor: { r: 0, b: 0, g: 0, a: 255 },
+  };
+  const chartBase: ChartBars = {
+    direction: "y",
+    width: 0.4,
+    radius: { x: 2, y: 2 },
+    xAxis: "bottom",
+    xAxisIx: 0,
+    yAxis: "left",
+    yAxisIx: 0,
+    position: 0,
+    bars: [],
+  };
+  const chart = createChart({
+    chartAreas: [
+      createChartArea({
+        points: [createPoint(3, 7), createPoint(6, 7), createPoint(6, 14), createPoint(3, 14)],
+      }),
+    ],
+    chartLines: [],
+    chartBars: [
+      {
+        ...chartBase,
+        position: 1,
+        bars: [
+          { max: 10, min: 0, color: fromArgb(255, 255, 0, 0) },
+          { max: 5, min: 0, color: fromArgb(255, 0, 0, 255) },
+          { max: 7, min: 0, color: fromArgb(255, 0, 255, 0) },
+        ],
+      },
+      { ...chartBase, position: 3, bars: [{ max: 4, color: fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 4, bars: [{ max: 2, color: fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 6, bars: [{ max: 4, color: fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 7, bars: [{ max: 5, color: fromArgb(255, 255, 0, 0) }] },
+      { ...chartBase, position: 10, bars: [{ max: 8, color: fromArgb(255, 255, 0, 0) }] },
+    ],
+    xAxisesBottom: [xAxis],
+    xAxisesTop: [{ type: "linear", min: 0, max: 8, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 }, noTicks: true }],
+    yAxisesRight: [{ type: "linear", noTicks: true, min: 0, max: 30, label: "", axisColor: { r: 0, b: 0, g: 0, a: 255 } }],
+    fontSize: 12,
+    xGrid: undefined,
+    yAxisesLeft: [yAxis],
+    labelLayout: "center",
+    padding: { top: 10, left: 50, right: 110, bottom: 65 },
+  });
+
+  return chart;
 }

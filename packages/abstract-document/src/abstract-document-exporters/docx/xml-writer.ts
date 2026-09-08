@@ -23,6 +23,26 @@ export interface XmlWriter {
   getXml: () => string;
 }
 
+function generatePrefix(namespaces: XmlNamespaceDictionary): string {
+  let i = 1;
+  while (i < 100) {
+    if (!Object.hasOwn(namespaces, "p" + i)) {
+      break;
+    }
+    i++;
+  }
+  return "p" + i;
+}
+
+function getPrefixedName(localName: string, prefix: string | undefined): string {
+  if (prefix) {
+    return `${prefix}:${localName}`;
+  } else {
+    // oxlint-disable-next-line typescript/no-unnecessary-template-expression
+    return `${localName}`;
+  }
+}
+
 export function createXmlWriter(): XmlWriter {
   const quoteChar = '"';
   const encoding = "utf-8";
@@ -42,26 +62,6 @@ export function createXmlWriter(): XmlWriter {
 
   function throwInvalidState(): void {
     throw new Error(`Invalid state '${state}'.`);
-  }
-
-  function generatePrefix(namespaces: XmlNamespaceDictionary): string {
-    let i = 1;
-    while (i < 100) {
-      if (!Object.hasOwn(namespaces, "p" + i)) {
-        break;
-      }
-      i++;
-    }
-    return "p" + i;
-  }
-
-  function getPrefixedName(localName: string, prefix: string | undefined): string {
-    if (prefix) {
-      return `${prefix}:${localName}`;
-    } else {
-      // oxlint-disable-next-line typescript/no-unnecessary-template-expression
-      return `${localName}`;
-    }
   }
 
   // Find existing prefix for a specified namespace

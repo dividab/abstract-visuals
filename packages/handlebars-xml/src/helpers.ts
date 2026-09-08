@@ -16,6 +16,22 @@ type HelperArg = {
   readonly type: JSONSchema7;
 };
 
+function compare(a: any, b: any): number {
+  if (a === null || b === null || a === undefined || b === undefined) {
+    if ((a === null || a === undefined) && (b === null || b === undefined)) {
+      return 0;
+    } else {
+      return a === null || a === undefined ? -1 : 1;
+    }
+  } else if (typeof a === "number" && typeof b === "number") {
+    return a - b;
+  } else if (typeof a === "string" && typeof b === "string") {
+    return a.localeCompare(b);
+  } else {
+    return 0;
+  }
+}
+
 //reusable schemas
 const num: JSONSchema7 = { type: "number" };
 const bool: JSONSchema7 = { type: "boolean" };
@@ -227,21 +243,6 @@ const sortBy: HelperFunc = {
   ],
   returnType: (...argSchemas) => argSchemas[0] ?? arraySchema,
   func: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
-    const compare = (a: any, b: any): number => {
-      if (a === null || b === null || a === undefined || b === undefined) {
-        if ((a === null || a === undefined) && (b === null || b === undefined)) {
-          return 0;
-        } else {
-          return a === null || a === undefined ? -1 : 1;
-        }
-      } else if (typeof a === "number" && typeof b === "number") {
-        return a - b;
-      } else if (typeof a === "string" && typeof b === "string") {
-        return a.localeCompare(b);
-      } else {
-        return 0;
-      }
-    };
     return items.toSorted((a, b) =>
       order === "desc"
         ? compare(extractStringPath(b, path), extractStringPath(a, path))

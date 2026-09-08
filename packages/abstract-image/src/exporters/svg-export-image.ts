@@ -337,11 +337,11 @@ function objectToAttributeValue(attributes: Attributes): string {
   return "";
 }
 
-function convertUpperToHyphenLower(elementName: string): string {
-  function upperToHyphenLower(match: string): string {
-    return "-" + match.toLowerCase();
-  }
+function upperToHyphenLower(match: string): string {
+  return "-" + match.toLowerCase();
+}
 
+function convertUpperToHyphenLower(elementName: string): string {
   return elementName !== "viewBox" ? elementName.replace(/[A-Z]/g, upperToHyphenLower) : elementName;
 }
 

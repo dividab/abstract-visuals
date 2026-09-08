@@ -1,3 +1,4 @@
+/* oxlint-disable unicorn/consistent-function-scoping -- each test's mock component is colocated with the test it belongs to; hoisting them to module scope would force artificial unique names and separate them from their usage */
 import { describe, expect, it } from "vitest";
 import { AnalysisError } from "./analyze/index.js";
 import { EvaluationError } from "./evaluate/index.js";
