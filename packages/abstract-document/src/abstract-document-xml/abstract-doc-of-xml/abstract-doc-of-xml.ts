@@ -38,7 +38,7 @@ export async function abstractDocsXml(
     const combinedReport = addResources(merge(...abstractDocs), resources);
     return { type: "Ok", value: combinedReport };
   } catch (e) {
-    return { type: "Err", error: typeof e === "string" ? e : e.message };
+    return { type: "Err", error: typeof e === "string" ? e : e instanceof Error ? e.message : String(e) };
   }
 }
 

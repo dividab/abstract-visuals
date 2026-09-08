@@ -27,7 +27,6 @@
     // Type Checking — strict sub-options overridden to false
     "strict": true,
     "strictFunctionTypes": false,
-    "useUnknownInCatchVariables": false,
 
     // Type Checking — additional strictness
     "allowUnreachableCode": false,

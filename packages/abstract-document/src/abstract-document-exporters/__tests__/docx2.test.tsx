@@ -116,7 +116,7 @@ async function diffXmlStrings(lhs: string, rhs: string): Promise<ReadonlyArray<D
         }
       );
     } catch (e) {
-      resolve([{ path: "", resultType: "ERROR", message: "ERROR while calling diffAsXml(): " + e.message }]);
+      resolve([{ path: "", resultType: "ERROR", message: "ERROR while calling diffAsXml(): " + (e instanceof Error ? e.message : String(e)) }]);
     }
   });
 }

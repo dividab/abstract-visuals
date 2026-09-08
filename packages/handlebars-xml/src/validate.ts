@@ -85,7 +85,7 @@ export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement
       const validationErrors = entryPointXml.children.flatMap((child) => validateElements(child, undefined, entryPointSchema, getRangeOfElement));
       errors.push(...validationErrors);
     } catch (e) {
-      errors.push(createError(e.message, ErrorType.error, toRange(1, 1, 1, 100)));
+      errors.push(createError(e instanceof Error ? e.message : String(e), ErrorType.error, toRange(1, 1, 1, 100)));
     }
   }
 

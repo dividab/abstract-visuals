@@ -161,6 +161,6 @@ function createSheet(data: string, template: string): { type: "Ok"; sheet: Abstr
   try {
     return { type: "Ok", sheet: abstractSheetXml(template, dataObject, {}) };
   } catch (e) {
-    return { type: "Err", error: e.message };
+    return { type: "Err", error: e instanceof Error ? e.message : String(e) };
   }
 }
