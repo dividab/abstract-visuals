@@ -321,58 +321,62 @@ describe("analyze - consolidated tests", () => {
             const requiredParams = methodDef.params.filter((p) => p.required);
             const nonVariadicParams = methodDef.params.filter((p) => !p.variadic);
 
-            if (requiredParams.length > 0) {
-              it(`should validate ${displayName} minimum parameters`, () => {
-                let testExpression: string = "";
+            it(`should validate ${displayName} minimum parameters`, () => {
+              if (requiredParams.length === 0) {
+                return;
+              }
 
-                if (objectName === "Math") {
-                  testExpression = `<Text>{Math.${methodName}()}</Text>`;
-                } else if (objectName === "Array.prototype") {
-                  testExpression = `<Text>{items.${methodName}()}</Text>`;
-                } else if (objectName === "String.prototype") {
-                  testExpression = `<Text>{text.${methodName}()}</Text>`;
-                } else {
-                  testExpression = `<Text>{${objectName}.${methodName}()}</Text>`;
-                }
+              let testExpression: string = "";
 
-                const ast = parse(testExpression);
-                const result = analyze(ast, baseSchema);
-                expect(result.hasWarnings).toBe(true);
-                expect(result.warnings[0].message).toContain(`${displayName} expects at least ${requiredParams.length} parameter`);
-              });
-            }
+              if (objectName === "Math") {
+                testExpression = `<Text>{Math.${methodName}()}</Text>`;
+              } else if (objectName === "Array.prototype") {
+                testExpression = `<Text>{items.${methodName}()}</Text>`;
+              } else if (objectName === "String.prototype") {
+                testExpression = `<Text>{text.${methodName}()}</Text>`;
+              } else {
+                testExpression = `<Text>{${objectName}.${methodName}()}</Text>`;
+              }
+
+              const ast = parse(testExpression);
+              const result = analyze(ast, baseSchema);
+              expect(result.hasWarnings).toBe(true);
+              expect(result.warnings[0].message).toContain(`${displayName} expects at least ${requiredParams.length} parameter`);
+            });
 
             // Test maximum parameters for non-variadic methods
-            if (nonVariadicParams.length === methodDef.params.length && methodDef.params.length > 0) {
-              it(`should validate ${displayName} maximum parameters`, () => {
-                // Create a call with too many parameters
-                const maxParams = methodDef.params.length;
-                const extraParams = Array(maxParams + 2)
-                  .fill("1")
-                  .join(", ");
+            it(`should validate ${displayName} maximum parameters`, () => {
+              if (!(nonVariadicParams.length === methodDef.params.length && methodDef.params.length > 0)) {
+                return;
+              }
 
-                let testExpression: string = "";
+              // Create a call with too many parameters
+              const maxParams = methodDef.params.length;
+              const extraParams = Array(maxParams + 2)
+                .fill("1")
+                .join(", ");
 
-                if (objectName === "Math") {
-                  testExpression = `<Text>{Math.${methodName}(${extraParams})}</Text>`;
-                } else if (objectName === "Array.prototype") {
-                  if (methodName === "map" || methodName === "filter") {
-                    testExpression = `<Text>{items.${methodName}(x => x, {}, ${extraParams})}</Text>`;
-                  } else {
-                    testExpression = `<Text>{items.${methodName}(${extraParams})}</Text>`;
-                  }
-                } else if (objectName === "String.prototype") {
-                  testExpression = `<Text>{text.${methodName}(${extraParams})}</Text>`;
+              let testExpression: string = "";
+
+              if (objectName === "Math") {
+                testExpression = `<Text>{Math.${methodName}(${extraParams})}</Text>`;
+              } else if (objectName === "Array.prototype") {
+                if (methodName === "map" || methodName === "filter") {
+                  testExpression = `<Text>{items.${methodName}(x => x, {}, ${extraParams})}</Text>`;
                 } else {
-                  testExpression = `<Text>{${objectName}.${methodName}(${extraParams})}</Text>`;
+                  testExpression = `<Text>{items.${methodName}(${extraParams})}</Text>`;
                 }
+              } else if (objectName === "String.prototype") {
+                testExpression = `<Text>{text.${methodName}(${extraParams})}</Text>`;
+              } else {
+                testExpression = `<Text>{${objectName}.${methodName}(${extraParams})}</Text>`;
+              }
 
-                const ast = parse(testExpression);
-                const result = analyze(ast, baseSchema);
-                expect(result.hasWarnings).toBe(true);
-                expect(result.warnings[0].message).toContain(`${displayName} expects at most ${maxParams} parameter`);
-              });
-            }
+              const ast = parse(testExpression);
+              const result = analyze(ast, baseSchema);
+              expect(result.hasWarnings).toBe(true);
+              expect(result.warnings[0].message).toContain(`${displayName} expects at most ${maxParams} parameter`);
+            });
           });
         });
       });

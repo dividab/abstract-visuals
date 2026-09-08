@@ -32,7 +32,6 @@ export default defineConfig({
     "react-perf/jsx-no-jsx-as-prop": "off", // 2 errors
     "vitest/no-commented-out-tests": "off", // 12 errors
     "vitest/valid-title": "off", // 10 errors
-    "vitest/no-conditional-tests": "off", // 2 errors
     "vitest/require-to-throw-message": "off", // 1 error
     "vitest/require-mock-type-parameters": "off", // 1 error
     "jsx-a11y/alt-text": "off", // 6 errors
