@@ -1,4 +1,5 @@
 import * as AbstractImage from "../../../index.js";
+import { ReactSvg } from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 const subImageText = AbstractImage.createText(
@@ -25,7 +26,7 @@ const components = [AbstractImage.createSubImage(AbstractImage.createPoint(10, 1
 
 const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
-const svg = <AbstractImage.ReactSvg image={image} />;
+const svg = <ReactSvg image={image} />;
 
 export const testReactSvgSubImage: ExportTestDef = {
   name: "react svg subimage",

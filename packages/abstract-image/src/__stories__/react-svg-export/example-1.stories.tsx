@@ -1,6 +1,7 @@
 import type { Meta } from "@storybook/react";
 import * as React from "react";
 import * as AbstractImage from "../../index.js";
+import { ReactSvg } from "../../index.js";
 
 export function ReactSvgExportExample1(): React.ReactElement<object> {
   const components = [
@@ -28,7 +29,7 @@ export function ReactSvgExportExample1(): React.ReactElement<object> {
     AbstractImage.white,
     components
   );
-  const svg = <AbstractImage.ReactSvg image={image} />;
+  const svg = <ReactSvg image={image} />;
   return (
     <div>
       <h1>React Svg</h1>

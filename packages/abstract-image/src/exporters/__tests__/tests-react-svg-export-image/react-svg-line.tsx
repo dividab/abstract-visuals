@@ -1,10 +1,11 @@
 import * as AbstractImage from "../../../index.js";
+import { ReactSvg } from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 const components = [AbstractImage.createLine(AbstractImage.createPoint(10, 100), AbstractImage.createPoint(40, 70), AbstractImage.black, 2)];
 const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
-const svg = <AbstractImage.ReactSvg image={image} />;
+const svg = <ReactSvg image={image} />;
 
 export const testReactSvgLine: ExportTestDef = {
   name: "react svg line",

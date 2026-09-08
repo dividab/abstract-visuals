@@ -1,5 +1,6 @@
 import React from "react";
-import * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
+import type * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
+import { render as Render } from "../../../abstract-3d/src/renderers/react/index.js";
 import { systemair2 } from "./generated/systemair-2.js";
 import { systemair3 } from "./generated/systemair-3.js";
 import { systemair4 } from "./generated/systemair-4.js";
@@ -190,7 +191,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         </div>
 
         {/* 3D VIEW */}
-        <React3Js.render
+        <Render
           sceneFallback={sceneFallback}
           useAlphaTest={false}
           selectedIds={{}}

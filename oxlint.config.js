@@ -23,7 +23,6 @@ export default defineConfig({
     "typescript/no-unnecessary-condition": "off", // 164 errors
     "typescript/switch-exhaustiveness-check": ["error", { considerDefaultExhaustiveForUnions: true }],
     "max-lines": ["error", 1100],
-    "import/namespace": "off", // 22  - False-positives on <Namespace.Component /> through an `export *` barrel.
     "react/react-in-jsx-scope": "off", // 1356 - tsconfig uses jsx: react-jsx (automatic runtime), React need not be in scope.
     "react-perf/jsx-no-new-object-as-prop": "off", // 102 errors
     "react-perf/jsx-no-new-array-as-prop": "off", // 61 errors

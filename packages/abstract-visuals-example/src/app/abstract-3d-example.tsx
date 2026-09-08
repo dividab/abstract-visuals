@@ -3,7 +3,8 @@ import React from "react";
 import type { Scene } from "../../../abstract-3d/src/abstract-3d.js";
 import { vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
 import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";
-import * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
+import type * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
+import { render as Render } from "../../../abstract-3d/src/renderers/react/index.js";
 import * as Step from "../../../abstract-3d/src/renderers/step/index.js";
 import * as Stl from "../../../abstract-3d/src/renderers/stl/index.js";
 import * as Svg from "../../../abstract-3d/src/renderers/svg/index.js";
@@ -156,7 +157,7 @@ export function Abstract3DExample(): React.ReactNode {
         ))}
         <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-            <React3Js.render
+            <Render
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
@@ -169,7 +170,7 @@ export function Abstract3DExample(): React.ReactNode {
             />
           </div>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-            <React3Js.render
+            <Render
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
@@ -179,7 +180,7 @@ export function Abstract3DExample(): React.ReactNode {
             />
           </div>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-            <React3Js.render
+            <Render
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}

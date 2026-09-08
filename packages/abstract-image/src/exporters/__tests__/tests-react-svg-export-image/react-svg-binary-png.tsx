@@ -1,4 +1,5 @@
 import * as AbstractImage from "../../../index.js";
+import { ReactSvg } from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 const pngEncoded =
@@ -12,7 +13,7 @@ const abstractImage = AbstractImage.createAbstractImage(AbstractImage.createPoin
   binaryImage,
 ]);
 
-const svg = <AbstractImage.ReactSvg image={abstractImage} />;
+const svg = <ReactSvg image={abstractImage} />;
 
 export const testReactSvgBinaryPng: ExportTestDef = {
   name: "react svg binary png",

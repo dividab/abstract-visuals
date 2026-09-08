@@ -1,4 +1,5 @@
 import * as AbstractImage from "../../../index.js";
+import { ReactSvg } from "../../../index.js";
 import type { ExportTestDef } from "./_export-test-def.js";
 
 const components = [
@@ -65,7 +66,7 @@ const components = [
 ];
 const image = AbstractImage.createAbstractImage(AbstractImage.createPoint(0, 0), AbstractImage.createSize(400, 400), AbstractImage.white, components);
 
-const svg = <AbstractImage.ReactSvg image={image} />;
+const svg = <ReactSvg image={image} />;
 
 export const testReactSvgTextGrowthDirections: ExportTestDef = {
   name: "react svg text growth directions",
