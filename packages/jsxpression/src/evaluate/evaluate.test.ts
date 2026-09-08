@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { compile } from "../compile/index.js";
 import { parse } from "../parse/index.js";
 import type { Schema } from "../schema.js";
-import { evaluate, type Component, type EvaluateOptions, type PropsDict } from "./evaluate.js";
+import { evaluate, type Component, type CreateElement, type EvaluateOptions, type Node as EvalNode, type PropsDict } from "./evaluate.js";
 import { EvaluationError } from "./evaluation-error.js";
 
 type Node = {
@@ -269,7 +269,7 @@ describe("evaluate", () => {
   });
 
   it("should pass correct parameters to custom createElement", () => {
-    const mockCreateElement = vi.fn();
+    const mockCreateElement = vi.fn<CreateElement<EvalNode>>();
 
     compileAndEvaluate("<Test x={10}>Hello</Test>", {
       components: { Test: () => ({ type: "Test", props: {}, children: [] }) },
