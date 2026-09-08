@@ -1,6 +1,6 @@
 {
   "name": "jsxpression",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "gitHead": "d98928b5dbdc9fd2eab49956969f56e27d57aeb2",
   "description": "Validate and safely render JSX expressions",
   "license": "MIT",
