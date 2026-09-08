@@ -80,15 +80,11 @@ describe("export docx", () => {
       const docxZip = await jszip.loadAsync(docxBuffer);
       for (const [filename, content] of Object.entries(item.expectedDocxZipContexts)) {
         const docxWordDocumentXml = await docxZip.file(filename)?.async("string");
-        if (docxWordDocumentXml !== undefined) {
-          if (filename.endsWith(".xml")) {
-            const result = await diffXmlStrings(content, docxWordDocumentXml);
-            // console.log("result", docxWordDocumentXml);
-            expect(result).toEqual([]);
-          } else {
-            expect(docxWordDocumentXml).toEqual(content);
-          }
-        }
+        expect(docxWordDocumentXml).toBeDefined();
+        const isXml = filename.endsWith(".xml");
+        const actual = isXml ? await diffXmlStrings(content, docxWordDocumentXml ?? "") : docxWordDocumentXml;
+        const expected: unknown = isXml ? [] : content;
+        expect(actual).toEqual(expected);
       }
     });
   });

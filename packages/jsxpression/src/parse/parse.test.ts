@@ -2,6 +2,15 @@ import { describe, it, expect } from "vitest";
 import { ParseError } from "./parse-error.js";
 import { parse } from "./parse.js";
 
+function getThrownError(fn: () => unknown): unknown {
+  try {
+    fn();
+  } catch (error) {
+    return error;
+  }
+  throw new Error("Expected function to throw");
+}
+
 describe("parse", () => {
   it("should parse valid JSX element", () => {
     const result = parse("<Text x={10}>Hello</Text>");
@@ -20,12 +29,6 @@ describe("parse", () => {
 
   it("should throw ParseError with position for syntax error", () => {
     expect(() => parse("<Text>Unclosed")).toThrow(ParseError);
-
-    try {
-      parse("<Text>Unclosed");
-    } catch (error) {
-      expect(error).toBeInstanceOf(ParseError);
-    }
   });
 
   it("should parse nested JSX", () => {
@@ -78,17 +81,12 @@ describe("parse", () => {
   });
 
   it("should preserve location information in errors", () => {
-    try {
-      parse("<Text>Unclosed");
-      throw new Error("Should have thrown ParseError");
-    } catch (error) {
-      expect(error).toBeInstanceOf(ParseError);
-      if (error instanceof ParseError && error.loc) {
-        expect(error.loc).toBeDefined();
-        expect(error.loc.line).toBe(1);
-        expect(error.loc.column).toBe(6);
-      }
-    }
+    const error = getThrownError(() => parse("<Text>Unclosed"));
+
+    expect(error).toBeInstanceOf(ParseError);
+    expect((error as ParseError).loc).toBeDefined();
+    expect((error as ParseError).loc?.line).toBe(1);
+    expect((error as ParseError).loc?.column).toBe(6);
   });
 
   it("should handle invalid JSX syntax", () => {
