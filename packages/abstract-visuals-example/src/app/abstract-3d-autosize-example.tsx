@@ -7,6 +7,8 @@ import { systemair5 } from "./generated/systemair-5.js";
 import { systemair6 } from "./generated/systemair-6.js";
 import { systemair } from "./generated/systemair.js";
 
+const sceneFallback = <div>Loading</div>;
+
 export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [cameraType, setCameraType] = React.useState<"Perspective" | "Orthographic">("Perspective");
   const [model, setModel] = React.useState<string>("systemair");
@@ -189,7 +191,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
 
         {/* 3D VIEW */}
         <React3Js.render
-          sceneFallback={<div>Loading</div>}
+          sceneFallback={sceneFallback}
           useAlphaTest={false}
           selectedIds={{}}
           fitPadding={0.15}

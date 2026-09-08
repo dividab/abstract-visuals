@@ -1,7 +1,7 @@
 import { Html, type OrbitControlsProps } from "@react-three/drei";
 import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import type { Scene, View, Group } from "../../abstract-3d.js";
 import type { ControlsHelper, Camera, BufferZones } from "./react-camera.js";
 import { ReactCamera } from "./react-camera.js";
@@ -90,9 +90,10 @@ export const render = memo(
     fitPadding,
   }: ReactProps): React.JSX.Element => {
     const intensity = useOldMode ? 2 : 0.4;
+    const suspenseFallback = useMemo(() => <Html center>{sceneFallback ?? <></>}</Html>, [sceneFallback]);
     return scene ? (
       <Canvas dpr={[1, window.devicePixelRatio]} frameloop="demand" {...canvasProps}>
-        <React.Suspense fallback={<Html center>{sceneFallback ?? <></>}</Html>}>
+        <React.Suspense fallback={suspenseFallback}>
           <ReactCamera
             bufferZones={bufferZones}
             fitPadding={fitPadding}
