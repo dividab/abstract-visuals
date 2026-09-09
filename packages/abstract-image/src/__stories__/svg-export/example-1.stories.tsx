@@ -19,7 +19,7 @@ export function SvgExportExample1(): React.ReactElement<object> {
     <div>
       <h1>Svg</h1>
       <pre>{svg}</pre>
-      <img src={`data:image/svg+xml;base64,${base64}`} />
+      <img src={`data:image/svg+xml;base64,${base64}`} alt="SVG export example preview" />
     </div>
   );
 }

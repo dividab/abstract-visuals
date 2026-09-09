@@ -46,7 +46,7 @@ function Chart({
             Svg
             <button onClick={() => FileSaver.saveAs(new Blob([svg], { type: "text/plain" }), `chart.svg`)}>Download</button>
           </h4>
-          <img width={width} height={height} src={`data:image/svg+xml;,${svg}`} />
+          <img width={width} height={height} src={`data:image/svg+xml;,${svg}`} alt={`${name} chart rendered as SVG`} />
         </div>
       </div>
     </>

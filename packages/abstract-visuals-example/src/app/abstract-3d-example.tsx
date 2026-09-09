@@ -149,11 +149,12 @@ export function Abstract3DExample(): React.ReactNode {
           src={`data:image/svg+xml,${encodeURIComponent(
             Svg.render(systemair, { view: "front", stroke_thickness: 1, rotation: 0, only_stroke: false }).image
           )}`}
+          alt="Systemair front view rendered as SVG"
         />
         <div className="wrapper" style={{ width: "200px", height: "200px", minWidth: "200px" }} dangerouslySetInnerHTML={{ __html: templateImage }} />
         <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} />
         {svgs.map((svg) => (
-          <img key={svg} src={svg} width="200px" style={{ height: "max-content" }} />
+          <img key={svg} src={svg} width="200px" style={{ height: "max-content" }} alt="Component geometry preview rendered as SVG" />
         ))}
         <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>

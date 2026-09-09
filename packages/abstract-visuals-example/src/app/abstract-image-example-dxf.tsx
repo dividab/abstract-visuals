@@ -85,7 +85,7 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
   return (
     <div>
       <h1>DXF</h1>
-      <img width="400" height="400" src={`data:image/svg+xml;base64,${base64}`} />
+      <img width="400" height="400" src={`data:image/svg+xml;base64,${base64}`} alt="Rendered DXF export SVG preview" />
       <div>
         <a href={dxfUrl2} download={"abstract_image_demo2.dxf"}>
           Download DXF 2

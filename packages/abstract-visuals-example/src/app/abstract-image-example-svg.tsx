@@ -32,7 +32,7 @@ export function AbstractImageExampleSvg(): React.JSX.Element {
       <h1>Svg</h1>
       <p>Test</p>
       <pre>{svg}</pre>
-      <img width="400" height="400" src={`data:image/svg+xml;,${svg}`} />
+      <img width="400" height="400" src={`data:image/svg+xml;,${svg}`} alt="Rendered SVG output" />
     </div>
   );
 }
