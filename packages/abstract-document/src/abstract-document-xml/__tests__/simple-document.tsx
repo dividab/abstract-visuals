@@ -25,12 +25,13 @@ export const testSimpleDocument: ExportTestDef = {
       {
         page: {
           style: {
-            headerMargins: { top: 0, bottom: 0, left: 0, right: 0 },
-            footerMargins: { top: 0, bottom: 0, left: 0, right: 0 },
-            contentMargins: { top: 0, bottom: 0, left: 0, right: 0 },
+            headerMargins: {},
+            footerMargins: {},
+            contentMargins: {},
             orientation: "Portrait",
             paperSize: "A4",
             noTopBottomMargin: false,
+            columnLayout: { columnCount: 1, columnGap: 0 },
           },
           header: [],
           footer: [],
@@ -53,12 +54,7 @@ export const testSimpleDocument: ExportTestDef = {
                     styleName: "footerResultCell",
                     columnSpan: 1,
                     rowSpan: 1,
-                    style: {
-                      type: "TableCellStyle",
-                      borders: { top: 0, bottom: 0, left: 0, right: 0 },
-                      borderColors: { top: "", bottom: "", left: "", right: "" },
-                      padding: { top: 0, bottom: 0, left: 0, right: 0 },
-                    },
+                    style: { type: "TableCellStyle" },
                     dummy: false,
                     children: [],
                   },
@@ -66,12 +62,7 @@ export const testSimpleDocument: ExportTestDef = {
                     styleName: "footerResultCell",
                     columnSpan: 1,
                     rowSpan: 1,
-                    style: {
-                      type: "TableCellStyle",
-                      borders: { top: 0, bottom: 0, left: 0, right: 0 },
-                      borderColors: { top: "", bottom: "", left: "", right: "" },
-                      padding: { top: 0, bottom: 0, left: 0, right: 0 },
-                    },
+                    style: { type: "TableCellStyle" },
                     dummy: false,
                     children: [
                       {
@@ -79,7 +70,7 @@ export const testSimpleDocument: ExportTestDef = {
                         styleName: "",
                         style: {
                           type: "ParagraphStyle",
-                          margins: { top: 0, bottom: 0, left: 0, right: 0 },
+                          margins: {},
                           position: "relative",
                           textStyle: { type: "TextStyle" },
                         },
@@ -98,12 +89,7 @@ export const testSimpleDocument: ExportTestDef = {
                     styleName: "footerResultCell",
                     columnSpan: 1,
                     rowSpan: 1,
-                    style: {
-                      type: "TableCellStyle",
-                      borders: { top: 0, bottom: 0, left: 0, right: 0 },
-                      borderColors: { top: "", bottom: "", left: "", right: "" },
-                      padding: { top: 0, bottom: 0, left: 0, right: 0 },
-                    },
+                    style: { type: "TableCellStyle" },
                     dummy: false,
                     children: [
                       {
@@ -111,7 +97,7 @@ export const testSimpleDocument: ExportTestDef = {
                         styleName: "",
                         style: {
                           type: "ParagraphStyle",
-                          margins: { top: 0, bottom: 0, left: 0, right: 0 },
+                          margins: {},
                           position: "relative",
                           textStyle: { type: "TextStyle" },
                         },
@@ -139,8 +125,7 @@ export const testSimpleDocument: ExportTestDef = {
         type: "TextStyle",
         fontSize: 8,
         color: "#353535",
-        bold: "true",
-        style: { type: "TextStyle" },
+        bold: true,
       },
       TableCellStyle_footerResultCell: {
         name: "footerResultCell",
@@ -152,37 +137,37 @@ export const testSimpleDocument: ExportTestDef = {
       },
       ParagraphStyle_H1: {
         type: "ParagraphStyle",
-        margins: { top: 8, bottom: 2, left: 0, right: 0 },
+        margins: { top: 8, bottom: 2 },
         position: "relative",
         textStyle: { type: "TextStyle", bold: true, fontSize: 32 },
       },
       ParagraphStyle_H2: {
         type: "ParagraphStyle",
-        margins: { top: 6, bottom: 1.5, left: 0, right: 0 },
+        margins: { top: 6, bottom: 1.5 },
         position: "relative",
         textStyle: { type: "TextStyle", bold: true, fontSize: 24 },
       },
       ParagraphStyle_H3: {
         type: "ParagraphStyle",
-        margins: { top: 4.5, bottom: 1.125, left: 0, right: 0 },
+        margins: { top: 4.5, bottom: 1.125 },
         position: "relative",
         textStyle: { type: "TextStyle", bold: true, fontSize: 18 },
       },
       ParagraphStyle_H4: {
         type: "ParagraphStyle",
-        margins: { top: 3.75, bottom: 0.9375, left: 0, right: 0 },
+        margins: { top: 3.75, bottom: 0.9375 },
         position: "relative",
         textStyle: { type: "TextStyle", bold: true, fontSize: 15 },
       },
       ParagraphStyle_H5: {
         type: "ParagraphStyle",
-        margins: { top: 3.25, bottom: 0.8125, left: 0, right: 0 },
+        margins: { top: 3.25, bottom: 0.8125 },
         position: "relative",
         textStyle: { type: "TextStyle", bold: true, fontSize: 13 },
       },
       ParagraphStyle_H6: {
         type: "ParagraphStyle",
-        margins: { top: 2.5, bottom: 0.625, left: 0, right: 0 },
+        margins: { top: 2.5, bottom: 0.625 },
         position: "relative",
         textStyle: { type: "TextStyle", bold: true, fontSize: 10 },
       },
@@ -191,6 +176,5 @@ export const testSimpleDocument: ExportTestDef = {
       TextStyle_Subscript: { type: "TextStyle", subScript: true, fontSize: 6 },
       TextStyle_Superscript: { type: "TextStyle", superScript: true, fontSize: 6 },
     },
-    fonts: {},
   },
 };

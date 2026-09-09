@@ -242,8 +242,8 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
     case "MemberExpression": {
       const obj = emitExpression(node.object, localFunctions);
       const prop: string = node.computed
-        ? `[${emitExpression(node.property, localFunctions)}]`
-        : `.${getAstKeyString(node.property as Identifier | Literal)}`;
+        ? `${node.optional ? "?." : ""}[${emitExpression(node.property, localFunctions)}]`
+        : `${node.optional ? "?." : "."}${getAstKeyString(node.property as Identifier | Literal)}`;
       return `${obj}${prop}`;
     }
     case "CallExpression": {
@@ -256,8 +256,10 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
           return emitExpression(argument, localFunctions);
         })
         .join(", ");
-      return `${callee}(${args})`;
+      return `${callee}${node.optional ? "?." : ""}(${args})`;
     }
+    case "ChainExpression":
+      return emitExpression(node.expression, localFunctions);
     case "ArrowFunctionExpression": {
       const params = node.params.map((param) => emitExpression(param as CompilableExpression, localFunctions)).join(", ");
       const body = emitExpression(node.body as CompilableExpression, localFunctions);

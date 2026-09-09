@@ -280,10 +280,9 @@ describe("compile", () => {
     });
   });
 
-  // TODO: Add ChainExpression support for optional chaining (?.)
-  // it("should compile nested object access with conditionals", () => {
-  //   const ast = parse("<div>{props.user?.profile?.name || 'Anonymous'}</div>");
-  //   const result = compile(ast);
-  //   expect(result).toBe('"use strict";return h("div", null, ((props.user?.profile?.name) || "Anonymous"));');
-  // });
+  it("should compile nested object access with conditionals", () => {
+    const ast = parse("<div>{props.user?.profile?.name || 'Anonymous'}</div>");
+    const result = compile(ast);
+    expect(result).toBe('"use strict";return h("div", null, (props.user?.profile?.name || "Anonymous"));');
+  });
 });
