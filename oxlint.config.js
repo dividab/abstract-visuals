@@ -27,7 +27,6 @@ export default defineConfig({
     "react-perf/jsx-no-new-object-as-prop": "off", // 102 errors
     "react-perf/jsx-no-new-array-as-prop": "off", // 61 errors
     "react-perf/jsx-no-new-function-as-prop": "off", // 46 errors
-    "vitest/no-commented-out-tests": "off", // 12 errors
     "jsx-a11y/alt-text": "off", // 6 errors
   },
 });

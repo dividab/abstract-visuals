@@ -363,9 +363,15 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.18
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.7(@types/react@19.2.18)
       react:
         specifier: 'catalog:'
         version: 19.2.8
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.8(react@19.2.8)
       vite:
         specifier: 'catalog:'
         version: 8.2.2(@types/node@24.9.2)(esbuild@0.27.3)(yaml@2.9.0)
