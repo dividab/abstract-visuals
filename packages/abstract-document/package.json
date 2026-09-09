@@ -1,6 +1,6 @@
 {
   "name": "abstract-document",
-  "version": "20.1.5",
+  "version": "20.1.6",
   "gitHead": "17921b59da5eee6cc446fd37a2134165af4d1901",
   "description": "Dynamically create documents using code or JSX and render to any format",
   "license": "MIT",
