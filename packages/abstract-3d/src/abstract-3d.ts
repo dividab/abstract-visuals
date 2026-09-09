@@ -12,7 +12,7 @@ export type Scene = {
   readonly dimensions_deprecated?: Dimensions;
   readonly hotSpots_deprecated?: ReadonlyArray<HotSpot>;
 };
-
+//dummy
 export type Renderer = "react" | "ai_schematic" | "ai_detailed" | "dxf";
 
 export type Dimensions = {
