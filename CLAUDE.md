@@ -36,4 +36,4 @@ pnpm workspace managed with [lerna](https://lerna.js.org/). Build = TS project r
 
 - `oxlint.config.js`: several rules off = migration baseline, not endorsed style — check there before assuming a rule is enforced
 - No separate `typecheck` script: `pnpm build` (`tsc -b`) both typechecks and emits via project references
-- Publishing (`pnpm publish-npm`) needs `~/.npmrc` auth; `scripts/release.sh` runs it under `pnpm@10.34.5` instead of the repo's pinned `pnpm@12.3.1` due to a registry-auth bug in the pinned version — see README
+- Publishing (`pnpm publish-npm`) needs `~/.npmrc` auth; `scripts/publish-npm.sh` runs the publish step under `pnpm@10.34.5` instead of the repo's pinned `pnpm@12.3.1` due to a registry-auth bug in the pinned version, and re-prompts for OTP on failure instead of aborting — see README

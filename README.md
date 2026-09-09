@@ -60,9 +60,9 @@ The packages are published on npmjs.org. To publish run this command:
 pnpm publish-npm
 ```
 
-It will build the packages and call `lerna publish` which will figure out which packages has changed, ask for new versions of them, and then publish them. Needs an npm auth token in `~/.npmrc` and, if 2FA is enabled, a one-time password: `pnpm publish-npm -- --otp=123456`.
+It will build the packages and call `lerna publish` which will figure out which packages has changed, ask for new versions of them, and then publish them. Needs an npm auth token in `~/.npmrc` and, if 2FA is enabled, an OTP, which it will prompt you for — if you enter a wrong or expired one, it re-prompts instead of aborting (rerunning the publish step is safe, it skips packages already on the registry).
 
-`scripts/release.sh` runs the actual publish under `pnpm@10.34.5` instead of this repo's pinned `pnpm@12.3.1` — the pinned version has a confirmed upstream bug where registry-authenticated requests (`whoami`, `publish`) fail even with a valid npm token, while `pnpm@10.34.5` works. Revisit that once it's fixed upstream.
+`scripts/publish-npm.sh` runs the actual publish under `pnpm@10.34.5` instead of this repo's pinned `pnpm@12.3.1` — the pinned version has a confirmed upstream bug where registry-authenticated requests (`whoami`, `publish`) fail even with a valid npm token, while `pnpm@10.34.5` works. Revisit that once it's fixed upstream.
 
 [build-image]: https://github.com/dividab/abstract-visuals/workflows/Build/badge.svg
 [build-url]: https://github.com/dividab/abstract-visuals/actions?query=workflow%3ABuild+branch%3Amaster

@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "precommit": "lint-staged",
-    "publish-npm": "run-s verify && pnpm exec lerna version && npm_config_manage_package_manager_versions=false mise x pnpm@10.34.5 -- pnpm exec lerna publish from-package",
+    "publish-npm": "scripts/publish-npm.sh",
     "verify": "run-s lint build test",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
