@@ -18,10 +18,12 @@ export function mapSchemaTypeToTypeScript(prop: PropertySchema, depth: number = 
       }
       return "boolean";
     case "array": {
+      // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization (e.g. hand-constructed by consumers of this package) and so may not actually carry `shape`
       const itemType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape, depth) : "any";
       return `${itemType}[]`;
     }
     case "object": {
+      // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization (e.g. hand-constructed by consumers of this package) and so may not actually carry `shape`
       if (prop.shape && typeof prop.shape === "object") {
         return generateObjectTypeWithJSDoc(prop.shape, depth);
       }
@@ -33,7 +35,7 @@ export function mapSchemaTypeToTypeScript(prop: PropertySchema, depth: number = 
       return "object";
     }
     case "record": {
-      const valueType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape) : "any";
+      const valueType = mapSchemaTypeToTypeScript(prop.shape);
       return `Record<string, ${valueType}>`;
     }
     case "function":
@@ -74,22 +76,21 @@ export function generatePropertyJSDoc(_propertyName: string, propertySchema: Pro
   }
 
   // Add @property tags for nested object properties (recursive!)
-  let hasNestedProperties = false;
+  // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization and so may not actually carry `shape`
   if (propertySchema.type === "object" && propertySchema.shape) {
     comments.push("");
     Object.entries(propertySchema.shape).forEach(([key, value]) => {
       if (value.description) {
         comments.push(`@property ${key} ${value.description}`);
-        hasNestedProperties = true;
       }
     });
+    // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization and so may not actually carry `shape`
   } else if (propertySchema.type === "array" && propertySchema.shape.type === "object" && propertySchema.shape.shape) {
     // For arrays of objects, document the object structure
     comments.push("");
     Object.entries(propertySchema.shape.shape).forEach(([key, value]) => {
       if (value.description) {
         comments.push(`@property ${key} ${value.description}`);
-        hasNestedProperties = true;
       }
     });
   }
@@ -100,7 +101,7 @@ export function generatePropertyJSDoc(_propertyName: string, propertySchema: Pro
   }
 
   // Single-line JSDoc
-  if (comments.length === 1 && !hasNestedProperties) {
+  if (comments.length === 1) {
     return `${indent}/** ${comments[0]} */\n`;
   }
 

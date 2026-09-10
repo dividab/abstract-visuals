@@ -209,7 +209,7 @@ function addWithSvgToPdfKit(
   let svgUpdated = svg;
   ["fill=", "stroke=", "color="].forEach((t) => {
     let index = 0;
-    while (true) {
+    for (;;) {
       index = svgUpdated.indexOf(t, index);
       if (index === -1) {
         break;
@@ -227,7 +227,7 @@ function addWithSvgToPdfKit(
 
   ["stroke-dasharray="].forEach((t) => {
     let index = 0;
-    while (true) {
+    for (;;) {
       index = svgUpdated.indexOf(t, index);
       if (index === -1) {
         break;

@@ -282,11 +282,9 @@ function preProcessTable(table: AD.Table.Table, resources: AD.Resources.Resource
   const processedHeaders = [];
   const processedChildren = [];
   const rowSpans: Map<number, AD.TableCell.TableCell> = new Map();
-  if (table.headerRows) {
-    for (const row of table.headerRows) {
-      const header = preProcessTableRow(row, rowSpans, resources);
-      processedHeaders.push(header);
-    }
+  for (const row of table.headerRows) {
+    const header = preProcessTableRow(row, rowSpans, resources);
+    processedHeaders.push(header);
   }
   for (const row of table.children) {
     const children = preProcessTableRow(row, rowSpans, resources);

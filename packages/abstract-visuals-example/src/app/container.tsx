@@ -31,8 +31,8 @@ const examples = [
 
 export function Container(): React.JSX.Element {
   const [selected, setSelected] = React.useState((): Example => {
-    const fromStorage = localStorage.getItem("selected") as Example;
-    return fromStorage && examples.includes(fromStorage) ? fromStorage : examples[0];
+    const fromStorage = localStorage.getItem("selected");
+    return fromStorage !== null && examples.includes(fromStorage as Example) ? (fromStorage as Example) : examples[0];
   });
 
   return (

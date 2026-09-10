@@ -33,7 +33,7 @@ export function image(
       return [zElem(img, (v2.z + v4.z) / 2)];
     }
     case "Url": {
-      const imageData = opts.imageDataByUrl?.[i.image.url];
+      const imageData = opts.imageDataByUrl[i.image.url];
       const image: EmbededImage | undefined = imageData?.startsWith(rawSvgPrefix)
         ? {
             type: "svg",

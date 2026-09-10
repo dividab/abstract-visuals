@@ -16,10 +16,8 @@ export const ReactDimensions = React.memo(
     readonly sceneRotation: Vec3 | undefined;
     readonly sceneCenter: Vec3 | undefined;
   }): React.JSX.Element => {
-    const dimensionMaterial = React.useMemo(
-      () => (dimensions?.material ? <ReactMaterial isText={true} material={dimensions?.material} /> : <></>),
-      [dimensions?.material]
-    );
+    const material = dimensions?.material;
+    const dimensionMaterial = React.useMemo(() => (material ? <ReactMaterial isText={true} material={material} /> : <></>), [material]);
     return (
       <>
         {dimensions?.dimensions.map((dimension, i) => (

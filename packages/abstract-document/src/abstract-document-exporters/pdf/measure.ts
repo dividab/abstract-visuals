@@ -460,7 +460,7 @@ function measureImage(resources: AD.Resources.Resources, availableSize: AD.Size.
     desiredWidth = availableSize.width;
   } else if (image.width) {
     desiredWidth = image.width;
-  } else if (resource?.abstractImage.size.width) {
+  } else if (resource.abstractImage.size.width) {
     desiredWidth = resource.abstractImage.size.width * (image.height / resource.abstractImage.size.height);
   }
 
@@ -469,7 +469,7 @@ function measureImage(resources: AD.Resources.Resources, availableSize: AD.Size.
     desiredHeight = availableSize.height;
   } else if (image.height) {
     desiredHeight = image.height;
-  } else if (resource?.abstractImage.size.height) {
+  } else if (resource.abstractImage.size.height) {
     desiredHeight = resource.abstractImage.size.height * (image.width / resource.abstractImage.size.width);
   }
   if (!resource.scaleMaxHeight || !resource.scaleMaxWidth) {

@@ -262,7 +262,7 @@ export function createChartLine(props: ChartLineProps): ChartLine {
     textColor,
     textOutlineColor,
     id,
-  } = props || {};
+  } = props;
   return { points, color, thickness, label, xAxis, xAxisIx, yAxis, yAxisIx, fontSize, textColor, textOutlineColor, id };
 }
 
@@ -275,7 +275,7 @@ export interface ChartStackConfig {
 export type ChartStackConfigProps = Partial<ChartStackConfig>;
 
 export function createChartStackConfig(props: ChartStackConfigProps): ChartStackConfig {
-  const { color = black, label = "" } = props || {};
+  const { color = black, label = "" } = props;
   return { color, label };
 }
 
@@ -296,7 +296,7 @@ export interface ChartStack {
 export type ChartStackProps = Partial<ChartStack>;
 
 export function createChartStack(props: ChartStackProps): ChartStack {
-  const { points = [], xAxis = "bottom", xAxisIx = 0, yAxis = "left", yAxisIx = 0, config = [createChartStackConfig({})] } = props || {};
+  const { points = [], xAxis = "bottom", xAxisIx = 0, yAxis = "left", yAxisIx = 0, config = [createChartStackConfig({})] } = props;
   return { points, xAxis, xAxisIx, yAxis, yAxisIx, config };
 }
 
@@ -340,9 +340,6 @@ export function inverseTransformPoint(point: Point, chart: Chart, xAxis: XAxis, 
   const yMax = padding.top;
   const x = inverseTransformValue(point.x, xMin, xMax, xAxis === "top" ? chart.xAxisesTop[xAxisIx] : chart.xAxisesBottom[xAxisIx]);
   const y = inverseTransformValue(point.y, yMin, yMax, yAxis === "right" ? chart.yAxisesRight[yAxisIx] : chart.yAxisesLeft[yAxisIx]);
-  if (x === undefined || y === undefined) {
-    return undefined;
-  }
   return createPoint(x, y);
 }
 
@@ -460,7 +457,7 @@ export function xAxises(
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && xAxis === "bottom";
     const xTicks = getTicks(xNumTicks, axis);
-    if (chart.xGrid && !axis.noTicks) {
+    if (!axis.noTicks) {
       gridLineComponents.push(generateXAxisGridLines(xMin, xMax, lineY + dirFactor * 10, fullGrid ? yMax : lineY, xTicks, axis, chart.xGrid));
     }
     const thickness = axis.thickness ?? 1;
@@ -520,7 +517,7 @@ export function yAxises(
   for (const [ix, axis] of axises.entries()) {
     const fullGrid = ix === 0 && yAxis === "left";
     const yTicks = getTicks(yNumTicks, axis);
-    if (chart.yGrid && !axis.noTicks) {
+    if (!axis.noTicks) {
       gridLineComponents.push(
         generateYAxisLines(lineX + dirFactor * 10, fullGrid ? xMax : lineX, yMin, yMax, yTicks, axis, chart.yGrid, chart.xGrid)
       );

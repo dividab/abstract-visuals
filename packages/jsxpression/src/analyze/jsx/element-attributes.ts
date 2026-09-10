@@ -11,7 +11,7 @@ export function analyzeElementAttributes(ast: Program, schema: Schema, validatio
 
   const localFunctionNames = new Set<string>();
   for (const stmt of ast.body) {
-    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+    if (stmt.type === "FunctionDeclaration") {
       localFunctionNames.add(stmt.id.name);
     }
   }
@@ -136,7 +136,7 @@ function getAttributeLiteralValue(attribute: JSXAttribute): string | number | bo
       value?: unknown;
     };
 
-    if (expression?.type === "Literal") {
+    if (expression.type === "Literal") {
       return expression.value as string | number | boolean | null | undefined;
     }
   }

@@ -342,7 +342,7 @@ function extractStringPath(obj: Record<string, any>, path: string): any {
   return extractArrayPath(obj, path.split("."));
 }
 
-function extractArrayPath(obj: Record<string, any>, path: ReadonlyArray<string>): any {
+function extractArrayPath(obj: Record<string, any> | null, path: ReadonlyArray<string>): any {
   const [first, ...rest] = path;
   if (first === undefined) {
     return obj;

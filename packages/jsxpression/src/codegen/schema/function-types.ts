@@ -7,7 +7,7 @@ export function declareFunctionTypes(schema: Schema): string {
   if (schema.functions) {
     Object.entries(schema.functions).forEach(([funcName, funcSchema]) => {
       const args = funcSchema.args ? funcSchema.args.map((arg) => `${arg.name}: ${mapSchemaTypeToTypeScript(arg.property)}`).join(", ") : "";
-      const ret = funcSchema.ret ? mapSchemaTypeToTypeScript(funcSchema.ret) : "void";
+      const ret = mapSchemaTypeToTypeScript(funcSchema.ret);
       output += `function ${funcName}(${args}): ${ret};\n`;
     });
   }

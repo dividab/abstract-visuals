@@ -63,12 +63,12 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
   const overriddenFontWeight: Partial<TextStyle> =
     overrider?.light || overrider?.normal || overrider?.mediumBold || overrider?.bold || overrider?.extraBold || overrider?.fontWeight
       ? {
-          light: overrider?.light,
-          normal: overrider?.normal,
-          mediumBold: overrider?.mediumBold,
-          bold: overrider?.bold,
-          extraBold: overrider?.extraBold,
-          fontWeight: overrider?.fontWeight,
+          light: overrider.light,
+          normal: overrider.normal,
+          mediumBold: overrider.mediumBold,
+          bold: overrider.bold,
+          extraBold: overrider.extraBold,
+          fontWeight: overrider.fontWeight,
         }
       : {
           light: toOverride?.light,

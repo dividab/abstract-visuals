@@ -11,7 +11,7 @@ export function analyzeElementChildren(ast: Program, schema: Schema, validationC
 
   const localFunctionNames = new Set<string>();
   for (const stmt of ast.body) {
-    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+    if (stmt.type === "FunctionDeclaration") {
       localFunctionNames.add(stmt.id.name);
     }
   }

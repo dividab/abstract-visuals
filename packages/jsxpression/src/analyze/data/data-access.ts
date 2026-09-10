@@ -191,7 +191,7 @@ function getArrayElementTypeFromCall(
       // Find the arrow function context that defines this parameter
       const parameterType = resolveParameterType(paramName, node, arrowFunctionContexts);
 
-      if (parameterType?.type === "object" && parameterType.shape) {
+      if (parameterType?.type === "object") {
         const propertySchema = parameterType.shape[propertyName];
         if (propertySchema?.type === "array") {
           return getArrayElementType(propertySchema);
@@ -242,7 +242,7 @@ function getSchemaAtPath(path: Array<string>, schema: Schema): PropertySchema | 
     if (prop === undefined) {
       return undefined;
     }
-    if (current.type === "object" && current.shape) {
+    if (current.type === "object") {
       current = current.shape[prop];
     } else {
       return null;
@@ -264,7 +264,7 @@ function validateParameterAccess(
 
   const propertyName = node.property.name;
 
-  if (paramType.type === "object" && paramType.shape) {
+  if (paramType.type === "object") {
     if (!paramType.shape[propertyName]) {
       analysisReport.addIssue(
         "INVALID_PARAMETER_ACCESS",
@@ -277,7 +277,7 @@ function validateParameterAccess(
   } else {
     analysisReport.addIssue(
       "INVALID_PARAMETER_ACCESS",
-      `Cannot access property '${propertyName}' on ${paramType.type ?? "undefined"} type parameter '${(node.object as Identifier).name}'`,
+      `Cannot access property '${propertyName}' on ${paramType.type} type parameter '${(node.object as Identifier).name}'`,
       getNodeRange(node),
       validationContext.getSnapshot()
     );
@@ -285,7 +285,7 @@ function validateParameterAccess(
 }
 
 export function getArrayElementType(schema: ArrayPropertySchema): PropertySchema | null {
-  return schema.shape || null;
+  return schema.shape;
 }
 
 function buildParentMap(ast: Program): Map<AnyNode, AnyNode | null> {

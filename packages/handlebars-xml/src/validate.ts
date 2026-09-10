@@ -72,10 +72,6 @@ export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement
       let pos = 0;
       const lines = cleanedXml.split("\n");
       const getRangeOfElement = (text: string, incrementPosition: boolean = true): Range => {
-        if (text === undefined) {
-          const monacoPosition = getPositionFromIndex(lines, pos);
-          return toRange(monacoPosition.lineNumber, monacoPosition.column, monacoPosition.lineNumber, monacoPosition.column + 5);
-        }
         const position = cleanedXml.indexOf(text, pos);
         if (incrementPosition) {
           pos = position >= pos ? position + text.length : pos;
@@ -153,9 +149,7 @@ function validateElements(
     const foundChild = findElement(schemaChildren, childName);
     if (!foundChild) {
       const childRange = getRangeOfElement(childName, false);
-      if (childRange) {
-        errors.push(createError(`"${childName}" is not a valid child of "${tagName}"`, ErrorType.error, childRange));
-      }
+      errors.push(createError(`"${childName}" is not a valid child of "${tagName}"`, ErrorType.error, childRange));
     }
 
     const elementErrors = validateElements(child, foundChild, completeSchema, getRangeOfElement);

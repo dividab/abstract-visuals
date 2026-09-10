@@ -50,23 +50,17 @@ export const creators: (styleNames: Record<string, string>) => Record<string, AD
 export const propsCreators: Record<string, ADCreatorFn> = {
   styles: ((props: { readonly styles: Record<string, Record<string, string | number> & { readonly type: string }> }): unknown => {
     const fixedStyles: Record<string, Record<string, string | number>> = {};
-    if (props.styles) {
-      Object.keys(props.styles).forEach((key: string) => {
-        fixedStyles[key] = { ...props.styles[key] };
-      });
-    }
+    Object.keys(props.styles).forEach((key: string) => {
+      fixedStyles[key] = { ...props.styles[key] };
+    });
 
     return { ...fixedStyles, ...DefaultStyles.createStandardStyles() };
   }) as ADCreatorFn,
   columnWidths: ((props: { readonly columnWidths: string; readonly columnMultiplier: string }): unknown => {
-    const columnWidths = (props.columnWidths ?? "")
-      // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
-      .toString()
-      .split(",")
-      .map((item: string) => {
-        const number = Number(item);
-        return number === 0 || Number.isNaN(number) ? Infinity : number;
-      });
+    const columnWidths = props.columnWidths.split(",").map((item: string) => {
+      const number = Number(item);
+      return number === 0 || Number.isNaN(number) ? Infinity : number;
+    });
     if (props.columnMultiplier) {
       return columnWidths.map((l) => l * Number(props.columnMultiplier));
     }
@@ -83,11 +77,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   }) as ADCreatorFn,
   borders: ((props: { readonly borders: string }): unknown => {
     const borders: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
-    // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
-    const propBorders = props.borders.toString().split(" ");
-    if (!propBorders) {
-      return borders;
-    }
+    const propBorders = props.borders.split(" ");
 
     if (propBorders.length === 1) {
       borders["top"] = Number(propBorders[0]);
@@ -150,11 +140,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   padding: ((props: { readonly padding: string }): unknown => {
     const padding: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
 
-    // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
-    const paddings = props.padding.toString().split(" ");
-    if (!paddings) {
-      return padding;
-    }
+    const paddings = props.padding.split(" ");
 
     if (paddings.length === 1) {
       padding["top"] = Number(paddings[0]);
@@ -216,11 +202,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   }) as ADCreatorFn,
   margins: ((props: { readonly margins: string }): unknown => {
     const margins: { [k: string]: number } = { top: 0, right: 0, bottom: 0, left: 0 };
-    // oxlint-disable-next-line typescript/no-unnecessary-type-conversion -- allProps can carry non-strings
-    const propMargins = props.margins.toString().split(" ");
-    if (!propMargins) {
-      return margins;
-    }
+    const propMargins = props.margins.split(" ");
 
     if (propMargins.length === 1) {
       margins["top"] = Number(propMargins[0]);
@@ -373,21 +355,10 @@ function imageProps(props: Record<string, unknown>): Record<string, unknown> {
   };
 }
 
-const strToBool = (str: string | undefined): boolean => {
-  if (str === undefined) {
-    return false;
-  }
-  const validBools = {
-    "1": true,
-    true: true,
-  };
-  return str in validBools;
-};
+// bold/italic/etc. are declared `xs:boolean` in the XSD schema; XSD's boolean lexical space is {true, false, 1, 0}
+const strToBool = (str: string | undefined): boolean => str === "true" || str === "1";
 
 const strToNum = (str: string | undefined): number => {
   const num = Number(str);
-  if (Number.isNaN(num)) {
-    return 0;
-  }
-  return num;
+  return Number.isFinite(num) ? num : 0;
 };

@@ -163,7 +163,7 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
         component.position.y.toString() +
         ")";
 
-      const lines: Array<string> = component.text !== null ? component.text.split("\n") : [];
+      const lines: Array<string> = component.text.split("\n");
 
       const tSpans = lines.map((t, i) => {
         const split = t.split("<sub>").flatMap((t) => t.split("</sub>"));
@@ -199,7 +199,7 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
       });
       const cs: Array<string> = [];
 
-      if (component.strokeThickness > 0 && component.strokeColor !== null) {
+      if (component.strokeThickness > 0) {
         cs.push(createElement("text", { style: objectToAttributeValue(shadowStyle), transform: transform }, tSpans));
       }
       cs.push(createElement("text", { style: objectToAttributeValue(style), transform: transform }, tSpans));
@@ -324,7 +324,7 @@ function createElement(elementName: string, attributes: Attributes, innerElement
 }
 
 function objectToAttributeValue(attributes: Attributes): string {
-  if (attributes && Object.keys(attributes).length > 0) {
+  if (Object.keys(attributes).length > 0) {
     return Object.keys(attributes).reduce((previousValue: string, currentValue: string) => {
       if (attributes[currentValue]) {
         return previousValue + `${convertUpperToHyphenLower(currentValue)}:${attributes[currentValue]};`;

@@ -58,35 +58,33 @@ export function abstractDocXml(
 function abstractDocXmlRecursive(creators: Record<string, ADCreatorFn>, xmlElement: XmlElement, onlyChildren: boolean = false): any {
   const children = [];
   const props: Record<string, unknown> = {};
-  for (const childElement of xmlElement.children ?? []) {
+  for (const childElement of xmlElement.children) {
     const childName = childElement.tagName;
-    if (childName !== undefined) {
-      if (childName === "StyleNames") {
-        props["styles"] = abstractDocXmlRecursive(creators, childElement);
-      } else if (childName === "StyleName" && childElement.attributes?.["name"]) {
-        const type = childElement.attributes["type"];
-        if (type === undefined) {
-          continue;
-        }
-        const styleName = StyleKey.create(type, childElement.attributes["name"]);
-        const style = abstractDocXmlRecursive(creators, childElement);
-        props[styleName] = style;
-      } else if (childName.startsWith(childName.charAt(0).toUpperCase())) {
-        // For uppercase elements we add them to the children key
-        children.push(abstractDocXmlRecursive(creators, childElement));
+    if (childName === "StyleNames") {
+      props["styles"] = abstractDocXmlRecursive(creators, childElement);
+    } else if (childName === "StyleName" && childElement.attributes["name"]) {
+      const type = childElement.attributes["type"];
+      if (type === undefined) {
+        continue;
+      }
+      const styleName = StyleKey.create(type, childElement.attributes["name"]);
+      const style = abstractDocXmlRecursive(creators, childElement);
+      props[styleName] = style;
+    } else if (childName.startsWith(childName.charAt(0).toUpperCase())) {
+      // For uppercase elements we add them to the children key
+      children.push(abstractDocXmlRecursive(creators, childElement));
+    } else {
+      // For lowercase elements we add them as keys using their name
+      // Some special keys should directly have an array of children as value instead of an object with children key
+      const arrayedElements = ["header", "footer", "headerRows"];
+      const childrenOnly = arrayedElements.findIndex((e) => e === childName) !== -1;
+      const differentFirstPage = childElement.attributes["differentFirstPage"];
+      if (differentFirstPage === "true" && childName === "header") {
+        props["frontHeader"] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
+      } else if (differentFirstPage === "true" && childName === "footer") {
+        props["frontFooter"] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
       } else {
-        // For lowercase elements we add them as keys using their name
-        // Some special keys should directly have an array of children as value instead of an object with children key
-        const arrayedElements = ["header", "footer", "headerRows"];
-        const childrenOnly = arrayedElements.findIndex((e) => e === childName) !== -1;
-        const differentFirstPage = childElement.attributes["differentFirstPage"];
-        if (differentFirstPage === "true" && childName === "header") {
-          props["frontHeader"] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
-        } else if (differentFirstPage === "true" && childName === "footer") {
-          props["frontFooter"] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
-        } else {
-          props[childName] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
-        }
+        props[childName] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
       }
     }
   }
@@ -190,7 +188,7 @@ function extractImageFontsStyleNames(
 ] {
   let crFntFam = currentFontFamily;
   xmlElement.forEach((item) => {
-    if (item.tagName.startsWith("Image") && item.attributes?.["src"]) {
+    if (item.tagName.startsWith("Image") && item.attributes["src"]) {
       images[item.attributes["src"]] = true;
     } else if (item.tagName === "style") {
       const fontFamily = crFntFam ?? styleFamilies["Default"];
@@ -208,7 +206,7 @@ function extractImageFontsStyleNames(
           crFntFam = fontFamily;
         }
       }
-    } else if (item.attributes?.["fontFamily"]) {
+    } else if (item.attributes["fontFamily"]) {
       const styleName = getFontStyleName(item.attributes);
       (fonts[item.attributes["fontFamily"]] ??= {})[styleName] = true;
       if (item.tagName === "StyleName" && item.attributes["name"] && item.attributes["type"]) {

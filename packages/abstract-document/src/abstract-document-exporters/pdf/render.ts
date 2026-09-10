@@ -67,9 +67,7 @@ function renderPage(parentResources: AD.Resources.Resources, pdfKit: PDFKit.PDFD
   const contentRect = addPage(pdfKit, page);
 
   page.namedDestionations.forEach((dest) => {
-    if (pdfKit.addNamedDestination) {
-      pdfKit.addNamedDestination(dest);
-    }
+    pdfKit.addNamedDestination(dest);
   });
 
   const { headerMargins, footerMargins } = getHeaderAndFooter(section, page.pageNo);
@@ -254,26 +252,24 @@ function renderParagraph(
       continue;
     }
 
-    if (atom.type === "Image") {
-      // Atom is Image
-      if (previousAtomType !== "Image") {
-        // Previous was not image
-        rows.push(currentRow);
-        currentRow = [];
-        currentWidth = 0;
-        previousAtomType = atom.type;
-      }
-      const atomSize = getDesiredSize(atom, desiredSizes);
-      if (currentWidth + atomSize.width < availableWidth || currentRow.length === 0) {
-        // Image fits in current row/current row is empty
-        currentRow.push(atom);
-        currentWidth += atomSize.width;
-      } else {
-        // Image does not fit in current row
-        rows.push(currentRow);
-        currentRow = [atom];
-        currentWidth = atomSize.width;
-      }
+    // Atom is Image
+    if (previousAtomType !== "Image") {
+      // Previous was not image
+      rows.push(currentRow);
+      currentRow = [];
+      currentWidth = 0;
+      previousAtomType = atom.type;
+    }
+    const atomSize = getDesiredSize(atom, desiredSizes);
+    if (currentWidth + atomSize.width < availableWidth || currentRow.length === 0) {
+      // Image fits in current row/current row is empty
+      currentRow.push(atom);
+      currentWidth += atomSize.width;
+    } else {
+      // Image does not fit in current row
+      rows.push(currentRow);
+      currentRow = [atom];
+      currentWidth = atomSize.width;
     }
   }
   if (currentRow.length > 0) {

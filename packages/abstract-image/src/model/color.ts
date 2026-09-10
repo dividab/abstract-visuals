@@ -14,7 +14,7 @@ export function toString6Hex(color: Color): string {
 }
 
 export function fromString(s: string): Color | undefined {
-  if (s?.length !== 9 || !s.startsWith("#")) {
+  if (s.length !== 9 || !s.startsWith("#")) {
     return undefined;
   }
 

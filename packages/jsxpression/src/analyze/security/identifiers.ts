@@ -108,13 +108,11 @@ function getFunctionLocalConsts(ast: Program): Map<FunctionDeclaration, Set<stri
     FunctionDeclaration(node) {
       const names = new Set<string>();
       const body = (node as FunctionDeclaration).body;
-      if (body?.type === "BlockStatement") {
-        for (const stmt of body.body) {
-          if (stmt.type === "VariableDeclaration" && stmt.kind === "const") {
-            for (const decl of stmt.declarations) {
-              if (decl.id.type === "Identifier") {
-                names.add(decl.id.name);
-              }
+      for (const stmt of body.body) {
+        if (stmt.type === "VariableDeclaration" && stmt.kind === "const") {
+          for (const decl of stmt.declarations) {
+            if (decl.id.type === "Identifier") {
+              names.add(decl.id.name);
             }
           }
         }
@@ -174,7 +172,7 @@ function getTopLevelConstNames(ast: Program): Array<string> {
 function getTopLevelFunctionNames(ast: Program): Array<string> {
   const names: Array<string> = [];
   for (const stmt of ast.body) {
-    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+    if (stmt.type === "FunctionDeclaration") {
       names.push(stmt.id.name);
     }
   }

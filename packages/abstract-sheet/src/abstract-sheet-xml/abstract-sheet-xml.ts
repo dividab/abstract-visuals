@@ -10,11 +10,9 @@ export const abstractSheetXml = (template: string, data: unknown, partials: Reco
 function abstractSheetXmlRecursive(el: XmlElement): unknown {
   const children = Array<unknown>();
   const childElements = Array<XmlElement>();
-  for (const child of el.children ?? []) {
-    if (child.tagName !== undefined) {
-      children.push(abstractSheetXmlRecursive(child));
-      childElements.push(child);
-    }
+  for (const child of el.children) {
+    children.push(abstractSheetXmlRecursive(child));
+    childElements.push(child);
   }
 
   switch (el.tagName) {
@@ -44,11 +42,11 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
         }
       });
       return {
-        name: ((el.attributes as Partial<Record<keyof Sheet, unknown>>)?.name ?? "") as string,
+        name: ((el.attributes as Partial<Record<keyof Sheet, unknown>>).name ?? "") as string,
         cells,
         colInfo,
         rowInfo,
-        direction: ((el.attributes as Partial<Record<keyof Sheet, unknown>>)?.direction ?? "") as Sheet["direction"],
+        direction: ((el.attributes as Partial<Record<keyof Sheet, unknown>>).direction ?? "") as Sheet["direction"],
       } satisfies Sheet;
     }
     case "ColInfos":

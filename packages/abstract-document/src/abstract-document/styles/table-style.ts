@@ -31,8 +31,8 @@ export function create(props?: TableStyleProps): TableStyle {
 }
 
 export function overrideWith(overrider: TableStyle, toOverride: TableStyle): TableStyle {
-  const a: TableStyleProps = overrider || {};
-  const b: TableStyleProps = toOverride || {};
+  const a: TableStyleProps = overrider;
+  const b: TableStyleProps = toOverride;
   return create({
     margins: LayoutFoundation.overrideWith(a.margins, b.margins),
     alignment: a.alignment ?? b.alignment,

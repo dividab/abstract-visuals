@@ -92,7 +92,7 @@ export function rowsSplit(
         currentRow.push(newFirstRowAtom);
 
         //then add new rows
-        for (const part of rest ?? []) {
+        for (const part of rest) {
           newRows.push(currentRow);
           const newAtom = { ...atom, text: part.text };
           desiredSizes.set(newAtom, { width: part.width, height: heightPerRow });
@@ -253,30 +253,28 @@ export function rowsCombineTextRuns(
       }
 
       if (isLast) {
-        if (current) {
-          //does the last contain spaces at the end?
-          if (alignment === "right") {
-            while (currentString.endsWith(" ")) {
-              currentString = currentString.slice(0, -1);
-            }
+        //does the last contain spaces at the end?
+        if (alignment === "right") {
+          while (currentString.endsWith(" ")) {
+            currentString = currentString.slice(0, -1);
           }
-          if (isFirst && alignment === "left") {
-            while (currentString.startsWith(" ")) {
-              currentString = currentString.slice(1);
-            }
-            isFirst = false;
-          }
-
-          const newTextRun: AD.Atom.Atom = {
-            ...current,
-            text: currentString,
-          };
-          newRow.push(newTextRun);
-          desiredSizes.set(newTextRun, {
-            width: stringWidth(current, pdf, currentString, resources, defaultStyle),
-            height: currentHeight,
-          });
         }
+        if (isFirst && alignment === "left") {
+          while (currentString.startsWith(" ")) {
+            currentString = currentString.slice(1);
+          }
+          isFirst = false;
+        }
+
+        const newTextRun: AD.Atom.Atom = {
+          ...current,
+          text: currentString,
+        };
+        newRow.push(newTextRun);
+        desiredSizes.set(newTextRun, {
+          width: stringWidth(current, pdf, currentString, resources, defaultStyle),
+          height: currentHeight,
+        });
       }
     }
     current = undefined;
@@ -295,15 +293,14 @@ function stringWidth(
   resources: AD.Resources.Resources,
   defaultStyle: AD.TextStyle.TextStyle
 ): number {
-  const style =
-    (AD.Resources.getNestedStyle(
-      defaultStyle,
-      textRun.style,
-      "TextStyle",
-      textRun.styleName,
-      resources,
-      textRun.nestedStyleNames ?? []
-    ) as AD.TextStyle.TextStyle) ?? defaultStyle;
+  const style = (AD.Resources.getNestedStyle(
+    defaultStyle,
+    textRun.style,
+    "TextStyle",
+    textRun.styleName,
+    resources,
+    textRun.nestedStyleNames ?? []
+  ) ?? defaultStyle) as AD.TextStyle.TextStyle;
 
   const font = getFontNameStyle(style);
   const fontSize = AD.TextStyle.calculateFontSize(style, 10);

@@ -81,7 +81,7 @@ function getIdAttr(target: Element | undefined, rootId: string): string | undefi
   const id = target.id;
   const parts = id.split("%");
   if (parts.length !== 2 || parts[0] !== "ai") {
-    return getIdAttr((target.parentNode as Element) || undefined, rootId);
+    return getIdAttr((target.parentNode as Element | null) ?? undefined, rootId);
   }
   return parts[1];
 }

@@ -299,7 +299,7 @@ function renderRow(
 ): TableRow {
   const children = row.children.reduce(
     (acc, cell) => {
-      const span = cell.columnSpan ?? 1;
+      const span = cell.columnSpan;
 
       const width = columnWidths.slice(acc.columnIndex, acc.columnIndex + span).reduce((a, b) => a + b, 0);
 
@@ -333,11 +333,7 @@ function renderCell(
 
   return new TableCell({
     verticalAlign:
-      (style.verticalAlignment && style.verticalAlignment === "Top"
-        ? VerticalAlign.TOP
-        : style.verticalAlignment === "Bottom"
-          ? VerticalAlign.BOTTOM
-          : VerticalAlign.CENTER) || undefined,
+      style.verticalAlignment === "Top" ? VerticalAlign.TOP : style.verticalAlignment === "Bottom" ? VerticalAlign.BOTTOM : VerticalAlign.CENTER,
     shading: {
       fill: style.background ?? undefined,
     },

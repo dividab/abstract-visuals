@@ -201,7 +201,7 @@ function componentDxf(
     const imageData = options.imageDataByUrl[c.data.url];
     const url =
       imageData === undefined ? c.data.url : typeof imageData === "string" ? imageData : DXF_DATA_URL + dxf2dExportImage(imageData, options);
-    if (url === undefined || typeof url !== "string" || !url.startsWith(DXF_DATA_URL)) {
+    if (typeof url !== "string" || !url.startsWith(DXF_DATA_URL)) {
       return [entities, blocks, blockRecords];
     }
 

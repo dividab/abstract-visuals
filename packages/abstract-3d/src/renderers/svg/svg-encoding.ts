@@ -108,7 +108,7 @@ function svgHoleMask(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): [string
     ? [
         `<mask id="${id}" mask-type="luminance" maskContentUnits="objectBoundingBox">
       <rect x="0" y="0" width="1" height="1" fill="white" />
-      ${svgMaskHoles(rot, size, holes ?? [])}
+      ${svgMaskHoles(rot, size, holes)}
     </mask>\n`,
         `mask="url(#${id}) "`,
       ]

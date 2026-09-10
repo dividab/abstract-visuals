@@ -47,10 +47,10 @@ ENDSEC;
 END-ISO-10303-21;`;
 
 export const CARTESIAN_POINT = (p: Vec3 | Vec2, m: MutableStep): number =>
-  mutate(`CARTESIAN_POINT('',(${stepNumber(p.x)},${stepNumber(p.y)}${(p as Vec3)?.z !== undefined ? `,${stepNumber((p as Vec3).z)}` : ""}))`, m);
+  mutate(`CARTESIAN_POINT('',(${stepNumber(p.x)},${stepNumber(p.y)}${"z" in p ? `,${stepNumber(p.z)}` : ""}))`, m);
 
 export const DIRECTION = (d: Vec3 | Vec2, m: MutableStep): number =>
-  mutate(`DIRECTION('',(${stepNumber(d.x)},${stepNumber(d.y)}${(d as Vec3)?.z !== undefined ? `,${stepNumber((d as Vec3).z)}` : ""}))`, m);
+  mutate(`DIRECTION('',(${stepNumber(d.x)},${stepNumber(d.y)}${"z" in d ? `,${stepNumber(d.z)}` : ""}))`, m);
 
 export const VERTEX_POINT = (CARTESIAN_POINT: number, m: MutableStep): number => mutate(`VERTEX_POINT('',#${CARTESIAN_POINT})`, m);
 

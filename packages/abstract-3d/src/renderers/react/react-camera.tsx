@@ -42,8 +42,14 @@ export type BufferZones = {
 export type ControlsHelper = (Viewcube | Viewport) & {
   readonly props: Pick<GizmoHelperProps, "alignment" | "margin">;
 };
-type Viewcube = { readonly type: "Viewcube"; readonly viewcubeProps: GenericProps };
-type Viewport = { readonly type: "Viewport"; readonly viewportProps: GizmoViewportProps };
+type Viewcube = {
+  readonly type: "Viewcube";
+  readonly viewcubeProps: GenericProps;
+};
+type Viewport = {
+  readonly type: "Viewport";
+  readonly viewportProps: GizmoViewportProps;
+};
 
 type RefInstance<C> = C extends React.ForwardRefExoticComponent<infer P> ? (P extends React.RefAttributes<infer R> ? R : never) : never;
 type OrbitControlsInstance = RefInstance<typeof OrbitControls>;
@@ -126,8 +132,7 @@ export function ReactCamera({
     const bufLeft = bufferZones.left ?? 0;
     const bufRight = bufferZones.right ?? 0;
     const bufTop = bufferZones.top ?? 0;
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- deps intentionally trimmed, see b290bc3e
-    const bufBottom = bufferZones.bottom! ?? 0;
+    const bufBottom = bufferZones.bottom ?? 0;
 
     // Canvas size in CSS pixels — use R3F's reactive size so the effect
     // re-runs on resize and is correct on first mount.

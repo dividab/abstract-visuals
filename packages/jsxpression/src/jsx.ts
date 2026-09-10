@@ -98,11 +98,11 @@ export type JSXNodeWithChildren = JSXElement | JSXFragment;
 export type JSXLeafNode = JSXText | JSXEmptyExpression;
 
 export function isJsxElement(value: unknown): value is JSXElement {
-  return (value as JSXElement)?.type === "JSXElement";
+  return (value as JSXElement | null | undefined)?.type === "JSXElement";
 }
 
 export function isJsxFragment(value: unknown): value is JSXFragment {
-  return (value as JSXFragment)?.type === "JSXFragment";
+  return (value as JSXFragment | null | undefined)?.type === "JSXFragment";
 }
 
 export function isJsxRoot(value: unknown): value is JSXRoot {
@@ -110,21 +110,21 @@ export function isJsxRoot(value: unknown): value is JSXRoot {
 }
 
 export function isJsxAttribute(value: unknown): value is JSXAttribute {
-  return (value as JSXAttribute)?.type === "JSXAttribute";
+  return (value as JSXAttribute | null | undefined)?.type === "JSXAttribute";
 }
 
 export function isJsxExpressionContainer(value: unknown): value is JSXExpressionContainer {
-  return (value as JSXExpressionContainer)?.type === "JSXExpressionContainer";
+  return (value as JSXExpressionContainer | null | undefined)?.type === "JSXExpressionContainer";
 }
 
 export function isJsxEmptyExpression(value: unknown): value is JSXEmptyExpression {
-  return (value as JSXEmptyExpression)?.type === "JSXEmptyExpression";
+  return (value as JSXEmptyExpression | null | undefined)?.type === "JSXEmptyExpression";
 }
 
 export function isJsxText(value: unknown): value is JSXText {
-  return (value as JSXText)?.type === "JSXText";
+  return (value as JSXText | null | undefined)?.type === "JSXText";
 }
 
 export function isJsxLeafNode(value: JSXNode): value is JSXLeafNode {
-  return (value as JSXText)?.type === "JSXText" || isJsxEmptyExpression(value);
+  return value.type === "JSXText" || isJsxEmptyExpression(value);
 }

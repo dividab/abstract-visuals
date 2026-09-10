@@ -2,6 +2,7 @@
   //dummy
   "extends": "../../tsconfig.base.json",
   "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "./vite.config.ts"],
   "typeRoots": ["src/@types", "node_modules/@types"],
   "compilerOptions": {
     "outDir": "lib",

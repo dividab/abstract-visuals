@@ -83,14 +83,12 @@ export function createXmlWriter(): XmlWriter {
   }
 
   function writeIndent(newLine: boolean = true): void {
-    if (indentSize > 0) {
-      if (newLine) {
-        write("\n");
-      }
-      if (!(state === "Start" || state === "Prolog")) {
-        for (let i = 0; i < indentSize * (contextStack.length - 1); i++) {
-          write(" ");
-        }
+    if (newLine) {
+      write("\n");
+    }
+    if (!(state === "Start" || state === "Prolog")) {
+      for (let i = 0; i < indentSize * (contextStack.length - 1); i++) {
+        write(" ");
       }
     }
   }
@@ -150,11 +148,9 @@ export function createXmlWriter(): XmlWriter {
         if (state === "Start" || state === "Prolog") {
           let bufBld: string = "";
           bufBld += "version=" + quoteChar + "1.0" + quoteChar;
-          if (encoding !== null) {
-            bufBld += ` encoding=${quoteChar}${encoding}${quoteChar}`;
-          }
+          bufBld += ` encoding=${quoteChar}${encoding}${quoteChar}`;
           if (standalone) {
-            const standAlone = standalone ? "yes" : "no";
+            const standAlone = "yes";
             bufBld += ` standalone=${quoteChar}${standAlone}${quoteChar}`;
           }
           writeIndent(state !== "Start");

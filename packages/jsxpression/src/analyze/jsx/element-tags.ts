@@ -10,7 +10,7 @@ export function analyzeElementTags(ast: Program, schema: Schema, validationConte
 
   const localFunctionNames = new Set<string>();
   for (const stmt of ast.body) {
-    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+    if (stmt.type === "FunctionDeclaration") {
       localFunctionNames.add(stmt.id.name);
     }
   }

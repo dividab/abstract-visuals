@@ -34,7 +34,7 @@ type CompilableExpression = Expression | PrivateIdentifier | Super | JSXElement 
 export function compile(ast: Program): string {
   const localFunctions = new Set<string>();
   for (const stmt of ast.body) {
-    if (stmt.type === "FunctionDeclaration" && stmt.id) {
+    if (stmt.type === "FunctionDeclaration") {
       localFunctions.add(stmt.id.name);
     }
   }
@@ -129,17 +129,19 @@ function emitAttributes(attributes: Array<JSXAttribute | JSXSpreadAttribute>, lo
       continue;
     }
 
+    // oxlint-disable-next-line typescript/no-unnecessary-condition -- attribute is only asserted (not runtime-validated) as JSXAttribute; acorn-typescript's real JSX grammar can still produce other AST shapes here
     if (attribute.type !== "JSXAttribute") {
       throw CompilationError.fromNode("Only simple JSX attributes allowed", attribute);
     }
 
-    const key = attribute.name?.name;
+    const key = attribute.name.name;
 
     let value: string = "";
     if (!attribute.value) {
       value = "true";
     } else if (attribute.value.type === "Literal") {
       value = JSON.stringify(attribute.value.value);
+      // oxlint-disable-next-line typescript/no-unnecessary-condition -- attribute.value is only asserted (not runtime-validated) as JSXAttributeValue; the real grammar can still produce other expression container contents here
     } else if (attribute.value.type === "JSXExpressionContainer") {
       value = emitExpression(attribute.value.expression, localFunctions);
     } else {
@@ -273,7 +275,7 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
     case "JSXEmptyExpression":
       return "null";
     default:
-      throw CompilationError.fromNode(`Unsupported expression: ${node?.type}`, node);
+      throw CompilationError.fromNode(`Unsupported expression: ${node.type}`, node);
   }
 }
 
@@ -348,6 +350,7 @@ function emitParam(param: Pattern, localFunctions: Set<string>): string {
 function getAstKeyString(node: Identifier | Literal): string {
   if (node.type === "Identifier") {
     return node.name;
+    // oxlint-disable-next-line typescript/no-unnecessary-condition -- node is only asserted (not runtime-validated) as Identifier | Literal at the call sites; the real ESTree key/property type is broader
   } else if (node.type === "Literal") {
     return JSON.stringify(node.value);
   } else {

@@ -15,7 +15,7 @@ export function isSimpleDataAccess(node: MemberExpression, dataKeys: ReadonlySet
 
   let current: MemberExpression["object"] = node.object;
 
-  while (current) {
+  for (;;) {
     if (current.type === "Identifier") {
       return dataKeys.has(current.name);
     }
@@ -33,8 +33,6 @@ export function isSimpleDataAccess(node: MemberExpression, dataKeys: ReadonlySet
       return false;
     }
   }
-
-  return false;
 }
 
 export function extractPath(node: MemberExpression): Array<string> {
@@ -46,7 +44,7 @@ export function extractPath(node: MemberExpression): Array<string> {
 
   let current: MemberExpression["object"] = node.object;
 
-  while (current) {
+  for (;;) {
     if (current.type === "Identifier") {
       path.unshift(current.name);
       break;
@@ -83,13 +81,13 @@ export function getAvailablePropsAtPath(path: Array<string>, depth: number, sche
 
   for (let i = 1; i <= depth; i++) {
     const prop = path[i];
-    if (prop === undefined || current?.type !== "object" || !current.shape) {
+    if (prop === undefined || current?.type !== "object") {
       return [];
     }
     current = current.shape[prop];
   }
 
-  if (current?.type === "object" && current.shape) {
+  if (current?.type === "object") {
     return Object.keys(current.shape);
   }
 
@@ -155,20 +153,9 @@ export function validateSchemaPath(
         return;
       }
 
-      const elementType: PropertySchema | null = current.shape || null;
+      const elementType: PropertySchema = current.shape;
 
-      if (!elementType) {
-        analysisReport.addIssue(
-          "INVALID_DATA_ACCESS",
-          `Cannot access property '${prop}' on unknown array element type`,
-          getNodeRange(node),
-          validationContext.getSnapshot(),
-          getAvailableArrayMembers()
-        );
-        return;
-      }
-
-      if (elementType.type === "object" && elementType.shape) {
+      if (elementType.type === "object") {
         const next: PropertySchema | undefined = elementType.shape[prop];
 
         if (!next) {
@@ -223,7 +210,7 @@ export function validateSchemaPath(
 
       analysisReport.addIssue(
         "INVALID_DATA_ACCESS",
-        `Cannot access property '${prop}' on ${elementType.type || "undefined"} type array element`,
+        `Cannot access property '${prop}' on ${elementType.type} type array element`,
         getNodeRange(node),
         validationContext.getSnapshot()
       );
@@ -246,10 +233,10 @@ export function validateSchemaPath(
       return;
     }
 
-    if (current.type !== "object" || !current.shape) {
+    if (current.type !== "object") {
       analysisReport.addIssue(
         "INVALID_DATA_ACCESS",
-        `Cannot access property '${prop}' on ${current.type || "undefined"} type`,
+        `Cannot access property '${prop}' on ${current.type} type`,
         getNodeRange(node),
         validationContext.getSnapshot()
       );
@@ -278,8 +265,8 @@ function getElementAccessFlags(node: MemberExpression, pathLength: number): Arra
   const flags = Array(pathLength).fill(false);
   const segments: Array<{ property: Expression | PrivateIdentifier; computed: boolean }> = [];
 
-  let current: Expression | Super | undefined = node;
-  while (current?.type === "MemberExpression") {
+  let current: Expression | Super = node;
+  while (current.type === "MemberExpression") {
     segments.unshift({ property: current.property, computed: current.computed });
     current = current.object;
   }
@@ -288,14 +275,14 @@ function getElementAccessFlags(node: MemberExpression, pathLength: number): Arra
   let lastWasComputedNumeric = false;
 
   for (const segment of segments) {
-    if (segment.property?.type === "Identifier") {
+    if (segment.property.type === "Identifier") {
       schemaIndex += 1;
       if (schemaIndex < pathLength) {
         flags[schemaIndex] = lastWasComputedNumeric;
       }
     }
 
-    if (segment.computed && segment.property?.type === "Literal" && typeof segment.property.value === "number") {
+    if (segment.computed && segment.property.type === "Literal" && typeof segment.property.value === "number") {
       lastWasComputedNumeric = true;
     } else {
       lastWasComputedNumeric = false;

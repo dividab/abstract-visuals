@@ -6,7 +6,6 @@ import { helpers } from "./helpers.js";
 export type XmlElement = {
   readonly tagName: string;
   readonly attributes: Record<string, string>;
-  // readonly attributes: Record<string, string | number | undefined>;
   readonly children: ReadonlyArray<XmlElement>;
   readonly textContent?: string;
 };
@@ -23,8 +22,9 @@ export const renderHandlebars = (template: string, data: unknown, partials: Reco
   return hbs.compile(template, { compat: true, preventIndent: true })(data);
 };
 
-export function parseXmlCustom(text: string, options: Partial<X2jOptions>): ReadonlyArray<XmlElement> {
-  const parser = new XMLParser(options);
+export function parseXmlCustom(text: string, options: Omit<Partial<X2jOptions>, "allowBooleanAttributes">): ReadonlyArray<XmlElement> {
+  // allowBooleanAttributes is forced off (not caller-configurable) so attribute values are always strings, matching XmlElement.attributes' declared type
+  const parser = new XMLParser({ ...options, allowBooleanAttributes: false });
   parser.addEntity("#x2F", "/");
   parser.addEntity("#x3D", "=");
   return transformFXP(parser.parse(text));
@@ -45,7 +45,7 @@ function transformFXP(parsedXml: ReadonlyArray<FastXmlElement>): ReadonlyArray<X
       const key = Object.keys(c)[0];
       return key !== "#text" && key !== ":@";
     });
-    const attributes = (element[":@"] as Record<string, string>) || {};
+    const attributes = (element[":@"] ?? {}) as Record<string, string>;
     const textChilds: Array<string> = ((element[key] ?? []) as Array<FastXmlElement>)
       .filter((c) => {
         const key = Object.keys(c)[0];
@@ -106,7 +106,7 @@ const xmlParser = new XMLParser({
   preserveOrder: true,
   ignoreAttributes: false,
   attributeNamePrefix: "",
-  allowBooleanAttributes: true,
+  allowBooleanAttributes: false,
   trimValues: false,
   ignoreDeclaration: true,
   processEntities: true,
@@ -119,7 +119,7 @@ const xsdParser = new XMLParser({
   preserveOrder: true,
   ignoreAttributes: false,
   attributeNamePrefix: "",
-  allowBooleanAttributes: true,
+  allowBooleanAttributes: false,
   trimValues: false,
   ignoreDeclaration: true,
 });

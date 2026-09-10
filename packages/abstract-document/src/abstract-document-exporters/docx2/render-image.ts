@@ -259,18 +259,16 @@ function binaryImageToSvg(
     }" width="${width}" height="${height}" href="${escapeXml(component.data.url)}" />`;
   }
 
-  if (component.data.type === "bytes") {
-    if (format === "png" || format === "jpg" || format === "jpeg") {
-      const mime = format === "png" ? "image/png" : "image/jpeg";
-      const base64 = Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength).toString("base64");
+  if (format === "png" || format === "jpg" || format === "jpeg") {
+    const mime = format === "png" ? "image/png" : "image/jpeg";
+    const base64 = Buffer.from(component.data.bytes.buffer, component.data.bytes.byteOffset, component.data.bytes.byteLength).toString("base64");
 
-      return `<image x="${component.topLeft.x}" y="${component.topLeft.y}" width="${width}" height="${height}" href="data:${mime};base64,${base64}" />`;
-    }
+    return `<image x="${component.topLeft.x}" y="${component.topLeft.y}" width="${width}" height="${height}" href="data:${mime};base64,${base64}" />`;
+  }
 
-    if (format === "svg") {
-      const svg = new TextDecoder().decode(component.data.bytes);
-      return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y})">${svg}</g>`;
-    }
+  if (format === "svg") {
+    const svg = new TextDecoder().decode(component.data.bytes);
+    return `<g transform="translate(${component.topLeft.x} ${component.topLeft.y})">${svg}</g>`;
   }
 
   return "";

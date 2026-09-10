@@ -30,7 +30,7 @@ export function parse(source: string): Program {
 const ACORN_LOCATION_SUFFIX_RX = /\s+\(\d+:\d+\)$/;
 
 function isAcornError(error: unknown): error is AcornError {
-  return error instanceof Error && (error as AcornError).loc !== undefined;
+  return error instanceof Error && (error as Partial<AcornError>).loc !== undefined;
 }
 
 type AcornError = Error & {

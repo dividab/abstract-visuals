@@ -32,15 +32,15 @@ export const AbstractDoc = (props?: AbstractDoc1.AbstractDocProps & ChildrenProp
 export const Section = (props?: Section1.SectionProps & ChildrenProp): React.JSX.Element =>
   Section1.create(props, props && (props.children as unknown as ReadonlyArray<SectionElement1.SectionElement>)) as unknown as React.JSX.Element;
 export const Group = (props: Group1.GroupProps & ChildrenProp): React.JSX.Element =>
-  Group1.create(props, props && (props.children as unknown as ReadonlyArray<SectionElement1.SectionElement>)) as unknown as React.JSX.Element;
+  Group1.create(props, props.children as unknown as ReadonlyArray<SectionElement1.SectionElement>) as unknown as React.JSX.Element;
 export const Paragraph = (props: Paragraph1.ParagraphProps & ChildrenProp): React.JSX.Element =>
-  Paragraph1.create(props, props && (props.children as unknown as ReadonlyArray<Atom1.Atom>)) as unknown as React.JSX.Element;
+  Paragraph1.create(props, props.children as unknown as ReadonlyArray<Atom1.Atom>) as unknown as React.JSX.Element;
 export const Table = (props: Table1.TableProps & ChildrenProp): React.JSX.Element =>
-  Table1.create(props, props && (props.children as unknown as ReadonlyArray<TableRow1.TableRow>)) as unknown as React.JSX.Element;
+  Table1.create(props, props.children as unknown as ReadonlyArray<TableRow1.TableRow>) as unknown as React.JSX.Element;
 export const TableRow = (props: TableRow1.TableRowProps & ChildrenProp): React.JSX.Element =>
-  TableRow1.create(props, props && (props.children as unknown as ReadonlyArray<TableCell1.TableCell>)) as unknown as React.JSX.Element;
+  TableRow1.create(props, props.children as unknown as ReadonlyArray<TableCell1.TableCell>) as unknown as React.JSX.Element;
 export const TableCell = (props: TableCell1.TableCellProps & ChildrenProp): React.JSX.Element =>
-  TableCell1.create(props, props && (props.children as unknown as ReadonlyArray<SectionElement1.SectionElement>)) as unknown as React.JSX.Element;
+  TableCell1.create(props, props.children as unknown as ReadonlyArray<SectionElement1.SectionElement>) as unknown as React.JSX.Element;
 export const HyperLink = (props: HyperLink1.HyperLinkProps): React.JSX.Element => HyperLink1.create(props) as unknown as React.JSX.Element;
 export const LinkTarget = (props: LinkTarget1.LinkTargetProps): React.JSX.Element => LinkTarget1.create(props) as unknown as React.JSX.Element;
 export const Image = (props: Image1.ImageProps): React.JSX.Element => Image1.create(props) as unknown as React.JSX.Element;

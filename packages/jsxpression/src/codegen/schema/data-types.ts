@@ -36,26 +36,23 @@ function generateNestedPropertyJSDoc(propertyName: string, propertySchema: Prope
     comments.push(desc);
   }
 
-  let hasNestedProperties = false;
-  if (propertySchema.type === "object" && propertySchema.shape) {
+  if (propertySchema.type === "object") {
     comments.push("");
     Object.entries(propertySchema.shape).forEach(([key, value]) => {
       if (value.description) {
         comments.push(`@property ${key} ${value.description}`);
-        hasNestedProperties = true;
       }
     });
-  } else if (propertySchema.type === "array" && propertySchema.shape.type === "object" && propertySchema.shape.shape) {
+  } else if (propertySchema.type === "array" && propertySchema.shape.type === "object") {
     comments.push("");
     Object.entries(propertySchema.shape.shape).forEach(([key, value]) => {
       if (value.description) {
         comments.push(`@property ${key} ${value.description}`);
-        hasNestedProperties = true;
       }
     });
   }
 
-  if (comments.length === 1 && !hasNestedProperties) {
+  if (comments.length === 1) {
     return `${indent}/** ${comments[0]} */\n`;
   }
 

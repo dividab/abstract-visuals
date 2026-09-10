@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.0] - 2026-09-10
+
+- Internal: activated `typescript/no-unnecessary-condition`. Runtime checks against acorn's real (broader-than-declared) AST shapes were kept, widening casts instead of removing them. No functional changes.
+
 ## [0.2.2] - 2026-09-09
 
 - Added support for optional chaining (`?.`) in compiled expressions, including chained member access and calls.
