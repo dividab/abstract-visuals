@@ -505,7 +505,7 @@ function renderGroup(group: AD.Group.Group, resources: AD.Resources.Resources, a
     if (index === group.children.length - 1) {
       keepNext = false;
     }
-    sofar.push(...renderSectionElement(group.children[index], resources, availabelWidth, keepNext));
+    sofar.push(...renderSectionElement(group.children[index]!, resources, availabelWidth, keepNext));
   }
   return sofar;
 }

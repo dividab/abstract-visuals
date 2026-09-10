@@ -1,6 +1,6 @@
 import { parseHandlebarsXml, type XmlElement } from "handlebars-xml";
 import { getFontStyleName } from "../../abstract-document-exporters/pdf/font.js";
-import { addResources, merge } from "../../abstract-document/abstract-doc.js";
+import { addResources, create, merge } from "../../abstract-document/abstract-doc.js";
 import type { AbstractDoc } from "../../abstract-document/index.js";
 import type { Font } from "../../abstract-document/primitives/font.js";
 import type { Resources } from "../../abstract-document/resources.js";
@@ -49,7 +49,8 @@ export function abstractDocXml(
 ): readonly [AbstractDoc.AbstractDoc, imageUrls: Record<string, true>, fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>>] {
   const xml = parseHandlebarsXml(template, data, partials);
   const [imageUrls, fontFamilies, styleNames] = extractImageFontsStyleNames(xml);
-  const doc = abstractDocXmlRecursive(creators(styleNames), xml[0]);
+  const root = xml[0];
+  const doc = root === undefined ? create() : abstractDocXmlRecursive(creators(styleNames), root);
   return [doc, imageUrls, fontFamilies];
 }
 
@@ -63,7 +64,11 @@ function abstractDocXmlRecursive(creators: Record<string, ADCreatorFn>, xmlEleme
       if (childName === "StyleNames") {
         props["styles"] = abstractDocXmlRecursive(creators, childElement);
       } else if (childName === "StyleName" && childElement.attributes?.["name"]) {
-        const styleName = StyleKey.create(childElement.attributes["type"], childElement.attributes["name"]);
+        const type = childElement.attributes["type"];
+        if (type === undefined) {
+          continue;
+        }
+        const styleName = StyleKey.create(type, childElement.attributes["name"]);
         const style = abstractDocXmlRecursive(creators, childElement);
         props[styleName] = style;
       } else if (childName.startsWith(childName.charAt(0).toUpperCase())) {

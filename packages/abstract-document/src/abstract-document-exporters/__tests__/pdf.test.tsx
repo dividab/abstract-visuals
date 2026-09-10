@@ -2,7 +2,7 @@ import path from "path";
 import * as S from "stream";
 import PDFParser from "pdf2json";
 import { describe, test, expect } from "vitest";
-import { render } from "../../abstract-document-jsx/index.js";
+import { AbstractDoc, Paragraph, Section, Table, TableCell, TableRow, TextRun, render } from "../../abstract-document-jsx/index.js";
 import { exportToStream } from "../pdf/render.js";
 import { testAbsolutePositionGroup } from "./pdf/absolute-position-group.js";
 import { testAbsolutePositionHeaderAndFooter } from "./pdf/absolute-position-header-and-footer.js";
@@ -101,6 +101,47 @@ import { testWorld } from "./pdf/world.js";
 import { saveBufferInTmpDir, streamToBuffer, diffJson } from "./test-utils/index.js";
 
 describe("export pdf", () => {
+  test("row spans beyond the table render like spans clipped to the remaining rows", async () => {
+    const outputs: Array<unknown> = [];
+    for (const rowSpan of [2, 5]) {
+      const document = render(
+        <AbstractDoc>
+          <Section>
+            <Table columnWidths={[100, 100]}>
+              <TableRow>
+                <TableCell rowSpan={rowSpan}>
+                  <Paragraph>
+                    <TextRun text="Spanning cell" />
+                  </Paragraph>
+                </TableCell>
+                <TableCell>
+                  <Paragraph>
+                    <TextRun text="First row" />
+                  </Paragraph>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <Paragraph>
+                    <TextRun text="Last row" />
+                  </Paragraph>
+                </TableCell>
+              </TableRow>
+            </Table>
+          </Section>
+        </AbstractDoc>
+      );
+      const stream = new S.PassThrough();
+      exportToStream(stream, document);
+      const buffer = await streamToBuffer(stream);
+      // pdf2json requires an unpooled buffer, as in the fixture tests below.
+      const parserBuffer = Buffer.alloc(buffer.length);
+      buffer.copy(parserBuffer);
+      outputs.push(await getJsonFromPdf(parserBuffer));
+    }
+    expect(diffJson(outputs[0], outputs[1])).toBe("");
+  });
+
   [
     testAbsolutePositionGroup,
     testAbsolutePositionHeaderAndFooter,

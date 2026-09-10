@@ -80,7 +80,7 @@ function preProcessParagraph(paragraph: AD.Paragraph.Paragraph, resources: AD.Re
     if (numberOverride !== undefined) {
       _numberingLevelItems.set(key, numberOverride);
     } else if (!_numberingLevelItems.has(key)) {
-      _numberingLevelItems.set(key, levelDefinitions[level].start);
+      _numberingLevelItems.set(key, levelDefinitions[level]?.start ?? 1);
     } else if (append !== true) {
       _numberingLevelItems.set(key, (_numberingLevelItems.get(key) ?? 0) + 1);
     }
@@ -158,7 +158,7 @@ function adjustParagraph(paragraph: AD.Paragraph.Paragraph): Array<AD.SectionEle
       const lines = text.split("\n");
 
       for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+        const line = lines[i]!;
         const tokens = line.split(spaceRegex).filter((t) => t.length !== 0);
         for (const token of tokens) {
           newChildren.push({

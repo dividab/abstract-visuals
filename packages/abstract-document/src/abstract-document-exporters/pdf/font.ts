@@ -91,8 +91,7 @@ export function getFontName(fontFamily: string | undefined, fontWeight: TextFont
 
 export function isFontAvailable(fontName: string, resources: AD.Resources.Resources): boolean {
   if (resources.fonts) {
-    for (const name of Object.keys(resources.fonts)) {
-      const font = resources.fonts[name];
+    for (const [name, font] of Object.entries(resources.fonts)) {
       if (font.light && fontName === `${name}-Light`) {
         return true;
       }

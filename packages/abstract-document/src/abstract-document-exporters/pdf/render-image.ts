@@ -120,7 +120,7 @@ function abstractComponentToPdf(
       break;
     case "polyline":
       for (let i = 0; i < component.points.length; ++i) {
-        const p = component.points[i];
+        const p = component.points[i]!;
         if (i === 0) {
           pdf.moveTo(p.x, p.y);
         } else {
@@ -312,7 +312,7 @@ function applyStrokeDashStyle(pdf: PDFKit.PDFDocument, dashStyle: AbstractImage.
       break;
     }
     const actualIndex = index + 1;
-    const replacementValue = dashes[actualIndex - 1] + dashes[actualIndex + 1];
+    const replacementValue = dashes[actualIndex - 1]! + dashes[actualIndex + 1]!;
     dashes = dashes
       .slice(0, actualIndex - 1)
       .concat([replacementValue])
@@ -322,7 +322,7 @@ function applyStrokeDashStyle(pdf: PDFKit.PDFDocument, dashStyle: AbstractImage.
   // The stroke array only having two elements (a dash value and space
   // value) is a special case.
   if (dashes.length === 1) {
-    dashes = [dashes[0], dashes[0]];
+    dashes = [dashes[0]!, dashes[0]!];
     if (dashes[0] === 0) {
       pdf.strokeOpacity(0);
     }
@@ -371,8 +371,8 @@ function applyStrokeDashStyle(pdf: PDFKit.PDFDocument, dashStyle: AbstractImage.
       //
       // ---␣␣-----␣␣␣␣
       //           ⎸
-      phase -= dashes[1];
-      dashes[dashes.length - 1] += dashes[1];
+      phase -= dashes[1]!;
+      dashes[dashes.length - 1]! += dashes[1]!;
       dashes = dashes.slice(2);
     }
     if (dashes[dashes.length - 1] === 0) {
@@ -392,8 +392,8 @@ function applyStrokeDashStyle(pdf: PDFKit.PDFDocument, dashStyle: AbstractImage.
       // ------␣␣␣␣---␣␣
       //      ⎸
       //
-      phase += dashes[dashes.length - 2];
-      dashes[0] += dashes[dashes.length - 2];
+      phase += dashes[dashes.length - 2]!;
+      dashes[0]! += dashes[dashes.length - 2]!;
       dashes = dashes.slice(0, -2);
     }
   }

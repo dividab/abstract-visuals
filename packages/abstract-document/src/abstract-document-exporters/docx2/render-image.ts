@@ -69,7 +69,7 @@ function tryCreateDirectImageRun(
   }
 
   const component = resource.abstractImage.components[0];
-  if (component.type !== "binaryimage") {
+  if (component?.type !== "binaryimage") {
     return undefined;
   }
 
@@ -123,8 +123,8 @@ function binaryImageToImageRun(
 
     const match = /^data:(.+?);base64,(.*)$/.exec(component.data.url);
     if (match) {
-      const mimeType = match[1].toLowerCase();
-      const data = fromBase64(match[2]);
+      const mimeType = match[1]!.toLowerCase();
+      const data = fromBase64(match[2]!);
 
       if (mimeType.includes("png")) {
         return new ImageRun({ data, transformation, type: "png" });

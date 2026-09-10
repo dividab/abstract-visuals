@@ -41,7 +41,7 @@ function paginateSection(
   let currentPage = previousPage;
   for (let i = 0; i < children.length; ++i) {
     const contentRect = getPageContentRect(desiredSizes, section, pages.length + 1);
-    const element = children[i];
+    const element = children[i]!;
     if (element.type === "PageBreak") {
       columns.push({ elements });
       currentPage = createPage(resources, desiredSizes, currentPage, section, columns, pages.length === 0);
@@ -371,7 +371,8 @@ function splitTableAt(
   //This causes them to be rendered like an empty cell
   //while keeping the remaining rowspan which was calculated
   //in the pre-process step
-  const splitRow = table.children[splitIndex];
+  // splitTable selects an existing row, and only splits tables with at least two rows.
+  const splitRow = table.children[splitIndex]!;
   const firstTailRow: Array<AD.TableCell.TableCell> = [];
   for (const cell of splitRow.children) {
     firstTailRow.push({ ...cell, dummy: false });

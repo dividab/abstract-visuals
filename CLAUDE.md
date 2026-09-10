@@ -8,6 +8,7 @@ pnpm workspace managed with [lerna](https://lerna.js.org/). Build = TS project r
 - `packages/abstract-visuals-example`: storybook/vite example app, not published
 - `packages/{handlebars-xml,jsxpression}`: supporting packages (XML templating, JS expression parsing)
 - `packages/tsconfig.json`: TS project references list — keep in sync with `packages/*` when adding/removing a package
+- `tsconfig.settings.json`: shared TypeScript compiler settings for packages and root scripts; root `tsconfig.json` checks `scripts/**/*.ts`
 
 ## Style
 
@@ -18,6 +19,7 @@ pnpm workspace managed with [lerna](https://lerna.js.org/). Build = TS project r
 
 - IMPORTANT: Always use the root `pnpm` scripts instead of invoking `oxlint`/`oxfmt`/`tsc` directly (via `npx`, `pnpm exec`, or any other direct call) — even for one-off flags like `--print-config`; the root scripts carry required flags/config
 - `pnpm build` = `tsc -b packages`
+- `pnpm typecheck:scripts` = check root scripts, including Node-compatible erasable TypeScript syntax
 - `pnpm update-refs` = sync TS project references with local package dependencies (including dev, peer, and optional dependencies), and refresh `packages/tsconfig.json`
 - `pnpm lint` = oxlint (type-aware, `-c ./oxlint.config.js`); plugins come from `oxlint-config-divid`
 - `pnpm fmt` / `pnpm fmt:check` = oxfmt
@@ -36,5 +38,5 @@ pnpm workspace managed with [lerna](https://lerna.js.org/). Build = TS project r
 ## Gotchas
 
 - `oxlint.config.js`: several rules off = migration baseline, not endorsed style — check there before assuming a rule is enforced
-- No separate `typecheck` script: `pnpm build` (`tsc -b`) both typechecks and emits via project references
+- `pnpm build` (`tsc -b`) both typechecks and emits packages via project references; `pnpm typecheck:scripts` separately checks root scripts without emitting
 - Publishing (`pnpm publish-npm`) needs `~/.npmrc` auth; `scripts/publish-npm.sh` runs the publish step under `pnpm@10.34.5` instead of the repo's pinned `pnpm@12.3.1` due to a registry-auth bug in the pinned version, and re-prompts for OTP on failure instead of aborting — see README

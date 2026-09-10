@@ -17,7 +17,7 @@ interface ListItemParams {
   readonly ordered: boolean;
   readonly start: number;
   readonly level: number;
-  readonly firstChild: AstElements;
+  readonly firstChild: AstElements | undefined;
 }
 
 function preProcessMarkdownAst(
@@ -129,12 +129,12 @@ export function create({ text, keepTogetherSections }: MarkdownProps): SectionEl
   let group: Array<SectionElement> = [];
   let i = 0;
   while (i < paragraphs.length) {
-    while (i < paragraphs.length && paragraphs[i].styleName.startsWith("H")) {
-      group.push(paragraphs[i]);
+    while (i < paragraphs.length && paragraphs[i]!.styleName.startsWith("H")) {
+      group.push(paragraphs[i]!);
       ++i;
     }
     if (i < paragraphs.length) {
-      group.push(paragraphs[i]);
+      group.push(paragraphs[i]!);
     }
     if (group.length > 0) {
       groups.push(group);

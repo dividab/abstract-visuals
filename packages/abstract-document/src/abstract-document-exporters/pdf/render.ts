@@ -119,7 +119,7 @@ function renderPage(parentResources: AD.Resources.Resources, pdfKit: PDFKit.PDFD
   for (let columnIndex = 0; columnIndex < page.columns.length; columnIndex++) {
     const x = contentRect.x + columnStep * columnIndex;
     let y = elementStart;
-    for (const element of page.columns[columnIndex].elements) {
+    for (const element of page.columns[columnIndex]!.elements) {
       const elementSize = getDesiredSize(element, desiredSizes);
       const isAbsolute = AD.Position.isPositionAbsolute(element);
       renderSectionElement(
@@ -287,7 +287,7 @@ function renderParagraph(
   const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdfKit, resources, style.textStyle);
   const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdfKit, newRows, desiredSizes, alignment, style.textStyle);
   for (let r = 0; r < combinedRows.length; r++) {
-    const row = combinedRows[r];
+    const row = combinedRows[r]!;
     const isLast = r === combinedRows.length - 1;
     if (row.length === 0) {
       continue;
@@ -304,7 +304,7 @@ function renderParagraph(
       x -= styleMargins.right;
     }
 
-    if (row.length > 1 || row[0].type === "Image" || row[0].type === "TextRun" || row[0].type === "TextField") {
+    if (row.length > 1 || row[0]!.type === "Image" || row[0]!.type === "TextRun" || row[0]!.type === "TextField") {
       // Using continued with alignment "center" or "right" is broken:
       // https://github.com/foliojs/pdfkit/issues/240
       // Therefore we have to position it ourself
@@ -744,8 +744,9 @@ function renderRow(
 
     let height = rowSize.height;
     if (cell.rowSpan > 1) {
-      for (let index = rowIndex + 1; index < rowIndex + cell.rowSpan; index++) {
-        height += getDesiredSize([...table.headerRows, ...table.children][index], desiredSizes).height;
+      const rows = [...table.headerRows, ...table.children];
+      for (let index = rowIndex + 1; index < Math.min(rowIndex + cell.rowSpan, rows.length); index++) {
+        height += getDesiredSize(rows[index]!, desiredSizes).height;
       }
     }
     const cellSize = getDesiredSize(cell, desiredSizes);

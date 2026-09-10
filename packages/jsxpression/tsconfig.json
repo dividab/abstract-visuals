@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.settings.json",
+  "extends": "../../tsconfig.settings.json",
   "include": ["src"],
   "exclude": ["src/**/*.test.ts", "./vite.config.ts"],
   "typeRoots": ["src/@types", "node_modules/@types"],

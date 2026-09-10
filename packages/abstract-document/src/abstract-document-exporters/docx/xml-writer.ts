@@ -57,7 +57,8 @@ export function createXmlWriter(): XmlWriter {
   }
 
   function peekContextStack(): XmlElementContext {
-    return contextStack[contextStack.length - 1];
+    // Called only while an element is open or immediately after pushing one.
+    return contextStack[contextStack.length - 1]!;
   }
 
   function throwInvalidState(): void {
@@ -96,18 +97,18 @@ export function createXmlWriter(): XmlWriter {
 
   function getNamespacesNotInAncestors(namespaces: XmlNamespaceDictionary): XmlNamespaceDictionary {
     const toWrite: XmlNamespaceDictionary = {};
-    for (const prefix of Object.keys(namespaces)) {
+    for (const [prefix, ns] of Object.entries(namespaces)) {
       let exists: boolean = false;
       // Don't check the current (last) context in the stack
       for (let i = 0; i < contextStack.length - 1; i++) {
-        const context = contextStack[i];
-        if (context.namespaces[prefix] === namespaces[prefix]) {
+        const context = contextStack[i]!;
+        if (context.namespaces[prefix] === ns) {
           exists = true;
           break;
         }
       }
       if (!exists) {
-        toWrite[prefix] = namespaces[prefix];
+        toWrite[prefix] = ns;
       }
     }
     return toWrite;
@@ -129,8 +130,8 @@ export function createXmlWriter(): XmlWriter {
     const toWrite = getNamespacesNotInAncestors(namespaces);
 
     // Write the ones that was not found in ancestor
-    for (const prefix of Object.keys(toWrite)) {
-      writeNamespaceAttribute(namespaces[prefix], prefix);
+    for (const [prefix, ns] of Object.entries(toWrite)) {
+      writeNamespaceAttribute(ns, prefix);
     }
   }
 

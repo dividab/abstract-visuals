@@ -166,7 +166,7 @@ function measureParagraph(
         currentRowHeight = 0;
       }
     }
-    if (row.length === 1 && row[0].type === "LineBreak") {
+    if (row.length === 1 && row[0]!.type === "LineBreak") {
       paragraphHeight += currentRowHeight;
     } else if (hasAtomImage) {
       paragraphHeight += desiredHeight + currentRowHeight;
@@ -276,7 +276,7 @@ export function measureTable(
   // Try to find the minimal height required for each row
   const cells = [];
   for (let i = 0; i < rows.length; i++) {
-    cells.push(...rows[i].children.map((child) => ({ child, rowIndex: i })));
+    cells.push(...rows[i]!.children.map((child) => ({ child, rowIndex: i })));
   }
   cells.sort((a, b) => {
     if (a.child.rowSpan === b.child.rowSpan) {
@@ -287,16 +287,16 @@ export function measureTable(
   });
   const minRowHeights = Array.from({ length: rows.length }, () => 0);
   for (const { child, rowIndex } of cells) {
-    const rowSpan = child.rowSpan || 1;
+    const rowSpan = Math.min(child.rowSpan || 1, rows.length - rowIndex);
     let currentHeight = 0;
     for (let i = rowIndex; i < rowIndex + rowSpan; i++) {
-      currentHeight += minRowHeights[i];
+      currentHeight += minRowHeights[i]!;
     }
     const adjustment = getDesiredSize(child, desiredSizes).height - currentHeight;
     if (adjustment > 0) {
       const adjustmentPerRow = adjustment / rowSpan;
       for (let i = rowIndex; i < rowIndex + rowSpan; i++) {
-        minRowHeights[i] += adjustmentPerRow;
+        minRowHeights[i]! += adjustmentPerRow;
       }
     }
   }
@@ -306,8 +306,8 @@ export function measureTable(
     : table.columnWidths.reduce((a, b) => a + b, styleMargins.left + styleMargins.right);
   let desiredHeight = styleMargins.top + styleMargins.bottom;
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
-    const rowHeight = minRowHeights[i];
+    const row = rows[i]!;
+    const rowHeight = minRowHeights[i]!;
     desiredHeight += rowHeight;
     desiredSizes.set(row, AD.Size.create(desiredWidth, rowHeight));
     for (const cell of row.children) {

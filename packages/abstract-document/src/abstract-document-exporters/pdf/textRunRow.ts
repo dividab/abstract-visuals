@@ -37,7 +37,7 @@ export function rowsSplit(
     let lastWasSpace = false;
 
     for (let i = 0; i < row.length; i++) {
-      const atom = row[i];
+      const atom = row[i]!;
       const size = getDesiredSize(atom, desiredSizes);
       const width = size.width;
       const height = size.height;
@@ -83,7 +83,7 @@ export function rowsSplit(
       if (splittedWord.length > 0) {
         const heightPerRow = height / splittedWord.length;
         const [first, ...rest] = splittedWord;
-        if (!first && !rest) {
+        if (!first) {
           continue;
         }
         //add the first to the current row
@@ -175,7 +175,7 @@ export function rowsCombineTextRuns(
 
   let currentString = "";
   let currentHeight = 0;
-  let current: AD.Atom.Atom | undefined = undefined;
+  let current: AD.TextRun.TextRun | undefined = undefined;
   let currentStyle: string = "";
 
   const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
@@ -184,7 +184,7 @@ export function rowsCombineTextRuns(
     let isFirst = true;
 
     for (let i = 0; i < row.length; i++) {
-      const atom = row[i];
+      const atom = row[i]!;
       const isLast = i === row.length - 1;
       const measurement = getDesiredSize(atom, desiredSizes);
 
