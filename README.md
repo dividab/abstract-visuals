@@ -64,6 +64,14 @@ It will build the packages and call `lerna publish` which will figure out which 
 
 `scripts/publish-npm.sh` runs the actual publish under `pnpm@10.34.5` instead of this repo's pinned `pnpm@12.3.1` — the pinned version has a confirmed upstream bug where registry-authenticated requests (`whoami`, `publish`) fail even with a valid npm token, while `pnpm@10.34.5` works. Revisit that once it's fixed upstream.
 
+If you are not logged in to npm, `pnpm publish-npm` runs `npm login` for you first. `npm login` prints a URL and waits for you to press Enter before opening it in your browser — on WSL, npm doesn't know how to launch a Windows browser by default, so configure it once:
+
+```sh
+npm config set browser "cmd.exe /c start"
+```
+
+After that, pressing Enter at the `npm login` prompt opens the login page in your Windows default browser.
+
 [build-image]: https://github.com/dividab/abstract-visuals/workflows/Build/badge.svg
 [build-url]: https://github.com/dividab/abstract-visuals/actions?query=workflow%3ABuild+branch%3Amaster
 [codecov-image]: https://codecov.io/gh/dividab/abstract-visuals/branch/master/graph/badge.svg

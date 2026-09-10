@@ -3,6 +3,11 @@
 # `lerna publish from-package` is safe to rerun: it skips packages already on the registry.
 set -euo pipefail
 
+if ! npm whoami >/dev/null 2>&1; then
+  echo "Not logged in to npm — running npm login (press Enter to open the login page in your browser, see README for WSL browser setup)."
+  npm login
+fi
+
 pnpm run verify
 pnpm exec lerna version
 
