@@ -128,7 +128,7 @@ function generatePropComment(prop: PropertySchema, indent: string): string {
   // oxlint-disable-next-line typescript/no-explicit-any -- "enum" isn't a PropertySchema.type variant; kept as-is rather than deleted by this type-only lint pass
   const propAsAny = prop as any;
   if (propAsAny.type === "enum" && propAsAny.values) {
-    // oxlint-disable-next-line typescript/no-explicit-any -- propAsAny.values is untyped ("enum" isn't a PropertySchema.type variant)
+    // oxlint-disable-next-line typescript/no-explicit-any, typescript/no-unsafe-call -- propAsAny.values is untyped ("enum" isn't a PropertySchema.type variant)
     comments.push(`@values ${propAsAny.values.map((v: any) => `"${v}"`).join(", ")}`);
   }
 

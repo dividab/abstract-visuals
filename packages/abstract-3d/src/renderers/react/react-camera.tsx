@@ -94,6 +94,7 @@ export function ReactCamera({
     const newCamera = (camera.type === "Perspective" ? perspectiveRef.current : orthographicRef.current)!;
     const target = initialTargetRef.current.clone();
 
+    // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
     controls.target.copy(target);
 
     const dist = initialDistRef.current;
@@ -115,6 +116,7 @@ export function ReactCamera({
     }
 
     newCamera.updateProjectionMatrix();
+    // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
     controls.update();
     invalidate();
   };
@@ -251,6 +253,7 @@ export function ReactCamera({
                   }
                   return controls?.target as Vector3;
                 }}
+                // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
                 onUpdate={() => controls?.update?.()}
               >
                 <GizmoViewcube {...controlsHelper.viewcubeProps} />
@@ -266,6 +269,7 @@ export function ReactCamera({
                   }
                   return controls?.target as Vector3;
                 }}
+                // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
                 onUpdate={() => controls?.update?.()}
               >
                 <GizmoViewport {...controlsHelper.viewportProps} />

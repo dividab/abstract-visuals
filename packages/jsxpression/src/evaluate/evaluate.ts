@@ -48,7 +48,7 @@ export function evaluate<T = unknown>(source: string, schema: Schema, options: E
   const h = createH(components, createElement ?? defaultCreateElement, schema);
   const frozen = deepFreezeData(structuredClone(data));
   try {
-    // oxlint-disable-next-line typescript/no-implied-eval, no-new-func
+    // oxlint-disable-next-line typescript/no-implied-eval, no-new-func, typescript/no-unsafe-call -- constructing and invoking a `Function` from dynamic source is the whole point of this evaluator; the result is cast to T below
     return new Function("h", "Math", ...dataKeys, ...functionKeys, source)(h, Math, ...Object.values(frozen), ...Object.values(functions)) as T;
   } catch (error: unknown) {
     // We may have thrown an EvaluationError from createH()

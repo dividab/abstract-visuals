@@ -29,14 +29,18 @@ import {
 
 // oxlint-disable-next-line typescript/no-explicit-any -- component functions receive arbitrary JSX-like template props (jsxpression's own Component type is likewise untyped); typing props precisely would require rewriting every component body
 export const createComponents = (mutableImageUrls: Array<string>): Record<string, (...args: Array<any>) => any> => ({
-  AbstractImage: (props): AbstractImage => ({
-    topLeft: { x: 0, y: 0 },
-    size: { width: props.width ?? 800, height: props.height ?? 600 },
-    backgroundColor: transparent,
-    components: (props.children ?? []).flat().filter(Boolean),
-  }),
+  AbstractImage: (props): AbstractImage => {
+    const children = props.children;
+    return {
+      topLeft: { x: 0, y: 0 },
+      size: { width: props.width ?? 800, height: props.height ?? 600 },
+      backgroundColor: transparent,
+      components: Array.isArray(children) ? children.flat().filter(Boolean) : [],
+    };
+  },
   Group: (props): Group => {
-    return createGroup("", (props.children ?? []).flat().filter(Boolean));
+    const children = props.children;
+    return createGroup("", Array.isArray(children) ? children.flat().filter(Boolean) : []);
   },
   Image: (props): BinaryImage => {
     if (props.src !== undefined && typeof props.src === "string") {

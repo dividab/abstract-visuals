@@ -206,10 +206,11 @@ const groupBy: HelperFunc = {
   }),
   func: (items: ReadonlyArray<any>, key: string | number) =>
     items.reduce((result: Record<string, Array<any>>, item) => {
-      const groupKey = (typeof key === "number" ? item[key] : extractStringPath(item, key))?.toString();
-      if (groupKey === undefined) {
+      const rawKey = typeof key === "number" ? item[key] : extractStringPath(item, key);
+      if (rawKey === undefined) {
         return result;
       }
+      const groupKey = String(rawKey);
       if (result[groupKey]) {
         result[groupKey].push(item);
       } else {
