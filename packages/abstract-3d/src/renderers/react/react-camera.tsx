@@ -253,7 +253,7 @@ export function ReactCamera({
                   }
                   return controls?.target as Vector3;
                 }}
-                // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
+                // oxlint-disable-next-line typescript/no-unsafe-call typescript/no-unsafe-return -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
                 onUpdate={() => controls?.update?.()}
               >
                 <GizmoViewcube {...controlsHelper.viewcubeProps} />
@@ -269,7 +269,7 @@ export function ReactCamera({
                   }
                   return controls?.target as Vector3;
                 }}
-                // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
+                // oxlint-disable-next-line typescript/no-unsafe-call typescript/no-unsafe-return -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
                 onUpdate={() => controls?.update?.()}
               >
                 <GizmoViewport {...controlsHelper.viewportProps} />

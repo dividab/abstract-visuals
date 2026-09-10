@@ -16,7 +16,6 @@ export default defineConfig({
     "functional/prefer-readonly-type": "off", // 419 errors
     "typescript/prefer-readonly-parameter-types": "off", // 1120 errors
     "typescript/no-unsafe-assignment": "off", // 165 errors
-    "typescript/no-unsafe-return": "off", // 48 errors
     "typescript/no-unsafe-member-access": "off", // 390 errors
     "typescript/no-unsafe-type-assertion": "off", // 155 errors
     "typescript/no-unnecessary-condition": "error",

@@ -79,9 +79,9 @@ function renderChildren(element: FakeElement): Array<unknown> {
         return [];
       }
       if (Array.isArray(c)) {
-        return c.map(render);
+        return c.map(render) as Array<unknown>;
       }
-      return render(c);
+      return render(c) as unknown;
     });
   } else {
     const elements = render(element.props.children); // Markdown returns an array of elements already

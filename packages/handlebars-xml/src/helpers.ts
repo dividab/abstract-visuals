@@ -49,7 +49,7 @@ const and: HelperFunc = {
     { name: "b", description: "Any value", type: anySchema },
   ],
   returnType: bool,
-  func: (a: any, b: any): boolean => a && b,
+  func: (a: any, b: any): boolean => Boolean(a && b),
 };
 
 const or: HelperFunc = {
@@ -61,7 +61,7 @@ const or: HelperFunc = {
   ],
   returnType: bool,
   // oxlint-disable-next-line typescript/prefer-nullish-coalescing -- this implements truthy-OR semantics for template authors, not a default-value pattern
-  func: (a: any, b: any): boolean => a || b,
+  func: (a: any, b: any): boolean => Boolean(a || b),
 };
 
 const not: HelperFunc = {
@@ -243,13 +243,12 @@ const sortBy: HelperFunc = {
     },
   ],
   returnType: (...argSchemas) => argSchemas[0] ?? arraySchema,
-  func: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc") => {
-    return items.toSorted((a, b) =>
+  func: (items: ReadonlyArray<any>, path: string, order: "asc" | "desc"): ReadonlyArray<unknown> =>
+    items.toSorted((a, b) =>
       order === "desc"
         ? compare(extractStringPath(b, path), extractStringPath(a, path))
         : compare(extractStringPath(a, path), extractStringPath(b, path))
-    );
-  },
+    ) as ReadonlyArray<unknown>,
 };
 
 const arrayLength: HelperFunc = {

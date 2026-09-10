@@ -231,7 +231,7 @@ function isNodeInsideArrowFunction(targetNode: AnyNode, arrowFunction: ArrowFunc
 function getSchemaAtPath(path: Array<string>, schema: Schema): PropertySchema | null | undefined {
   const root = path[0];
   if (!schema.data || root === undefined) {
-    // oxlint-disable-next-line typescript/no-explicit-any -- this branch returns the raw schema.data record (not a PropertySchema) when no path segments remain; preserved as-is for behavior parity
+    // oxlint-disable-next-line typescript/no-explicit-any typescript/no-unsafe-return -- this branch returns the raw schema.data record (not a PropertySchema) when no path segments remain; preserved as-is for behavior parity
     return schema.data as any;
   }
 

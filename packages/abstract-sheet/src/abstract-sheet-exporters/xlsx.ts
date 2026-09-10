@@ -20,7 +20,7 @@ export function toXlsx(as: AbstractSheet): Uint8Array<ArrayBuffer> {
     type: "buffer",
     compression: true,
     cellDates: false,
-  });
+  }) as Uint8Array<ArrayBuffer>;
 
   // Remove metadata.xml to fix office repair warning
   try {

@@ -262,7 +262,7 @@ export function validateSchemaPath(
 }
 
 function getElementAccessFlags(node: MemberExpression, pathLength: number): Array<boolean> {
-  const flags = Array(pathLength).fill(false);
+  const flags = Array.from<boolean>({ length: pathLength }).fill(false);
   const segments: Array<{ property: Expression | PrivateIdentifier; computed: boolean }> = [];
 
   let current: Expression | Super = node;

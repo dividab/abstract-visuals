@@ -82,7 +82,7 @@ export function renderDynamicImage(jsString: string, data: Record<string, unknow
         data,
         functions,
         components: createComponents(imageUrls),
-      }) as AbstractImage,
+      }),
       imageUrls,
     };
   } catch (error) {
