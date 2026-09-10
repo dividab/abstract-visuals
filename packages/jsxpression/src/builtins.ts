@@ -1083,7 +1083,7 @@ export function getBuiltins(): Record<string, BuiltinSchema> {
 
 export function getBuiltinGlobals(): Array<string> {
   // oxlint-disable-next-line typescript/no-unnecessary-boolean-literal-compare
-  return Object.keys(BUILTINS).filter((name) => BUILTINS[name].global === true);
+  return Object.keys(BUILTINS).filter((name) => BUILTINS[name]?.global === true);
 }
 
 export function isAllowedOnArray(prop: string): boolean {

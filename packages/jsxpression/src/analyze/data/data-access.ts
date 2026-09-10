@@ -22,8 +22,7 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
         callee.type === "MemberExpression" &&
         !callee.computed &&
         callee.property.type === "Identifier" &&
-        args.length > 0 &&
-        args[0].type === "ArrowFunctionExpression"
+        args[0]?.type === "ArrowFunctionExpression"
       ) {
         const method = callee.property.name;
 
@@ -38,12 +37,12 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
             const parameterTypes = new Map<string, PropertySchema>();
 
             // First parameter is always the array element
-            if (arrowFunction.params[0].type === "Identifier") {
+            if (arrowFunction.params[0]?.type === "Identifier") {
               parameterTypes.set(arrowFunction.params[0].name, arrayElementType);
             }
 
             // For methods like reduce, second parameter might be index (number)
-            if (arrowFunction.params.length > 1 && arrowFunction.params[1].type === "Identifier") {
+            if (arrowFunction.params[1]?.type === "Identifier") {
               parameterTypes.set(arrowFunction.params[1].name, { type: "number" });
             }
 
@@ -75,7 +74,7 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
     MemberExpression(node) {
       if (isSimpleDataAccess(node, dataKeys)) {
         const path = extractPath(node);
-        if (dataKeys.has(path[0])) {
+        if (path[0] !== undefined && dataKeys.has(path[0])) {
           dataPaths.add(path.join("."));
         }
       }
@@ -124,7 +123,7 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
       if (isSimpleDataAccess(node, dataKeys)) {
         const path = extractPath(node);
 
-        if (dataKeys.has(path[0])) {
+        if (path[0] !== undefined && dataKeys.has(path[0])) {
           const pathString = path.join(".");
 
           if (validatablePaths.has(pathString)) {
@@ -168,7 +167,7 @@ function getArrayElementTypeFromCall(
 
   if (isSimpleDataAccess(callee, dataKeys)) {
     const path = extractPath(callee);
-    if (dataKeys.has(path[0])) {
+    if (path[0] !== undefined && dataKeys.has(path[0])) {
       const schemaPath = path.slice(0, -1); // Remove method name
       const arraySchema = getSchemaAtPath(schemaPath, schema);
 
@@ -185,6 +184,9 @@ function getArrayElementTypeFromCall(
       // e.g., ["group", "items"] or ["dept", "employees"]
       const paramName = objectPath[0];
       const propertyName = objectPath[1];
+      if (paramName === undefined || propertyName === undefined) {
+        return null;
+      }
 
       // Find the arrow function context that defines this parameter
       const parameterType = resolveParameterType(paramName, node, arrowFunctionContexts);
@@ -227,16 +229,21 @@ function isNodeInsideArrowFunction(targetNode: AnyNode, arrowFunction: ArrowFunc
 }
 
 function getSchemaAtPath(path: Array<string>, schema: Schema): PropertySchema | null | undefined {
-  if (!schema.data || path.length === 0) {
+  const root = path[0];
+  if (!schema.data || root === undefined) {
     // oxlint-disable-next-line typescript/no-explicit-any -- this branch returns the raw schema.data record (not a PropertySchema) when no path segments remain; preserved as-is for behavior parity
     return schema.data as any;
   }
 
-  let current = schema.data[path[0]];
+  let current = schema.data[root];
 
   for (let i = 1; i < path.length && current; i++) {
+    const prop = path[i];
+    if (prop === undefined) {
+      return undefined;
+    }
     if (current.type === "object" && current.shape) {
-      current = current.shape[path[i]];
+      current = current.shape[prop];
     } else {
       return null;
     }

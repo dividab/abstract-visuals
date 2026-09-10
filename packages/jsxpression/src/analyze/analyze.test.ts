@@ -99,6 +99,15 @@ describe("analyze - consolidated tests", () => {
         expect(result.hasErrors).toBe(true);
         expect(result.errors[0].message).toContain("Property 'user.profile.invalid' does not exist in schema");
       });
+
+      it("should report a missing intermediate property and continue analyzing other paths", () => {
+        const ast = parse("<Text>{user.missing.name}{user.profile.invalid}</Text>");
+        const result = analyze(ast, baseSchema);
+        expect(result.errors.map((error) => error.message)).toEqual([
+          "Property 'user.missing' does not exist in schema",
+          "Property 'user.profile.invalid' does not exist in schema",
+        ]);
+      });
     });
 
     describe("array access", () => {

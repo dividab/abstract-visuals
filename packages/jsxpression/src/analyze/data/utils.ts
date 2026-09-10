@@ -75,13 +75,18 @@ export function getAvailablePropsAtPath(path: Array<string>, depth: number, sche
     return Object.keys(schemaData);
   }
 
-  let current: PropertySchema | undefined = schemaData[path[0]];
+  const root = path[0];
+  if (root === undefined) {
+    return [];
+  }
+  let current: PropertySchema | undefined = schemaData[root];
 
   for (let i = 1; i <= depth; i++) {
-    if (current?.type !== "object" || !current.shape) {
+    const prop = path[i];
+    if (prop === undefined || current?.type !== "object" || !current.shape) {
       return [];
     }
-    current = current.shape[path[i]];
+    current = current.shape[prop];
   }
 
   if (current?.type === "object" && current.shape) {
@@ -99,7 +104,8 @@ export function validateSchemaPath(
   validationContext: ValidationContext
 ): void {
   const schemaData = schema.data;
-  if (!schemaData || path.length === 0) {
+  const root = path[0];
+  if (!schemaData || root === undefined) {
     analysisReport.addIssue(
       "INVALID_DATA_ACCESS",
       "Invalid data access - no schema data available",
@@ -110,12 +116,12 @@ export function validateSchemaPath(
     return;
   }
 
-  let current = schemaData[path[0]];
+  let current = schemaData[root];
 
   if (!current) {
     analysisReport.addIssue(
       "INVALID_DATA_ACCESS",
-      `Property '${path[0]}' does not exist in schema`,
+      `Property '${root}' does not exist in schema`,
       getNodeRange(node),
       validationContext.getSnapshot(),
       Object.keys(schemaData)
@@ -127,6 +133,9 @@ export function validateSchemaPath(
 
   for (let i = 1; i < path.length; i++) {
     const prop = path[i];
+    if (prop === undefined) {
+      return;
+    }
     const isElementAccess = elementAccessFlags[i - 1];
 
     if (current.type === "array") {
@@ -146,7 +155,7 @@ export function validateSchemaPath(
         return;
       }
 
-      const elementType = current.shape || null;
+      const elementType: PropertySchema | null = current.shape || null;
 
       if (!elementType) {
         analysisReport.addIssue(
@@ -160,7 +169,7 @@ export function validateSchemaPath(
       }
 
       if (elementType.type === "object" && elementType.shape) {
-        const next = elementType.shape[prop];
+        const next: PropertySchema | undefined = elementType.shape[prop];
 
         if (!next) {
           const paths = path.slice(0, i + 1);
@@ -260,6 +269,7 @@ export function validateSchemaPath(
         validationContext.getSnapshot(),
         availableProps
       );
+      return;
     }
   }
 }

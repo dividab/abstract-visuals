@@ -18,7 +18,7 @@ interface IssueDefinition {
   custom: boolean;
 }
 
-const ISSUES_DEFINITIONS: Record<string, IssueDefinition> = {
+const ISSUES_DEFINITIONS = {
   VARIABLE_NOT_ALLOWED: {
     severity: 3,
     custom: true,
@@ -163,7 +163,7 @@ const ISSUES_DEFINITIONS: Record<string, IssueDefinition> = {
     severity: 3,
     custom: true,
   },
-} as const;
+} as const satisfies Record<string, IssueDefinition>;
 
 export type IssueCode = keyof typeof ISSUES_DEFINITIONS;
 

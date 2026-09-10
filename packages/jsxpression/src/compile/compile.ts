@@ -54,7 +54,7 @@ export function compile(ast: Program): string {
       parts.push(`return ${emitJsxRoot(statement.expression, localFunctions)};`);
     } else if (!hasDeclarations && statement.type === "BlockStatement" && statement.body.length === 1) {
       const innerStatement = statement.body[0];
-      if (innerStatement.type === "ExpressionStatement") {
+      if (innerStatement?.type === "ExpressionStatement") {
         const syntheticContainer = {
           type: "JSXExpressionContainer" as const,
           expression: innerStatement.expression as CompilableExpression,
@@ -156,7 +156,7 @@ function emitAttributes(attributes: Array<JSXAttribute | JSXSpreadAttribute>, lo
   }
 
   if (parts.length === 1) {
-    return parts[0];
+    return parts[0] ?? "null";
   }
 
   return `Object.assign({}, ${parts.join(", ")})`;
@@ -197,8 +197,9 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
       const bits: Array<string> = [];
       node.quasis.forEach((quasi, index) => {
         bits.push(JSON.stringify(quasi.value.cooked ?? ""));
-        if (node.expressions.length > index) {
-          bits.push(`+(${emitExpression(node.expressions[index], localFunctions)})+`);
+        const expression = node.expressions[index];
+        if (expression !== undefined) {
+          bits.push(`+(${emitExpression(expression, localFunctions)})+`);
         }
       });
       return bits.join("").replace(TRAILING_PLUS_RX, "") || '""';

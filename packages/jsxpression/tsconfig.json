@@ -5,8 +5,7 @@
   "typeRoots": ["src/@types", "node_modules/@types"],
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
-    "noUncheckedIndexedAccess": false
+    "rootDir": "src"
   },
   "references": []
 }

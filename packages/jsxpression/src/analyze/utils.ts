@@ -48,11 +48,10 @@ export function getAttributeSimilarityMatchers(invalid: string, available: Array
 export function getBestSimilarityMatcherSuggestion(invalid: string, available: Array<string>): string | null {
   const similarityMatchers = getElementSimilarityMatchers(invalid, available);
 
-  if (similarityMatchers.length === 0) {
+  const best = similarityMatchers[0];
+  if (best === undefined) {
     return null;
   }
-
-  const best = similarityMatchers[0];
 
   if (best.confidence > 0.6) {
     return best.suggestion;
@@ -102,23 +101,25 @@ function levenshteinDistance(x: string, y: string): number {
 
   const matrix: Array<Array<number>> = [];
 
+  // Every indexed row and cell below is initialized before it is read.
+
   for (let i = 0; i <= y.length; i++) {
     matrix[i] = [i];
   }
 
   for (let j = 0; j <= x.length; j++) {
-    matrix[0][j] = j;
+    matrix[0]![j] = j;
   }
 
   for (let i = 1; i <= y.length; i++) {
     for (let j = 1; j <= x.length; j++) {
       if (y.charAt(i - 1) === x.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
+        matrix[i]![j] = matrix[i - 1]![j - 1]!;
       } else {
-        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j] + 1);
+        matrix[i]![j] = Math.min(matrix[i - 1]![j - 1]! + 1, matrix[i]![j - 1]! + 1, matrix[i - 1]![j]! + 1);
       }
     }
   }
 
-  return matrix[y.length][x.length];
+  return matrix[y.length]![x.length]!;
 }

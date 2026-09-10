@@ -20,7 +20,7 @@ export function analyzeMethodCalls(ast: Program, schema: Schema, validationConte
 
         if (isSimpleDataAccess(callee, dataKeys)) {
           const path = extractPath(callee);
-          if (dataKeys.has(path[0])) {
+          if (path[0] !== undefined && dataKeys.has(path[0])) {
             const schemaPath = path.slice(0, -1);
             if (schemaPath.length > 0) {
               validateSchemaPath(schemaPath, schema, analysisReport, callee, validationContext);
