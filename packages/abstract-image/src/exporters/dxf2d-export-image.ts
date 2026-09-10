@@ -542,30 +542,24 @@ function stripBlocks(blocks: string, blocksToStrip: ReadonlyArray<string>): stri
 
   let currentBlock: Array<string> = [];
   let currentBlockName = undefined;
-  let i = 0;
-  while (i < b.length) {
-    if (b[i] === "0" && b[i + 1] === "BLOCK") {
-      if (i !== 0) {
-        if (currentBlockName && !s.has(currentBlockName)) {
-          validBlocks.push(...currentBlock);
-          currentBlock = [];
-          currentBlockName = undefined;
-        } else {
-          currentBlock = [];
-          currentBlockName = undefined;
+  for (let i = 0; i < b.length; i++) {
+    const line = b[i];
+    if (line === undefined) {
+      continue;
+    }
+    if (line === "0" && b[i + 1] === "BLOCK") {
+      if (currentBlockName && !s.has(currentBlockName)) {
+        // Blocks can exceed the argument limit for spreading into push.
+        for (const item of currentBlock) {
+          validBlocks.push(item);
         }
       }
-
-      currentBlock.push(b[i], b[i + 1]);
-      i += 2;
-    } else if (b[i] === "2") {
+      currentBlock = [];
+      currentBlockName = undefined;
+    } else if (line === "2") {
       currentBlockName = b[i + 1];
-      currentBlock.push(b[i]);
-      i += 1;
-    } else {
-      currentBlock.push(b[i]);
-      i++;
     }
+    currentBlock.push(line);
   }
 
   if (currentBlockName && !s.has(currentBlockName)) {
@@ -598,14 +592,14 @@ function extractEntities(dxf: string): string | undefined {
 
 function extractBlockRecords(dxf: string): ReadonlyArray<BlockRecord> {
   return [...dxf.matchAll(/^\s*0\s*\n\s*BLOCK_RECORD[\s\S]*?\n\s*5\s*\n\s*([0-9A-Fa-f]+)[\s\S]*?\n\s*2\s*\n\s*([^\r\n]+)/gm)].map((match) => ({
-    name: match[2],
-    id: match[1],
+    name: match[2] ?? "",
+    id: match[1] ?? "",
   }));
 }
 
 function extractBlocks(dxf: string, newModelSpace: string, newPaperSpace: string): string {
   const blockMatch = /0\s+SECTION\s+2\s+BLOCKS\s+([\s\S]*?)0\s+ENDSEC/m.exec(dxf);
-  if (blockMatch === null) {
+  if (blockMatch?.[1] === undefined) {
     return "";
   }
 
@@ -657,7 +651,11 @@ function remapHandleIds(
     let i = 0;
     let inEntityHeader = false;
     while (i < lines.length) {
-      const groupCode = lines[i].trim();
+      const line = lines[i];
+      if (line === undefined) {
+        break;
+      }
+      const groupCode = line.trim();
       const next = (lines[i + 1] ?? "").trim();
 
       if (groupCode === "0" && ents.has(next)) {
@@ -669,7 +667,7 @@ function remapHandleIds(
       }
 
       if (inEntityHeader && i + 1 < lines.length && handleGroupCodes.has(groupCode)) {
-        const value = lines[i + 1].trim();
+        const value = next;
         if (/^[0-9A-Fa-f]+$/.test(value)) {
           out.push(groupCode);
 
@@ -685,7 +683,7 @@ function remapHandleIds(
           continue;
         }
       }
-      out.push(lines[i]);
+      out.push(line);
       i++;
     }
     return out.join("\n");
@@ -709,7 +707,14 @@ function scaleDxf(dxfString: string | undefined, sx: number, sy: number, _height
   let currentAcDbEntity = "";
   for (let i = 0; i < lines.length; i += 2) {
     const codeLine = lines[i];
+    if (codeLine === undefined) {
+      break;
+    }
     const valueLine = lines[i + 1];
+    if (valueLine === undefined) {
+      scaledLines.push(codeLine);
+      break;
+    }
 
     if (codeLine === "100") {
       currentAcDbEntity = valueLine;

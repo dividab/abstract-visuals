@@ -104,6 +104,9 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       const id = makeIdAttr(component.id);
       if (component.data.type === "url") {
         const data = options.imageDataByUrl[component.data.url];
+        if (data === undefined) {
+          return <></>;
+        }
         if (typeof data === "string") {
           return <image x={x} y={y} width={width} height={height} id={id} href={data} />;
         }

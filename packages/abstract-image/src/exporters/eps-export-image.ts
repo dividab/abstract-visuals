@@ -66,16 +66,20 @@ function epsExportComponent(c: Component, height: number, characterEncoding: Cha
       ]);
     }
     case "polygon": {
+      const firstPoint = c.points[0];
+      if (firstPoint === undefined) {
+        return [];
+      }
       return [
         ...getColored(c.fillColor, [
-          `${c.points[0].x} ${height - c.points[0].y} moveto`,
+          `${firstPoint.x} ${height - firstPoint.y} moveto`,
           ...c.points.map((p) => `${p.x} ${height - p.y} lineto`),
           "closepath",
           `${c.strokeThickness} setlinewidth`,
           "fill",
         ]),
         ...getColored(c.strokeColor, [
-          `${c.points[0].x} ${height - c.points[0].y} moveto`,
+          `${firstPoint.x} ${height - firstPoint.y} moveto`,
           ...c.points.map((p) => `${p.x} ${height - p.y} lineto`),
           "closepath",
           "stroke",
@@ -83,8 +87,12 @@ function epsExportComponent(c: Component, height: number, characterEncoding: Cha
       ];
     }
     case "polyline": {
+      const firstPoint = c.points[0];
+      if (firstPoint === undefined) {
+        return [];
+      }
       return getColored(c.strokeColor, [
-        `${c.points[0].x} ${height - c.points[0].y} moveto`,
+        `${firstPoint.x} ${height - firstPoint.y} moveto`,
         ...c.points.map((p) => `${p.x} ${height - p.y} lineto`),
         `${c.strokeThickness} setlinewidth`,
         "stroke",
