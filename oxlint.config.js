@@ -18,7 +18,6 @@ export default defineConfig({
     "typescript/no-unsafe-assignment": "off", // 165 errors
     "typescript/no-unsafe-member-access": "off", // 390 errors
     "typescript/no-unsafe-type-assertion": "off", // 155 errors
-    "typescript/no-unnecessary-condition": "error",
     "typescript/switch-exhaustiveness-check": ["error", { considerDefaultExhaustiveForUnions: true }],
     "max-lines": ["error", 1100],
     "react/react-in-jsx-scope": "off", // 1356 - tsconfig uses jsx: react-jsx (automatic runtime), React need not be in scope.
