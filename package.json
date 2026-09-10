@@ -19,6 +19,7 @@
     "clean": "tsc -b packages --clean && rm -rf packages/*/lib",
     "cleanbuild": "run-s clean build",
     "build": "tsc -b packages",
+    "update-refs": "node --experimental-strip-types scripts/update-refs.ts",
     "build-watch": "tsc -b -w --preserveWatchOutput packages",
     "start": "cd packages/abstract-visuals-example && vite",
     "storybook": "start-storybook -p 6006 --ci",
