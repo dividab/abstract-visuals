@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
 
     // Interop
     "skipLibCheck": true,

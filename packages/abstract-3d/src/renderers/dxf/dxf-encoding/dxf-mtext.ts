@@ -1,17 +1,19 @@
 import type { Vec3 } from "../../../abstract-3d.js";
 import { DXF_FONT_SIZE_RATIO, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 
-export enum DxfMTextAttachment {
-  TopLeft = 1,
-  TopCenter = 2,
-  TopRight = 3,
-  MiddleLeft = 4,
-  MiddleCenter = 5,
-  MiddleRight = 6,
-  BottomLeft = 7,
-  BottomCenter = 8,
-  BottomRight = 9,
-}
+// oxlint-disable-next-line no-redeclare -- value + type share a name, the standard enum-replacement pattern (erasableSyntaxOnly forbids enum)
+export const DxfMTextAttachment = {
+  TopLeft: 1,
+  TopCenter: 2,
+  TopRight: 3,
+  MiddleLeft: 4,
+  MiddleCenter: 5,
+  MiddleRight: 6,
+  BottomLeft: 7,
+  BottomCenter: 8,
+  BottomRight: 9,
+} as const;
+export type DxfMTextAttachment = (typeof DxfMTextAttachment)[keyof typeof DxfMTextAttachment];
 
 export function dxfEncMText(
   pos: Vec3,

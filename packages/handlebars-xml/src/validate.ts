@@ -3,10 +3,12 @@ import { XMLValidator } from "fast-xml-parser";
 import type { XmlElement } from "./parse.js";
 import { parseXml, findElement } from "./parse.js";
 
-enum ErrorType {
-  warning = 0,
-  error = 1,
-}
+// oxlint-disable-next-line no-redeclare -- value + type share a name, the standard enum-replacement pattern (erasableSyntaxOnly forbids enum)
+const ErrorType = {
+  warning: 0,
+  error: 1,
+} as const;
+type ErrorType = (typeof ErrorType)[keyof typeof ErrorType];
 
 type Range = {
   readonly startLineNumber: number;

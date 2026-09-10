@@ -8,16 +8,20 @@ import { ERROR_IMG_KEY, getColor, materialDefaults, selectMat } from "./react-ma
 
 export const planeGeometry = new PlaneGeometry();
 
-export enum MinificationFilter {
-  Nearest = 1003,
-  Linear = 1006,
-  LinearMipmap = 1008,
-}
+// oxlint-disable-next-line no-redeclare -- value + type share a name, the standard enum-replacement pattern (erasableSyntaxOnly forbids enum)
+export const MinificationFilter = {
+  Nearest: 1003,
+  Linear: 1006,
+  LinearMipmap: 1008,
+} as const;
+export type MinificationFilter = (typeof MinificationFilter)[keyof typeof MinificationFilter];
 
-export enum MagnificationFilter {
-  Nearest = 1003,
-  Linear = 1006,
-}
+// oxlint-disable-next-line no-redeclare -- value + type share a name, the standard enum-replacement pattern (erasableSyntaxOnly forbids enum)
+export const MagnificationFilter = {
+  Nearest: 1003,
+  Linear: 1006,
+} as const;
+export type MagnificationFilter = (typeof MagnificationFilter)[keyof typeof MagnificationFilter];
 
 export type TextureFilter = {
   readonly min: MinificationFilter;

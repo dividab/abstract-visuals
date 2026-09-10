@@ -1,6 +1,6 @@
 {
   //dummy
-  "extends": "../../tsconfig.settings.json",
+  "extends": "../../tsconfig.base.json",
   "include": ["src/**/*"],
   "exclude": ["./vite.config.ts"],
   "compilerOptions": {

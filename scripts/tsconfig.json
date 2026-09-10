@@ -1,12 +1,11 @@
 {
-  "extends": "./tsconfig.settings.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "composite": false,
     "declaration": false,
     "declarationMap": false,
     "types": ["node"],
-    "noEmit": true,
-    "erasableSyntaxOnly": true
+    "noEmit": true
   },
-  "include": ["scripts/**/*.ts"]
+  "include": ["**/*.ts"]
 }

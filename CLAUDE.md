@@ -8,7 +8,8 @@ pnpm workspace managed with [lerna](https://lerna.js.org/). Build = TS project r
 - `packages/abstract-visuals-example`: storybook/vite example app, not published
 - `packages/{handlebars-xml,jsxpression}`: supporting packages (XML templating, JS expression parsing)
 - `packages/tsconfig.json`: TS project references list — keep in sync with `packages/*` when adding/removing a package
-- `tsconfig.settings.json`: shared TypeScript compiler settings for packages and root scripts; root `tsconfig.json` checks `scripts/**/*.ts`
+- `tsconfig.base.json`: shared TypeScript compiler settings, extended by `packages/*/tsconfig.json` and `scripts/tsconfig.json`
+- `scripts/tsconfig.json`: checks `scripts/**/*.ts` (root scripts, not part of the `packages` build)
 
 ## Style
 

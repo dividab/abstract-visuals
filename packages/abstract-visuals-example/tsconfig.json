@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.settings.json",
+  "extends": "../../tsconfig.base.json",
   "exclude": ["./vite.config.ts"],
   "include": ["src"],
   "compilerOptions": {

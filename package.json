@@ -20,7 +20,7 @@
     "cleanbuild": "run-s clean build",
     "build": "tsc -b packages",
     "update-refs": "node --experimental-strip-types scripts/update-refs.ts",
-    "typecheck:scripts": "tsc -p tsconfig.json",
+    "typecheck:scripts": "tsc -p scripts/tsconfig.json",
     "build-watch": "tsc -b -w --preserveWatchOutput packages",
     "start": "cd packages/abstract-visuals-example && vite",
     "storybook": "start-storybook -p 6006 --ci",
