@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.1] - 2026-09-14
+
+- Fixed: `<ColInfo>`/`<RowInfo>` XML template elements' `widthPixels`/`heightPixels`/`hidden` attributes are now parsed into real numbers/booleans instead of staying raw strings; previously a non-empty string was never falsy/nullish, so the default width/height fallback never applied and `hidden="false"` was written to the spreadsheet as hidden.
+- Fixed: `<Cell>`'s boolean attribute is now read as `bool`, matching the XSD; it was previously read as `boolean`, so a schema-valid `<Cell bool="true"/>` silently produced an empty string cell instead of a boolean cell.
+
 ## [1.3.0] - 2026-09-10
 
 - Changed: an XML template attribute written without a value (e.g. `<Cell boolean>` instead of `boolean="true"`) no longer takes effect — see handlebars-xml's changelog for why; always give attributes an explicit value.

@@ -17,7 +17,7 @@ import {
   TocSeparator,
   ImageResource,
 } from "../../abstract-document/index.js";
-import type { TextRowProps, TextCellProps, TextParagraphProps, ImageCellProps, ImageParagraphProps, ImageRowProps } from "./custom-elements.js";
+import type { ImageCellProps, ImageParagraphProps, ImageRowProps } from "./custom-elements.js";
 import { TextRow, TextCell, TextParagraph, ImageCell, ImageParagraph, ImageRow } from "./custom-elements.js";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
@@ -27,22 +27,23 @@ export const creators: (styleNames: Record<string, string>) => Record<string, AD
     AbstractDoc: ((props, children: ReadonlyArray<Section.Section>) => AbstractDoc.create(props, children)) as ADCreatorFn,
     Section: ((props, children: ReadonlyArray<SectionElement.SectionElement>) => Section.create(props, children)) as ADCreatorFn,
     Paragraph: ((props, children: ReadonlyArray<Atom.Atom>) => Paragraph.create(props, children)) as ADCreatorFn,
-    TextRow: ((props: TextRowProps) => TextRow(props, styleNames)) as ADCreatorFn,
-    TextCell: ((props: TextCellProps) => TextCell(props, styleNames)) as ADCreatorFn,
-    TextParagraph: ((props: TextParagraphProps) => TextParagraph(props, styleNames)) as ADCreatorFn,
-    TextRun: (props) => TextRun.create(props as unknown as TextRun.TextRunProps),
+    TextRow: (props) => TextRow({ ...props, text: requireText(props) }, styleNames),
+    TextCell: (props) => TextCell({ ...props, text: requireText(props) }, styleNames),
+    TextParagraph: (props) => TextParagraph({ ...props, text: requireText(props) }, styleNames),
+    TextRun: (props) => TextRun.create({ ...props, text: requireText(props) }),
     ImageRow: ((props: Record<string, unknown>) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames)) as ADCreatorFn,
     ImageCell: ((props: Record<string, unknown>) => ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames)) as ADCreatorFn,
     ImageParagraph: ((props: Record<string, unknown>) =>
       ImageParagraph(imageProps(props) as unknown as ImageParagraphProps, styleNames)) as ADCreatorFn,
     Image: ((props: Record<string, unknown>) => Image.create(imageProps(props) as unknown as Image.ImageProps)) as ADCreatorFn,
-    Table: ((props, children: ReadonlyArray<TableRow.TableRow>) => Table.create(props as unknown as Table.TableProps, children)) as ADCreatorFn,
+    Table: ((props, children: ReadonlyArray<TableRow.TableRow>) =>
+      Table.create({ ...props, columnWidths: props?.["columnWidths"] ?? [] } as unknown as Table.TableProps, children)) as ADCreatorFn,
     TableRow: ((props, children: ReadonlyArray<TableCell.TableCell>) => TableRow.create(props, children)) as ADCreatorFn,
     TableCell: ((props, children: ReadonlyArray<SectionElement.SectionElement>) => TableCell.create(props, children)) as ADCreatorFn,
-    TextField: (props) => TextField.create(props as unknown as TextField.TextFieldProps),
-    Group: (props, children) => Group.create(props, children as ReadonlyArray<Group.Group>),
+    TextField: (props) => TextField.create({ ...props, fieldType: requireFieldType(props) }),
+    Group: (props, children) => Group.create(props, children as ReadonlyArray<SectionElement.SectionElement>),
     PageBreak: () => PageBreak.create(),
-    Markdown: (props) => Markdown.create(props as unknown as Markdown.MarkdownProps),
+    Markdown: (props) => Markdown.create({ ...props, text: requireText(props) }),
     TocSeparator: (props) => TocSeparator.create(props as TocSeparator.TocSeparatorProps),
   };
 };
@@ -339,6 +340,21 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   keepTogether: ((props: { readonly keepTogether: string }): unknown => strToBool(props.keepTogether)) as ADCreatorFn,
   differentFirstPage: ((props: { readonly differentFirstPage: string }): unknown => strToBool(props.differentFirstPage)) as ADCreatorFn,
 };
+
+function requireText(props: Record<string, unknown> | undefined): string {
+  const text = props?.["text"];
+  return typeof text === "string" ? text : "";
+}
+
+const validFieldTypes: ReadonlyArray<TextField.FieldType> = ["Date", "PageNumber", "TotalPages", "PageNumberOf"];
+
+function requireFieldType(props: Record<string, unknown> | undefined): TextField.FieldType {
+  const fieldType = props?.["fieldType"];
+  if (validFieldTypes.includes(fieldType as TextField.FieldType)) {
+    return fieldType as TextField.FieldType;
+  }
+  throw new Error(`<TextField> requires a "fieldType" attribute of ${validFieldTypes.join(", ")}, got: ${String(fieldType)}`);
+}
 
 const zero = createPoint(0, 0);
 const size = createSize(0, 0);

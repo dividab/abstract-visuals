@@ -1,7 +1,7 @@
 import type { XmlElement } from "handlebars-xml";
 import { parseHandlebarsXml, parseXsd } from "handlebars-xml";
 import { xsd } from "../abstract-sheet/abstract-sheet-xsd.js";
-import type { ColInfos, Cells, RowInfos, Sheet, Style, Styles, AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
+import type { ColInfo, ColInfos, Cells, RowInfo, RowInfos, Sheet, Style, Styles, AbstractSheet } from "../abstract-sheet/abstract-sheet.js";
 import { borderStyleRecord } from "../abstract-sheet/abstract-sheet.js";
 
 export const abstractSheetXml = (template: string, data: unknown, partials: Record<string, string>): AbstractSheet =>
@@ -52,11 +52,17 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
     case "ColInfos":
       return children;
     case "ColInfo":
-      return el.attributes;
+      return {
+        hidden: strToBool(el.attributes["hidden"]),
+        widthPixels: strToNum(el.attributes["widthPixels"]),
+      } satisfies ColInfo;
     case "RowInfos":
       return children;
     case "RowInfo":
-      return el.attributes;
+      return {
+        hidden: strToBool(el.attributes["hidden"]),
+        heightPixels: strToNum(el.attributes["heightPixels"]),
+      } satisfies RowInfo;
     case "Cells":
       return children;
     case "Cell": {
@@ -65,8 +71,8 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
         const parsedNumber = Number(el.attributes["number"]);
         const num = Number.isNaN(parsedNumber) ? el.attributes["number"] : parsedNumber;
         return { ...el.attributes, type: "number", value: num, styles };
-      } else if (el.attributes["boolean"] !== undefined) {
-        return { ...el.attributes, type: "boolean", value: el.attributes["boolean"], styles };
+      } else if (el.attributes["bool"] !== undefined) {
+        return { ...el.attributes, type: "boolean", value: el.attributes["bool"], styles };
       } else if (el.attributes["date"] !== undefined) {
         return { ...el.attributes, type: "date", value: el.attributes["date"], styles };
       } else {
@@ -124,5 +130,15 @@ function abstractSheetXmlRecursive(el: XmlElement): unknown {
       throw new Error(`Could not find creator for element with name ${el.tagName}`);
   }
 }
+
+const strToBool = (str: string | undefined): boolean | undefined => (str === undefined ? undefined : str === "true" || str === "1");
+
+const strToNum = (str: string | undefined): number | undefined => {
+  if (str === undefined) {
+    return undefined;
+  }
+  const num = Number(str);
+  return Number.isFinite(num) ? num : undefined;
+};
 
 export const parsedXsd = parseXsd(xsd);

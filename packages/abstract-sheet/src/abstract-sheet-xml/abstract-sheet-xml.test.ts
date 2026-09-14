@@ -19,9 +19,25 @@ describe("abstractSheetXml", () => {
       {}
     );
     const [sheet] = result.sheets;
-    expect(sheet.colInfo).toEqual([{ widthPixels: "100" }]);
-    expect(sheet.rowInfo).toEqual([{ heightPixels: "20" }]);
+    expect(sheet.colInfo).toEqual([{ widthPixels: 100 }]);
+    expect(sheet.rowInfo).toEqual([{ heightPixels: 20 }]);
     expect(sheet.cells).toEqual([[{ text: "hello", type: "string", value: "hello", styles: undefined }]]);
+  });
+
+  it('coerces ColInfo/RowInfo hidden to a real boolean, not the truthy string "false"', () => {
+    const result = abstractSheetXml(
+      '<AbstractSheet><Sheet name="Sheet1"><ColInfos><ColInfo hidden="false" /></ColInfos><RowInfos><RowInfo hidden="true" /></RowInfos><Cells></Cells></Sheet></AbstractSheet>',
+      {},
+      {}
+    );
+    const [sheet] = result.sheets;
+    expect(sheet.colInfo).toEqual([{ hidden: false }]);
+    expect(sheet.rowInfo).toEqual([{ hidden: true }]);
+  });
+
+  it('parses a Cell\'s "bool" attribute (matching the XSD) as a boolean-typed cell', () => {
+    const result = abstractSheetXml('<AbstractSheet><Sheet name="Sheet1"><Cells><Cell bool="true" /></Cells></Sheet></AbstractSheet>', {}, {});
+    expect(result.sheets[0]?.cells).toEqual([[{ bool: "true", type: "boolean", value: "true", styles: undefined }]]);
   });
 
   it("handles a Sheet with no children at all", () => {

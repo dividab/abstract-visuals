@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.2.1] - 2026-09-14
+
+- Fixed: a `<Table>` XML template element without a `columnWidths` attribute no longer crashes PDF export (`Cannot read properties of undefined (reading 'filter')`); it now renders with zero fixed-width columns instead.
+- Fixed: `<TextRun>`/`<TextRow>`/`<TextCell>`/`<TextParagraph>`/`<Markdown>` XML template elements without a `text` attribute no longer crash (`.replaceAll`/iteration on `undefined`); the text now defaults to an empty string.
+- Fixed: `<TextField>` with a missing or invalid `fieldType` attribute now throws a clear error at document-build time instead of silently producing wrong layout measurements.
+
 ## [20.2.0] - 2026-09-10
 
 - Changed: an XML template attribute written without a value (e.g. `<TextRun bold>` instead of `bold="true"`) no longer sets it — this was an undocumented side effect of a handlebars-xml parsing quirk (see its changelog); always give attribute values explicitly, which was already the only supported form.

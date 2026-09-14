@@ -1,7 +1,35 @@
 import { describe, test, expect } from "vitest";
+import { exportToBytes } from "../../abstract-document-exporters/pdf/render.js";
 import { abstractDocXml } from "../abstract-doc-of-xml/abstract-doc-of-xml.js";
 
 describe("creator.ts propsCreators", () => {
+  test("Table without a columnWidths attribute exports instead of throwing on undefined.filter", async () => {
+    const [doc] = abstractDocXml(
+      '<AbstractDoc><Section><Table><TableRow><TableCell><Paragraph><TextRun text="cell"/></Paragraph></TableCell></TableRow></Table></Section></AbstractDoc>',
+      {},
+      {}
+    );
+    await expect(exportToBytes(doc)).resolves.toBeInstanceOf(Uint8Array);
+  });
+
+  test("TextRun without a text attribute defaults to an empty string instead of throwing on undefined.replaceAll", () => {
+    const [doc] = abstractDocXml("<AbstractDoc><Section><Paragraph><TextRun/></Paragraph></Section></AbstractDoc>", {}, {});
+    const textRun = (doc as unknown as { children: Array<{ children: Array<{ children: Array<{ text: unknown }> }> }> }).children[0]?.children[0]
+      ?.children[0];
+    expect(textRun?.text).toBe("");
+  });
+
+  test("Markdown without a text attribute defaults to an empty string instead of throwing inside Markdown.create", () => {
+    expect(() => abstractDocXml("<AbstractDoc><Section><Markdown/></Section></AbstractDoc>", {}, {})).not.toThrow();
+  });
+
+  test("TextField with a missing/invalid fieldType throws a clear error instead of silently mis-measuring", () => {
+    expect(() => abstractDocXml("<AbstractDoc><Section><Paragraph><TextField/></Paragraph></Section></AbstractDoc>", {}, {})).toThrow(/fieldType/);
+    expect(() =>
+      abstractDocXml('<AbstractDoc><Section><Paragraph><TextField fieldType="NotAThing"/></Paragraph></Section></AbstractDoc>', {}, {})
+    ).toThrow(/fieldType/);
+  });
+
   test("columnWidths: parses a comma list, treats 0/NaN as Infinity, and applies columnMultiplier", () => {
     const [doc] = abstractDocXml(
       '<AbstractDoc><Section><Table columnWidths="10,0,abc" columnMultiplier="2"><TableRow /></Table></Section></AbstractDoc>',
