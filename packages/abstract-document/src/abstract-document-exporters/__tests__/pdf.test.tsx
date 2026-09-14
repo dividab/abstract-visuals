@@ -137,7 +137,7 @@ describe("export pdf", () => {
       // pdf2json requires an unpooled buffer, as in the fixture tests below.
       const parserBuffer = Buffer.alloc(buffer.length);
       buffer.copy(parserBuffer);
-      outputs.push(await getJsonFromPdf(parserBuffer));
+      outputs.push(neutralizeVolatileMeta(await getJsonFromPdf(parserBuffer)));
     }
     expect(diffJson(outputs[0], outputs[1])).toBe("");
   });
@@ -266,6 +266,21 @@ describe("export pdf", () => {
       });
     });
 });
+
+// pdfkit stamps Info.CreationDate with the wall-clock time of export (pdfkit.js: `CreationDate: new Date()`),
+// so two exports of otherwise-identical content can legitimately disagree by a second or more under load
+// (observed in CI, not locally). Blank it out before an exact-JSON diff between two live exports.
+function neutralizeVolatileMeta(parsed: unknown): unknown {
+  const meta = (parsed as { Meta?: Record<string, unknown> }).Meta;
+  if (meta) {
+    for (const key of ["CreationDate", "ModDate"]) {
+      if (key in meta) {
+        meta[key] = "*";
+      }
+    }
+  }
+  return parsed;
+}
 
 function getJsonFromPdf(pdfBuffer: Buffer): Promise<unknown> {
   return new Promise((resolve, reject) => {
