@@ -501,7 +501,7 @@ function measureText(
     ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
   };
 
-  let transformedText = `${text}`;
+  let transformedText = text;
   switch(textStyle.transform) {
     case "lowercase":
       transformedText = transformedText.toLowerCase();
