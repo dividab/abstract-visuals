@@ -120,13 +120,12 @@ describe("abstract-doc-xml", () => {
     });
   });
 
-  test("LinkTarget, LineBreak, and both ToC separator spellings create atoms", () => {
+  test("LinkTarget, LineBreak, and TocSeparator create atoms", () => {
     const [doc] = abstractDocXml(
       `<AbstractDoc><Section><Paragraph>
         <LinkTarget name="chapter"/>
         <LineBreak styleName="break"><style bold="true"/></LineBreak>
         <TocSeparator width="7"/>
-        <TocSeperator width="9"/>
       </Paragraph></Section></AbstractDoc>`,
       {},
       {}
@@ -138,7 +137,6 @@ describe("abstract-doc-xml", () => {
         { type: "LinkTarget", name: "chapter" },
         { type: "LineBreak", styleName: "break", style: { type: "TextStyle", bold: true } },
         { type: "TocSeparator", width: 7 },
-        { type: "TocSeparator", width: 9 },
       ],
     });
   });

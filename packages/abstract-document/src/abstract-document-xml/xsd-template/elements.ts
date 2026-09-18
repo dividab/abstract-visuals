@@ -149,8 +149,7 @@ export const paragraph = `<xs:complexType name="Paragraph">
 		<xs:element name="HyperLink" type="HyperLink" minOccurs="0" maxOccurs="unbounded"></xs:element>
 		<xs:element name="LinkTarget" type="LinkTarget" minOccurs="0" maxOccurs="unbounded"></xs:element>
 		<xs:element name="LineBreak" type="LineBreak" minOccurs="0" maxOccurs="unbounded"></xs:element>
-		<xs:element name="TocSeparator" type="TocSeperator" minOccurs="0" maxOccurs="unbounded"></xs:element>
-		<xs:element name="TocSeperator" type="TocSeperator" minOccurs="0" maxOccurs="unbounded"></xs:element>
+		<xs:element name="TocSeparator" type="TocSeparator" minOccurs="0" maxOccurs="unbounded"></xs:element>
 		<xs:element name="style" type="ParagraphStyle" minOccurs="0" maxOccurs="1"></xs:element>
 	</xs:choice>
 	<xs:attribute name="styleName" type="xs:string" >
@@ -173,7 +172,7 @@ export const hyperLink = `<xs:complexType name="HyperLink">
 	<xs:attribute name="text" type="xs:string" />
 </xs:complexType>`;
 
-export const tocSeparator = `<xs:complexType name="TocSeperator">
+export const tocSeparator = `<xs:complexType name="TocSeparator">
 	<xs:attribute name="width" type="xs:decimal" />
 </xs:complexType>`;
 
