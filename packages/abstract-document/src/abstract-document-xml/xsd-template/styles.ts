@@ -255,6 +255,15 @@ export const textStyle = `<xs:complexType name="TextStyle">
 	<xs:attribute name="indent" type="xs:decimal" />
 	<xs:attribute name="color" type="xs:string" />
 	<xs:attribute name="fontFamily" type="xs:string" />
+	<xs:attribute name="transform">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="normal" />
+				<xs:enumeration value="uppercase" />
+				<xs:enumeration value="lowercase" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
 	<xs:attribute name="baseline">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">

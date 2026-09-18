@@ -1,5 +1,6 @@
 export type TextBaseline = "top" | "bottom" | "middle" | "alphabetic" | "hanging";
 export type TextFontWeight = "light" | "normal" | "mediumBold" | "bold" | "extraBold";
+export type TextTransform = "normal" | "uppercase" | "lowercase";
 
 export interface TextStyle {
   readonly type: "TextStyle";
@@ -25,6 +26,7 @@ export interface TextStyle {
   readonly strike?: boolean;
   readonly opacity?: number;
   readonly characterSpacing?: number;
+  readonly transform?: TextTransform;
 }
 
 export interface TextStyleProps {
@@ -50,6 +52,7 @@ export interface TextStyleProps {
   readonly strike?: boolean;
   readonly opacity?: number;
   readonly characterSpacing?: number;
+  readonly transform?: TextTransform;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
@@ -97,6 +100,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
     strike: a.strike ?? b.strike,
     opacity: a.opacity ?? b.opacity,
     characterSpacing: a.characterSpacing ?? b.characterSpacing,
+    transform: a.transform ?? b.transform,
     ...overriddenFontWeight,
   });
 }

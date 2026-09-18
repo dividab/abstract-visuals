@@ -99,6 +99,8 @@ import { testSingleTextRun } from "./pdf/single-textrun.js";
 import { testTableOfContentSeparator } from "./pdf/table-of-content-separator.js";
 import { testWorld } from "./pdf/world.js";
 import { saveBufferInTmpDir, streamToBuffer, diffJson } from "./test-utils/index.js";
+import { testSingleTextRunTransformUppercase } from "./pdf/single-textrun-transform-uppercase.js";
+import { testSingleTextRunTransformLowercase } from "./pdf/single-textrun-transform-lowercase.js";
 
 describe("export pdf", () => {
   test("row spans beyond the table render like spans clipped to the remaining rows", async () => {
@@ -230,6 +232,8 @@ describe("export pdf", () => {
     testSingleTextRunWithStartAlignmentThatLinebreaks,
     testSingleTextRunWithStartAlignment,
     testSingleTextRun,
+    testSingleTextRunTransformUppercase,
+    testSingleTextRunTransformLowercase,
     testTableOfContentSeparator,
     testWorld,
     testPageColumnLayout,

@@ -583,7 +583,7 @@ function drawText(
   pdf: PDFKit.PDFDocument,
   finalRect: AD.Rect.Rect,
   textStyle: AD.TextStyle.TextStyle,
-  text: string,
+  rawText: string,
   alignment: PdfKitAlignment,
   isFirst: boolean,
   isEnd: boolean
@@ -595,6 +595,18 @@ function drawText(
     .fontSize(fontSize)
     .fillColor(textStyle.color ?? "black", textStyle.opacity ?? 1.0);
   applyTextOffset(pdf, textStyle);
+
+  let text = rawText;
+  switch(textStyle.transform) {
+    case "lowercase":
+      text = text.toLowerCase();
+      break;
+    case "uppercase":
+      text = text.toUpperCase();
+      break;
+    default:
+      break;
+  }
 
   switch (alignment) {
     case "justify": {

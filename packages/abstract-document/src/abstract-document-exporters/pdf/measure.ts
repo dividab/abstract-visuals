@@ -501,13 +501,25 @@ function measureText(
     ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
   };
 
+  let transformedText = `${text}`;
+  switch(textStyle.transform) {
+    case "lowercase":
+      transformedText = transformedText.toLowerCase();
+      break;
+    case "uppercase":
+      transformedText = transformedText.toUpperCase();
+      break;
+    default:
+      break;
+  }
+
   let measuredWidth = 0;
   if (measureWithSpaces !== undefined && measureWithSpaces) {
     const spaceWidth = widthOfString(pdf, font, fontSize, " ", textOptions);
-    const stringWidth = widthOfString(pdf, font, fontSize, ` ${text} `, textOptions) - spaceWidth * 2;
+    const stringWidth = widthOfString(pdf, font, fontSize, ` ${transformedText} `, textOptions) - spaceWidth * 2;
     measuredWidth = stringWidth;
   } else {
-    measuredWidth = widthOfString(pdf, font, fontSize, text, textOptions);
+    measuredWidth = widthOfString(pdf, font, fontSize, transformedText, textOptions);
   }
 
   const width = Math.min(availableSize.width, measuredWidth);
@@ -516,7 +528,7 @@ function measureText(
     width: lineWidth,
     ...textOptions,
   };
-  const height = heightOfString(pdf, font, fontSize, text, options);
+  const height = heightOfString(pdf, font, fontSize, transformedText, options);
   // const height = pdf.heightOfString(text, options);
   return AD.Size.create(width, height, availableSize.width);
 }
