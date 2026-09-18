@@ -16,6 +16,7 @@ export const section = `<xs:complexType name="Section">
 		<xs:element name="PageBreak" type="PageBreak" minOccurs="0" />
 		<xs:element name="Paragraph" type="Paragraph" minOccurs="0" />
 		${Custom.textParagraphElement}
+		${Custom.hyperLinkParagraphElement}
 		${Custom.imageParagraphElement}
 		<xs:element name="Markdown" type="Markdown" minOccurs="0" />
 		<xs:element name="page" type="page" minOccurs="0" maxOccurs="1"></xs:element>
@@ -38,6 +39,7 @@ const sectionElementBody = `<xs:element name="Table" type="Table" minOccurs="0" 
 	<xs:element name="PageBreak" type="PageBreak" minOccurs="0" />
 	<xs:element name="Paragraph" type="Paragraph" minOccurs="0" />
 	${Custom.textParagraphElement}
+	${Custom.hyperLinkParagraphElement}
 	${Custom.imageParagraphElement}
 <xs:element name="Markdown" type="Markdown" minOccurs="0" />`;
 
@@ -61,6 +63,7 @@ export const group = `<xs:complexType name="Group">
 		<xs:element name="PageBreak" type="PageBreak" minOccurs="0" />
 		<xs:element name="Paragraph" type="Paragraph" minOccurs="0" />
 		${Custom.textParagraphElement}
+		${Custom.hyperLinkParagraphElement}
 		${Custom.imageParagraphElement}
 		<xs:element name="style" type="GroupStyle" minOccurs="0" />
 	</xs:choice>
@@ -75,6 +78,7 @@ export const table = `<xs:complexType name="Table">
 			<xs:choice minOccurs="1">
 				<xs:element name="TableRow" type="TableRow"  maxOccurs="unbounded" />
 				${Custom.textRowElement}
+				${Custom.hyperLinkRowElement}
 				${Custom.imageRowElement}
 			</xs:choice>
 		</xs:sequence>
@@ -96,6 +100,7 @@ export const headerRows = `<xs:complexType name="headerRows">
 		<xs:choice minOccurs="1" maxOccurs="unbounded">
 			<xs:element name="TableRow" type="TableRow"/>
 			${Custom.textRowElement}
+			${Custom.hyperLinkRowElement}
 			${Custom.imageRowElement}
 		</xs:choice>
 	</xs:sequence>
@@ -105,6 +110,7 @@ export const tableRow = `<xs:complexType name="TableRow">
 	<xs:choice maxOccurs="unbounded">
 		<xs:element name="TableCell" type="TableCell" minOccurs="0" maxOccurs="unbounded" />
 		${Custom.textCellElement}
+		${Custom.hyperLinkCellElement}
 		${Custom.imageCellElement}
 	</xs:choice>
 </xs:complexType>`;
@@ -117,6 +123,7 @@ export const tableCell = `<xs:complexType name="TableCell">
 		<xs:element name="PageBreak" type="PageBreak" minOccurs="0" maxOccurs="unbounded" />
 		<xs:element name="Paragraph" type="Paragraph" minOccurs="0" maxOccurs="unbounded" />
 		${Custom.textParagraphElement}
+		${Custom.hyperLinkParagraphElement}
 		${Custom.imageParagraphElement}
 		<xs:element name="Markdown" type="Markdown" minOccurs="0" maxOccurs="unbounded" />
 	</xs:choice>
@@ -141,6 +148,8 @@ export const paragraph = `<xs:complexType name="Paragraph">
 		<xs:element name="Image" type="Image" minOccurs="0" maxOccurs="unbounded"></xs:element>
 		<xs:element name="HyperLink" type="HyperLink" minOccurs="0" maxOccurs="unbounded"></xs:element>
 		<xs:element name="LinkTarget" type="LinkTarget" minOccurs="0" maxOccurs="unbounded"></xs:element>
+		<xs:element name="LineBreak" type="LineBreak" minOccurs="0" maxOccurs="unbounded"></xs:element>
+		<xs:element name="TocSeparator" type="TocSeperator" minOccurs="0" maxOccurs="unbounded"></xs:element>
 		<xs:element name="TocSeperator" type="TocSeperator" minOccurs="0" maxOccurs="unbounded"></xs:element>
 		<xs:element name="style" type="ParagraphStyle" minOccurs="0" maxOccurs="1"></xs:element>
 	</xs:choice>
@@ -160,7 +169,7 @@ export const hyperLink = `<xs:complexType name="HyperLink">
 			<xs:documentation>Refrence to a TextStyle that is defined in \\<AbstractDoc> \\<StyleNames> \\<StyleName name="..." /> \\</StyleNames> \\</AbstractDoc></xs:documentation>
 		</xs:annotation>
 	</xs:attribute>
-	<xs:attribute name="target" type="xs:string" />
+	<xs:attribute name="target" type="xs:string" use="required" />
 	<xs:attribute name="text" type="xs:string" />
 </xs:complexType>`;
 
@@ -169,7 +178,14 @@ export const tocSeparator = `<xs:complexType name="TocSeperator">
 </xs:complexType>`;
 
 export const linkTarget = `<xs:complexType name="LinkTarget">
-	<xs:attribute name="name" type="xs:string" />
+	<xs:attribute name="name" type="xs:string" use="required" />
+</xs:complexType>`;
+
+export const lineBreak = `<xs:complexType name="LineBreak">
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="style" type="TextStyle" />
+	</xs:choice>
+	<xs:attribute name="styleName" type="xs:string" />
 </xs:complexType>`;
 
 export const textRun = `<xs:complexType name="TextRun">

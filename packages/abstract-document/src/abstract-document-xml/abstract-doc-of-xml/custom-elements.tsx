@@ -1,6 +1,6 @@
 import type { ImageProps } from "../../abstract-document/atoms/image.js";
 import type { TextStyle, ParagraphStyle, TableCellStyle } from "../../abstract-document/index.js";
-import { TextRun, Paragraph, TableCell, TableRow, Image } from "../../abstract-document/index.js";
+import { TextRun, Paragraph, TableCell, TableRow, Image, HyperLink } from "../../abstract-document/index.js";
 import type { ParagraphProps } from "../../abstract-document/section-elements/paragraph.js";
 //dummy2
 
@@ -85,6 +85,47 @@ export function TextParagraph(props: TextParagraphProps, styleNameTypes: Record<
     styleName: styleNames.TextStyle,
   });
   return Paragraph.create({ style, styleName: styleNames.ParagraphStyle }, [textRun]);
+}
+
+export type HyperLinkParagraphProps = TextParagraphProps & {
+  readonly target: string;
+};
+
+export function HyperLinkParagraph(props: HyperLinkParagraphProps, styleNameTypes: Record<string, string>): Paragraph.Paragraph {
+  const { text, target, textStyle, style } = props;
+  const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
+  const hyperLink = HyperLink.create({
+    text,
+    target,
+    style: textStyle ? { ...textStyle, type: "TextStyle" } : undefined,
+    styleName: styleNames.TextStyle,
+  });
+  return Paragraph.create({ style, styleName: styleNames.ParagraphStyle }, [hyperLink]);
+}
+
+export type HyperLinkCellProps = Omit<HyperLinkParagraphProps, "style"> & {
+  readonly columnSpan?: number;
+  readonly rowSpan?: number;
+  readonly style?: TableCellStyle.TableCellStyle;
+  readonly paragraphStyle?: ParagraphStyle.ParagraphStyle;
+};
+
+export function HyperLinkCell(props: HyperLinkCellProps, styleNameTypes: Record<string, string>): TableCell.TableCell {
+  const { paragraphStyle, style, columnSpan, rowSpan } = props;
+  const styleNames = extractStyleNames(props.styleNames, styleNameTypes);
+  const paragraph = HyperLinkParagraph(
+    { ...props, style: paragraphStyle ? { ...paragraphStyle, type: "ParagraphStyle" } : undefined },
+    styleNameTypes
+  );
+  return TableCell.create({ columnSpan, rowSpan, style, styleName: styleNames.TableCellStyle }, [paragraph]);
+}
+
+export type HyperLinkRowProps = Omit<HyperLinkCellProps, "style"> & {
+  readonly cellStyle?: TableCellStyle.TableCellStyle;
+};
+
+export function HyperLinkRow(props: HyperLinkRowProps, styleNameTypes: Record<string, string>): TableRow.TableRow {
+  return TableRow.create({}, [HyperLinkCell({ ...props, style: props.cellStyle }, styleNameTypes)]);
 }
 
 export type ImageRowProps = Omit<ImageCellProps, "style"> & {

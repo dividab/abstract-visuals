@@ -138,6 +138,7 @@ function abstractDocXmlRecursive(creators: Record<string, ADCreatorFn>, xmlEleme
           break;
         case "TextField":
         case "HyperLink":
+        case "LineBreak":
         case "TextRun":
           obj["style"] = { ...obj["style"], type: "TextStyle" };
           break;

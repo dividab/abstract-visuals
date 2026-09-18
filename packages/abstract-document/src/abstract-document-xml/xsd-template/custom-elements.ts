@@ -68,6 +68,64 @@ export const textParagraph = `<xs:complexType name="TextParagraph">
 </xs:complexType>`;
 export const textParagraphElement = `<xs:element name="TextParagraph" type="TextParagraph" maxOccurs="unbounded" />`;
 
+export const hyperLinkParagraph = `<xs:complexType name="HyperLinkParagraph">
+	<xs:annotation>
+		<xs:documentation>Shortcut to create \\<Paragraph> \\<HyperLink text="..." target="..." /> \\</Paragraph></xs:documentation>
+	</xs:annotation>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="style" type="ParagraphStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="textStyle" type="TextStyle" />
+	</xs:choice>
+	<xs:attribute name="styleNames" type="xs:string" />
+	<xs:attribute name="target" type="xs:string" use="required" />
+	<xs:attribute name="text" type="xs:string" use="required" />
+</xs:complexType>`;
+export const hyperLinkParagraphElement = `<xs:element name="HyperLinkParagraph" type="HyperLinkParagraph" maxOccurs="unbounded" />`;
+
+export const hyperLinkCell = `<xs:complexType name="HyperLinkCell">
+	<xs:annotation>
+		<xs:documentation>Shortcut to create a \\<TableCell> \\<Paragraph> \\<HyperLink text="..." target="..." /> \\</Paragraph> \\</TableCell></xs:documentation>
+	</xs:annotation>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="style" type="TableCellStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="textStyle" type="TextStyle" />
+	</xs:choice>
+	<xs:attribute name="styleNames" type="xs:string" />
+	<xs:attribute name="target" type="xs:string" use="required" />
+	<xs:attribute name="columnSpan" type="xs:integer" />
+	<xs:attribute name="rowSpan" type="xs:integer" />
+	<xs:attribute name="text" type="xs:string" use="required" />
+</xs:complexType>`;
+export const hyperLinkCellElement = `<xs:element name="HyperLinkCell" type="HyperLinkCell" minOccurs="0" maxOccurs="unbounded" />`;
+
+export const hyperLinkRow = `<xs:complexType name="HyperLinkRow">
+	<xs:annotation>
+		<xs:documentation>Shortcut to create a \\<TableRow> \\<TableCell> \\<Paragraph> \\<HyperLink text="..." target="..." /> \\</Paragraph> \\</TableCell> \\</TableRow></xs:documentation>
+	</xs:annotation>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="cellStyle" type="TableCellStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="paragraphStyle" type="ParagraphStyle" />
+	</xs:choice>
+	<xs:choice minOccurs="0" maxOccurs="1">
+		<xs:element name="textStyle" type="TextStyle" />
+	</xs:choice>
+	<xs:attribute name="styleNames" type="xs:string" />
+	<xs:attribute name="target" type="xs:string" use="required" />
+	<xs:attribute name="columnSpan" type="xs:integer" />
+	<xs:attribute name="rowSpan" type="xs:integer" />
+	<xs:attribute name="text" type="xs:string" use="required" />
+</xs:complexType>`;
+export const hyperLinkRowElement = `<xs:element name="HyperLinkRow" type="HyperLinkRow" maxOccurs="unbounded" />`;
+
 export const imageRow = `<xs:complexType name="ImageRow">
 	<xs:annotation>
 		<xs:documentation>Shortcut to create a \\<TableRow> \\<TableCell> \\<Paragraph> \\<Image src text="..." /> \\</Paragraph> \\</TableCell> \\</TableRow></xs:documentation>

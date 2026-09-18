@@ -14,6 +14,7 @@ ${Elements.image}
 ${Elements.textField}
 ${Elements.textRun}
 ${Elements.hyperLink}
+${Elements.lineBreak}
 ${Elements.tocSeparator}
 ${Elements.linkTarget}
 ${Styles.position}
@@ -33,6 +34,9 @@ ${Elements.tableCell}
 ${CustomElements.textRow}
 ${CustomElements.textCell}
 ${CustomElements.textParagraph}
+${CustomElements.hyperLinkParagraph}
+${CustomElements.hyperLinkCell}
+${CustomElements.hyperLinkRow}
 ${CustomElements.imageRow}
 ${CustomElements.imageCell}
 ${CustomElements.imageParagraph}`;

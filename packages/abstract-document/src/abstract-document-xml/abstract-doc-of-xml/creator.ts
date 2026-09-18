@@ -4,7 +4,10 @@ import {
   AbstractDoc,
   DefaultStyles,
   Group,
+  HyperLink,
   Image,
+  LineBreak,
+  LinkTarget,
   Markdown,
   PageBreak,
   Paragraph,
@@ -18,7 +21,17 @@ import {
   ImageResource,
 } from "../../abstract-document/index.js";
 import type { ImageCellProps, ImageParagraphProps, ImageRowProps } from "./custom-elements.js";
-import { TextRow, TextCell, TextParagraph, ImageCell, ImageParagraph, ImageRow } from "./custom-elements.js";
+import {
+  TextRow,
+  TextCell,
+  TextParagraph,
+  HyperLinkRow,
+  HyperLinkCell,
+  HyperLinkParagraph,
+  ImageCell,
+  ImageParagraph,
+  ImageRow,
+} from "./custom-elements.js";
 
 export type ADCreatorFn = (props?: Record<string, unknown>, children?: ReadonlyArray<unknown>) => unknown;
 
@@ -30,7 +43,14 @@ export const creators: (styleNames: Record<string, string>) => Record<string, AD
     TextRow: (props) => TextRow({ ...props, text: requireText(props) }, styleNames),
     TextCell: (props) => TextCell({ ...props, text: requireText(props) }, styleNames),
     TextParagraph: (props) => TextParagraph({ ...props, text: requireText(props) }, styleNames),
+    HyperLinkRow: (props) => HyperLinkRow({ ...props, text: requireText(props), target: requireTarget(props, "HyperLinkRow") }, styleNames),
+    HyperLinkParagraph: (props) =>
+      HyperLinkParagraph({ ...props, text: requireText(props), target: requireTarget(props, "HyperLinkParagraph") }, styleNames),
+    HyperLinkCell: (props) => HyperLinkCell({ ...props, text: requireText(props), target: requireTarget(props, "HyperLinkCell") }, styleNames),
     TextRun: (props) => TextRun.create({ ...props, text: requireText(props) }),
+    HyperLink: (props) => HyperLink.create({ ...props, text: requireText(props), target: requireTarget(props, "HyperLink") }),
+    LinkTarget: (props) => LinkTarget.create({ name: requireName(props) }),
+    LineBreak: (props) => LineBreak.create(props),
     ImageRow: ((props: Record<string, unknown>) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames)) as ADCreatorFn,
     ImageCell: ((props: Record<string, unknown>) => ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames)) as ADCreatorFn,
     ImageParagraph: ((props: Record<string, unknown>) =>
@@ -344,6 +364,22 @@ export const propsCreators: Record<string, ADCreatorFn> = {
 function requireText(props: Record<string, unknown> | undefined): string {
   const text = props?.["text"];
   return typeof text === "string" ? text : "";
+}
+
+function requireTarget(props: Record<string, unknown> | undefined, element: string): string {
+  const target = props?.["target"];
+  if (typeof target !== "string") {
+    throw new Error(`<${element}> requires a "target" attribute`);
+  }
+  return target;
+}
+
+function requireName(props: Record<string, unknown> | undefined): string {
+  const name = props?.["name"];
+  if (typeof name !== "string") {
+    throw new Error('<LinkTarget> requires a "name" attribute');
+  }
+  return name;
 }
 
 const validFieldTypes: ReadonlyArray<TextField.FieldType> = ["Date", "PageNumber", "TotalPages", "PageNumberOf"];
