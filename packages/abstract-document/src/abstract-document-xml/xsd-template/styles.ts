@@ -84,6 +84,15 @@ export const StyleName = `<xs:complexType name="StyleName">
 	<xs:attribute name="indent" type="xs:decimal" />
 	<xs:attribute name="color" type="xs:string" />
 	<xs:attribute name="fontFamily" type="xs:string" />
+	<xs:attribute name="transform">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="normal" />
+				<xs:enumeration value="uppercase" />
+				<xs:enumeration value="lowercase" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
 	<xs:attribute name="alignment">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
