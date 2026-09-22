@@ -75,214 +75,214 @@ export function AbstractChartExample(): React.JSX.Element {
       <Chart chart={generateBarChart()} name="Bar chart" />
     </div>
   );
+}
 
-  function generateLineChart(hovered: string): Chart_1 {
-    const series = [
-      createChartLine({
-        points: [
-          { x: 0, y: 0 },
-          { x: 1, y: 2 },
-          { x: 2, y: 4 },
-          { x: 3, y: 1.5 },
-          { x: 4, y: 1 },
-          { x: 5, y: 0 },
-          { x: 6, y: 0 },
-          { x: 7, y: 0 },
-          { x: 8, y: 0 },
-        ],
-        color: red,
-        label: "How bad you feel",
-        xAxis: "bottom",
-        yAxis: "left",
-        thickness: hovered === "line one" ? 4 : 1,
-        id: "line one",
-      }),
-      createChartLine({
-        points: [
-          { x: 0, y: 0 },
-          { x: 1, y: 0 },
-          { x: 2, y: 0 },
-          { x: 3, y: 1 },
-          { x: 4, y: 2 },
-          { x: 5, y: 3 },
-          { x: 6, y: 2.8 },
-          { x: 7, y: 2 },
-          { x: 8, y: 1.5 },
-        ],
-        color: blue,
-        label: "How bad you sound<sub>Feel good!</sub>",
-        xAxis: "bottom",
-        yAxis: "left",
-        thickness: hovered === "line two" ? 4 : 1,
-        id: "line two",
-      }),
-    ];
-
-    const [xMin, xMax] = getLineRange(series, (point) => point.x);
-    const [yMin, yMax] = getLineRange(series, (point) => point.y);
-
-    const dataAxisPointsSquaredX = [];
-    const dataAxisPointsCubedX = [];
-    for (let i = xMin; i <= xMax; ++i) {
-      dataAxisPointsSquaredX.push({ x: i, y: i * i });
-      dataAxisPointsCubedX.push({ x: i, y: i * i * i });
-    }
-    const dataAxisPointsSquaredY = [];
-    const dataAxisPointsCubedY = [];
-    for (let i = yMin; i <= yMax; ++i) {
-      dataAxisPointsSquaredY.push({ x: i, y: i * i });
-      dataAxisPointsCubedY.push({ x: i, y: i * i * i });
-    }
-
-    const chart = createChart({
-      width: 1000,
-      height: 800,
-      chartLines: series,
-      chartPoints: [
-        createChartPoint({
-          position: { x: 7, y: 4 },
-          id: "point1",
-          size: hovered === "point1" ? { width: 8, height: 8 } : { width: 5, height: 5 },
-          label: "Point",
-        }),
-        createChartPoint({
-          position: { x: 1, y: 1 },
-          id: "point2",
-          size: hovered === "point2" ? { width: 8, height: 8 } : { width: 5, height: 5 },
-          label: "Point<sub>Feel good!</sub>",
-        }),
-      ],
-      chartDataAxisesBottom: [createChartDataAxis(dataAxisPointsSquaredX, "X^2")],
-      chartDataAxisesTop: [createChartDataAxis(dataAxisPointsCubedX, "X^3")],
-      chartDataAxisesLeft: [createChartDataAxis(dataAxisPointsSquaredY, "Y^2")],
-      chartDataAxisesRight: [createChartDataAxis(dataAxisPointsCubedY, "Y^3")],
-      xAxisesBottom: [
-        createLinearAxis(xMin, xMax, "Days with cold bottom 1", undefined, undefined, undefined, 2, undefined, "x-bottom-1"),
-        createLinearAxis(xMin, xMax, "Days with cold bottom 2", undefined, undefined, undefined, 2, undefined, "x-bottom-2"),
-      ],
-      xAxisesTop: [
-        createLinearAxis(xMin, xMax, "Days with cold top 1", undefined, undefined, undefined, 2, undefined, "x-top-1"),
-        createLinearAxis(xMin, xMax, "Days with cold top 2", undefined, undefined, undefined, 2, undefined, "x-top-2"),
-      ],
-      yAxisesLeft: [
-        createLinearAxis(yMin, yMax + 1, "Badness left 1", undefined, undefined, undefined, 2, undefined, "y-left-1"),
-        createLinearAxis(yMin, yMax + 1, "Badness left 2", undefined, undefined, undefined, 2, undefined, "y-left-2"),
-      ],
-      yAxisesRight: [
-        createLinearAxis(yMin, yMax + 1, "Badness right 1", undefined, undefined, undefined, 2, undefined, "y-right-1"),
-        createLinearAxis(yMin, yMax + 1, "Badness right 2", undefined, undefined, undefined, 2, undefined, "y-right-2"),
-      ],
-      labelLayout: "center",
-      textOutlineColor: white,
-    });
-
-    return chart;
-  }
-
-  function generateLineChartDiscreteXAxis(): Chart_1 {
-    const series = [
-      createChartLine({
-        points: [
-          { x: 0, y: 0 },
-          { x: 1, y: 2 },
-          { x: 2, y: 4 },
-          { x: 3, y: 1.5 },
-          { x: 4, y: 1 },
-          { x: 5, y: 0 },
-          { x: 6, y: 0 },
-          { x: 7, y: 0 },
-          { x: 8, y: 0 },
-        ],
-        color: red,
-        label: "How bad you feel",
-        xAxis: "bottom",
-        yAxis: "left",
-      }),
-      createChartLine({
-        points: [
-          { x: 0, y: 0 },
-          { x: 1, y: 0 },
-          { x: 2, y: 0 },
-          { x: 3, y: 1 },
-          { x: 4, y: 2 },
-          { x: 5, y: 3 },
-          { x: 6, y: 2.8 },
-          { x: 7, y: 2 },
-          { x: 8, y: 1.5 },
-        ],
-        color: blue,
-        label: "How bad you sound",
-        xAxis: "bottom",
-        yAxis: "left",
-      }),
-    ];
-
-    const [yMin, yMax] = getLineRange(series, (point) => point.y);
-
-    const xAxis: Axis = {
-      type: "discrete",
+function generateLineChart(hovered: string): Chart_1 {
+  const series = [
+    createChartLine({
       points: [
-        { value: 0, label: "2023-02" },
-        { value: 1, label: "2023-03" },
-        { value: 2, label: "2023-04" },
-        { value: 3, label: "2023-05" },
-        { value: 3.5, label: "2023-05-15" },
-        { value: 4, label: "2023-06" },
-        { value: 5, label: "2023-07" },
-        { value: 6, label: "2023-08" },
-        { value: 7, label: "2023-09" },
-        { value: 8, label: "2023-10" },
+        { x: 0, y: 0 },
+        { x: 1, y: 2 },
+        { x: 2, y: 4 },
+        { x: 3, y: 1.5 },
+        { x: 4, y: 1 },
+        { x: 5, y: 0 },
+        { x: 6, y: 0 },
+        { x: 7, y: 0 },
+        { x: 8, y: 0 },
       ],
-      label: "Time",
-      labelRotation: -25,
-      tickLabelDisp: 25,
-      axisFontSize: 18,
-      thickness: 2,
-      axisColor: { r: 0, b: 0, g: 0, a: 255 },
-    };
-    const yAxis: Axis = {
-      type: "linear",
-      min: yMin,
-      max: yMax + 1,
-      label: "Badness",
-      axisFontSize: 15,
-      tickFontSize: 14,
-      thickness: 7,
-      axisColor: { r: 0, b: 0, g: 0, a: 255 },
-    };
-    const chart = createChart({
-      chartLines: [],
-      xAxisesBottom: [xAxis],
-      xAxisesTop: [
-        {
-          type: "linear",
-          min: 0,
-          max: 8,
-          label: "",
-          thickness: 2,
-          axisColor: { r: 0, b: 0, g: 0, a: 255 },
-          noTicks: true,
-        },
+      color: red,
+      label: "How bad you feel",
+      xAxis: "bottom",
+      yAxis: "left",
+      thickness: hovered === "line one" ? 4 : 1,
+      id: "line one",
+    }),
+    createChartLine({
+      points: [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+        { x: 3, y: 1 },
+        { x: 4, y: 2 },
+        { x: 5, y: 3 },
+        { x: 6, y: 2.8 },
+        { x: 7, y: 2 },
+        { x: 8, y: 1.5 },
       ],
-      yAxisesRight: [
-        {
-          type: "linear",
-          noTicks: true,
-          min: yMin,
-          max: yMax + 1,
-          label: "",
-          thickness: 2,
-          axisColor: { r: 0, b: 0, g: 0, a: 255 },
-        },
-      ],
-      fontSize: 12,
-      yAxisesLeft: [yAxis],
-      labelLayout: "center",
-      padding: { top: 5, left: 50, right: 110, bottom: 65 },
-    });
+      color: blue,
+      label: "How bad you sound<sub>Feel good!</sub>",
+      xAxis: "bottom",
+      yAxis: "left",
+      thickness: hovered === "line two" ? 4 : 1,
+      id: "line two",
+    }),
+  ];
 
-    return chart;
+  const [xMin, xMax] = getLineRange(series, (point) => point.x);
+  const [yMin, yMax] = getLineRange(series, (point) => point.y);
+
+  const dataAxisPointsSquaredX = [];
+  const dataAxisPointsCubedX = [];
+  for (let i = xMin; i <= xMax; ++i) {
+    dataAxisPointsSquaredX.push({ x: i, y: i * i });
+    dataAxisPointsCubedX.push({ x: i, y: i * i * i });
   }
+  const dataAxisPointsSquaredY = [];
+  const dataAxisPointsCubedY = [];
+  for (let i = yMin; i <= yMax; ++i) {
+    dataAxisPointsSquaredY.push({ x: i, y: i * i });
+    dataAxisPointsCubedY.push({ x: i, y: i * i * i });
+  }
+
+  const chart = createChart({
+    width: 1000,
+    height: 800,
+    chartLines: series,
+    chartPoints: [
+      createChartPoint({
+        position: { x: 7, y: 4 },
+        id: "point1",
+        size: hovered === "point1" ? { width: 8, height: 8 } : { width: 5, height: 5 },
+        label: "Point",
+      }),
+      createChartPoint({
+        position: { x: 1, y: 1 },
+        id: "point2",
+        size: hovered === "point2" ? { width: 8, height: 8 } : { width: 5, height: 5 },
+        label: "Point<sub>Feel good!</sub>",
+      }),
+    ],
+    chartDataAxisesBottom: [createChartDataAxis(dataAxisPointsSquaredX, "X^2")],
+    chartDataAxisesTop: [createChartDataAxis(dataAxisPointsCubedX, "X^3")],
+    chartDataAxisesLeft: [createChartDataAxis(dataAxisPointsSquaredY, "Y^2")],
+    chartDataAxisesRight: [createChartDataAxis(dataAxisPointsCubedY, "Y^3")],
+    xAxisesBottom: [
+      createLinearAxis(xMin, xMax, "Days with cold bottom 1", undefined, undefined, undefined, 2, undefined, "x-bottom-1"),
+      createLinearAxis(xMin, xMax, "Days with cold bottom 2", undefined, undefined, undefined, 2, undefined, "x-bottom-2"),
+    ],
+    xAxisesTop: [
+      createLinearAxis(xMin, xMax, "Days with cold top 1", undefined, undefined, undefined, 2, undefined, "x-top-1"),
+      createLinearAxis(xMin, xMax, "Days with cold top 2", undefined, undefined, undefined, 2, undefined, "x-top-2"),
+    ],
+    yAxisesLeft: [
+      createLinearAxis(yMin, yMax + 1, "Badness left 1", undefined, undefined, undefined, 2, undefined, "y-left-1"),
+      createLinearAxis(yMin, yMax + 1, "Badness left 2", undefined, undefined, undefined, 2, undefined, "y-left-2"),
+    ],
+    yAxisesRight: [
+      createLinearAxis(yMin, yMax + 1, "Badness right 1", undefined, undefined, undefined, 2, undefined, "y-right-1"),
+      createLinearAxis(yMin, yMax + 1, "Badness right 2", undefined, undefined, undefined, 2, undefined, "y-right-2"),
+    ],
+    labelLayout: "center",
+    textOutlineColor: white,
+  });
+
+  return chart;
+}
+
+function generateLineChartDiscreteXAxis(): Chart_1 {
+  const series = [
+    createChartLine({
+      points: [
+        { x: 0, y: 0 },
+        { x: 1, y: 2 },
+        { x: 2, y: 4 },
+        { x: 3, y: 1.5 },
+        { x: 4, y: 1 },
+        { x: 5, y: 0 },
+        { x: 6, y: 0 },
+        { x: 7, y: 0 },
+        { x: 8, y: 0 },
+      ],
+      color: red,
+      label: "How bad you feel",
+      xAxis: "bottom",
+      yAxis: "left",
+    }),
+    createChartLine({
+      points: [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+        { x: 3, y: 1 },
+        { x: 4, y: 2 },
+        { x: 5, y: 3 },
+        { x: 6, y: 2.8 },
+        { x: 7, y: 2 },
+        { x: 8, y: 1.5 },
+      ],
+      color: blue,
+      label: "How bad you sound",
+      xAxis: "bottom",
+      yAxis: "left",
+    }),
+  ];
+
+  const [yMin, yMax] = getLineRange(series, (point) => point.y);
+
+  const xAxis: Axis = {
+    type: "discrete",
+    points: [
+      { value: 0, label: "2023-02" },
+      { value: 1, label: "2023-03" },
+      { value: 2, label: "2023-04" },
+      { value: 3, label: "2023-05" },
+      { value: 3.5, label: "2023-05-15" },
+      { value: 4, label: "2023-06" },
+      { value: 5, label: "2023-07" },
+      { value: 6, label: "2023-08" },
+      { value: 7, label: "2023-09" },
+      { value: 8, label: "2023-10" },
+    ],
+    label: "Time",
+    labelRotation: -25,
+    tickLabelDisp: 25,
+    axisFontSize: 18,
+    thickness: 2,
+    axisColor: { r: 0, b: 0, g: 0, a: 255 },
+  };
+  const yAxis: Axis = {
+    type: "linear",
+    min: yMin,
+    max: yMax + 1,
+    label: "Badness",
+    axisFontSize: 15,
+    tickFontSize: 14,
+    thickness: 7,
+    axisColor: { r: 0, b: 0, g: 0, a: 255 },
+  };
+  const chart = createChart({
+    chartLines: [],
+    xAxisesBottom: [xAxis],
+    xAxisesTop: [
+      {
+        type: "linear",
+        min: 0,
+        max: 8,
+        label: "",
+        thickness: 2,
+        axisColor: { r: 0, b: 0, g: 0, a: 255 },
+        noTicks: true,
+      },
+    ],
+    yAxisesRight: [
+      {
+        type: "linear",
+        noTicks: true,
+        min: yMin,
+        max: yMax + 1,
+        label: "",
+        thickness: 2,
+        axisColor: { r: 0, b: 0, g: 0, a: 255 },
+      },
+    ],
+    fontSize: 12,
+    yAxisesLeft: [yAxis],
+    labelLayout: "center",
+    padding: { top: 5, left: 50, right: 110, bottom: 65 },
+  });
+
+  return chart;
 }
 
 function getLineRange(series: Array<ChartLine>, axisSelector: (point: Point) => number): [number, number] {

@@ -23,7 +23,7 @@ const packages = readdirSync(packagesDir, { withFileTypes: true })
   }));
 const projects = new Map(packages.filter(({ dir }) => existsSync(join(dir, "tsconfig.json"))).map(({ dir, manifest }) => [manifest.name, dir]));
 
-function updateReferences(file: string, dirs: readonly string[]): void {
+function updateReferences(file: string, dirs: ReadonlyArray<string>): void {
   const text = readFileSync(file, "utf8");
   const parsed = ts.parseConfigFileTextToJson(file, text);
   if (parsed.error) {
@@ -37,6 +37,7 @@ function updateReferences(file: string, dirs: readonly string[]): void {
   if (
     Array.isArray(current) &&
     current.length === references.length &&
+    // oxlint-disable-next-line typescript/no-unsafe-call
     references.every(({ path }) => current.some((ref) => ref.path.replace(/^\.\//, "") === path.replace(/^\.\//, "")))
   ) {
     return;
@@ -58,11 +59,14 @@ function updateReferences(file: string, dirs: readonly string[]): void {
       `${object.properties.length && !object.properties.hasTrailingComma ? "," : ""}\n  "references": ${value}` +
       text.slice(object.properties.end);
   writeFileSync(file, updated);
+  // oxlint-disable-next-line no-console
   console.log(`Updated ${relative(root, file)}`);
 }
 
 for (const { dir, manifest } of packages) {
-  if (!projects.has(manifest.name)) continue;
+  if (!projects.has(manifest.name)) {
+    continue;
+  }
   const dependencies = {
     ...manifest.dependencies,
     ...manifest.devDependencies,

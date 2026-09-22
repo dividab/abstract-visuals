@@ -597,7 +597,7 @@ function drawText(
   applyTextOffset(pdf, textStyle);
 
   let text = rawText;
-  switch(textStyle.transform) {
+  switch (textStyle.transform) {
     case "lowercase":
       text = text.toLowerCase();
       break;

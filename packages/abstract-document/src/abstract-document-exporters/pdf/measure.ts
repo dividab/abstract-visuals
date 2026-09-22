@@ -502,7 +502,7 @@ function measureText(
   };
 
   let transformedText = text;
-  switch(textStyle.transform) {
+  switch (textStyle.transform) {
     case "lowercase":
       transformedText = transformedText.toLowerCase();
       break;

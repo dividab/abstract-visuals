@@ -88,6 +88,8 @@ import { testSingleTextRunBaseLineHanging } from "./pdf/single-textrun-baseline-
 import { testSingleTextRunBaseLineMiddle } from "./pdf/single-textrun-baseline-middle.js";
 import { testSingleTextRunBaseLineTop } from "./pdf/single-textrun-baseline-top.js";
 import { testSingleTextRunSuperScript } from "./pdf/single-textrun-super-subscript.js";
+import { testSingleTextRunTransformLowercase } from "./pdf/single-textrun-transform-lowercase.js";
+import { testSingleTextRunTransformUppercase } from "./pdf/single-textrun-transform-uppercase.js";
 import { testSingleTextRunWithAlignmentThatLinebreaks } from "./pdf/single-textrun-with-center-alignment-that-linebreaks.js";
 import { testSingleTextRunWithCenterAlignment } from "./pdf/single-textrun-with-center-alignment.js";
 import { testSingleTextRunWithEndAlignmentThatLinebreaks } from "./pdf/single-textrun-with-end-alignment-that-linebreaks.js";
@@ -99,8 +101,6 @@ import { testSingleTextRun } from "./pdf/single-textrun.js";
 import { testTableOfContentSeparator } from "./pdf/table-of-content-separator.js";
 import { testWorld } from "./pdf/world.js";
 import { saveBufferInTmpDir, streamToBuffer, diffJson } from "./test-utils/index.js";
-import { testSingleTextRunTransformUppercase } from "./pdf/single-textrun-transform-uppercase.js";
-import { testSingleTextRunTransformLowercase } from "./pdf/single-textrun-transform-lowercase.js";
 
 describe("export pdf", () => {
   test("row spans beyond the table render like spans clipped to the remaining rows", async () => {
