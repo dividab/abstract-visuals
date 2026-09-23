@@ -221,13 +221,13 @@ importers:
     dependencies:
       '@react-three/drei':
         specifier: ^10.7.8
-        version: 10.7.8(@react-three/fiber@9.7.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0))(@types/react@19.2.17)(@types/three@0.185.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)
+        version: 10.7.8(@react-three/fiber@9.8.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0))(@types/react@19.2.17)(@types/three@0.186.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)
       '@react-three/fiber':
-        specifier: ^9.7.0
-        version: 9.7.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)
+        specifier: ^9.8.0
+        version: 9.8.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)
       '@react-three/postprocessing':
         specifier: ^3.1.1
-        version: 3.1.1(@react-three/fiber@9.7.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0))(@types/three@0.185.4)(postprocessing@6.39.5(three@0.186.0))(react@19.2.7)(three@0.186.0)
+        version: 3.1.1(@react-three/fiber@9.8.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0))(@types/three@0.186.0)(postprocessing@6.39.5(three@0.186.0))(react@19.2.7)(three@0.186.0)
       abstract-image:
         specifier: workspace:^
         version: link:../abstract-image
@@ -251,8 +251,8 @@ importers:
         specifier: ^0.33.0
         version: 0.33.0(@types/react@19.2.17)
       '@types/three':
-        specifier: ^0.185.4
-        version: 0.185.4
+        specifier: ^0.186.0
+        version: 0.186.0
       react:
         specifier: 'catalog:'
         version: 19.2.7
@@ -1418,15 +1418,15 @@ packages:
       react-dom:
         optional: true
 
-  '@react-three/fiber@9.7.0':
-    resolution: {integrity: sha512-EWm9FwcaOZQu/ExFW5rggoCMM1NJet5YbxVxKaOE+KSncrjU0Wx7017qSyGFvupviK89nMYGCWU3BIK4dI1clw==}
+  '@react-three/fiber@9.8.0':
+    resolution: {integrity: sha512-We1NYDnG9/AN8VToe75S9B5WlDsSCE43t948niieOqQ1x4U/PIazRgZh09Qo+x8q5OTAS83xI0eFhzVcgc3mVg==}
     peerDependencies:
       expo: '>=43.0'
       expo-asset: '>=8.4'
       expo-file-system: '>=11.0'
       expo-gl: '>=11.0'
-      react: '>=19 <19.3'
-      react-dom: '>=19 <19.3'
+      react: '>=19 <19.4'
+      react-dom: '>=19 <19.4'
       react-native: '>=0.78'
       three: '>=0.156'
     peerDependenciesMeta:
@@ -1894,8 +1894,8 @@ packages:
   '@types/stats.js@0.17.4':
     resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
 
-  '@types/three@0.185.4':
-    resolution: {integrity: sha512-gAsBIC07NIFrxjbf7tH2t71c38uulFfk/RFoC7FNBSjMRAQ8J1x/RBvusX0N5PJouaYFJawXQqfCQ0RKUx/1nA==}
+  '@types/three@0.186.0':
+    resolution: {integrity: sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -4493,6 +4493,9 @@ packages:
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
 
+  scheduler@0.28.0:
+    resolution: {integrity: sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==}
+
   semver-compare@1.0.0:
     resolution: {integrity: sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==}
 
@@ -5432,7 +5435,7 @@ snapshots:
     dependencies:
       '@simple-libs/child-process-utils': 2.0.0
       '@simple-libs/stream-utils': 2.0.0
-      semver: 7.7.2
+      semver: 7.8.5
     optionalDependencies:
       conventional-commits-filter: 6.0.1
       conventional-commits-parser: 7.1.2
@@ -5739,7 +5742,7 @@ snapshots:
       proggy: 3.0.0
       promise-all-reject-late: 1.0.1
       promise-call-limit: 3.0.2
-      semver: 7.7.2
+      semver: 7.8.5
       ssri: 12.0.0
       treeverse: 3.0.0
       walk-up-path: 4.0.0
@@ -5748,11 +5751,11 @@ snapshots:
 
   '@npmcli/fs@4.0.0':
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.5
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.5
 
   '@npmcli/git@6.0.3':
     dependencies:
@@ -5762,7 +5765,7 @@ snapshots:
       npm-pick-manifest: 10.0.0
       proc-log: 5.0.0
       promise-retry: 2.0.1
-      semver: 7.7.2
+      semver: 7.8.5
       which: 5.0.0
 
   '@npmcli/git@7.0.2':
@@ -5773,7 +5776,7 @@ snapshots:
       lru-cache: 11.5.2
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
-      semver: 7.7.2
+      semver: 7.8.5
       which: 6.0.1
 
   '@npmcli/installed-package-contents@3.0.0':
@@ -5799,7 +5802,7 @@ snapshots:
       json-parse-even-better-errors: 5.0.0
       pacote: 21.5.1(supports-color@7.2.0)
       proc-log: 6.1.0
-      semver: 7.7.2
+      semver: 7.8.5
     transitivePeerDependencies:
       - supports-color
 
@@ -5818,7 +5821,7 @@ snapshots:
       hosted-git-info: 9.0.3
       json-parse-even-better-errors: 5.0.0
       proc-log: 6.1.0
-      semver: 7.7.2
+      semver: 7.8.5
       validate-npm-package-license: 3.0.4
 
   '@npmcli/promise-spawn@8.0.3':
@@ -5851,7 +5854,7 @@ snapshots:
       ejs: 5.0.1
       minimatch: 10.2.5
       nx: 23.2.1
-      semver: 7.7.2
+      semver: 7.8.5
       tslib: 2.8.1
       yargs-parser: 21.1.1
 
@@ -6084,22 +6087,22 @@ snapshots:
   '@oxlint/binding-win32-x64-msvc@1.85.0':
     optional: true
 
-  '@react-three/drei@10.7.8(@react-three/fiber@9.7.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0))(@types/react@19.2.17)(@types/three@0.185.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)':
+  '@react-three/drei@10.7.8(@react-three/fiber@9.8.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0))(@types/react@19.2.17)(@types/three@0.186.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@mediapipe/tasks-vision': 0.10.17
       '@monogrid/gainmap-js': 3.4.0(three@0.186.0)
-      '@react-three/fiber': 9.7.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)
+      '@react-three/fiber': 9.8.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)
       '@use-gesture/react': 10.3.1(react@19.2.7)
       camera-controls: 3.1.2(three@0.186.0)
       cross-env: 7.0.3
       detect-gpu: 5.0.70
       glsl-noise: 0.0.0
       hls.js: 1.7.3
-      maath: 0.10.8(@types/three@0.185.4)(three@0.186.0)
+      maath: 0.10.8(@types/three@0.186.0)(three@0.186.0)
       meshline: 3.3.1(three@0.186.0)
       react: 19.2.7
-      stats-gl: 2.4.2(@types/three@0.185.4)(three@0.186.0)
+      stats-gl: 2.4.2(@types/three@0.186.0)(three@0.186.0)
       stats.js: 0.17.0
       suspend-react: 0.1.3(react@19.2.7)
       three: 0.186.0
@@ -6117,7 +6120,7 @@ snapshots:
       - '@types/three'
       - immer
 
-  '@react-three/fiber@9.7.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)':
+  '@react-three/fiber@9.8.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)':
     dependencies:
       '@babel/runtime': 7.29.7
       '@types/webxr': 0.5.24
@@ -6126,7 +6129,7 @@ snapshots:
       its-fine: 2.0.0(@types/react@19.2.17)(react@19.2.7)
       react: 19.2.7
       react-use-measure: 2.1.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      scheduler: 0.27.0
+      scheduler: 0.28.0
       suspend-react: 0.1.3(react@19.2.7)
       three: 0.186.0
       use-sync-external-store: 1.7.0(react@19.2.7)
@@ -6137,10 +6140,10 @@ snapshots:
       - '@types/react'
       - immer
 
-  '@react-three/postprocessing@3.1.1(@react-three/fiber@9.7.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0))(@types/three@0.185.4)(postprocessing@6.39.5(three@0.186.0))(react@19.2.7)(three@0.186.0)':
+  '@react-three/postprocessing@3.1.1(@react-three/fiber@9.8.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0))(@types/three@0.186.0)(postprocessing@6.39.5(three@0.186.0))(react@19.2.7)(three@0.186.0)':
     dependencies:
-      '@react-three/fiber': 9.7.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)
-      maath: 0.10.8(@types/three@0.185.4)(three@0.186.0)
+      '@react-three/fiber': 9.8.0(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(three@0.186.0)
+      maath: 0.10.8(@types/three@0.186.0)(three@0.186.0)
       n8ao: 2.0.1(postprocessing@6.39.5(three@0.186.0))(three@0.186.0)
       postprocessing: 6.39.5(three@0.186.0)
       react: 19.2.7
@@ -6481,7 +6484,7 @@ snapshots:
 
   '@types/stats.js@0.17.4': {}
 
-  '@types/three@0.185.4':
+  '@types/three@0.186.0':
     dependencies:
       '@dimforge/rapier3d-compat': 0.12.0
       '@tweenjs/tween.js': 23.1.3
@@ -6498,7 +6501,7 @@ snapshots:
 
   '@types/xml@1.0.11':
     dependencies:
-      '@types/node': 22.20.3
+      '@types/node': 24.13.5
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
@@ -6810,7 +6813,7 @@ snapshots:
 
   brace-expansion@5.0.9:
     dependencies:
-      balanced-match: 4.0.3
+      balanced-match: 4.0.4
 
   braces@3.0.3:
     dependencies:
@@ -7067,7 +7070,7 @@ snapshots:
       '@simple-libs/stream-utils': 2.0.0
       argue-cli: 3.2.0
       conventional-commits-filter: 6.0.1
-      semver: 7.7.2
+      semver: 7.8.5
 
   conventional-changelog@8.1.0(conventional-commits-filter@6.0.1):
     dependencies:
@@ -7214,7 +7217,7 @@ snapshots:
   default-browser@5.2.1:
     dependencies:
       bundle-name: 4.1.0
-      default-browser-id: 5.0.0
+      default-browser-id: 5.0.1
 
   default-browser@5.5.1:
     dependencies:
@@ -7661,7 +7664,7 @@ snapshots:
       call-bind-apply-helpers: 1.0.2
       es-define-property: 1.0.1
       es-errors: 1.3.0
-      es-object-atoms: 1.1.1
+      es-object-atoms: 1.1.2
       function-bind: 1.1.2
       get-proto: 1.0.1
       gopd: 1.2.0
@@ -7674,7 +7677,7 @@ snapshots:
   get-proto@1.0.1:
     dependencies:
       dunder-proto: 1.0.1
-      es-object-atoms: 1.1.1
+      es-object-atoms: 1.1.2
 
   get-stream@5.2.0:
     dependencies:
@@ -7896,7 +7899,7 @@ snapshots:
       npm-package-arg: 13.0.1
       promzard: 2.0.0
       read: 4.1.0
-      semver: 7.7.2
+      semver: 7.8.5
       validate-npm-package-license: 3.0.4
       validate-npm-package-name: 6.0.2
 
@@ -8242,7 +8245,7 @@ snapshots:
       npm-package-arg: 13.0.1
       npm-registry-fetch: 19.1.0(supports-color@7.2.0)
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.5
       sigstore: 4.1.1(supports-color@7.2.0)
       ssri: 12.0.0
     transitivePeerDependencies:
@@ -8383,9 +8386,9 @@ snapshots:
 
   lru-cache@11.5.2: {}
 
-  maath@0.10.8(@types/three@0.185.4)(three@0.186.0):
+  maath@0.10.8(@types/three@0.186.0)(three@0.186.0):
     dependencies:
-      '@types/three': 0.185.4
+      '@types/three': 0.186.0
       three: 0.186.0
 
   magic-string@0.30.21:
@@ -8441,7 +8444,7 @@ snapshots:
 
   md5.js@1.3.5:
     dependencies:
-      hash-base: 3.0.5
+      hash-base: 3.1.2
       inherits: 2.0.4
       safe-buffer: 5.2.1
 
@@ -8581,9 +8584,9 @@ snapshots:
       graceful-fs: 4.2.11
       nopt: 9.0.0
       proc-log: 6.1.0
-      semver: 7.7.2
+      semver: 7.8.5
       tar: 7.5.22
-      tinyglobby: 0.2.12
+      tinyglobby: 0.2.17
       undici: 6.28.1
       which: 6.0.1
 
@@ -8646,11 +8649,11 @@ snapshots:
 
   npm-install-checks@7.1.2:
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.5
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.5
 
   npm-normalize-package-bin@4.0.0: {}
 
@@ -8660,14 +8663,14 @@ snapshots:
     dependencies:
       hosted-git-info: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.5
       validate-npm-package-name: 6.0.2
 
   npm-package-arg@13.0.1:
     dependencies:
       hosted-git-info: 9.0.3
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.5
       validate-npm-package-name: 6.0.2
 
   npm-packlist@10.0.3:
@@ -8680,20 +8683,20 @@ snapshots:
       npm-install-checks: 7.1.2
       npm-normalize-package-bin: 4.0.0
       npm-package-arg: 12.0.2
-      semver: 7.7.2
+      semver: 7.8.5
 
   npm-pick-manifest@11.0.3:
     dependencies:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.1
-      semver: 7.7.2
+      semver: 7.8.5
 
   npm-registry-fetch@19.1.0(supports-color@7.2.0):
     dependencies:
       '@npmcli/redact': 3.2.2
       jsonparse: 1.3.1
-      make-fetch-happen: 15.0.2(supports-color@7.2.0)
+      make-fetch-happen: 15.0.6(supports-color@7.2.0)
       minipass: 7.1.3
       minipass-fetch: 4.0.1
       minizlib: 3.1.0
@@ -8886,10 +8889,10 @@ snapshots:
 
   open@10.1.0:
     dependencies:
-      default-browser: 5.2.1
+      default-browser: 5.5.1
       define-lazy-prop: 3.0.0
       is-inside-container: 1.0.0
-      is-wsl: 3.1.0
+      is-wsl: 3.1.1
 
   open@11.0.4:
     dependencies:
@@ -9517,6 +9520,8 @@ snapshots:
 
   scheduler@0.27.0: {}
 
+  scheduler@0.28.0: {}
+
   semver-compare@1.0.0: {}
 
   semver@5.7.2: {}
@@ -9683,9 +9688,9 @@ snapshots:
 
   state-toggle@1.0.3: {}
 
-  stats-gl@2.4.2(@types/three@0.185.4)(three@0.186.0):
+  stats-gl@2.4.2(@types/three@0.186.0)(three@0.186.0):
     dependencies:
-      '@types/three': 0.185.4
+      '@types/three': 0.186.0
       three: 0.186.0
 
   stats.js@0.17.0: {}
@@ -9933,7 +9938,7 @@ snapshots:
     dependencies:
       '@tufjs/models': 4.1.0
       debug: 4.4.3(supports-color@7.2.0)
-      make-fetch-happen: 15.0.2(supports-color@7.2.0)
+      make-fetch-happen: 15.0.6(supports-color@7.2.0)
     transitivePeerDependencies:
       - supports-color
 
