@@ -1,9 +1,8 @@
 import type { Cylinder, Material, Vec3 } from "../../../abstract-3d.js";
-import { vec3TransRot, vec3RotCombine, vec3Zero, vec3, equals, vec3Scale } from "../../../abstract-3d.js";
+import { vec3TransRot, vec3RotCombine, vec3Zero, vec3, equals } from "../../../abstract-3d.js";
 import { stlPlaneOfVertices } from "../stl-encoding.js";
-import { stlPlane } from "./stl-plane.js";
 
-export function stlCylinder(c: Cylinder, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3): string {
+export function stlCylinder(c: Cylinder, _m: Material, sides: number, parentPos: Vec3, parentRot: Vec3): string {
   let stlString = "";
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
@@ -16,6 +15,7 @@ export function stlCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
   let currentAngle = angleStart;
 
   const half = c.length / 2;
+  const radiusEnd = c.radiusEnd ?? c.radius;
   const topPos = vec3tr(0, half, 0);
   const botPos = vec3tr(0, -half, 0);
 
@@ -23,10 +23,10 @@ export function stlCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
   const topVec3Array = Array<Vec3>();
 
   for (let i = 0; i <= sides; i++) {
-    const x = Math.sin(currentAngle) * c.radius;
-    const z = Math.cos(currentAngle) * c.radius;
-    const currBot = vec3tr(x, -half, z);
-    const currTop = vec3tr(x, half, z);
+    const sin = Math.sin(currentAngle);
+    const cos = Math.cos(currentAngle);
+    const currBot = vec3tr(sin * c.radius, -half, cos * c.radius);
+    const currTop = vec3tr(sin * radiusEnd, half, cos * radiusEnd);
     botVec3Array.push(currBot);
     topVec3Array.push(currTop);
     if (i !== 0) {
@@ -41,16 +41,8 @@ export function stlCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
   }
 
   if (!equals(angleStart, angleEnd - Math.PI * 2) && angleLength > 0.0) {
-    const aStart = angleStart - Math.PI / 2;
-    const aEnd = angleEnd - Math.PI / 2;
-    const halfRadius = c.radius / 2;
-    const plane1Rot = vec3(0, aStart, 0);
-    const plane2Rot = vec3(0, aEnd, 0);
-    const plane1Pos = vec3Scale(vec3(Math.cos(aStart), 0, -Math.sin(aStart)), halfRadius);
-    const plane2Pos = vec3Scale(vec3(Math.cos(aEnd), 0, -Math.sin(aEnd)), halfRadius);
-    const planeSize = vec3(c.radius, c.length, 1);
-    stlString += stlPlane({ type: "Plane", pos: plane1Pos, size: planeSize, rot: plane1Rot }, m, pos, rot);
-    stlString += stlPlane({ type: "Plane", pos: plane2Pos, size: planeSize, rot: plane2Rot }, m, pos, rot);
+    stlString += stlPlaneOfVertices(botPos, botVec3Array[0]!, topVec3Array[0]!, topPos);
+    stlString += stlPlaneOfVertices(botPos, topPos, topVec3Array[sides]!, botVec3Array[sides]!);
   }
 
   return stlString;

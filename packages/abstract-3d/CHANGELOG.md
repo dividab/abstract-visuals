@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.10.0] - 2026-09-27
+
+- Added optional `radiusEnd` to `Cylinder` (radius at the +y end, defaults to `radius`) for tapered cylinders and truncated cones, supported by all renderers. Holes are ignored on tapered cylinders.
+
 ## [2.9.0] - 2026-09-10
 
 - Internal: activated `typescript/no-unnecessary-condition`. No functional changes.

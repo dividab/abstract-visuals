@@ -112,7 +112,10 @@ export type Cylinder = {
   readonly pos: Vec3;
   readonly rot?: Vec3;
   readonly length: number;
+  /** Radius at the -y end */
   readonly radius: number;
+  /** Radius at the +y end, defaults to `radius`. A tapered cylinder (radiusEnd !== radius) ignores `holes` */
+  readonly radiusEnd?: number;
   readonly holes?: ReadonlyArray<Hole>;
   readonly open?: boolean;
   readonly angleStart?: number;
@@ -600,7 +603,8 @@ export function boundsBox(b: Box, parentPos: Vec3, parentRot: Vec3): Bounds3 {
 export function boundsCylinder(c: Cylinder, parentPos: Vec3, parentRot: Vec3): Bounds3 {
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
-  const half = vec3(c.radius, c.length / 2, c.radius);
+  const maxRadius = Math.max(c.radius, c.radiusEnd ?? c.radius);
+  const half = vec3(maxRadius, c.length / 2, maxRadius);
   const points = [
     vec3(-half.x, half.y, half.z),
     vec3(half.x, half.y, half.z),
@@ -896,12 +900,14 @@ export const cylinder = (
   open = false,
   holes: ReadonlyArray<Hole> = [],
   angleStart?: number,
-  angleLength?: number
+  angleLength?: number,
+  radiusEnd?: number
 ): CylinderMesh => ({
   geometry: {
     type: "Cylinder",
     pos,
     radius,
+    radiusEnd,
     length,
     rot,
     holes,

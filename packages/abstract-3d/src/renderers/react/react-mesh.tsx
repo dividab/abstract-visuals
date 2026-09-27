@@ -34,8 +34,9 @@ import type {
   Tube as A3dTube,
   CircleCurve as A3dCircleCurve,
   Hole,
+  Vec3,
 } from "../../abstract-3d.js";
-import { vec2Scale, vec2Sub, vec2Add, isZero, vec3Scale, vec3, vec3Add, vec3RotCombine, vec3Zero, vec3Rot, equals } from "../../abstract-3d.js";
+import { vec2Scale, vec2Sub, vec2Add, isZero, vec3, equals } from "../../abstract-3d.js";
 import { planeGeometry } from "./react-image-material.js";
 
 extend({
@@ -57,8 +58,7 @@ extend({
 
 const CYLINDER_SEGMENTS = 40;
 const boxGeometry = new BoxGeometry();
-const cylinderGeometry = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1);
-const cylinderGeometryOpen = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1, true);
+const cylinderGeometries = new Map<string, BufferGeometry>();
 const coneGeometry = new ConeGeometry(1, 1, 16, 1);
 const sphereGeometry = new SphereGeometry(1, 12, 12);
 export const euler = new Euler();
@@ -114,70 +114,36 @@ export function ReactMesh({ mesh, children }: { readonly mesh: Mesh; readonly ch
       );
     }
     case "Cylinder": {
-      const { pos, radius, rot, length, holes, open, angleStart, angleLength } = mesh.geometry;
-      const filteredHoles = holes?.filter((h) => !holeIsZero(h));
-      const hasAngles = angleStart !== undefined && angleLength !== undefined;
-      const isWhole = !hasAngles || (isZero(Math.PI * 2 - angleLength) && isZero(angleStart));
-      if (isWhole) {
-        return !filteredHoles || filteredHoles.length === 0 ? (
-          <mesh
-            geometry={open ? cylinderGeometryOpen : cylinderGeometry}
-            scale={[radius, length, radius]}
-            position={[pos.x, pos.y, pos.z]}
-            rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
-            castShadow
-            receiveShadow
-          >
+      const { pos, radius, radiusEnd = radius, rot, length, holes, open, angleStart = 0, angleLength = Math.PI * 2 } = mesh.geometry;
+      const isWhole = isZero(Math.PI * 2 - angleLength);
+      // Holes are extruded along the length, which can't taper
+      const filteredHoles = radiusEnd === radius ? holes?.filter((h) => !holeIsZero(h)) : undefined;
+      if (isWhole && filteredHoles && filteredHoles.length > 0) {
+        return <ExcrudeCylinder cyl={mesh.geometry}>{children}</ExcrudeCylinder>;
+      }
+      // Unit geometry scaled by the largest radius, so only the radius ratio needs its own geometry
+      const maxRadius = Math.max(radius, radiusEnd);
+      const unitTop = radiusEnd / (maxRadius || 1);
+      const unitBottom = radius / (maxRadius || 1);
+      const transform = {
+        scale: [maxRadius, length, maxRadius],
+        position: [pos.x, pos.y, pos.z],
+        rotation: [rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0],
+      } as const;
+      return isWhole ? (
+        <mesh geometry={getCylinderGeometry(unitTop, unitBottom, open ?? false, 0, Math.PI * 2)} {...transform} castShadow receiveShadow>
+          {children}
+        </mesh>
+      ) : (
+        <mesh {...transform}>
+          <mesh geometry={getCylinderGeometry(unitTop, unitBottom, false, angleStart, angleLength)} castShadow receiveShadow>
             {children}
           </mesh>
-        ) : (
-          <ExcrudeCylinder cyl={mesh.geometry}>{children}</ExcrudeCylinder>
-        );
-      } else {
-        const angledCylinder = new CylinderGeometry(1, 1, 1, CYLINDER_SEGMENTS, 1, false, angleStart, angleLength);
-        const angleEnd = angleStart + angleLength;
-        const halfRadius = radius / 2;
-        const aStart = angleStart - Math.PI / 2;
-        const aEnd = angleEnd - Math.PI / 2;
-        const plane1Rot = vec3RotCombine(rot ?? vec3Zero, vec3(0, aStart, 0));
-        const plane2Rot = vec3RotCombine(rot ?? vec3Zero, vec3(0, aEnd, 0));
-        const plane1Pos = vec3Add(vec3Rot(vec3Scale(vec3(Math.cos(aStart), 0, -Math.sin(aStart)), halfRadius), vec3Zero, rot ?? vec3Zero), pos);
-        const plane2Pos = vec3Add(vec3Rot(vec3Scale(vec3(Math.cos(aEnd), 0, -Math.sin(aEnd)), halfRadius), vec3Zero, rot ?? vec3Zero), pos);
-        return (
-          <mesh>
-            <mesh
-              geometry={angledCylinder}
-              scale={[radius, length, radius]}
-              position={[pos.x, pos.y, pos.z]}
-              rotation={[rot?.x ?? 0, rot?.y ?? 0, rot?.z ?? 0]}
-              castShadow
-              receiveShadow
-            >
-              {children}
-            </mesh>
-            <mesh
-              geometry={planeGeometry}
-              scale={[radius, length, 1]}
-              position={[plane1Pos.x, plane1Pos.y, plane1Pos.z]}
-              rotation={[plane1Rot.x, plane1Rot.y, plane1Rot.z]}
-              castShadow
-              receiveShadow
-            >
-              {children}
-            </mesh>
-            <mesh
-              geometry={planeGeometry}
-              scale={[radius, length, 1]}
-              position={[plane2Pos.x, plane2Pos.y, plane2Pos.z]}
-              rotation={[plane2Rot.x, plane2Rot.y, plane2Rot.z]}
-              castShadow
-              receiveShadow
-            >
-              {children}
-            </mesh>
+          <mesh geometry={getCylinderCutGeometry(unitTop, unitBottom, angleStart, angleLength)} castShadow receiveShadow>
+            {children}
           </mesh>
-        );
-      }
+        </mesh>
+      );
     }
     case "Image":
       return (
@@ -345,6 +311,52 @@ function ExcrudeShape({ s, children }: { readonly s: Shape_1; readonly children?
       </mesh>
     </mesh>
   );
+}
+
+function cachedCylinderGeometry(key: string, create: () => BufferGeometry): BufferGeometry {
+  const cached = cylinderGeometries.get(key);
+  if (cached) {
+    return cached;
+  }
+  const geometry = create();
+  cylinderGeometries.set(key, geometry);
+  return geometry;
+}
+
+function getCylinderGeometry(top: number, bottom: number, open: boolean, angleStart: number, angleLength: number): BufferGeometry {
+  return cachedCylinderGeometry(
+    `cyl_${top}_${bottom}_${open}_${angleStart}_${angleLength}`,
+    () => new CylinderGeometry(top, bottom, 1, CYLINDER_SEGMENTS, 1, open, angleStart, angleLength)
+  );
+}
+
+const rimPoint = (radius: number, y: number, angle: number): Vec3 => vec3(radius * Math.sin(angle), y, radius * Math.cos(angle));
+
+/** The two walls closing an angled cylinder, from the axis out to the rim at angleStart and angleEnd */
+function getCylinderCutGeometry(top: number, bottom: number, angleStart: number, angleLength: number): BufferGeometry {
+  return cachedCylinderGeometry(`cut_${top}_${bottom}_${angleStart}_${angleLength}`, () => {
+    const [c0, c1] = [vec3(0, -0.5, 0), vec3(0, 0.5, 0)];
+    const angleEnd = angleStart + angleLength;
+    const [b0, t0] = [rimPoint(bottom, -0.5, angleStart), rimPoint(top, 0.5, angleStart)];
+    const [b1, t1] = [rimPoint(bottom, -0.5, angleEnd), rimPoint(top, 0.5, angleEnd)];
+    // Unshared vertices so each wall gets its own flat normal, wound opposite so both face outwards
+    const triangles = [
+      [c0, b0, t0],
+      [c0, t0, c1],
+      [c0, c1, t1],
+      [c0, t1, b1],
+    ];
+    const g = new BufferGeometry();
+    g.setAttribute(
+      "position",
+      new Float32BufferAttribute(
+        triangles.flat().flatMap((v) => [v.x, v.y, v.z]),
+        3
+      )
+    );
+    g.computeVertexNormals();
+    return g;
+  });
 }
 
 function ExcrudeCylinder({ cyl, children }: { readonly cyl: Cylinder; readonly children?: React.JSX.Element }): React.JSX.Element {

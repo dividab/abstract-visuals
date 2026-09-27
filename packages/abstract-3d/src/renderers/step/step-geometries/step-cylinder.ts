@@ -45,7 +45,7 @@ import {
 const SMALLEST_RADIUS = 1e-4;
 const GEOMETRY_EPSILON = 1e-12;
 
-export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep, rSmall?: number): void {
+export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
   const h = c.length;
 
   if (h <= GEOMETRY_EPSILON) {
@@ -53,7 +53,7 @@ export function stepCylinder(c: Cylinder, mat: Material, parentPos: Vec3, parent
   }
 
   const bottomRadius = Math.max(c.radius, SMALLEST_RADIUS);
-  const requestedTopRadius = Math.max(rSmall ?? c.radius, SMALLEST_RADIUS);
+  const requestedTopRadius = Math.max(c.radiusEnd ?? c.radius, SMALLEST_RADIUS);
 
   const radiusTolerance = GEOMETRY_EPSILON * Math.max(1, bottomRadius, requestedTopRadius);
 

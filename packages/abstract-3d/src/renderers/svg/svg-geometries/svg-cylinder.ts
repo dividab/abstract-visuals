@@ -13,7 +13,8 @@ export function cylinder(
   parentPos: Vec3,
   parentRot: Vec3
 ): ReadonlyArray<zOrderElement> {
-  const half = vec3(c.radius, c.length / 2, c.radius);
+  const half = c.length / 2;
+  const radiusEnd = c.radiusEnd ?? c.radius;
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (p: Vec3): Vec3 => vec3TransRot(p, pos, rot);
@@ -32,10 +33,10 @@ export function cylinder(
   const botVec3Array = Array<Vec3>();
   const topVec3Array = Array<Vec3>();
   for (let i = 0; i <= sides; i++) {
-    const x = Math.sin(currentAngle) * c.radius;
-    const z = Math.cos(currentAngle) * c.radius;
-    const currBot = vec3tr(vec3(x, -half.y, z));
-    const currTop = vec3tr(vec3(x, half.y, z));
+    const sin = Math.sin(currentAngle);
+    const cos = Math.cos(currentAngle);
+    const currBot = vec3tr(vec3(sin * c.radius, -half, cos * c.radius));
+    const currTop = vec3tr(vec3(sin * radiusEnd, half, cos * radiusEnd));
     botVec3Array.push(currBot);
     topVec3Array.push(currTop);
     if (i !== 0) {
@@ -49,11 +50,12 @@ export function cylinder(
   }
   if (!c.open) {
     // Add circle if direcly facing camera
-    const circleTop = vec3tr(vec3(0, half.y, 0));
-    const circleBottom = vec3tr(vec3(0, -half.y, 0));
+    const circleTop = vec3tr(vec3(0, half, 0));
+    const circleBottom = vec3tr(vec3(0, -half, 0));
     if (equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1)) {
-      const circlePos = circleTop.z > circleBottom.z ? circleTop : circleBottom;
-      zOrderComponents.push(zElem(svgCircle(c.radius, rot, point(circlePos.x, circlePos.y), fill, opacity, stroke, stBW, c.holes), circlePos.z));
+      const [circlePos, circleRadius] = circleTop.z > circleBottom.z ? [circleTop, radiusEnd] : [circleBottom, c.radius];
+      const holes = radiusEnd === c.radius ? c.holes : undefined;
+      zOrderComponents.push(zElem(svgCircle(circleRadius, rot, point(circlePos.x, circlePos.y), fill, opacity, stroke, stBW, holes), circlePos.z));
     }
   }
   return zOrderComponents;
