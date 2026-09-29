@@ -184,8 +184,8 @@ importers:
         specifier: ^1.86.0
         version: 1.86.0(oxlint-tsgolint@7.0.2003)
       oxlint-config-divid:
-        specifier: ^1.5.0
-        version: 1.5.0(oxlint@1.86.0(oxlint-tsgolint@7.0.2003))
+        specifier: ^1.5.1
+        version: 1.5.1(oxlint@1.86.0(oxlint-tsgolint@7.0.2003))
       oxlint-tsgolint:
         specifier: ^7.0.2003
         version: 7.0.2003
@@ -4016,11 +4016,11 @@ packages:
       vite-plus:
         optional: true
 
-  oxlint-config-divid@1.5.0:
-    resolution: {integrity: sha512-MImSnSNLaB1jaRU1KyQqDLi4RPOI1LxloqGPAuRYFefYjltJM5zCMAADJFgHjVkU6RMEBqIPAcXZGAQ5m795Hg==}
+  oxlint-config-divid@1.5.1:
+    resolution: {integrity: sha512-p4E8yHH41BYQn0yOhxTj9TxoG+o5PHPEigVdmZGsgBp8iQRuW2xAwFPuRyxFcfMxTLy5ILjXWxaf7+zusGekgA==}
     engines: {node: '>=24.0.0', npm: please-use-pnpm, yarn: please-use-pnpm}
     peerDependencies:
-      oxlint: '>=1.82.0'
+      oxlint: '>=1.86.0'
 
   oxlint-tsgolint@7.0.2003:
     resolution: {integrity: sha512-VnK4zlqgmgq/7ZcjzCk/WpN8kKFsYGcB85Io9qT3wL4K8Un3RKmJkp793crNETieMusPMKOA4a+Mw2wbteI6TQ==}
@@ -8948,7 +8948,7 @@ snapshots:
       '@oxfmt/binding-win32-ia32-msvc': 0.71.0
       '@oxfmt/binding-win32-x64-msvc': 0.71.0
 
-  oxlint-config-divid@1.5.0(oxlint@1.86.0(oxlint-tsgolint@7.0.2003)):
+  oxlint-config-divid@1.5.1(oxlint@1.86.0(oxlint-tsgolint@7.0.2003)):
     dependencies:
       oxlint: 1.86.0(oxlint-tsgolint@7.0.2003)
 
