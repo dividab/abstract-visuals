@@ -1,7 +1,7 @@
 import FileSaver from "file-saver";
 import React from "react";
-import type { Scene } from "../../../abstract-3d/src/abstract-3d.js";
-import { vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
+import type { Group, Scene } from "../../../abstract-3d/src/abstract-3d.js";
+import { dimensionIsOfTypeAligned, vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
 import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";
 import type * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
 import { render as Render } from "../../../abstract-3d/src/renderers/react/index.js";
@@ -17,6 +17,25 @@ import { componentGeometries } from "./generated/double-view-component-geometrie
 import { systemair } from "./generated/systemair.js";
 import { vortice } from "./generated/vortice.js";
 import { templateScene } from "./template-scene.js";
+
+// Each dimension gets the id of the group nearest along x, so clicking it selects that group
+function withDimensionIds(scene: Scene): Scene {
+  const dims = scene.dimensions_deprecated;
+  return dims
+    ? {
+        ...scene,
+        dimensions_deprecated: {
+          ...dims,
+          dimensions: dims.dimensions.map((d) => (dimensionIsOfTypeAligned(d) ? { ...d, id: nearestGroupId(scene.groups, d.linePosition.x) } : d)),
+        },
+      }
+    : scene;
+}
+
+const nearestGroupId = (groups: ReadonlyArray<Group>, x: number): string | undefined =>
+  groups.toSorted((a, b) => Math.abs(a.pos.x - x) - Math.abs(b.pos.x - x))[0]?.data?.["id"];
+
+const demoWithDimensionIds = withDimensionIds(demo as Scene);
 
 function getTooltips(id: string): ReadonlyArray<React3Js.ReactPopover> {
   return [{ id, pos: vec3Zero, content: <span>{id}</span> }];
@@ -185,7 +204,7 @@ export function Abstract3DExample(): React.ReactNode {
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
-              scene={demo as Scene}
+              scene={demoWithDimensionIds}
               orbitContolsProps={{ enableDamping: false }}
               camera={camera}
             />

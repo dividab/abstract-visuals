@@ -99,6 +99,11 @@ export function ReactScene({
         showDimensions={showDimensions}
         sceneRotation={scene.rotation_deprecated}
         sceneCenter={scene.center_deprecated}
+        selectedIds={selectedIds}
+        hotSpotsActive={activeHotSpots !== undefined}
+        onClickGroup={onClickGroup}
+        onHoverGroup={onHoverGroup}
+        onContextMenuGroup={onContextMenuGroup}
       />
       <ReactHotSpots
         hotSpots={scene.hotSpots_deprecated}

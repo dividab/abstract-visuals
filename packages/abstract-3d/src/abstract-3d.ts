@@ -27,6 +27,8 @@ export type DimensionMesh = {
   readonly pos: Vec3;
   readonly rot: Vec3;
   readonly meshes: ReadonlyArray<Mesh>;
+  /** Makes the dimension clickable in the react renderer, which then calls the group callbacks with this id. */
+  readonly id?: string;
 };
 
 export type DimensionAligned = {
@@ -44,6 +46,8 @@ export type DimensionAligned = {
   readonly text?: string;
   readonly views?: ReadonlyArray<View>;
   readonly material?: Material;
+  /** Makes the dimension clickable in the react renderer, which then calls the group callbacks with this id. */
+  readonly id?: string;
 };
 
 type DimensionSide = "top" | "bottom" | "left" | "right";
@@ -984,7 +988,8 @@ export const alignedDimension = (
   linePosition: Vec3,
   text: string,
   views?: ReadonlyArray<View>,
-  material?: Material
+  material?: Material,
+  id?: string
 ): DimensionAligned => ({
   measurementStart,
   measurementEnd,
@@ -992,6 +997,7 @@ export const alignedDimension = (
   text,
   views,
   material,
+  id,
 });
 
 export function dimensionIsOfTypeAligned(dimension: Dimension): dimension is DimensionAligned {
@@ -1123,6 +1129,7 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
     pos: vec3Zero,
     rot: vec3Zero,
     views: dimension.views ?? ["front"],
+    id: dimension.id,
   };
 }
 

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Added optional `id` to `DimensionAligned` and `DimensionMesh` (and a last `id` argument to `alignedDimension`). In the react renderer a dimension with an id is clickable like a group when `onClickGroup` is given: it calls `onClickGroup`, `onHoverGroup` and `onContextMenuGroup` with that id, and is drawn in the select color when hovered or when its id is selected.
+
 ## [2.10.0] - 2026-09-27
 
 - Added optional `radiusEnd` to `Cylinder` (radius at the +y end, defaults to `radius`) for tapered cylinders and truncated cones, supported by all renderers. Holes are ignored on tapered cylinders.
