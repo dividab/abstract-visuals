@@ -10,7 +10,10 @@ import {
 } from "@react-three/drei";
 import { type ThreeEvent, useThree } from "@react-three/fiber";
 import React, { useLayoutEffect, useRef, useState } from "react";
-import type { OrthographicCamera as ThreeOrthographicCamera, PerspectiveCamera as ThreePerspectiveCamera } from "three";
+import type {
+  OrthographicCamera as ThreeOrthographicCamera,
+  PerspectiveCamera as ThreePerspectiveCamera,
+} from "three";
 import { Vector3 } from "three";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { View, Scene, Vec3 } from "../../abstract-3d.js";
@@ -51,7 +54,12 @@ type Viewport = {
   readonly viewportProps: GizmoViewportProps;
 };
 
-type RefInstance<C> = C extends React.ForwardRefExoticComponent<infer P> ? (P extends React.RefAttributes<infer R> ? R : never) : never;
+type RefInstance<C> =
+  C extends React.ForwardRefExoticComponent<infer P>
+    ? P extends React.RefAttributes<infer R>
+      ? R
+      : never
+    : never;
 type OrbitControlsInstance = RefInstance<typeof OrbitControls>;
 
 export function ReactCamera({
@@ -76,7 +84,9 @@ export function ReactCamera({
   // oxlint-disable-next-line typescript/no-redundant-type-constituents -- oxlint's type-aware checker resolves OrbitControlsInstance (a conditional type over a forward-ref component) as `any`; tsc resolves it correctly and the `| null` is not actually redundant
   const [controls, setControls] = useState<OrbitControlsInstance | null>(null);
   const perspectiveRef = useRef<ThreePerspectiveCamera | undefined>(undefined);
-  const orthographicRef = useRef<ThreeOrthographicCamera | undefined>(undefined);
+  const orthographicRef = useRef<ThreeOrthographicCamera | undefined>(
+    undefined,
+  );
 
   const initialDistRef = useRef<number | null>(null);
   const initialTargetRef = useRef(new Vector3());
@@ -87,11 +97,19 @@ export function ReactCamera({
   const invalidate = useThree(({ invalidate }) => invalidate);
 
   const resetZoomOnGizmoClick = (): void => {
-    if (!controls || initialDistRef.current === null || (!perspectiveRef.current && !orthographicRef.current)) {
+    if (
+      !controls ||
+      initialDistRef.current === null ||
+      (!perspectiveRef.current && !orthographicRef.current)
+    ) {
       return;
     }
 
-    const newCamera = (camera.type === "Perspective" ? perspectiveRef.current : orthographicRef.current)!;
+    const newCamera = (
+      camera.type === "Perspective"
+        ? perspectiveRef.current
+        : orthographicRef.current
+    )!;
     const target = initialTargetRef.current.clone();
 
     // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
@@ -112,7 +130,14 @@ export function ReactCamera({
       const canvasH = canvasSize.height;
       const usableW = Math.max(1, canvasW - bufLeft - bufRight);
       const usableH = Math.max(1, canvasH - bufTop - bufBottom);
-      newCamera.setViewOffset(usableW, usableH, -bufLeft, -bufTop, canvasW, canvasH);
+      newCamera.setViewOffset(
+        usableW,
+        usableH,
+        -bufLeft,
+        -bufTop,
+        canvasW,
+        canvasH,
+      );
     }
 
     newCamera.updateProjectionMatrix();
@@ -164,9 +189,15 @@ export function ReactCamera({
       const { sceneHalfW, sceneHalfH } =
         sceneAspect > usableAspect
           ? // Scene wider than usable area — constrain by width
-            { sceneHalfW: (screenW / 2) * padFactor, sceneHalfH: (screenW / 2 / usableAspect) * padFactor }
+            {
+              sceneHalfW: (screenW / 2) * padFactor,
+              sceneHalfH: (screenW / 2 / usableAspect) * padFactor,
+            }
           : // Scene taller — constrain by height
-            { sceneHalfH: (screenH / 2) * padFactor, sceneHalfW: ((usableAspect * screenH) / 2) * padFactor };
+            {
+              sceneHalfH: (screenH / 2) * padFactor,
+              sceneHalfW: ((usableAspect * screenH) / 2) * padFactor,
+            };
 
       // World units per CSS pixel in the usable area
       const wpp = (sceneHalfW * 2) / usableW;
@@ -178,7 +209,11 @@ export function ReactCamera({
       orthographicRef.current.top = sceneHalfH + bufTop * hpp;
       orthographicRef.current.bottom = -sceneHalfH - bufBottom * hpp;
 
-      orthographicRef.current.position.set(posX * dist, posY * dist, posZ * dist);
+      orthographicRef.current.position.set(
+        posX * dist,
+        posY * dist,
+        posZ * dist,
+      );
       orthographicRef.current.zoom = 1;
       orthographicRef.current.updateProjectionMatrix();
 
@@ -202,22 +237,41 @@ export function ReactCamera({
 
       perspectiveRef.current.fov = fov;
       perspectiveRef.current.aspect = usableAspect;
-      perspectiveRef.current.position.set(posX * dist, posY * dist, posZ * dist);
+      perspectiveRef.current.position.set(
+        posX * dist,
+        posY * dist,
+        posZ * dist,
+      );
 
       // Slice/extend the rendered frustum from the usable-area-sized window
       // out to the full canvas, asymmetrically per buffer side.
-      perspectiveRef.current.setViewOffset(usableW, usableH, -bufLeft, -bufTop, canvasW, canvasH);
+      perspectiveRef.current.setViewOffset(
+        usableW,
+        usableH,
+        -bufLeft,
+        -bufTop,
+        canvasW,
+        canvasH,
+      );
 
       perspectiveRef.current.updateProjectionMatrix();
     }
     //}, [camera, viewPortAspect, canvasSize, bufferZones, view, scene, fitPadding]);
-    // oxlint-disable-next-line react-hooks/exhaustive-deps -- deps intentionally trimmed, see b290bc3e
-  }, [camera, viewPortAspect]);
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- deps intentionally trimmed, see b290bc3e;
+  }, [
+    camera,
+    viewPortAspect,
+    scene.size_deprecated.x,
+    scene.size_deprecated.y,
+    scene.size_deprecated.z,
+  ]);
 
   return (
     <>
       <PerspectiveCamera
-        ref={perspectiveRef as unknown as React.RefObject<ThreePerspectiveCamera | null>}
+        ref={
+          perspectiveRef as unknown as React.RefObject<ThreePerspectiveCamera | null>
+        }
         near={camera.near}
         far={camera.far}
         fov={camera.type === "Perspective" ? camera.fov : 75}
@@ -226,7 +280,9 @@ export function ReactCamera({
         makeDefault={camera.type === "Perspective"}
       />
       <OrthographicCamera
-        ref={orthographicRef as unknown as React.RefObject<ThreeOrthographicCamera | null>}
+        ref={
+          orthographicRef as unknown as React.RefObject<ThreeOrthographicCamera | null>
+        }
         up={[0, 1, 0]}
         near={camera.near}
         far={camera.far}
@@ -287,7 +343,7 @@ export function ReactCamera({
 const ControlsWrapper = (
   props: OrbitControlsProps & {
     setControls: (controls: OrbitControlsInstance) => void;
-  }
+  },
 ): React.JSX.Element => {
   const ref = useRef<OrbitControlsInstance>(null);
 
@@ -326,7 +382,9 @@ type GenericProps = {
 };
 
 export const cameraDist = (size: Vec3, fov: number): number =>
-  size.z * 0.5 + (size.x > size.y ? size.x : size.y) / (1 / 2 / Math.tan((Math.PI * fov) / 180 / 2));
+  size.z * 0.5 +
+  (size.x > size.y ? size.x : size.y) /
+    (1 / 2 / Math.tan((Math.PI * fov) / 180 / 2));
 
 type ViewTransform = readonly [number, number, number, Vec3, number];
 function getViewTransform(view: View, scene: Scene): ViewTransform {
