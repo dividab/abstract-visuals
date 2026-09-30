@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Zoom resets when 3D object changes
+
 - Added optional `id` to `DimensionAligned` and `DimensionMesh` (and a last `id` argument to `alignedDimension`). In the react renderer a dimension with an id is clickable like a group when `onClickGroup` is given: it calls `onClickGroup`, `onHoverGroup` and `onContextMenuGroup` with that id, and is drawn in the select color when hovered or when its id is selected.
 
 ## [2.10.0] - 2026-09-27
