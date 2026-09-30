@@ -4,9 +4,17 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
-- Zoom resets when 3D object changes
+## [2.10.3] - 2026-09-30
+
+- Fixed: zoom now resets when the 3D model changes in the react renderer
+
+## [2.10.2] - 2026-09-29
 
 - Added optional `id` to `DimensionAligned` and `DimensionMesh` (and a last `id` argument to `alignedDimension`). In the react renderer a dimension with an id is clickable like a group when `onClickGroup` is given: it calls `onClickGroup`, `onHoverGroup` and `onContextMenuGroup` with that id, and is drawn in the select color when hovered or when its id is selected.
+
+## [2.10.1] - 2026-09-29
+
+- Bumped `three`, `@react-three/fiber`, `@react-three/drei` and `@react-three/postprocessing` dependencies. No functional changes.
 
 ## [2.10.0] - 2026-09-27
 
