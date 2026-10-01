@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [2.10.4] - 2026-10-01
+
+- Fixed: removed: zoom now resets when the 3D model changes in the react renderer. Reset only on gizmo click
+
 ## [2.10.3] - 2026-09-30
 
 - Fixed: zoom now resets when the 3D model changes in the react renderer
