@@ -10,10 +10,7 @@ import {
 } from "@react-three/drei";
 import { type ThreeEvent, useThree } from "@react-three/fiber";
 import React, { useLayoutEffect, useRef, useState } from "react";
-import type {
-  OrthographicCamera as ThreeOrthographicCamera,
-  PerspectiveCamera as ThreePerspectiveCamera,
-} from "three";
+import type { OrthographicCamera as ThreeOrthographicCamera, PerspectiveCamera as ThreePerspectiveCamera } from "three";
 import { Vector3 } from "three";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { View, Scene, Vec3 } from "../../abstract-3d.js";
@@ -54,12 +51,7 @@ type Viewport = {
   readonly viewportProps: GizmoViewportProps;
 };
 
-type RefInstance<C> =
-  C extends React.ForwardRefExoticComponent<infer P>
-    ? P extends React.RefAttributes<infer R>
-      ? R
-      : never
-    : never;
+type RefInstance<C> = C extends React.ForwardRefExoticComponent<infer P> ? (P extends React.RefAttributes<infer R> ? R : never) : never;
 type OrbitControlsInstance = RefInstance<typeof OrbitControls>;
 
 export function ReactCamera({
@@ -84,69 +76,24 @@ export function ReactCamera({
   // oxlint-disable-next-line typescript/no-redundant-type-constituents -- oxlint's type-aware checker resolves OrbitControlsInstance (a conditional type over a forward-ref component) as `any`; tsc resolves it correctly and the `| null` is not actually redundant
   const [controls, setControls] = useState<OrbitControlsInstance | null>(null);
   const perspectiveRef = useRef<ThreePerspectiveCamera | undefined>(undefined);
-  const orthographicRef = useRef<ThreeOrthographicCamera | undefined>(
-    undefined,
-  );
+  const orthographicRef = useRef<ThreeOrthographicCamera | undefined>(undefined);
 
-  const initialDistRef = useRef<number | null>(null);
   const initialTargetRef = useRef(new Vector3());
-  const initialFovRef = useRef<number | null>(null);
 
   const viewPortAspect = useThree(({ viewport: { aspect } }) => aspect);
   const canvasSize = useThree(({ size }) => size);
   const invalidate = useThree(({ invalidate }) => invalidate);
 
-  const resetZoomOnGizmoClick = (): void => {
-    if (
-      !controls ||
-      initialDistRef.current === null ||
-      (!perspectiveRef.current && !orthographicRef.current)
-    ) {
-      return;
-    }
-
-    const newCamera = (
-      camera.type === "Perspective"
-        ? perspectiveRef.current
-        : orthographicRef.current
-    )!;
-    const target = initialTargetRef.current.clone();
-
-    // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
-    controls.target.copy(target);
-
-    const dist = initialDistRef.current;
-    const dir = newCamera.position.clone().sub(target).normalize();
-    (newCamera as ThreePerspectiveCamera).fov = initialFovRef.current!;
-    newCamera.zoom = 1;
-    newCamera.position.copy(target.clone().add(dir.multiplyScalar(dist)));
-
-    if (camera.type === "Perspective") {
-      const bufLeft = bufferZones.left ?? 0;
-      const bufRight = bufferZones.right ?? 0;
-      const bufTop = bufferZones.top ?? 0;
-      const bufBottom = bufferZones.bottom ?? 0;
-      const canvasW = canvasSize.width;
-      const canvasH = canvasSize.height;
-      const usableW = Math.max(1, canvasW - bufLeft - bufRight);
-      const usableH = Math.max(1, canvasH - bufTop - bufBottom);
-      newCamera.setViewOffset(
-        usableW,
-        usableH,
-        -bufLeft,
-        -bufTop,
-        canvasW,
-        canvasH,
-      );
-    }
-
-    newCamera.updateProjectionMatrix();
-    // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
-    controls.update();
-    invalidate();
-  };
-
-  useLayoutEffect(() => {
+  // Fits the active camera's frustum to the latest scene/canvas/buffer zones.
+  // Returns the fitted camera, its fit distance and the view's default direction;
+  // callers position the camera and call updateProjectionMatrix().
+  const fitCamera = ():
+    | {
+        readonly cam: ThreePerspectiveCamera | ThreeOrthographicCamera;
+        readonly dist: number;
+        readonly viewDir: Vector3;
+      }
+    | undefined => {
     const [posX, posY, posZ, size, sceneAspect] = getViewTransform(view, scene);
 
     // size.x/y are scene width/height in screen space (remapped per view direction)
@@ -167,22 +114,21 @@ export function ReactCamera({
     const canvasH = canvasSize.height;
 
     if (canvasW === 0 || canvasH === 0) {
-      return;
+      return undefined;
     }
 
     // Usable area in CSS pixels
     const usableW = Math.max(1, canvasW - bufLeft - bufRight);
     const usableH = Math.max(1, canvasH - bufTop - bufBottom);
     const usableAspect = usableW / usableH;
-
-    initialFovRef.current = camera.type === "Perspective" ? fov : null;
+    const viewDir = new Vector3(posX, posY, posZ);
 
     // ------------------------------------------------------------------
     // ORTHOGRAPHIC
     // ------------------------------------------------------------------
     if (camera.type === "Orthographic" && orthographicRef.current) {
+      const cam = orthographicRef.current;
       const dist = cameraDist(size, fov);
-      initialDistRef.current = dist;
 
       // Fit scene into the usable area
       const padFactor = 1 + fitPadding;
@@ -204,23 +150,18 @@ export function ReactCamera({
       const hpp = (sceneHalfH * 2) / usableH;
 
       // Extend frustum outward by buffer pixel amounts
-      orthographicRef.current.left = -sceneHalfW - bufLeft * wpp;
-      orthographicRef.current.right = sceneHalfW + bufRight * wpp;
-      orthographicRef.current.top = sceneHalfH + bufTop * hpp;
-      orthographicRef.current.bottom = -sceneHalfH - bufBottom * hpp;
-
-      orthographicRef.current.position.set(
-        posX * dist,
-        posY * dist,
-        posZ * dist,
-      );
-      orthographicRef.current.zoom = 1;
-      orthographicRef.current.updateProjectionMatrix();
+      cam.left = -sceneHalfW - bufLeft * wpp;
+      cam.right = sceneHalfW + bufRight * wpp;
+      cam.top = sceneHalfH + bufTop * hpp;
+      cam.bottom = -sceneHalfH - bufBottom * hpp;
+      cam.zoom = 1;
+      return { cam, dist, viewDir };
 
       // ------------------------------------------------------------------
       // PERSPECTIVE
       // ------------------------------------------------------------------
     } else if (camera.type === "Perspective" && perspectiveRef.current) {
+      const cam = perspectiveRef.current;
       const fovRad = (fov * Math.PI) / 180;
 
       // Horizontal FOV across just the *usable* area (not the full canvas) —
@@ -233,29 +174,45 @@ export function ReactCamera({
       const distForW = screenW / 2 / Math.tan(fovHRad / 2) + size.z * 0.5;
 
       const dist = Math.max(distForH, distForW) * (1 + fitPadding);
-      initialDistRef.current = dist;
 
-      perspectiveRef.current.fov = fov;
-      perspectiveRef.current.aspect = usableAspect;
-      perspectiveRef.current.position.set(
-        posX * dist,
-        posY * dist,
-        posZ * dist,
-      );
+      cam.fov = fov;
+      cam.aspect = usableAspect;
+      cam.zoom = 1;
 
       // Slice/extend the rendered frustum from the usable-area-sized window
       // out to the full canvas, asymmetrically per buffer side.
-      perspectiveRef.current.setViewOffset(
-        usableW,
-        usableH,
-        -bufLeft,
-        -bufTop,
-        canvasW,
-        canvasH,
-      );
-
-      perspectiveRef.current.updateProjectionMatrix();
+      cam.setViewOffset(usableW, usableH, -bufLeft, -bufTop, canvasW, canvasH);
+      return { cam, dist, viewDir };
     }
+    return undefined;
+  };
+
+  const resetZoomOnGizmoClick = (): void => {
+    const fit = fitCamera();
+    if (!controls || !fit) {
+      return;
+    }
+
+    const target = initialTargetRef.current.clone();
+    // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
+    controls.target.copy(target);
+
+    // Keep the current direction, the gizmo animates the rotation itself
+    const dir = fit.cam.position.clone().sub(target).normalize();
+    fit.cam.position.copy(target.add(dir.multiplyScalar(fit.dist)));
+    fit.cam.updateProjectionMatrix();
+    // oxlint-disable-next-line typescript/no-unsafe-call -- oxlint's type-aware checker resolves OrbitControlsInstance as `any` (see the note on its declaration above); tsc resolves it correctly
+    controls.update();
+    invalidate();
+  };
+
+  useLayoutEffect(() => {
+    const fit = fitCamera();
+    if (!fit) {
+      return;
+    }
+    fit.cam.position.copy(fit.viewDir.multiplyScalar(fit.dist));
+    fit.cam.updateProjectionMatrix();
     //}, [camera, viewPortAspect, canvasSize, bufferZones, view, scene, fitPadding]);
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- deps intentionally trimmed, see b290bc3e;
   }, [camera, viewPortAspect]);
@@ -263,9 +220,7 @@ export function ReactCamera({
   return (
     <>
       <PerspectiveCamera
-        ref={
-          perspectiveRef as unknown as React.RefObject<ThreePerspectiveCamera | null>
-        }
+        ref={perspectiveRef as unknown as React.RefObject<ThreePerspectiveCamera | null>}
         near={camera.near}
         far={camera.far}
         fov={camera.type === "Perspective" ? camera.fov : 75}
@@ -274,9 +229,7 @@ export function ReactCamera({
         makeDefault={camera.type === "Perspective"}
       />
       <OrthographicCamera
-        ref={
-          orthographicRef as unknown as React.RefObject<ThreeOrthographicCamera | null>
-        }
+        ref={orthographicRef as unknown as React.RefObject<ThreeOrthographicCamera | null>}
         up={[0, 1, 0]}
         near={camera.near}
         far={camera.far}
@@ -337,7 +290,7 @@ export function ReactCamera({
 const ControlsWrapper = (
   props: OrbitControlsProps & {
     setControls: (controls: OrbitControlsInstance) => void;
-  },
+  }
 ): React.JSX.Element => {
   const ref = useRef<OrbitControlsInstance>(null);
 
@@ -376,9 +329,7 @@ type GenericProps = {
 };
 
 export const cameraDist = (size: Vec3, fov: number): number =>
-  size.z * 0.5 +
-  (size.x > size.y ? size.x : size.y) /
-    (1 / 2 / Math.tan((Math.PI * fov) / 180 / 2));
+  size.z * 0.5 + (size.x > size.y ? size.x : size.y) / (1 / 2 / Math.tan((Math.PI * fov) / 180 / 2));
 
 type ViewTransform = readonly [number, number, number, Vec3, number];
 function getViewTransform(view: View, scene: Scene): ViewTransform {
