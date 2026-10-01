@@ -11,6 +11,7 @@
     "verify": "run-s lint build test",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
+    "test:abstract-3d": "vitest run --dir packages/abstract-3d",
     "test:abstract-image": "vitest run --dir packages/abstract-image --silent=false",
     "test:abstract-document": "vitest run --dir packages/abstract-document",
     "lint": "oxlint --type-aware -c ./oxlint.config.js ./packages",

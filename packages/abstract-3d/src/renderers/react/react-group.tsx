@@ -10,7 +10,9 @@ import { ReactMaterial } from "./react-material.js";
 import { ReactMesh } from "./react-mesh.js";
 import type { ReactPopover } from "./react-types.js";
 
-export function ReactGroup({
+export const ReactGroup = React.memo(ReactGroupBase, groupPropsEqual);
+
+function ReactGroupBase({
   g,
   materialStateImages,
   hoveredIdsExternal,
@@ -26,40 +28,7 @@ export function ReactGroup({
   onContextMenuGroup,
   createGroupKey,
   getTooltips,
-}: {
-  readonly g: Group_1;
-  readonly materialStateImages?: Record<string, string>;
-  readonly hoveredIdsExternal: ReadonlyArray<string> | undefined;
-  readonly hoveredParent?: boolean;
-  readonly selectedIds: Record<string, boolean> | undefined;
-  readonly hotSpotsActive: boolean;
-  readonly useAlphaTest?: boolean;
-  readonly activeComponents: Record<string, MaterialState> | undefined;
-  readonly id: string | undefined;
-  readonly rootData: Record<string, string> | undefined;
-  readonly onClickGroup?: (
-    id: string | undefined,
-    rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined,
-    e: ThreeEvent<MouseEvent>
-  ) => void;
-  readonly onHoverGroup?: (
-    id: string | undefined,
-    rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined,
-    e: ThreeEvent<MouseEvent>
-  ) => void;
-  readonly onContextMenuGroup?: (
-    id: string,
-    rootData: Record<string, string> | undefined,
-    data: Record<string, string> | undefined,
-    left: number,
-    top: number,
-    e: ThreeEvent<MouseEvent>
-  ) => void;
-  readonly getTooltips?: (id: string) => ReadonlyArray<ReactPopover>;
-  readonly createGroupKey?: (g: Group_1, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
-}): React.JSX.Element {
+}: ReactGroupProps): React.JSX.Element {
   const ref = React.useRef<Group>(undefined!);
   useFrame(({ invalidate }, delta) => {
     if (g.animation) {
@@ -77,6 +46,14 @@ export function ReactGroup({
     }
   });
   const [hovered, setHovered] = React.useState<boolean>(false);
+  // Stable so the memoized child groups below can skip rendering
+  const onChildHoverGroup = React.useCallback<NonNullable<ReactGroupProps["onHoverGroup"]>>(
+    (hId, rData, data, e) => {
+      setHovered(hId !== undefined);
+      onHoverGroup?.(hId, rData, data, e);
+    },
+    [onHoverGroup]
+  );
   // oxlint-disable-next-line typescript/prefer-nullish-coalescing -- `id && ...includes(id)` can legitimately be `false`, which must fall through to hoveredParent
   const hoveredFinal = hovered || (id && hoveredIdsExternal?.includes(id)) || !!hoveredParent;
   const selected = selectedIds?.[id ?? ""];
@@ -130,10 +107,7 @@ export function ReactGroup({
           hoveredIdsExternal={hoveredIdsExternal}
           hoveredParent={hoveredFinal}
           onClickGroup={onClickGroup}
-          onHoverGroup={(hId, rData, data, e) => {
-            setHovered(hId !== undefined);
-            onHoverGroup?.(hId, rData, data, e);
-          }}
+          onHoverGroup={onChildHoverGroup}
           onContextMenuGroup={onContextMenuGroup}
           getTooltips={getTooltips}
           id={id}
@@ -175,5 +149,53 @@ export function ReactGroup({
           </Html>
         ))}
     </group>
+  );
+}
+
+export type ReactGroupProps = {
+  readonly g: Group_1;
+  readonly materialStateImages?: Record<string, string>;
+  readonly hoveredIdsExternal: ReadonlyArray<string> | undefined;
+  readonly hoveredParent?: boolean;
+  readonly selectedIds: Record<string, boolean> | undefined;
+  readonly hotSpotsActive: boolean;
+  readonly useAlphaTest?: boolean;
+  readonly activeComponents: Record<string, MaterialState> | undefined;
+  readonly id: string | undefined;
+  readonly rootData: Record<string, string> | undefined;
+  readonly onClickGroup?: (
+    id: string | undefined,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined,
+    e: ThreeEvent<MouseEvent>
+  ) => void;
+  readonly onHoverGroup?: (
+    id: string | undefined,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined,
+    e: ThreeEvent<MouseEvent>
+  ) => void;
+  readonly onContextMenuGroup?: (
+    id: string,
+    rootData: Record<string, string> | undefined,
+    data: Record<string, string> | undefined,
+    left: number,
+    top: number,
+    e: ThreeEvent<MouseEvent>
+  ) => void;
+  readonly getTooltips?: (id: string) => ReadonlyArray<ReactPopover>;
+  readonly createGroupKey?: (g: Group_1, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
+};
+
+/** Shallow compare, except that selectedIds and activeComponents are only read at the group's own id (nested groups share it). */
+export function groupPropsEqual(prev: ReactGroupProps, next: ReactGroupProps): boolean {
+  const id = next.id ?? "";
+  if (prev.selectedIds?.[id] !== next.selectedIds?.[id] || prev.activeComponents?.[id] !== next.activeComponents?.[id]) {
+    return false;
+  }
+  const keys = Object.keys(next) as Array<keyof ReactGroupProps>;
+  return (
+    keys.length === Object.keys(prev).length &&
+    keys.every((key) => key === "selectedIds" || key === "activeComponents" || Object.is(prev[key], next[key]))
   );
 }

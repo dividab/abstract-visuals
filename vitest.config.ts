@@ -4,6 +4,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     projects: [
+      "./packages/abstract-3d/vite.config.ts",
       "./packages/abstract-document/vite.config.ts",
       "./packages/abstract-image/vite.config.ts",
       "./packages/abstract-sheet/vite.config.ts",
