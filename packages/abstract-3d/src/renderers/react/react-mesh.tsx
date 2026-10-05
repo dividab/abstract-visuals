@@ -8,7 +8,6 @@ import {
   CatmullRomCurve3,
   Color,
   ConeGeometry,
-  Curve,
   CylinderGeometry,
   Euler,
   ExtrudeGeometry,
@@ -23,20 +22,9 @@ import {
   Vector2,
   Vector3,
 } from "three";
-import { exhaustiveCheck } from "ts-exhaustive-check";
-import type {
-  Mesh,
-  Box,
-  Plane,
-  Shape as Shape_1,
-  Cylinder,
-  Polygon as A3dPolygon,
-  Tube as A3dTube,
-  CircleCurve as A3dCircleCurve,
-  Hole,
-  Vec3,
-} from "../../abstract-3d.js";
-import { vec2Scale, vec2Sub, vec2Add, isZero, vec3, equals } from "../../abstract-3d.js";
+import type { Mesh, Box, Plane, Shape as Shape_1, Cylinder, Polygon as A3dPolygon, Tube as A3dTube } from "../../abstract-3d.js";
+import { vec2Scale, isZero } from "../../abstract-3d.js";
+import { addHoles, CircleCurve, CYLINDER_SEGMENTS, cylinderCutPositions, nonZeroHoles } from "../shared/three-geometry.js";
 import { planeGeometry } from "./react-image-material.js";
 
 extend({
@@ -56,7 +44,6 @@ extend({
   CylinderGeometry,
 });
 
-const CYLINDER_SEGMENTS = 40;
 const boxGeometry = new BoxGeometry();
 const cylinderGeometries = new Map<string, BufferGeometry>();
 const coneGeometry = new ConeGeometry(1, 1, 16, 1);
@@ -80,8 +67,7 @@ export function ReactMesh({ mesh, children }: { readonly mesh: Mesh; readonly ch
   switch (mesh.geometry.type) {
     case "Box": {
       const { pos, size, rot, holes } = mesh.geometry;
-      const filteredHoles = holes?.filter((h) => !holeIsZero(h));
-      return !filteredHoles || filteredHoles.length === 0 ? (
+      return nonZeroHoles(holes).length === 0 ? (
         <mesh
           geometry={boxGeometry}
           scale={[size.x, size.y, size.z]}
@@ -117,8 +103,7 @@ export function ReactMesh({ mesh, children }: { readonly mesh: Mesh; readonly ch
       const { pos, radius, radiusEnd = radius, rot, length, holes, open, angleStart = 0, angleLength = Math.PI * 2 } = mesh.geometry;
       const isWhole = isZero(Math.PI * 2 - angleLength);
       // Holes are extruded along the length, which can't taper
-      const filteredHoles = radiusEnd === radius ? holes?.filter((h) => !holeIsZero(h)) : undefined;
-      if (isWhole && filteredHoles && filteredHoles.length > 0) {
+      if (isWhole && radiusEnd === radius && nonZeroHoles(holes).length > 0) {
         return <ExcrudeCylinder cyl={mesh.geometry}>{children}</ExcrudeCylinder>;
       }
       // Unit geometry scaled by the largest radius, so only the radius ratio needs its own geometry
@@ -162,8 +147,7 @@ export function ReactMesh({ mesh, children }: { readonly mesh: Mesh; readonly ch
       );
     case "Plane": {
       const { pos, size, rot, holes } = mesh.geometry;
-      const filteredHoles = holes?.filter((h) => !holeIsZero(h));
-      return !filteredHoles || filteredHoles.length === 0 ? (
+      return nonZeroHoles(holes).length === 0 ? (
         <mesh
           geometry={planeGeometry}
           scale={[size.x, size.y, 1]}
@@ -273,7 +257,7 @@ function ExcrudeBoxPlane({
   const excrudeGeometry = React.useMemo(() => {
     const shape = new Shape();
     shape.moveTo(-half.x, -half.y).lineTo(-half.x, half.y).lineTo(half.x, half.y).lineTo(half.x, -half.y).closePath();
-    holes(geo.holes, shape);
+    addHoles(geo.holes, shape);
     return new ExtrudeGeometry(shape, { depth: sizeZ, bevelEnabled: false });
   }, [geo, half.x, half.y, sizeZ]);
 
@@ -299,7 +283,7 @@ function ExcrudeShape({ s, children }: { readonly s: Shape_1; readonly children?
       shape.lineTo(p.x, p.y);
     }
     shape.closePath();
-    holes(s.holes, shape);
+    addHoles(s.holes, shape);
     return new ExtrudeGeometry(shape, { depth: s.thickness, bevelEnabled: false });
   }, [s]);
 
@@ -330,30 +314,11 @@ function getCylinderGeometry(top: number, bottom: number, open: boolean, angleSt
   );
 }
 
-const rimPoint = (radius: number, y: number, angle: number): Vec3 => vec3(radius * Math.sin(angle), y, radius * Math.cos(angle));
-
 /** The two walls closing an angled cylinder, from the axis out to the rim at angleStart and angleEnd */
 function getCylinderCutGeometry(top: number, bottom: number, angleStart: number, angleLength: number): BufferGeometry {
   return cachedCylinderGeometry(`cut_${top}_${bottom}_${angleStart}_${angleLength}`, () => {
-    const [c0, c1] = [vec3(0, -0.5, 0), vec3(0, 0.5, 0)];
-    const angleEnd = angleStart + angleLength;
-    const [b0, t0] = [rimPoint(bottom, -0.5, angleStart), rimPoint(top, 0.5, angleStart)];
-    const [b1, t1] = [rimPoint(bottom, -0.5, angleEnd), rimPoint(top, 0.5, angleEnd)];
-    // Unshared vertices so each wall gets its own flat normal, wound opposite so both face outwards
-    const triangles = [
-      [c0, b0, t0],
-      [c0, t0, c1],
-      [c0, c1, t1],
-      [c0, t1, b1],
-    ];
     const g = new BufferGeometry();
-    g.setAttribute(
-      "position",
-      new Float32BufferAttribute(
-        triangles.flat().flatMap((v) => [v.x, v.y, v.z]),
-        3
-      )
-    );
+    g.setAttribute("position", new Float32BufferAttribute(cylinderCutPositions(top, bottom, 1, angleStart, angleLength), 3));
     g.computeVertexNormals();
     return g;
   });
@@ -363,7 +328,7 @@ function ExcrudeCylinder({ cyl, children }: { readonly cyl: Cylinder; readonly c
   const excrudeGeometry = React.useMemo(() => {
     const shape = new Shape();
     shape.moveTo(0, cyl.radius).absellipse(0, 0, cyl.radius, cyl.radius, 0, Math.PI * 2, true);
-    holes(cyl.holes, shape);
+    addHoles(cyl.holes, shape);
     return new ExtrudeGeometry(shape, { depth: cyl.length, bevelEnabled: false });
   }, [cyl]);
 
@@ -375,29 +340,6 @@ function ExcrudeCylinder({ cyl, children }: { readonly cyl: Cylinder; readonly c
       </mesh>
     </mesh>
   );
-}
-
-function holes(holes: ReadonlyArray<Hole> | undefined, shape: Shape): void {
-  holes
-    ?.filter((h) => !holeIsZero(h))
-    .forEach((h) => {
-      switch (h.type) {
-        case "RoundHole":
-          shape.holes.push(new Path().absarc(h.pos.x, h.pos.y, h.radius, 0, Math.PI * 2, true));
-          break;
-        case "SquareHole": {
-          const path = new Path();
-          const halfHole = vec2Scale(h.size, 0.5);
-          const min = vec2Sub(h.pos, halfHole);
-          const max = vec2Add(h.pos, halfHole);
-          path.moveTo(min.x, min.y).lineTo(min.x, max.y).lineTo(max.x, max.y).lineTo(max.x, min.y).closePath();
-          shape.holes.push(path);
-          break;
-        }
-        default:
-          exhaustiveCheck(h);
-      }
-    });
 }
 
 function Polygon({ polygon, children }: { readonly polygon: A3dPolygon; readonly children?: React.JSX.Element }): React.JSX.Element {
@@ -479,41 +421,6 @@ function Tube({ tube, children }: { readonly tube: A3dTube; readonly children?: 
       {children}
     </mesh>
   );
-}
-
-function holeIsZero(hole: Hole): boolean {
-  switch (hole.type) {
-    case "RoundHole": {
-      return equals(hole.radius, 0.0);
-    }
-    case "SquareHole": {
-      return equals(hole.size.x, 0.0) || equals(hole.size.y, 0.0);
-    }
-    default:
-      return false;
-  }
-}
-
-// oxlint-disable-next-line functional/no-classes -- extends three.js Curve, which requires a class
-class CircleCurve extends Curve<Vector3> {
-  radius: number;
-  angleLength: number;
-  startAngle: number;
-
-  constructor(circleCurve: A3dCircleCurve) {
-    super();
-    this.radius = circleCurve.radius;
-    this.startAngle = circleCurve.angleStart;
-    this.angleLength = circleCurve.angleLength;
-  }
-
-  override getPoint(t: number, optionalTarget = new Vector3()): Vector3 {
-    return optionalTarget.set(
-      -this.radius * Math.sin(this.startAngle + this.angleLength * t),
-      -this.radius * Math.cos(this.startAngle + this.angleLength * t),
-      0
-    );
-  }
 }
 
 const culledLineVertexShader = `

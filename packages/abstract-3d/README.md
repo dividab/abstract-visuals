@@ -4,4 +4,4 @@
 [![code style: oxfmt][oxfmt-image]][oxfmt-url]
 [![MIT license][license-image]][license-url]
 
-Abstract 3d with 4 renderers, react (three js + react three fiber), svg, stl and dxf
+Abstract 3d with renderers for react (three js + react three fiber), svg, stl, step, ifc and dxf

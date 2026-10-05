@@ -37,6 +37,11 @@
       "types": "./lib/renderers/step/index.d.ts",
       "import": "./lib/renderers/step/index.js"
     },
+    "./ifc": {
+      "ts": "./src/renderers/ifc/index.ts",
+      "types": "./lib/renderers/ifc/index.d.ts",
+      "import": "./lib/renderers/ifc/index.js"
+    },
     "./stl": {
       "ts": "./src/renderers/stl/index.ts",
       "types": "./lib/renderers/stl/index.d.ts",

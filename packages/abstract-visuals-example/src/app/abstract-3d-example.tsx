@@ -3,6 +3,7 @@ import React from "react";
 import type { Group, Scene } from "../../../abstract-3d/src/abstract-3d.js";
 import { dimensionIsOfTypeAligned, vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
 import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";
+import * as Ifc from "../../../abstract-3d/src/renderers/ifc/index.js";
 import type * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
 import { render as Render } from "../../../abstract-3d/src/renderers/react/index.js";
 import * as Step from "../../../abstract-3d/src/renderers/step/index.js";
@@ -153,6 +154,18 @@ export function Abstract3DExample(): React.ReactNode {
         </button>
         <button onClick={() => FileSaver.saveAs(new Blob([Stl.render(systemair)], { type: "text/plain" }), `a3d.stl`)}>STL</button>
         <button onClick={() => FileSaver.saveAs(new Blob([Step.render(systemair)], { type: "text/plain" }), `a3d.stp`)}>STEP</button>
+        <button
+          onClick={() =>
+            FileSaver.saveAs(
+              new Blob([Ifc.render(systemair, { root: { entity: "IfcUnitaryEquipment", predefinedType: "AIRHANDLER", name: "AHU" } })], {
+                type: "text/plain",
+              }),
+              `a3d.ifc`
+            )
+          }
+        >
+          IFC
+        </button>
         <button
           onClick={() =>
             FileSaver.saveAs(new Blob([Svg.render(systemair, { view: "top", stroke_thickness: 2 }).image], { type: "text/plain" }), `a3d.svg`)
