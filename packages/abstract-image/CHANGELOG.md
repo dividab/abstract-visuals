@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [13.3.0] - 2026-10-05
+
+- Added: Support for `"avif"` as `BinaryFormat`. AVIF binary images are rendered by the SVG and React SVG exporters.
+
 ## [13.2.0] - 2026-09-10
 
 - Internal: activated `typescript/no-unnecessary-condition`. No functional changes.

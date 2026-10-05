@@ -24,7 +24,7 @@ export function createGroup(name: string, children: Array<Component>): Group {
 
 /** Embed a foreign binary image in any suported format. */
 
-export type BinaryFormat = "svg" | "png" | "dxf";
+export type BinaryFormat = "svg" | "png" | "dxf" | "avif";
 
 export interface BinaryImage {
   readonly type: "binaryimage";

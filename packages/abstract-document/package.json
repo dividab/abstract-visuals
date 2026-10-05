@@ -41,6 +41,8 @@
     }
   },
   "dependencies": {
+    "@jsquash/avif": "^2.1.1",
+    "@jsquash/png": "^3.1.1",
     "abstract-image": "workspace:^",
     "docx": "^9.7.1",
     "fast-xml-parser": "^4.5.0",

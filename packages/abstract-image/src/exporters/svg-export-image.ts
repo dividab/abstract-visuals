@@ -60,9 +60,9 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
           (component.bottomRight.y - component.topLeft.y) / (data.size.height || 1)
         );
         return createElement("g", { transform: `translate(${x}, ${y}) scale(${scale})` }, [createSVG(data, options)]);
-      } else if (component.format === "png") {
+      } else if (component.format === "png" || component.format === "avif") {
         const base64 = fromByteArray(component.data.bytes);
-        return createElement("image", { x, y, width, height, href: `data:image/png;base64,${base64}` }, []);
+        return createElement("image", { x, y, width, height, href: `data:image/${component.format};base64,${base64}` }, []);
       } else if (component.format === "svg") {
         const svg = String.fromCharCode(...component.data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
         const bytes = [];

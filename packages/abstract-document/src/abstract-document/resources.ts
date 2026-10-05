@@ -13,8 +13,8 @@ export interface Resources {
   readonly fonts?: Indexer<Font>;
   readonly styles?: Indexer<Style>;
   /**
-   * Embedded image data uri are expected to have to shape: data:image/png;base64,${string}, data:image/jpeg;base64,${string} or
-   * data:image/svg+xml,${string}
+   * Embedded image data uri are expected to have to shape: data:image/png;base64,${string}, data:image/jpeg;base64,${string},
+   * data:image/avif;base64,${string} (transcoded to PNG when exporting to PDF and DOCX) or data:image/svg+xml,${string}
    */
   readonly imageResources?: Record<string, ImageResource>;
   readonly numberingDefinitions?: Indexer<NumberingDefinition>;

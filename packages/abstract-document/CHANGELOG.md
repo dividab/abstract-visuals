@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.3.0] - 2026-10-05
+
+- Added: Support for AVIF images (`"avif"` binary format or `data:image/avif;base64,` urls). The PDF and DOCX exporters transcode them to PNG using `@jsquash/avif` and `@jsquash/png` (wasm, loaded only when a document contains AVIF).
+- Changed: `exportToStream` in the PDF exporter now builds the document asynchronously, so errors are emitted as `error` events on the stream instead of being thrown.
+
 ## [20.2.1] - 2026-09-14
 
 - Fixed: a `<Table>` XML template element without a `columnWidths` attribute no longer crashes PDF export (`Cannot read properties of undefined (reading 'filter')`); it now renders with zero fixed-width columns instead.

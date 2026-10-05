@@ -32,21 +32,21 @@ import {
   PageNumber,
 } from "docx";
 import * as AD from "../../abstract-document/index.js";
+import { transcodeAvifImages } from "../shared/avif-to-png.js";
 import { renderImage } from "./render-image.js";
 
 const abstractDocToDocxFontRatio = 2;
 const abstractDocPixelToDocxDXARatio = 20;
 const abstractDocBorderToDocxBorderSizeRatio = 8;
 
-export function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc): Promise<Blob> {
-  const docx = createDocument(doc);
+export async function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc): Promise<Blob> {
+  const docx = createDocument(await transcodeAvifImages(doc));
   return Packer.toBlob(docx);
 }
 
 export function exportToStream(blobStream: NodeJS.WritableStream, doc: AD.AbstractDoc.AbstractDoc): void {
-  const docx = createDocument(doc);
-
-  Packer.toBuffer(docx)
+  transcodeAvifImages(doc)
+    .then((transcoded) => Packer.toBuffer(createDocument(transcoded)))
     .then((buffer) => {
       const readableStream = new Readable();
       readableStream.push(buffer);

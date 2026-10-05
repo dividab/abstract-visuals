@@ -116,9 +116,9 @@ function JsxComponent({ component, options }: { readonly component: Component; r
             <ReactSvg image={data} options={{ imageDataByUrl: options.imageDataByUrl }} />
           </g>
         );
-      } else if (component.format === "png") {
+      } else if (component.format === "png" || component.format === "avif") {
         const base64 = fromByteArray(component.data.bytes);
-        return <image x={x} y={y} width={width} height={height} id={id} href={`data:image/png;base64,${base64}`} />;
+        return <image x={x} y={y} width={width} height={height} id={id} href={`data:image/${component.format};base64,${base64}`} />;
       } else if (component.format === "svg") {
         const svg = String.fromCharCode(...component.data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
         const bytes = [];

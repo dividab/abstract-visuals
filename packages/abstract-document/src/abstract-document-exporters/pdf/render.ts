@@ -2,6 +2,7 @@
 import PDFDocument from "pdfkit";
 import { toBlob, toBytes } from "pdfkit/output";
 import * as AD from "../../abstract-document/index.js";
+import { transcodeAvifImages } from "../shared/avif-to-png.js";
 import { registerFonts, getFontNameStyle } from "./font.js";
 import { getHeaderAndFooter } from "./header-footer.js";
 import { measure, measurePages } from "./measure.js";
@@ -18,13 +19,13 @@ export type PdfExportOptions = {
   compress: boolean;
 };
 
-export function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): Promise<Blob> {
-  const pdf = createDocument(options, doc);
+export async function exportToHTML5Blob(doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): Promise<Blob> {
+  const pdf = createDocument(options, await transcodeAvifImages(doc));
   return toBlob(pdf);
 }
 
-export function exportToBytes(doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): Promise<Uint8Array> {
-  const pdf = createDocument(options, doc);
+export async function exportToBytes(doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): Promise<Uint8Array> {
+  const pdf = createDocument(options, await transcodeAvifImages(doc));
   return toBytes(pdf);
 }
 
@@ -37,8 +38,10 @@ export function exportToBytes(doc: AD.AbstractDoc.AbstractDoc, options: PdfExpor
  * @param options
  */
 export function exportToStream(blobStream: unknown, doc: AD.AbstractDoc.AbstractDoc, options: PdfExportOptions = { compress: false }): void {
-  const pdf = createDocument(options, doc);
-  pdf.pipe(blobStream as NodeJS.WritableStream);
+  const stream = blobStream as NodeJS.WritableStream;
+  transcodeAvifImages(doc)
+    .then((transcoded) => createDocument(options, transcoded).pipe(stream))
+    .catch((err: unknown) => stream.emit("error", err instanceof Error ? err : new Error(String(err))));
 }
 
 function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDoc): PDFKit.PDFDocument {
