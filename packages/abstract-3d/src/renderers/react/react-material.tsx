@@ -56,11 +56,11 @@ export function ReactMaterial({
   }
   return (
     <meshStandardMaterial
-      key={`mesh_material_standard_${mat.normal}_${mat.metalness}_${mat.opacity}_${mat.roughness}`}
+      key={`mesh_material_standard_${mat.normal}_${mat.metalness}_${mat.opacity}_${mat.roughness}_${material.backfaceCulling}`}
       color={getColor(selected, hovered, mat, selectMat)}
       roughness={mat.roughness}
       metalness={mat.metalness}
-      side={DoubleSide}
+      side={material.backfaceCulling ? FrontSide : DoubleSide}
       {...(opacity < 1 || disabled
         ? {
             transparent: true,

@@ -1,7 +1,7 @@
 import { createSVG } from "abstract-image";
 import React from "react";
 import { suspend } from "suspend-react";
-import { CanvasTexture, DoubleSide, PlaneGeometry, SRGBColorSpace, type Texture, TextureLoader } from "three";
+import { CanvasTexture, DoubleSide, FrontSide, PlaneGeometry, SRGBColorSpace, type Texture, TextureLoader } from "three";
 import type { Material, Image as A3dImage } from "../../abstract-3d.js";
 import type { MaterialState } from "./react-material.js";
 import { ERROR_IMG_KEY, getColor, materialDefaults, selectMat } from "./react-material.js";
@@ -59,7 +59,7 @@ export function ImageMaterial({
   return (
     <meshBasicMaterial
       color={getColor(selected, hovered, material, selectMat)}
-      side={DoubleSide}
+      side={material.backfaceCulling ? FrontSide : DoubleSide}
       alphaTest={(useAlphaTest ?? true) ? 0.8 : undefined}
       map={texture}
       {...(material.opacity !== undefined && material.opacity < 1 ? { opacity: material.opacity } : materialDefaults)}

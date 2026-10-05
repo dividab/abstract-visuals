@@ -91,6 +91,8 @@ export type Material = {
   readonly opacity?: number;
   readonly metalness?: number;
   readonly roughness?: number;
+  /** Draw only the front side, e.g. an image on a wall that should not show through from behind. Default is both sides. */
+  readonly backfaceCulling?: boolean;
 };
 
 export type ImageMesh = {

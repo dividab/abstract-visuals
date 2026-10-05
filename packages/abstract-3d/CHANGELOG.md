@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Added: `backfaceCulling` on `Material`, which makes the react renderer draw only the front side of meshes and images that use it, e.g. an image on the far wall that should not show through an open casing. Default is still both sides
+
 ## [2.11.0] - 2026-10-05
 
 - Added: IFC renderer (`abstract-3d/ifc`, `Ifc.render(scene)`), exports an IFC4 file where every mesh is triangulated into an `IfcTriangulatedFaceSet` with its color, and every top-level group and every group with `data` becomes an `IfcBuildingElementProxy` aggregated into its parent element, groups without `data` are merged into their parent. The GlobalId comes from the group's `data.id` when it's a uuid. The `root` option wraps the whole scene in one element, e.g. an `IfcUnitaryEquipment` air handler
