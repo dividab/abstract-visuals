@@ -62,7 +62,7 @@ pnpm publish-npm
 
 It will build the packages and call `lerna publish` which will figure out which packages has changed, ask for new versions of them, and then publish them. Needs an npm auth token in `~/.npmrc` and, if 2FA is enabled, an OTP, which it will prompt you for — if you enter a wrong or expired one, it re-prompts instead of aborting (rerunning the publish step is safe, it skips packages already on the registry).
 
-`scripts/publish-npm.sh` runs the actual publish under `pnpm@10.34.5` instead of this repo's pinned `pnpm@12.3.1` — the pinned version has a confirmed upstream bug where registry-authenticated requests (`whoami`, `publish`) fail even with a valid npm token, while `pnpm@10.34.5` works. Revisit that once it's fixed upstream.
+`scripts/publish-npm.sh` runs the actual publish under `pnpm@10.34.5` instead of this repo's pinned `pnpm@12.8.2` — the pinned version has a confirmed upstream bug where registry-authenticated requests (`whoami`, `publish`) fail even with a valid npm token, while `pnpm@10.34.5` works. Revisit that once it's fixed upstream.
 
 If you are not logged in to npm, `pnpm publish-npm` runs `npm login` for you first. `npm login` prints a URL and waits for you to press Enter before opening it in your browser — on WSL, npm doesn't know how to launch a Windows browser by default, so configure it once:
 
