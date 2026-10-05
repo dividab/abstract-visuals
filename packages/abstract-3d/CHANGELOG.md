@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [2.10.6] - 2026-10-05
+
+- Fixed: the lines of a selected or hovered dimension are now also drawn in the select color in the react renderer
+
+## [2.10.5] - 2026-10-01
+
+- Changed: groups are memoized in the react renderer so unchanged groups skip re-rendering
+
 ## [2.10.4] - 2026-10-01
 
 - Fixed: removed: zoom now resets when the 3D model changes in the react renderer. Reset only on gizmo click

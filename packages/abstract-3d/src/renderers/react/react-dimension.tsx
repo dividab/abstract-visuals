@@ -69,9 +69,9 @@ export function ReactDimension({
   readonly _sceneCenter: Vec3 | undefined;
 } & DimensionCallbacks): React.JSX.Element {
   const [hovered, setHovered] = React.useState<boolean>(false);
-  const dim = dimensionConvertToTypeMesh(dimension, sceneRotation ?? vec3Zero, material);
-  const id = hotSpotsActive || !onClickGroup ? undefined : dim.id;
+  const id = hotSpotsActive || !onClickGroup ? undefined : dimension.id;
   const highlighted = !!id && (hovered || !!selectedIds?.[id]);
+  const dim = dimensionConvertToTypeMesh(highlighted ? { ...dimension, material: selectMat } : dimension, sceneRotation ?? vec3Zero, material);
   return visible ? (
     <group
       position={[dim.pos.x, dim.pos.y, dim.pos.z]}
