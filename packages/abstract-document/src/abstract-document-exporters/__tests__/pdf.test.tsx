@@ -3,7 +3,8 @@ import * as S from "stream";
 import PDFParser from "pdf2json";
 import { describe, test, expect } from "vitest";
 import { AbstractDoc, Paragraph, Section, Table, TableCell, TableRow, TextRun, render } from "../../abstract-document-jsx/index.js";
-import { exportToStream } from "../pdf/render.js";
+import * as AD from "../../abstract-document/index.js";
+import { exportToBytes, exportToStream } from "../pdf/render.js";
 import { testAbsolutePositionGroup } from "./pdf/absolute-position-group.js";
 import { testAbsolutePositionHeaderAndFooter } from "./pdf/absolute-position-header-and-footer.js";
 import { testAbsolutePositionParagraph } from "./pdf/absolute-position-paragraph.js";
@@ -103,6 +104,20 @@ import { testWorld } from "./pdf/world.js";
 import { saveBufferInTmpDir, streamToBuffer, diffJson } from "./test-utils/index.js";
 
 describe("export pdf", () => {
+  test("an empty fontFamily falls back to Helvetica", async () => {
+    const document = render(
+      <AbstractDoc>
+        <Section>
+          <Paragraph>
+            <TextRun text="Bold" style={AD.TextStyle.create({ fontFamily: "", bold: true })} />
+            <TextRun text="Normal" style={AD.TextStyle.create({ fontFamily: "" })} />
+          </Paragraph>
+        </Section>
+      </AbstractDoc>
+    );
+    await expect(exportToBytes(document)).resolves.toBeInstanceOf(Uint8Array);
+  });
+
   test("row spans beyond the table render like spans clipped to the remaining rows", async () => {
     const outputs: Array<unknown> = [];
     for (const rowSpan of [2, 5]) {

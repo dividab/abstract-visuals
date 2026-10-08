@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [20.3.2] - 2026.10-07
+## [20.3.3] - 2026-10-07
+
+- Fixed: in the PDF exporter, an empty `fontFamily` (e.g. `fontFamily=""` in an XML template) falls back to Helvetica again, as it did before 20.1.0. Since 20.1.0 it produced font names like `-Bold`, which pdfkit tried to read as a file (`Cannot read '-Bold': file paths are not supported outside of Node`).
+
+## [20.3.2] - 2026-10-07
 
 - Fixed: the PDF exporter no longer prints wrong characters when the font lacks a character. Narrow no-break space (U+202F) and figure space (U+2007) fall back to a no-break space or a space, thin space (U+2009) to a space, and minus sign (U+2212) and non-breaking hyphen (U+2011) to a hyphen-minus. The fallback only applies when the font lacks the original. Before, built-in fonts (Helvetica, Times, Courier) printed `1 /234` for 1 234 grouped with U+202F and `"12` for −12 written with U+2212, and embedded fonts drew their missing-character glyph.
 - Fixed: in the PDF exporter, hyperlinks are now drawn with their text style's `transform` (uppercase/lowercase), as they were already measured, and lines of text runs with a `transform` are now aligned using the transformed width.

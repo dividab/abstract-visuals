@@ -117,7 +117,7 @@ export function getFontStyleName(attributes: Record<string, string>): keyof Font
 }
 
 export function getFontName(fontFamily: string | undefined, fontWeight: TextFontWeight, italic: boolean | undefined): string {
-  const name = fontFamily ?? "Helvetica";
+  const name = fontFamily === undefined || fontFamily.length === 0 ? "Helvetica" : fontFamily;
   if (fontWeight === "light" && italic) {
     return name + "-LightOblique";
   } else if (fontWeight === "bold" && italic) {
