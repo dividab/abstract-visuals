@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.3.2] - 2026.10-07
+
+- Fixed: the PDF exporter no longer prints wrong characters when the font lacks a character. Narrow no-break space (U+202F) and figure space (U+2007) fall back to a no-break space or a space, thin space (U+2009) to a space, and minus sign (U+2212) and non-breaking hyphen (U+2011) to a hyphen-minus. The fallback only applies when the font lacks the original. Before, built-in fonts (Helvetica, Times, Courier) printed `1 /234` for 1 234 grouped with U+202F and `"12` for −12 written with U+2212, and embedded fonts drew their missing-character glyph.
+- Fixed: in the PDF exporter, hyperlinks are now drawn with their text style's `transform` (uppercase/lowercase), as they were already measured, and lines of text runs with a `transform` are now aligned using the transformed width.
+
 ## [20.3.0] - 2026-10-05
 
 - Added: Support for AVIF images (`"avif"` binary format or `data:image/avif;base64,` urls). The PDF and DOCX exporters transcode them to PNG using `@jsquash/avif` and `@jsquash/png` (wasm, loaded only when a document contains AVIF).

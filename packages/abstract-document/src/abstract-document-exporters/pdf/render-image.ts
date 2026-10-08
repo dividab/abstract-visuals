@@ -2,7 +2,7 @@ import type * as AbstractImage from "abstract-image";
 import svgToPdfKit from "svg-to-pdfkit";
 import * as AD from "../../abstract-document/index.js";
 import { rawSvgPrefix, toBase64 } from "../shared/base-64.js";
-import { getFontNameStyle, getFontName, isFontAvailable } from "./font.js";
+import { getFontNameStyle, getFontName, isFontAvailable, transformText } from "./font.js";
 
 export function renderImage(
   resources: AD.Resources.Resources,
@@ -140,7 +140,8 @@ function abstractComponentToPdf(
         });
       }
       pdf.font(font).fontSize(component.fontSize);
-      const stringWidth = pdf.widthOfString(component.text);
+      const text = transformText(pdf, component.text, undefined);
+      const stringWidth = pdf.widthOfString(text);
       const stringHeight = pdf.currentLineHeight();
       const dx =
         component.horizontalGrowthDirection === "left" ? -stringWidth : component.horizontalGrowthDirection === "uniform" ? -stringWidth * 0.5 : 0;
@@ -150,7 +151,7 @@ function abstractComponentToPdf(
         .font(font)
         .fontSize(component.fontSize)
         .fillColor(colorToRgb(component.textColor))
-        .text(component.text, component.position.x + dx, component.position.y + dy, { lineBreak: false });
+        .text(text, component.position.x + dx, component.position.y + dy, { lineBreak: false });
       if (component.clockwiseRotationDegrees !== 0) {
         pdf.restore();
       }

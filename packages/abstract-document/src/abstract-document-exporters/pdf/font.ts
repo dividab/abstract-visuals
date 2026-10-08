@@ -1,7 +1,59 @@
 import * as AD from "../../abstract-document/index.js";
 import type { Font } from "../../abstract-document/primitives/font.js";
-import type { TextFontWeight } from "../../abstract-document/styles/text-style.js";
+import type { TextFontWeight, TextTransform } from "../../abstract-document/styles/text-style.js";
 import { getResources } from "../shared/get_resources.js";
+
+// Characters the current font may lack, with replacements in order of preference. pdfkit doesn't warn about
+// missing characters: built-in fonts only cover WinAnsi and encode anything else as wrong bytes (U+2212 → `"`),
+// and embedded fonts draw their missing-character glyph.
+const fallbackChars: Readonly<Record<string, ReadonlyArray<string>>> = {
+  "\u{202F}": ["\u{00A0}", " "], // narrow no-break space
+  "\u{2009}": [" "], // thin space
+  "\u{2007}": ["\u{00A0}", " "], // figure space
+  "\u{2212}": ["-"], // minus sign
+  "\u{2011}": ["-"], // non-breaking hyphen
+};
+const fallbackCharsRegex = new RegExp(`[${Object.keys(fallbackChars).join("")}]`, "gu");
+
+// pdfkit's font object behind `pdf.font()`: a fontkit font for embedded fonts, an AFMFont for built-in fonts.
+// pdfkit exposes neither, so it's read from the private `_font` field.
+type PdfKitFont = {
+  readonly hasGlyphForCodePoint?: (codePoint: number) => boolean;
+  readonly characterToGlyph?: (codePoint: number) => string;
+};
+const resolvedCharsByFont = new WeakMap<PdfKitFont, Map<string, string>>();
+
+/**
+ * Applies the text transform, then replaces characters the current font (set with `pdf.font()`) lacks with a fallback it has. Measure and draw text
+ * through this so the measured width matches what's drawn.
+ */
+export function transformText(pdf: PDFKit.PDFDocument, text: string, transform: TextTransform | undefined): string {
+  const transformed = transform === "uppercase" ? text.toUpperCase() : transform === "lowercase" ? text.toLowerCase() : text;
+  const font = (pdf as unknown as { readonly _font?: { readonly font?: PdfKitFont } })._font?.font;
+  if (!font) {
+    return transformed;
+  }
+  const resolvedChars = resolvedCharsByFont.get(font) ?? new Map<string, string>();
+  resolvedCharsByFont.set(font, resolvedChars);
+  return transformed.replace(fallbackCharsRegex, (char) => {
+    const cached = resolvedChars.get(char);
+    if (cached !== undefined) {
+      return cached;
+    }
+    const resolved = [char, ...(fallbackChars[char] ?? [])].find((c) => fontHasChar(font, c)) ?? char;
+    resolvedChars.set(char, resolved);
+    return resolved;
+  });
+}
+
+function fontHasChar(font: PdfKitFont, char: string): boolean {
+  const codePoint = char.codePointAt(0) ?? 0;
+  if (font.hasGlyphForCodePoint) {
+    return font.hasGlyphForCodePoint(codePoint);
+  }
+  // An unknown font shape counts as having the character, which keeps pdfkit's own behaviour
+  return font.characterToGlyph?.(codePoint) !== ".notdef";
+}
 
 export function registerFonts(registerFont: (fontName: string, fontSource: AD.Font.FontSource) => void, document: AD.AbstractDoc.AbstractDoc): void {
   const resources = getResources(document);

@@ -1,6 +1,6 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import * as AD from "../../abstract-document/index.js";
-import { registerFonts, getFontNameStyle } from "./font.js";
+import { registerFonts, getFontNameStyle, transformText } from "./font.js";
 import { getHeaderAndFooter } from "./header-footer.js";
 import type { Page } from "./page.js";
 
@@ -154,8 +154,17 @@ function measureParagraph(
       }
       const atomSize = measureAtom(pdfKit, resources, style.textStyle, contentAvailableSize, contentAvailableSize.width - currentRowWidth, atom);
       if (atom.type === "TextRun" || atom.type === "TextField" || atom.type === "HyperLink") {
-        concatenatedText += atom.text;
-        textOptions = getBiggestStyle(atom, style, resources, textOptions);
+        const atomTextStyle = AD.Resources.getNestedStyle(
+          style.textStyle,
+          atom.style,
+          "TextStyle",
+          atom.styleName,
+          resources,
+          atom.type === "TextRun" && atom.nestedStyleNames ? atom.nestedStyleNames : []
+        ) as AD.TextStyle.TextStyle;
+        // measureAtom left the atom's font current
+        concatenatedText += transformText(pdfKit, atom.text, atomTextStyle.transform);
+        textOptions = getBiggestStyle(atom, atomTextStyle, textOptions);
       }
       desiredSizes.set(atom, atomSize);
       currentRowWidth += atomSize.width;
@@ -197,19 +206,9 @@ function measureParagraph(
 
 function getBiggestStyle(
   atom: AD.TextField.TextField | AD.TextRun.TextRun | AD.HyperLink.HyperLink,
-  style: AD.ParagraphStyle.ParagraphStyle,
-  resources: AD.Resources.Resources,
+  textStyle: AD.TextStyle.TextStyle,
   textOptions: AD.TextStyle.TextStyle | undefined
 ): AD.TextStyle.TextStyle | undefined {
-  const textStyle = AD.Resources.getNestedStyle(
-    style.textStyle,
-    atom.style,
-    "TextStyle",
-    atom.styleName,
-    resources,
-    atom.type === "TextRun" && atom.nestedStyleNames ? atom.nestedStyleNames : []
-  ) as AD.TextStyle.TextStyle;
-
   if (textOptions) {
     if ((textOptions.fontSize ?? 100) < (textStyle.fontSize ?? 100)) {
       return atom.style;
@@ -501,17 +500,7 @@ function measureText(
     ...(textStyle.lineGap !== undefined ? { lineGap: textStyle.lineGap } : {}),
   };
 
-  let transformedText = text;
-  switch (textStyle.transform) {
-    case "lowercase":
-      transformedText = transformedText.toLowerCase();
-      break;
-    case "uppercase":
-      transformedText = transformedText.toUpperCase();
-      break;
-    default:
-      break;
-  }
+  const transformedText = transformText(pdf, text, textStyle.transform);
 
   let measuredWidth = 0;
   if (measureWithSpaces !== undefined && measureWithSpaces) {

@@ -3,7 +3,7 @@ import PDFDocument from "pdfkit";
 import { toBlob, toBytes } from "pdfkit/output";
 import * as AD from "../../abstract-document/index.js";
 import { transcodeAvifImages } from "../shared/avif-to-png.js";
-import { registerFonts, getFontNameStyle } from "./font.js";
+import { registerFonts, getFontNameStyle, transformText } from "./font.js";
 import { getHeaderAndFooter } from "./header-footer.js";
 import { measure, measurePages } from "./measure.js";
 import type { Page } from "./page.js";
@@ -489,13 +489,14 @@ function drawHyperLink(
     .fillColor(textStyle.color ?? "blue");
 
   applyTextOffset(pdf, textStyle);
+  const text = transformText(pdf, hyperLink.text, textStyle.transform);
 
   // Using continued with alignment "center" or "right" is broken:
   // https://github.com/foliojs/pdfkit/issues/240
   // so always set alignment to left and handle it through an x offset
   // if its just a single atom then we can use its alignment to partially support multi-line texts for other alignments
   if (isFirstAtom || alignment !== "left") {
-    pdf.text(hyperLink.text, finalRect.x, finalRect.y, {
+    pdf.text(text, finalRect.x, finalRect.y, {
       width: availableWidth,
       align: isSingleAtom ? alignment : "left",
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
@@ -509,7 +510,7 @@ function drawHyperLink(
       pdf.underline(xUnderline, finalRect.y + 2, finalRect.width, finalRect.height, { color: "blue" });
     }
   } else {
-    pdf.text(hyperLink.text, {
+    pdf.text(text, {
       align: "left",
       goTo: isInternalLink ? hyperLink.target.substr(1) : undefined,
       indent: textStyle.indent ?? 0,
@@ -599,17 +600,7 @@ function drawText(
     .fillColor(textStyle.color ?? "black", textStyle.opacity ?? 1.0);
   applyTextOffset(pdf, textStyle);
 
-  let text = rawText;
-  switch (textStyle.transform) {
-    case "lowercase":
-      text = text.toLowerCase();
-      break;
-    case "uppercase":
-      text = text.toUpperCase();
-      break;
-    default:
-      break;
-  }
+  const text = transformText(pdf, rawText, textStyle.transform);
 
   switch (alignment) {
     case "justify": {

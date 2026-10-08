@@ -1,5 +1,5 @@
 import * as AD from "../../abstract-document/index.js";
-import { getFontNameStyle } from "./font.js";
+import { getFontNameStyle, transformText } from "./font.js";
 
 export type PdfKitAlignment = PDFKit.Mixins.TextOptions["align"];
 
@@ -316,7 +316,7 @@ function stringWidth(
     ...(style.characterSpacing !== undefined ? { characterSpacing: style.characterSpacing } : {}),
     ...(style.lineGap !== undefined ? { lineGap: style.lineGap } : {}),
   };
-  return pdf.widthOfString(text, textOptions);
+  return pdf.widthOfString(transformText(pdf, text, style.transform), textOptions);
 }
 
 function getDesiredSize(element: object, desiredSizes: Map<object, AD.Size.Size>): AD.Size.Size {
