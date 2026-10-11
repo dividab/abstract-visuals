@@ -19,8 +19,8 @@ The library is compiled to ES5 and no polyfills are required.
 ## Usage
 
 ```js
-import * as React from "react";
 import * as AbstractImage from "abstract-image";
+import * as React from "react";
 
 export function AbstractImageExample() {
   const components = [
