@@ -29,8 +29,20 @@ export type Triangulation = {
   readonly triangles: ReadonlyArray<readonly [number, number, number]>;
 };
 
+/** Encoded IFC coordinates of a line's start and end */
+export type Polyline = readonly [string, string];
+
 /** Abstract 3D is Y-up like three.js, IFC is Z-up */
 export const toIfc = (v: Vec3): Vec3 => vec3(v.x, -v.z, v.y);
+
+/** The line's start and end in the coordinate system where its parent group is at parentPos/parentRot, undefined for geometries that aren't lines */
+export function polyline(geometry: Mesh["geometry"], parentPos = vec3Zero, parentRot = vec3Zero): Polyline | undefined {
+  if (geometry.type !== "Line" && geometry.type !== "CulledLine") {
+    return undefined;
+  }
+  const ifcPoint = (p: Vec3): string => point(toIfc(vec3TransRot(p, parentPos, parentRot)));
+  return [ifcPoint(geometry.start), ifcPoint(geometry.end)];
+}
 
 /**
  * Triangulates the mesh in the coordinate system where its parent group is at parentPos/parentRot, undefined for geometries without a solid surface

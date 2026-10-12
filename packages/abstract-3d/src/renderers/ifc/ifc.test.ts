@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Scene } from "../../abstract-3d.js";
-import { box, cylinder, group, line, roundHole, sphere, vec2, vec3, vec3Zero } from "../../abstract-3d.js";
+import { box, culledLine, cylinder, group, line, roundHole, sphere, vec2, vec3, vec3Zero } from "../../abstract-3d.js";
 import { guid, ifcFile, real, str } from "./ifc-encoding.js";
-import { triangulate } from "./ifc-geometry.js";
+import { polyline, triangulate } from "./ifc-geometry.js";
 import { render } from "./ifc.js";
 
 const red = { normal: "rgb(255, 0, 0)", opacity: 0.5 };
@@ -12,17 +12,19 @@ const ids = (s: string): ReadonlyArray<string> => Array.from(s.matchAll(/#(\d+)/
 /** Random GlobalIds replaced, to compare files */
 const normalize = (ifc: string): string => ifc.replaceAll(/'[0-9A-Za-z_$]{22}'/g, "'guid'");
 
-/** The layer of every face set of the element named `name`, in order */
+const entities = (ifc: string): ReadonlyMap<string, string> => new Map(Array.from(ifc.matchAll(/^#(\d+)=(.*);$/gm), (match) => [match[1], match[2]]));
+
+/** The layer of every face set and polyline of the element named `name`, in order */
 function elementLayers(ifc: string, name: string): ReadonlyArray<string | undefined> {
-  const entities = new Map(Array.from(ifc.matchAll(/^#(\d+)=(.*);$/gm), (match) => [match[1], match[2]]));
+  const byId = entities(ifc);
   const layers = new Map(
     Array.from(ifc.matchAll(/[=]IFCPRESENTATIONLAYERASSIGNMENT\('([^']*)',\$,\(([^)]*)\),\$\);/g)).flatMap(([, layer, items]) =>
       ids(items).map((item) => [item, layer] as const)
     )
   );
-  // The element's owner history, placement and shape, the shape's representation and its context and items
-  const [, , shape] = ids(Array.from(entities.values()).find((e) => e.includes(`,'${name}',$,$,#`))!);
-  const [, ...items] = ids(entities.get(ids(entities.get(shape)!)[0])!);
+  // The element's owner history, placement and shape, the shape's representations and their context and items
+  const [, , shape] = ids(Array.from(byId.values()).find((e) => e.includes(`,'${name}',$,$,#`))!);
+  const items = ids(byId.get(shape)!).flatMap((representation) => ids(byId.get(representation)!).slice(1));
   return items.map((item) => layers.get(item));
 }
 
@@ -76,6 +78,12 @@ describe("ifc triangulation", () => {
     expect(triangulate(cylinder(vec3Zero, 1, 2, red, vec3Zero, false, [], 0, Math.PI).geometry)!.triangles.length).toBeGreaterThan(0);
     expect(triangulate(line(vec3Zero, vec3(1, 1, 1), 1, red).geometry)).toBeUndefined();
   });
+
+  it("converts the end points of lines like the triangle points and nothing else", () => {
+    expect(polyline(line(vec3(1, 2, 3), vec3(4, 5, 6), 1, red).geometry, vec3(0, 10, 0))).toEqual(["(1.,-3.,12.)", "(4.,-6.,15.)"]);
+    expect(polyline(culledLine(vec3Zero, vec3(1, 0, 0), vec3(0, 0, 1), 1, red).geometry)).toEqual(["(0.,0.,0.)", "(1.,0.,0.)"]);
+    expect(polyline(box(vec3(1, 1, 1), red).geometry)).toBeUndefined();
+  });
 });
 
 describe("ifc render", () => {
@@ -100,8 +108,8 @@ describe("ifc render", () => {
     expect(ifc).toMatch(/^ISO-10303-21;/);
     expect(ifc).toContain("FILE_SCHEMA(('IFC4'));");
     expect(ifc.trimEnd()).toMatch(/END-ISO-10303-21;$/);
-    // The line-only and the empty group are left out, the group without data is merged into its parent
-    expect(count(ifc, "IFCBUILDINGELEMENTPROXY")).toBe(3);
+    // The empty group is left out, the group without data is merged into its parent
+    expect(count(ifc, "IFCBUILDINGELEMENTPROXY")).toBe(4);
     expect(count(ifc, "IFCTRIANGULATEDFACESET")).toBe(4);
     expect(count(ifc, "IFCRELAGGREGATES")).toBe(4);
     expect(count(ifc, "IFCRELCONTAINEDINSPATIALSTRUCTURE")).toBe(1);
@@ -127,6 +135,49 @@ describe("ifc render", () => {
     expect(ifc).toMatch(/[=]IFCSURFACESTYLERENDERING\(#\d+,0\.,\$,\$,\$,\$,\$,\$,\.NOTDEFINED\.\);/);
     expect(count(ifc, "IFCSURFACESTYLERENDERING")).toBe(2);
     expect(count(ifc, "IFCSURFACESTYLE")).toBe(2);
+  });
+
+  it("writes a line as a polyline in a Curve3D representation next to the face sets, styled with its colour and on its group's layer", () => {
+    const green = { normal: "rgb(0, 255, 0)" };
+    const ifc = render(
+      scene([
+        group([box(vec3(1, 1, 1), red)], vec3Zero, vec3Zero, [group([line(vec3(1, 2, 3), vec3(4, 5, 6), 2, green)], vec3(0, 100, 0))], {
+          layer: "A",
+        }),
+      ]),
+      { layer: (path) => path.at(-1)?.layer }
+    );
+    const byId = entities(ifc);
+    expect(count(ifc, "IFCPOLYLINE")).toBe(1);
+    const [, polylineId, start, end] = /^#(\d+)=IFCPOLYLINE\(\(#(\d+),#(\d+)\)\);$/m.exec(ifc)!;
+    // The line keeps its group's offset, Y-up 100 becomes Z
+    expect([byId.get(start), byId.get(end)]).toEqual(["IFCCARTESIANPOINT((1.,-3.,102.))", "IFCCARTESIANPOINT((4.,-6.,105.))"]);
+    const [tessellation, curve] = ids(Array.from(byId.values()).find((e) => e.startsWith("IFCPRODUCTDEFINITIONSHAPE("))!);
+    expect(byId.get(tessellation)).toMatch(/^IFCSHAPEREPRESENTATION\(#\d+,'Body','Tessellation',\(#\d+\)\)$/);
+    expect(byId.get(curve)).toMatch(new RegExp(`^IFCSHAPEREPRESENTATION\\(#\\d+,'Body','Curve3D',\\(#${polylineId}\\)\\)$`));
+    const [, style] = ids(Array.from(byId.values()).find((e) => e.startsWith(`IFCSTYLEDITEM(#${polylineId},`))!);
+    const [colour] = ids(byId.get(style)!);
+    expect(byId.get(style)).toBe(`IFCCURVESTYLE($,$,$,#${colour},.T.)`);
+    expect(byId.get(colour)).toBe("IFCCOLOURRGB($,0.,1.,0.)");
+    expect(elementLayers(ifc, "Element 1")).toEqual(["A", "A"]);
+  });
+
+  it("writes an element with only lines, styling each colour once", () => {
+    const green = { normal: "rgb(0, 255, 0)" };
+    const ifc = render(
+      scene([
+        group([line(vec3Zero, vec3(1, 0, 0), 1, green), culledLine(vec3Zero, vec3(0, 1, 0), vec3(0, 0, 1), 1, green)], vec3Zero, vec3Zero, [], {
+          name: "Lines only",
+        }),
+      ])
+    );
+    expect(count(ifc, "IFCBUILDINGELEMENTPROXY")).toBe(1);
+    expect(ifc).toContain(",'Lines only',$,$,#");
+    expect(count(ifc, "IFCPOLYLINE")).toBe(2);
+    expect(count(ifc, "IFCCURVESTYLE")).toBe(1);
+    expect(count(ifc, "IFCTRIANGULATEDFACESET")).toBe(0);
+    expect(count(ifc, "IFCSHAPEREPRESENTATION")).toBe(1);
+    expect(ifc).toMatch(/[=]IFCSHAPEREPRESENTATION\(#\d+,'Body','Curve3D',\(#\d+,#\d+\)\);/);
   });
 
   it("wraps the scene in one root element", () => {
@@ -262,7 +313,9 @@ describe("ifc render", () => {
   });
 
   it("only references entities that exist", () => {
-    const ifc = render(scene([group([box(vec3(1, 1, 1), red)], vec3(1, 2, 3), vec3(0.1, 0.2, 0.3), [group([sphere(1, red)])])]));
+    const ifc = render(
+      scene([group([box(vec3(1, 1, 1), red), line(vec3Zero, vec3(1, 1, 1), 1, red)], vec3(1, 2, 3), vec3(0.1, 0.2, 0.3), [group([sphere(1, red)])])])
+    );
     const ids = new Set(Array.from(ifc.matchAll(/^#(\d+)=/gm), (match) => match[1]));
     const referenced = Array.from(ifc.matchAll(/[(,]#(\d+)/g), (match) => match[1]);
     expect(referenced.filter((id) => !ids.has(id))).toEqual([]);

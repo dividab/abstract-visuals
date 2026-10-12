@@ -3,8 +3,8 @@ import type { Scene, Group, Material, Vec3 } from "../../abstract-3d.js";
 import { vec3Zero, vec3PosX, vec3PosY, vec3Rot, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
 import type { MutableIfc } from "./ifc-encoding.js";
 import { add, guid, ifcFile, point, real, ref, refs, serialize, str } from "./ifc-encoding.js";
-import type { Triangulation } from "./ifc-geometry.js";
-import { toIfc, triangulate } from "./ifc-geometry.js";
+import type { Polyline, Triangulation } from "./ifc-geometry.js";
+import { polyline, toIfc, triangulate } from "./ifc-geometry.js";
 
 /** Element classes with the same attributes as IfcBuildingElementProxy (GlobalId, ..., Tag, PredefinedType) */
 export type IfcElementEntity = "IfcBuildingElementProxy" | "IfcUnitaryEquipment";
@@ -43,7 +43,13 @@ export type IfcOptions = {
   readonly layer?: (path: ReadonlyArray<Record<string, string>>) => string | undefined;
 };
 
-type NodeMesh = { readonly material: Material; readonly triangulation: Triangulation; readonly layer: string | undefined };
+/** A triangulated mesh or a line, `type` is the RepresentationType of the shape representation it's written in */
+type NodeMesh = { readonly material: Material; readonly layer: string | undefined } & (
+  | { readonly type: "Tessellation"; readonly triangulation: Triangulation }
+  | { readonly type: "Curve3D"; readonly polyline: Polyline }
+);
+
+const representationTypes = ["Tessellation", "Curve3D"] as const;
 
 /** The `data` of the groups from the root down to a group and the layer its meshes are on */
 type Layering = {
@@ -52,7 +58,7 @@ type Layering = {
   readonly layer: string | undefined;
 };
 
-/** A group that becomes an element, groups without any triangulated geometry in them are left out */
+/** A group that becomes an element, groups without any triangulated geometry or lines in them are left out */
 type ElementNode = {
   readonly group: Group;
   readonly elementClass: IfcElementClass;
@@ -66,7 +72,7 @@ const proxyClass: IfcElementClass = { entity: "IfcBuildingElementProxy" };
 
 /**
  * `owner` is the encoded GlobalId and OwnerHistory every IfcRoot entity starts with, call it once per entity since the GlobalId must be unique.
- * `layers` are the face sets on each layer
+ * `layers` are the representation items (face sets and polylines) on each layer
  */
 type IfcContext = {
   readonly body: number;
@@ -76,10 +82,10 @@ type IfcContext = {
 };
 
 /**
- * IFC4 (Reference View) with every mesh as an IfcTriangulatedFaceSet, in millimetres. Every top-level group and every group with a `data.id` or
- * `data.name` becomes an IfcBuildingElementProxy placed relative to its parent element and aggregated into it. Other groups are only transforms or
- * metadata, so their meshes are merged into the parent element. With `layer`, the face sets are assigned to an IfcPresentationLayerAssignment per
- * layer, the presentation layer of the Reference View
+ * IFC4 (Reference View) with every mesh as an IfcTriangulatedFaceSet and every line as an IfcPolyline without thickness, in millimetres. Every
+ * top-level group and every group with a `data.id` or `data.name` becomes an IfcBuildingElementProxy placed relative to its parent element and
+ * aggregated into it. Other groups are only transforms or metadata, so their meshes are merged into the parent element. With `layer`, the face sets
+ * and polylines are assigned to an IfcPresentationLayerAssignment per layer, the presentation layer of the Reference View
  */
 export function render(scene: Scene, options: IfcOptions = {}): string {
   const name = options.name ?? "Abstract 3D";
@@ -154,9 +160,16 @@ function elementNode(group: Group, pos: Vec3, rot: Vec3, layering: Layering, ele
  * `data.id` or `data.name` as elements
  */
 function elementContent(group: Group, pos: Vec3, rot: Vec3, layering: Layering): Pick<ElementNode, "meshes" | "children"> {
-  const meshes = (group.meshes ?? []).flatMap((mesh) => {
+  const meshes = (group.meshes ?? []).flatMap((mesh): ReadonlyArray<NodeMesh> => {
+    const { material } = mesh;
+    const { layer } = layering;
     const triangulation = triangulate(mesh.geometry, pos, rot);
-    return triangulation ? [{ material: mesh.material, triangulation, layer: layering.layer }] : [];
+    const line = polyline(mesh.geometry, pos, rot);
+    return triangulation
+      ? [{ type: "Tessellation", material, layer, triangulation }]
+      : line
+        ? [{ type: "Curve3D", material, layer, polyline: line }]
+        : [];
   });
   const nested = (group.groups ?? []).map((child) => {
     const childPos = vec3TransRot(child.pos, pos, rot);
@@ -183,11 +196,11 @@ function groupLayering(group: Group, parent: Layering): Layering {
 /** `path` is the element's position in the tree (e.g. "2.1"), named after it when the group has no `data.name` or `data.id` since IFC requires a name */
 function element(m: MutableIfc, node: ElementNode, path: string, parentPlacement: number, c: IfcContext): number {
   const placement = add(m, `IFCLOCALPLACEMENT(${ref(parentPlacement)},${ref(axisPlacement(m, node.pos, node.rot))})`);
-  const items = node.meshes.map((mesh) => faceSet(m, mesh, c));
-  const shape =
-    items.length > 0
-      ? ref(add(m, `IFCPRODUCTDEFINITIONSHAPE($,$,(${ref(add(m, `IFCSHAPEREPRESENTATION(${ref(c.body)},'Body','Tessellation',${refs(items)})`))}))`))
-      : "$";
+  const representations = representationTypes.flatMap((type) => {
+    const items = node.meshes.filter((mesh) => mesh.type === type).map((mesh) => representationItem(m, mesh, c));
+    return items.length > 0 ? [add(m, `IFCSHAPEREPRESENTATION(${ref(c.body)},'Body',${str(type)},${refs(items)})`)] : [];
+  });
+  const shape = representations.length > 0 ? ref(add(m, `IFCPRODUCTDEFINITIONSHAPE($,$,${refs(representations)})`)) : "$";
   const id = node.group.data?.["id"];
   const name = node.group.data?.["name"] ?? id ?? `Element ${path}`;
   const { entity, predefinedType = "NOTDEFINED" } = node.elementClass;
@@ -201,36 +214,55 @@ function element(m: MutableIfc, node: ElementNode, path: string, parentPlacement
   return ifcElement;
 }
 
-/** One face set per mesh, so meshes on different layers are never in the same item */
-function faceSet(m: MutableIfc, { material, triangulation: { points, triangles }, layer }: NodeMesh, c: IfcContext): number {
-  const pointList = add(m, `IFCCARTESIANPOINTLIST3D((${points.join(",")}))`);
-  const faces = add(m, `IFCTRIANGULATEDFACESET(${ref(pointList)},$,.F.,(${triangles.map((t) => `(${t.join(",")})`).join(",")}),$)`);
-  add(m, `IFCSTYLEDITEM(${ref(faces)},(${ref(surfaceStyle(m, material, c))}),$)`);
-  if (layer !== undefined) {
-    const items = c.layers.get(layer);
+/** One face set or polyline per mesh, so meshes on different layers are never in the same item */
+function representationItem(m: MutableIfc, mesh: NodeMesh, c: IfcContext): number {
+  const [item, style] =
+    mesh.type === "Tessellation"
+      ? [faceSet(m, mesh.triangulation), surfaceStyle(m, mesh.material, c)]
+      : [add(m, `IFCPOLYLINE(${refs(mesh.polyline.map((p) => add(m, `IFCCARTESIANPOINT(${p})`)))})`), curveStyle(m, mesh.material, c)];
+  add(m, `IFCSTYLEDITEM(${ref(item)},(${ref(style)}),$)`);
+  if (mesh.layer !== undefined) {
+    const items = c.layers.get(mesh.layer);
     if (items) {
-      items.push(faces);
+      items.push(item);
     } else {
-      c.layers.set(layer, [faces]);
+      c.layers.set(mesh.layer, [item]);
     }
   }
-  return faces;
+  return item;
+}
+
+function faceSet(m: MutableIfc, { points, triangles }: Triangulation): number {
+  const pointList = add(m, `IFCCARTESIANPOINTLIST3D((${points.join(",")}))`);
+  return add(m, `IFCTRIANGULATEDFACESET(${ref(pointList)},$,.F.,(${triangles.map((t) => `(${t.join(",")})`).join(",")}),$)`);
 }
 
 function surfaceStyle(m: MutableIfc, material: Material, c: IfcContext): number {
   const opacity = material.opacity ?? 1;
-  const key = `${material.normal}_${opacity}`;
+  return cachedStyle(c, `surface_${material.normal}_${opacity}`, () => {
+    // Rendering rather than its supertype shading, since many viewers only read the transparency from rendering
+    const rendering = add(m, `IFCSURFACESTYLERENDERING(${ref(colour(m, material))},${real(1 - opacity)},$,$,$,$,$,$,.NOTDEFINED.)`);
+    return add(m, `IFCSURFACESTYLE(${str(material.normal)},.BOTH.,(${ref(rendering)}))`);
+  });
+}
+
+/** Only the colour, IFC has no line width that viewers reliably show */
+const curveStyle = (m: MutableIfc, material: Material, c: IfcContext): number =>
+  cachedStyle(c, `curve_${material.normal}`, () => add(m, `IFCCURVESTYLE($,$,$,${ref(colour(m, material))},.T.)`));
+
+function cachedStyle(c: IfcContext, key: string, create: () => number): number {
   const cached = c.styles.get(key);
   if (cached !== undefined) {
     return cached;
   }
-  const { r, g, b } = new Color(material.normal).getRGB({ r: 0, g: 0, b: 0 }, SRGBColorSpace);
-  const colour = add(m, `IFCCOLOURRGB($,${real(r)},${real(g)},${real(b)})`);
-  // Rendering rather than its supertype shading, since many viewers only read the transparency from rendering
-  const rendering = add(m, `IFCSURFACESTYLERENDERING(${ref(colour)},${real(1 - opacity)},$,$,$,$,$,$,.NOTDEFINED.)`);
-  const style = add(m, `IFCSURFACESTYLE(${str(material.normal)},.BOTH.,(${ref(rendering)}))`);
+  const style = create();
   c.styles.set(key, style);
   return style;
+}
+
+function colour(m: MutableIfc, material: Material): number {
+  const { r, g, b } = new Color(material.normal).getRGB({ r: 0, g: 0, b: 0 }, SRGBColorSpace);
+  return add(m, `IFCCOLOURRGB($,${real(r)},${real(g)},${real(b)})`);
 }
 
 /** The group's local axes, converted to IFC's Z-up where three.js' up (Y) becomes the placement's Axis (Z) */
