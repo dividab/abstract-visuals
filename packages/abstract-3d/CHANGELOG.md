@@ -2,8 +2,6 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
-
 ## [2.12.0] - 2026-10-12
 
 - Changed (behaviour change): in the IFC renderer only groups whose `data` has an `id` or `name` become elements (top-level groups still always do). A group whose `data` only has other keys, e.g. `{ type: "panel" }`, is now metadata and its meshes are merged into the element above it, like a group without `data`
