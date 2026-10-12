@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-10-12
+
+- Changed (behaviour change): in the IFC renderer only groups whose `data` has an `id` or `name` become elements (top-level groups still always do). A group whose `data` only has other keys, e.g. `{ type: "panel" }`, is now metadata and its meshes are merged into the element above it, like a group without `data`
+
+- Added: `layer` option on the IFC renderer that puts the shapes on presentation layers (CAD layers). It's called with the `data` of the groups from the root down to each group with `data`, and every mesh is on the layer of the nearest group above it that got one. Each layer is written as one `IfcPresentationLayerAssignment` on the mesh's `IfcTriangulatedFaceSet`, so one element can have shapes on several layers. Without `layer` the output is unchanged
+
+- Added: the IFC renderer writes an `IfcOwnerHistory` (person, organization, application and creation date) on every object, and the author, organization and application in the file header. Set them with the new `author`, `organization` and `application` options, which default to an unknown author and organization and Abstract 3D by Divid AB
+
+## [2.11.2] - 2026-10-05
+
 - Added: `backfaceCulling` on `Material`, which makes the react renderer draw only the front side of meshes and images that use it, e.g. an image on the far wall that should not show through an open casing. Default is still both sides
 
 ## [2.11.0] - 2026-10-05

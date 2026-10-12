@@ -74,12 +74,30 @@ export function guid(m: MutableIfc, uuid?: string): string {
   return id;
 }
 
-export const header = (fileName: string, date: string): string => `ISO-10303-21;
+/** FILE_NAME header fields, `originatingSystem` is the application that produced the scene */
+export type IfcHeader = {
+  readonly fileName: string;
+  readonly date: string;
+  readonly author: string;
+  readonly organization: string;
+  readonly originatingSystem: string;
+};
+
+export const header = (h: IfcHeader): string => `ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('ViewDefinition [ReferenceView_V1.2]'),'2;1');
-FILE_NAME(${str(fileName)},${str(date)},(''),('Divid AB'),'Abstract 3D to IFC Exporter','Abstract 3D','');
+FILE_NAME(
+/* name */ ${str(h.fileName)},
+/* time_stamp */ ${str(h.date)},
+/* author */ (${str(h.author)}),
+/* organization */ (${str(h.organization)}),
+/* preprocessor_version */ 'Abstract 3D to IFC Exporter',
+/* originating_system */ ${str(h.originatingSystem)},
+/* authorization */ 'None');
+
 FILE_SCHEMA(('IFC4'));
 ENDSEC;
+
 DATA;
 `;
 
@@ -87,5 +105,4 @@ export const footer = (): string => `ENDSEC;
 END-ISO-10303-21;
 `;
 
-export const serialize = (m: MutableIfc, fileName: string, date: string): string =>
-  header(fileName, date) + m.entities.map((e, i) => `#${i + 1}=${e};\n`).join("") + footer();
+export const serialize = (m: MutableIfc, h: IfcHeader): string => header(h) + m.entities.map((e, i) => `#${i + 1}=${e};\n`).join("") + footer();
