@@ -110,12 +110,23 @@ describe("ifc render", () => {
     // Same material is styled once
     expect(count(ifc, "IFCSURFACESTYLE")).toBe(1);
     expect(ifc).toContain("IFCCOLOURRGB($,1.,0.,0.)");
-    expect(ifc).toContain("IFCSURFACESTYLESHADING(#");
+    expect(ifc).toMatch(/[=]IFCSURFACESTYLERENDERING\(#\d+,0\.5,\$,\$,\$,\$,\$,\$,\.NOTDEFINED\.\);/);
+    expect(ifc).not.toContain("IFCSURFACESTYLESHADING(");
     expect(ifc).toContain(",'588c9525-0f1b-4b0b-a3e1-ba10f8a922ff',$,$,#");
     expect(ifc).toContain(",'588c9525-0f1b-4b0b-a3e1-ba10f8a922ff',.NOTDEFINED.)");
     expect(ifc).toContain(",'Fan',$,$,#");
     // IFC requires a name, top-level groups without data are named after their position
     expect(ifc).toContain(",'Element 2',$,$,#");
+  });
+
+  it("writes the transparency as one minus the opacity, styling each colour and opacity once", () => {
+    const blue = { normal: "rgb(0, 0, 255)", opacity: 0.25 };
+    const ifc = render(scene([group([box(vec3(1, 1, 1), blue), sphere(1, blue), box(vec3(1, 1, 1), { normal: "rgb(0, 0, 255)" })])]));
+    expect(ifc).toMatch(/[=]IFCSURFACESTYLERENDERING\(#\d+,0\.75,\$,\$,\$,\$,\$,\$,\.NOTDEFINED\.\);/);
+    // No opacity is opaque
+    expect(ifc).toMatch(/[=]IFCSURFACESTYLERENDERING\(#\d+,0\.,\$,\$,\$,\$,\$,\$,\.NOTDEFINED\.\);/);
+    expect(count(ifc, "IFCSURFACESTYLERENDERING")).toBe(2);
+    expect(count(ifc, "IFCSURFACESTYLE")).toBe(2);
   });
 
   it("wraps the scene in one root element", () => {

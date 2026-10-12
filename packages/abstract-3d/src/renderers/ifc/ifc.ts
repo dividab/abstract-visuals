@@ -226,8 +226,9 @@ function surfaceStyle(m: MutableIfc, material: Material, c: IfcContext): number 
   }
   const { r, g, b } = new Color(material.normal).getRGB({ r: 0, g: 0, b: 0 }, SRGBColorSpace);
   const colour = add(m, `IFCCOLOURRGB($,${real(r)},${real(g)},${real(b)})`);
-  const shading = add(m, `IFCSURFACESTYLESHADING(${ref(colour)},${real(1 - opacity)})`);
-  const style = add(m, `IFCSURFACESTYLE(${str(material.normal)},.BOTH.,(${ref(shading)}))`);
+  // Rendering rather than its supertype shading, since many viewers only read the transparency from rendering
+  const rendering = add(m, `IFCSURFACESTYLERENDERING(${ref(colour)},${real(1 - opacity)},$,$,$,$,$,$,.NOTDEFINED.)`);
+  const style = add(m, `IFCSURFACESTYLE(${str(material.normal)},.BOTH.,(${ref(rendering)}))`);
   c.styles.set(key, style);
   return style;
 }
