@@ -6,7 +6,7 @@ const base: ReactGroupProps = {
   g: group([]),
   hoveredIdsExternal: undefined,
   selectedIds: { a: true },
-  hotSpotsActive: false,
+  relationsActive: false,
   activeComponents: { a: "Error" },
   id: "a",
   rootData: undefined,
@@ -39,7 +39,7 @@ describe("groupPropsEqual", () => {
   it("is not equal when another prop changes identity", () => {
     expect(groupPropsEqual(base, { ...base, g: group([]) })).toBe(false);
     expect(groupPropsEqual(base, { ...base, onClickGroup: () => undefined })).toBe(false);
-    expect(groupPropsEqual(base, { ...base, hotSpotsActive: true })).toBe(false);
+    expect(groupPropsEqual(base, { ...base, relationsActive: true })).toBe(false);
     expect(groupPropsEqual(base, { ...base, id: "b" })).toBe(false);
   });
 

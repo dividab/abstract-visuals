@@ -65,13 +65,37 @@ function compressGuid(bytes: ReadonlyArray<number>): string {
   return guid;
 }
 
-/** IFC GlobalId, derived from `uuid` when it's a valid uuid not used before in the file so re-exports keep the same ids, otherwise random */
-export function guid(m: MutableIfc, uuid?: string): string {
-  const hex = uuid !== undefined && UUID_REGEX.test(uuid) ? uuid.replaceAll("-", "") : undefined;
-  const fromUuid = hex && compressGuid(Array.from({ length: 16 }, (_, i) => parseInt(hex.slice(i * 2, i * 2 + 2), 16)));
-  const id = fromUuid && !m.usedGuids.has(fromUuid) ? fromUuid : compressGuid(Array.from(crypto.getRandomValues(new Uint8Array(16))));
-  m.usedGuids.add(id);
-  return id;
+/**
+ * IFC GlobalId derived from `id` so re-exports keep the same ids, from a uuid's own bytes and from a hash of any other id. Random without an id or
+ * when the id's GlobalId is already used in the file
+ */
+export function guid(m: MutableIfc, id?: string): string {
+  const hex = id !== undefined && UUID_REGEX.test(id) ? id.replaceAll("-", "") : undefined;
+  const bytes = hex ? Array.from({ length: 16 }, (_, i) => parseInt(hex.slice(i * 2, i * 2 + 2), 16)) : id === undefined ? undefined : hash128(id);
+  const fromId = bytes && compressGuid(bytes);
+  const globalId = fromId && !m.usedGuids.has(fromId) ? fromId : compressGuid(Array.from(crypto.getRandomValues(new Uint8Array(16))));
+  m.usedGuids.add(globalId);
+  return globalId;
+}
+
+/** The 16 bytes of cyrb128, a fast non-cryptographic hash */
+function hash128(s: string): ReadonlyArray<number> {
+  // oxlint-disable no-bitwise
+  let [h1, h2, h3, h4] = [1779033703, 3144134277, 1013904242, 2773480762];
+  for (let i = 0; i < s.length; i++) {
+    const k = s.charCodeAt(i);
+    h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
+    h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+    h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
+    h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+  }
+  h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
+  h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+  h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213);
+  h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
+  h1 ^= h2 ^ h3 ^ h4;
+  return [h1, h2 ^ h1, h3 ^ h1, h4 ^ h1].flatMap((h) => [(h >>> 24) & 255, (h >>> 16) & 255, (h >>> 8) & 255, h & 255]);
+  // oxlint-enable no-bitwise
 }
 
 /** FILE_NAME header fields, `originatingSystem` is the application that produced the scene */

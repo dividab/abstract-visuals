@@ -2,10 +2,9 @@ import { Html, type OrbitControlsProps } from "@react-three/drei";
 import { Canvas, type CanvasProps, type ThreeEvent } from "@react-three/fiber";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import React, { memo, useMemo } from "react";
-import type { Scene, View, Group } from "../../abstract-3d.js";
+import type { Scene, View, Group, Relation } from "../../abstract-3d.js";
 import type { ControlsHelper, Camera, BufferZones } from "./react-camera.js";
 import { ReactCamera } from "./react-camera.js";
-import type { HotSpotInfo } from "./react-hotspot.js";
 import type { MaterialState } from "./react-material.js";
 import { ReactScene } from "./react-scene.js";
 import type { ReactPopover } from "./react-types.js";
@@ -13,12 +12,14 @@ import type { ReactPopover } from "./react-types.js";
 type ReactProps = {
   readonly scene: Scene | undefined; // undefined to allow for simple early loadign the js when lazy loading the React3Js renderer
   readonly selectedIds: Record<string, boolean> | undefined;
-  readonly activeHotSpots?: Record<string, HotSpotInfo> | undefined;
+  /**
+   * The ids of the relations whose shape is drawn to be clicked, e.g. where a component can be inserted. While defined, even when empty, only the
+   * groups whose material state is Accept can be clicked
+   */
+  readonly activeRelations?: ReadonlyArray<string> | undefined;
   readonly activeComponents?: Record<string, MaterialState> | undefined;
   readonly hoveredIdsExternal?: ReadonlyArray<string> | undefined;
-  readonly showHotSpotTexts?: boolean;
   readonly showDimensions?: boolean;
-  readonly hotSpotTexts?: Record<string, string>;
   readonly popovers?: ReadonlyArray<ReactPopover>;
   readonly useAnimations?: boolean;
   readonly camera?: Camera;
@@ -53,7 +54,7 @@ type ReactProps = {
     e: ThreeEvent<MouseEvent>
   ) => void;
   readonly getTooltips?: (id: string) => ReadonlyArray<ReactPopover>;
-  readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: ThreeEvent<MouseEvent>) => void;
+  readonly onClickRelation?: (relation: Relation, e: ThreeEvent<MouseEvent>) => void;
   readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
   readonly createGroupId?: (g: Group) => string;
 };
@@ -63,12 +64,10 @@ export const render = memo(
     scene,
     selectedIds,
     useOldMode,
-    activeHotSpots,
+    activeRelations,
     activeComponents,
     hoveredIdsExternal,
-    hotSpotTexts,
     popovers: reactPopovers,
-    showHotSpotTexts = false,
     showDimensions = true,
     useAnimations = false,
     camera = { type: "Perspective" },
@@ -83,7 +82,7 @@ export const render = memo(
     onHoverGroup,
     onContextMenuGroup,
     getTooltips,
-    onClickHotSpot,
+    onClickRelation,
     createGroupKey,
     createGroupId,
     bufferZones,
@@ -149,19 +148,17 @@ export const render = memo(
           <ReactScene
             scene={scene}
             selectedIds={selectedIds}
-            activeHotSpots={activeHotSpots}
+            activeRelations={activeRelations}
             activeComponents={activeComponents}
             showDimensions={showDimensions}
-            showHotSpotTexts={showHotSpotTexts}
             hoveredIdsExternal={hoveredIdsExternal}
-            hotSpotTexts={hotSpotTexts}
             reactPopovers={reactPopovers}
             materialStateImages={materialStateImages}
             onClickGroup={onClickGroup}
             onHoverGroup={onHoverGroup}
             onContextMenuGroup={onContextMenuGroup}
             getTooltips={getTooltips}
-            onClickHotSpot={onClickHotSpot}
+            onClickRelation={onClickRelation}
             createGroupKey={createGroupKey}
             createGroupId={createGroupId}
             useAlphaTest={useAlphaTest}

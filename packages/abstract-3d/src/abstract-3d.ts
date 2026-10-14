@@ -4,13 +4,13 @@ import type { AbstractImage } from "abstract-image";
 export type Scene = {
   readonly size_deprecated: Vec3; //move size calculation to every renderer??
   readonly groups: ReadonlyArray<Group>;
+  readonly relations?: ReadonlyArray<Relation>;
   readonly data?: Record<string, string>;
   //should be removed
   readonly center_deprecated?: Vec3;
   readonly rotation_deprecated?: Vec3;
   //might be removed
   readonly dimensions_deprecated?: Dimensions;
-  readonly hotSpots_deprecated?: ReadonlyArray<HotSpot>;
 };
 //dummy
 export type Renderer = "react" | "ai_schematic" | "ai_detailed" | "dxf";
@@ -67,18 +67,45 @@ export type DimensionBounds = {
   readonly threeD: Bounds3;
 };
 
-export type HotSpot = {
-  readonly id: string;
-  readonly mesh: Mesh;
-};
-
 export type Group = {
   readonly pos: Vec3;
   readonly rot?: Vec3;
   readonly groups?: ReadonlyArray<Group>;
   readonly meshes?: ReadonlyArray<Mesh>;
+  /**
+   * Identifies what the group is, e.g. for the relations and as the IFC GlobalId. Sibling groups with the same id are parts of the same thing, e.g.
+   * something in several places, and one IFC element
+   */
+  readonly id?: string;
+  readonly name?: string;
+  /** What the group is beyond its name, e.g. the IFC element's Description */
+  readonly description?: string;
+  /** The layer of the group's meshes and of the groups below it that don't have their own */
+  readonly layer?: string;
+  /** The application's own data, not read by the renderers */
   readonly data?: Record<string, string>;
   readonly animation?: Animation;
+};
+
+/**
+ * A connection between two groups, e.g. where air flows from one section of a unit to the next, or a connection with one end, where something outside
+ * the scene connects to a group. `pos` and `rot` are in the scene's coordinates like the top-level groups, and the relation's local x points along
+ * the flow from `from` to `to`
+ */
+export type Relation = {
+  readonly id: string;
+  /** The `id` of the group the flow comes from, none when it comes from outside the scene */
+  readonly from?: string;
+  /** The `id` of the group the flow goes to, none when it goes outside the scene */
+  readonly to?: string;
+  readonly name?: string;
+  readonly pos: Vec3;
+  readonly rot?: Vec3;
+  /**
+   * The relation's own shape, in the scene's coordinates like the top-level groups, e.g. merged into its IFC port's shape, or what the react renderer
+   * draws to be clicked when the relation is active
+   */
+  readonly groups?: ReadonlyArray<Group>;
 };
 
 export type Mesh = {

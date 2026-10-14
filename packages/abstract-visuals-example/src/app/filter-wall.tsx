@@ -220,5 +220,4 @@ export const filterWall = {
     y: 0,
     z: 0,
   },
-  hotSpots_deprecated: [],
 } satisfies A3D.Scene;

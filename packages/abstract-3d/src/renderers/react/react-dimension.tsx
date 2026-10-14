@@ -7,7 +7,7 @@ import { ReactMesh } from "./react-mesh.js";
 
 type DimensionCallbacks = {
   readonly selectedIds?: Record<string, boolean> | undefined;
-  readonly hotSpotsActive?: boolean;
+  readonly relationsActive?: boolean;
   readonly onClickGroup?: (id: string | undefined, rootData: undefined, data: undefined, e: ThreeEvent<MouseEvent>) => void;
   readonly onHoverGroup?: (id: string | undefined, rootData: undefined, data: undefined, e: ThreeEvent<MouseEvent>) => void;
   readonly onContextMenuGroup?: (id: string, rootData: undefined, data: undefined, left: number, top: number, e: ThreeEvent<MouseEvent>) => void;
@@ -56,7 +56,7 @@ export function ReactDimension({
   children,
   sceneRotation,
   selectedIds,
-  hotSpotsActive,
+  relationsActive,
   onClickGroup,
   onHoverGroup,
   onContextMenuGroup,
@@ -69,7 +69,7 @@ export function ReactDimension({
   readonly _sceneCenter: Vec3 | undefined;
 } & DimensionCallbacks): React.JSX.Element {
   const [hovered, setHovered] = React.useState<boolean>(false);
-  const id = hotSpotsActive || !onClickGroup ? undefined : dimension.id;
+  const id = relationsActive || !onClickGroup ? undefined : dimension.id;
   const highlighted = !!id && (hovered || !!selectedIds?.[id]);
   const dim = dimensionConvertToTypeMesh(highlighted ? { ...dimension, material: selectMat } : dimension, sceneRotation ?? vec3Zero, material);
   return visible ? (

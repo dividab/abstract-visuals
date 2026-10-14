@@ -430,5 +430,4 @@ export const templateScene = {
     y: 0,
     z: 0,
   },
-  hotSpots_deprecated: [],
 };

@@ -1,12 +1,11 @@
 import { Html } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
 import React from "react";
-import type { Scene, Group } from "../../abstract-3d.js";
+import type { Scene, Group, Relation } from "../../abstract-3d.js";
 import { ReactDimensions } from "./react-dimension.js";
 import { ReactGroup } from "./react-group.js";
-import type { HotSpotInfo } from "./react-hotspot.js";
-import { ReactHotSpots } from "./react-hotspot.js";
 import type { MaterialState } from "./react-material.js";
+import { ReactRelations } from "./react-relation.js";
 import type { ReactPopover } from "./react-types.js";
 
 export type SceneMouseEvent = ThreeEvent<MouseEvent>;
@@ -15,10 +14,8 @@ export function ReactScene({
   scene,
   selectedIds,
   hoveredIdsExternal,
-  activeHotSpots,
+  activeRelations,
   activeComponents,
-  hotSpotTexts,
-  showHotSpotTexts,
   showDimensions,
   useAlphaTest,
   materialStateImages,
@@ -27,19 +24,17 @@ export function ReactScene({
   onHoverGroup,
   onContextMenuGroup,
   getTooltips,
-  onClickHotSpot,
+  onClickRelation,
   createGroupKey,
   createGroupId,
 }: {
   readonly scene: Scene;
   readonly selectedIds: Record<string, boolean> | undefined;
   readonly hoveredIdsExternal: ReadonlyArray<string> | undefined;
-  readonly activeHotSpots: Record<string, HotSpotInfo> | undefined;
+  readonly activeRelations: ReadonlyArray<string> | undefined;
   readonly activeComponents: Record<string, MaterialState> | undefined;
-  readonly showHotSpotTexts: boolean;
   readonly showDimensions: boolean;
   readonly useAlphaTest?: boolean;
-  readonly hotSpotTexts?: Record<string, string>;
   readonly materialStateImages?: Record<string, string>;
   readonly reactPopovers?: ReadonlyArray<ReactPopover>;
   readonly onClickGroup?: (
@@ -63,7 +58,7 @@ export function ReactScene({
     e: SceneMouseEvent
   ) => void;
   readonly getTooltips?: (id: string) => ReadonlyArray<ReactPopover>;
-  readonly onClickHotSpot?: (hotSpot: HotSpotInfo, e: SceneMouseEvent) => void;
+  readonly onClickRelation?: (relation: Relation, e: SceneMouseEvent) => void;
   readonly createGroupKey?: (g: Group, idx: number, rootData: Record<string, string> | undefined, id: string) => string;
   readonly createGroupId?: (g: Group) => string;
 }): React.JSX.Element {
@@ -79,7 +74,7 @@ export function ReactScene({
             key={createGroupKey ? createGroupKey(g, 0, g.data, id) : i}
             g={g}
             selectedIds={selectedIds}
-            hotSpotsActive={activeHotSpots !== undefined}
+            relationsActive={activeRelations !== undefined}
             activeComponents={activeComponents}
             materialStateImages={materialStateImages}
             hoveredIdsExternal={hoveredIdsExternal}
@@ -100,19 +95,12 @@ export function ReactScene({
         sceneRotation={scene.rotation_deprecated}
         sceneCenter={scene.center_deprecated}
         selectedIds={selectedIds}
-        hotSpotsActive={activeHotSpots !== undefined}
+        relationsActive={activeRelations !== undefined}
         onClickGroup={onClickGroup}
         onHoverGroup={onHoverGroup}
         onContextMenuGroup={onContextMenuGroup}
       />
-      <ReactHotSpots
-        hotSpots={scene.hotSpots_deprecated}
-        hotSpotZAdjPos={scene.size_deprecated.z / 2}
-        activeHotSpots={activeHotSpots}
-        hotSpotTexts={hotSpotTexts}
-        onClickHotSpot={onClickHotSpot}
-        showHotSpotTexts={showHotSpotTexts}
-      />
+      <ReactRelations relations={scene.relations} activeRelations={activeRelations} onClickRelation={onClickRelation} />
       {reactPopovers?.map((p) => (
         <Html key={p.id} position={[p.pos.x, p.pos.y, p.pos.z]} center pointerEvents="none" style={{ pointerEvents: "none" }}>
           {p.content}

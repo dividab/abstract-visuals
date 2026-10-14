@@ -15,7 +15,7 @@ export function ReactMaterial({
   disabled,
   materialState,
   isText,
-  isHotSpot,
+  isRelation,
   drawBackOnly,
 }: {
   readonly material: Material;
@@ -24,7 +24,7 @@ export function ReactMaterial({
   readonly disabled?: boolean;
   readonly materialState?: MaterialState | undefined;
   readonly isText: boolean;
-  readonly isHotSpot?: boolean;
+  readonly isRelation?: boolean;
   readonly drawBackOnly?: boolean;
 }): React.JSX.Element {
   const mat = !materialState ? material : materialState === "Accept" ? acceptMat : materialState === "Error" ? errorMar : warningMat;
@@ -41,10 +41,10 @@ export function ReactMaterial({
       />
     );
   }
-  if (isHotSpot) {
+  if (isRelation) {
     return (
       <meshBasicMaterial
-        key="mesh_material_hotspot"
+        key="mesh_material_relation"
         color={getColor(selected, hovered, mat, selectMat)}
         side={drawBackOnly === true ? BackSide : DoubleSide}
         depthTest={true}

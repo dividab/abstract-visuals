@@ -210,7 +210,6 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
             },
           }}
           useAnimations={true}
-          onClickHotSpot={undefined}
           onClickGroup={undefined}
           onContextMenuGroup={undefined}
           createGroupKey={undefined}

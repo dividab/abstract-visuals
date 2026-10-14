@@ -17,7 +17,7 @@ function ReactGroupBase({
   materialStateImages,
   hoveredIdsExternal,
   selectedIds,
-  hotSpotsActive,
+  relationsActive,
   activeComponents,
   useAlphaTest,
   id,
@@ -59,7 +59,7 @@ function ReactGroupBase({
   const selected = selectedIds?.[id ?? ""];
 
   const materialState = activeComponents?.[id ?? ""];
-  const disabled = hotSpotsActive && materialState !== "Accept";
+  const disabled = relationsActive && materialState !== "Accept";
   return (
     <group
       rotation={[g.rot?.x ?? 0, g.rot?.y ?? 0, g.rot?.z ?? 0]}
@@ -101,7 +101,7 @@ function ReactGroupBase({
           key={createGroupKey ? createGroupKey(g, i, rootData, id ?? "") : i}
           g={g}
           selectedIds={selectedIds}
-          hotSpotsActive={hotSpotsActive}
+          relationsActive={relationsActive}
           activeComponents={activeComponents}
           materialStateImages={materialStateImages}
           hoveredIdsExternal={hoveredIdsExternal}
@@ -158,7 +158,8 @@ export type ReactGroupProps = {
   readonly hoveredIdsExternal: ReadonlyArray<string> | undefined;
   readonly hoveredParent?: boolean;
   readonly selectedIds: Record<string, boolean> | undefined;
-  readonly hotSpotsActive: boolean;
+  /** Relations are active, e.g. to pick one to insert a component on, so only the groups whose material state is Accept can be clicked */
+  readonly relationsActive: boolean;
   readonly useAlphaTest?: boolean;
   readonly activeComponents: Record<string, MaterialState> | undefined;
   readonly id: string | undefined;

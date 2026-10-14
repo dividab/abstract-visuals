@@ -157,9 +157,15 @@ export function Abstract3DExample(): React.ReactNode {
         <button
           onClick={() =>
             FileSaver.saveAs(
-              new Blob([Ifc.render(systemair, { root: { entity: "IfcUnitaryEquipment", predefinedType: "AIRHANDLER", name: "AHU" } })], {
-                type: "text/plain",
-              }),
+              new Blob(
+                [
+                  Ifc.render(
+                    { ...systemair, groups: [{ pos: vec3Zero, groups: systemair.groups, name: "AHU" }] },
+                    { entity: (g) => (g.name === "AHU" ? { entity: "IfcUnitaryEquipment", predefinedType: "AIRHANDLER" } : undefined) }
+                  ),
+                ],
+                { type: "text/plain" }
+              ),
               `a3d.ifc`
             )
           }

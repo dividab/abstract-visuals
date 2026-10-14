@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.0] - 2026-10-14
+
+- Removed (breaking): `hotSpots_deprecated` on `Scene` and the `HotSpot` type, and the react renderer's `activeHotSpots`, `onClickHotSpot`, `hotSpotTexts` and `showHotSpotTexts` props and the `HotSpotInfo` type. Use the scene's `relations` instead: the react renderer draws the `groups` of the relations whose ids are in the new `activeRelations` prop, clickable and darker when hovered, and calls the new `onClickRelation` prop with the clicked relation. While `activeRelations` is defined, even when empty, only the groups whose material state is Accept can be clicked, as with `activeHotSpots`
+
+- Added: `id`, `name`, `description` and `layer` on `Group`. `id` identifies what the group is, sibling groups with the same `id` are parts of the same thing and one IFC element, `description` is the IFC element's Description, `layer` is inherited by the groups below that don't have their own. `data` is now only the application's own and isn't read by any renderer
+
+- Added: `relations` on `Scene`, connections between two groups by their `id` (`from` → `to`), or with one end where something outside the scene connects to a group, each with a position and rotation whose local x points along the flow, and optional `groups` as its shape, in the scene's coordinates like the top-level groups
+
+- Added: the IFC renderer writes every relation as an `IfcDistributionPort` nested in each of its groups' elements, SOURCE in `from` and SINK in `to`, placed relative to the element, and connects the two ports of a relation with both ends with `IfcRelConnectsPorts`. The relation's groups are merged into the first port's shape. The new `port` option gives a relation's ports their type and system, e.g. `{ predefinedType: "DUCT", systemType: "VENTILATION" }`
+
+- Added: `entity` option on the IFC renderer that gives each element its class, e.g. `{ entity: "IfcFan", predefinedType: "CENTRIFUGALAIRFOIL" }`, with the IFC4 PredefinedTypes of IfcUnitaryEquipment, IfcFan, IfcFilter, IfcCoil, IfcAirToAirHeatRecovery, IfcDamper, IfcDuctSilencer, IfcHumidifier and IfcBuildingElementProxy, which it defaults to, and IfcBuildingElementPart, e.g. for the parts of a casing that aren't equipment of their own
+
+- Changed: the IFC GlobalId is derived from a hash of any `id` that isn't a uuid too, so every object with an id keeps its GlobalId between exports
+
+- Changed (breaking): in the IFC renderer the groups that become elements are the top-level groups and the groups with an `id` or `name`, which also give the element's GlobalId, name and tag, instead of `data.id` and `data.name`. The layers come from `layer` on the groups, the `layer` option is removed. The `root` option is removed, wrap the groups in one group with a `name` and give it its class with `entity` instead
+
 ## [2.12.0] - 2026-10-12
 
 - Changed (behaviour change): in the IFC renderer only groups whose `data` has an `id` or `name` become elements (top-level groups still always do). A group whose `data` only has other keys, e.g. `{ type: "panel" }`, is now metadata and its meshes are merged into the element above it, like a group without `data`
