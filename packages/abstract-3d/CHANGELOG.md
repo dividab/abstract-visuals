@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. The format 
 
 - Removed (breaking): `hotSpots_deprecated` on `Scene` and the `HotSpot` type, and the react renderer's `activeHotSpots`, `onClickHotSpot`, `hotSpotTexts` and `showHotSpotTexts` props and the `HotSpotInfo` type. Use the scene's `relations` instead: the react renderer draws the `groups` of the relations whose ids are in the new `activeRelations` prop, clickable and darker when hovered, and calls the new `onClickRelation` prop with the clicked relation. While `activeRelations` is defined, even when empty, only the groups whose material state is Accept can be clicked, as with `activeHotSpots`
 
-- Added: `id`, `name`, `description` and `layer` on `Group`. `id` identifies what the group is, sibling groups with the same `id` are parts of the same thing and one IFC element, `description` is the IFC element's Description, `layer` is inherited by the groups below that don't have their own. `data` is now only the application's own and isn't read by any renderer
+- Added: `id`, `name`, `description` and `layer` on `Group`. `id` identifies what the group is, sibling groups with the same `id` are parts of the same thing, `layer` is inherited by the groups below that don't have their own. `data` is now only the application's own and isn't read by any renderer
 
 - Added: `relations` on `Scene`, connections between two groups by their `id` (`from` → `to`), or with one end where something outside the scene connects to a group, each with a position and rotation whose local x points along the flow, and optional `groups` as its shape, in the scene's coordinates like the top-level groups
 
