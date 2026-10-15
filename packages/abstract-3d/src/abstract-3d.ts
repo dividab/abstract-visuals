@@ -886,10 +886,11 @@ export const group = (
   groups: ReadonlyArray<Group> = Array<Group>(),
   data = {},
   animation?: Animation,
-  layer?: string,
+  id?: string,
   name?: string,
-  id?: string
-): Group => ({ meshes, pos, rot, data, groups, animation: animation!, layer, name, id });
+  description?: string,
+  layer?: string,
+): Group => ({ meshes, pos, rot, data, groups, animation: animation!, layer, name, id, description });
 
 export const boxMesh = (box: Box, material: Material): Mesh => ({ geometry: box, material });
 export const boxGeometry = (size: Vec3, pos: Vec3 = vec3Zero, rot = vec3Zero, holes: ReadonlyArray<Hole> = []): Box => ({
