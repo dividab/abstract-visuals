@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Fixed: the DOCX exporter no longer imports Node's `stream`. `exportToStream` writes the document to the given stream with `end`, so bundlers that keep unused code, like vite's bundled dev mode, no longer fail on the missing `Readable` in the browser.
+
 ## [20.3.3] - 2026-10-07
 
 - Fixed: in the PDF exporter, an empty `fontFamily` (e.g. `fontFamily=""` in an XML template) falls back to Helvetica again, as it did before 20.1.0. Since 20.1.0 it produced font names like `-Bold`, which pdfkit tried to read as a file (`Cannot read '-Bold': file paths are not supported outside of Node`).

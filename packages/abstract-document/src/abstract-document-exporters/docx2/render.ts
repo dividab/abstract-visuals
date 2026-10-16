@@ -1,4 +1,3 @@
-import { Readable } from "stream";
 import type {
   ISectionOptions,
   ImageRun,
@@ -48,10 +47,7 @@ export function exportToStream(blobStream: NodeJS.WritableStream, doc: AD.Abstra
   transcodeAvifImages(doc)
     .then((transcoded) => Packer.toBuffer(createDocument(transcoded)))
     .then((buffer) => {
-      const readableStream = new Readable();
-      readableStream.push(buffer);
-      readableStream.push(null);
-      readableStream.pipe(blobStream);
+      blobStream.end(buffer);
       return undefined;
     })
     .catch((err: unknown) => blobStream.emit("error", err instanceof Error ? err : new Error(String(err))));
