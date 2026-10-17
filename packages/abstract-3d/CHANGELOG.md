@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.2] - 2026-10-17
+
+- Added: `type` on `Group` and `Scene`, what it is (`GroupType`), e.g. `"AirHandler"`, `"Fan"`, `"WaterCoil"`, `"RotaryHeatExchanger"` or `"Part"` for a part of what it's in, `airType` on `Relation`, the air through it by where the unit's air comes in or goes out (`AirType`), `"fresh"`, `"supply"`, `"extract"` or `"exhaust"`, and `id` and `name` on `Scene`, what the scene is as a whole
+
+- Added: the IFC renderer writes an element as the class of its `type` when the `entity` option doesn't give one, e.g. `IfcFan` or `IfcCoil` HYDRONICCOIL, and the ports of a relation with an `airType` as ducts of its system, VENTILATION for fresh and supply air and EXHAUST for extract and exhaust air, when the `port` option doesn't give their type. A scene with an `id`, `name` or `type` is one element with all its groups in it, e.g. an `IfcUnitaryEquipment` air handler
+
 ## [3.0.0] - 2026-10-14
 
 - Removed (breaking): `hotSpots_deprecated` on `Scene` and the `HotSpot` type, and the react renderer's `activeHotSpots`, `onClickHotSpot`, `hotSpotTexts` and `showHotSpotTexts` props and the `HotSpotInfo` type. Use the scene's `relations` instead: the react renderer draws the `groups` of the relations whose ids are in the new `activeRelations` prop, clickable and darker when hovered, and calls the new `onClickRelation` prop with the clicked relation. While `activeRelations` is defined, even when empty, only the groups whose material state is Accept can be clicked, as with `activeHotSpots`

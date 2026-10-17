@@ -5,6 +5,10 @@ export type Scene = {
   readonly size_deprecated: Vec3; //move size calculation to every renderer??
   readonly groups: ReadonlyArray<Group>;
   readonly relations?: ReadonlyArray<Relation>;
+  /** What the scene is as a whole, e.g. a unit its groups are the parts of, which a relation can have as an end by its `id` */
+  readonly id?: string;
+  readonly name?: string;
+  readonly type?: GroupType;
   readonly data?: Record<string, string>;
   //should be removed
   readonly center_deprecated?: Vec3;
@@ -82,6 +86,7 @@ export type Group = {
   readonly description?: string;
   /** The layer of the group's meshes and of the groups below it that don't have their own */
   readonly layer?: string;
+  readonly type?: GroupType;
   /** The application's own data, not read by the renderers */
   readonly data?: Record<string, string>;
   readonly animation?: Animation;
@@ -106,7 +111,33 @@ export type Relation = {
    * draws to be clicked when the relation is active
    */
   readonly groups?: ReadonlyArray<Group>;
+  readonly airType?: AirType;
 };
+
+/** What a group or scene is, `Part` a part of what it's in, e.g. a casing's panel */
+export type GroupType =
+  | "AirHandler"
+  | "Fan"
+  | "Filter"
+  | "Damper"
+  | "Silencer"
+  | "WaterCoil"
+  | "DxCoil"
+  | "RefrigerantCoil"
+  | "ElectricHeater"
+  | "SteamCoil"
+  | "GasBurner"
+  | "RotaryHeatExchanger"
+  | "PlateHeatExchanger"
+  | "RunAroundCoil"
+  | "HeatPipe"
+  | "Humidifier"
+  | "SteamHumidifier"
+  | "SprayHumidifier"
+  | "Part";
+
+/** The air through a relation by where the unit's air comes in or goes out: fresh air and extract air in, supply air and exhaust air out */
+export type AirType = "fresh" | "supply" | "extract" | "exhaust";
 
 export type Mesh = {
   readonly material: Material;
@@ -889,7 +920,7 @@ export const group = (
   id?: string,
   name?: string,
   description?: string,
-  layer?: string,
+  layer?: string
 ): Group => ({ meshes, pos, rot, data, groups, animation: animation!, layer, name, id, description });
 
 export const boxMesh = (box: Box, material: Material): Mesh => ({ geometry: box, material });

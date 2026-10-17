@@ -236,6 +236,25 @@ describe("ifc render", () => {
     expect(count(ifc, "IFCRELAGGREGATES")).toBe(4);
   });
 
+  it("writes a scene with a type as one element its groups are in, the elements as the class of their type and a relation's air type as duct ports", () => {
+    const ifc = render({
+      ...scene(
+        [
+          { ...group([box(vec3(1, 1, 1), red)]), id: "filter", type: "Filter" },
+          { ...group([box(vec3(1, 1, 1), red)], vec3(100, 0, 0)), id: "fan" },
+        ],
+        [{ id: "r1", to: "filter", pos: vec3(-50, 0, 0), name: "ODA", airType: "fresh" }]
+      ),
+      id: "ahu",
+      name: "AHU",
+      type: "AirHandler",
+    });
+    expect(ifc).toMatch(/[=]IFCUNITARYEQUIPMENT\('[^']{22}',#\d+,'AHU',\$,\$,#\d+,\$,'ahu',\.AIRHANDLER\.\);/);
+    expect(ifc).toMatch(/[=]IFCFILTER\('[^']{22}',#\d+,'filter',\$,\$,#\d+,#\d+,'filter',\.AIRPARTICLEFILTER\.\);/);
+    expect(ifc).toMatch(/[=]IFCRELCONTAINEDINSPATIALSTRUCTURE\('[^']{22}',#\d+,\$,\$,\(#\d+\),#\d+\);/);
+    expect(ifc).toMatch(/[=]IFCDISTRIBUTIONPORT\('[^']{22}',#\d+,'ODA',\$,\$,#\d+,\$,\.SINK\.,\.DUCT\.,\.VENTILATION\.\);/);
+  });
+
   it("writes the owner history on every rooted entity and the author and application in the header", () => {
     const ifc = render(scene([group([box(vec3(1, 1, 1), red)], vec3Zero, vec3Zero, [{ ...group([sphere(1, red)]), name: "Fan" }])]), {
       author: "Ivan",

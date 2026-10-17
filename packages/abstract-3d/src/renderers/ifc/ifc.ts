@@ -1,5 +1,5 @@
 import { Color, SRGBColorSpace } from "three";
-import type { Scene, Group, Material, Relation, Vec3 } from "../../abstract-3d.js";
+import type { Scene, Group, Material, Relation, Vec3, GroupType, AirType } from "../../abstract-3d.js";
 import { vec3Zero, vec3PosX, vec3PosY, vec3Rot, vec3Sub, vec3TransRot, vec3RotCombine, vec3RotInverse } from "../../abstract-3d.js";
 import type { MutableIfc } from "./ifc-encoding.js";
 import { add, guid, ifcFile, point, real, ref, refs, serialize, str } from "./ifc-encoding.js";
@@ -122,6 +122,37 @@ export type IfcPortType = {
   readonly systemType?: IfcDistributionSystem;
 };
 
+/** The element class of each type of group, when the `entity` option doesn't give one */
+const entityByType: Record<GroupType, IfcEntity> = {
+  AirHandler: { entity: "IfcUnitaryEquipment", predefinedType: "AIRHANDLER" },
+  Fan: { entity: "IfcFan" },
+  Filter: { entity: "IfcFilter", predefinedType: "AIRPARTICLEFILTER" },
+  Damper: { entity: "IfcDamper" },
+  Silencer: { entity: "IfcDuctSilencer", predefinedType: "RECTANGULAR" },
+  WaterCoil: { entity: "IfcCoil", predefinedType: "HYDRONICCOIL" },
+  DxCoil: { entity: "IfcCoil", predefinedType: "DXCOOLINGCOIL" },
+  RefrigerantCoil: { entity: "IfcCoil" },
+  ElectricHeater: { entity: "IfcCoil", predefinedType: "ELECTRICHEATINGCOIL" },
+  SteamCoil: { entity: "IfcCoil", predefinedType: "STEAMHEATINGCOIL" },
+  GasBurner: { entity: "IfcCoil", predefinedType: "GASHEATINGCOIL" },
+  RotaryHeatExchanger: { entity: "IfcAirToAirHeatRecovery", predefinedType: "ROTARYWHEEL" },
+  PlateHeatExchanger: { entity: "IfcAirToAirHeatRecovery" },
+  RunAroundCoil: { entity: "IfcAirToAirHeatRecovery", predefinedType: "RUNAROUNDCOILLOOP" },
+  HeatPipe: { entity: "IfcAirToAirHeatRecovery", predefinedType: "HEATPIPE" },
+  Humidifier: { entity: "IfcHumidifier" },
+  SteamHumidifier: { entity: "IfcHumidifier", predefinedType: "STEAMINJECTION" },
+  SprayHumidifier: { entity: "IfcHumidifier", predefinedType: "ADIABATICATOMIZING" },
+  Part: { entity: "IfcBuildingElementPart" },
+};
+
+/** The duct port of each air type, when the `port` option doesn't give one */
+const ductPortByAirType: Record<AirType, IfcPortType> = {
+  fresh: { predefinedType: "DUCT", systemType: "VENTILATION" },
+  supply: { predefinedType: "DUCT", systemType: "VENTILATION" },
+  extract: { predefinedType: "DUCT", systemType: "EXHAUST" },
+  exhaust: { predefinedType: "DUCT", systemType: "EXHAUST" },
+};
+
 export type IfcApplicationInfo = {
   readonly name: string;
   readonly version?: string;
@@ -181,10 +212,11 @@ type IfcContext = {
 
 /**
  * IFC4 (Reference View) with every mesh as an IfcTriangulatedFaceSet and every line as an IfcPolyline without thickness, in millimetres. Every
- * top-level group and every group with an `id` or `name` becomes an element of the class `entity` gives it, an IfcBuildingElementProxy by default,
- * placed relative to its parent element and aggregated into it. Other groups are only transforms, so their meshes are merged into the parent element.
- * The face sets and polylines are on an IfcPresentationLayerAssignment per `layer`. Every relation becomes an IfcDistributionPort nested in each of
- * the elements of its groups, with the flow leaving `from` and entering `to`, and the two ports of a relation with both are connected
+ * top-level group and every group with an `id` or `name` becomes an element of the class `entity` or its `type` gives it, an IfcBuildingElementProxy
+ * by default, placed relative to its parent element and aggregated into it, and a scene with an `id`, `name` or `type` is one element they're all in.
+ * Other groups are only transforms, so their meshes are merged into the parent element. The face sets and polylines are on an
+ * IfcPresentationLayerAssignment per `layer`. Every relation becomes an IfcDistributionPort nested in each of the elements of its groups, with the
+ * flow leaving `from` and entering `to`, of the type `port` or its `airType` gives it, and the two ports of a relation with both are connected
  */
 export function render(scene: Scene, options: IfcOptions = {}): string {
   const name = options.name ?? "Abstract 3D";
@@ -227,7 +259,12 @@ export function render(scene: Scene, options: IfcOptions = {}): string {
 
   const center = scene.center_deprecated ?? vec3Zero;
   const sceneRot = scene.rotation_deprecated ?? vec3Zero;
-  const elements = mergeSameId(scene.groups)
+  // A scene that is something as a whole is one element, with its groups as the parts of it
+  const roots =
+    scene.id !== undefined || scene.name !== undefined || scene.type !== undefined
+      ? [{ pos: vec3Zero, id: scene.id, name: scene.name, type: scene.type, groups: scene.groups }]
+      : scene.groups;
+  const elements = mergeSameId(roots)
     .flatMap((g) => elementNode(g, vec3TransRot(g.pos, center, sceneRot), vec3RotCombine(sceneRot, g.rot ?? vec3Zero), g.layer) ?? [])
     .map((node, i) => element(m, node, `${i + 1}`, { element: storey, placement: storeyPlacement, pos: vec3Zero, rot: vec3Zero }, c));
   if (elements.length > 0) {
@@ -303,6 +340,7 @@ function mergeSameId(groups: ReadonlyArray<Group>): ReadonlyArray<Group> {
             name: g.name,
             description: g.description,
             layer: g.layer,
+            type: g.type,
             data: g.data,
             pos: vec3Zero,
             groups: same.map((s) => ({ ...s, id: undefined, name: undefined })),
@@ -319,7 +357,8 @@ function mergeSameId(groups: ReadonlyArray<Group>): ReadonlyArray<Group> {
 function element(m: MutableIfc, node: ElementNode, path: string, parent: IfcElement, c: IfcContext): number {
   const placement = add(m, `IFCLOCALPLACEMENT(${ref(parent.placement)},${ref(axisPlacement(m, node.pos, node.rot))})`);
   const { id, name = id ?? `Element ${path}`, description } = node.group;
-  const { entity, predefinedType = "NOTDEFINED" } = c.entity?.(node.group) ?? { entity: "IfcBuildingElementProxy" };
+  const { entity, predefinedType = "NOTDEFINED" } =
+    c.entity?.(node.group) ?? (node.group.type ? entityByType[node.group.type] : { entity: "IfcBuildingElementProxy" });
   const ifcElement = add(
     m,
     `${entity.toUpperCase()}(${c.owner(id)},${str(name)},${str(description)},$,${ref(placement)},${representation(m, node.meshes, c)},${str(id)},.${predefinedType}.)`
@@ -350,7 +389,7 @@ function relationPorts(m: MutableIfc, relation: Relation, center: Vec3, sceneRot
   const pos = vec3TransRot(relation.pos, center, sceneRot);
   const rot = vec3RotCombine(sceneRot, relation.rot ?? vec3Zero);
   const portInverse = vec3RotInverse(rot);
-  const { predefinedType = "NOTDEFINED", systemType } = portType?.(relation) ?? {};
+  const { predefinedType = "NOTDEFINED", systemType } = portType?.(relation) ?? (relation.airType ? ductPortByAirType[relation.airType] : {});
   const ends = [
     { e: relation.from === undefined ? undefined : c.elements.get(relation.from), flow: "SOURCE" },
     { e: relation.to === undefined ? undefined : c.elements.get(relation.to), flow: "SINK" },
