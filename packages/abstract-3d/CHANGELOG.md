@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. The format 
 
 - Added: `lights` prop on the react renderer, the scene's lights, rendered in the canvas instead of the default ambient and directional lights, e.g. an environment map for reflections and a key light. The default lights are mostly ambient, which lights every face alike and gives no reflections
 
+- Changed: the react renderer pauses the scene's pointer events while the camera is dragged, so moving the pointer to rotate or pan no longer raycasts the scene and runs the hover handlers (`onHoverGroup`, hover highlighting, tooltips) on every move. The hovered group is unhovered when the drag starts moving the camera, and hovering resumes on the next pointer move after it ends
+
 ## [3.0.2] - 2026-10-17
 
 - Added: `type` on `Group` and `Scene`, what it is (`GroupType`), e.g. `"AirHandler"`, `"Fan"`, `"WaterCoil"`, `"RotaryHeatExchanger"` or `"Part"` for a part of what it's in, `airType` on `Relation`, the air through it by where the unit's air comes in or goes out (`AirType`), `"fresh"`, `"supply"`, `"extract"` or `"exhaust"`, and `id` and `name` on `Scene`, what the scene is as a whole

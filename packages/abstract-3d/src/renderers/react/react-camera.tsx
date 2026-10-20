@@ -287,20 +287,57 @@ export function ReactCamera({
   );
 }
 
-const ControlsWrapper = (
-  props: OrbitControlsProps & {
-    setControls: (controls: OrbitControlsInstance) => void;
-  }
-): React.JSX.Element => {
+/** OrbitControlsProps resolves to an index signature (drei omits from a type that has one), so its callbacks are typed here */
+type ControlsCallbacks = {
+  readonly onStart?: (e?: unknown) => void;
+  readonly onChange?: (e?: unknown) => void;
+  readonly onEnd?: (e?: unknown) => void;
+};
+
+const ControlsWrapper = ({
+  setControls,
+  ...props
+}: OrbitControlsProps & {
+  setControls: (controls: OrbitControlsInstance) => void;
+}): React.JSX.Element => {
+  const { onStart, onChange, onEnd } = props as ControlsCallbacks;
   const ref = useRef<OrbitControlsInstance>(null);
+  const getState = useThree(({ get }) => get);
+  const setEvents = useThree(({ setEvents }) => setEvents);
+  // While the camera is moved by a drag, the scene's pointer events are paused so every pointer move doesn't raycast the scene and run the hover handlers
+  const dragRef = useRef({ dragging: false, paused: false });
 
   useLayoutEffect(() => {
     if (!ref.current) {
       return;
     }
-    props.setControls(ref.current);
+    setControls(ref.current);
   });
-  return <OrbitControls {...props} makeDefault ref={ref} />;
+  return (
+    <OrbitControls
+      {...props}
+      makeDefault
+      ref={ref}
+      onStart={(e?: unknown) => {
+        dragRef.current.dragging = true;
+        onStart?.(e);
+      }}
+      onChange={(e?: unknown) => {
+        if (dragRef.current.dragging && !dragRef.current.paused && getState().events.enabled) {
+          dragRef.current.paused = true;
+          setEvents({ enabled: false });
+        }
+        onChange?.(e);
+      }}
+      onEnd={(e?: unknown) => {
+        if (dragRef.current.paused) {
+          setEvents({ enabled: true });
+        }
+        dragRef.current = { dragging: false, paused: false };
+        onEnd?.(e);
+      }}
+    />
+  );
 };
 type GizmoViewportProps = React.JSX.IntrinsicElements["group"] & {
   readonly axisColors?: [string, string, string];
