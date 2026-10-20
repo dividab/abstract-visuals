@@ -30,6 +30,11 @@ type ReactProps = {
   readonly orbitContolsProps?: OrbitControlsProps & React.RefAttributes<unknown>;
   readonly materialStateImages?: Record<string, string>;
   readonly sceneFallback?: React.JSX.Element;
+  /**
+   * The scene's lights, rendered in the canvas instead of the default ambient and directional lights, e.g. an environment map for reflections and a
+   * key light. A constant element, as a new one each render re-renders the whole scene
+   */
+  readonly lights?: React.JSX.Element;
   readonly useOldMode?: boolean;
   readonly bufferZones?: BufferZones;
   readonly fitPadding?: number;
@@ -77,6 +82,7 @@ export const render = memo(
     orbitContolsProps,
     materialStateImages,
     sceneFallback,
+    lights,
     useAlphaTest = true,
     onClickGroup,
     onHoverGroup,
@@ -103,47 +109,51 @@ export const render = memo(
             controlsHelper={controlsHelper}
             orbitContolsProps={orbitContolsProps}
           />
-          <ambientLight intensity={3.5} />
-          <directionalLight
-            position={[
-              -(scene.center_deprecated?.x ?? 0) - 1.5 * scene.size_deprecated.x,
-              -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
-              -(scene.center_deprecated?.z ?? 0),
-            ]}
-            intensity={intensity}
-          />
-          <directionalLight
-            position={[
-              -(scene.center_deprecated?.x ?? 0),
-              -(scene.center_deprecated?.y ?? 0) + 1 * scene.size_deprecated.y,
-              -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
-            ]}
-            intensity={intensity}
-          />
-          <directionalLight
-            position={[
-              -(scene.center_deprecated?.x ?? 0) + 2 * scene.size_deprecated.x,
-              -(scene.center_deprecated?.y ?? 0),
-              -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
-            ]}
-            intensity={intensity}
-          />
-          <directionalLight
-            position={[
-              -(scene.center_deprecated?.x ?? 0) - 1.5 * scene.size_deprecated.x,
-              -(scene.center_deprecated?.y ?? 0),
-              -(scene.center_deprecated?.z ?? 0),
-            ]}
-            intensity={0.4}
-          />
-          <directionalLight
-            position={[
-              -(scene.center_deprecated?.x ?? 0) + 1.5 * scene.size_deprecated.x,
-              -(scene.center_deprecated?.y ?? 0),
-              -(scene.center_deprecated?.z ?? 0),
-            ]}
-            intensity={0.4}
-          />
+          {lights ?? (
+            <>
+              <ambientLight intensity={3.5} />
+              <directionalLight
+                position={[
+                  -(scene.center_deprecated?.x ?? 0) - 1.5 * scene.size_deprecated.x,
+                  -(scene.center_deprecated?.y ?? 0) + 1.5 * scene.size_deprecated.y,
+                  -(scene.center_deprecated?.z ?? 0),
+                ]}
+                intensity={intensity}
+              />
+              <directionalLight
+                position={[
+                  -(scene.center_deprecated?.x ?? 0),
+                  -(scene.center_deprecated?.y ?? 0) + 1 * scene.size_deprecated.y,
+                  -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
+                ]}
+                intensity={intensity}
+              />
+              <directionalLight
+                position={[
+                  -(scene.center_deprecated?.x ?? 0) + 2 * scene.size_deprecated.x,
+                  -(scene.center_deprecated?.y ?? 0),
+                  -(scene.center_deprecated?.z ?? 0) + 1.5 * scene.size_deprecated.z,
+                ]}
+                intensity={intensity}
+              />
+              <directionalLight
+                position={[
+                  -(scene.center_deprecated?.x ?? 0) - 1.5 * scene.size_deprecated.x,
+                  -(scene.center_deprecated?.y ?? 0),
+                  -(scene.center_deprecated?.z ?? 0),
+                ]}
+                intensity={0.4}
+              />
+              <directionalLight
+                position={[
+                  -(scene.center_deprecated?.x ?? 0) + 1.5 * scene.size_deprecated.x,
+                  -(scene.center_deprecated?.y ?? 0),
+                  -(scene.center_deprecated?.z ?? 0),
+                ]}
+                intensity={0.4}
+              />
+            </>
+          )}
 
           <ReactScene
             scene={scene}
