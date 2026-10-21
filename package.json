@@ -38,18 +38,18 @@
     "@types/node": "^24.9.2",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "@vitest/coverage-v8": "5.0.4",
+    "@vitest/coverage-v8": "5.0.5",
     "@xsd-tools/typescript": "^0.2.0",
     "husky": "^0.14.3",
     "lerna": "^10.0.1",
     "lint-staged": "^10.5.4",
     "npm-run-all": "^4.1.5",
-    "oxfmt": "^0.73.0",
-    "oxlint": "^1.88.0",
-    "oxlint-config-divid": "^1.5.3",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "oxlint-config-divid": "^1.5.4",
     "oxlint-tsgolint": "^7.0.2004",
     "react": "catalog:",
-    "rollup-plugin-visualizer": "7.0.1",
+    "rollup-plugin-visualizer": "7.1.1",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-next": "npm:typescript@7.0.2",
     "vite": "catalog:",
@@ -64,5 +64,5 @@
       "oxfmt"
     ]
   },
-  "packageManager": "pnpm@12.8.2"
+  "packageManager": "pnpm@12.14.0"
 }
