@@ -16,7 +16,7 @@ export type Scene = {
   //might be removed
   readonly dimensions_deprecated?: Dimensions;
 };
-//dummy
+
 export type Renderer = "react" | "ai_schematic" | "ai_detailed" | "dxf";
 
 export type Dimensions = {
