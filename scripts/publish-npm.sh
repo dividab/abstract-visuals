@@ -21,6 +21,11 @@ if ! npm whoami >/dev/null 2>&1; then
   npm login
 fi
 
+if [ "$web" = false ] && ! pnpm whoami >/dev/null 2>&1; then
+  echo "pnpm can't authenticate to npm: remove the stale //registry.npmjs.org/:_authToken line from ~/.config/pnpm/auth.ini (see README)."
+  exit 1
+fi
+
 pnpm run verify
 pnpm exec lerna version
 
@@ -54,7 +59,7 @@ while true; do
     exit 1
   fi
 
-  if npm_config_manage_package_manager_versions=false mise x pnpm@10.34.5 -- pnpm exec lerna publish from-package --yes --otp="$otp"; then
+  if pnpm exec lerna publish from-package --yes --otp="$otp"; then
     exit 0
   fi
 
