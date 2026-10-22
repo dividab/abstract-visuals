@@ -43,20 +43,20 @@ The benchmark compared the current r3f renderer with the PoC `buildScene()` laye
 | ------------------------------------------------------------ | ------------------------- | -------------------------------------------------------- |
 | React renderer (`src/renderers/react/`)                      | about 1,850               | about 80 (wrapper)                                       |
 | three layer, scene build (`src/renderers/three/`)            | 0 (the PoC was about 780) | about 900                                                |
-| three layer, viewer (new)                                    | 0                         | about 1,050                                              |
+| three layer, viewer (new)                                    | 0                         | about 750                                                |
 | Shared helpers (`src/renderers/shared/`)                     | 87                        | about 230 (texture and material code moved out of React) |
 | Custom r3f typings (`src/custom_typings/react-three-*.d.ts`) | yes                       | deleted                                                  |
-| **Total**                                                    | **about 1,940**           | **about 2,260**                                          |
+| **Total**                                                    | **about 1,940**           | **about 1,960**                                          |
 
-- **About 320 more lines, for two renderers instead of one:** a viewer that works without React, plus the React wrapper. The React-specific code shrinks from about 1,850 lines to about 80.
+- **About the same size, for two renderers instead of one:** a viewer that works without React, plus the React wrapper. The React-specific code shrinks from about 1,850 lines to about 80.
 - **React plumbing goes away:** the callback prop types repeated through three component levels, `groupPropsEqual`, `extend()`, the `fakeArgs` cast, and the lint disables and casts around `OrbitControlsInstance`.
-- **New code, mainly in the viewer:** the viewcube (about 250), camera fitting ported from `react-camera.tsx`, and pointer events. This is code drei and fiber provide today.
+- **Imported, not written:** the gizmos, pointer events, controls, text, lines and AO come from plain three.js libraries (see Libraries). Our new code is mainly the camera fitting ported from `react-camera.tsx`, overlays, and glue.
 - **Keeping r3f and using the three layer only for the scene build** would cost about the same total, keep the r3f dependencies, and leave non-React users without a viewer.
 
 ### Dependencies and packaging
 
 - **Removed:** `@react-three/fiber`, `@react-three/drei` and everything it pulls in, `@react-three/postprocessing`, `suspend-react`, and `react-reconciler` (a dependency of fiber).
-- **Added:** `n8ao` for ambient occlusion, and `troika-three-text`, which today comes in through drei.
+- **Added:** `@pmndrs/pointer-events`, `three-viewport-gizmo`, `troika-three-text` (today it comes in through drei) and `n8ao`. See Libraries.
 - **React and react-dom become optional peer dependencies.** Non-React users stop getting peer warnings and r3f packages installed.
 - **No more lockstep upgrades.** Today fiber, drei, postprocessing, React and three have to be upgraded together. After this, only three and React matter, and the wrapper works with any React version that has hooks.
 
@@ -65,6 +65,20 @@ The benchmark compared the current r3f renderer with the PoC `buildScene()` laye
 - **A viewer for non-React consumers**, which exists only for React today.
 - **Simpler profiling:** stack traces are just three plus our code.
 - **Explicit disposal:** every geometry, material and texture has an owner. It also fixes the likely leak in today's `react-mesh.tsx`, where `useMemo`'d `ExtrudeGeometry`, `TubeGeometry` and culled-line geometries are passed as props and r3f never disposes them.
+
+## Libraries: import as much as possible
+
+Everything below is plain three.js with no React. Our code is the scene build, camera fitting, overlays, and the glue between these libraries.
+
+| Need                                                                    | Library                                                                                    | Notes                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pointer events: click, hover, context menu, bubbling, `stopPropagation` | `@pmndrs/pointer-events` (MIT, no dependencies, maintained by pmndrs, the team behind r3f) | The framework-agnostic version of r3f's event model. Listeners go on `Object3D`s, events bubble up the parent chain, and events carry `instanceId`. `forwardHtmlEvents(canvas, camera, scene)` wires it up. Setting `pointerEvents = "none"` on an object keeps disabled groups from blocking picks. r3f's own event system can't be imported without React: it's tied to fiber's store and reconciler. |
+| Viewcube and viewport axes                                              | `three-viewport-gizmo` (MIT, peer `three >=0.162 <1.0`)                                    | `type: "cube"` gives the viewcube with face labels, edges, corners and hover. `type: "sphere"` gives the axes gizmo. `placement` and `offset` replace drei's `alignment` and `margin`. Also `font`, colors, `opacity`, `animated` and `attachControls(controls)`. Last release March 2025: small enough to fork if needed.                                                                              |
+| Orbit controls                                                          | three/addons `OrbitControls`                                                               | What drei's `OrbitControls` wraps today                                                                                                                                                                                                                                                                                                                                                                 |
+| Text                                                                    | `troika-three-text`                                                                        | What drei's `Text` wraps today, so text renders the same                                                                                                                                                                                                                                                                                                                                                |
+| Lines                                                                   | three/addons `Line2`, `LineMaterial`, `LineGeometry`                                       | What drei's `Line` wraps today                                                                                                                                                                                                                                                                                                                                                                          |
+| Ambient occlusion                                                       | `n8ao` with three/addons `EffectComposer`                                                  | Same N8AO effect as today's `@react-three/postprocessing`                                                                                                                                                                                                                                                                                                                                               |
+| Environment lighting                                                    | three/addons `RoomEnvironment` and `PMREMGenerator`                                        | Replaces drei `<Environment>` for consumers' `lights`                                                                                                                                                                                                                                                                                                                                                   |
 
 ## Target architecture
 
@@ -77,9 +91,9 @@ src/renderers/three/
   three-relation.ts    active relations: unlit, outlined, hover, pick
   viewer.ts            createViewer: renderer, render on demand, resize/dpr, lights, AO, loading state
   viewer-camera.ts     perspective/orthographic, fitting with buffer zones and fitPadding, views, reset
-  viewer-events.ts     raycasting, hover/click/context menu per group, cursor, paused while dragging
+  viewer-events.ts     @pmndrs/pointer-events wiring: group callbacks, instance → group hover, cursor, paused while dragging
   viewer-overlay.ts    overlays: which are shown (popovers, hovered group's tooltips, loading fallback), positions, hidden behind camera
-  viewer-gizmo.ts      viewcube and viewport-axes gizmos in a corner viewport
+  viewer-gizmo.ts      three-viewport-gizmo setup from controlsHelper, resetZoomAndPanOnClick
 src/renderers/react/
   index.ts
   react.tsx            the render component: creates and disposes the viewer, passes props, portals overlay content
@@ -150,15 +164,15 @@ It only bridges the React lifecycle and renders React content:
 | Dimensions, `showDimensions`, clickable dimension ids                               | `react-dimension.tsx`                                               | `three-dimension.ts`                                                               |
 | Relations, `activeRelations`, outline, hover, `onClickRelation`                     | `react-relation.tsx`                                                | `three-relation.ts`                                                                |
 | Scene `center_deprecated` and `rotation_deprecated`                                 | `react-scene.tsx`                                                   | Applied on the `buildScene` root                                                   |
-| `onClickGroup`, `onHoverGroup`, `onContextMenuGroup`, cursor                        | r3f events on groups                                                | `viewer-events.ts`                                                                 |
-| Only Accept groups clickable while relations are active                             | r3f handlers left off                                               | Pick filter; disabled groups don't block picks                                     |
+| `onClickGroup`, `onHoverGroup`, `onContextMenuGroup`, cursor                        | r3f events on groups                                                | `@pmndrs/pointer-events`, wired in `viewer-events.ts`                              |
+| Only Accept groups clickable while relations are active                             | r3f handlers left off                                               | `pointerEvents = "none"` on disabled groups, so they don't block picks             |
 | Pointer events paused while orbit-dragging                                          | `ControlsWrapper`                                                   | `viewer-events.ts`                                                                 |
 | `popovers`, `getTooltips`                                                           | drei `Html`                                                         | `viewer-overlay.ts` decides which and where; the wrapper portals the React content |
 | `sceneFallback` while loading, and when `scene` is undefined                        | Suspense with `Html`                                                | `fallback` overlay, shown by the core's loading state                              |
 | `camera` perspective/orthographic, near, far, fov                                   | drei cameras                                                        | `viewer-camera.ts`                                                                 |
 | `view`, `bufferZones`, `fitPadding`, refit on resize                                | `react-camera.tsx` fit math                                         | Ported as a pure, unit-tested function                                             |
 | `orbitContolsProps` (damping, distance limits, zoom speed, ...)                     | drei `OrbitControls`                                                | three/addons `OrbitControls`                                                       |
-| `controlsHelper` Viewcube and Viewport, `resetZoomAndPanOnClick`, alignment, margin | drei gizmos                                                         | `viewer-gizmo.ts`                                                                  |
+| `controlsHelper` Viewcube and Viewport, `resetZoomAndPanOnClick`, alignment, margin | drei gizmos                                                         | `three-viewport-gizmo`, configured in `viewer-gizmo.ts`                            |
 | Default lights, `useOldMode` intensities                                            | JSX lights                                                          | Same lights built in code                                                          |
 | `lights`                                                                            | JSX element                                                         | `Object3D[]` or `(scene) => Object3D[]`, plus `environment?: Texture`              |
 | N8AO (when `useOldMode` is off)                                                     | `@react-three/postprocessing`                                       | `n8ao` with three/addons `EffectComposer`                                          |
@@ -202,13 +216,18 @@ Each phase leaves `pnpm build` and `pnpm test` green and the old renderer workin
 
 - `viewer.ts`: `WebGLRenderer`, `ResizeObserver`, dpr, render on demand through `invalidate()`, the loop for animated groups, default and custom lights, environment, AO with `n8ao`, loading state, `dispose()`.
 - `viewer-camera.ts`: port the fit math from `react-camera.tsx` into a pure function with unit tests (perspective `setViewOffset`, orthographic frustum, buffer zones, fitPadding, views). Add camera type switching and `OrbitControls`.
-- `viewer-events.ts`: raycast only against pickable objects, emulate per-group hover in and out, click, context menu, cursor, and pause while dragging.
+- `viewer-events.ts`: wire `@pmndrs/pointer-events` with `forwardHtmlEvents`. Map events to group callbacks; for instanced meshes, map `instanceId` to the group and emit group hover in and out when it changes. Also the cursor, and pausing while dragging.
 - `viewer-overlay.ts`: anchors projected each rendered frame and hidden when behind the camera.
 
 ### Phase 2: gizmos
 
-- Viewport axes: build on three/addons `ViewHelper`, or port drei's `GizmoViewport` (MIT).
-- Viewcube: port drei's `GizmoViewcube` (MIT). It's a cube with canvas-texture faces in a scissored corner viewport, with clickable faces, edges and corners that animate the camera, hover color, and `resetZoomAndPanOnClick`.
+- Map `controlsHelper` to `three-viewport-gizmo`:
+  - Viewcube → `type: "cube"`, Viewport → `type: "sphere"`.
+  - `alignment` and `margin` → `placement` and `offset`.
+  - `viewcubeProps` colors and font → its style options.
+- Attach it to the `OrbitControls`.
+- Implement `resetZoomAndPanOnClick` with the camera fit from phase 1, hooked to the gizmo's events.
+- Spike first: check the look against today's drei viewcube, and how to hook the reset.
 
 ### Phase 3: React wrapper
 
@@ -246,8 +265,9 @@ Each phase leaves `pnpm build` and `pnpm test` green and the old renderer workin
 
 ## Risks
 
-- **Viewcube port:** the largest piece of new code. Option: ship the viewport axes first and the viewcube right after.
-- **Event semantics:** r3f bubbling and `stopPropagation` across nested groups that share an id has to be reproduced. Picking returns the root id, as today.
+- **`three-viewport-gizmo` maintenance:** its last release was March 2025. If it falls behind three, fork it; it's about 57 KB unminified.
+- **Hover between instances:** pointer over and out fire per object, so moving between instances of one `InstancedMesh` needs `pointermove` plus an `instanceId` → group check. Verify in the phase 1 spike.
+- **Event semantics:** `@pmndrs/pointer-events` has r3f-style bubbling and `stopPropagation`. Groups sharing a root id must still report the root id, as today.
 - **`lights` migration** for consumers who pass drei JSX today.
 - **Text rendering:** troika loads its default font from a CDN, as drei `Text` does today. Pass a font URL if offline use matters.
 - **Swap crash in today's renderer:** in the benchmark, after scene swaps the current renderer threw from `useFrame` in `react-group.tsx` because a group's ref was null. It's unconfirmed whether that happens in the real app. Not a risk for the new layer, but the old renderer might need a fix if it stays in use during the migration.
@@ -256,5 +276,4 @@ Each phase leaves `pnpm build` and `pnpm test` green and the old renderer workin
 
 1. **`three`**: keep it as a dependency, or make it a peer dependency so apps that use three themselves don't get two copies?
 2. **Prop names**: keep today's names exactly, or clean them up in 4.0.0 (`orbitContolsProps` → `orbitControls`, `render` → `Viewer`)?
-3. **Viewcube**: port drei's version, or write a smaller custom one?
-4. **AO**: `n8ao` with three's `EffectComposer`, or pmndrs `postprocessing`?
+3. **AO**: `n8ao` with three's `EffectComposer`, or pmndrs `postprocessing`?
