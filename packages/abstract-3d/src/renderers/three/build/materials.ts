@@ -39,7 +39,7 @@ export function createClassMaterial(c: MaterialClass, reflections: boolean): Mat
 }
 
 /** The most metalness without reflections */
-const plainMetalness = 0.4;
+const plainMetalness = 0.25;
 
 /**
  * The physical finish of each type of surface, in the material's color: metals reflect their color; galvanized and aluminum sheet keep some of their

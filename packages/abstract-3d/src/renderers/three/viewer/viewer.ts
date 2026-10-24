@@ -584,8 +584,8 @@ function updateOverlays<Content>(v: Viewer<Content>): void {
 /** The studio's share of the light, the key light giving the rest, so the key light's shadows show */
 const studioIntensity = 0.6;
 /** Without the studio, of its three-point lighting, by the environment's intensity; the key light is the studio's, the floor as the studio's */
-const skyIntensity = 1.5;
-const fillIntensity = 1.5;
+const skyIntensity = 2.5;
+const fillIntensity = 2;
 const rimIntensity = 2;
 const floorColor = 0xe6e6e6;
 /** From the right, opposite the key light from the upper left front, and lower; the rim light from behind and above */

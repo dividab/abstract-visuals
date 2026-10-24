@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [4.0.1] - 2026-10-24
+
+- Changed: with `studio={false}`, the scene is lit brighter, closer to the studio, by a stronger sky and fill light, and metals keep more of their color, a light silver instead of mid gray
+
 ## [4.0.0] - 2026-10-24
 
 - Changed (breaking): the react renderer is rewritten on plain three.js, without `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` and `suspend-react`. The new `abstract-3d/three` entry is the viewer without React (`createViewer`), and `abstract-3d/react` is a thin component around it. Solids of the same material are drawn as one batch, so a scene takes about a dozen draw calls whatever its size, and hover and selection repaint instance colors instead of re-rendering components
