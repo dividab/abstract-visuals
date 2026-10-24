@@ -21,7 +21,7 @@ const viewer = createViewer(document.getElementById("app")!, options);
 
 declare global {
   interface Window {
-    harness: { readonly viewer: typeof viewer; readonly created: number };
+    harness: { readonly viewer: typeof viewer; readonly created: number; readonly swap: (name: string) => void };
   }
 }
-window.harness = { viewer, created: performance.now() };
+window.harness = { viewer, created: performance.now(), swap: (name) => updateViewer(viewer, { scene: scenes[name] }) };

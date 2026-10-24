@@ -202,13 +202,13 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
   if (changes.has("camera")) {
     const { near = 0.1, far = 2000, ...rest } = options.camera ?? { type: "Perspective" };
     v.camera = v.cameras[rest.type];
-    Object.assign(v.camera, { near, far, ...("fov" in rest && rest.fov !== undefined ? { fov: rest.fov } : {}) });
+    Object.assign(v.camera, { near, far, ...(rest.type === "Perspective" ? { fov: rest.fov ?? 45 } : {}) });
     v.controls.orbit.object = v.camera;
   }
   if (changes.has("controls")) {
     configureControls(v.controls, options.controls ?? {});
   }
-  // As the r3f renderer, the scene is fitted at first, and for a new camera or canvas size
+  // As the r3f renderer, the scene is fitted at first, and for a new camera or canvas aspect
   if ((changes.has("build") && !v.fitted) || changes.has("camera")) {
     fitPose(v);
   }
@@ -219,7 +219,7 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
     updateLights(v);
   }
   if (changes.has("quality")) {
-    const quality = options.quality ?? "auto";
+    const quality = options.quality ?? "high";
     v.governor = { quality, tier: quality === "auto" ? "high" : quality, sum: 0, count: 0 };
     v.renderer.setPixelRatio(getPixelRatio(v.governor.tier, window.devicePixelRatio));
   }
@@ -315,21 +315,25 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
   }
 }
 
+/** As the r3f renderer, a resize refits only when the canvas' aspect changes */
 function onResize<Content>(v: Viewer<Content>, rect: DOMRectReadOnly): void {
+  const aspectChanged = rect.width / rect.height !== v.size.width / v.size.height;
   Object.assign(v.size, { width: rect.width, height: rect.height });
   v.renderer.setSize(rect.width, rect.height, false);
   v.overlays.renderer.setSize(rect.width, rect.height);
   v.gizmo?.update();
-  fitPose(v);
+  if (aspectChanged) {
+    fitPose(v);
+  }
   invalidate(v);
 }
 
-/** Fits the projection to the scene, and moves the camera to look at it from the view */
+/** Fits the projection to the scene, and moves the camera to look from the view; as the r3f renderer, the target stays where it was panned to */
 function fitPose<Content>(v: Viewer<Content>): void {
   const placement = fitScene(v);
   if (placement) {
     const { x, y, z } = placement.direction;
-    setPose(v.controls, new Vector3(x, y, z).multiplyScalar(placement.distance), new Vector3());
+    setPose(v.controls, new Vector3(x, y, z).multiplyScalar(placement.distance), v.controls.orbit.target);
     v.fitted = true;
   }
 }

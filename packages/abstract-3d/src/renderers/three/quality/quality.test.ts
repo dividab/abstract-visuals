@@ -30,8 +30,8 @@ describe("recordFrame", () => {
 });
 
 describe("getPixelRatio", () => {
-  it("caps the screen's pixel ratio by the tier", () => {
-    expect([getPixelRatio("low", 3), getPixelRatio("medium", 3), getPixelRatio("high", 3)]).toEqual([1, 1.5, 2]);
+  it("caps the screen's pixel ratio by the tier, and high is the screen's own, as the r3f renderer's", () => {
+    expect([getPixelRatio("low", 3), getPixelRatio("medium", 3), getPixelRatio("high", 3)]).toEqual([1, 1.5, 3]);
     expect(getPixelRatio("high", 1)).toBe(1);
   });
 });

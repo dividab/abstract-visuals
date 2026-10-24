@@ -1,6 +1,7 @@
 /**
- * Quality tiers by resolution, the cheapest lever on a weak GPU: low renders a pixel per CSS pixel, medium up to 1.5 and high up to 2 on high-density
- * screens. `auto` starts high and drops to low for good once moving frames are slow, as model viewers lower their resolution under load
+ * Quality tiers by resolution, the cheapest lever on a weak GPU: low renders a pixel per CSS pixel, medium up to 1.5, and high, the default, the
+ * screen's own pixel ratio as the r3f renderer. `auto` starts high and drops to low for good once moving frames are slow, as model viewers lower
+ * their resolution under load
  */
 
 export type Tier = "low" | "medium" | "high";
@@ -9,7 +10,7 @@ export type Quality = Tier | "auto";
 /** `auto` starts at high, and drops to low for good once moving frames average slower than 40 per second */
 export type TierGovernor = { readonly quality: Quality; tier: Tier; sum: number; count: number };
 
-const pixelRatioCaps: Record<Tier, number> = { low: 1, medium: 1.5, high: 2 };
+const pixelRatioCaps: Record<Tier, number> = { low: 1, medium: 1.5, high: Infinity };
 const windowSize = 30;
 const slowFrameMs = 25;
 /** Longer intervals are pauses between moves, not slow frames */

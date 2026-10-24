@@ -33,7 +33,7 @@ Where the implementation departs from this plan:
 - **Renderer:** the classic `WebGLRenderer` and GLSL, the classic stack below, so WebGL libraries run as they are: `LineMaterial`, `three-viewport-gizmo` and `CSS2DRenderer`. `WebGPURenderer` cost about 230 lines of our own replacements for them. WebGPU waits until it's mature.
 - **No post-processing:** ambient occlusion (N8AO, and before it GTAO) looked noisy at a cost weak GPUs can't pay, so it's removed. Quality tiers set the resolution only, and the ground shadow, rendered once per build, gives the grounding AO was for.
 - **Text:** our SDF atlas from the system font, in a `ShaderMaterial`, not troika, which needs a font file.
-- **Camera controls:** the 3.x OrbitControls only, with their refit behavior (at first, and for a new camera or canvas size), not camera-controls; two control implementations were redundant. Buffer zones use the ported view offset. The gizmo animates its own turns.
+- **Camera controls:** the 3.x OrbitControls only, with their refit behavior (at first, and for a new camera or canvas aspect), not camera-controls; two control implementations were redundant. Buffer zones use the ported view offset. The gizmo animates its own turns.
 - **API:** flat options with the 3.x prop names (`options.ts`) instead of the grouped options sketched below. `updateViewer` takes the options that changed and redoes what a static table says each one needs, batched into the next frame; telling what changed is the caller's, so the React wrapper passes each group of props from an effect, and compares the few that would refit, rebuild or recreate the gizmo by value. The viewer is plain state with module functions (`createViewer`, `updateViewer`, `invalidate`, `disposeViewer`), as is every module: no closure factories.
 - **Fallback:** rendered by the React wrapper until the viewer's `onLoad`, not by the viewer.
 - **Layout:** a folder per concern, each with its source and tests: `compile`, `appearance`, `geometry`, `text`, `build` (parts, materials), `camera` (controls, gizmo), `quality` and `viewer` (options, overlays).
@@ -53,7 +53,7 @@ Not done yet:
 
 - The selection outline.
 - The effect hook (`addEffect`), pausing when offscreen, `buildScene` without batching for `GLTFExporter`.
-- Frame times on a weak GPU, and the memory baseline check after scene swaps in the browser.
+- Frame times on a weak GPU. Memory is checked: over 150 scene swaps GPU geometries, textures and programs stay flat and the heap stays at 37–40 MB, and an idle viewer renders no frames.
 - 4.0.0 out of beta (the betas are on npm's `beta` tag).
 
 ## Why raw three.js

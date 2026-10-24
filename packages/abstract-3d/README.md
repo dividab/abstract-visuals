@@ -8,7 +8,7 @@ Abstract 3d with renderers for three.js (`abstract-3d/three`, with a React compo
 
 ## Viewer
 
-`abstract-3d/three` is an interactive three.js viewer that works without React. It draws a scene in a few draw calls whatever its size, and renders only when something changes, so it runs smoothly on weak graphics cards. By default it renders at up to 2 pixels per CSS pixel, and lowers that if moving gets slow.
+`abstract-3d/three` is an interactive three.js viewer that works without React. It draws a scene in a few draw calls whatever its size, and renders only when something changes, so it runs smoothly on weak graphics cards. `quality: "auto"` lowers the resolution if moving gets slow.
 
 ```ts
 import { createViewer, disposeViewer, updateViewer } from "abstract-3d/three";
@@ -24,4 +24,4 @@ disposeViewer(viewer);
 
 `abstract-3d/react` wraps it as the `Viewer` component, with the same props as the 3.x `render` component except for the breaking changes listed in the CHANGELOG. `three` is a peer dependency, and `react` and `react-dom` are optional peer dependencies.
 
-Development: `pnpm test:abstract-3d`, `pnpm bench:abstract-3d` (compile, build, hover and picking in Node) and `pnpm bench:abstract-3d:browser [bench] [screenshots]` (frame times, draw calls and screenshots in headless Chromium, written to `bench/out`).
+Development: `pnpm test:abstract-3d`, `pnpm bench:abstract-3d` (compile, build, hover and picking in Node) and `pnpm bench:abstract-3d:browser [bench] [memory] [screenshots]` (frame times and draw calls; frames rendered while idle and GPU resources and heap over 150 scene swaps; screenshots written to `bench/out`; in headless Chromium).

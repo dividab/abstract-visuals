@@ -34,7 +34,7 @@ export type ViewerOptions<Content> = {
    */
   readonly activeRelations?: ReadonlyArray<string>;
   readonly showDimensions?: boolean;
-  /** View, buffer zones and padding are read when the scene is fitted: first, and for a new camera or canvas size */
+  /** View, buffer zones and padding are read when the scene is fitted: first, and for a new camera or canvas aspect */
   readonly camera?: CameraOptions;
   readonly view?: View;
   readonly bufferZones?: BufferZones;
@@ -48,7 +48,7 @@ export type ViewerOptions<Content> = {
   readonly environmentIntensity?: number;
   /** A soft shadow on the ground under the scene, rendered once per build; on by default */
   readonly groundShadow?: boolean;
-  /** The resolution: `low` 1, `medium` up to 1.5 and `high` up to 2 pixels per CSS pixel; `auto` by default, high until moving gets slow */
+  /** The resolution: `low` 1 and `medium` up to 1.5 pixels per CSS pixel, `high`, the default, the screen's; `auto` high until moving gets slow */
   readonly quality?: Quality;
   readonly useAlphaTest?: boolean;
   readonly materialStateImages?: Record<string, string>;

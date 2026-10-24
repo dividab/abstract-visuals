@@ -16,9 +16,9 @@ All notable changes to this project will be documented in this file. The format 
 
 - Added: a soft shadow on the ground under the scene, falling a little behind it, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
 
-- Removed (breaking): ambient occlusion. The new `quality` prop sets the resolution instead: `"low"` renders a pixel per CSS pixel, `"medium"` up to 1.5 and `"high"` up to 2 on high-density screens, and `"auto"`, the default, starts at high and drops to low once moving gets slow
+- Removed (breaking): ambient occlusion. The new `quality` prop sets the resolution instead: `"high"`, the default, renders at the screen's pixel ratio as 3.x did, `"medium"` at up to 1.5 and `"low"` at 1 pixel per CSS pixel, and `"auto"` starts at high and drops to low once moving gets slow
 
-- Changed (breaking): `orbitContolsProps` is `controls`, the same OrbitControls options with the 3.x behavior: damping, the `onStart`, `onChange` and `onEnd` callbacks, and fitting the scene at first and for a new camera or canvas size. Pointer events pause while the camera is dragged
+- Changed (breaking): `orbitContolsProps` is `controls`, the same OrbitControls options with the 3.x behavior: damping, the `onStart`, `onChange` and `onEnd` callbacks, and fitting the scene at first and for a new camera or canvas aspect. Pointer events pause while the camera is dragged
 
 - Changed: `controlsHelper` draws the viewcube or axes with `three-viewport-gizmo`, with the same options except `hideAxisHeads`, which is removed. Text is drawn with the system font (Helvetica or Arial), so no font is loaded
 

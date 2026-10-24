@@ -8,7 +8,7 @@ import { createServer } from "vite";
 
 /**
  * Browser benchmark and screenshots of the three.js viewer, in headless Chromium with a software GPU, so frame times measure the CPU side only.
- * Usage: node packages/abstract-3d/bench/browser/run.ts [bench] [screenshots]
+ * Usage: node packages/abstract-3d/bench/browser/run.ts [bench] [memory] [screenshots]
  */
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -98,6 +98,40 @@ if (runs("bench")) {
     await page.close();
   }
   console.table(rows);
+}
+
+// Frames rendered while idle, which render on demand keeps at 0, then GPU resources and heap after swapping scenes, which should stay flat
+if (runs("memory")) {
+  const { page } = await open({ scene: "systemair3" });
+  const frames = await page.evaluate(async () => {
+    const before = window.harness.viewer.stats.frames;
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    return window.harness.viewer.stats.frames - before;
+  });
+  console.log(`frames rendered in 2 s idle: ${frames}`);
+  const rows = [];
+  const names = ["systemair6", "demo", "systemair3"];
+  for (const swaps of Array.from({ length: 151 }, (_, i) => i)) {
+    if (swaps % 30 === 0) {
+      rows.push({
+        swaps,
+        ...(await page.evaluate(() => {
+          (window as unknown as { gc?: () => void }).gc?.();
+          const { renderer } = window.harness.viewer;
+          return {
+            geometries: renderer.info.memory.geometries,
+            textures: renderer.info.memory.textures,
+            programs: renderer.info.programs?.length ?? 0,
+            heapMb: Math.round((performance as unknown as { memory: { usedJSHeapSize: number } }).memory.usedJSHeapSize / 1e6),
+          };
+        })),
+      });
+    }
+    await page.evaluate((name) => window.harness.swap(name), names[swaps % names.length]!);
+    await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 150)));
+  }
+  console.table(rows);
+  await page.close();
 }
 
 if (runs("screenshots")) {

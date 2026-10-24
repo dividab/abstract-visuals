@@ -13,7 +13,7 @@ const sceneFallback = <div>Loading</div>;
 export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [cameraType, setCameraType] = React.useState<"Perspective" | "Orthographic">("Perspective");
   const [model, setModel] = React.useState<string>("systemair");
-  const [quality, setQuality] = React.useState<React3Js.Quality>("low");
+  const [quality, setQuality] = React.useState<React3Js.Quality>("high");
   const [groundShadow, setGroundShadow] = React.useState(true);
 
   const camera = React.useMemo((): React3Js.Camera => {
