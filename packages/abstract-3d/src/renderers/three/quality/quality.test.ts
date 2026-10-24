@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { Quality, TierGovernor } from "./quality.js";
-import { recordFrame } from "./quality.js";
+import { getPixelRatio, recordFrame } from "./quality.js";
 
-const governor = (quality: Quality): TierGovernor => ({ quality, tier: quality === "auto" ? "medium" : quality, sum: 0, count: 0 });
+const governor = (quality: Quality): TierGovernor => ({ quality, tier: quality === "auto" ? "high" : quality, sum: 0, count: 0 });
 const record = (g: TierGovernor, intervals: ReadonlyArray<number>): ReadonlyArray<boolean> => intervals.map((ms) => recordFrame(g, ms));
 
 describe("recordFrame", () => {
@@ -19,12 +19,19 @@ describe("recordFrame", () => {
     expect(g.tier).toBe("low");
   });
 
-  it("keeps auto at medium at 60 frames per second, ignoring the pauses between moves", () => {
+  it("keeps auto at high at 60 frames per second, ignoring the pauses between moves", () => {
     const g = governor("auto");
     record(
       g,
       Array.from({ length: 100 }, (_, i) => (i % 10 === 0 ? 2000 : 16.7))
     );
-    expect(g.tier).toBe("medium");
+    expect(g.tier).toBe("high");
+  });
+});
+
+describe("getPixelRatio", () => {
+  it("caps the screen's pixel ratio by the tier", () => {
+    expect([getPixelRatio("low", 3), getPixelRatio("medium", 3), getPixelRatio("high", 3)]).toEqual([1, 1.5, 2]);
+    expect(getPixelRatio("high", 1)).toBe(1);
   });
 });

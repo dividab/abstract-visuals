@@ -8,7 +8,7 @@ Abstract 3d with renderers for three.js (`abstract-3d/three`, with a React compo
 
 ## Viewer
 
-`abstract-3d/three` is an interactive three.js viewer that works without React. It draws a scene in a few draw calls whatever its size, and renders only when something changes, so it runs smoothly on weak graphics cards. `quality: "medium"` adds ambient occlusion while the camera is still.
+`abstract-3d/three` is an interactive three.js viewer that works without React. It draws a scene in a few draw calls whatever its size, and renders only when something changes, so it runs smoothly on weak graphics cards. By default it renders at up to 2 pixels per CSS pixel, and lowers that if moving gets slow.
 
 ```ts
 import { createViewer, disposeViewer, updateViewer } from "abstract-3d/three";

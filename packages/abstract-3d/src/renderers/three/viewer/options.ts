@@ -48,7 +48,7 @@ export type ViewerOptions<Content> = {
   readonly environmentIntensity?: number;
   /** A soft shadow on the ground under the scene, rendered once per build; on by default */
   readonly groundShadow?: boolean;
-  /** `low` by default, without ambient occlusion */
+  /** The resolution: `low` 1, `medium` up to 1.5 and `high` up to 2 pixels per CSS pixel; `auto` by default, high until moving gets slow */
   readonly quality?: Quality;
   readonly useAlphaTest?: boolean;
   readonly materialStateImages?: Record<string, string>;

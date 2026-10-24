@@ -32,8 +32,8 @@ import { configureControls, createControls, setPose } from "../camera/controls.j
 import { createGizmo } from "../camera/gizmo.js";
 import type { CompiledScene } from "../compile/compile.js";
 import { compileScene } from "../compile/compile.js";
-import type { RenderPath, TierGovernor } from "../quality/quality.js";
-import { createRenderPath, disposeRenderPath, recordFrame, renderPath } from "../quality/quality.js";
+import type { TierGovernor } from "../quality/quality.js";
+import { getPixelRatio, recordFrame } from "../quality/quality.js";
 import type { GroundShadow } from "../shadow/shadow.js";
 import { createGroundShadow, disposeGroundShadow } from "../shadow/shadow.js";
 import type { GlyphAtlas } from "../text/text.js";
@@ -79,7 +79,6 @@ export type Viewer<Content> = {
   compiled?: CompiledScene;
   built?: BuiltScene;
   gizmo?: ViewportGizmo;
-  path?: RenderPath;
   shadow?: GroundShadow;
   governor?: TierGovernor;
   readonly environments: Partial<Record<"studio" | "room", Texture>>;
@@ -167,9 +166,6 @@ export function disposeViewer<Content>(v: Viewer<Content>): void {
   v.resizeObserver.disconnect();
   v.controls.orbit.dispose();
   v.gizmo?.dispose();
-  if (v.path) {
-    disposeRenderPath(v.path);
-  }
   if (v.built) {
     disposeScene(v.built);
   }
@@ -223,11 +219,9 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
     updateLights(v);
   }
   if (changes.has("quality")) {
-    const quality = options.quality ?? "low";
-    v.governor = { quality, tier: quality === "auto" ? "medium" : quality, sum: 0, count: 0 };
-  }
-  if (changes.has("quality") || changes.has("camera")) {
-    updateRenderPath(v);
+    const quality = options.quality ?? "auto";
+    v.governor = { quality, tier: quality === "auto" ? "high" : quality, sum: 0, count: 0 };
+    v.renderer.setPixelRatio(getPixelRatio(v.governor.tier, window.devicePixelRatio));
   }
   if ((changes.has("paint") || changes.has("build")) && v.built) {
     const start = performance.now();
@@ -296,7 +290,7 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
   renderer.info.reset();
   const moving = v.controls.orbit.update(Math.min(interval / 1000, 0.1)) || !!gizmo?.animating;
   if (moving && loop.wasMoving && v.governor && recordFrame(v.governor, interval)) {
-    updateRenderPath(v);
+    renderer.setPixelRatio(getPixelRatio(v.governor.tier, window.devicePixelRatio));
   }
   loop.wasMoving = moving;
   const animated = !!built && built.animatedItems.length > 0;
@@ -308,11 +302,13 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
   if (built) {
     cullScene(built, camera.position);
   }
-  const fading = v.loaded && v.path ? renderPath(v.path, renderer, v.scene, camera, moving || animated) : false;
+  if (v.loaded) {
+    renderer.render(v.scene, camera);
+  }
   gizmo?.render();
   v.overlays.renderer.render(v.overlays.scene, camera);
   Object.assign(v.stats, { frames: v.stats.frames + 1, frameMs: performance.now() - start, drawCalls: renderer.info.render.calls });
-  if (moving || animated || fading) {
+  if (moving || animated) {
     invalidate(v);
   } else {
     loop.last = 0;
@@ -322,7 +318,6 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
 function onResize<Content>(v: Viewer<Content>, rect: DOMRectReadOnly): void {
   Object.assign(v.size, { width: rect.width, height: rect.height });
   v.renderer.setSize(rect.width, rect.height, false);
-  v.path?.composer?.setSize(rect.width, rect.height);
   v.overlays.renderer.setSize(rect.width, rect.height);
   v.gizmo?.update();
   fitPose(v);
@@ -542,13 +537,6 @@ function updateOverlays<Content>(v: Viewer<Content>): void {
     );
   }
   setOverlays(v.overlays, overlays, options.onOverlays);
-}
-
-function updateRenderPath<Content>(v: Viewer<Content>): void {
-  if (v.path) {
-    disposeRenderPath(v.path);
-  }
-  v.path = createRenderPath(v.renderer, v.scene, v.camera, v.governor?.tier ?? "low");
 }
 
 const raycaster = new Raycaster();

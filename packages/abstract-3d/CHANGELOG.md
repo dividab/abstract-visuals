@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [4.0.0-beta.2] - 2026-10-24
+
+- Removed (breaking): ambient occlusion, and with it the `n8ao` and `postprocessing` dependencies. `quality` now only sets the resolution: `"low"` renders a pixel per CSS pixel, `"medium"` up to 1.5 and `"high"` up to 2 on high-density screens, and `"auto"`, the default again, starts at high and drops to low once moving gets slow
+
 ## [4.0.0-beta.1] - 2026-10-24
 
 - Added: a soft shadow on the ground under the scene, falling a little behind it, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
@@ -28,7 +32,7 @@ All notable changes to this project will be documented in this file. The format 
 
 - Changed: `controlsHelper` draws the viewcube or axes with `three-viewport-gizmo`, with the same options except `hideAxisHeads`, which is removed. Text is drawn with the system font (Helvetica or Arial), so no font is loaded
 
-- Removed (breaking): `canvasProps` (use `className` and `style`, and `onPointerMissed` from 4.0.0-beta.1), `createGroupKey`, `useAnimations` and `useOldMode` (`quality="low"` turns ambient occlusion off)
+- Removed (breaking): `canvasProps` (use `className` and `style`, and `onPointerMissed` from 4.0.0-beta.1), `createGroupKey`, `useAnimations` and `useOldMode`
 
 ## [3.0.2] - 2026-10-17
 
