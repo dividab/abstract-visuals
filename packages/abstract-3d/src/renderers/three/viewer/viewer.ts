@@ -26,6 +26,7 @@ import type { CompiledScene } from "../compile/compile.js";
 import { compileScene } from "../compile/compile.js";
 import type { TierGovernor } from "../quality/quality.js";
 import { getPixelRatio, recordFrame } from "../quality/quality.js";
+import { createKeyLight, disposeKeyLight } from "../shadow/key-light.js";
 import type { GroundShadow } from "../shadow/shadow.js";
 import { createGroundShadow, disposeGroundShadow } from "../shadow/shadow.js";
 import type { GlyphAtlas } from "../text/text.js";
@@ -72,6 +73,8 @@ export type Viewer<Content> = {
   built?: BuiltScene;
   gizmo?: ViewportGizmo;
   shadow?: GroundShadow;
+  /** The key light that casts the solids' shadows on themselves */
+  keyLight?: Group;
   governor?: TierGovernor;
   /** The studio environment, loading and once loaded */
   readonly studio: { loading?: Promise<unknown>; texture?: Texture };
@@ -96,6 +99,8 @@ export function createViewer<Content>(container: HTMLElement, options: ViewerOpt
   const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
   Object.assign(renderer, { toneMapping: NeutralToneMapping });
   renderer.setClearColor(0x000000, 0);
+  // Rendered when the scene is built, not each frame
+  Object.assign(renderer.shadowMap, { enabled: true, autoUpdate: false });
   renderer.info.autoReset = false;
   const cameras = { Perspective: new PerspectiveCamera(45), Orthographic: new OrthographicCamera() };
   const camera = cameras[options.camera?.type ?? "Perspective"];
@@ -165,6 +170,9 @@ export function disposeViewer<Content>(v: Viewer<Content>): void {
   if (v.shadow) {
     disposeGroundShadow(v.shadow);
   }
+  if (v.keyLight) {
+    disposeKeyLight(v.keyLight);
+  }
   v.studio.texture?.dispose();
   v.geometries.forEach((g) => g.dispose());
   v.atlas.texture.dispose();
@@ -191,6 +199,15 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
       disposeGroundShadow(v.shadow);
     }
     v.shadow = v.built && options.groundShadow !== false ? createGroundShadow(v.renderer, v.scene, v.built) : undefined;
+    if (v.keyLight) {
+      disposeKeyLight(v.keyLight);
+    }
+    v.keyLight = v.built && options.shadows !== false ? createKeyLight(v.built) : undefined;
+    if (v.keyLight) {
+      v.scene.add(v.keyLight);
+    }
+    // The shadow map is rendered once, as the scene doesn't move, or each frame while something animates
+    Object.assign(v.renderer.shadowMap, { needsUpdate: true, autoUpdate: !!v.built && v.built.animatedItems.length > 0 });
   }
   if (changes.has("camera")) {
     const { near = 0.1, far = 2000, ...rest } = options.camera ?? { type: "Perspective" };

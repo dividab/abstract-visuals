@@ -14,6 +14,7 @@ const options: ViewerOptions<string> = {
   view: (params.get("view") ?? "front") as View,
   quality: (params.get("quality") ?? "medium") as Quality,
   gizmo: params.get("gizmo") === "axes" ? { type: "Viewport" } : { type: "Viewcube" },
+  shadows: params.get("shadows") !== "off",
   onClickGroup: (id) => updateViewer(viewer, { selectedIds: { [id]: true } }),
   getTooltips: (id) => [{ id, pos: { x: 0, y: 0, z: 0 }, content: id.slice(0, 8) }],
 };

@@ -1,4 +1,5 @@
 import {
+  type BatchedMesh,
   Box3,
   CanvasTexture,
   HalfFloatType,
@@ -43,18 +44,26 @@ const floorLight = 0.06;
 /** The pool's reach beyond the solids, of their height */
 const floorReach = 1;
 
-/** Undefined for a scene without solids; renders with `renderer`, and leaves its render target as it was */
-export function createGroundShadow(renderer: WebGLRenderer, scene: Scene, built: BuiltScene): GroundShadow | undefined {
+/** The batches of solids that cast shadows, with their bounds: not text, lines, images or dimensions */
+export function getShadowCasters(built: BuiltScene): { readonly casters: ReadonlyArray<BatchedMesh>; readonly bounds: Box3 } {
+  const casters: Array<BatchedMesh> = [];
   const bounds = new Box3();
   built.parts.forEach((part) => {
     if (part.kind === "solid" && part.object.parent !== built.dimensions && part.object.boundingBox) {
-      part.object.layers.enable(shadowLayer);
+      casters.push(part.object);
       bounds.union(part.object.boundingBox);
     }
   });
+  return { casters, bounds };
+}
+
+/** Undefined for a scene without solids; renders with `renderer`, and leaves its render target as it was */
+export function createGroundShadow(renderer: WebGLRenderer, scene: Scene, built: BuiltScene): GroundShadow | undefined {
+  const { casters, bounds } = getShadowCasters(built);
   if (bounds.isEmpty()) {
     return undefined;
   }
+  casters.forEach((caster) => caster.layers.enable(shadowLayer));
   const size = bounds.getSize(new Vector3());
   // The plane reaches past the solids by twice the blur's reach on every side
   const reach = softness * size.y;
