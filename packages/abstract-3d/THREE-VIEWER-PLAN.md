@@ -54,7 +54,7 @@ Not done yet:
 - `high` tier extras: OIT, TRAA at rest and the selection outline; `high` is AO while moving too.
 - The effect hook (`addEffect`), pausing when offscreen, `buildScene` without batching for `GLTFExporter`.
 - Frame times on a weak GPU, and the memory baseline check after scene swaps in the browser.
-- 4.0.0 out of beta (4.0.0-beta.0 is on npm's `beta` tag).
+- 4.0.0 out of beta (the betas are on npm's `beta` tag).
 
 ## Why raw three.js
 

@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [4.0.0-beta.1] - 2026-10-24
+
 - Added: a soft shadow on the ground under the scene, falling a little behind it, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
 
 - Added: `onPointerMissed`, called for a click on nothing clickable, e.g. the background, as r3f's `Canvas` prop that 3.x apps passed in `canvasProps`
