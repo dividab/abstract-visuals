@@ -18,6 +18,7 @@ import { componentGeometries } from "./generated/double-view-component-geometrie
 import { systemair } from "./generated/systemair.js";
 import { vortice } from "./generated/vortice.js";
 import { templateScene } from "./template-scene.js";
+import { getThemedScene, ThemeContext } from "./theme.js";
 
 // Each dimension gets the id of the group nearest along x, so clicking it selects that group
 function withDimensionIds(scene: Scene): Scene {
@@ -45,6 +46,15 @@ function getTooltips(id: string): ReadonlyArray<React3Js.ReactPopover> {
 export function Abstract3DExample(): React.ReactNode {
   const [selected, setSelected] = React.useState<string | undefined>(undefined);
   const [hovered] = React.useState<string | undefined>(undefined);
+  const theme = React.useContext(ThemeContext);
+  const themed = React.useMemo(
+    () => ({
+      systemair: getThemedScene(systemair, theme),
+      vortice: getThemedScene(vortice, theme),
+      demo: getThemedScene(demoWithDimensionIds, theme),
+    }),
+    [theme]
+  );
   const group = systemair.groups.find((g) => g.data?.["id"] === hovered);
   const popover: React3Js.ReactPopover | undefined = group
     ? { id: "popover", pos: { ...group.pos, y: group.pos.y - 300 }, content: "Hej" }
@@ -75,7 +85,7 @@ export function Abstract3DExample(): React.ReactNode {
   const templateImage = Svg.render(templateScene as Scene, { stroke_thickness: 3, only_stroke: true }).image;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "rgb(230,  230, 230)" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "var(--surface)" }}>
       <style>
         {`
        .wrapper > svg {
@@ -84,7 +94,7 @@ export function Abstract3DExample(): React.ReactNode {
       }
     `}
       </style>
-      <div style={{ display: "flex", height: "20px", background: "rgb(251,  251, 251)" }}>
+      <div style={{ display: "flex", height: "20px", background: "var(--toolbar)" }}>
         <button
           onClick={() =>
             FileSaver.saveAs(
@@ -206,7 +216,7 @@ export function Abstract3DExample(): React.ReactNode {
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
-              scene={systemair}
+              scene={themed.systemair}
               controls={{ enableDamping: false }}
               camera={camera}
               //onHoverGroup={(id) => setHovered(id)}
@@ -219,7 +229,7 @@ export function Abstract3DExample(): React.ReactNode {
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
-              scene={vortice}
+              scene={themed.vortice}
               controls={{ enableDamping: false }}
               camera={camera}
             />
@@ -229,7 +239,7 @@ export function Abstract3DExample(): React.ReactNode {
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
-              scene={demoWithDimensionIds}
+              scene={themed.demo}
               controls={{ enableDamping: false }}
               camera={camera}
             />

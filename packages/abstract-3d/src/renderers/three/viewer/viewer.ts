@@ -325,7 +325,14 @@ function onResize<Content>(v: Viewer<Content>, rect: DOMRectReadOnly): void {
   if (aspectChanged) {
     fitPose(v);
   }
-  invalidate(v);
+  // Resizing cleared the canvas; rendered now, before the browser paints, instead of the next frame, so it never shows blank
+  if (v.loop.frame) {
+    cancelAnimationFrame(v.loop.frame);
+    v.loop.frame = 0;
+  }
+  if (rect.width > 0 && rect.height > 0 && !v.disposed) {
+    renderFrame(v, performance.now());
+  }
 }
 
 /** Fits the projection to the scene, and moves the camera to look from the view; as the r3f renderer, the target stays where it was panned to */
@@ -349,6 +356,19 @@ function updateGizmo<Content>(v: Viewer<Content>): void {
   v.gizmo = gizmo && createGizmo(v.camera, v.renderer, v.container, gizmo).attachControls(v.controls.orbit);
   v.gizmo?.addEventListener("change", () => invalidate(v));
   v.gizmo?.addEventListener("start", () => onGizmoStart(v));
+  // Its labels are drawn once, so ones drawn before the page's web fonts loaded are redrawn when they have
+  const created = v.gizmo;
+  if (created && document.fonts.status !== "loaded") {
+    document.fonts.ready.then(() => redrawGizmo(v, created)).catch(() => undefined);
+  }
+}
+
+/** Unless the gizmo was replaced or the viewer disposed meanwhile */
+function redrawGizmo<Content>(v: Viewer<Content>, gizmo: ViewportGizmo): void {
+  if (v.gizmo === gizmo && !v.disposed) {
+    gizmo.set(gizmo.options);
+    invalidate(v);
+  }
 }
 
 /**

@@ -11,6 +11,8 @@ import { AbstractImageExampleSvg } from "./abstract-image-example-svg.js";
 import { AbstractSheetExample } from "./abstract-sheet-example.js";
 import { AbstractSheetXMLExample } from "./abstract-sheet-xml-example.js";
 import { DynamicImage } from "./dynamic-image.js";
+import type { Theme } from "./theme.js";
+import { ThemeContext } from "./theme.js";
 
 type Example = (typeof examples)[number];
 
@@ -34,6 +36,12 @@ export function Container(): React.JSX.Element {
     const fromStorage = localStorage.getItem("selected");
     return fromStorage !== null && examples.includes(fromStorage as Example) ? (fromStorage as Example) : examples[0];
   });
+  const [theme, setTheme] = React.useState((): Theme => (localStorage.getItem("theme") === "dark" ? "dark" : "light"));
+
+  // On the root element, so the page's CSS variables and native controls follow it
+  React.useLayoutEffect(() => {
+    document.documentElement.dataset["theme"] = theme;
+  }, [theme]);
 
   return (
     <div style={{ height: "calc(100vh - 30px)", width: "calc(100vw - 30px)" }}>
@@ -50,36 +58,52 @@ export function Container(): React.JSX.Element {
           </option>
         ))}
       </select>
-      {(() => {
-        switch (selected) {
-          case "AbstractChart":
-            return <AbstractChartExample />;
-          case "AbstractImageSvg":
-            return <AbstractImageExampleSvg />;
-          case "AbstractImageReact":
-            return <AbstractImageExampleReact />;
-          case "AbstractImageDxf":
-            return <AbstractImageExampleDxf />;
-          case "AbstractDocument":
-            return <AbstractDocumentExample />;
-          case "AbstractDocumentXML":
-            return <AbstractDocumentXMLExample />;
-          case "AbstractDocumentXML2":
-            return <AbstractDocumentXMLExample2 />;
-          case "Abstract3D":
-            return <Abstract3DExample />;
-          case "Abstract3DAutoSize":
-            return <Abstract3DAutoSizeExample />;
-          case "AbstractSheet":
-            return <AbstractSheetExample />;
-          case "AbstractSheetXML":
-            return <AbstractSheetXMLExample />;
-          case "DynamicImage":
-            return <DynamicImage />;
-          default:
-            return <></>;
-        }
-      })()}
+      <label style={{ marginLeft: 12 }}>
+        Theme:
+        <select
+          value={theme}
+          onChange={(e) => {
+            localStorage.setItem("theme", e.currentTarget.value);
+            setTheme(e.currentTarget.value as Theme);
+          }}
+          style={{ marginLeft: 8 }}
+        >
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <ThemeContext.Provider value={theme}>
+        {(() => {
+          switch (selected) {
+            case "AbstractChart":
+              return <AbstractChartExample />;
+            case "AbstractImageSvg":
+              return <AbstractImageExampleSvg />;
+            case "AbstractImageReact":
+              return <AbstractImageExampleReact />;
+            case "AbstractImageDxf":
+              return <AbstractImageExampleDxf />;
+            case "AbstractDocument":
+              return <AbstractDocumentExample />;
+            case "AbstractDocumentXML":
+              return <AbstractDocumentXMLExample />;
+            case "AbstractDocumentXML2":
+              return <AbstractDocumentXMLExample2 />;
+            case "Abstract3D":
+              return <Abstract3DExample />;
+            case "Abstract3DAutoSize":
+              return <Abstract3DAutoSizeExample />;
+            case "AbstractSheet":
+              return <AbstractSheetExample />;
+            case "AbstractSheetXML":
+              return <AbstractSheetXMLExample />;
+            case "DynamicImage":
+              return <DynamicImage />;
+            default:
+              return <></>;
+          }
+        })()}
+      </ThemeContext.Provider>
     </div>
   );
 }

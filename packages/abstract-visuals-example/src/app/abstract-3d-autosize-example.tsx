@@ -7,6 +7,7 @@ import { systemair4 } from "./generated/systemair-4.js";
 import { systemair5 } from "./generated/systemair-5.js";
 import { systemair6 } from "./generated/systemair-6.js";
 import { systemair } from "./generated/systemair.js";
+import { getThemedScene, ThemeContext } from "./theme.js";
 
 const sceneFallback = <div>Loading</div>;
 
@@ -82,6 +83,9 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         return systemair;
     }
   })();
+
+  const theme = React.useContext(ThemeContext);
+  const themedModel = React.useMemo(() => getThemedScene(selectedModel, theme), [selectedModel, theme]);
 
   return (
     <div
@@ -223,13 +227,13 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
           fitPadding={0.15}
           quality={quality}
           groundShadow={groundShadow}
-          scene={selectedModel}
+          scene={themedModel}
           showDimensions={true}
           camera={camera}
           controlsHelper={controlsHelper}
           controls={orbitContolProps}
           bufferZones={{ left: left, right: right, top: top, bottom: bottom }}
-          style={{ backgroundColor: "#ccc" }}
+          style={{ backgroundColor: "var(--viewer)" }}
           onClickGroup={undefined}
           onContextMenuGroup={undefined}
           createGroupId={undefined}

@@ -59,7 +59,8 @@ export function createGizmo(
     size,
     placement: helper.props?.alignment ?? "bottom-right",
     offset: { left: mx - size / 2, right: mx - size / 2, top: my - size / 2, bottom: my - size / 2 },
-    font: { family, weight },
+    // A family without a generic fallback, e.g. a web font, would otherwise fall back to the browser's serif
+    font: { family: `${family}, sans-serif`, weight },
     ...(helper.type === "Viewcube" ? getViewcubeOptions(helper.viewcubeProps ?? {}) : getAxesOptions(helper.viewportProps ?? {})),
   });
   gizmo.enabled = !(helper.type === "Viewport" && helper.viewportProps?.disabled);
