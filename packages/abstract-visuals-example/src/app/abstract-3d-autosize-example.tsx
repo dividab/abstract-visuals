@@ -7,6 +7,8 @@ import { systemair4 } from "./generated/systemair-4.js";
 import { systemair5 } from "./generated/systemair-5.js";
 import { systemair6 } from "./generated/systemair-6.js";
 import { systemair } from "./generated/systemair.js";
+import { assignMaterialTypes } from "./material-types.js";
+import { materialsScene } from "./materials-scene.js";
 import { roundBoxes } from "./round-boxes.js";
 import { getThemedScene, ThemeContext } from "./theme.js";
 
@@ -17,6 +19,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [model, setModel] = React.useState<string>("systemair");
   const [quality, setQuality] = React.useState<React3Js.Quality>("high");
   const [groundShadow, setGroundShadow] = React.useState(true);
+  const [typed, setTyped] = React.useState(true);
 
   const camera = React.useMemo((): React3Js.Camera => {
     if (cameraType === "Orthographic") {
@@ -79,6 +82,8 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         return systemair5;
       case "systemair6":
         return systemair6;
+      case "materials":
+        return materialsScene;
 
       default:
         return systemair;
@@ -86,7 +91,10 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   })();
 
   const theme = React.useContext(ThemeContext);
-  const themedModel = React.useMemo(() => getThemedScene(roundBoxes(selectedModel), theme), [selectedModel, theme]);
+  const themedModel = React.useMemo(
+    () => getThemedScene(roundBoxes(typed ? assignMaterialTypes(selectedModel) : selectedModel), theme),
+    [selectedModel, typed, theme]
+  );
 
   return (
     <div
@@ -118,6 +126,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
               <option value="systemair4">4</option>
               <option value="systemair5">5</option>
               <option value="systemair6">6</option>
+              <option value="materials">Materials</option>
             </select>
           </label>
         </div>
@@ -139,6 +148,15 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
             <select value={groundShadow ? "on" : "off"} onChange={(e) => setGroundShadow(e.target.value === "on")} style={{ marginLeft: 8 }}>
               <option value="on">On</option>
               <option value="off">Off</option>
+            </select>
+          </label>
+        </div>
+        <div style={{ padding: 8 }}>
+          <label>
+            Material types:
+            <select value={typed ? "on" : "off"} onChange={(e) => setTyped(e.target.value === "on")} style={{ marginLeft: 8 }}>
+              <option value="on">On</option>
+              <option value="off">Off (as authored)</option>
             </select>
           </label>
         </div>

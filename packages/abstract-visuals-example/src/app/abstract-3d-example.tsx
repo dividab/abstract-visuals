@@ -17,6 +17,7 @@ import { demo } from "./generated/demo.js";
 import { componentGeometries } from "./generated/double-view-component-geometries.js";
 import { systemair } from "./generated/systemair.js";
 import { vortice } from "./generated/vortice.js";
+import { assignMaterialTypes } from "./material-types.js";
 import { roundBoxes } from "./round-boxes.js";
 import { templateScene } from "./template-scene.js";
 import { getThemedScene, ThemeContext } from "./theme.js";
@@ -50,9 +51,9 @@ export function Abstract3DExample(): React.ReactNode {
   const theme = React.useContext(ThemeContext);
   const themed = React.useMemo(
     () => ({
-      systemair: getThemedScene(roundBoxes(systemair), theme),
-      vortice: getThemedScene(roundBoxes(vortice), theme),
-      demo: getThemedScene(roundBoxes(demoWithDimensionIds), theme),
+      systemair: getThemedScene(roundBoxes(assignMaterialTypes(systemair)), theme),
+      vortice: getThemedScene(roundBoxes(assignMaterialTypes(vortice)), theme),
+      demo: getThemedScene(roundBoxes(assignMaterialTypes(demoWithDimensionIds)), theme),
     }),
     [theme]
   );
@@ -83,7 +84,7 @@ export function Abstract3DExample(): React.ReactNode {
     imageDataByUrlDxf2[geo.image.url] = `${DXF_DATA_URL}${Dxf.renderScenes(geo.scenes.slice(0, 1) as unknown as ReadonlyArray<Dxf.DxfScene>)}`;
   }
 
-  const templateImage = Svg.render(templateScene as Scene, { stroke_thickness: 3, only_stroke: true }).image;
+  const templateImage = Svg.render(templateScene as unknown as Scene, { stroke_thickness: 3, only_stroke: true }).image;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "var(--surface)" }}>

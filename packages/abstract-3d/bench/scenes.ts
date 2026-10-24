@@ -1,14 +1,17 @@
 import { demo } from "../../abstract-visuals-example/src/app/generated/demo.js";
 import { systemair3 } from "../../abstract-visuals-example/src/app/generated/systemair-3.js";
 import { systemair6 } from "../../abstract-visuals-example/src/app/generated/systemair-6.js";
+import { assignMaterialTypes } from "../../abstract-visuals-example/src/app/material-types.js";
+import { materialsScene } from "../../abstract-visuals-example/src/app/materials-scene.js";
 import { roundBoxes } from "../../abstract-visuals-example/src/app/round-boxes.js";
 import type { Scene } from "../src/abstract-3d.js";
 
-/** The benchmark and screenshot scenes, from the example app, with their boxes rounded as there */
+/** The benchmark and screenshot scenes, from the example app, with their boxes rounded and materials typed as there */
 export const scenes: Record<string, Scene> = {
-  demo: roundBoxes(demo as Scene),
-  systemair3: roundBoxes(systemair3),
-  systemair6: roundBoxes(systemair6),
+  demo: roundBoxes(assignMaterialTypes(demo as Scene)),
+  systemair3: roundBoxes(assignMaterialTypes(systemair3)),
+  systemair6: roundBoxes(assignMaterialTypes(systemair6)),
+  materials: materialsScene,
 };
 
 /** `count` copies of the scene in a square grid, each group's id made unique per copy */

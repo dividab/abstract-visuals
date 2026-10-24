@@ -147,11 +147,27 @@ export type Mesh = {
 export type Material = {
   readonly normal: string;
   readonly opacity?: number;
+  /** Without a type */
   readonly metalness?: number;
+  /** Without a type */
   readonly roughness?: number;
   /** Draw only the front side, e.g. an image on a wall that should not show through from behind. Default is both sides. */
   readonly backfaceCulling?: boolean;
+  /**
+   * What the surface is, which the three.js viewer draws with a physical finish of its own, in the material's color, instead of metalness and
+   * roughness
+   */
+  readonly type?: MaterialType;
 };
+
+/**
+ * Painted sheet and casings; galvanized sheet and base frames; aluminum profiles; stainless trays and fittings; copper pipes; plastic handles and
+ * covers; rubber gaskets and seals; fabric filter media; glass windows
+ */
+export type MaterialType = (typeof materialTypes)[number];
+
+/** The material types; a material's `type` that isn't one, e.g. a number from a database, is ignored */
+export const materialTypes = ["painted", "galvanized", "aluminum", "stainless", "copper", "plastic", "rubber", "fabric", "glass"] as const;
 
 export type ImageMesh = {
   readonly type: "Image";

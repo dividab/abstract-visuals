@@ -8,12 +8,14 @@ import {
   LinearMipmapLinearFilter,
   type Material,
   MeshBasicMaterial,
+  MeshPhysicalMaterial,
+  type MeshPhysicalMaterialParameters,
   MeshStandardMaterial,
   SRGBColorSpace,
   type Texture,
   TextureLoader,
 } from "three";
-import type { Image } from "../../../abstract-3d.js";
+import type { Image, MaterialType } from "../../../abstract-3d.js";
 import type { MaterialClass, MaterialState } from "../appearance/appearance.js";
 import { ERROR_IMG_KEY } from "../appearance/appearance.js";
 
@@ -22,10 +24,31 @@ import { ERROR_IMG_KEY } from "../appearance/appearance.js";
 export function createClassMaterial(c: MaterialClass): Material {
   const side = c.side === "front" ? FrontSide : c.side === "back" ? BackSide : DoubleSide;
   const common = { side, transparent: c.transparent, depthWrite: !c.transparent };
-  return c.lit
-    ? Object.assign(new MeshStandardMaterial({ ...common, metalness: c.metalness, roughness: c.roughness }), { onBeforeCompile: roundEdges })
-    : new MeshBasicMaterial(common);
+  if (!c.lit) {
+    return new MeshBasicMaterial(common);
+  }
+  const material = c.type
+    ? new MeshPhysicalMaterial({ ...common, ...finishes[c.type] })
+    : new MeshStandardMaterial({ ...common, metalness: c.metalness, roughness: c.roughness });
+  return Object.assign(material, { onBeforeCompile: roundEdges });
 }
+
+/**
+ * The physical finish of each type of surface, in the material's color: metals reflect their color, brighter than physical, as product renders light
+ * metals, since the studio around them is dark; the others are dielectrics with a white reflection; painted sheet has a light clearcoat, fabric a
+ * soft sheen. Glass is a thin, smooth, mostly see-through surface, not refracting, which would render the scene once more each frame
+ */
+const finishes: Record<MaterialType, MeshPhysicalMaterialParameters> = {
+  painted: { metalness: 0, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.25 },
+  galvanized: { metalness: 0.85, roughness: 0.55, envMapIntensity: 1.6 },
+  aluminum: { metalness: 0.9, roughness: 0.4, envMapIntensity: 1.6 },
+  stainless: { metalness: 1, roughness: 0.25, envMapIntensity: 1.5 },
+  copper: { metalness: 1, roughness: 0.3, envMapIntensity: 1.3 },
+  plastic: { metalness: 0, roughness: 0.55 },
+  rubber: { metalness: 0, roughness: 0.9 },
+  fabric: { metalness: 0, roughness: 1, sheen: 1, sheenRoughness: 0.8, sheenColor: 0x888888 },
+  glass: { metalness: 0, roughness: 0.05, specularIntensity: 1 },
+};
 
 /**
  * Shades the edges of boxes with a radius as rounded by it, so they catch light and reflections: the normal of a rounded box of the same size, from
@@ -72,14 +95,24 @@ varying mat3 vBoxRotation;`
       "#include <normal_fragment_maps>",
       `#include <normal_fragment_maps>
 if ( vBevel > 0.0 ) {
-  // At least a pixel wide, so a rounded edge far away is a soft line instead of a jagged sub-pixel highlight, and at most half the box
+  // At least 2 pixels wide, so a rounded edge far away is a soft line instead of a jagged sub-pixel highlight, and at most half the box
   vec3 pixel = fwidth( vBoxPoint );
-  float radius = min( max( vBevel, max( pixel.x, max( pixel.y, pixel.z ) ) ), min( vBoxHalf.x, min( vBoxHalf.y, vBoxHalf.z ) ) );
+  float radius = min( max( vBevel, 2.0 * max( pixel.x, max( pixel.y, pixel.z ) ) ), min( vBoxHalf.x, min( vBoxHalf.y, vBoxHalf.z ) ) );
   vec3 rounded = sign( vBoxPoint ) * max( abs( vBoxPoint ) - ( vBoxHalf - radius ), 0.0 );
   if ( dot( rounded, rounded ) > 0.0 ) {
     normal = normalize( vBoxRotation * normalize( rounded ) ) * faceDirection;
   }
 }`
+    )
+    .replace(
+      "#include <clearcoat_normal_fragment_maps>",
+      `#include <clearcoat_normal_fragment_maps>
+#ifdef USE_CLEARCOAT
+  // A painted finish's clearcoat follows the rounded edge too
+  if ( vBevel > 0.0 ) {
+    clearcoatNormal = normal;
+  }
+#endif`
     );
 }
 

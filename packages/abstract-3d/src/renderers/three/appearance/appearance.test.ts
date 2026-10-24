@@ -50,6 +50,25 @@ describe("getMaterialClass", () => {
     expect(classify(solid({ normal: red, backfaceCulling: true }), group)).toMatchObject({ side: "front", metalness: 0, roughness: 1 });
   });
 
+  it("gives solids of a type its finish, in one class whatever their metalness and roughness, unless a material state replaces it", () => {
+    const painted = classify(solid({ normal: red, type: "painted", metalness: 0.45, roughness: 0.4 }), group);
+    expect(painted).toMatchObject({ lit: true, type: "painted" });
+    expect(classify(solid({ normal: "rgb(0,0,255)", type: "painted", metalness: 0.9 }), group)).toEqual(painted);
+    expect(classify(solid({ normal: red, type: "painted" }), group, { activeComponents: { fan: "Accept" } }).type).toBeUndefined();
+  });
+
+  it("ignores a type that isn't a material type, e.g. a number from a database", () => {
+    const fromDatabase = { normal: red, metalness: 0.3, roughness: 0.7, type: 2 } as unknown as Material;
+    expect(classify(solid(fromDatabase), group)).toMatchObject({ metalness: 0.3, roughness: 0.7 });
+    expect(classify(solid(fromDatabase), group).type).toBeUndefined();
+  });
+
+  it("makes glass see-through unless its material has an opacity", () => {
+    expect(classify(solid({ normal: red, type: "glass" }), group).transparent).toBe(true);
+    expect(paint(solid({ normal: red, type: "glass" }), group)).toEqual(rgba(red, 0.25));
+    expect(classify(solid({ normal: red, type: "glass", opacity: 1 }), group).transparent).toBe(false);
+  });
+
   it("makes translucent materials and disabled groups transparent", () => {
     expect(classify(solid({ normal: red, opacity: 0.5 }), group).transparent).toBe(true);
     expect(classify(solid({ normal: red }), group, { relationsActive: true }).transparent).toBe(true);

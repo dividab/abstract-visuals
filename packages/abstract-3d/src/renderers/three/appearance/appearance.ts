@@ -1,5 +1,6 @@
 import { Color, type Vector4 } from "three";
-import type { Material } from "../../../abstract-3d.js";
+import type { Material, MaterialType } from "../../../abstract-3d.js";
+import { materialTypes } from "../../../abstract-3d.js";
 import { shade } from "../../../utils.js";
 import type { Item, Target } from "../compile/compile.js";
 
@@ -30,6 +31,8 @@ export type PaintState = StructureState & {
 /** Items of one material class share a material, and are drawn in one batch */
 export type MaterialClass = {
   readonly lit: boolean;
+  /** A physical finish of its own, instead of metalness and roughness */
+  readonly type?: MaterialType;
   readonly metalness: number;
   readonly roughness: number;
   readonly side: "front" | "back" | "double";
@@ -51,6 +54,8 @@ const stateMaterials: Record<MaterialState, Material> = {
   Warning: { normal: "rgb(240, 197, 48)", metalness: 0.5, roughness: 0.5 },
 };
 const unlit = { lit: false, metalness: 0, roughness: 1, transparent: false } as const;
+/** Of glass without an opacity of its own */
+const glassOpacity = 0.25;
 
 export function getTargetStates(targets: ReadonlyArray<Target>, structure: StructureState): ReadonlyArray<TargetState> {
   return targets.map((target) => {
@@ -69,13 +74,15 @@ export function getMaterialClass(item: Item, { materialState, disabled }: Target
     case "dimension":
       return { ...unlit, side: "front", transparent: (material.opacity ?? 1) < 1 };
     default: {
+      // A material state's color and finish replace the material's
       const mat = materialState ? stateMaterials[materialState] : material;
+      // Only a known type, as data may have a type of its own, e.g. a number
+      const type = item.role === "solid" && materialTypes.includes(mat.type as MaterialType) ? mat.type : undefined;
       return {
         lit: item.role === "solid",
-        metalness: mat.metalness ?? 0,
-        roughness: mat.roughness ?? 1,
+        ...(type ? { type, metalness: 0, roughness: 0 } : { metalness: mat.metalness ?? 0, roughness: mat.roughness ?? 1 }),
         side: item.role === "text" || material.backfaceCulling ? "front" : "double",
-        transparent: (material.opacity ?? 1) < 1 || disabled,
+        transparent: getOpacity(material) < 1 || disabled,
       };
     }
   }
@@ -102,7 +109,7 @@ export function getItemColor(item: Item, { materialState, disabled }: TargetStat
   const { material } = item.mesh;
   const hovered = highlight % SELECTED === HOVERED;
   const selected = highlight >= SELECTED;
-  const opacity = material.opacity ?? 1;
+  const opacity = getOpacity(material);
   switch (item.style) {
     case "relation":
       return setColor(out, material.normal, hovered, 1);
@@ -123,6 +130,11 @@ export function getItemColor(item: Item, { materialState, disabled }: TargetStat
         : setColor(out, style, hovered, item.role === "solid" && disabled ? opacity * disabledOpacity : opacity);
     }
   }
+}
+
+/** Glass is mostly see-through unless its material says otherwise */
+function getOpacity(material: Material): number {
+  return material.opacity ?? (material.type === "glass" ? glassOpacity : 1);
 }
 
 const colors = new Map<string, Color>();
