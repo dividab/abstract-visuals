@@ -1,25 +1,17 @@
 import {
-  AmbientLight,
   type BufferGeometry,
-  CanvasTexture,
-  DirectionalLight,
-  EquirectangularReflectionMapping,
   Group,
   NeutralToneMapping,
-  type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
-  PMREMGenerator,
   Raycaster,
   Scene as ThreeScene,
-  SRGBColorSpace,
   type Texture,
   Vector2,
   Vector3,
   WebGLRenderer,
 } from "three";
 import type { ViewportGizmo } from "three-viewport-gizmo";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import type { StructureState } from "../appearance/appearance.js";
 import type { BuiltScene } from "../build/build.js";
 import { animateScene, buildScene, cullScene, disposeScene, getPickables, getPickedItem, paintScene } from "../build/build.js";
@@ -81,7 +73,8 @@ export type Viewer<Content> = {
   gizmo?: ViewportGizmo;
   shadow?: GroundShadow;
   governor?: TierGovernor;
-  readonly environments: Partial<Record<"studio" | "room", Texture>>;
+  /** The studio environment, loading and once loaded */
+  readonly studio: { loading?: Promise<unknown>; texture?: Texture };
   /** The scene is built and its shaders compiled */
   loaded: boolean;
   fitted: boolean;
@@ -128,7 +121,7 @@ export function createViewer<Content>(container: HTMLElement, options: ViewerOpt
     pending: new Set(["compile", "build", "camera", "controls", "gizmo", "lights", "quality", "paint", "overlays"]),
     stats: { frames: 0, frameMs: 0, drawCalls: 0, pickMs: 0, paintMs: 0 },
     structure: { activeComponents: options.activeComponents, relationsActive: options.activeRelations !== undefined },
-    environments: {},
+    studio: {},
     loaded: false,
     fitted: false,
     disposed: false,
@@ -172,7 +165,7 @@ export function disposeViewer<Content>(v: Viewer<Content>): void {
   if (v.shadow) {
     disposeGroundShadow(v.shadow);
   }
-  Object.values(v.environments).forEach((e) => e.dispose());
+  v.studio.texture?.dispose();
   v.geometries.forEach((g) => g.dispose());
   v.atlas.texture.dispose();
   disposeTextures(v.textures);
@@ -260,9 +253,10 @@ function rebuild<Content>(v: Viewer<Content>): void {
   if (v.built) {
     v.scene.add(v.built.root);
     v.built.dimensions.visible = options.showDimensions ?? true;
-    // Compiled in parallel where the driver can, as three.js's compileAsync example
-    v.renderer
-      .compileAsync(v.scene, v.camera)
+    // Compiled in parallel where the driver can, as three.js's compileAsync example, and after the studio arrived, which they use
+    loadStudio(v)
+      .catch(() => undefined)
+      .then(() => v.renderer.compileAsync(v.scene, v.camera))
       .then(() => onLoaded(v))
       .catch(() => undefined);
   }
@@ -483,63 +477,26 @@ function getGroupArgs<Content>(
   }
 }
 
+/** The scene is lit by a photographed studio as its environment; apps can add their own lights */
 function updateLights<Content>(v: Viewer<Content>): void {
-  const { scene, lights, environment = "studio", environmentIntensity = 1 } = v.options;
+  const { scene, lights, environmentIntensity = 1 } = v.options;
   v.lights.clear();
-  const objects = typeof lights === "function" ? (scene ? lights(scene) : []) : (lights ?? createLights());
-  objects.forEach((o) => v.lights.add(o));
-  if (typeof environment === "string") {
-    v.environments[environment] ??= createEnvironment(environment, v.renderer);
-  }
-  Object.assign(v.scene, { environment: typeof environment === "string" ? v.environments[environment] : environment, environmentIntensity });
+  (typeof lights === "function" ? (scene ? lights(scene) : []) : (lights ?? [])).forEach((o) => v.lights.add(o));
+  v.scene.environmentIntensity = environmentIntensity;
+  loadStudio(v).catch(() => undefined);
 }
 
-/**
- * A weak ambient light, so the environment lights faces by which way they turn, with a key light from the upper left for shading and highlights and
- * two fills. Directional lights shine towards the origin, the scene's center, so only their positions' directions matter
- */
-function createLights(): ReadonlyArray<Object3D> {
-  const directional = [
-    [-1.9, 1, 0, 3],
-    [0, 1, 0.94, 1.2],
-    [3.9, 0, 1, 0.3],
-  ] as const;
-  return [
-    new AmbientLight(0xffffff, 0.2),
-    ...directional.map(([x, y, z, i]) => {
-      const light = new DirectionalLight(0xffffff, i);
-      light.position.set(x, y, z);
-      return light;
-    }),
-  ];
-}
-
-/**
- * Studio: an equirectangular gradient from a white ceiling to a dark floor, with three softboxes 20-50° up, so faces are brighter from above than
- * from below and metal profiles and panels get reflections. Room: three.js's RoomEnvironment through PMREM, as its examples light models
- */
-function createEnvironment(kind: "studio" | "room", renderer: WebGLRenderer): Texture {
-  if (kind === "room") {
-    const pmrem = new PMREMGenerator(renderer);
-    const texture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    pmrem.dispose();
-    return texture;
-  }
-  const canvas = Object.assign(document.createElement("canvas"), { width: 1024, height: 512 });
-  const ctx = canvas.getContext("2d")!;
-  const gradient = ctx.createLinearGradient(0, 0, 0, 512);
-  gradient.addColorStop(0, "#ffffff");
-  gradient.addColorStop(0.45, "#d8d8d8");
-  gradient.addColorStop(0.55, "#8a8a8a");
-  gradient.addColorStop(1, "#5a5a5a");
-  Object.assign(ctx, { fillStyle: gradient }).fillRect(0, 0, 1024, 512);
-  ctx.fillStyle = "#ffffff";
-  [
-    [80, 120],
-    [400, 90],
-    [700, 140],
-  ].forEach(([x, width]) => ctx.fillRect(x!, 110, width!, 90));
-  return Object.assign(new CanvasTexture(canvas), { mapping: EquirectangularReflectionMapping, colorSpace: SRGBColorSpace });
+/** The studio, loaded once, its own chunk; set when it arrives, so the scene's shaders are compiled after it, with it */
+function loadStudio<Content>(v: Viewer<Content>): Promise<unknown> {
+  v.studio.loading ??= import("../environment/studio.js")
+    .then(({ loadStudio: load }) => load())
+    .then((texture) => {
+      v.studio.texture = texture;
+      v.scene.environment = texture;
+      invalidate(v);
+      return texture;
+    });
+  return v.studio.loading;
 }
 
 function updateOverlays<Content>(v: Viewer<Content>): void {

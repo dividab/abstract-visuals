@@ -1,4 +1,4 @@
-import type { Object3D, Texture } from "three";
+import type { Object3D } from "three";
 import type { Group, Relation, Scene, Vec3, View } from "../../../abstract-3d.js";
 import type { MaterialState } from "../appearance/appearance.js";
 import type { BufferZones, CameraOptions } from "../camera/camera.js";
@@ -41,10 +41,9 @@ export type ViewerOptions<Content> = {
   readonly fitPadding?: number;
   readonly controls?: ControlsOptions;
   readonly gizmo?: ControlsHelper;
-  /** Replace the default lights, a weak ambient light, a key light from the upper left and two fills */
+  /** Lights added to the photographed studio that lights the scene; none by default */
   readonly lights?: ReadonlyArray<Object3D> | ((scene: Scene) => ReadonlyArray<Object3D>);
-  /** Lights faces by which way they turn and gives metal reflections: `studio` by default, `room` for three's RoomEnvironment, or null for none */
-  readonly environment?: Texture | "studio" | "room" | null;
+  /** Of the studio's light */
   readonly environmentIntensity?: number;
   /** A soft shadow on the ground under the scene, rendered once per build; on by default */
   readonly groundShadow?: boolean;
@@ -88,7 +87,6 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   controls: ["controls"],
   gizmo: ["gizmo"],
   lights: ["lights"],
-  environment: ["lights"],
   environmentIntensity: ["lights"],
   groundShadow: ["shadow"],
   quality: ["quality"],

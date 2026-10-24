@@ -10,9 +10,9 @@ All notable changes to this project will be documented in this file. The format 
 
 - Changed (breaking): `three`, `react` and `react-dom` are optional peer dependencies. `three` is needed by the `three`, `react` and `ifc` renderers; the `dxf`, `step`, `stl` and `svg` renderers don't use it
 
-- Changed (breaking): the component is `Viewer` instead of `render`. Event callbacks get a `SceneEvent` (`nativeEvent` and the hit `point`) instead of r3f's `ThreeEvent`. `lights` is an array of three.js objects or a function of the scene that returns them, instead of a JSX element, and the new `environment` prop takes an environment map, `"studio"`, `"room"` or `null`
+- Changed (breaking): the component is `Viewer` instead of `render`. Event callbacks get a `SceneEvent` (`nativeEvent` and the hit `point`) instead of r3f's `ThreeEvent`. `lights` is an array of three.js objects or a function of the scene that returns them, added to the environment's light, instead of a JSX element replacing the default lights
 
-- Changed: the default lights are a studio: a gradient environment with three softboxes, which lights faces by which way they turn and gives metal reflections, a weak ambient light, and a key light from the upper left with two fills, instead of the strong ambient light that lit every face alike
+- Changed: the scene is lit by a photographed studio, Poly Haven's Studio Small 08 HDRI (CC0), which lights faces by which way they turn and gives metal and glass real reflections, instead of a strong ambient light that lit every face alike and directional lights. It's bundled, about 350 kB gzipped, and loaded on demand by the 3D viewer only
 
 - Added: a soft shadow on the ground under the scene, in a faint pool of light so it also shows on dark backgrounds, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
 
