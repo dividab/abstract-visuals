@@ -44,7 +44,7 @@ Where the implementation departs from this plan:
 - **Text:** signed distance field glyphs from the system font with an atlas, the approach of Mapbox GL JS, through its `@mapbox/tiny-sdf`; layout constants (line height 1.5, centered anchors) from drei's `Text` (troika).
 - **Camera fit, buffer zones, gizmo reset and pausing hover while orbiting:** the r3f renderer's `react-camera.tsx`, ported as it was.
 - **Gizmo:** `three-viewport-gizmo`, with the options of drei's `GizmoViewcube` and `GizmoViewport` mapped to it.
-- **Ground shadow:** three.js's `webgl_shadow_contact` example, rendered once as drei's `ContactShadows` with `frames={1}`, sheared to fall behind the scene.
+- **Ground shadow:** three.js's `webgl_shadow_contact` example, rendered once as drei's `ContactShadows` with `frames={1}`.
 - **Render on demand and batched updates:** r3f's `frameloop="demand"`, r3f applying props in the next frame, and three's `OrbitControls` damping loop.
 - **Overlays:** three's `CSS2DRenderer`, as drei's `Html` places elements.
 - **Lines:** three.js `LineSegments2` with `LineMaterial`; culled dimension lines as the r3f renderer's shader did, on the CPU per camera move.

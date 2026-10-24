@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file. The format 
 
 - Changed: the default lights are a studio: a gradient environment with three softboxes, which lights faces by which way they turn and gives metal reflections, a weak ambient light, and a key light from the upper left with two fills, instead of the strong ambient light that lit every face alike
 
-- Added: a soft shadow on the ground under the scene, falling a little behind it, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
+- Added: a soft shadow on the ground under the scene, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
 
 - Removed (breaking): ambient occlusion. The new `quality` prop sets the resolution instead: `"high"`, the default, renders at the screen's pixel ratio as 3.x did, `"medium"` at up to 1.5 and `"low"` at 1 pixel per CSS pixel, and `"auto"` starts at high and drops to low once moving gets slow
 

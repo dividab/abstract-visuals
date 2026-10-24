@@ -1,7 +1,6 @@
 import {
   Box3,
   type Scene,
-  Matrix4,
   Mesh,
   MeshBasicMaterial,
   MeshDepthMaterial,
@@ -30,8 +29,6 @@ export type GroundShadow = { readonly mesh: Mesh<PlaneGeometry, MeshBasicMateria
 const shadowLayer = 1;
 /** Of the texture's longer side */
 const resolution = 512;
-/** How far behind (-z) a part's shadow falls per unit of its height, as from a light in front and above */
-const lean = 0.5;
 /** The blur's reach, of the solids' height */
 const softness = 0.15;
 const opacity = 0.8;
@@ -49,22 +46,20 @@ export function createGroundShadow(renderer: WebGLRenderer, scene: Scene, built:
     return undefined;
   }
   const size = bounds.getSize(new Vector3());
-  // The plane reaches past the solids by twice the blur's reach, and behind them as far as their tops' shadows fall
-  const [reach, behind] = [softness * size.y, lean * size.y];
-  const [width, depth] = [size.x + reach * 4, size.z + reach * 4 + behind];
-  const center = new Vector3((bounds.min.x + bounds.max.x) / 2, bounds.min.y, (bounds.min.z + bounds.max.z - behind) / 2);
+  // The plane reaches past the solids by twice the blur's reach on every side
+  const reach = softness * size.y;
+  const [width, depth] = [size.x + reach * 4, size.z + reach * 4];
+  const center = new Vector3((bounds.min.x + bounds.max.x) / 2, bounds.min.y, (bounds.min.z + bounds.max.z) / 2);
   const [texelsX, texelsZ] =
     width > depth ? [resolution, Math.ceil((resolution * depth) / width)] : [Math.ceil((resolution * width) / depth), resolution];
   const [target, blurred] = [new WebGLRenderTarget(texelsX, texelsZ), new WebGLRenderTarget(texelsX, texelsZ)];
 
-  // Looks up from the ground, seeing as far as the solids are high; the shear moves what's at height h back by lean·h. Up is +z on its screen, and
-  // a height h is -h in its view space
+  // Looks up from the ground, seeing as far as the solids are high
   const camera = new OrthographicCamera(-width / 2, width / 2, depth / 2, -depth / 2, 0, size.y);
   camera.position.copy(center);
   camera.rotation.x = Math.PI / 2;
   camera.layers.set(shadowLayer);
   camera.updateMatrixWorld();
-  camera.projectionMatrix.multiply(new Matrix4().set(1, 0, 0, 0, 0, 1, lean, 0, 0, 0, 1, 0, 0, 0, 0, 1));
   // Depth tested, so at each point the surface closest to the ground darkens it, not the last one drawn
   const darkness = new MeshDepthMaterial();
   darkness.onBeforeCompile = (shader) => {
