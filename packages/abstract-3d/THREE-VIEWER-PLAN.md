@@ -5,38 +5,46 @@ Replace the r3f renderer with a three.js viewer, plus a thin React wrapper. The 
 Goals, in order:
 
 1. It runs smoothly on weak graphics cards.
-2. It looks clean and polished. Realism isn't a goal.
+2. It looks clean and polished, and as real as costs nothing per frame: realism comes from the data (material types, edge radii) and from work done once per scene, not from post-processing.
 3. The code is small and readable.
 
 Particle effects (airflow, smoke, rain, spray) come later, but the frame loop has room for them from the start.
 
-The other renderers (dxf, step, ifc, stl, svg) are unaffected.
+The other renderers (dxf, step, ifc, stl, svg) are unaffected; they ignore the viewer-only fields (`type`, `castShadow` and `radius`).
 
 ## Status (2026-10-24)
 
-Phases 0–4 are implemented: `src/renderers/three/` (the viewer), `src/renderers/react/react.tsx` (the wrapper), the r3f renderer deleted, the example app migrated. `pnpm test:abstract-3d` covers compile, appearance, geometry, text layout, build (batching, picking, repaint, animation, culling, dispose), camera fit and the quality governor. `pnpm bench:abstract-3d` measures the scene layer in Node, and `pnpm bench:abstract-3d:browser` frame times, draw calls and screenshots in headless Chromium.
+Phases 0–4 are implemented: `src/renderers/three/` (the viewer), `src/renderers/react/react.tsx` (the wrapper), the r3f renderer deleted, the example app migrated. 4.0.0 is in beta on npm's `beta` tag. `pnpm test:abstract-3d` covers compile, appearance (material classes, types, shadow casting), geometry (shared unit geometries, edge radii), text layout, build (batching, picking, repaint, animation, culling, dispose), camera fit and the quality governor. `pnpm typecheck:tests` type-checks the tests and the bench. `pnpm bench:abstract-3d` measures the scene layer in Node, and `pnpm bench:abstract-3d:browser` frame times, draw calls, memory over scene swaps and screenshots in headless Chromium.
 
-Measured in headless Chromium (software GPU, so CPU side only), systemair3:
+Measured in headless Chromium (software GPU, so CPU side only), systemair3 with its materials typed and boxes rounded as in the example app:
 
 |                          | ×1  | ×4  | ×9  |
 | ------------------------ | --- | --- | --- |
-| Draw calls               | 40  | 40  | 40  |
-| CPU per frame (ms)       | 0.9 | 1.4 | 2.6 |
-| Hover update (ms)        | 0.3 | 0.6 | 1.2 |
-| Time until ready (ms)    | 478 | 410 | 175 |
-| JS heap once loaded (MB) | 39  | 41  | 44  |
+| Draw calls               | 55  | 55  | 55  |
+| CPU per frame (ms)       | 1.0 | 1.5 | 2.6 |
+| Hover update (ms)        | 0.4 | 0.8 | 1.2 |
+| Time until ready (ms)    | 735 | 820 | 920 |
+| JS heap once loaded (MB) | 42  | 43  | 46  |
 
-Draw calls include the viewcube's, which the renderer now draws: the scene took 14 when the viewcube was HTML.
+In Node, compiling, building and disposing systemair3 takes 5.0, 11.2 and 26 ms (×1, ×4, ×9), a pick 0.1, 0.4 and 1.0 ms, and a hover repaint 8–35 µs.
+
+Draw calls include the viewcube's (about 26) and a batch per material type; the shadow map isn't rendered per frame, so it adds none. Time until ready includes loading the studio HDRI and compiling the physical materials, which the earlier 175–480 ms didn't have. Over 150 scene swaps GPU geometries, textures and programs stay flat (33, 54, 17) and the heap at 41–45 MB, and an idle viewer renders no frames.
+
+The viewer is 2,235 lines without tests, comments and the HDRI's data, against 1,667 for the r3f renderer.
 
 Where the implementation departs from this plan:
 
-- **Renderer:** the classic `WebGLRenderer` and GLSL, the classic stack below, so WebGL libraries run as they are: `LineMaterial`, `three-viewport-gizmo` and `CSS2DRenderer`. `WebGPURenderer` cost about 230 lines of our own replacements for them. WebGPU waits until it's mature.
-- **No post-processing:** ambient occlusion (N8AO, and before it GTAO) looked noisy at a cost weak GPUs can't pay, so it's removed. Quality tiers set the resolution only, and the ground shadow, rendered once per build, gives the grounding AO was for.
+- **Renderer:** the classic `WebGLRenderer` and GLSL, the classic stack below, so WebGL libraries run as they are: `LineMaterial`, `three-viewport-gizmo` and `CSS2DRenderer`. `WebGPURenderer` cost about 230 lines of our own replacements for them, and on its WebGL2 fallback took 1.6–4 times longer until ready with up to 40% more CPU per frame; WebGPU itself draws a `BatchedMesh` as one draw per instance, as it has no multi-draw. WebGPU waits until particles need compute, or three batches on it.
+- **No post-processing:** ambient occlusion (N8AO, and before it GTAO) looked noisy at a cost weak GPUs can't pay, so it's removed. Quality tiers set the resolution only: `high`, the default, the screen's pixel ratio as the r3f renderer, and `auto` drops to 1 when moving gets slow.
+- **Lighting:** a photographed studio HDRI (Poly Haven's Studio Small 08, CC0, 512×256, bundled as a chunk loaded on demand) and a key light from the upper left front, half each, instead of an ambient light and directional lights. There's no other environment and no default lights; `lights` adds to them.
+- **Shadows, each rendered once per scene:** a contact shadow on the ground, in a faint pool of light so it shows on dark backgrounds, both alpha-dithered against 8-bit banding; and the key light's shadow map, the solids' shadows on themselves. A material's `castShadow: false` keeps symbols and markers out of both.
+- **Materials:** `Material.type` (painted, galvanized, aluminum, stainless, copper, plastic, rubber, fabric, glass) picks a `MeshPhysicalMaterial` finish, e.g. a clearcoat on paint and a sheen on fabric; a type that isn't one, e.g. a number from a database, is ignored. Each type is a batch.
+- **Rounded edges:** `Box.radius` shades a box's edges as rounded by it, the normal of a rounded box from its signed distance function, at least two pixels wide so far edges stay smooth; no extra geometry, a shared unit geometry per radius.
 - **Text:** our SDF atlas from the system font, in a `ShaderMaterial`, not troika, which needs a font file.
-- **Camera controls:** the 3.x OrbitControls only, with their refit behavior (at first, and for a new camera or canvas aspect), not camera-controls; two control implementations were redundant. Buffer zones use the ported view offset. The gizmo animates its own turns.
-- **API:** flat options with the 3.x prop names (`options.ts`) instead of the grouped options sketched below. `updateViewer` takes the options that changed and redoes what a static table says each one needs, batched into the next frame; telling what changed is the caller's, so the React wrapper passes each group of props from an effect, and compares the few that would refit, rebuild or recreate the gizmo by value. The viewer is plain state with module functions (`createViewer`, `updateViewer`, `invalidate`, `disposeViewer`), as is every module: no closure factories.
+- **Camera:** the r3f renderer's, ported exactly: its fit math (identical in 1,296 compared cases), OrbitControls with damping, refitting only for a new camera or canvas aspect and keeping the panned target. Not camera-controls; two control implementations were redundant. The gizmo animates its own turns, and redraws its labels once web fonts load.
+- **API:** flat options with the 3.x prop names (`options.ts`) instead of the grouped options sketched below. `updateViewer` takes the options that changed and redoes what a static table says each one needs, batched into the next frame; telling what changed is the caller's, so the React wrapper passes each group of props from an effect, and compares the few that would refit, rebuild or recreate the gizmo by value. The viewer is plain state with module functions (`createViewer`, `updateViewer`, `invalidate`, `disposeViewer`), as is every module: no closure factories. A resize renders right away, so the canvas never shows blank.
 - **Fallback:** rendered by the React wrapper until the viewer's `onLoad`, not by the viewer.
-- **Layout:** a folder per concern, each with its source and tests: `compile`, `appearance`, `geometry`, `text`, `build` (parts, materials), `camera` (controls, gizmo), `quality` and `viewer` (options, overlays).
+- **Layout:** a folder per concern, each with its source and tests: `compile`, `appearance`, `geometry`, `text`, `build` (parts, materials), `camera` (controls, gizmo), `shadow` (ground shadow, key light), `environment` (the HDRI), `quality` and `viewer` (options, overlays).
 
 ## Sources
 
@@ -44,17 +52,21 @@ Where the implementation departs from this plan:
 - **Text:** signed distance field glyphs from the system font with an atlas, the approach of Mapbox GL JS, through its `@mapbox/tiny-sdf`; layout constants (line height 1.5, centered anchors) from drei's `Text` (troika).
 - **Camera fit, buffer zones, gizmo reset and pausing hover while orbiting:** the r3f renderer's `react-camera.tsx`, ported as it was.
 - **Gizmo:** `three-viewport-gizmo`, with the options of drei's `GizmoViewcube` and `GizmoViewport` mapped to it.
+- **Lighting:** Poly Haven's Studio Small 08 HDRI through three's `HDRLoader`; a key light with its shadow map rendered on demand, as three's `shadowMap.autoUpdate = false` examples.
 - **Ground shadow:** three.js's `webgl_shadow_contact` example, rendered once as drei's `ContactShadows` with `frames={1}`.
+- **Rounded edges:** Inigo Quilez's rounded box signed distance function (`sdRoundBox`), its normal used on the sharp box.
 - **Render on demand and batched updates:** r3f's `frameloop="demand"`, r3f applying props in the next frame, and three's `OrbitControls` damping loop.
 - **Overlays:** three's `CSS2DRenderer`, as drei's `Html` places elements.
 - **Lines:** three.js `LineSegments2` with `LineMaterial`; culled dimension lines as the r3f renderer's shader did, on the CPU per camera move.
 
 Not done yet:
 
-- The selection outline.
-- The effect hook (`addEffect`), pausing when offscreen, `buildScene` without batching for `GLTFExporter`.
-- Frame times on a weak GPU. Memory is checked: over 150 scene swaps GPU geometries, textures and programs stay flat and the heap stays at 37–40 MB, and an idle viewer renders no frames.
-- 4.0.0 out of beta (the betas are on npm's `beta` tag).
+- Filling in `type`, `castShadow` and `radius` in the real scene data; the example app derives them from material names. The material database already has a numeric `type` of its own, which collides with `Material.type` in TypeScript.
+- Frame times on a weak GPU.
+- Realism without post-processing: brushed (anisotropic) aluminum, fine normal maps for galvanized spangle and paint grain; a path-traced photo mode at rest, opt-in, for which three-gpu-pathtracer needs an unbatched scene and loses text and dimensions.
+- A test that the shader insertions (rounded edges, clearcoat) still find three's chunks after a three upgrade.
+- The selection outline, the effect hook (`addEffect`), pausing when offscreen, `buildScene` without batching for `GLTFExporter`, fitting to everything drawn (opt-in, as the camera must stay the r3f renderer's), a fallback without WebGL.
+- 4.0.0 out of beta, with the betas' CHANGELOG section merged into it.
 
 ## Why raw three.js
 
