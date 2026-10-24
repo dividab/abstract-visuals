@@ -25,7 +25,7 @@ export type ViewerProps = Omit<ViewerOptions<React.ReactNode>, "hoveredIds" | "o
 
 export function Viewer(props: ViewerProps): React.JSX.Element {
   const { scene, createGroupId, useAlphaTest, selectedIds, hoveredIdsExternal, onClickGroup, view, bufferZones, fitPadding, controls } = props;
-  const { lights, environmentIntensity, groundShadow, shadows, quality, showDimensions, popovers, getTooltips } = props;
+  const { lights, environmentIntensity, studio, groundShadow, shadows, quality, showDimensions, popovers, getTooltips } = props;
   const { onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed, sceneFallback, className, style } = props;
   // Equal by value, so inline objects don't refit the camera, recreate the gizmo or rebuild the scene
   const camera = useStableValue(props.camera);
@@ -65,7 +65,7 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
   useEffect(() => updateViewer(viewer.current!, { view, bufferZones, fitPadding, camera }), [view, bufferZones, fitPadding, camera]);
   useEffect(() => updateViewer(viewer.current!, { controls }), [controls]);
   useEffect(() => updateViewer(viewer.current!, { gizmo }), [gizmo]);
-  useEffect(() => updateViewer(viewer.current!, { lights, environmentIntensity }), [lights, environmentIntensity]);
+  useEffect(() => updateViewer(viewer.current!, { lights, environmentIntensity, studio }), [lights, environmentIntensity, studio]);
   useEffect(() => updateViewer(viewer.current!, { quality }), [quality]);
   useEffect(() => updateViewer(viewer.current!, { showDimensions }), [showDimensions]);
   useEffect(() => updateViewer(viewer.current!, { groundShadow, shadows }), [groundShadow, shadows]);

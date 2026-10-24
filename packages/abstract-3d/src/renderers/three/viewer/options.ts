@@ -43,8 +43,14 @@ export type ViewerOptions<Content> = {
   readonly gizmo?: ControlsHelper;
   /** Lights added to the photographed studio and key light that light the scene; none by default */
   readonly lights?: ReadonlyArray<Object3D> | ((scene: Scene) => ReadonlyArray<Object3D>);
-  /** Of the studio's light, 0.8 by default, the key light giving the rest */
+  /** Of the studio's light, or without the studio of its plain light, 0.6 by default, the key light giving the rest */
   readonly environmentIntensity?: number;
+  /**
+   * The photographed studio's light and reflections, on by default. Off, three-point lighting emulates it, a weak sky and floor light, the key light,
+   * a fill and a rim light, without reflections, so metals are satin at most; a first visit then shows the scene about 400 ms sooner, as its shaders
+   * compile without the reflection code. Changing it rebuilds the scene
+   */
+  readonly studio?: boolean;
   /** A soft shadow on the ground under the scene, rendered once per build; on by default */
   readonly groundShadow?: boolean;
   /** The solids' shadows on themselves, e.g. under a roof, cast by the key light from the upper left front; on by default */
@@ -90,6 +96,7 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   gizmo: ["gizmo"],
   lights: ["lights"],
   environmentIntensity: ["lights"],
+  studio: ["build", "lights"],
   groundShadow: ["shadow"],
   shadows: ["shadow"],
   quality: ["quality"],

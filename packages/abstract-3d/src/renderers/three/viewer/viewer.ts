@@ -1,6 +1,8 @@
 import {
   type BufferGeometry,
+  DirectionalLight,
   Group,
+  HemisphereLight,
   NeutralToneMapping,
   OrthographicCamera,
   PerspectiveCamera,
@@ -136,7 +138,9 @@ export function createViewer<Content>(container: HTMLElement, options: ViewerOpt
   };
   v.scene.add(v.lights);
   // Loaded while the first frame builds the scene
-  loadStudio(v).catch(() => undefined);
+  if (options.studio !== false) {
+    loadStudio(v).catch(() => undefined);
+  }
   const signal = { signal: v.listeners.signal };
   canvas.addEventListener("pointermove", (e) => onPointerMove(v, e), signal);
   canvas.addEventListener("pointerleave", (e) => setHovered(v, undefined, e), signal);
@@ -282,7 +286,7 @@ function rebuild<Content>(v: Viewer<Content>): void {
     v.scene.add(v.built.root);
     v.built.dimensions.visible = options.showDimensions ?? true;
     // Compiled in parallel where the driver can, as three.js's compileAsync example, and after the studio arrived, which they use
-    loadStudio(v)
+    (options.studio === false ? Promise.resolve() : loadStudio(v))
       .catch(() => undefined)
       .then(() => v.renderer.compileAsync(v.scene, v.camera))
       .then(() => onLoaded(v))
@@ -517,12 +521,26 @@ function getGroupArgs<Content>(
   }
 }
 
-/** The scene is lit by a photographed studio as its environment; apps can add their own lights */
+/** The scene is lit by a photographed studio as its environment, or without it by a plain sky and floor light; apps can add their own lights */
 function updateLights<Content>(v: Viewer<Content>): void {
-  const { scene, lights, environmentIntensity = studioIntensity } = v.options;
+  const { scene, lights, environmentIntensity = studioIntensity, studio = true } = v.options;
   v.lights.clear();
   (typeof lights === "function" ? (scene ? lights(scene) : []) : (lights ?? [])).forEach((o) => v.lights.add(o));
   v.scene.environmentIntensity = environmentIntensity;
+  v.scene.environment = studio ? (v.studio.texture ?? null) : null;
+  if (studio) {
+    loadStudio(v).catch(() => undefined);
+  } else {
+    // The studio emulated by three-point lighting: a weak sky and floor light, so faces differ by which way they turn, the key light, a fill from
+    // the other side, so the key light's shadow side isn't flat, and a rim light from behind, which outlines edges
+    const [fill, rim] = [
+      new DirectionalLight(0xffffff, environmentIntensity * fillIntensity),
+      new DirectionalLight(0xffffff, environmentIntensity * rimIntensity),
+    ];
+    fill.position.copy(fillDirection);
+    rim.position.copy(rimDirection);
+    v.lights.add(new HemisphereLight(0xffffff, floorColor, environmentIntensity * skyIntensity), fill, rim);
+  }
 }
 
 /** The studio, loaded once, its own chunk; set when it arrives, so the scene's shaders are compiled after it, with it */
@@ -535,7 +553,7 @@ function loadStudio<Content>(v: Viewer<Content>): Promise<unknown> {
         return texture;
       }
       v.studio.texture = texture;
-      v.scene.environment = texture;
+      v.scene.environment = v.options.studio === false ? null : texture;
       invalidate(v);
       return texture;
     });
@@ -565,6 +583,14 @@ function updateOverlays<Content>(v: Viewer<Content>): void {
 
 /** The studio's share of the light, the key light giving the rest, so the key light's shadows show */
 const studioIntensity = 0.6;
+/** Without the studio, of its three-point lighting, by the environment's intensity; the key light is the studio's, the floor as the studio's */
+const skyIntensity = 1.5;
+const fillIntensity = 1.5;
+const rimIntensity = 2;
+const floorColor = 0xe6e6e6;
+/** From the right, opposite the key light from the upper left front, and lower; the rim light from behind and above */
+const fillDirection = new Vector3(1.5, 0.5, 1);
+const rimDirection = new Vector3(0.5, 1.5, -1.5);
 
 const raycaster = new Raycaster();
 const ndc = new Vector2();

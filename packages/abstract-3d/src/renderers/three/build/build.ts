@@ -45,6 +45,8 @@ export type BuildOptions = {
   readonly materialStateImages?: Record<string, string>;
   readonly useAlphaTest?: boolean;
   readonly onTextureLoaded?: () => void;
+  /** Lit by the studio, whose reflections metals show; true by default */
+  readonly studio?: boolean;
 };
 
 export type BuiltScene = {
@@ -233,7 +235,7 @@ function createPart(
       });
       if (first.role === "solid") {
         const c = getMaterialClass(first, targetStates[first.target]!);
-        const part = createSolidPart(entries, createClassMaterial(c));
+        const part = createSolidPart(entries, createClassMaterial(c, options.studio !== false));
         Object.assign(part.object, { castShadow: c.castShadow, receiveShadow: c.lit });
         return part;
       }

@@ -21,17 +21,25 @@ import { ERROR_IMG_KEY } from "../appearance/appearance.js";
 
 /** White materials, colored per instance, for each material class; images' materials and textures */
 
-export function createClassMaterial(c: MaterialClass): Material {
+/**
+ * Without reflections, i.e. without the studio, metals keep at most a little metalness, satin from the lights' highlights, as they'd be black, having
+ * almost no diffuse light
+ */
+export function createClassMaterial(c: MaterialClass, reflections: boolean): Material {
   const side = c.side === "front" ? FrontSide : c.side === "back" ? BackSide : DoubleSide;
   const common = { side, transparent: c.transparent, depthWrite: !c.transparent };
   if (!c.lit) {
     return new MeshBasicMaterial(common);
   }
+  const metalness = c.type ? (finishes[c.type].metalness ?? 0) : c.metalness;
   const material = c.type
-    ? new MeshPhysicalMaterial({ ...common, ...finishes[c.type] })
-    : new MeshStandardMaterial({ ...common, metalness: c.metalness, roughness: c.roughness });
+    ? new MeshPhysicalMaterial({ ...common, ...finishes[c.type], metalness: reflections ? metalness : Math.min(metalness, plainMetalness) })
+    : new MeshStandardMaterial({ ...common, metalness: reflections ? metalness : Math.min(metalness, plainMetalness), roughness: c.roughness });
   return Object.assign(material, { onBeforeCompile: roundEdges });
 }
+
+/** The most metalness without reflections */
+const plainMetalness = 0.4;
 
 /**
  * The physical finish of each type of surface, in the material's color: metals reflect their color; galvanized and aluminum sheet keep some of their

@@ -22,6 +22,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [groundShadow, setGroundShadow] = React.useState(true);
   const [typed, setTyped] = React.useState(true);
   const [shadows, setShadows] = React.useState(true);
+  const [studio, setStudio] = React.useState<"on" | "off" | "compare">("on");
 
   const camera = React.useMemo((): React3Js.Camera => {
     if (cameraType === "Orthographic") {
@@ -100,6 +101,21 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
     [selectedModel, typed, theme]
   );
 
+  const viewerProps: React3Js.ViewerProps = {
+    sceneFallback,
+    useAlphaTest: false,
+    selectedIds: {},
+    fitPadding: 0.15,
+    quality,
+    groundShadow,
+    shadows,
+    scene: themedModel,
+    showDimensions: true,
+    camera,
+    controlsHelper,
+    controls: orbitContolProps,
+  };
+
   return (
     <div
       style={{
@@ -167,6 +183,16 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         </div>
         <div style={{ padding: 8 }}>
           <label>
+            Studio:
+            <select value={studio} onChange={(e) => setStudio(e.target.value as typeof studio)} style={{ marginLeft: 8 }}>
+              <option value="on">On</option>
+              <option value="off">Off, ~400 ms quicker first load</option>
+              <option value="compare">Side by side, on and off</option>
+            </select>
+          </label>
+        </div>
+        <div style={{ padding: 8 }}>
+          <label>
             Material types:
             <select value={typed ? "on" : "off"} onChange={(e) => setTyped(e.target.value === "on")} style={{ marginLeft: 8 }}>
               <option value="on">On</option>
@@ -184,94 +210,92 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
           overflow: "hidden",
         }}
       >
-        {/* LEFT PANEL */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: `${left}px`,
-            background: "rgba(0,0,0,0.6)",
-            color: "white",
-            padding: 12,
-            zIndex: 10,
-          }}
-        >
-          Left panel
-        </div>
+        {studio !== "compare" && (
+          <>
+            {/* LEFT PANEL */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                bottom: 0,
+                width: `${left}px`,
+                background: "rgba(0,0,0,0.6)",
+                color: "white",
+                padding: 12,
+                zIndex: 10,
+              }}
+            >
+              Left panel
+            </div>
 
-        {/* RIGHT PANEL */}
-        <div
-          style={{
-            position: "absolute",
-            top: 200,
-            right: 0,
-            bottom: 0,
-            width: `${right}px`,
-            background: "rgba(0,0,0,0.6)",
-            color: "white",
-            padding: 12,
-            zIndex: 10,
-          }}
-        >
-          Right panel
-        </div>
+            {/* RIGHT PANEL */}
+            <div
+              style={{
+                position: "absolute",
+                top: 200,
+                right: 0,
+                bottom: 0,
+                width: `${right}px`,
+                background: "rgba(0,0,0,0.6)",
+                color: "white",
+                padding: 12,
+                zIndex: 10,
+              }}
+            >
+              Right panel
+            </div>
 
-        {/* TOP PANEL */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 200,
-            height: `${top}px`,
-            background: "rgba(20,20,20,0.7)",
-            color: "white",
-            padding: 12,
-            zIndex: 10,
-          }}
-        >
-          Top panel
-        </div>
+            {/* TOP PANEL */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 200,
+                height: `${top}px`,
+                background: "rgba(20,20,20,0.7)",
+                color: "white",
+                padding: 12,
+                zIndex: 10,
+              }}
+            >
+              Top panel
+            </div>
 
-        {/* BOTTOM PANEL */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: `${bottom}px`,
-            background: "rgba(20,20,20,0.7)",
-            color: "white",
-            padding: 12,
-            zIndex: 10,
-          }}
-        >
-          Bottom panel
-        </div>
+            {/* BOTTOM PANEL */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: `${bottom}px`,
+                background: "rgba(20,20,20,0.7)",
+                color: "white",
+                padding: 12,
+                zIndex: 10,
+              }}
+            >
+              Bottom panel
+            </div>
+          </>
+        )}
 
         {/* 3D VIEW */}
-        <Viewer
-          sceneFallback={sceneFallback}
-          useAlphaTest={false}
-          selectedIds={{}}
-          fitPadding={0.15}
-          quality={quality}
-          groundShadow={groundShadow}
-          shadows={shadows}
-          scene={themedModel}
-          showDimensions={true}
-          camera={camera}
-          controlsHelper={controlsHelper}
-          controls={orbitContolProps}
-          bufferZones={{ left: left, right: right, top: top, bottom: bottom }}
-          style={{ backgroundColor: "var(--viewer)" }}
-          onClickGroup={undefined}
-          onContextMenuGroup={undefined}
-          createGroupId={undefined}
-        />
+        {studio === "compare" ? (
+          <div style={{ display: "flex", gap: 4, width: "100%", height: "100%" }}>
+            <Viewer {...viewerProps} studio={true} style={{ flex: 1, backgroundColor: "var(--viewer)" }} />
+            <Viewer {...viewerProps} studio={false} style={{ flex: 1, backgroundColor: "var(--viewer)" }} />
+          </div>
+        ) : (
+          <Viewer
+            {...viewerProps}
+            studio={studio === "on"}
+            bufferZones={{ left: left, right: right, top: top, bottom: bottom }}
+            style={{ backgroundColor: "var(--viewer)" }}
+          />
+        )}
       </div>
     </div>
   );
