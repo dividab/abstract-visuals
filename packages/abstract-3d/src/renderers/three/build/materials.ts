@@ -42,18 +42,17 @@ export function createClassMaterial(c: MaterialClass, reflections: boolean): Mat
 const plainMetalness = 0.25;
 
 /**
- * The physical finish of each type of surface, in the material's color: metals reflect their color; galvanized and aluminum sheet keep some of their
- * color diffuse, so faces that mirror the studio's dark surroundings aren't black; the others are dielectrics with a white reflection; painted sheet
- * has a light clearcoat, fabric a soft sheen. Glass is a thin, smooth, mostly see-through surface, not refracting, which would render the scene once
- * more each frame
+ * The physical finish of each type of surface, in the material's color: metals reflect their color; the others are dielectrics with a white
+ * reflection; painted sheet has a full, soft clearcoat, fabric a soft sheen. Glass is a thin, smooth, mostly see-through surface, not refracting,
+ * which would render the scene once more each frame
  */
 const finishes: Record<MaterialType, MeshPhysicalMaterialParameters> = {
-  painted: { metalness: 0, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.25 },
-  galvanized: { metalness: 0.6, roughness: 0.6 },
-  aluminum: { metalness: 0.7, roughness: 0.45 },
-  stainless: { metalness: 1, roughness: 0.3 },
-  copper: { metalness: 1, roughness: 0.35 },
-  plastic: { metalness: 0, roughness: 0.55 },
+  painted: { metalness: 0, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.5 },
+  galvanized: { metalness: 1, roughness: 0.35 },
+  aluminum: { metalness: 1, roughness: 0.4 },
+  stainless: { metalness: 1, roughness: 0.2 },
+  copper: { metalness: 1, roughness: 0.25 },
+  plastic: { metalness: 0, roughness: 0.4 },
   rubber: { metalness: 0, roughness: 0.9 },
   fabric: { metalness: 0, roughness: 1, sheen: 1, sheenRoughness: 0.8, sheenColor: 0x888888 },
   glass: { metalness: 0, roughness: 0.05, specularIntensity: 1 },

@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Changed: the material types' finishes are those of a product configurator's AHU: painted sheet smoother with a full, soft clearcoat, galvanized and aluminum fully metallic, stainless and copper smoother, plastic smoother
+
 ## [4.0.1] - 2026-10-24
 
 - Changed: with `studio={false}`, the scene is lit brighter, closer to the studio, by a stronger sky and fill light, and metals keep more of their color, a light silver instead of mid gray
