@@ -21,11 +21,12 @@ pnpm workspace managed with [lerna](https://lerna.js.org/). Build = TS project r
 - IMPORTANT: Always use the root `pnpm` scripts instead of invoking `oxlint`/`oxfmt`/`tsc` directly (via `npx`, `pnpm exec`, or any other direct call) — even for one-off flags like `--print-config`; the root scripts carry required flags/config
 - `pnpm build` = `tsc -b packages`
 - `pnpm typecheck:scripts` = check root scripts, including Node-compatible erasable TypeScript syntax
+- `pnpm typecheck:tests` = check abstract-3d's tests and bench, which the build doesn't include. oxlint checks test files with default compiler options, so test code must type-check under both (e.g. `.at(i)` and `assert` instead of `[i]!`)
 - `pnpm update-refs` = sync TS project references with local package dependencies (including dev, peer, and optional dependencies), and refresh `packages/tsconfig.json`
 - `pnpm lint` = oxlint (type-aware, `-c ./oxlint.config.js`); plugins come from `oxlint-config-divid`
 - `pnpm fmt` / `pnpm fmt:check` = oxfmt
 - `pnpm test` = vitest run (whole repo); `pnpm test:abstract-image` / `pnpm test:abstract-document` for those packages only
-- `pnpm verify` = lint + build + test (what CI effectively checks)
+- `pnpm verify` = lint + build + typecheck:tests + test (what CI effectively checks)
 - `pnpm cleanbuild` = clean + build
 
 ## Workflow

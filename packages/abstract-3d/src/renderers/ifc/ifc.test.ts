@@ -8,21 +8,23 @@ import { render } from "./ifc.js";
 const red = { normal: "rgb(255, 0, 0)", opacity: 0.5 };
 const scene = (groups: Scene["groups"], relations?: Scene["relations"]): Scene => ({ size_deprecated: vec3Zero, groups, relations });
 const count = (ifc: string, entity: string): number => ifc.split(`=${entity}(`).length - 1;
-const ids = (s: string): ReadonlyArray<string> => Array.from(s.matchAll(/#(\d+)/g), (match) => match[1]);
+const ids = (s: string): ReadonlyArray<string> => Array.from(s.matchAll(/#(\d+)/g), (match) => match.at(1) ?? "");
 /** Random GlobalIds replaced, to compare files */
 const normalize = (ifc: string): string => ifc.replaceAll(/'[0-9A-Za-z_$]{22}'/g, "'guid'");
 
-const entities = (ifc: string): ReadonlyMap<string, string> => new Map(Array.from(ifc.matchAll(/^#(\d+)=(.*);$/gm), (match) => [match[1], match[2]]));
+/** By id; looked up by ids destructured from a list, so by possibly undefined ones */
+const entities = (ifc: string): ReadonlyMap<string | undefined, string> =>
+  new Map(Array.from(ifc.matchAll(/^#(\d+)=(.*);$/gm), (match) => [match.at(1), match.at(2) ?? ""]));
 
 /** The #id of the element or port named `name` */
-const named = (ifc: string, name: string): string => new RegExp(`^#(\\d+)=IFC\\w+\\('[^']{22}',#\\d+,'${name}',`, "m").exec(ifc)![1];
+const named = (ifc: string, name: string): string => new RegExp(`^#(\\d+)=IFC\\w+\\('[^']{22}',#\\d+,'${name}',`, "m").exec(ifc)?.at(1) ?? "";
 
 /** The layer of every face set and polyline of the element named `name`, in order */
 function elementLayers(ifc: string, name: string): ReadonlyArray<string | undefined> {
   const byId = entities(ifc);
   const layers = new Map(
-    Array.from(ifc.matchAll(/[=]IFCPRESENTATIONLAYERASSIGNMENT\('([^']*)',\$,\(([^)]*)\),\$\);/g)).flatMap(([, layer, items]) =>
-      ids(items).map((item) => [item, layer] as const)
+    Array.from(ifc.matchAll(/[=]IFCPRESENTATIONLAYERASSIGNMENT\('([^']*)',\$,\(([^)]*)\),\$\);/g)).flatMap((match) =>
+      ids(match.at(2) ?? "").map((item) => [item, match.at(1)] as const)
     )
   );
   // The element's owner history, placement and shape, the shape's representations and their context and items

@@ -8,7 +8,7 @@
   "scripts": {
     "precommit": "lint-staged",
     "publish-npm": "scripts/publish-npm.sh",
-    "verify": "run-s lint build test",
+    "verify": "run-s lint build typecheck:tests test",
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "test:abstract-3d": "vitest run --dir packages/abstract-3d",
@@ -24,6 +24,7 @@
     "build": "tsc -b packages",
     "update-refs": "node --experimental-strip-types scripts/update-refs.ts",
     "typecheck:scripts": "tsc -p scripts/tsconfig.json",
+    "typecheck:tests": "tsc -p packages/abstract-3d/tsconfig.test.json && tsc -p packages/abstract-3d/bench/tsconfig.json",
     "build-watch": "tsc -b -w --preserveWatchOutput packages",
     "start": "cd packages/abstract-visuals-example && vite",
     "storybook": "start-storybook -p 6006 --ci",

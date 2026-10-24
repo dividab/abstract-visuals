@@ -1,5 +1,5 @@
 import { Color, Vector4 } from "three";
-import { describe, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 import type { Material, Mesh } from "../../../abstract-3d.js";
 import { box, line, text, vec3, vec3Zero } from "../../../abstract-3d.js";
 import { shade } from "../../../utils.js";
@@ -24,11 +24,16 @@ const relation: Target = { kind: "relation", relation: { id: "r", pos: vec3Zero 
 const idle: PaintState = { relationsActive: false, dimensionsClickable: true };
 const round = (v: number): number => Math.round(v * 1e4) / 1e4;
 const rgba = (color: string, alpha = 1): ReadonlyArray<number> => [...new Color(color).toArray(), alpha].map(round);
-const classify = (i: Item, target: Target, state: Partial<PaintState> = {}): MaterialClass =>
-  getMaterialClass(i, getTargetStates([target], { ...idle, ...state })[0]);
+const classify = (i: Item, target: Target, state: Partial<PaintState> = {}): MaterialClass => {
+  const [targetState] = getTargetStates([target], { ...idle, ...state });
+  assert(targetState);
+  return getMaterialClass(i, targetState);
+};
 const paint = (i: Item, target: Target, partial: Partial<PaintState> = {}): ReadonlyArray<number> => {
   const state = { ...idle, ...partial };
-  return getItemColor(i, getTargetStates([target], state)[0], getHighlight(target, 0, state), new Vector4())
+  const [targetState] = getTargetStates([target], state);
+  assert(targetState);
+  return getItemColor(i, targetState, getHighlight(target, 0, state), new Vector4())
     .toArray()
     .map(round);
 };

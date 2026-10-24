@@ -1,5 +1,5 @@
 import { BatchedMesh, InstancedMesh, Matrix4, PerspectiveCamera, Raycaster, Vector2, Vector3, Vector4 } from "three";
-import { describe, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 import type { Group, Scene } from "../../../abstract-3d.js";
 import { alignedDimension, box, culledLine, group, sphere, text, vec3, vec3Zero } from "../../../abstract-3d.js";
 import type { PaintState, StructureState } from "../appearance/appearance.js";
@@ -28,11 +28,18 @@ const rasterize = (): GlyphBitmap => {
 const idle: StructureState = { relationsActive: false };
 const scene = (groups: ReadonlyArray<Group>, rest: Partial<Scene> = {}): Scene => ({ size_deprecated: vec3(1, 1, 1), groups, ...rest });
 const part = (id: string, x: number, material = red): Group => group([box(vec3(10, 10, 10), material)], vec3(x, 0, 0), vec3Zero, [], { id });
+// Destructured, as the build's and lint's compiler options disagree on reading an index signature by dot or bracket
+const groupId = (g: Group): string => {
+  const { id = "" }: Record<string, string | undefined> = g.data ?? {};
+  return id;
+};
 const build = (s: Scene, structure = idle, activeRelations?: ReadonlyArray<string>): BuiltScene =>
-  buildScene(
-    compileScene(s, (g) => g.data?.id ?? ""),
-    { structure, activeRelations, geometries: new Map(), atlas: createGlyphAtlas(rasterize, 256) }
-  );
+  buildScene(compileScene(s, groupId), { structure, activeRelations, geometries: new Map(), atlas: createGlyphAtlas(rasterize, 256) });
+const firstBatch = (built: BuiltScene): BatchedMesh => {
+  const [batch] = batches(built);
+  assert(batch);
+  return batch;
+};
 const relation = (id: string): NonNullable<Scene["relations"]>[number] => ({ id, pos: vec3Zero, groups: [group([box(vec3(1, 1, 1), red)])] });
 const batches = (built: BuiltScene): ReadonlyArray<BatchedMesh> => built.root.children.filter((o): o is BatchedMesh => o instanceof BatchedMesh);
 
@@ -45,9 +52,10 @@ function pickId(built: BuiltScene, x: number): string | undefined {
   const raycaster = new Raycaster();
   raycaster.setFromCamera(new Vector2(0, 0), camera);
   const hits = raycaster.intersectObjects(getPickables(built), false);
-  const item = hits.length > 0 ? getPickedItem(built, hits[0]) : undefined;
+  const hit = hits.at(0);
+  const item = hit && getPickedItem(built, hit);
   const { compiled }: { readonly compiled: CompiledScene } = built;
-  const target = item === undefined ? undefined : compiled.targets[compiled.items[item].target];
+  const target = item === undefined ? undefined : compiled.targets[compiled.items.at(item)?.target ?? -1];
   return target?.kind === "group" || target?.kind === "dimension" ? target.id : undefined;
 }
 
@@ -71,7 +79,7 @@ describe("buildScene", () => {
 
   it("repaints the hovered and selected targets", () => {
     const built = build(scene([part("a", 0), part("b", 20)]));
-    const [batch] = batches(built);
+    const batch = firstBatch(built);
     const color = (instance: number): ReadonlyArray<number> =>
       batch
         .getColorAt(instance, new Vector4())
@@ -117,7 +125,7 @@ describe("buildScene", () => {
     const built = build(scene([group([box(vec3(1, 1, 1), red)], vec3(5, 0, 0), vec3Zero, [], {}, spin)]));
     expect(built.animatedItems).toHaveLength(1);
     animateScene(built, 0.5);
-    const position = new Vector3(1, 0, 0).applyMatrix4(batches(built)[0].getMatrixAt(0, new Matrix4()));
+    const position = new Vector3(1, 0, 0).applyMatrix4(firstBatch(built).getMatrixAt(0, new Matrix4()));
     expect(position.toArray().map((v) => Math.round(v * 1000) / 1000 + 0)).toEqual([5, 1, 0]);
   });
 
@@ -134,7 +142,7 @@ describe("buildScene", () => {
   it("disposes its batches and materials", () => {
     const built = build(scene([part("a", 0)]));
     const disposed: Array<string> = [];
-    batches(built)[0].material.addEventListener("dispose", () => disposed.push("material"));
+    firstBatch(built).material.addEventListener("dispose", () => disposed.push("material"));
     disposeScene(built);
     expect(disposed).toEqual(["material"]);
   });
