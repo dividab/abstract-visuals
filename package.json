@@ -12,6 +12,8 @@
     "test": "vitest run",
     "test-coverage": "vitest run --coverage",
     "test:abstract-3d": "vitest run --dir packages/abstract-3d",
+    "bench:abstract-3d": "vitest bench --run --dir packages/abstract-3d --reporter=verbose",
+    "bench:abstract-3d:browser": "node packages/abstract-3d/bench/browser/run.ts",
     "test:abstract-image": "vitest run --dir packages/abstract-image --silent=false",
     "test:abstract-document": "vitest run --dir packages/abstract-document",
     "lint": "oxlint --type-aware -c ./oxlint.config.js ./packages",

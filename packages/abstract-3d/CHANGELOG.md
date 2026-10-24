@@ -4,9 +4,19 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
-- Added: `lights` prop on the react renderer, the scene's lights, rendered in the canvas instead of the default ambient and directional lights, e.g. an environment map for reflections and a key light. The default lights are mostly ambient, which lights every face alike and gives no reflections
+- Changed (breaking): the react renderer is rewritten on plain three.js, without `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` and `suspend-react`. The new `abstract-3d/three` entry is the viewer without React (`createViewer`), and `abstract-3d/react` is a thin component around it. Solids of the same material are drawn as one batch, so a scene takes about a dozen draw calls whatever its size, and hover and selection repaint instance colors instead of re-rendering components. The `quality` prop is `"low"` by default, without ambient occlusion; `"medium"` adds it while the camera is still, `"high"` while it moves too, and `"auto"` starts at medium and drops to low on weak graphics cards
 
-- Changed: the react renderer pauses the scene's pointer events while the camera is dragged, so moving the pointer to rotate or pan no longer raycasts the scene and runs the hover handlers (`onHoverGroup`, hover highlighting, tooltips) on every move. The hovered group is unhovered when the drag starts moving the camera, and hovering resumes on the next pointer move after it ends
+- Changed (breaking): `three`, `react` and `react-dom` are optional peer dependencies. `three` is needed by the `three`, `react` and `ifc` renderers; the `dxf`, `step`, `stl` and `svg` renderers don't use it
+
+- Changed (breaking): the component is `Viewer` instead of `render`. Event callbacks get a `SceneEvent` (`nativeEvent` and the hit `point`) instead of r3f's `ThreeEvent`. `lights` is an array of three.js objects or a function of the scene that returns them, instead of a JSX element, and the new `environment` prop takes an environment map, `"studio"`, `"room"` or `null`
+
+- Changed: the default lights are a studio: a gradient environment with three softboxes, which lights faces by which way they turn and gives metal reflections, a weak ambient light, and a key light from the upper left with two fills, instead of the strong ambient light that lit every face alike
+
+- Changed (breaking): `orbitContolsProps` is `controls`, the same OrbitControls options with the 3.x behavior: damping, the `onStart`, `onChange` and `onEnd` callbacks, and fitting the scene at first and for a new camera or canvas size. Pointer events pause while the camera is dragged
+
+- Changed: `controlsHelper` draws the viewcube or axes with `three-viewport-gizmo`, with the same options except `hideAxisHeads`, which is removed. Text is drawn with the system font (Helvetica or Arial), so no font is loaded
+
+- Removed (breaking): `canvasProps` (use `className` and `style`), `createGroupKey`, `useAnimations` and `useOldMode` (`quality="low"` turns ambient occlusion off)
 
 ## [3.0.2] - 2026-10-17
 

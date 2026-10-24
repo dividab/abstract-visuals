@@ -1,6 +1,6 @@
 import React from "react";
 import type * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
-import { render as Render } from "../../../abstract-3d/src/renderers/react/index.js";
+import { Viewer } from "../../../abstract-3d/src/renderers/react/index.js";
 import { systemair2 } from "./generated/systemair-2.js";
 import { systemair3 } from "./generated/systemair-3.js";
 import { systemair4 } from "./generated/systemair-4.js";
@@ -13,6 +13,7 @@ const sceneFallback = <div>Loading</div>;
 export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [cameraType, setCameraType] = React.useState<"Perspective" | "Orthographic">("Perspective");
   const [model, setModel] = React.useState<string>("systemair");
+  const [quality, setQuality] = React.useState<React3Js.Quality>("low");
 
   const camera = React.useMemo((): React3Js.Camera => {
     if (cameraType === "Orthographic") {
@@ -90,28 +91,42 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         flexDirection: "column",
       }}
     >
-      <div style={{ padding: 8 }}>
-        <label>
-          Camera:
-          <select value={cameraType} onChange={(e) => setCameraType(e.target.value as "Perspective" | "Orthographic")} style={{ marginLeft: 8 }}>
-            <option value="Perspective">Perspective</option>
-            <option value="Orthographic">Orthographic</option>
-          </select>
-        </label>
-      </div>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div style={{ padding: 8 }}>
+          <label>
+            Camera:
+            <select value={cameraType} onChange={(e) => setCameraType(e.target.value as "Perspective" | "Orthographic")} style={{ marginLeft: 8 }}>
+              <option value="Perspective">Perspective</option>
+              <option value="Orthographic">Orthographic</option>
+            </select>
+          </label>
+        </div>
 
-      <div style={{ padding: 8 }}>
-        <label>
-          3D model:
-          <select value={model} onChange={(e) => setModel(e.target.value)} style={{ marginLeft: 8 }}>
-            <option value="systemair1">1</option>
-            <option value="systemair2">2</option>
-            <option value="systemair3">3</option>
-            <option value="systemair4">4</option>
-            <option value="systemair5">5</option>
-            <option value="systemair6">6</option>
-          </select>
-        </label>
+        <div style={{ padding: 8 }}>
+          <label>
+            3D model:
+            <select value={model} onChange={(e) => setModel(e.target.value)} style={{ marginLeft: 8 }}>
+              <option value="systemair1">1</option>
+              <option value="systemair2">2</option>
+              <option value="systemair3">3</option>
+              <option value="systemair4">4</option>
+              <option value="systemair5">5</option>
+              <option value="systemair6">6</option>
+            </select>
+          </label>
+        </div>
+
+        <div style={{ padding: 8 }}>
+          <label>
+            Quality:
+            <select value={quality} onChange={(e) => setQuality(e.target.value as React3Js.Quality)} style={{ marginLeft: 8 }}>
+              <option value="auto">Auto</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       {/* 3D + overlays container */}
@@ -191,30 +206,22 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         </div>
 
         {/* 3D VIEW */}
-        <Render
+        <Viewer
           sceneFallback={sceneFallback}
           useAlphaTest={false}
           selectedIds={{}}
           fitPadding={0.15}
+          quality={quality}
           scene={selectedModel}
           showDimensions={true}
           camera={camera}
           controlsHelper={controlsHelper}
-          orbitContolsProps={orbitContolProps}
+          controls={orbitContolProps}
           bufferZones={{ left: left, right: right, top: top, bottom: bottom }}
-          canvasProps={{
-            style: {
-              backgroundColor: "#ccc",
-              width: "100%",
-              height: "100%",
-            },
-          }}
-          useAnimations={true}
+          style={{ backgroundColor: "#ccc" }}
           onClickGroup={undefined}
           onContextMenuGroup={undefined}
-          createGroupKey={undefined}
           createGroupId={undefined}
-          useOldMode={true}
         />
       </div>
     </div>

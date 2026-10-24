@@ -1,6 +1,3 @@
 export * from "./react.js";
-export * from "./react-types.js";
-export type { SceneMouseEvent } from "./react-scene.js";
-export type { CameraType, Camera, ControlsHelper } from "./react-camera.js";
-export type { MaterialState } from "./react-material.js";
-export { ERROR_IMG_KEY } from "./react-material.js";
+export type { CameraOptions as Camera, BufferZones, ControlsHelper, ControlsOptions, MaterialState, SceneEvent, Quality } from "../three/index.js";
+export { ERROR_IMG_KEY } from "../three/index.js";

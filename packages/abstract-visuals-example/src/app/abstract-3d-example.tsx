@@ -5,7 +5,7 @@ import { dimensionIsOfTypeAligned, vec3Zero } from "../../../abstract-3d/src/abs
 import * as Dxf from "../../../abstract-3d/src/renderers/dxf/index.js";
 import * as Ifc from "../../../abstract-3d/src/renderers/ifc/index.js";
 import type * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
-import { render as Render } from "../../../abstract-3d/src/renderers/react/index.js";
+import { Viewer } from "../../../abstract-3d/src/renderers/react/index.js";
 import * as Step from "../../../abstract-3d/src/renderers/step/index.js";
 import * as Stl from "../../../abstract-3d/src/renderers/stl/index.js";
 import * as Svg from "../../../abstract-3d/src/renderers/svg/index.js";
@@ -180,28 +180,34 @@ export function Abstract3DExample(): React.ReactNode {
           SVG
         </button>
       </div>
-      <div style={{ display: "flex", flexDirection: "row", height: "100%" }}>
-        <img
-          width="1000px"
-          style={{ height: "max-content" }}
-          src={`data:image/svg+xml,${encodeURIComponent(
-            Svg.render(systemair, { view: "front", stroke_thickness: 1, rotation: 0, only_stroke: false }).image
-          )}`}
-          alt="Systemair front view rendered as SVG"
-        />
-        <div className="wrapper" style={{ width: "200px", height: "200px", minWidth: "200px" }} dangerouslySetInnerHTML={{ __html: templateImage }} />
-        <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} />
-        {svgs.map((svg) => (
-          <img key={svg} src={svg} width="200px" style={{ height: "max-content" }} alt="Component geometry preview rendered as SVG" />
-        ))}
-        <div style={{ height: "calc(100% - 20px)", width: "100%", display: "flex" }}>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+          <img
+            width="1000px"
+            style={{ height: "max-content" }}
+            src={`data:image/svg+xml,${encodeURIComponent(
+              Svg.render(systemair, { view: "front", stroke_thickness: 1, rotation: 0, only_stroke: false }).image
+            )}`}
+            alt="Systemair front view rendered as SVG"
+          />
+          <div
+            className="wrapper"
+            style={{ width: "200px", height: "200px", minWidth: "200px" }}
+            dangerouslySetInnerHTML={{ __html: templateImage }}
+          />
+          <div dangerouslySetInnerHTML={{ __html: createSVG(ai, { imageDataByUrl: imageDataByUrlSvg }) }} />
+          {svgs.map((svg) => (
+            <img key={svg} src={svg} width="200px" style={{ height: "max-content" }} alt="Component geometry preview rendered as SVG" />
+          ))}
+        </div>
+        <div style={{ height: "600px", width: "100%", display: "flex" }}>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-            <Render
+            <Viewer
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
               scene={systemair}
-              orbitContolsProps={{ enableDamping: false }}
+              controls={{ enableDamping: false }}
               camera={camera}
               //onHoverGroup={(id) => setHovered(id)}
               popovers={undefined}
@@ -209,22 +215,22 @@ export function Abstract3DExample(): React.ReactNode {
             />
           </div>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-            <Render
+            <Viewer
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
               scene={vortice}
-              orbitContolsProps={{ enableDamping: false }}
+              controls={{ enableDamping: false }}
               camera={camera}
             />
           </div>
           <div style={{ height: "100%", width: "50%", display: "flex", flexDirection: "column" }}>
-            <Render
+            <Viewer
               selectedIds={selected ? { [selected]: true } : undefined}
               onClickGroup={(id) => setSelected(id)}
               createGroupId={(g) => g.data?.["id"] ?? ""}
               scene={demoWithDimensionIds}
-              orbitContolsProps={{ enableDamping: false }}
+              controls={{ enableDamping: false }}
               camera={camera}
             />
           </div>

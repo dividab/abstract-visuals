@@ -102,11 +102,11 @@ async function initCodecs(): Promise<Codecs> {
 async function readPackageFile(packageName: string, file: string): Promise<Uint8Array<ArrayBuffer>> {
   // Specifiers are held in variables so bundlers targeting the browser don't try to resolve these Node built-ins
   const [moduleSpecifier, fsSpecifier, pathSpecifier] = ["node:module", "node:fs/promises", "node:path"];
-  const [nodeModule, nodeFs, nodePath] = (await Promise.all([import(moduleSpecifier), import(fsSpecifier), import(pathSpecifier)])) as [
-    typeof NodeModule,
-    typeof NodeFs,
-    typeof NodePath,
-  ];
+  const [nodeModule, nodeFs, nodePath] = (await Promise.all([
+    import(/* @vite-ignore */ moduleSpecifier),
+    import(/* @vite-ignore */ fsSpecifier),
+    import(/* @vite-ignore */ pathSpecifier),
+  ])) as [typeof NodeModule, typeof NodeFs, typeof NodePath];
   const packageEntry = nodeModule.createRequire(import.meta.url).resolve(packageName);
   return new Uint8Array(await nodeFs.readFile(nodePath.join(nodePath.dirname(packageEntry), file)));
 }

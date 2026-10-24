@@ -12,6 +12,50 @@ Particle effects (airflow, smoke, rain, spray) come later, but the frame loop ha
 
 The other renderers (dxf, step, ifc, stl, svg) are unaffected.
 
+## Status (2026-10-24)
+
+Phases 0–4 are implemented: `src/renderers/three/` (the viewer), `src/renderers/react/react.tsx` (the wrapper), the r3f renderer deleted, the example app migrated. `pnpm test:abstract-3d` covers compile, appearance, geometry, text layout, build (batching, picking, repaint, animation, culling, dispose), camera fit and the quality governor. `pnpm bench:abstract-3d` measures the scene layer in Node, and `pnpm bench:abstract-3d:browser` frame times, draw calls and screenshots in headless Chromium.
+
+Measured in headless Chromium (software GPU, so CPU side only), systemair3:
+
+|                          | ×1  | ×4  | ×9  |
+| ------------------------ | --- | --- | --- |
+| Draw calls               | 40  | 40  | 40  |
+| CPU per frame (ms)       | 0.9 | 1.4 | 2.6 |
+| Hover update (ms)        | 0.3 | 0.6 | 1.2 |
+| Time until ready (ms)    | 478 | 410 | 175 |
+| JS heap once loaded (MB) | 39  | 41  | 44  |
+
+Draw calls include the viewcube's, which the renderer now draws: the scene took 14 when the viewcube was HTML.
+
+Where the implementation departs from this plan:
+
+- **Renderer:** the classic `WebGLRenderer` and GLSL, the classic stack below, so WebGL libraries run as they are: N8AO, `LineMaterial`, `three-viewport-gizmo` and `CSS2DRenderer`. `WebGPURenderer` cost about 230 lines of our own replacements for them. WebGPU waits until it's mature.
+- **Antialiasing with AO:** N8AO's scene render target is multisampled instead of SMAA, which lost the antialiased alpha of edges over the transparent background.
+- **Text:** our SDF atlas from the system font, in a `ShaderMaterial`, not troika, which needs a font file.
+- **Camera controls:** the 3.x OrbitControls only, with their refit behavior (at first, and for a new camera or canvas size), not camera-controls; two control implementations were redundant. Buffer zones use the ported view offset. The gizmo animates its own turns.
+- **API:** flat options with the 3.x prop names (`options.ts`) instead of the grouped options sketched below. `updateViewer` takes the options that changed and redoes what a static table says each one needs, batched into the next frame; telling what changed is the caller's, so the React wrapper passes each group of props from an effect, and compares the few that would refit, rebuild or recreate the gizmo by value. The viewer is plain state with module functions (`createViewer`, `updateViewer`, `invalidate`, `disposeViewer`), as is every module: no closure factories.
+- **Fallback:** rendered by the React wrapper until the viewer's `onLoad`, not by the viewer.
+- **Layout:** a folder per concern, each with its source and tests: `compile`, `appearance`, `geometry`, `text`, `build` (parts, materials), `camera` (controls, gizmo), `quality` and `viewer` (options, overlays).
+
+## Sources
+
+- **Batching:** three.js `BatchedMesh` and its `webgpu_mesh_batch` example; per-instance color as in three's `InstancedMesh` examples.
+- **Text:** signed distance field glyphs from the system font with an atlas, the approach of Mapbox GL JS, through its `@mapbox/tiny-sdf`; layout constants (line height 1.5, centered anchors) from drei's `Text` (troika).
+- **Camera fit, buffer zones, gizmo reset and pausing hover while orbiting:** the r3f renderer's `react-camera.tsx`, ported as it was.
+- **Gizmo:** `three-viewport-gizmo`, with the options of drei's `GizmoViewcube` and `GizmoViewport` mapped to it.
+- **Ambient occlusion:** N8AO through three's `EffectComposer`, configured as the r3f renderer's; AO only at rest, faded in, after progressive viewers such as Sketchfab's.
+- **Render on demand and batched updates:** r3f's `frameloop="demand"`, r3f applying props in the next frame, and three's `OrbitControls` damping loop.
+- **Overlays:** three's `CSS2DRenderer`, as drei's `Html` places elements.
+- **Lines:** three.js `LineSegments2` with `LineMaterial`; culled dimension lines as the r3f renderer's shader did, on the CPU per camera move.
+
+Not done yet:
+
+- `high` tier extras: OIT, TRAA at rest and the selection outline; `high` is AO while moving too.
+- The effect hook (`addEffect`), pausing when offscreen, `buildScene` without batching for `GLTFExporter`.
+- Frame times on a weak GPU, and the memory baseline check after scene swaps in the browser.
+- The 4.0.0 version bump, at release.
+
 ## Why raw three.js
 
 - **The measured gains come from building the scene imperatively,** not from React. The PoC's numbers (systemair3, 1,247 meshes, below) are the floor; batching goes further.
