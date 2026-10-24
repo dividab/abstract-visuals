@@ -132,6 +132,8 @@ export function createViewer<Content>(container: HTMLElement, options: ViewerOpt
     disposed: false,
   };
   v.scene.add(v.lights);
+  // Loaded while the first frame builds the scene
+  loadStudio(v).catch(() => undefined);
   const signal = { signal: v.listeners.signal };
   canvas.addEventListener("pointermove", (e) => onPointerMove(v, e), signal);
   canvas.addEventListener("pointerleave", (e) => setHovered(v, undefined, e), signal);
@@ -500,7 +502,6 @@ function updateLights<Content>(v: Viewer<Content>): void {
   v.lights.clear();
   (typeof lights === "function" ? (scene ? lights(scene) : []) : (lights ?? [])).forEach((o) => v.lights.add(o));
   v.scene.environmentIntensity = environmentIntensity;
-  loadStudio(v).catch(() => undefined);
 }
 
 /** The studio, loaded once, its own chunk; set when it arrives, so the scene's shaders are compiled after it, with it */
@@ -508,6 +509,10 @@ function loadStudio<Content>(v: Viewer<Content>): Promise<unknown> {
   v.studio.loading ??= import("../environment/studio.js")
     .then(({ loadStudio: load }) => load())
     .then((texture) => {
+      if (v.disposed) {
+        texture.dispose();
+        return texture;
+      }
       v.studio.texture = texture;
       v.scene.environment = texture;
       invalidate(v);
@@ -538,7 +543,7 @@ function updateOverlays<Content>(v: Viewer<Content>): void {
 }
 
 /** The studio's share of the light, the key light giving the rest, so the key light's shadows show */
-const studioIntensity = 0.5;
+const studioIntensity = 0.8;
 
 const raycaster = new Raycaster();
 const ndc = new Vector2();

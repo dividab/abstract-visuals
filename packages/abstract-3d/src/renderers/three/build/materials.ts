@@ -40,10 +40,10 @@ export function createClassMaterial(c: MaterialClass): Material {
  */
 const finishes: Record<MaterialType, MeshPhysicalMaterialParameters> = {
   painted: { metalness: 0, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.25 },
-  galvanized: { metalness: 0.85, roughness: 0.55, envMapIntensity: 1.6 },
-  aluminum: { metalness: 0.9, roughness: 0.4, envMapIntensity: 1.6 },
-  stainless: { metalness: 1, roughness: 0.25, envMapIntensity: 1.5 },
-  copper: { metalness: 1, roughness: 0.3, envMapIntensity: 1.3 },
+  galvanized: { metalness: 0.85, roughness: 0.55, envMapIntensity: 1.2 },
+  aluminum: { metalness: 0.9, roughness: 0.4, envMapIntensity: 1.2 },
+  stainless: { metalness: 1, roughness: 0.25, envMapIntensity: 1.2 },
+  copper: { metalness: 1, roughness: 0.3, envMapIntensity: 1.2 },
   plastic: { metalness: 0, roughness: 0.55 },
   rubber: { metalness: 0, roughness: 0.9 },
   fabric: { metalness: 0, roughness: 1, sheen: 1, sheenRoughness: 0.8, sheenColor: 0x888888 },

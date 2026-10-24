@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
-## [4.0.0-beta.7] - 2026-10-24
+## [4.0.0-beta.8] - 2026-10-24
 
 - Changed (breaking): the react renderer is rewritten on plain three.js, without `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` and `suspend-react`. The new `abstract-3d/three` entry is the viewer without React (`createViewer`), and `abstract-3d/react` is a thin component around it. Solids of the same material are drawn as one batch, so a scene takes about a dozen draw calls whatever its size, and hover and selection repaint instance colors instead of re-rendering components
 
@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file. The format 
 
 - Added: `radius` on `Box`, which rounds its edges, e.g. by the bend of sheet metal. The three.js viewer shades the edges of boxes without holes as rounded by it, at least two pixels wide so far edges stay smooth, without extra geometry; the other renderers draw boxes sharp as before
 
-- Added: shadows of the solids on themselves, e.g. under a roof or behind a profile, cast by a key light from the upper left front that lights the scene together with the studio, whose share is half by default (`environmentIntensity`). Its shadow map is rendered once per scene, or each frame while something animates; transparent solids, e.g. glass, don't cast. Turn them off with `shadows={false}`, or for a material's solids with `castShadow: false` on it, e.g. for symbols and markers, which then cast neither these nor the ground shadow
+- Added: shadows of the solids on themselves, e.g. under a roof or behind a profile, cast by a key light from the upper left front that lights the scene together with the studio (`environmentIntensity`, 0.8 by default). They're soft, letting some of the key light through, so faces under an overhang aren't black. Its shadow map is rendered once per scene, or each frame while something animates; transparent solids, e.g. glass, don't cast. Turn them off with `shadows={false}`, or for a material's solids with `castShadow: false` on it, e.g. for symbols and markers, which then cast neither these nor the ground shadow
 
 - Added: a soft shadow on the ground under the scene, in a faint pool of light so it also shows on dark backgrounds, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
 

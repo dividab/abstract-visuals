@@ -43,7 +43,7 @@ export type ViewerOptions<Content> = {
   readonly gizmo?: ControlsHelper;
   /** Lights added to the photographed studio and key light that light the scene; none by default */
   readonly lights?: ReadonlyArray<Object3D> | ((scene: Scene) => ReadonlyArray<Object3D>);
-  /** Of the studio's light, 0.5 by default, the key light giving the rest */
+  /** Of the studio's light, 0.8 by default, the key light giving the rest */
   readonly environmentIntensity?: number;
   /** A soft shadow on the ground under the scene, rendered once per build; on by default */
   readonly groundShadow?: boolean;
