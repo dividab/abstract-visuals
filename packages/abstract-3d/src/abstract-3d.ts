@@ -276,6 +276,11 @@ export type Box = {
   readonly rot?: Vec3;
   readonly size: Vec3;
   readonly holes?: ReadonlyArray<Hole>;
+  /**
+   * Rounds the edges by this radius, e.g. the bend of sheet metal; drawn by the three.js viewer, which shades the edges of boxes without holes as
+   * rounded
+   */
+  readonly radius?: number;
 };
 
 export type Hole = RoundHole | SquareHole;
@@ -931,8 +936,15 @@ export const boxGeometry = (size: Vec3, pos: Vec3 = vec3Zero, rot = vec3Zero, ho
   size,
   holes,
 });
-export const box = (size: Vec3, material: Material, pos: Vec3 = vec3Zero, rot = vec3Zero, holes: ReadonlyArray<Hole> = []): BoxMesh => ({
-  geometry: { type: "Box", pos, rot, size, holes },
+export const box = (
+  size: Vec3,
+  material: Material,
+  pos: Vec3 = vec3Zero,
+  rot = vec3Zero,
+  holes: ReadonlyArray<Hole> = [],
+  radius?: number
+): BoxMesh => ({
+  geometry: { type: "Box", pos, rot, size, holes, ...(radius === undefined ? {} : { radius }) },
   material,
 });
 export const image = (size: Vec3, material: Material, image: ImageMesh["image"], pos: Vec3 = vec3Zero, rot: Vec3 = vec3Zero): Mesh => ({

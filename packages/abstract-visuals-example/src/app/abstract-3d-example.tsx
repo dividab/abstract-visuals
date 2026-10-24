@@ -17,6 +17,7 @@ import { demo } from "./generated/demo.js";
 import { componentGeometries } from "./generated/double-view-component-geometries.js";
 import { systemair } from "./generated/systemair.js";
 import { vortice } from "./generated/vortice.js";
+import { roundBoxes } from "./round-boxes.js";
 import { templateScene } from "./template-scene.js";
 import { getThemedScene, ThemeContext } from "./theme.js";
 
@@ -49,9 +50,9 @@ export function Abstract3DExample(): React.ReactNode {
   const theme = React.useContext(ThemeContext);
   const themed = React.useMemo(
     () => ({
-      systemair: getThemedScene(systemair, theme),
-      vortice: getThemedScene(vortice, theme),
-      demo: getThemedScene(demoWithDimensionIds, theme),
+      systemair: getThemedScene(roundBoxes(systemair), theme),
+      vortice: getThemedScene(roundBoxes(vortice), theme),
+      demo: getThemedScene(roundBoxes(demoWithDimensionIds), theme),
     }),
     [theme]
   );

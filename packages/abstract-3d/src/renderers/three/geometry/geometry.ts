@@ -42,7 +42,7 @@ export function getSolidShape(g: Mesh["geometry"]): SolidShape | undefined {
       const size = g.type === "Box" ? g.size : vec3(g.size.x, g.size.y, 1);
       return g.holes?.some((h) => !holeIsZero(h))
         ? { key: JSON.stringify([g.type, g.size, g.holes]), local: transform(g.pos, g.rot) }
-        : { key: g.type, local: transform(g.pos, g.rot, undefined, size) };
+        : { key: g.type === "Box" && g.radius ? `Box ${g.radius}` : g.type, local: transform(g.pos, g.rot, undefined, size) };
     }
     case "Image":
       return { key: "Plane", local: transform(g.pos, g.rot, undefined, vec3(g.size.x, g.size.y, 1)) };
@@ -86,8 +86,11 @@ export function createSolidGeometry(g: Mesh["geometry"]): BufferGeometry {
   if (!geometry.hasAttribute("uv")) {
     geometry.setAttribute("uv", new Float32BufferAttribute(new Float32Array(count * 2), 2));
   }
+  // The radius a unit box's edges are shaded as rounded by, 0 for sharp; every geometry has it, as a batch's geometries share their attributes
+  const radius = geometry instanceof BoxGeometry && g.type === "Box" ? (g.radius ?? 0) : 0;
+  geometry.setAttribute("bevel", new Float32BufferAttribute(new Float32Array(count).fill(radius), 1));
   Object.keys(geometry.attributes).forEach((name) => {
-    if (name !== "position" && name !== "normal" && name !== "uv") {
+    if (name !== "position" && name !== "normal" && name !== "uv" && name !== "bevel") {
       geometry.deleteAttribute(name);
     }
   });

@@ -22,7 +22,65 @@ import { ERROR_IMG_KEY } from "../appearance/appearance.js";
 export function createClassMaterial(c: MaterialClass): Material {
   const side = c.side === "front" ? FrontSide : c.side === "back" ? BackSide : DoubleSide;
   const common = { side, transparent: c.transparent, depthWrite: !c.transparent };
-  return c.lit ? new MeshStandardMaterial({ ...common, metalness: c.metalness, roughness: c.roughness }) : new MeshBasicMaterial(common);
+  return c.lit
+    ? Object.assign(new MeshStandardMaterial({ ...common, metalness: c.metalness, roughness: c.roughness }), { onBeforeCompile: roundEdges })
+    : new MeshBasicMaterial(common);
+}
+
+/**
+ * Shades the edges of boxes with a radius as rounded by it, so they catch light and reflections: the normal of a rounded box of the same size, from
+ * the signed distance function of a rounded box (Inigo Quilez's sdRoundBox), is used at each point of the sharp one. No extra geometry, and the
+ * radius stays the same along every edge, as boxes are one unit cube scaled to their size. Only the outline stays sharp
+ */
+function roundEdges(shader: { vertexShader: string; fragmentShader: string }): void {
+  shader.vertexShader = shader.vertexShader
+    .replace(
+      "#include <common>",
+      `#include <common>
+attribute float bevel;
+varying float vBevel;
+varying vec3 vBoxPoint;
+varying vec3 vBoxHalf;
+varying mat3 vBoxRotation;`
+    )
+    .replace(
+      "#include <batching_vertex>",
+      `#include <batching_vertex>
+#ifdef USE_BATCHING
+  vec3 boxSize = vec3( length( batchingMatrix[ 0 ].xyz ), length( batchingMatrix[ 1 ].xyz ), length( batchingMatrix[ 2 ].xyz ) );
+  mat3 boxRotation = mat3( batchingMatrix[ 0 ].xyz / boxSize.x, batchingMatrix[ 1 ].xyz / boxSize.y, batchingMatrix[ 2 ].xyz / boxSize.z );
+#else
+  vec3 boxSize = vec3( 1.0 );
+  mat3 boxRotation = mat3( 1.0 );
+#endif
+  // From the box's own axes to view space, where the fragment shader's normal is
+  vBoxRotation = normalMatrix * boxRotation;
+  vBevel = bevel;
+  vBoxHalf = boxSize * 0.5;
+  vBoxPoint = position * boxSize;`
+    );
+  shader.fragmentShader = shader.fragmentShader
+    .replace(
+      "#include <common>",
+      `#include <common>
+varying float vBevel;
+varying vec3 vBoxPoint;
+varying vec3 vBoxHalf;
+varying mat3 vBoxRotation;`
+    )
+    .replace(
+      "#include <normal_fragment_maps>",
+      `#include <normal_fragment_maps>
+if ( vBevel > 0.0 ) {
+  // At least a pixel wide, so a rounded edge far away is a soft line instead of a jagged sub-pixel highlight, and at most half the box
+  vec3 pixel = fwidth( vBoxPoint );
+  float radius = min( max( vBevel, max( pixel.x, max( pixel.y, pixel.z ) ) ), min( vBoxHalf.x, min( vBoxHalf.y, vBoxHalf.z ) ) );
+  vec3 rounded = sign( vBoxPoint ) * max( abs( vBoxPoint ) - ( vBoxHalf - radius ), 0.0 );
+  if ( dot( rounded, rounded ) > 0.0 ) {
+    normal = normalize( vBoxRotation * normalize( rounded ) ) * faceDirection;
+  }
+}`
+    );
 }
 
 export function createImageMaterial(backfaceCulling: boolean | undefined, useAlphaTest: boolean): MeshBasicMaterial {

@@ -17,6 +17,8 @@ const bounds = (mesh: Mesh): ReadonlyArray<number> => {
   return [...geometry.boundingBox!.min.toArray(), ...geometry.boundingBox!.max.toArray()].map((v) => Math.round(v * 1000) / 1000 + 0);
 };
 
+const bevel = (mesh: Mesh): ReadonlyArray<number> => [...new Set(createSolidGeometry(mesh.geometry).getAttribute("bevel").array)];
+
 describe("getSolidShape", () => {
   it("shares unit geometries between primitives of any size, scaled by the local matrix", () => {
     expect(key(box(vec3(1, 2, 3), m))).toBe(key(box(vec3(4, 5, 6), m)));
@@ -74,8 +76,20 @@ describe("createSolidGeometry", () => {
     meshes.forEach((mesh) => {
       const geometry = createSolidGeometry(mesh.geometry);
       expect(geometry.index!.count).toBeGreaterThan(0);
-      expect(Object.keys(geometry.attributes).sort()).toEqual(["normal", "position", "uv"]);
+      expect(Object.keys(geometry.attributes).sort()).toEqual(["bevel", "normal", "position", "uv"]);
     });
+  });
+
+  it("gives boxes with a radius it as the radius their edges are shaded rounded by, with a geometry per radius", () => {
+    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4))).toEqual([4]);
+    expect(key(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4))).toBe(key(box(vec3(9, 9, 9), m, vec3Zero, vec3Zero, [], 4)));
+    expect(key(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4))).not.toBe(key(box(vec3(1, 1, 1), m)));
+  });
+
+  it("keeps boxes without a radius, with holes, and other shapes sharp", () => {
+    expect(bevel(box(vec3(1, 1, 1), m))).toEqual([0]);
+    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [roundHole(vec2(0, 0), 0.1)], 4))).toEqual([0]);
+    expect(bevel(sphere(1, m))).toEqual([0]);
   });
 });
 

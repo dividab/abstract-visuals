@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file. The format 
 
 - Changed: the scene is lit by a photographed studio, Poly Haven's Studio Small 08 HDRI (CC0), which lights faces by which way they turn and gives metal and glass real reflections, instead of a strong ambient light that lit every face alike and directional lights. It's bundled, about 350 kB gzipped, and loaded on demand by the 3D viewer only
 
+- Added: `radius` on `Box`, which rounds its edges, e.g. by the bend of sheet metal. The three.js viewer shades the edges of boxes without holes as rounded by it, at least a pixel wide so far edges stay smooth, without extra geometry; the other renderers draw boxes sharp as before
+
 - Added: a soft shadow on the ground under the scene, in a faint pool of light so it also shows on dark backgrounds, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
 
 - Removed (breaking): ambient occlusion. The new `quality` prop sets the resolution instead: `"high"`, the default, renders at the screen's pixel ratio as 3.x did, `"medium"` at up to 1.5 and `"low"` at 1 pixel per CSS pixel, and `"auto"` starts at high and drops to low once moving gets slow

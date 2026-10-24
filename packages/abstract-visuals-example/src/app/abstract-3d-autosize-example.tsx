@@ -7,6 +7,7 @@ import { systemair4 } from "./generated/systemair-4.js";
 import { systemair5 } from "./generated/systemair-5.js";
 import { systemair6 } from "./generated/systemair-6.js";
 import { systemair } from "./generated/systemair.js";
+import { roundBoxes } from "./round-boxes.js";
 import { getThemedScene, ThemeContext } from "./theme.js";
 
 const sceneFallback = <div>Loading</div>;
@@ -85,7 +86,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   })();
 
   const theme = React.useContext(ThemeContext);
-  const themedModel = React.useMemo(() => getThemedScene(selectedModel, theme), [selectedModel, theme]);
+  const themedModel = React.useMemo(() => getThemedScene(roundBoxes(selectedModel), theme), [selectedModel, theme]);
 
   return (
     <div
