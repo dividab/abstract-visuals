@@ -44,12 +44,12 @@ const floorLight = 0.06;
 /** The pool's reach beyond the solids, of their height */
 const floorReach = 1;
 
-/** The batches of solids that cast shadows, with their bounds: not text, lines, images or dimensions */
+/** The batches of solids that cast shadows, with their bounds: opaque ones whose material doesn't turn it off, not text, lines, images or dimensions */
 export function getShadowCasters(built: BuiltScene): { readonly casters: ReadonlyArray<BatchedMesh>; readonly bounds: Box3 } {
   const casters: Array<BatchedMesh> = [];
   const bounds = new Box3();
   built.parts.forEach((part) => {
-    if (part.kind === "solid" && part.object.parent !== built.dimensions && part.object.boundingBox) {
+    if (part.kind === "solid" && part.object.castShadow && part.object.parent !== built.dimensions && part.object.boundingBox) {
       casters.push(part.object);
       bounds.union(part.object.boundingBox);
     }

@@ -202,7 +202,7 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
     if (v.keyLight) {
       disposeKeyLight(v.keyLight);
     }
-    v.keyLight = v.built && options.shadows !== false ? createKeyLight(v.built) : undefined;
+    v.keyLight = v.built ? createKeyLight(v.built, options.shadows !== false) : undefined;
     if (v.keyLight) {
       v.scene.add(v.keyLight);
     }
@@ -496,7 +496,7 @@ function getGroupArgs<Content>(
 
 /** The scene is lit by a photographed studio as its environment; apps can add their own lights */
 function updateLights<Content>(v: Viewer<Content>): void {
-  const { scene, lights, environmentIntensity = 1 } = v.options;
+  const { scene, lights, environmentIntensity = studioIntensity } = v.options;
   v.lights.clear();
   (typeof lights === "function" ? (scene ? lights(scene) : []) : (lights ?? [])).forEach((o) => v.lights.add(o));
   v.scene.environmentIntensity = environmentIntensity;
@@ -536,6 +536,9 @@ function updateOverlays<Content>(v: Viewer<Content>): void {
   }
   setOverlays(v.overlays, overlays, options.onOverlays);
 }
+
+/** The studio's share of the light, the key light giving the rest, so the key light's shadows show */
+const studioIntensity = 0.5;
 
 const raycaster = new Raycaster();
 const ndc = new Vector2();

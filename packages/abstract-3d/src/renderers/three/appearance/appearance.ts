@@ -37,6 +37,8 @@ export type MaterialClass = {
   readonly roughness: number;
   readonly side: "front" | "back" | "double";
   readonly transparent: boolean;
+  /** Opaque solids whose material doesn't turn it off cast shadows */
+  readonly castShadow: boolean;
 };
 
 /** Bit flags of how a target is highlighted, so only targets whose highlight changed need a repaint */
@@ -53,7 +55,7 @@ const stateMaterials: Record<MaterialState, Material> = {
   Error: { normal: "#b82f3a", metalness: 0.5, roughness: 0.5 },
   Warning: { normal: "rgb(240, 197, 48)", metalness: 0.5, roughness: 0.5 },
 };
-const unlit = { lit: false, metalness: 0, roughness: 1, transparent: false } as const;
+const unlit = { lit: false, metalness: 0, roughness: 1, transparent: false, castShadow: false } as const;
 /** Of glass without an opacity of its own */
 const glassOpacity = 0.25;
 
@@ -83,6 +85,7 @@ export function getMaterialClass(item: Item, { materialState, disabled }: Target
         ...(type ? { type, metalness: 0, roughness: 0 } : { metalness: mat.metalness ?? 0, roughness: mat.roughness ?? 1 }),
         side: item.role === "text" || material.backfaceCulling ? "front" : "double",
         transparent: getOpacity(material) < 1 || disabled,
+        castShadow: item.role === "solid" && getOpacity(material) === 1 && !disabled && material.castShadow !== false,
       };
     }
   }

@@ -232,7 +232,10 @@ function createPart(
         return { geometry, local: shape.local };
       });
       if (first.role === "solid") {
-        return createSolidPart(entries, createClassMaterial(getMaterialClass(first, targetStates[first.target]!)));
+        const c = getMaterialClass(first, targetStates[first.target]!);
+        const part = createSolidPart(entries, createClassMaterial(c));
+        Object.assign(part.object, { castShadow: c.castShadow, receiveShadow: c.lit });
+        return part;
       }
       // Images are hidden until their texture loads
       const part = createImagePart(

@@ -20,6 +20,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [quality, setQuality] = React.useState<React3Js.Quality>("high");
   const [groundShadow, setGroundShadow] = React.useState(true);
   const [typed, setTyped] = React.useState(true);
+  const [shadows, setShadows] = React.useState(true);
 
   const camera = React.useMemo((): React3Js.Camera => {
     if (cameraType === "Orthographic") {
@@ -153,6 +154,15 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         </div>
         <div style={{ padding: 8 }}>
           <label>
+            Self shadows:
+            <select value={shadows ? "on" : "off"} onChange={(e) => setShadows(e.target.value === "on")} style={{ marginLeft: 8 }}>
+              <option value="on">On</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+        </div>
+        <div style={{ padding: 8 }}>
+          <label>
             Material types:
             <select value={typed ? "on" : "off"} onChange={(e) => setTyped(e.target.value === "on")} style={{ marginLeft: 8 }}>
               <option value="on">On</option>
@@ -246,6 +256,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
           fitPadding={0.15}
           quality={quality}
           groundShadow={groundShadow}
+          shadows={shadows}
           scene={themedModel}
           showDimensions={true}
           camera={camera}

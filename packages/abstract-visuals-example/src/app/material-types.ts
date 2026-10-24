@@ -1,6 +1,9 @@
 import type { Group, Material, MaterialType, Scene } from "../../../abstract-3d/src/abstract-3d.js";
 
-/** The example scenes' materials typed by the name the material database gives them, as the data will carry the type itself */
+/**
+ * The example scenes' materials typed by the name the material database gives them, and abstract parts, e.g. symbols, markers and air arrows, kept
+ * from casting shadows, as the data will say both itself
+ */
 
 const typesByName: Record<string, MaterialType> = {
   panel: "painted",
@@ -48,6 +51,8 @@ const typesByName: Record<string, MaterialType> = {
   menerga_transparent2: "glass",
 };
 
+const abstractNames = new Set(["image", "hot_spot", "supply_air", "outdoor_air", "extract_air", "exhaust_air"]);
+
 export function assignMaterialTypes(scene: Scene): Scene {
   return { ...scene, groups: scene.groups.map(assignGroup) };
 }
@@ -56,8 +61,13 @@ function assignGroup(g: Group): Group {
   return {
     ...g,
     meshes: g.meshes?.map((m) => {
-      const type = typesByName[(m.material as Material & { readonly name?: string }).name ?? ""];
-      return type ? { ...m, material: { ...m.material, type } } : m;
+      const name = (m.material as Material & { readonly name?: string }).name ?? "";
+      const type = typesByName[name];
+      return type
+        ? { ...m, material: { ...m.material, type } }
+        : abstractNames.has(name)
+          ? { ...m, material: { ...m.material, castShadow: false } }
+          : m;
     }),
     groups: g.groups?.map(assignGroup),
   };

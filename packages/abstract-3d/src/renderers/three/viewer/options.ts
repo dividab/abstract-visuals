@@ -41,13 +41,13 @@ export type ViewerOptions<Content> = {
   readonly fitPadding?: number;
   readonly controls?: ControlsOptions;
   readonly gizmo?: ControlsHelper;
-  /** Lights added to the photographed studio that lights the scene; none by default */
+  /** Lights added to the photographed studio and key light that light the scene; none by default */
   readonly lights?: ReadonlyArray<Object3D> | ((scene: Scene) => ReadonlyArray<Object3D>);
-  /** Of the studio's light */
+  /** Of the studio's light, 0.5 by default, the key light giving the rest */
   readonly environmentIntensity?: number;
   /** A soft shadow on the ground under the scene, rendered once per build; on by default */
   readonly groundShadow?: boolean;
-  /** The solids' shadows on themselves, e.g. under a roof, from a key light on top of the studio's light; on by default */
+  /** The solids' shadows on themselves, e.g. under a roof, cast by the key light from the upper left front; on by default */
   readonly shadows?: boolean;
   /** The resolution: `low` 1 and `medium` up to 1.5 pixels per CSS pixel, `high`, the default, the screen's; `auto` high until moving gets slow */
   readonly quality?: Quality;

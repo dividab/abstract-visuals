@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file. The format 
 
 - Added: `radius` on `Box`, which rounds its edges, e.g. by the bend of sheet metal. The three.js viewer shades the edges of boxes without holes as rounded by it, at least two pixels wide so far edges stay smooth, without extra geometry; the other renderers draw boxes sharp as before
 
+- Added: shadows of the solids on themselves, e.g. under a roof or behind a profile, cast by a key light from the upper left front that lights the scene together with the studio, whose share is half by default (`environmentIntensity`). Its shadow map is rendered once per scene, or each frame while something animates; transparent solids, e.g. glass, don't cast. Turn them off with `shadows={false}`, or for a material's solids with `castShadow: false` on it, e.g. for symbols and markers, which then cast neither these nor the ground shadow
+
 - Added: a soft shadow on the ground under the scene, in a faint pool of light so it also shows on dark backgrounds, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
 
 - Removed (breaking): ambient occlusion. The new `quality` prop sets the resolution instead: `"high"`, the default, renders at the screen's pixel ratio as 3.x did, `"medium"` at up to 1.5 and `"low"` at 1 pixel per CSS pixel, and `"auto"` starts at high and drops to low once moving gets slow

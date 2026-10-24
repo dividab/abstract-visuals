@@ -46,8 +46,16 @@ describe("getMaterialClass", () => {
       roughness: 0.7,
       side: "double",
       transparent: false,
+      castShadow: true,
     });
     expect(classify(solid({ normal: red, backfaceCulling: true }), group)).toMatchObject({ side: "front", metalness: 0, roughness: 1 });
+  });
+
+  it("casts shadows from opaque solids unless their material turns it off, e.g. for symbols", () => {
+    expect(classify(solid({ normal: red, castShadow: false }), group).castShadow).toBe(false);
+    expect(classify(solid({ normal: red, opacity: 0.5 }), group).castShadow).toBe(false);
+    expect(classify(solid({ normal: red }), group, { relationsActive: true }).castShadow).toBe(false);
+    expect(classify(solid({ normal: red }, "relation"), relation, { relationsActive: true }).castShadow).toBe(false);
   });
 
   it("gives solids of a type its finish, in one class whatever their metalness and roughness, unless a material state replaces it", () => {
