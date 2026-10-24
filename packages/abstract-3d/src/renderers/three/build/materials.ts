@@ -34,16 +34,17 @@ export function createClassMaterial(c: MaterialClass): Material {
 }
 
 /**
- * The physical finish of each type of surface, in the material's color: metals reflect their color, brighter than physical, as product renders light
- * metals, since the studio around them is dark; the others are dielectrics with a white reflection; painted sheet has a light clearcoat, fabric a
- * soft sheen. Glass is a thin, smooth, mostly see-through surface, not refracting, which would render the scene once more each frame
+ * The physical finish of each type of surface, in the material's color: metals reflect their color; galvanized and aluminum sheet keep some of their
+ * color diffuse, so faces that mirror the studio's dark surroundings aren't black; the others are dielectrics with a white reflection; painted sheet
+ * has a light clearcoat, fabric a soft sheen. Glass is a thin, smooth, mostly see-through surface, not refracting, which would render the scene once
+ * more each frame
  */
 const finishes: Record<MaterialType, MeshPhysicalMaterialParameters> = {
   painted: { metalness: 0, roughness: 0.45, clearcoat: 0.3, clearcoatRoughness: 0.25 },
-  galvanized: { metalness: 0.85, roughness: 0.55, envMapIntensity: 1.2 },
-  aluminum: { metalness: 0.9, roughness: 0.4, envMapIntensity: 1.2 },
-  stainless: { metalness: 1, roughness: 0.25, envMapIntensity: 1.2 },
-  copper: { metalness: 1, roughness: 0.3, envMapIntensity: 1.2 },
+  galvanized: { metalness: 0.6, roughness: 0.6 },
+  aluminum: { metalness: 0.7, roughness: 0.45 },
+  stainless: { metalness: 1, roughness: 0.3 },
+  copper: { metalness: 1, roughness: 0.35 },
   plastic: { metalness: 0, roughness: 0.55 },
   rubber: { metalness: 0, roughness: 0.9 },
   fabric: { metalness: 0, roughness: 1, sheen: 1, sheenRoughness: 0.8, sheenColor: 0x888888 },
@@ -53,15 +54,17 @@ const finishes: Record<MaterialType, MeshPhysicalMaterialParameters> = {
 /**
  * Shades the edges of boxes with a radius as rounded by it, so they catch light and reflections: the normal of a rounded box of the same size, from
  * the signed distance function of a rounded box (Inigo Quilez's sdRoundBox), is used at each point of the sharp one. No extra geometry, and the
- * radius stays the same along every edge, as boxes are one unit cube scaled to their size. Only the outline stays sharp
+ * radius stays the same along every edge, as boxes are one unit cube scaled to their size. Only the box's rounded edges bend; the outline stays
+ * sharp
  */
 function roundEdges(shader: { vertexShader: string; fragmentShader: string }): void {
   shader.vertexShader = shader.vertexShader
     .replace(
       "#include <common>",
       `#include <common>
-attribute float bevel;
+attribute vec2 bevel;
 varying float vBevel;
+flat varying int vEdges;
 varying vec3 vBoxPoint;
 varying vec3 vBoxHalf;
 varying mat3 vBoxRotation;`
@@ -78,7 +81,8 @@ varying mat3 vBoxRotation;`
 #endif
   // From the box's own axes to view space, where the fragment shader's normal is
   vBoxRotation = normalMatrix * boxRotation;
-  vBevel = bevel;
+  vBevel = bevel.x;
+  vEdges = int( bevel.y );
   vBoxHalf = boxSize * 0.5;
   vBoxPoint = position * boxSize;`
     );
@@ -87,6 +91,7 @@ varying mat3 vBoxRotation;`
       "#include <common>",
       `#include <common>
 varying float vBevel;
+flat varying int vEdges;
 varying vec3 vBoxPoint;
 varying vec3 vBoxHalf;
 varying mat3 vBoxRotation;`
@@ -94,15 +99,42 @@ varying mat3 vBoxRotation;`
     .replace(
       "#include <normal_fragment_maps>",
       `#include <normal_fragment_maps>
+float edgeShade = 1.0;
 if ( vBevel > 0.0 ) {
-  // At least 2 pixels wide, so a rounded edge far away is a soft line instead of a jagged sub-pixel highlight, and at most half the box
+  // At least 2 pixels wide, so a rounded edge far away is a soft line instead of a jagged sub-pixel highlight, and at most half the box; a radius
+  // smaller than that bends the normal only partly, so far edges don't catch more light than their size
   vec3 pixel = fwidth( vBoxPoint );
-  float radius = min( max( vBevel, 2.0 * max( pixel.x, max( pixel.y, pixel.z ) ) ), min( vBoxHalf.x, min( vBoxHalf.y, vBoxHalf.z ) ) );
-  vec3 rounded = sign( vBoxPoint ) * max( abs( vBoxPoint ) - ( vBoxHalf - radius ), 0.0 );
+  float minRadius = 2.0 * max( pixel.x, max( pixel.y, pixel.z ) );
+  float radius = min( max( vBevel, minRadius ), min( vBoxHalf.x, min( vBoxHalf.y, vBoxHalf.z ) ) );
+  float bend = min( vBevel / minRadius, 1.0 );
+  vec3 near = max( abs( vBoxPoint ) - ( vBoxHalf - radius ), 0.0 );
+  // Whether the edge along x, y and z here is rounded, its bit by which sides it's between, as boxEdges orders them
+  ivec3 high = ivec3( greaterThan( vBoxPoint, vec3( 0.0 ) ) );
+  bvec3 edge = notEqual( ( ivec3( vEdges ) >> ( ivec3( 0, 4, 8 ) + high.yxx + 2 * high.zzy ) ) & 1, ivec3( 0 ) );
+  // An axis bends where the edge between its side and another side near the point is rounded
+  vec3 bends = vec3(
+    ( edge.z && near.y > 0.0 ) || ( edge.y && near.z > 0.0 ),
+    ( edge.z && near.x > 0.0 ) || ( edge.x && near.z > 0.0 ),
+    ( edge.y && near.x > 0.0 ) || ( edge.x && near.y > 0.0 )
+  );
+  vec3 rounded = sign( vBoxPoint ) * near * bends;
   if ( dot( rounded, rounded ) > 0.0 ) {
-    normal = normalize( vBoxRotation * normalize( rounded ) ) * faceDirection;
+    normal = normalize( mix( normal, normalize( vBoxRotation * normalize( rounded ) ) * faceDirection, bend ) );
   }
+  // Light doesn't reach into the groove where rounded edges meet, so parts show where they start and end, also far away: how far into the edge
+  // a point is, from the face to its outermost line, is the bend of the axes other than the face's, which is bent by the whole radius
+  vec3 bent = abs( rounded );
+  float depth = min( ( bent.x + bent.y + bent.z - max( bent.x, max( bent.y, bent.z ) ) ) / radius, 1.0 );
+  edgeShade = 1.0 - 0.4 * depth * depth;
 }`
+    )
+    .replace(
+      "#include <aomap_fragment>",
+      `#include <aomap_fragment>
+reflectedLight.directDiffuse *= edgeShade;
+reflectedLight.directSpecular *= edgeShade;
+reflectedLight.indirectDiffuse *= edgeShade;
+reflectedLight.indirectSpecular *= edgeShade;`
     )
     .replace(
       "#include <clearcoat_normal_fragment_maps>",

@@ -17,7 +17,12 @@ const bounds = (mesh: Mesh): ReadonlyArray<number> => {
   return [...geometry.boundingBox!.min.toArray(), ...geometry.boundingBox!.max.toArray()].map((v) => Math.round(v * 1000) / 1000 + 0);
 };
 
-const bevel = (mesh: Mesh): ReadonlyArray<number> => [...new Set(createSolidGeometry(mesh.geometry).getAttribute("bevel").array)];
+/** The radius and joined sides' bits, the same for every vertex */
+const bevel = (mesh: Mesh): ReadonlyArray<number> => {
+  const attribute = createSolidGeometry(mesh.geometry).getAttribute("bevel");
+  const pairs = new Set(Array.from({ length: attribute.count }, (_, i) => `${attribute.getX(i)} ${attribute.getY(i)}`));
+  return [...pairs].flatMap((pair) => pair.split(" ").map(Number));
+};
 
 describe("getSolidShape", () => {
   it("shares unit geometries between primitives of any size, scaled by the local matrix", () => {
@@ -81,15 +86,22 @@ describe("createSolidGeometry", () => {
   });
 
   it("gives boxes with a radius it as the radius their edges are shaded rounded by, with a geometry per radius", () => {
-    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4))).toEqual([4]);
+    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4))).toEqual([4, 2 ** 12 - 1]);
     expect(key(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4))).toBe(key(box(vec3(9, 9, 9), m, vec3Zero, vec3Zero, [], 4)));
     expect(key(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4))).not.toBe(key(box(vec3(1, 1, 1), m)));
   });
 
+  it("rounds all edges of boxes with a radius, or only their rounded edges, a bit each in the order of boxEdges, with a geometry per edges", () => {
+    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4, ["BottomBack", "FrontRight", "TopRight"]))).toEqual([4, 1 + 2 ** 7 + 2 ** 11]);
+    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4, []))).toEqual([4, 0]);
+    expect(key(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4, ["TopFront"]))).not.toBe(key(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], 4)));
+  });
+
   it("keeps boxes without a radius, with holes, and other shapes sharp", () => {
-    expect(bevel(box(vec3(1, 1, 1), m))).toEqual([0]);
-    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [roundHole(vec2(0, 0), 0.1)], 4))).toEqual([0]);
-    expect(bevel(sphere(1, m))).toEqual([0]);
+    expect(bevel(box(vec3(1, 1, 1), m))).toEqual([0, 0]);
+    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [], undefined, ["TopFront"]))).toEqual([0, 0]);
+    expect(bevel(box(vec3(1, 1, 1), m, vec3Zero, vec3Zero, [roundHole(vec2(0, 0), 0.1)], 4))).toEqual([0, 0]);
+    expect(bevel(sphere(1, m))).toEqual([0, 0]);
   });
 });
 

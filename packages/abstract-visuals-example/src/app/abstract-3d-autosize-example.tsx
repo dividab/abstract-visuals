@@ -1,6 +1,7 @@
 import React from "react";
 import type * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
 import { Viewer } from "../../../abstract-3d/src/renderers/react/index.js";
+import { edgesScene } from "./edges-scene.js";
 import { systemair2 } from "./generated/systemair-2.js";
 import { systemair3 } from "./generated/systemair-3.js";
 import { systemair4 } from "./generated/systemair-4.js";
@@ -85,6 +86,8 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
         return systemair6;
       case "materials":
         return materialsScene;
+      case "edges":
+        return edgesScene;
 
       default:
         return systemair;
@@ -128,6 +131,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
               <option value="systemair5">5</option>
               <option value="systemair6">6</option>
               <option value="materials">Materials</option>
+              <option value="edges">Rounded edges</option>
             </select>
           </label>
         </div>

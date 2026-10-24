@@ -16,7 +16,7 @@ import {
 } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import type { Hole, Mesh } from "../../../abstract-3d.js";
-import { isZero, vec3, vec3Zero } from "../../../abstract-3d.js";
+import { boxEdges, isZero, vec3, vec3Zero } from "../../../abstract-3d.js";
 import { addHoles, CircleCurve, CYLINDER_SEGMENTS, cylinderCutPositions, holeIsZero } from "../../shared/three-geometry.js";
 import { transform } from "../compile/compile.js";
 
@@ -42,7 +42,10 @@ export function getSolidShape(g: Mesh["geometry"]): SolidShape | undefined {
       const size = g.type === "Box" ? g.size : vec3(g.size.x, g.size.y, 1);
       return g.holes?.some((h) => !holeIsZero(h))
         ? { key: JSON.stringify([g.type, g.size, g.holes]), local: transform(g.pos, g.rot) }
-        : { key: g.type === "Box" && g.radius ? `Box ${g.radius}` : g.type, local: transform(g.pos, g.rot, undefined, size) };
+        : {
+            key: g.type === "Box" && g.radius ? `Box ${g.radius} ${g.roundedEdges?.join() ?? ""}` : g.type,
+            local: transform(g.pos, g.rot, undefined, size),
+          };
     }
     case "Image":
       return { key: "Plane", local: transform(g.pos, g.rot, undefined, vec3(g.size.x, g.size.y, 1)) };
@@ -86,9 +89,13 @@ export function createSolidGeometry(g: Mesh["geometry"]): BufferGeometry {
   if (!geometry.hasAttribute("uv")) {
     geometry.setAttribute("uv", new Float32BufferAttribute(new Float32Array(count * 2), 2));
   }
-  // The radius a unit box's edges are shaded as rounded by, 0 for sharp; every geometry has it, as a batch's geometries share their attributes
-  const radius = geometry instanceof BoxGeometry && g.type === "Box" ? (g.radius ?? 0) : 0;
-  geometry.setAttribute("bevel", new Float32BufferAttribute(new Float32Array(count).fill(radius), 1));
+  // The radius a unit box's edges are shaded as rounded by, 0 for sharp, and a bit per rounded edge, in the order of `boxEdges`; every geometry has
+  // it, as a batch's geometries share their attributes
+  const bevel =
+    geometry instanceof BoxGeometry && g.type === "Box" && g.radius
+      ? [g.radius, boxEdges.reduce((edges, edge, i) => ((g.roundedEdges?.includes(edge) ?? true) ? edges + 2 ** i : edges), 0)]
+      : [0, 0];
+  geometry.setAttribute("bevel", new Float32BufferAttribute(Array.from({ length: count }, () => bevel).flat(), 2));
   Object.keys(geometry.attributes).forEach((name) => {
     if (name !== "position" && name !== "normal" && name !== "uv" && name !== "bevel") {
       geometry.deleteAttribute(name);

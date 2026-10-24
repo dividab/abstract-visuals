@@ -11,7 +11,7 @@ export function roundBoxes(scene: Scene, radius = 2): Scene {
 function roundGroup(g: Group, radius: number): Group {
   return {
     ...g,
-    meshes: g.meshes?.map((m): Mesh => (m.geometry.type === "Box" ? { ...m, geometry: { ...m.geometry, radius } } : m)),
+    meshes: g.meshes?.map((m): Mesh => (m.geometry.type === "Box" ? { ...m, geometry: { ...m.geometry, radius: m.geometry.radius ?? radius } } : m)),
     groups: g.groups?.map((child) => roundGroup(child, radius)),
   };
 }

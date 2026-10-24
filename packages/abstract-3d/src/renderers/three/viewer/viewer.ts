@@ -71,6 +71,8 @@ export type Viewer<Content> = {
   structure: StructureState;
   compiled?: CompiledScene;
   built?: BuiltScene;
+  /** The previous build and ground shadow, out of the scene, disposed once the next frame has given their shader programs to the new ones */
+  readonly retired: { built?: BuiltScene; shadow?: GroundShadow };
   gizmo?: ViewportGizmo;
   shadow?: GroundShadow;
   /** The key light that casts the solids' shadows on themselves */
@@ -127,6 +129,7 @@ export function createViewer<Content>(container: HTMLElement, options: ViewerOpt
     stats: { frames: 0, frameMs: 0, drawCalls: 0, pickMs: 0, paintMs: 0 },
     structure: { activeComponents: options.activeComponents, relationsActive: options.activeRelations !== undefined },
     studio: {},
+    retired: {},
     loaded: false,
     fitted: false,
     disposed: false,
@@ -166,6 +169,7 @@ export function disposeViewer<Content>(v: Viewer<Content>): void {
   v.resizeObserver.disconnect();
   v.controls.orbit.dispose();
   v.gizmo?.dispose();
+  disposeRetired(v);
   if (v.built) {
     disposeScene(v.built);
   }
@@ -197,9 +201,12 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
     rebuild(v);
   }
   if (changes.has("shadow") || changes.has("build")) {
-    if (v.shadow) {
-      disposeGroundShadow(v.shadow);
+    if (v.retired.shadow) {
+      disposeGroundShadow(v.retired.shadow);
     }
+    v.retired.shadow = v.shadow;
+    v.shadow?.mesh.removeFromParent();
+    v.shadow?.floor.removeFromParent();
     v.shadow = v.built && options.groundShadow !== false ? createGroundShadow(v.renderer, v.scene, v.built) : undefined;
     if (v.keyLight) {
       disposeKeyLight(v.keyLight);
@@ -255,9 +262,11 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
 }
 
 function rebuild<Content>(v: Viewer<Content>): void {
-  if (v.built) {
-    disposeScene(v.built);
+  if (v.retired.built) {
+    disposeScene(v.retired.built);
   }
+  v.retired.built = v.built;
+  v.built?.root.removeFromParent();
   const { options, compiled } = v;
   v.built =
     compiled &&
@@ -279,6 +288,17 @@ function rebuild<Content>(v: Viewer<Content>): void {
       .then(() => onLoaded(v))
       .catch(() => undefined);
   }
+}
+
+/** Three deletes a shader program once no material uses it, so the previous build's are disposed after the new build's took the programs over */
+function disposeRetired<Content>(v: Viewer<Content>): void {
+  if (v.retired.built) {
+    disposeScene(v.retired.built);
+  }
+  if (v.retired.shadow) {
+    disposeGroundShadow(v.retired.shadow);
+  }
+  Object.assign(v.retired, { built: undefined, shadow: undefined });
 }
 
 function onLoaded<Content>(v: Viewer<Content>): void {
@@ -317,6 +337,7 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
   }
   if (v.loaded) {
     renderer.render(v.scene, camera);
+    disposeRetired(v);
   }
   gizmo?.render();
   v.overlays.renderer.render(v.overlays.scene, camera);
@@ -543,7 +564,7 @@ function updateOverlays<Content>(v: Viewer<Content>): void {
 }
 
 /** The studio's share of the light, the key light giving the rest, so the key light's shadows show */
-const studioIntensity = 0.8;
+const studioIntensity = 0.6;
 
 const raycaster = new Raycaster();
 const ndc = new Vector2();

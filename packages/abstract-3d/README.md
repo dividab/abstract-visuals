@@ -46,6 +46,8 @@ The viewer lights scenes with a photographed studio and a key light, and draws s
 
 **`radius` on `Box`:** the radius of the box's edges, e.g. 2 for sheet metal bent with a 2 mm radius, in the scene's units. The edges are shaded as rounded, without extra geometry, and boxes with the same radius share their geometry, so a few radii cost nothing. Boxes with holes stay sharp, as do boxes without a radius.
 
+**`roundedEdges` on `Box`:** the edges `radius` rounds, all 12 by default, named by the two sides they're between, e.g. `"TopFront"` (`BoxEdge`, `boxEdges`). For a part made of several boxes, e.g. a corner piece, round only its outer edges and keep those where the boxes meet sharp, so it reads as one part instead of showing seams, e.g. `["TopBack", "TopFront", "BottomBack", "BottomFront"]` for an arm along x whose ends meet other boxes.
+
 ```ts
 const panel = box(vec3(800, 600, 50), { normal: "rgb(230, 232, 235)", type: "painted" }, vec3Zero, vec3Zero, [], 2);
 const profile = box(vec3(40, 600, 40), { normal: "rgb(170, 175, 185)", type: "aluminum" }, vec3(420, 0, 0), vec3Zero, [], 2);

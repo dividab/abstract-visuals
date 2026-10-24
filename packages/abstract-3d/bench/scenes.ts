@@ -1,3 +1,4 @@
+import { edgesScene } from "../../abstract-visuals-example/src/app/edges-scene.js";
 import { demo } from "../../abstract-visuals-example/src/app/generated/demo.js";
 import { systemair3 } from "../../abstract-visuals-example/src/app/generated/systemair-3.js";
 import { systemair6 } from "../../abstract-visuals-example/src/app/generated/systemair-6.js";
@@ -12,6 +13,7 @@ export const scenes: Record<string, Scene> = {
   systemair3: roundBoxes(assignMaterialTypes(systemair3)),
   systemair6: roundBoxes(assignMaterialTypes(systemair6)),
   materials: materialsScene,
+  edges: edgesScene,
 };
 
 /** `count` copies of the scene in a square grid, each group's id made unique per copy */

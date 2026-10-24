@@ -8,7 +8,7 @@ import { getShadowCasters } from "./shadow.js";
  */
 
 const direction = new Vector3(-1, 2, 1.2).normalize();
-const intensity = 2.5;
+const intensity = 1.6;
 const mapSize = 2048;
 /** Of the key light kept out of its shadows, so faces under an overhang, e.g. a recessed base frame, aren't black */
 const shadowIntensity = 0.6;

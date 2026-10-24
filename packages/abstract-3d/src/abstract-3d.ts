@@ -299,7 +299,26 @@ export type Box = {
    * rounded
    */
   readonly radius?: number;
+  /** The edges `radius` rounds, all by default; e.g. only the outer ones of the boxes a corner piece is made of */
+  readonly roundedEdges?: ReadonlyArray<BoxEdge>;
 };
+
+/** A box's edges, by the two sides they're between, front is +z; along x, y, then z */
+export type BoxEdge = (typeof boxEdges)[number];
+export const boxEdges = [
+  "BottomBack",
+  "TopBack",
+  "BottomFront",
+  "TopFront",
+  "BackLeft",
+  "BackRight",
+  "FrontLeft",
+  "FrontRight",
+  "BottomLeft",
+  "BottomRight",
+  "TopLeft",
+  "TopRight",
+] as const;
 
 export type Hole = RoundHole | SquareHole;
 
@@ -960,9 +979,18 @@ export const box = (
   pos: Vec3 = vec3Zero,
   rot = vec3Zero,
   holes: ReadonlyArray<Hole> = [],
-  radius?: number
+  radius?: number,
+  roundedEdges?: ReadonlyArray<BoxEdge>
 ): BoxMesh => ({
-  geometry: { type: "Box", pos, rot, size, holes, ...(radius === undefined ? {} : { radius }) },
+  geometry: {
+    type: "Box",
+    pos,
+    rot,
+    size,
+    holes,
+    ...(radius === undefined ? {} : { radius }),
+    ...(roundedEdges === undefined ? {} : { roundedEdges }),
+  },
   material,
 });
 export const image = (size: Vec3, material: Material, image: ImageMesh["image"], pos: Vec3 = vec3Zero, rot: Vec3 = vec3Zero): Mesh => ({

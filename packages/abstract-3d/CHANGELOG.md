@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
-## [4.0.0-beta.8] - 2026-10-24
+## [4.0.0-beta.9] - 2026-10-24
 
 - Changed (breaking): the react renderer is rewritten on plain three.js, without `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` and `suspend-react`. The new `abstract-3d/three` entry is the viewer without React (`createViewer`), and `abstract-3d/react` is a thin component around it. Solids of the same material are drawn as one batch, so a scene takes about a dozen draw calls whatever its size, and hover and selection repaint instance colors instead of re-rendering components
 
@@ -12,11 +12,11 @@ All notable changes to this project will be documented in this file. The format 
 
 - Changed (breaking): the component is `Viewer` instead of `render`. Event callbacks get a `SceneEvent` (`nativeEvent` and the hit `point`) instead of r3f's `ThreeEvent`. `lights` is an array of three.js objects or a function of the scene that returns them, added to the environment's light, instead of a JSX element replacing the default lights
 
-- Changed: the scene is lit by a photographed studio, Poly Haven's Studio Small 08 HDRI (CC0), which lights faces by which way they turn and gives metal and glass real reflections, instead of a strong ambient light that lit every face alike and directional lights. It's bundled, about 350 kB gzipped, and loaded on demand by the 3D viewer only
+- Changed: the scene is lit by a photographed studio, Poly Haven's Studio Small 08 HDRI (CC0), which lights faces by which way they turn and gives metal and glass real reflections, instead of a strong ambient light that lit every face alike and directional lights. Its floor is light gray, as a product photo's white sweep, so metal facing forward or down isn't dark. It's bundled, about 200 kB gzipped, and loaded on demand by the 3D viewer only
 
 - Added: `type` on `Material`, what the surface is: `"painted"`, `"galvanized"`, `"aluminum"`, `"stainless"`, `"copper"`, `"plastic"`, `"rubber"`, `"fabric"` or `"glass"` (`MaterialType`, `materialTypes`). The three.js viewer draws each with a physical finish of its own in the material's color, e.g. a clearcoat on painted sheet, a sheen on fabric, see-through glass, instead of `metalness` and `roughness`; a `type` that isn't one, e.g. a number from a database, is ignored. The README's Realistic scenes section shows which type to use for which part, and how to fill in `type`, `castShadow` and `radius`
 
-- Added: `radius` on `Box`, which rounds its edges, e.g. by the bend of sheet metal. The three.js viewer shades the edges of boxes without holes as rounded by it, at least two pixels wide so far edges stay smooth, without extra geometry; the other renderers draw boxes sharp as before
+- Added: `radius` on `Box`, which rounds its edges, e.g. by the bend of sheet metal, and `roundedEdges`, which of its 12 edges it rounds, all by default (`BoxEdge`, `boxEdges`), so a part made of several boxes, e.g. a corner piece, rounds only its outer edges. The three.js viewer shades the edges of boxes without holes as rounded by it, at least two pixels wide so far edges stay smooth, without extra geometry; the other renderers draw boxes sharp as before
 
 - Added: shadows of the solids on themselves, e.g. under a roof or behind a profile, cast by a key light from the upper left front that lights the scene together with the studio (`environmentIntensity`, 0.8 by default). They're soft, letting some of the key light through, so faces under an overhang aren't black. Its shadow map is rendered once per scene, or each frame while something animates; transparent solids, e.g. glass, don't cast. Turn them off with `shadows={false}`, or for a material's solids with `castShadow: false` on it, e.g. for symbols and markers, which then cast neither these nor the ground shadow
 

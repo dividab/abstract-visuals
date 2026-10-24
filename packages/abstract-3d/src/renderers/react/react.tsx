@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Scene } from "../../abstract-3d.js";
+import type { Group, Scene } from "../../abstract-3d.js";
 import type { ControlsHelper, MountedOverlay, Popover, Viewer as ThreeViewer, ViewerOptions } from "../three/index.js";
 import { createViewer, disposeViewer, updateViewer } from "../three/index.js";
 
@@ -43,7 +43,17 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
     return () => disposeViewer(viewer.current!);
   }, []);
 
-  useEffect(() => updateViewer(viewer.current!, { scene, createGroupId }), [scene, createGroupId]);
+  // The latest createGroupId through a stable function, so an inline one doesn't rebuild the scene each render, as 3.x didn't; a new scene does
+  const latestGroupId = useRef(createGroupId);
+  useLayoutEffect(() => {
+    latestGroupId.current = createGroupId;
+  });
+  const [stableGroupId] = useState(
+    () =>
+      (g: Group): string =>
+        latestGroupId.current?.(g) ?? ""
+  );
+  useEffect(() => updateViewer(viewer.current!, { scene, createGroupId: stableGroupId }), [scene, stableGroupId]);
   useEffect(
     () => updateViewer(viewer.current!, { activeComponents, activeRelations, useAlphaTest, materialStateImages }),
     [activeComponents, activeRelations, useAlphaTest, materialStateImages]
