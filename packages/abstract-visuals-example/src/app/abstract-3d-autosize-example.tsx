@@ -14,6 +14,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [cameraType, setCameraType] = React.useState<"Perspective" | "Orthographic">("Perspective");
   const [model, setModel] = React.useState<string>("systemair");
   const [quality, setQuality] = React.useState<React3Js.Quality>("low");
+  const [groundShadow, setGroundShadow] = React.useState(true);
 
   const camera = React.useMemo((): React3Js.Camera => {
     if (cameraType === "Orthographic") {
@@ -127,6 +128,15 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
             </select>
           </label>
         </div>
+        <div style={{ padding: 8 }}>
+          <label>
+            Shadow:
+            <select value={groundShadow ? "on" : "off"} onChange={(e) => setGroundShadow(e.target.value === "on")} style={{ marginLeft: 8 }}>
+              <option value="on">On</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       {/* 3D + overlays container */}
@@ -212,6 +222,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
           selectedIds={{}}
           fitPadding={0.15}
           quality={quality}
+          groundShadow={groundShadow}
           scene={selectedModel}
           showDimensions={true}
           camera={camera}

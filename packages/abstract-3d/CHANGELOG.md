@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Added: a soft shadow on the ground under the scene, falling a little behind it, rendered once per scene so it costs nothing per frame. Turn it off with `groundShadow={false}`
+
+- Added: `onPointerMissed`, called for a click on nothing clickable, e.g. the background, as r3f's `Canvas` prop that 3.x apps passed in `canvasProps`
+
+- Fixed: images no longer flicker when the scene is rebuilt, e.g. for new material states
+
+- Note on migrating from 3.x: an app that lazy-loads the component must resolve `Viewer`, e.g. `React.lazy(() => import("abstract-3d/react").then((m) => ({ default: m.Viewer })))`. Resolving the removed `render` gives React `undefined`, which fails with "Element type is invalid. Received a promise that resolves to: undefined. Lazy element type must resolve to a class or function"
+
 ## [4.0.0-beta.0] - 2026-10-24
 
 - Changed (breaking): the react renderer is rewritten on plain three.js, without `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` and `suspend-react`. The new `abstract-3d/three` entry is the viewer without React (`createViewer`), and `abstract-3d/react` is a thin component around it. Solids of the same material are drawn as one batch, so a scene takes about a dozen draw calls whatever its size, and hover and selection repaint instance colors instead of re-rendering components. The `quality` prop is `"low"` by default, without ambient occlusion; `"medium"` adds it while the camera is still, `"high"` while it moves too, and `"auto"` starts at medium and drops to low on weak graphics cards
@@ -18,7 +26,7 @@ All notable changes to this project will be documented in this file. The format 
 
 - Changed: `controlsHelper` draws the viewcube or axes with `three-viewport-gizmo`, with the same options except `hideAxisHeads`, which is removed. Text is drawn with the system font (Helvetica or Arial), so no font is loaded
 
-- Removed (breaking): `canvasProps` (use `className` and `style`), `createGroupKey`, `useAnimations` and `useOldMode` (`quality="low"` turns ambient occlusion off)
+- Removed (breaking): `canvasProps` (use `className` and `style`, and `onPointerMissed` from 4.0.0-beta.1), `createGroupKey`, `useAnimations` and `useOldMode` (`quality="low"` turns ambient occlusion off)
 
 ## [3.0.2] - 2026-10-17
 

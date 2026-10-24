@@ -25,8 +25,8 @@ export type ViewerProps = Omit<ViewerOptions<React.ReactNode>, "hoveredIds" | "o
 
 export function Viewer(props: ViewerProps): React.JSX.Element {
   const { scene, createGroupId, useAlphaTest, selectedIds, hoveredIdsExternal, onClickGroup, view, bufferZones, fitPadding, controls } = props;
-  const { lights, environment, environmentIntensity, quality, showDimensions, popovers, getTooltips } = props;
-  const { onHoverGroup, onContextMenuGroup, onClickRelation, sceneFallback, className, style } = props;
+  const { lights, environment, environmentIntensity, groundShadow, quality, showDimensions, popovers, getTooltips } = props;
+  const { onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed, sceneFallback, className, style } = props;
   // Equal by value, so inline objects don't refit the camera, recreate the gizmo or rebuild the scene
   const camera = useStableValue(props.camera);
   const gizmo = useStableValue(props.controlsHelper);
@@ -58,6 +58,7 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
   useEffect(() => updateViewer(viewer.current!, { lights, environment, environmentIntensity }), [lights, environment, environmentIntensity]);
   useEffect(() => updateViewer(viewer.current!, { quality }), [quality]);
   useEffect(() => updateViewer(viewer.current!, { showDimensions }), [showDimensions]);
+  useEffect(() => updateViewer(viewer.current!, { groundShadow }), [groundShadow]);
   useEffect(
     () =>
       updateViewer(viewer.current!, {
@@ -67,8 +68,8 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
     [popovers, getTooltips]
   );
   useEffect(
-    () => updateViewer(viewer.current!, { onHoverGroup, onContextMenuGroup, onClickRelation }),
-    [onHoverGroup, onContextMenuGroup, onClickRelation]
+    () => updateViewer(viewer.current!, { onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed }),
+    [onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed]
   );
 
   return (

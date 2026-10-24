@@ -34,6 +34,8 @@ import type { CompiledScene } from "../compile/compile.js";
 import { compileScene } from "../compile/compile.js";
 import type { RenderPath, TierGovernor } from "../quality/quality.js";
 import { createRenderPath, disposeRenderPath, recordFrame, renderPath } from "../quality/quality.js";
+import type { GroundShadow } from "../shadow/shadow.js";
+import { createGroundShadow, disposeGroundShadow } from "../shadow/shadow.js";
 import type { GlyphAtlas } from "../text/text.js";
 import { createGlyphAtlas } from "../text/text.js";
 import type { Change, ViewerOptions } from "./options.js";
@@ -78,6 +80,7 @@ export type Viewer<Content> = {
   built?: BuiltScene;
   gizmo?: ViewportGizmo;
   path?: RenderPath;
+  shadow?: GroundShadow;
   governor?: TierGovernor;
   readonly environments: Partial<Record<"studio" | "room", Texture>>;
   /** The scene is built and its shaders compiled */
@@ -170,6 +173,9 @@ export function disposeViewer<Content>(v: Viewer<Content>): void {
   if (v.built) {
     disposeScene(v.built);
   }
+  if (v.shadow) {
+    disposeGroundShadow(v.shadow);
+  }
   Object.values(v.environments).forEach((e) => e.dispose());
   v.geometries.forEach((g) => g.dispose());
   v.atlas.texture.dispose();
@@ -190,6 +196,12 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
   if (changes.has("build")) {
     v.structure = { activeComponents: options.activeComponents, relationsActive: options.activeRelations !== undefined };
     rebuild(v);
+  }
+  if (changes.has("shadow") || changes.has("build")) {
+    if (v.shadow) {
+      disposeGroundShadow(v.shadow);
+    }
+    v.shadow = v.built && options.groundShadow !== false ? createGroundShadow(v.renderer, v.scene, v.built) : undefined;
   }
   if (changes.has("camera")) {
     const { near = 0.1, far = 2000, ...rest } = options.camera ?? { type: "Perspective" };
@@ -369,13 +381,16 @@ function hoverAtPointer<Content>(v: Viewer<Content>): void {
 
 function onClick<Content>(v: Viewer<Content>, event: MouseEvent): void {
   const { down } = v.pointer;
-  const hit = down && Math.hypot(event.clientX - down.x, event.clientY - down.y) <= clickTolerance ? pick(v, event) : undefined;
+  const clicked = !!down && Math.hypot(event.clientX - down.x, event.clientY - down.y) <= clickTolerance;
+  const hit = clicked ? pick(v, event) : undefined;
   const target = hit && v.compiled!.targets[hit.target];
   const args = hit && getGroupArgs(v, hit);
   if (hit && target?.kind === "relation") {
     v.options.onClickRelation?.(target.relation, { nativeEvent: event, point: hit.point });
   } else if (hit && args) {
     v.options.onClickGroup?.(...args, { nativeEvent: event, point: hit.point });
+  } else if (clicked) {
+    v.options.onPointerMissed?.(event);
   }
 }
 

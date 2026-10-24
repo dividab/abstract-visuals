@@ -43,6 +43,8 @@ export const SELECTED = 2;
 const disabledOpacity = 0.125;
 const selectColor = "rgb(14,82,184)";
 const textSelectColor = "rgb(0, 26, 65)";
+/** Of the inverted hull around a relation's boxes */
+const outlineColor = "rgb(0, 0, 0)";
 const stateMaterials: Record<MaterialState, Material> = {
   Accept: { normal: "rgb(0,148,91)", metalness: 0.5, roughness: 0.5 },
   Error: { normal: "#b82f3a", metalness: 0.5, roughness: 0.5 },
@@ -103,8 +105,9 @@ export function getItemColor(item: Item, { materialState, disabled }: TargetStat
   const opacity = material.opacity ?? 1;
   switch (item.style) {
     case "relation":
-    case "outline":
       return setColor(out, material.normal, hovered, 1);
+    case "outline":
+      return setColor(out, outlineColor, false, 1);
     case "dimension":
       return setColor(out, selected ? selectColor : material.normal, false, opacity);
     default: {

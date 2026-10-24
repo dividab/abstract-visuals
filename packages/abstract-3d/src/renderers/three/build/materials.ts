@@ -34,19 +34,25 @@ export function getImageUrl(image: Image, materialState: MaterialState | undefin
   return errorUrl ?? (image.type === "AbstractImage" ? `data:image/svg+xml,${createSVG(image.image)}` : image.url);
 }
 
-/** Each url's texture, loaded once */
-export type TextureCache = Map<string, Promise<Texture | undefined>>;
+/** A url's texture, loaded once; `texture` is set once it's loaded, so a rebuild shows it right away instead of a frame later */
+export type TextureEntry = { loading: Promise<Texture | undefined>; texture?: Texture };
+export type TextureCache = Map<string, TextureEntry>;
 
-export function loadTexture(cache: TextureCache, url: string): Promise<Texture | undefined> {
+export function loadTexture(cache: TextureCache, url: string): TextureEntry {
+  const cached = cache.get(url);
+  if (cached) {
+    return cached;
+  }
   const svg = url.startsWith("data:image/svg+xml") || url.endsWith(".svg") || url.includes(".svg?");
-  const loading = cache.get(url) ?? (svg ? loadSvg(url) : loader.loadAsync(url).catch(() => undefined)).then((t) => t && applyFilters(t));
-  cache.set(url, loading);
-  return loading;
+  const entry: TextureEntry = { loading: svg ? loadSvg(url) : loader.loadAsync(url).catch(() => undefined) };
+  entry.loading = entry.loading.then((t) => (entry.texture = t && applyFilters(t)));
+  cache.set(url, entry);
+  return entry;
 }
 
 export function disposeTextures(cache: TextureCache): void {
-  cache.forEach((loading) => {
-    loading.then((texture) => texture?.dispose()).catch(() => undefined);
+  cache.forEach((entry) => {
+    entry.loading.then((texture) => texture?.dispose()).catch(() => undefined);
   });
   cache.clear();
 }

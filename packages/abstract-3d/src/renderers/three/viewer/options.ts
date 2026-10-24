@@ -46,6 +46,8 @@ export type ViewerOptions<Content> = {
   /** Lights faces by which way they turn and gives metal reflections: `studio` by default, `room` for three's RoomEnvironment, or null for none */
   readonly environment?: Texture | "studio" | "room" | null;
   readonly environmentIntensity?: number;
+  /** A soft shadow on the ground under the scene, rendered once per build; on by default */
+  readonly groundShadow?: boolean;
   /** `low` by default, without ambient occlusion */
   readonly quality?: Quality;
   readonly useAlphaTest?: boolean;
@@ -61,10 +63,12 @@ export type ViewerOptions<Content> = {
   readonly onHoverGroup?: (id: string | undefined, rootData: Data, data: Data, event: SceneEvent) => void;
   readonly onContextMenuGroup?: (id: string, rootData: Data, data: Data, left: number, top: number, event: SceneEvent) => void;
   readonly onClickRelation?: (relation: Relation, event: SceneEvent) => void;
+  /** A click, not a drag, on nothing clickable, e.g. the background; r3f's Canvas event of the same name */
+  readonly onPointerMissed?: (event: MouseEvent) => void;
 };
 
 /** What an update has to redo, in the order it's redone */
-export type Change = "compile" | "build" | "camera" | "controls" | "gizmo" | "lights" | "quality" | "paint" | "dimensions" | "overlays";
+export type Change = "compile" | "build" | "shadow" | "camera" | "controls" | "gizmo" | "lights" | "quality" | "paint" | "dimensions" | "overlays";
 
 /** What passing each option redoes; callbacks and what's read later need nothing */
 export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: ReadonlyArray<Change> } = {
@@ -86,6 +90,7 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   lights: ["lights"],
   environment: ["lights"],
   environmentIntensity: ["lights"],
+  groundShadow: ["shadow"],
   quality: ["quality"],
   popovers: ["overlays"],
   getTooltips: ["overlays"],
@@ -95,4 +100,5 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   onHoverGroup: [],
   onContextMenuGroup: [],
   onClickRelation: [],
+  onPointerMissed: [],
 };

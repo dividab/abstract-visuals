@@ -243,9 +243,12 @@ function createPart(
       const g = first.mesh.geometry;
       if (g.type === "Image" && options.textures) {
         const url = getImageUrl(g.image, targetStates[first.target]!.materialState, options.materialStateImages);
-        loadTexture(options.textures, url)
-          .then((texture) => showImage(part.object, texture, state, options.onTextureLoaded))
-          .catch(() => undefined);
+        const entry = loadTexture(options.textures, url);
+        if (entry.texture) {
+          showImage(part.object, entry.texture, state, undefined);
+        } else {
+          entry.loading.then((texture) => showImage(part.object, texture, state, options.onTextureLoaded)).catch(() => undefined);
+        }
       }
       return part;
     }

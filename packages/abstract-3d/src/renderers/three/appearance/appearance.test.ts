@@ -97,6 +97,11 @@ describe("getItemColor", () => {
     );
   });
 
+  it("outlines relations in black, also while hovered", () => {
+    expect(paint(solid({ normal: "rgb(0,148,91)" }, "outline"), relation)).toEqual(rgba("rgb(0, 0, 0)"));
+    expect(paint(solid({ normal: "rgb(0,148,91)" }, "outline"), relation, { hoveredTarget: 0 })).toEqual(rgba("rgb(0, 0, 0)"));
+  });
+
   it("keeps lines in their material's color", () => {
     expect(paint(item(line(vec3Zero, vec3(1, 0, 0), 1, { normal: red }), "group", "line"), group, { selectedIds: { fan: true } })).toEqual(rgba(red));
   });
