@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [4.0.0-beta.0] - 2026-10-24
+
 - Changed (breaking): the react renderer is rewritten on plain three.js, without `@react-three/fiber`, `@react-three/drei`, `@react-three/postprocessing` and `suspend-react`. The new `abstract-3d/three` entry is the viewer without React (`createViewer`), and `abstract-3d/react` is a thin component around it. Solids of the same material are drawn as one batch, so a scene takes about a dozen draw calls whatever its size, and hover and selection repaint instance colors instead of re-rendering components. The `quality` prop is `"low"` by default, without ambient occlusion; `"medium"` adds it while the camera is still, `"high"` while it moves too, and `"auto"` starts at medium and drops to low on weak graphics cards
 
 - Changed (breaking): `three`, `react` and `react-dom` are optional peer dependencies. `three` is needed by the `three`, `react` and `ifc` renderers; the `dxf`, `step`, `stl` and `svg` renderers don't use it
