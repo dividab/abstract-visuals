@@ -3,7 +3,7 @@ import { vec3ZMean, vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abst
 import { rgbGrayScale } from "../../../utils.js";
 import { svgPolygon } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
-import { gray, zElem, transparent } from "./shared.js";
+import { gray, isOpaque, zElem, transparent } from "./shared.js";
 
 export function polygon(
   p: Polygon,
@@ -21,5 +21,12 @@ export function polygon(
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
     ? [opts.gray_scale ? gray : color, opts.background, opts.stroke_thickness]
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color, 0];
-  return [zElem(svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness), vec3ZMean(...rotatedPoints))];
+  return [
+    zElem(
+      svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness),
+      vec3ZMean(...rotatedPoints),
+      rotatedPoints,
+      isOpaque(fill, material.opacity ?? 1.0)
+    ),
+  ];
 }

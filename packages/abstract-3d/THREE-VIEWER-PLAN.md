@@ -14,7 +14,7 @@ The other renderers (dxf, step, ifc, stl, svg) are unaffected; they ignore the v
 
 ## Status (2026-10-24)
 
-Phases 0–4 are implemented: `src/renderers/three/` (the viewer), `src/renderers/react/react.tsx` (the wrapper), the r3f renderer deleted, the example app migrated. 4.0.0 is in beta on npm's `beta` tag. `pnpm test:abstract-3d` covers compile, appearance (material classes, types, shadow casting), geometry (shared unit geometries, edge radii), text layout, build (batching, picking, repaint, animation, culling, dispose), camera fit and the quality governor. `pnpm typecheck:tests` type-checks the tests and the bench. `pnpm bench:abstract-3d` measures the scene layer in Node, and `pnpm bench:abstract-3d:browser` frame times, draw calls, memory over scene swaps and screenshots in headless Chromium.
+Phases 0–4 are implemented: `src/renderers/three/` (the viewer), `src/renderers/react/react.tsx` (the wrapper), the r3f renderer deleted, the example app migrated. It's released as 4.0.0. `pnpm test:abstract-3d` covers compile, appearance (material classes, types, shadow casting), geometry (shared unit geometries, edge radii), text layout, build (batching, picking, repaint, animation, culling, dispose), camera fit and the quality governor. `pnpm typecheck:tests` type-checks the tests and the bench. `pnpm bench:abstract-3d` measures the scene layer in Node, and `pnpm bench:abstract-3d:browser` frame times, draw calls, memory over scene swaps and screenshots in headless Chromium.
 
 Measured in headless Chromium (software GPU, so CPU side only), systemair3 with its materials typed and boxes rounded as in the example app:
 
@@ -66,7 +66,6 @@ Not done yet:
 - Realism without post-processing: brushed (anisotropic) aluminum, fine normal maps for galvanized spangle and paint grain; a path-traced photo mode at rest, opt-in, for which three-gpu-pathtracer needs an unbatched scene and loses text and dimensions.
 - A test that the shader insertions (rounded edges, clearcoat) still find three's chunks after a three upgrade.
 - The selection outline, the effect hook (`addEffect`), pausing when offscreen, `buildScene` without batching for `GLTFExporter`, fitting to everything drawn (opt-in, as the camera must stay the r3f renderer's), a fallback without WebGL.
-- 4.0.0 out of beta, with the betas' CHANGELOG section merged into it.
 
 ## Why raw three.js
 

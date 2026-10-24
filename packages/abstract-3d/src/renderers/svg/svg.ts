@@ -29,6 +29,7 @@ import { plane } from "./svg-geometries/svg-plane.js";
 import { polygon } from "./svg-geometries/svg-polygon.js";
 import { shape } from "./svg-geometries/svg-shape.js";
 import { text } from "./svg-geometries/svg-text.js";
+import { orderElements } from "./svg-order.js";
 
 export type SvgScene = {
   readonly scene: Scene;
@@ -89,26 +90,29 @@ function renderInternal(
     rotation: options?.rotation ?? 0,
     imageBg: options?.imageBg ?? false,
   };
-  const cameraRot = rotationForCameraPos(opts.view);
+  // Isometric: the front turned 45° to show the side, and tilted by arctan(1/√2) to show the top, so the three axes are foreshortened alike
+  const isometric = opts.view === "TopLeft" || opts.view === "TopRight";
+  const view = isometric ? "front" : opts.view;
+  const isometricRot = isometric
+    ? vec3RotCombine(vec3(Math.atan(1 / Math.SQRT2), 0, 0), vec3(0, ((opts.view === "TopRight" ? -1 : 1) * Math.PI) / 4, 0))
+    : vec3Zero;
+  const cameraRot = vec3RotCombine(isometricRot, rotationForCameraPos(view));
   const viewRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), cameraRot) : cameraRot;
   const unitRot = vec3RotCombine(viewRot, scene.rotation_deprecated ?? vec3Zero);
 
-  const unitCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, rotationForCameraPos(opts.view));
+  const unitCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, cameraRot);
   const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
   const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
   const svgCenter = vec2(offset.x + opts.stroke_thickness * 0.75, offset.y + opts.stroke_thickness * 0.75);
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
   const unitCenterFlipped = vec3Flip(unitCenter);
 
-  const elements = Array<zOrderElement>();
-  for (const g of scene.groups) {
-    elements.push(...svgGroup(g, unitCenterFlipped, unitRot, point, opts));
-  }
+  const elements = [...orderElements(scene.groups.flatMap((g) => svgGroup(g, unitCenterFlipped, unitRot, point, opts)))];
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
-  elements.sort((a, b) => a.zOrder - b.zOrder);
-  const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
+  const visibleViews = calculateVisibleViews(view, scene.rotation_deprecated);
 
-  for (const dim of scene.dimensions_deprecated?.dimensions ?? []) {
+  // Dimensions are drawn for the flat views
+  for (const dim of isometric ? [] : (scene.dimensions_deprecated?.dimensions ?? [])) {
     const d = dimensionConvertToTypeMesh(dim, scene.rotation_deprecated ?? vec3Zero, scene.dimensions_deprecated?.material);
     if (isViewVisible(d.views[0], visibleViews)) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);

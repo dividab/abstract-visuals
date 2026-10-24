@@ -3,7 +3,7 @@ import { vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3ZMean } fr
 import { rgbGrayScale } from "../../../utils.js";
 import { svgPolygon } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
-import { gray, black, zElem } from "./shared.js";
+import { gray, black, isOpaque, zElem } from "./shared.js";
 
 export function plane(
   p: Plane,
@@ -29,5 +29,12 @@ export function plane(
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
     ? [opts.gray_scale ? gray : material.normal, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(material.normal) : material.normal, 0];
-  return [zElem(svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes), vec3ZMean(v1, v2, v3, v4))];
+  return [
+    zElem(
+      svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes),
+      vec3ZMean(v1, v2, v3, v4),
+      [v1, v2, v3, v4],
+      isOpaque(fill, material.opacity ?? 1.0) && !holes?.length
+    ),
+  ];
 }
