@@ -21,6 +21,7 @@ import {
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { Axis, AxisBase, DiscreteAxisPoint, NumberFormat } from "./axis.js";
 import { inverseTransformValue, getTicks, createLinearAxis, transformValue, transformPoint } from "./axis.js";
+import { classNames } from "./class-names.js";
 
 export type Partial<T> = { [P in keyof T]?: T[P] };
 
@@ -1158,7 +1159,8 @@ export function generateXAxisLabel(
     0,
     axis.labelColor ?? black,
     false,
-    axis.id
+    axis.id,
+    classNames.axisLabel
   );
 }
 
@@ -1247,7 +1249,8 @@ export function generateYAxisLabel(
     0,
     axis.labelColor ?? black,
     false,
-    axis.id
+    axis.id,
+    classNames.axisLabel
   );
 }
 

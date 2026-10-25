@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [12.2.5] - 2026-10-25
+
+- Added: `classNames`, the classes a chart puts on its components, so a page's CSS styles them besides abstract-image's `ReactSvg` classes: `ac-axis-label` on an axis's title, e.g. tinted while hovered. Needs abstract-image 13.3.3's `Text` `className`.
+
 ## [12.2.0] - 2026-09-10
 
 - Internal: activated `typescript/no-unnecessary-condition`. No functional changes.

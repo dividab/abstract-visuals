@@ -1,6 +1,7 @@
 import { fromByteArray } from "base64-js";
 import React from "react";
 import type { AbstractImage } from "../model/abstract-image.js";
+import { classNames } from "../model/class-names.js";
 import type { Color } from "../model/color.js";
 import type { AbstractFontWeight, Component, GrowthDirection } from "../model/component.js";
 import type { Point } from "../model/point.js";
@@ -20,14 +21,17 @@ export type ReactSvgOptions = {
   readonly imageDataByUrl: Record<string, `data:image/${string},${string}` | AbstractImage>;
 };
 
+/** Drawn with `classNames`' classes on its parts; `className` its svg's class besides `classNames.root`, e.g. sized to fill its box */
 export function ReactSvg({
   image,
   callbacks,
   options,
+  className,
 }: {
   readonly image: AbstractImage;
   readonly callbacks?: ReactSvgCallbacks;
   readonly options?: Optional<ReactSvgOptions>;
+  readonly className?: string;
 }): React.JSX.Element {
   const opts: ReactSvgOptions = {
     imageDataByUrl: options?.imageDataByUrl ?? {},
@@ -38,6 +42,7 @@ export function ReactSvg({
     // oxlint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- rendered image/chart, click callbacks report hit coordinates rather than acting as an interactive widget
     <svg
       id={id}
+      className={className ? `${classNames.root} ${className}` : classNames.root}
       width={`${image.size.width}px`}
       height={`${image.size.height}px`}
       viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
@@ -74,6 +79,23 @@ function makeIdAttr(id: string | undefined): string | undefined {
   return `ai%${id}`;
 }
 
+/** An element's classes: `classNames.part` with an id, and a text's own */
+function makePartClass(id: string | undefined, className?: string): string | undefined {
+  const part = id ? classNames.part : undefined;
+  return part && className ? `${part} ${className}` : (part ?? className);
+}
+
+/** A sub image's svg, without the root's class, id or callbacks */
+function subImageSvg(image: AbstractImage, options: ReactSvgOptions): React.JSX.Element {
+  return (
+    <svg width={`${image.size.width}px`} height={`${image.size.height}px`} viewBox={[0, 0, image.size.width, image.size.height].join(" ")}>
+      {image.components.map((c, i) => (
+        <JsxComponent key={i} component={c} options={options} />
+      ))}
+    </svg>
+  );
+}
+
 function getIdAttr(target: Element | undefined, rootId: string): string | undefined {
   if (!target || target.id === rootId) {
     return undefined;
@@ -108,17 +130,23 @@ function JsxComponent({ component, options }: { readonly component: Component; r
           return <></>;
         }
         if (typeof data === "string") {
-          return <image x={x} y={y} width={width} height={height} id={id} href={data} />;
+          return <image x={x} y={y} width={width} height={height} id={id} className={classNames.image} href={data} />;
         }
         const scale = Math.min(width / (data.size.width || 1), height / (data.size.height || 1));
-        return (
-          <g transform={`translate(${x}, ${y}) scale(${scale})`}>
-            <ReactSvg image={data} options={{ imageDataByUrl: options.imageDataByUrl }} />
-          </g>
-        );
+        return <g transform={`translate(${x}, ${y}) scale(${scale})`}>{subImageSvg(data, options)}</g>;
       } else if (component.format === "png" || component.format === "avif") {
         const base64 = fromByteArray(component.data.bytes);
-        return <image x={x} y={y} width={width} height={height} id={id} href={`data:image/${component.format};base64,${base64}`} />;
+        return (
+          <image
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            id={id}
+            className={classNames.image}
+            href={`data:image/${component.format};base64,${base64}`}
+          />
+        );
       } else if (component.format === "svg") {
         const svg = String.fromCharCode(...component.data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
         const bytes = [];
@@ -126,7 +154,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
           bytes.push(svg.charCodeAt(i));
         }
         const base64 = fromByteArray(new Uint8Array(bytes));
-        return <image x={x} y={y} width={width} height={height} id={id} href={`data:image/svg+xml;base64,${base64}`} />;
+        return <image x={x} y={y} width={width} height={height} id={id} className={classNames.image} href={`data:image/svg+xml;base64,${base64}`} />;
       }
       return <></>;
     }
@@ -138,7 +166,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
             component.size.height / (component.image.size.height || 1)
           )})`}
         >
-          <ReactSvg image={component.image} options={options} />
+          {subImageSvg(component.image, options)}
         </g>
       );
     }
@@ -148,6 +176,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       return (
         <line
           id={makeIdAttr(component.id)}
+          className={makePartClass(component.id)}
           x1={component.start.x}
           y1={component.start.y}
           x2={component.end.x}
@@ -190,18 +219,24 @@ function JsxComponent({ component, options }: { readonly component: Component; r
         <>
           {component.strokeThickness > 0 && (
             <text
-              style={{
-                ...baseStyle,
-                stroke: colorToRgb(component.strokeColor),
-                strokeWidth: component.strokeThickness,
-              }}
+              style={baseStyle}
+              stroke={colorToRgb(component.strokeColor)}
+              strokeWidth={component.strokeThickness}
               transform={transform}
               id={makeIdAttr(component.id)}
+              className={makePartClass(component.id, component.className)}
             >
               {tSpans}
             </text>
           )}
-          <text style={{ ...baseStyle, fill: colorToRgb(component.textColor) }} transform={transform} id={makeIdAttr(component.id)}>
+          {/* Its colors attributes, which a class overrides, e.g. a hovered axis label */}
+          <text
+            style={baseStyle}
+            fill={colorToRgb(component.textColor)}
+            transform={transform}
+            id={makeIdAttr(component.id)}
+            className={makePartClass(component.id, component.className)}
+          >
             {tSpans}
           </text>
         </>
@@ -217,6 +252,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       return (
         <ellipse
           id={makeIdAttr(component.id)}
+          className={makePartClass(component.id)}
           cx={cx}
           cy={cy}
           rx={rx}
@@ -238,6 +274,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       return (
         <polyline
           id={makeIdAttr(component.id)}
+          className={makePartClass(component.id)}
           points={linePoints}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
@@ -257,6 +294,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       return (
         <polygon
           id={makeIdAttr(component.id)}
+          className={makePartClass(component.id)}
           points={points}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
@@ -275,6 +313,7 @@ function JsxComponent({ component, options }: { readonly component: Component; r
       return (
         <rect
           id={makeIdAttr(component.id)}
+          className={makePartClass(component.id)}
           x={component.topLeft.x}
           y={component.topLeft.y}
           width={Math.abs(component.bottomRight.x - component.topLeft.x)}

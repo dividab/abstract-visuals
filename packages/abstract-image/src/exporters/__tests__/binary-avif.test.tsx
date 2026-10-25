@@ -24,7 +24,7 @@ describe("binary avif", () => {
 
   test("react svg", () => {
     expect(renderToStaticMarkup(<ReactSvg image={abstractImage} />)).toContain(
-      `<image x="0" y="0" width="400" height="400" href="data:image/avif;base64,${avifEncoded}"></image>`
+      `<image x="0" y="0" width="400" height="400" class="ai-image" href="data:image/avif;base64,${avifEncoded}"></image>`
     );
   });
 });

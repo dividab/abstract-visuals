@@ -2,8 +2,9 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.0.2] - 2026-10-25
 
+- Added: `classNames` in `abstract-3d/svg`, the classes the svg renderer puts on what it draws, so a page's CSS styles a drawing without reaching into it: `a3d-root` on its svg, e.g. sized to fill its box, `a3d-stroke` on each stroked element, e.g. as thick at any size, and `a3d-image` on an embedded picture or svg
 - Changed: the material types' finishes are those of a product configurator's AHU: painted sheet smoother with a full, soft clearcoat, galvanized and aluminum fully metallic, stainless and copper smoother, plastic smoother
 
 ## [4.0.1] - 2026-10-24

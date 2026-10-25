@@ -255,6 +255,8 @@ export interface Text {
   readonly strokeColor: Color;
   readonly italic: boolean;
   readonly id: string | undefined;
+  /** Its class for the page's CSS, besides ReactSvg's own, e.g. a chart's axis label */
+  readonly className?: string;
 }
 
 export function createText(
@@ -271,7 +273,8 @@ export function createText(
   strokeThickness: number,
   strokeColor: Color,
   italic: boolean,
-  id?: string
+  id?: string,
+  className?: string
 ): Text {
   return {
     type: "text",
@@ -289,6 +292,7 @@ export function createText(
     strokeColor,
     italic,
     id,
+    className,
   };
 }
 

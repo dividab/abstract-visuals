@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [13.3.3] - 2026-10-25
+
+- Added: `classNames`, the classes `ReactSvg` puts on what it draws, so a page's CSS styles a drawing without reaching into it: `ai-root` on its svg, `ai-image` on an embedded picture, e.g. inverted in a dark theme, and `ai-part` on an element with an id, e.g. clickable. A sub image's svg is drawn without the root's class and id.
+- Added: `ReactSvg`'s `className`, its svg's class besides `ai-root`, e.g. sized to fill its box, and a `Text`'s `className` (`createText`'s last argument), added to its elements' classes, e.g. a chart's axis title.
+- Changed: `ReactSvg` draws a text's color and outline as `fill`, `stroke` and `stroke-width` attributes instead of an inline style, so a class can override them, e.g. on hover. It looks the same.
+
 ## [13.3.0] - 2026-10-05
 
 - Added: Support for `"avif"` as `BinaryFormat`. AVIF binary images are rendered by the SVG and React SVG exporters.
