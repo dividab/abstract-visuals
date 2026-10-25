@@ -12,5 +12,5 @@ export const testSvgEllpise: ExportTestDef = {
   name: "svg ellipse",
   abstractImage: svg,
   expectedImage:
-    '<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"><ellipse cx="75" cy="75" rx="25" ry="25" stroke="rgb(0, 128, 0)" stroke-opacity="1" stroke-width="2" fill="rgb(255, 255, 0)" fill-opacity="1"></ellipse></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" class="ai-root" width="400px" height="400px" viewBox="0 0 400 400"><ellipse cx="75" cy="75" rx="25" ry="25" stroke="rgb(0, 128, 0)" stroke-opacity="1" stroke-width="2" fill="rgb(255, 255, 0)" fill-opacity="1"></ellipse></svg>',
 };

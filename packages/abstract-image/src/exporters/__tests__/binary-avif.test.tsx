@@ -18,7 +18,7 @@ const abstractImage = AbstractImage.createAbstractImage(AbstractImage.createPoin
 describe("binary avif", () => {
   test("svg", () => {
     expect(AbstractImage.createSVG(abstractImage)).toEqual(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"><image x="0" y="0" width="400" height="400" href="data:image/avif;base64,${avifEncoded}"></image></svg>`
+      `<svg xmlns="http://www.w3.org/2000/svg" class="ai-root" width="400px" height="400px" viewBox="0 0 400 400"><image x="0" y="0" width="400" height="400" class="ai-image" href="data:image/avif;base64,${avifEncoded}"></image></svg>`
     );
   });
 

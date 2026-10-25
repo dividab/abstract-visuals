@@ -48,6 +48,8 @@ export type SvgOptions = {
 
   readonly font: string;
   readonly imageDataByUrl: Record<string, ImageDataUri>;
+  /** Its svg's class besides `classNames.root`, e.g. sized to fill its box */
+  readonly className: string;
 };
 
 export function svgTrsMatrix(translation: Vec2, rotation: Vec3, scale?: Vec2): string {

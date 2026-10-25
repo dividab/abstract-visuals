@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [13.3.4] - 2026-10-25
+
+- Added: `createSVG` puts `classNames`' classes on what it draws like `ReactSvg`, `ai-root` on its svg, not a sub image's, and `ai-image` on an embedded picture, and its `className` option, its svg's class besides `ai-root`, e.g. sized to fill its box.
+
 ## [13.3.3] - 2026-10-25
 
 - Added: `classNames`, the classes `ReactSvg` puts on what it draws, so a page's CSS styles a drawing without reaching into it: `ai-root` on its svg, `ai-image` on an embedded picture, e.g. inverted in a dark theme, and `ai-part` on an element with an id, e.g. clickable. A sub image's svg is drawn without the root's class and id.

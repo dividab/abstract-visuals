@@ -3,8 +3,8 @@ import { bounds2FromVec2Array, vec2, vec2Add, vec2Scale, vec2Sub, vec3, vec3Rot,
 import { classNames } from "./class-names.js";
 import { svgTrsMatrix } from "./svg-geometries/shared.js";
 
-export const svg = (min: Vec2, size: Vec2, children: string): string => {
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="${classNames.root}" viewBox="${min.x.toFixed(0)} ${min.y.toFixed(0)} ${size.x.toFixed(
+export const svg = (min: Vec2, size: Vec2, children: string, className: string): string => {
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="${className ? `${classNames.root} ${className}` : classNames.root}" viewBox="${min.x.toFixed(0)} ${min.y.toFixed(0)} ${size.x.toFixed(
     0
   )} ${size.y.toFixed(0)}" width="${size.x.toFixed(0)}px" height="${size.y.toFixed(0)}px">${children}</svg>`;
 };

@@ -12,5 +12,5 @@ export const testSvgRectangle: ExportTestDef = {
   name: "svg rectangle",
   abstractImage: svg,
   expectedImage:
-    '<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"><rect x="10" y="50" width="40" height="10" stroke="rgb(0, 0, 255)" stroke-opacity="1" stroke-width="2" fill="rgb(255, 0, 0)" fill-opacity="1"></rect></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" class="ai-root" width="400px" height="400px" viewBox="0 0 400 400"><rect x="10" y="50" width="40" height="10" stroke="rgb(0, 0, 255)" stroke-opacity="1" stroke-width="2" fill="rgb(255, 0, 0)" fill-opacity="1"></rect></svg>',
 };

@@ -54,7 +54,8 @@ export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Opti
   const image = svg(
     mergedBounds.min,
     size,
-    allElements.reduce((a, { element }) => `${a} ${element}`, "")
+    allElements.reduce((a, { element }) => `${a} ${element}`, ""),
+    baseOptions?.className ?? ""
   );
   return { image, width: size.x, height: size.y };
 }
@@ -65,7 +66,8 @@ export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSiz
   const image = svg(
     vec2(center.x - size.x / 2, center.y - size.y / 2),
     size,
-    elements.reduce((a, { element }) => `${a} ${element}`, "")
+    elements.reduce((a, { element }) => `${a} ${element}`, ""),
+    options?.className ?? ""
   );
   return { image, width: size.x, height: size.y };
 }
@@ -89,6 +91,7 @@ function renderInternal(
     imageDataByUrl: options?.imageDataByUrl ?? {},
     rotation: options?.rotation ?? 0,
     imageBg: options?.imageBg ?? false,
+    className: options?.className ?? "",
   };
   // Isometric: the front turned 45° to show the side, and tilted by arctan(1/√2) to show the top, so the three axes are foreshortened alike
   const isometric = opts.view === "TopLeft" || opts.view === "TopRight";

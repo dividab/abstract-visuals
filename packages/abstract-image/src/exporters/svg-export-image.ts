@@ -1,5 +1,6 @@
 import { fromByteArray } from "base64-js";
 import type { AbstractImage } from "../model/abstract-image.js";
+import { classNames } from "../model/class-names.js";
 import type { Color } from "../model/color.js";
 import type { Component, GrowthDirection } from "../model/component.js";
 import type { Optional } from "../model/shared.js";
@@ -10,13 +11,23 @@ export type SvgOptions = {
   readonly pixelWidth: number;
   readonly pixelHeight: number;
   readonly imageDataByUrl: Record<string, `data:image/${string},${string}` | AbstractImage>;
+  /** Its svg's class besides `classNames.root`, e.g. sized to fill its box */
+  readonly className: string;
 };
 
+/** Drawn with `classNames`' classes like ReactSvg, its svg's `classNames.root` and `className`, an embedded picture's `classNames.image` */
 export function createSVG(image: AbstractImage, options?: Optional<SvgOptions>): string {
+  const className = options?.className ? `${classNames.root} ${options.className}` : classNames.root;
+  return svgElement(image, options, className);
+}
+
+/** An image's svg, a sub image's without a class */
+function svgElement(image: AbstractImage, options: Optional<SvgOptions> | undefined, className: string | undefined): string {
   const opts: SvgOptions = {
     imageDataByUrl: options?.imageDataByUrl ?? {},
     pixelWidth: options?.pixelWidth ?? image.size.width,
     pixelHeight: options?.pixelHeight ?? image.size.height,
+    className: "",
   };
   const subOptions: SvgOptions = { ...opts, pixelWidth: 0, pixelHeight: 0 };
   const imageElements = image.components.map((c: Component) => abstractComponentToSVG(c, subOptions));
@@ -25,6 +36,7 @@ export function createSVG(image: AbstractImage, options?: Optional<SvgOptions>):
     "svg",
     {
       xmlns: "http://www.w3.org/2000/svg",
+      class: className ?? "",
       width: `${opts.pixelWidth}px`,
       height: `${opts.pixelHeight}px`,
       viewBox: [0, 0, image.size.width, image.size.height].join(" "),
@@ -52,17 +64,17 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
       if (component.data.type === "url") {
         const data = options.imageDataByUrl[component.data.url];
         if (typeof data === "string" || data === undefined) {
-          return createElement("image", { x, y, width, height, href: data ?? component.data.url }, []);
+          return createElement("image", { x, y, width, height, class: classNames.image, href: data ?? component.data.url }, []);
         }
 
         const scale = Math.min(
           (component.bottomRight.x - component.topLeft.x) / (data.size.width || 1),
           (component.bottomRight.y - component.topLeft.y) / (data.size.height || 1)
         );
-        return createElement("g", { transform: `translate(${x}, ${y}) scale(${scale})` }, [createSVG(data, options)]);
+        return createElement("g", { transform: `translate(${x}, ${y}) scale(${scale})` }, [svgElement(data, options, undefined)]);
       } else if (component.format === "png" || component.format === "avif") {
         const base64 = fromByteArray(component.data.bytes);
-        return createElement("image", { x, y, width, height, href: `data:image/${component.format};base64,${base64}` }, []);
+        return createElement("image", { x, y, width, height, class: classNames.image, href: `data:image/${component.format};base64,${base64}` }, []);
       } else if (component.format === "svg") {
         const svg = String.fromCharCode(...component.data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
         const bytes = [];
@@ -70,14 +82,14 @@ function abstractComponentToSVG(component: Component, options: SvgOptions): stri
           bytes.push(svg.charCodeAt(i));
         }
         const base64 = fromByteArray(new Uint8Array(bytes));
-        return createElement("image", { x, y, width, height, href: `data:image/svg+xml;base64,${base64}` }, []);
+        return createElement("image", { x, y, width, height, class: classNames.image, href: `data:image/svg+xml;base64,${base64}` }, []);
       }
       return "";
     }
     case "subimage": {
       const scale = Math.min(component.size.width / (component.image.size.width || 1), component.size.height / (component.image.size.height || 1));
       return createElement("g", { transform: `translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})` }, [
-        createSVG(component.image, { ...options, pixelWidth: undefined, pixelHeight: undefined }),
+        svgElement(component.image, { ...options, pixelWidth: undefined, pixelHeight: undefined }, undefined),
       ]);
     }
     case "line": {

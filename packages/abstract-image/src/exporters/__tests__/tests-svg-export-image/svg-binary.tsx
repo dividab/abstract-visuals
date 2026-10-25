@@ -15,5 +15,5 @@ const svg = AbstractImage.createSVG(abstractImage);
 export const testSvgBinary: ExportTestDef = {
   name: "svg binary",
   abstractImage: svg,
-  expectedImage: `<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"><image x="0" y="0" width="400" height="400" href="data:image/svg+xml;base64,${svgEncoded}"></image></svg>`,
+  expectedImage: `<svg xmlns="http://www.w3.org/2000/svg" class="ai-root" width="400px" height="400px" viewBox="0 0 400 400"><image x="0" y="0" width="400" height="400" class="ai-image" href="data:image/svg+xml;base64,${svgEncoded}"></image></svg>`,
 };

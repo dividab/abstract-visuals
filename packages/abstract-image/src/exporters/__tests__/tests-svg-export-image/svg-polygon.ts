@@ -23,5 +23,5 @@ export const testSvgPolygon: ExportTestDef = {
   name: "svg polygon",
   abstractImage: svg,
   expectedImage:
-    '<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"><polygon points="110,10 100,20 110,30 100,40 110,50" stroke="rgb(0, 0, 255)" stroke-opacity="1" stroke-width="2" fill="rgb(255, 0, 0)" fill-opacity="1"></polygon></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" class="ai-root" width="400px" height="400px" viewBox="0 0 400 400"><polygon points="110,10 100,20 110,30 100,40 110,50" stroke="rgb(0, 0, 255)" stroke-opacity="1" stroke-width="2" fill="rgb(255, 0, 0)" fill-opacity="1"></polygon></svg>',
 };

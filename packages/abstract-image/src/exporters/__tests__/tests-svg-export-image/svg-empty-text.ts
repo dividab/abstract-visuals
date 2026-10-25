@@ -25,5 +25,5 @@ const svg = AbstractImage.createSVG(image);
 export const testSvgEmptyText: ExportTestDef = {
   name: "svg empty text",
   abstractImage: svg,
-  expectedImage: '<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"></svg>',
+  expectedImage: '<svg xmlns="http://www.w3.org/2000/svg" class="ai-root" width="400px" height="400px" viewBox="0 0 400 400"></svg>',
 };

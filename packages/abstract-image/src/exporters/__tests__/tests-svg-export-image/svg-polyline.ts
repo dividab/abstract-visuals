@@ -24,5 +24,5 @@ export const testSvgPolyline: ExportTestDef = {
   name: "svg polyline",
   abstractImage: svg,
   expectedImage:
-    '<svg xmlns="http://www.w3.org/2000/svg" width="400px" height="400px" viewBox="0 0 400 400"><polyline fill="none" points="10,40 20,30 30,40 40,30 50,40 60,30 70,40" stroke="rgb(0, 0, 0)" stroke-opacity="1" stroke-width="2"></polyline></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" class="ai-root" width="400px" height="400px" viewBox="0 0 400 400"><polyline fill="none" points="10,40 20,30 30,40 40,30 50,40 60,30 70,40" stroke="rgb(0, 0, 0)" stroke-opacity="1" stroke-width="2"></polyline></svg>',
 };
