@@ -64,7 +64,7 @@ It will build the packages and call `lerna publish` which will figure out which 
 
 If your npm 2FA uses a passkey/security key (e.g. fingerprint) instead of an authenticator app, run `pnpm publish-npm --web` instead. It publishes each not-yet-published package with `npm publish` (packed with `pnpm pack` first, so `workspace:^` dependencies become real versions), and npm asks you to authenticate each publish in the browser. If a publish fails, just rerun: already published versions are skipped.
 
-pnpm 11+ reads auth tokens from `~/.config/pnpm/auth.ini` before `~/.npmrc`, so a stale `//registry.npmjs.org/:_authToken` there makes `pnpm whoami`/`publish` fail with 401 even right after `npm login` (which only updates `~/.npmrc`). Remove that line from `auth.ini` so pnpm falls back to `~/.npmrc`.
+pnpm 11+ reads auth tokens from `~/.config/pnpm/auth.ini` (Linux) `~/Library/Preferences/pnpm/auth.ini` (macOS) before `~/.npmrc`, so a stale `//registry.npmjs.org/:_authToken` there makes `pnpm whoami`/`publish` fail with 401 even right after `npm login` (which only updates `~/.npmrc`). Remove that line from `auth.ini` so pnpm falls back to `~/.npmrc`.
 
 If you are not logged in to npm, `pnpm publish-npm` runs `npm login` for you first. `npm login` prints a URL and waits for you to press Enter before opening it in your browser — on WSL, npm doesn't know how to launch a Windows browser by default, so configure it once:
 
