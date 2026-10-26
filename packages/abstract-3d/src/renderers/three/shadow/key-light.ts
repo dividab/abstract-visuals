@@ -8,10 +8,12 @@ import { getShadowCasters } from "./shadow.js";
  */
 
 const direction = new Vector3(-1, 2, 1.2).normalize();
-const intensity = 1.6;
-const mapSize = 2048;
+const intensity = 1.2;
+const mapSize = 1024;
 /** Of the key light kept out of its shadows, so faces under an overhang, e.g. a recessed base frame, aren't black */
-const shadowIntensity = 0.6;
+const shadowIntensity = 0.45;
+/** The penumbra's reach, in shadow map texels */
+const penumbra = 16;
 
 /** The light and its target, to add to the scene, with or without shadows; undefined for a scene without solids */
 export function createKeyLight(built: BuiltScene, shadows: boolean): Group | undefined {
@@ -29,7 +31,7 @@ export function createKeyLight(built: BuiltScene, shadows: boolean): Group | und
   light.shadow.camera.updateProjectionMatrix();
   light.shadow.mapSize.set(mapSize, mapSize);
   // Offsets along the normal by three texels, against shadow acne on the lit faces
-  Object.assign(light.shadow, { bias: -0.0005, normalBias: (radius * 6) / mapSize, radius: 3, intensity: shadowIntensity });
+  Object.assign(light.shadow, { bias: -0.0005, normalBias: (radius * 6) / mapSize, radius: penumbra, intensity: shadowIntensity });
   return new Group().add(light, light.target);
 }
 

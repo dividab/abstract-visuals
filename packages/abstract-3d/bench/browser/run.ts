@@ -8,7 +8,7 @@ import { createServer } from "vite";
 
 /**
  * Browser benchmark and screenshots of the three.js viewer, in headless Chromium with a software GPU, so frame times measure the CPU side only.
- * Usage: node packages/abstract-3d/bench/browser/run.ts [bench] [memory] [screenshots]
+ * Usage: node packages/abstract-3d/bench/browser/run.ts [bench] [memory] [screenshots] [studio]
  */
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -170,6 +170,21 @@ if (runs("screenshots")) {
   await gizmoPage.screenshot({ path: join(out, "systemair3-gizmo-click.png") });
   await gizmoPage.close();
   writeFileSync(join(out, "README.txt"), "Screenshots of the last `pnpm bench:abstract-3d:browser screenshots` run\n");
+  console.log(`screenshots in ${out}`);
+}
+
+if (runs("studio")) {
+  // The same orbited view lit by the studio and by its three-point emulation, to compare
+  mkdirSync(out, { recursive: true });
+  for (const scene of ["demo", "systemair3"]) {
+    for (const studio of ["on", "off"]) {
+      const { page } = await open({ scene, studio });
+      await drag(page, 12);
+      await page.waitForTimeout(800);
+      await page.screenshot({ path: join(out, `${scene}-studio-${studio}.png`) });
+      await page.close();
+    }
+  }
   console.log(`screenshots in ${out}`);
 }
 

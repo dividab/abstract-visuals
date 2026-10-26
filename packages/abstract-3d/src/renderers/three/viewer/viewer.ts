@@ -8,10 +8,10 @@ import {
   PerspectiveCamera,
   Raycaster,
   Scene as ThreeScene,
-  type Texture,
   Vector2,
   Vector3,
   WebGLRenderer,
+  type WebGLRenderTarget,
 } from "three";
 import type { ViewportGizmo } from "three-viewport-gizmo";
 import type { StructureState } from "../appearance/appearance.js";
@@ -81,7 +81,7 @@ export type Viewer<Content> = {
   keyLight?: Group;
   governor?: TierGovernor;
   /** The studio environment, loading and once loaded */
-  readonly studio: { loading?: Promise<unknown>; texture?: Texture };
+  readonly studio: { loading?: Promise<unknown>; target?: WebGLRenderTarget };
   /** The scene is built and its shaders compiled */
   loaded: boolean;
   fitted: boolean;
@@ -183,7 +183,7 @@ export function disposeViewer<Content>(v: Viewer<Content>): void {
   if (v.keyLight) {
     disposeKeyLight(v.keyLight);
   }
-  v.studio.texture?.dispose();
+  v.studio.target?.dispose();
   v.geometries.forEach((g) => g.dispose());
   v.atlas.texture.dispose();
   disposeTextures(v.textures);
@@ -521,13 +521,13 @@ function getGroupArgs<Content>(
   }
 }
 
-/** The scene is lit by a photographed studio as its environment, or without it by a plain sky and floor light; apps can add their own lights */
+/** The scene is lit by a studio room as its environment, or without it by a plain sky and floor light; apps can add their own lights */
 function updateLights<Content>(v: Viewer<Content>): void {
-  const { scene, lights, environmentIntensity = studioIntensity, studio = true } = v.options;
+  const { scene, lights, studio = true, environmentIntensity = studio ? studioIntensity : plainIntensity } = v.options;
   v.lights.clear();
   (typeof lights === "function" ? (scene ? lights(scene) : []) : (lights ?? [])).forEach((o) => v.lights.add(o));
   v.scene.environmentIntensity = environmentIntensity;
-  v.scene.environment = studio ? (v.studio.texture ?? null) : null;
+  v.scene.environment = studio ? (v.studio.target?.texture ?? null) : null;
   if (studio) {
     loadStudio(v).catch(() => undefined);
   } else {
@@ -545,18 +545,16 @@ function updateLights<Content>(v: Viewer<Content>): void {
 
 /** The studio, loaded once, its own chunk; set when it arrives, so the scene's shaders are compiled after it, with it */
 function loadStudio<Content>(v: Viewer<Content>): Promise<unknown> {
-  v.studio.loading ??= import("../environment/studio.js")
-    .then(({ loadStudio: load }) => load())
-    .then((texture) => {
-      if (v.disposed) {
-        texture.dispose();
-        return texture;
-      }
-      v.studio.texture = texture;
-      v.scene.environment = v.options.studio === false ? null : texture;
-      invalidate(v);
-      return texture;
-    });
+  v.studio.loading ??= import("../environment/studio.js").then(({ createStudio }) => {
+    if (v.disposed) {
+      return undefined;
+    }
+    const target = createStudio(v.renderer);
+    v.studio.target = target;
+    v.scene.environment = v.options.studio === false ? null : target.texture;
+    invalidate(v);
+    return target;
+  });
   return v.studio.loading;
 }
 
@@ -582,7 +580,8 @@ function updateOverlays<Content>(v: Viewer<Content>): void {
 }
 
 /** The studio's share of the light, the key light giving the rest, so the key light's shadows show */
-const studioIntensity = 0.6;
+const studioIntensity = 0.45;
+const plainIntensity = 0.6;
 /** Without the studio, of its three-point lighting, by the environment's intensity; the key light is the studio's, the floor as the studio's */
 const skyIntensity = 2.5;
 const fillIntensity = 2;

@@ -26,7 +26,7 @@ disposeViewer(viewer);
 
 ### Realistic scenes
 
-The viewer lights scenes with a photographed studio and a key light, and draws surfaces by what they are. Three things in the scene data decide how real it looks: what each material is, which parts are abstract, and how round the edges of sheet metal are.
+The viewer lights scenes with a studio, a room with soft area lights, and a key light, and draws surfaces by what they are. Three things in the scene data decide how real it looks: what each material is, which parts are abstract, and how round the edges of sheet metal are.
 
 **`type` on `Material`:** what the surface is. Each type gets a physical finish of its own in the material's `normal` color, and `metalness` and `roughness` are then not used. Without a type, a material is drawn as before, by its `metalness` and `roughness`.
 
