@@ -37,8 +37,8 @@ const shadowLayer = 1;
 /** Of the texture's longer side */
 const resolution = 512;
 /** The blur's reach, of the solids' height */
-const softness = 0.22;
-const opacity = 0.8;
+const softness = 0.16;
+const opacity = 0.9;
 /** A pool of light on the floor the shadow lies in, so it shows on a dark background, which a shadow alone can't darken; on white it's invisible */
 const floorLight = 0.06;
 /** The pool's reach beyond the solids, of their height */

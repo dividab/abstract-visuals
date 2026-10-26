@@ -11,9 +11,9 @@ const direction = new Vector3(-1, 2, 1.2).normalize();
 const intensity = 1.2;
 const mapSize = 1024;
 /** Of the key light kept out of its shadows, so faces under an overhang, e.g. a recessed base frame, aren't black */
-const shadowIntensity = 0.45;
+const shadowIntensity = 0.55;
 /** The penumbra's reach, in shadow map texels */
-const penumbra = 16;
+const penumbra = 8;
 
 /** The light and its target, to add to the scene, with or without shadows; undefined for a scene without solids */
 export function createKeyLight(built: BuiltScene, shadows: boolean): Group | undefined {
