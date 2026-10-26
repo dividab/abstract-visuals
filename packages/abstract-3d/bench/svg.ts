@@ -10,7 +10,7 @@ import type { render as Render } from "../src/renderers/svg/svg.js";
 import type { scenes as Scenes } from "./scenes.js";
 
 /**
- * Renders a scene with the svg renderer, in color and as a sketch, front and isometric from both sides, to bench/out as svg and png, timing each.
+ * Renders a scene with the svg renderer, in color and as a sketch, front and three-quarter from both sides, to bench/out as svg and png, timing each.
  * Usage: node packages/abstract-3d/bench/svg.ts [scene], e.g. systemair3
  */
 

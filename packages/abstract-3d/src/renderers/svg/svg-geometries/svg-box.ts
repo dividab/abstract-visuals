@@ -34,7 +34,16 @@ export function box(
     }
     // Only the front and back have holes, which show what's behind them
     const holes = i === 0 ? b.holes : undefined;
-    return [zElem(svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes), vec3ZMean(...polygon), polygon, opaque && !holes?.length)];
+    const plain = !holes?.length;
+    return [
+      zElem(
+        svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes),
+        vec3ZMean(...polygon),
+        polygon,
+        opaque && plain,
+        plain ? { fill, opacity, stroke: strokeColor, strokeWidth: strokeUse } : undefined
+      ),
+    ];
   });
 }
 

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.6] - 2026-10-26
+
+- Changed: the svg renderer's `"TopLeft"` and `"TopRight"` views are a three-quarter view, the front turned 30° and tilted 20°, so the front is foremost and less of the top is seen, instead of isometric
+- Fixed: the svg renderer draws faces in the order a BSP tree of their planes gives, splitting a face where another's plane cuts it, instead of ordering whole faces pairwise, which drew some faces over nearer ones where faces cut through each other or covered each other in a cycle, e.g. a panel sunk into its frame, or a gap in a unit's top. A split face's pieces are stroked only along its own edges, and it's drawn whole again where nothing drawn between its pieces overlaps it; what an opaque face drawn later covers is still left out
+
 ## [4.0.5] - 2026-10-26
 
 - Changed: darker, sharper shadows: the key light's shadows on the solids have a narrower penumbra and are darker, and the ground shadow is darker and less blurred

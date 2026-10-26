@@ -100,6 +100,19 @@ function svgStrokedHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, strok
   return svgHoles;
 }
 
+/** A polygon's edges that are flagged, the edge from each point to the next, as one path, without a fill */
+export function svgEdges(points: ReadonlyArray<Vec2>, edges: ReadonlyArray<boolean>, stroke: string, strokeWidth: number): string {
+  // From after an unflagged edge, so a run of edges isn't broken where the points wrap around
+  const start = edges.indexOf(false) + 1;
+  const d = points.reduce((path, _, k) => {
+    const i = (start + k) % points.length;
+    const [p, q] = [points[i]!, points[(i + 1) % points.length]!];
+    const move = k > 0 && edges[(i + points.length - 1) % points.length] ? "" : `M${p.x.toFixed(0)},${p.y.toFixed(0)}`;
+    return edges[i] ? `${path}${move}L${q.x.toFixed(0)},${q.y.toFixed(0)}` : path;
+  }, "");
+  return `<path class="${classNames.stroke}" d="${d}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
+}
+
 export const svgCircle2 = (radius: number, pos: Vec2, fill: string, stroke: string, strokeWidth: number, _holes?: ReadonlyArray<Hole>): string =>
   `<circle class="${classNames.stroke}" r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(
     0

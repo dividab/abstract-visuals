@@ -29,12 +29,15 @@ export function plane(
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
     ? [opts.gray_scale ? gray : material.normal, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(material.normal) : material.normal, 0];
+  const opacity = material.opacity ?? 1.0;
+  const plain = !holes?.length;
   return [
     zElem(
-      svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes),
+      svgPolygon(rot, points, fill, opacity, strokeColor, strokeThickness, holes),
       vec3ZMean(v1, v2, v3, v4),
       [v1, v2, v3, v4],
-      isOpaque(fill, material.opacity ?? 1.0) && !holes?.length
+      isOpaque(fill, opacity) && plain,
+      plain ? { fill, opacity, stroke: strokeColor, strokeWidth: strokeThickness } : undefined
     ),
   ];
 }

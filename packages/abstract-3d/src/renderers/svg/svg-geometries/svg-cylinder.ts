@@ -25,6 +25,7 @@ export function cylinder(
     ? [opts.gray_scale ? gray : color, opts.background]
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color];
   const opaque = isOpaque(fill, opacity);
+  const style = { fill, opacity, stroke, strokeWidth: stBW };
   // A closed opaque cylinder's facets turned away are hidden by those toward the viewer and its near end
   const cullBack = opaque && !c.open;
   const zOrderComponents = Array<zOrderElement>();
@@ -49,7 +50,7 @@ export function cylinder(
 
       const points = [point(currBot.x, currBot.y), point(prevBot.x, prevBot.y), point(prevTop.x, prevTop.y), point(currTop.x, currTop.y)];
       const polygon = [currBot, prevBot, prevTop, currTop];
-      zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(...polygon), polygon, opaque));
+      zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(...polygon), polygon, opaque, style));
     }
     currentAngle += angleStep;
   }
@@ -73,7 +74,7 @@ export function cylinder(
       const points = ring.map((p) => point(p.x, p.y));
       // Not seen edge on, when it's only a line along the facets' edges
       if (Math.abs(getArea(points)) >= 1e-6) {
-        zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), circlePos.z, ring, opaque && !c.holes?.length));
+        zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), circlePos.z, ring, opaque && !c.holes?.length, style));
       }
     }
   }

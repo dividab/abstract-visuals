@@ -21,12 +21,14 @@ export function shape(
   const [strokeColor, fill] = opts.only_stroke
     ? [opts.gray_scale ? gray : color, opts.background]
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color];
+  const opacity = material.opacity ?? 1.0;
   return [
     zElem(
-      svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, 0),
+      svgPolygon(rot, points, fill, opacity, strokeColor, 0),
       vec3ZMean(...rotatedPoints),
       rotatedPoints,
-      isOpaque(fill, material.opacity ?? 1.0) && !s.holes?.length
+      isOpaque(fill, opacity) && !s.holes?.length,
+      { fill, opacity, stroke: strokeColor, strokeWidth: 0 }
     ),
   ];
 }

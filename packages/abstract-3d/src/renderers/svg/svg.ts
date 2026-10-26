@@ -93,13 +93,13 @@ function renderInternal(
     imageBg: options?.imageBg ?? false,
     className: options?.className ?? "",
   };
-  // Isometric: the front turned 45° to show the side, and tilted by arctan(1/√2) to show the top, so the three axes are foreshortened alike
-  const isometric = opts.view === "TopLeft" || opts.view === "TopRight";
-  const view = isometric ? "front" : opts.view;
-  const isometricRot = isometric
-    ? vec3RotCombine(vec3(Math.atan(1 / Math.SQRT2), 0, 0), vec3(0, ((opts.view === "TopRight" ? -1 : 1) * Math.PI) / 4, 0))
+  // A three-quarter view: the front turned 30° to show the side, and tilted 20° to show the top, the front foremost
+  const angled = opts.view === "TopLeft" || opts.view === "TopRight";
+  const view = angled ? "front" : opts.view;
+  const angledRot = angled
+    ? vec3RotCombine(vec3((20 * Math.PI) / 180, 0, 0), vec3(0, ((opts.view === "TopRight" ? -1 : 1) * 30 * Math.PI) / 180, 0))
     : vec3Zero;
-  const cameraRot = vec3RotCombine(isometricRot, rotationForCameraPos(view));
+  const cameraRot = vec3RotCombine(angledRot, rotationForCameraPos(view));
   const viewRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), cameraRot) : cameraRot;
   const unitRot = vec3RotCombine(viewRot, scene.rotation_deprecated ?? vec3Zero);
 
@@ -110,12 +110,17 @@ function renderInternal(
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
   const unitCenterFlipped = vec3Flip(unitCenter);
 
-  const elements = [...orderElements(scene.groups.flatMap((g) => svgGroup(g, unitCenterFlipped, unitRot, point, opts)))];
+  const elements = [
+    ...orderElements(
+      scene.groups.flatMap((g) => svgGroup(g, unitCenterFlipped, unitRot, point, opts)),
+      point
+    ),
+  ];
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   const visibleViews = calculateVisibleViews(view, scene.rotation_deprecated);
 
   // Dimensions are drawn for the flat views
-  for (const dim of isometric ? [] : (scene.dimensions_deprecated?.dimensions ?? [])) {
+  for (const dim of angled ? [] : (scene.dimensions_deprecated?.dimensions ?? [])) {
     const d = dimensionConvertToTypeMesh(dim, scene.rotation_deprecated ?? vec3Zero, scene.dimensions_deprecated?.material);
     if (isViewVisible(d.views[0], visibleViews)) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
