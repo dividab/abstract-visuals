@@ -46,6 +46,18 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("max(...values: number[]): number");
       expect(result).toContain("min(...values: number[]): number");
     });
+
+    it("should generate call signatures for globals called as functions", () => {
+      const schema: Schema = {
+        data: {},
+        elements: {},
+      };
+
+      const result = generateTypeScriptDefinitions(schema);
+
+      expect(result).toMatch(/const String: \{\n(?:\s+(?:\/\*\*| \*).*\n)*\s+\(value: any\): string;/);
+      expect(result).toMatch(/const Number: \{\n(?:\s+(?:\/\*\*| \*).*\n)*\s+\(value: any\): number;/);
+    });
   });
 
   describe("element types generation", () => {

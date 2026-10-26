@@ -41,6 +41,7 @@ export interface BuiltinPropertySchema {
 export interface BuiltinSchema {
   methods?: Record<string, BuiltinMethodSchema>;
   properties?: Record<string, BuiltinPropertySchema>;
+  call?: BuiltinMethodSchema; // A global called as a function, e.g. `String(value)`
   global: boolean;
   intrinsic?: boolean;
   generic?: string; // Generic type parameters, e.g., "<T>" or "<K, V>"
@@ -247,6 +248,19 @@ const BUILTINS: Record<string, BuiltinSchema> = {
   [NUMBER]: {
     global: true,
     intrinsic: false,
+    call: {
+      description: "Converts a value to a number",
+      params: [
+        {
+          kind: "primitive" as const,
+          name: "value",
+          types: ["any"],
+          description: "The value to convert",
+          required: true,
+        },
+      ],
+      returnType: "number",
+    },
     methods: {
       isNaN: {
         description: "Determines whether the passed value is NaN (Not-A-Number)",
@@ -735,6 +749,19 @@ const BUILTINS: Record<string, BuiltinSchema> = {
   [STRING]: {
     global: true,
     intrinsic: false,
+    call: {
+      description: "Converts a value to a string",
+      params: [
+        {
+          kind: "primitive" as const,
+          name: "value",
+          types: ["any"],
+          description: "The value to convert",
+          required: true,
+        },
+      ],
+      returnType: "string",
+    },
   },
 
   [STRING_PROTOTYPE]: {

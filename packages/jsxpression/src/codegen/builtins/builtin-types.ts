@@ -106,6 +106,10 @@ function generateNamespaceDeclaration(namespace: string, schema: BuiltinSchema):
   } else {
     result += `const ${namespace}: {\n`;
 
+    if (schema.call) {
+      result += generateMethod("", schema.call) + "\n";
+    }
+
     if (schema.properties) {
       for (const [propName, prop] of Object.entries(schema.properties)) {
         result += generateProperty(propName, prop) + "\n";

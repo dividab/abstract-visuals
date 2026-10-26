@@ -815,6 +815,18 @@ describe("analyze - consolidated tests", () => {
         expect(result.errors[0].message).toContain("only member calls allowed");
       });
 
+      it("should allow calling String and Number", () => {
+        const ast = parse("<Text>{String(1) + Number('2')}</Text>");
+        const result = analyze(ast, baseSchema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should block calling Math and Array", () => {
+        const ast = parse("<Text>{Math(1)}{Array(3)}</Text>");
+        const result = analyze(ast, baseSchema);
+        expect(result.errors.map((error) => error.message)).toEqual(["only member calls allowed", "only member calls allowed"]);
+      });
+
       it("should block Function constructor", () => {
         const ast = parse("<Text>{new Function('return 1')()}</Text>");
         const result = analyze(ast, baseSchema);

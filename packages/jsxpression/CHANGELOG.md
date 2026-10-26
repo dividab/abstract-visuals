@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.2] - 2026-10-26
+
+- The generated TypeScript definitions give `String` and `Number` a call signature, so `String(value)` and `Number(value)` are typed as returning a `string` and a `number`, and an editor shows them as functions instead of empty objects.
+- Validation only allows calling a builtin global that is a function: `String(value)` and `Number(value)` still pass, `Math(1)` (which threw on render) and `Array(3)` are now errors.
+
 ## [0.3.0] - 2026-09-10
 
 - Internal: activated `typescript/no-unnecessary-condition`. Runtime checks against acorn's real (broader-than-declared) AST shapes were kept, widening casts instead of removing them. No functional changes.

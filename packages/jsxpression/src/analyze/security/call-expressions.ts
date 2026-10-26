@@ -1,5 +1,5 @@
 import type { Program } from "acorn";
-import { getBuiltinGlobals } from "../../builtins.js";
+import { getBuiltins } from "../../builtins.js";
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
@@ -16,7 +16,12 @@ export function analyzeCallExpressions(ast: Program, schema: Schema, validationC
     }
   }
   const schemaFunctionNames = new Set(Object.keys(schema.functions ?? {}));
-  const builtinGlobals = new Set(getBuiltinGlobals());
+  // Only a global with a call signature, e.g. `String(value)`, not `Math(1)`
+  const callableBuiltinGlobals = new Set(
+    Object.entries(getBuiltins())
+      .filter(([, builtin]) => builtin.global && builtin.call)
+      .map(([name]) => name)
+  );
 
   traverse(ast, {
     CallExpression(node) {
@@ -35,7 +40,7 @@ export function analyzeCallExpressions(ast: Program, schema: Schema, validationC
       }
 
       if (callee.type === "Identifier") {
-        if (localFunctionNames.has(callee.name) || schemaFunctionNames.has(callee.name) || builtinGlobals.has(callee.name)) {
+        if (localFunctionNames.has(callee.name) || schemaFunctionNames.has(callee.name) || callableBuiltinGlobals.has(callee.name)) {
           return;
         }
       }
