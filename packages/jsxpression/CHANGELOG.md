@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.3] - 2026-10-27
+
+- The generated TypeScript definitions support a data schema that contains itself, e.g. a component whose `children` are components. Such a schema is declared as a named type, e.g. `type Component = { children: Component[] }`, instead of the generator never finishing. An object, array, record or union schema takes an optional `name` for that type, else it's called `Recursive`.
+
 ## [0.3.2] - 2026-10-26
 
 - The generated TypeScript definitions give `String` and `Number` a call signature, so `String(value)` and `Number(value)` are typed as returning a `string` and a `number`, and an editor shows them as functions instead of empty objects.

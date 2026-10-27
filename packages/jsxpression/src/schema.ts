@@ -33,6 +33,8 @@ export type FunctionPropertySchema = {
 
 export type ObjectPropertySchema = {
   type: "object";
+  /** The type's name in the generated TypeScript definitions if it contains itself */
+  name?: string;
   description?: string;
   required?: boolean;
   shape: Record<string, PropertySchema>;
@@ -40,6 +42,8 @@ export type ObjectPropertySchema = {
 
 export type RecordPropertySchema = {
   type: "record";
+  /** The type's name in the generated TypeScript definitions if it contains itself */
+  name?: string;
   description?: string;
   required?: boolean;
   shape: PropertySchema;
@@ -47,6 +51,8 @@ export type RecordPropertySchema = {
 
 export type UnionPropertySchema = {
   type: "union";
+  /** The type's name in the generated TypeScript definitions if it contains itself */
+  name?: string;
   description?: string;
   required?: boolean;
   shape: ReadonlyArray<PropertySchema>;
@@ -54,6 +60,8 @@ export type UnionPropertySchema = {
 
 export type ArrayPropertySchema = {
   type: "array";
+  /** The type's name in the generated TypeScript definitions if it contains itself */
+  name?: string;
   description?: string;
   required?: boolean;
   shape: PropertySchema;
@@ -124,24 +132,28 @@ const zodSchema: z.ZodType<PropertySchema> = z.lazy(() =>
     }),
     z.object({
       type: z.literal("object"),
+      name: z.string().optional(),
       description: z.string().optional(),
       required: z.boolean().optional(),
       shape: z.record(z.string(), zodSchema),
     }),
     z.object({
       type: z.literal("record"),
+      name: z.string().optional(),
       description: z.string().optional(),
       required: z.boolean().optional(),
       shape: zodSchema,
     }),
     z.object({
       type: z.literal("array"),
+      name: z.string().optional(),
       description: z.string().optional(),
       required: z.boolean().optional(),
       shape: zodSchema,
     }),
     z.object({
       type: z.literal("union"),
+      name: z.string().optional(),
       description: z.string().optional(),
       required: z.boolean().optional(),
       shape: z.array(zodSchema),

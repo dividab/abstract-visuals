@@ -1,6 +1,10 @@
 import type { PropertySchema } from "../../schema.js";
 
-export function mapSchemaTypeToTypeScript(prop: PropertySchema, depth: number = 0): string {
+export function mapSchemaTypeToTypeScript(prop: PropertySchema, depth: number = 0, names: Readonly<Record<string, PropertySchema>> = {}): string {
+  const name = Object.keys(names).find((n) => names[n] === prop);
+  if (name !== undefined) {
+    return name;
+  }
   switch (prop.type) {
     case "string":
       if (prop.enum && Array.isArray(prop.enum)) {
@@ -19,13 +23,13 @@ export function mapSchemaTypeToTypeScript(prop: PropertySchema, depth: number = 
       return "boolean";
     case "array": {
       // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization (e.g. hand-constructed by consumers of this package) and so may not actually carry `shape`
-      const itemType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape, depth) : "any";
+      const itemType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape, depth, names) : "any";
       return `${itemType}[]`;
     }
     case "object": {
       // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization (e.g. hand-constructed by consumers of this package) and so may not actually carry `shape`
       if (prop.shape && typeof prop.shape === "object") {
-        return generateObjectTypeWithJSDoc(prop.shape, depth);
+        return generateObjectTypeWithJSDoc(prop.shape, depth, names);
       }
       // oxlint-disable-next-line typescript/no-explicit-any -- "properties" isn't an ObjectPropertySchema field; kept as a legacy fallback rather than removed by this type-only pass
       const propAsAny = prop as any;
@@ -35,20 +39,24 @@ export function mapSchemaTypeToTypeScript(prop: PropertySchema, depth: number = 
       return "object";
     }
     case "record": {
-      const valueType = mapSchemaTypeToTypeScript(prop.shape);
+      const valueType = mapSchemaTypeToTypeScript(prop.shape, 0, names);
       return `Record<string, ${valueType}>`;
     }
     case "function":
       return "(...args: any[]) => any";
     case "union": {
-      return prop.shape.map((p) => mapSchemaTypeToTypeScript(p)).join(" | ");
+      return prop.shape.map((p) => mapSchemaTypeToTypeScript(p, 0, names)).join(" | ");
     }
     default:
       return "any";
   }
 }
 
-export function generateObjectTypeWithJSDoc(properties: Record<string, PropertySchema>, depth: number = 0): string {
+export function generateObjectTypeWithJSDoc(
+  properties: Record<string, PropertySchema>,
+  depth: number = 0,
+  names: Readonly<Record<string, PropertySchema>> = {}
+): string {
   let result = "{\n";
 
   // Generate each property with inline JSDoc
@@ -57,7 +65,7 @@ export function generateObjectTypeWithJSDoc(properties: Record<string, PropertyS
     const propertyJSDoc = generatePropertyJSDoc(key, value, "    ", depth);
     result += propertyJSDoc;
 
-    const nestedType = mapSchemaTypeToTypeScript(value, depth + 1);
+    const nestedType = mapSchemaTypeToTypeScript(value, depth + 1, names);
     const required = value.required !== false ? "" : "?";
 
     result += `    ${formatKey(key)}${required}: ${nestedType};\n`;

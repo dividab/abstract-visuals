@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { ElementSchema, Schema } from "../schema.js";
+import type { ElementSchema, ObjectPropertySchema, PropertySchema, Schema } from "../schema.js";
 import { generateTypeScriptDefinitions } from "./generate-typescript-definitions.js";
 
 describe("generateTypeScriptDefinitions", () => {
@@ -781,6 +781,47 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("description?: string");
       expect(result).toContain("onSubmit: (...args: any[]) => any");
       expect(result).toContain("onCancel?: (...args: any[]) => any");
+    });
+  });
+
+  describe("recursive types", () => {
+    it("should declare a schema that contains itself as a named type", () => {
+      const component: ObjectPropertySchema = { type: "object", name: "Component", shape: { name: { type: "string" } } };
+      component.shape.children = { type: "array", shape: component };
+      const schema: Schema = {
+        data: { components: { type: "array", shape: component } },
+        functions: { first: { args: [{ name: "components", property: { type: "array", shape: component } }], ret: component } },
+      };
+
+      const result = generateTypeScriptDefinitions(schema);
+
+      expect(result).toContain("  type Component = {\n    name: string;\n");
+      expect(result).toContain("    children: Component[];\n  };\n");
+      expect(result).toContain("const components: Component[];");
+      expect(result).toContain("function first(components: Component[]): Component;");
+    });
+
+    it("should name recursive schemas without a name, or with the same name, apart", () => {
+      const a: ObjectPropertySchema = { type: "object", shape: {} };
+      a.shape.next = a;
+      const b: ObjectPropertySchema = { type: "object", shape: {} };
+      b.shape.byKey = { type: "record", shape: { type: "union", shape: [b, { type: "string" }] } };
+
+      const result = generateTypeScriptDefinitions({ data: { a, b } });
+
+      expect(result).toContain("type Recursive = {\n");
+      expect(result).toContain("    next: Recursive;\n  };\n  type Recursive2 = {\n    byKey: Record<string, Recursive2 | string>;\n  };");
+      expect(result).toContain("const a: Recursive;");
+      expect(result).toContain("const b: Recursive2;");
+    });
+
+    it("should keep a schema used in several places, but not in itself, inline", () => {
+      const point: PropertySchema = { type: "object", shape: { x: { type: "number" } } };
+
+      const result = generateTypeScriptDefinitions({ data: { from: point, to: point } });
+
+      expect(result).not.toContain("type Recursive");
+      expect(result.match(/x: number;/g)).toHaveLength(2);
     });
   });
 });

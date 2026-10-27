@@ -1,14 +1,14 @@
 import type { PropertySchema, Schema } from "../../schema.js";
 import { mapSchemaTypeToTypeScript } from "./utils.js";
 
-export function declareDataTypes(schema: Schema): string {
+export function declareDataTypes(schema: Schema, names: Readonly<Record<string, PropertySchema>>): string {
   let output = `declare global {\n`;
 
   if (schema.data) {
     Object.entries(schema.data).forEach(([dataKey, dataSchema]) => {
       output += generateNestedPropertyJSDoc(dataKey, dataSchema, "  ");
 
-      const type = mapSchemaTypeToTypeScript(dataSchema);
+      const type = mapSchemaTypeToTypeScript(dataSchema, 0, names);
 
       const indentedType = type.includes("\n") ? type.replace(/\n/g, "\n    ").replace(/\n {4}$/, "\n  ") : type;
       output += `  const ${dataKey}: ${indentedType};\n`;

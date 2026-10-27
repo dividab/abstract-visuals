@@ -8,13 +8,13 @@ type ElementSchemaExtras = ElementSchema & {
   examples?: ReadonlyArray<string>;
 };
 
-export function declareComponentTypes(schema: Schema): string {
+export function declareComponentTypes(schema: Schema, names: Readonly<Record<string, PropertySchema>>): string {
   let output = `declare global {\n`;
 
   if (schema.elements) {
     Object.entries(schema.elements).forEach(([elementName, element]) => {
       const interfaceName = `${elementName}Props`;
-      output += generatePropsInterface(interfaceName, element, "  ");
+      output += generatePropsInterface(interfaceName, element, names, "  ");
       output += "\n";
     });
   }
@@ -36,12 +36,17 @@ export function declareComponentTypes(schema: Schema): string {
   return output;
 }
 
-function generatePropsInterface(interfaceName: string, element: ElementSchemaExtras, indent: string = ""): string {
+function generatePropsInterface(
+  interfaceName: string,
+  element: ElementSchemaExtras,
+  names: Readonly<Record<string, PropertySchema>>,
+  indent: string = ""
+): string {
   let output = `${indent}interface ${interfaceName} {\n`;
 
   Object.entries(element.props ?? {}).forEach(([propName, prop]) => {
     const optional = prop.required ? "" : "?";
-    const type = mapSchemaTypeToTypeScript(prop);
+    const type = mapSchemaTypeToTypeScript(prop, 0, names);
     const comment = generatePropComment(prop, `${indent}  `);
 
     if (comment) {
