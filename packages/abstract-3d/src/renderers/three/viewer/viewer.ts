@@ -529,6 +529,10 @@ function updateLights<Content>(v: Viewer<Content>): void {
   v.scene.environmentIntensity = environmentIntensity;
   v.scene.environment = studio ? (v.studio.target?.texture ?? null) : null;
   if (studio) {
+    // A bounce light from behind and below, as the room's lights are above and in front, so the back and underside aren't dark
+    const bounce = new DirectionalLight(0xffffff, environmentIntensity * bounceIntensity);
+    bounce.position.copy(bounceDirection);
+    v.lights.add(bounce);
     loadStudio(v).catch(() => undefined);
   } else {
     // The studio emulated by three-point lighting: a weak sky and floor light, so faces differ by which way they turn, the key light, a fill from
@@ -590,6 +594,8 @@ const floorColor = 0xe6e6e6;
 /** From the right, opposite the key light from the upper left front, and lower; the rim light from behind and above */
 const fillDirection = new Vector3(1.5, 0.5, 1);
 const rimDirection = new Vector3(0.5, 1.5, -1.5);
+const bounceIntensity = 2.5;
+const bounceDirection = new Vector3(0.3, -1, -1);
 
 const raycaster = new Raycaster();
 const ndc = new Vector2();

@@ -7,8 +7,10 @@ import { DataTexture, LinearFilter, RedFormat, UnsignedByteType } from "three";
  * Textures and Special Effects", SIGGRAPH 2007)
  */
 
-export const RASTER_SIZE = 40;
-export const SDF_BUFFER = 4;
+export const RASTER_SIZE = 96;
+export const SDF_BUFFER = 8;
+/** The distance, in raster pixels, the distance field's values span */
+export const SDF_RADIUS = 24;
 /** The distance field's value at the glyph's edge, from tiny-sdf's default cutoff of 0.25 */
 export const SDF_EDGE = 0.75;
 const LINE_HEIGHT = 1.5;
@@ -50,7 +52,7 @@ export type GlyphQuad = {
 };
 
 /** Without `rasterize`, glyphs are rasterized with the OS's built-in Helvetica or Arial, on a canvas created at first use */
-export function createGlyphAtlas(rasterize?: Rasterize, size = 1024): GlyphAtlas {
+export function createGlyphAtlas(rasterize?: Rasterize, size = 2048): GlyphAtlas {
   const texture = new DataTexture(new Uint8Array(size * size), size, size, RedFormat, UnsignedByteType);
   Object.assign(texture, { minFilter: LinearFilter, magFilter: LinearFilter, generateMipmaps: false });
   return { texture, size, glyphs: new Map(), shelf: { x: 0, y: 0, height: 0 }, rasterize, sdf: {} };
@@ -63,7 +65,7 @@ export function getGlyph(atlas: GlyphAtlas, char: string): Glyph {
   }
   atlas.sdf.current ??= atlas.rasterize
     ? undefined
-    : new TinySDF({ fontSize: RASTER_SIZE, buffer: SDF_BUFFER, radius: 10, fontFamily: "Helvetica, Arial, sans-serif" });
+    : new TinySDF({ fontSize: RASTER_SIZE, buffer: SDF_BUFFER, radius: SDF_RADIUS, fontFamily: "Helvetica, Arial, sans-serif" });
   const bitmap = atlas.rasterize?.(char) ?? atlas.sdf.current!.draw(char);
   const rect = bitmap.width > 2 * SDF_BUFFER && bitmap.height > 2 * SDF_BUFFER ? packGlyph(atlas, bitmap) : undefined;
   const glyph: Glyph = {

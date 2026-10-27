@@ -21,7 +21,7 @@ import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
 import type { Vec3 } from "../../../abstract-3d.js";
 import type { GlyphAtlas } from "../text/text.js";
-import { layoutText, SDF_EDGE } from "../text/text.js";
+import { layoutText, SDF_EDGE, SDF_RADIUS } from "../text/text.js";
 
 /** The drawn objects: solids of a material class in one batch, all text in one instanced mesh, lines per thickness, images as meshes; each item a slot */
 
@@ -80,13 +80,13 @@ export function createTextPart(entries: ReadonlyArray<TextEntry>, atlas: GlyphAt
   geometry.setAttribute("glyphRect", new InstancedBufferAttribute(Float32Array.from(quads.flatMap((q) => q.glyph.rect)), 4));
   const colors = new InstancedBufferAttribute(new Float32Array(quads.length * 4), 4);
   geometry.setAttribute("glyphColor", colors);
-  // Glyphs colored per instance, one draw call as troika's BatchedText; edges antialiased by the distance field's fwidth, as troika does
+  // Glyphs colored per instance, one draw call as troika's BatchedText; edges antialiased over one screen pixel, by the atlas texels per pixel
   const material = new ShaderMaterial({
     side: FrontSide,
     transparent: true,
     depthWrite: false,
     uniforms: { atlas: { value: atlas.texture } },
-    defines: { SDF_EDGE },
+    defines: { SDF_EDGE, SDF_RADIUS: SDF_RADIUS.toFixed(1), ATLAS_SIZE: atlas.size.toFixed(1) },
     vertexShader: textVertexShader,
     fragmentShader: textFragmentShader,
   });
@@ -264,9 +264,10 @@ uniform sampler2D atlas;
 varying vec2 vUv;
 varying vec4 vColor;
 void main() {
-  float distance = texture2D(atlas, vUv).r;
-  float edge = fwidth(distance) * 0.7;
-  gl_FragColor = vec4(vColor.rgb, vColor.a * smoothstep(SDF_EDGE - edge, SDF_EDGE + edge, distance));
+  vec2 texel = vUv * ATLAS_SIZE;
+  float texelsPerPixel = 0.5 * (length(dFdx(texel)) + length(dFdy(texel)));
+  float pixels = (texture2D(atlas, vUv).r - SDF_EDGE) * SDF_RADIUS / texelsPerPixel;
+  gl_FragColor = vec4(vColor.rgb, vColor.a * clamp(pixels + 0.5, 0.0, 1.0));
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
 }`;

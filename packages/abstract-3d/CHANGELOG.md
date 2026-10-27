@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.10] - 2026-10-27
+
+- Changed: sharper text: glyphs are rasterized at 96 px instead of 40, so large or zoomed-in text keeps smooth curves instead of lumpy edges, and their edges are antialiased over one screen pixel, so small text is darker and crisper
+- Changed: with the studio, a soft bounce light from behind and below, so the back and underside of a unit aren't dark
+
 ## [4.0.6] - 2026-10-26
 
 - Changed: the svg renderer's `"TopLeft"` and `"TopRight"` views are a three-quarter view, the front turned 30° and tilted 20°, so the front is foremost and less of the top is seen, instead of isometric
