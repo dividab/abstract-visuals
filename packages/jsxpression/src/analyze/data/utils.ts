@@ -1,6 +1,8 @@
 import type { Expression, MemberExpression, PrivateIdentifier, Super } from "acorn";
+import type { JSONSchema7Definition } from "json-schema";
 import { isAllowedOnArray, isAllowedOnString, getAvailableArrayMembers, getAvailableStringMembers } from "../../builtins.js";
-import type { PropertySchema, Schema } from "../../schema.js";
+import { items, keys, property, types } from "../../json-schema.js";
+import type { Schema } from "../../schema.js";
 import type { AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
 import type { ValidationContext } from "../validation-context.js";
@@ -63,37 +65,10 @@ export function extractPath(node: MemberExpression): Array<string> {
   return path;
 }
 
-export function getAvailablePropsAtPath(path: Array<string>, depth: number, schemaDataParam: unknown): Array<string> {
-  const schemaData = schemaDataParam as Record<string, PropertySchema> | undefined;
-  if (!schemaData || depth < 0) {
-    return schemaData ? Object.keys(schemaData) : [];
-  }
-
-  if (depth === 0) {
-    return Object.keys(schemaData);
-  }
-
-  const root = path[0];
-  if (root === undefined) {
-    return [];
-  }
-  let current: PropertySchema | undefined = schemaData[root];
-
-  for (let i = 1; i <= depth; i++) {
-    const prop = path[i];
-    if (prop === undefined || current?.type !== "object") {
-      return [];
-    }
-    current = current.shape[prop];
-  }
-
-  if (current?.type === "object") {
-    return Object.keys(current.shape);
-  }
-
-  return [];
-}
-
+/**
+ * Adds an issue if the data doesn't have the path, e.g. product.images.front: each name a property of the one before, or, after an index like [0], of
+ * an array's items, or a member strings and arrays have, like length, after which the path isn't followed further
+ */
 export function validateSchemaPath(
   path: Array<string>,
   schema: Schema,
@@ -101,163 +76,51 @@ export function validateSchemaPath(
   node: MemberExpression,
   validationContext: ValidationContext
 ): void {
-  const schemaData = schema.data;
-  const root = path[0];
-  if (!schemaData || root === undefined) {
+  const data = schema.data;
+  if (data === undefined || path[0] === undefined) {
     analysisReport.addIssue(
       "INVALID_DATA_ACCESS",
       "Invalid data access - no schema data available",
       getNodeRange(node),
       validationContext.getSnapshot(),
-      schemaData ? Object.keys(schemaData) : undefined
-    );
-    return;
-  }
-
-  let current = schemaData[root];
-
-  if (!current) {
-    analysisReport.addIssue(
-      "INVALID_DATA_ACCESS",
-      `Property '${root}' does not exist in schema`,
-      getNodeRange(node),
-      validationContext.getSnapshot(),
-      Object.keys(schemaData)
+      data === undefined ? undefined : [...keys(data, data)]
     );
     return;
   }
 
   const elementAccessFlags = getElementAccessFlags(node, path.length);
+  const issue = (message: string, suggestions: ReadonlyArray<string> | undefined): void =>
+    analysisReport.addIssue("INVALID_DATA_ACCESS", message, getNodeRange(node), validationContext.getSnapshot(), suggestions && [...suggestions]);
 
-  for (let i = 1; i < path.length; i++) {
-    const prop = path[i];
-    if (prop === undefined) {
+  let current: JSONSchema7Definition = data;
+  for (const [i, prop] of path.entries()) {
+    const accessedPath = path.slice(0, i + 1).join(".");
+    const container: JSONSchema7Definition = (elementAccessFlags[i - 1] === true ? items(current, data) : undefined) ?? current;
+    const typeNames = types(container, data);
+    const next = property(container, prop, data);
+
+    if (next !== undefined && (typeNames.size === 0 || typeNames.has("object"))) {
+      current = next;
+      continue;
+    }
+    if (typeNames.has("array")) {
+      if (!isAllowedOnArray(prop)) {
+        issue(`Property '${accessedPath}' does not exist on array type`, getAvailableArrayMembers());
+      }
       return;
     }
-    const isElementAccess = elementAccessFlags[i - 1];
-
-    if (current.type === "array") {
-      if (!isElementAccess) {
-        if (isAllowedOnArray(prop)) {
-          return;
-        }
-
-        const accessedPath = [...path.slice(0, i), prop].join(".");
-        analysisReport.addIssue(
-          "INVALID_DATA_ACCESS",
-          `Property '${accessedPath}' does not exist on array type`,
-          getNodeRange(node),
-          validationContext.getSnapshot(),
-          getAvailableArrayMembers()
-        );
-        return;
+    if (typeNames.has("string")) {
+      if (!isAllowedOnString(prop)) {
+        issue(`Property '${accessedPath}' does not exist on string type`, getAvailableStringMembers());
       }
-
-      const elementType: PropertySchema = current.shape;
-
-      if (elementType.type === "object") {
-        const next: PropertySchema | undefined = elementType.shape[prop];
-
-        if (!next) {
-          const paths = path.slice(0, i + 1);
-          const suggestions = Object.keys(elementType.shape);
-
-          analysisReport.addIssue(
-            "INVALID_DATA_ACCESS",
-            `Property '${paths.join(".")}' does not exist in schema`,
-            getNodeRange(node),
-            validationContext.getSnapshot(),
-            suggestions
-          );
-          return;
-        }
-
-        current = next;
-        continue;
-      }
-
-      if (elementType.type === "array") {
-        if (isAllowedOnArray(prop)) {
-          return;
-        }
-
-        const accessedPath = [...path.slice(0, i), prop].join(".");
-        analysisReport.addIssue(
-          "INVALID_DATA_ACCESS",
-          `Property '${accessedPath}' does not exist on array type`,
-          getNodeRange(node),
-          validationContext.getSnapshot(),
-          getAvailableArrayMembers()
-        );
-        return;
-      }
-
-      if (elementType.type === "string") {
-        if (isAllowedOnString(prop)) {
-          return;
-        }
-
-        const accessedPath = [...path.slice(0, i), prop].join(".");
-        analysisReport.addIssue(
-          "INVALID_DATA_ACCESS",
-          `Property '${accessedPath}' does not exist on string type`,
-          getNodeRange(node),
-          validationContext.getSnapshot(),
-          getAvailableStringMembers()
-        );
-        return;
-      }
-
-      analysisReport.addIssue(
-        "INVALID_DATA_ACCESS",
-        `Cannot access property '${prop}' on ${elementType.type} type array element`,
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
       return;
     }
-
-    if (current.type === "string") {
-      if (isAllowedOnString(prop)) {
-        return;
-      }
-
-      const accessedPath = [...path.slice(0, i), prop].join(".");
-      analysisReport.addIssue(
-        "INVALID_DATA_ACCESS",
-        `Property '${accessedPath}' does not exist on string type`,
-        getNodeRange(node),
-        validationContext.getSnapshot(),
-        getAvailableStringMembers()
-      );
+    if (typeNames.size > 0 && !typeNames.has("object")) {
+      issue(`Cannot access property '${prop}' on ${[...typeNames].join(" | ")} type`, undefined);
       return;
     }
-
-    if (current.type !== "object") {
-      analysisReport.addIssue(
-        "INVALID_DATA_ACCESS",
-        `Cannot access property '${prop}' on ${current.type} type`,
-        getNodeRange(node),
-        validationContext.getSnapshot()
-      );
-      return;
-    }
-
-    current = current.shape[prop];
-
-    if (!current) {
-      const availableProps = getAvailablePropsAtPath(path, i - 1, schemaData);
-      const paths = path.slice(0, i + 1);
-
-      analysisReport.addIssue(
-        "INVALID_DATA_ACCESS",
-        `Property '${paths.join(".")}' does not exist in schema`,
-        getNodeRange(node),
-        validationContext.getSnapshot(),
-        availableProps
-      );
-      return;
-    }
+    issue(`Property '${accessedPath}' does not exist in schema`, keys(container, data));
+    return;
   }
 }
 

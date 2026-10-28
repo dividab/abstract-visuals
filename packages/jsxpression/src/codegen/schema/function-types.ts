@@ -1,21 +1,12 @@
-import type { PropertySchema, Schema } from "../../schema.js";
-import { mapSchemaTypeToTypeScript } from "./utils.js";
+import type { Schema } from "../../schema.js";
+import { typeScriptType } from "./utils.js";
 
-export function declareFunctionTypes(schema: Schema, names: Readonly<Record<string, PropertySchema>>): string {
-  let output = `declare global {\n`;
-
-  if (schema.functions) {
-    Object.entries(schema.functions).forEach(([funcName, funcSchema]) => {
-      const args = funcSchema.args
-        ? funcSchema.args.map((arg) => `${arg.name}: ${mapSchemaTypeToTypeScript(arg.property, 0, names)}`).join(", ")
-        : "";
-      const ret = mapSchemaTypeToTypeScript(funcSchema.ret, 0, names);
-      output += `function ${funcName}(${args}): ${ret};\n`;
-    });
-  }
-
-  output += `}\n\n`;
-  output += `export {};\n`;
-
-  return output;
+/** The functions, their arguments' and return values' $refs referring to the data's $defs, named as the data declares them */
+export function declareFunctionTypes(schema: Schema, names: Readonly<Record<string, string>>): string {
+  const root = schema.data ?? {};
+  const functions = Object.entries(schema.functions ?? {}).map(([funcName, funcSchema]) => {
+    const args = (funcSchema.args ?? []).map((arg) => `${arg.name}: ${typeScriptType(arg.schema, root, names)}`).join(", ");
+    return `function ${funcName}(${args}): ${typeScriptType(funcSchema.ret, root, names)};\n`;
+  });
+  return `declare global {\n${functions.join("")}}\n\nexport {};\n`;
 }

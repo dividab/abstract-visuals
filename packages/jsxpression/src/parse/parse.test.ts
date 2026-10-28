@@ -17,14 +17,14 @@ describe("parse", () => {
 
     expect(result.type).toBe("Program");
     expect(result.body).toHaveLength(1);
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should parse JSX fragment", () => {
     const result = parse("<><Text>A</Text><Text>B</Text></>");
 
     expect(result.type).toBe("Program");
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should throw ParseError with position for syntax error", () => {
@@ -35,49 +35,49 @@ describe("parse", () => {
     const result = parse("<Outer><Inner><Deep>Text</Deep></Inner></Outer>");
 
     expect(result.type).toBe("Program");
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should parse JSX with expressions", () => {
     const result = parse("<Text>{props.value}</Text>");
 
     expect(result.type).toBe("Program");
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should parse JSX with complex expressions", () => {
     const result = parse("<Text>{items.map(x => x * 2).join(', ')}</Text>");
 
     expect(result.type).toBe("Program");
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should parse JSX with attributes", () => {
     const result = parse('<Text x={10} y="hello" z={value}>Content</Text>');
 
     expect(result.type).toBe("Program");
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should parse self-closing JSX elements", () => {
     const result = parse("<Input value={name} />");
 
     expect(result.type).toBe("Program");
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should parse JSX with conditional expressions", () => {
     const result = parse("<Text>{show ? 'visible' : 'hidden'}</Text>");
 
     expect(result.type).toBe("Program");
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should parse empty JSX expressions", () => {
     const result = parse("<Text>{}</Text>");
 
     expect(result.type).toBe("Program");
-    expect(result.body[0].type).toBe("ExpressionStatement");
+    expect(result.body.at(0)?.type).toBe("ExpressionStatement");
   });
 
   it("should preserve location information in errors", () => {

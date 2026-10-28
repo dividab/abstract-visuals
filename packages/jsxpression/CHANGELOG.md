@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.0] - 2026-10-28
+
+- Breaking: a schema's data, element attributes and function arguments and return values are JSON Schemas instead of `PropertySchema`, which is removed with `serializePropertySchemaToJson` and `deserializePropertySchemaFromJson`.
+- Added: `jsxpression/json-schema`, what jsxpression reads JSON Schemas with, for others to read them the same way, like an editor suggesting a template's names: `resolve` follows `$ref`s, `property`, `keys`, `items`, `types`, `enumValues` and `isRequired` read objects, arrays, `allOf`, `anyOf` and `oneOf`. An object with `properties` but no `additionalProperties` only has those, unless it's one of `allOf`'s, and the names a `propertyNames` lists are its known keys, only those if it enumerates them.
+  - `data` is one object's schema, each of its properties a variable, its `$defs` what `$ref`s in it refer to. An element's `props` is an object's schema, its `required` the attributes it needs. A function argument's `property` is its `schema`.
+  - The old kinds map as `{ type: "object", shape }` to `properties` and `required`, `record` to `additionalProperties`, `array`'s `shape` to `items` and `union` to `anyOf`. A property's `required: true` moves to its object's `required`, and data properties are no longer required unless listed there.
+- Added: the data check follows `$ref`s, `allOf`, `anyOf` and `oneOf`, so a union's members' properties can be read, and allows any key of an object with `additionalProperties`, or only those its `propertyNames` enumerate, where a record couldn't be read before.
+- Changed: the generated TypeScript definitions declare the data's `$defs` as named types, e.g. `type Node = { children?: Node[] }`, which replaces the optional `name` of 0.3.3. An object with `additionalProperties` gets an index signature, `{ [key: string]: T }`, besides its properties.
+
 ## [0.3.3] - 2026-10-27
 
 - The generated TypeScript definitions support a data schema that contains itself, e.g. a component whose `children` are components. Such a schema is declared as a named type, e.g. `type Component = { children: Component[] }`, instead of the generator never finishing. An object, array, record or union schema takes an optional `name` for that type, else it's called `Recursive`.

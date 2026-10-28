@@ -5,9 +5,10 @@ import { EvaluationError } from "./evaluate/index.js";
 import { ParseError } from "./parse/index.js";
 import { render } from "./render.js";
 
-type TestNode = {
+/** A node the tests' components return, with the props the template gave them */
+type TestNode<P = Record<string, unknown>> = {
   type: string;
-  props: Record<string, unknown>;
+  props: P;
   children: Array<unknown>;
 };
 
@@ -19,18 +20,25 @@ describe("render", () => {
       children: children ?? [],
     });
 
-    const result = render(
+    const result = render<TestNode>(
       "<Test x={x} y={Math.floor(y)}>Hello</Test>",
       {
         data: {
-          x: { type: "number" },
-          y: { type: "number" },
+          type: "object",
+          properties: {
+            x: { type: "number" },
+            y: { type: "number" },
+          },
+          required: ["x", "y"],
         },
         elements: {
           Test: {
             props: {
-              x: { type: "number" },
-              y: { type: "number" },
+              type: "object",
+              properties: {
+                x: { type: "number" },
+                y: { type: "number" },
+              },
             },
           },
         },
@@ -53,16 +61,23 @@ describe("render", () => {
       children: [],
     });
 
-    const result = render(
+    const result = render<TestNode<{ values: string }>>(
       "<Test values={items.filter(x => x > 2).map(x => x * 2).join(', ')}>Text</Test>",
       {
         data: {
-          items: { type: "array", shape: { type: "number" } },
+          type: "object",
+          properties: {
+            items: { type: "array", items: { type: "number" } },
+          },
+          required: ["items"],
         },
         elements: {
           Test: {
             props: {
-              values: { type: "string" },
+              type: "object",
+              properties: {
+                values: { type: "string" },
+              },
             },
           },
         },
@@ -89,18 +104,24 @@ describe("render", () => {
       children: children ?? [],
     });
 
-    const result = render(
+    const result = render<TestNode>(
       "<Outer x={10}><Inner y={20}>Nested</Inner></Outer>",
       {
         elements: {
           Outer: {
             props: {
-              x: { type: "number" },
+              type: "object",
+              properties: {
+                x: { type: "number" },
+              },
             },
           },
           Inner: {
             props: {
-              y: { type: "number" },
+              type: "object",
+              properties: {
+                y: { type: "number" },
+              },
             },
           },
         },
@@ -117,7 +138,7 @@ describe("render", () => {
     expect(result.type).toBe("OuterComponent");
     expect(result.props).toEqual({ x: 10 });
     expect(result.children).toHaveLength(1);
-    expect(result.children[0].type).toBe("InnerComponent");
+    expect((result.children[0] as TestNode).type).toBe("InnerComponent");
   });
 
   it("should render JSX fragments", () => {
@@ -150,12 +171,17 @@ describe("render", () => {
       "{user.name}",
       {
         data: {
-          user: {
-            type: "object",
-            shape: {
-              name: { type: "string" },
+          type: "object",
+          properties: {
+            user: {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+              },
+              required: ["name"],
             },
           },
+          required: ["user"],
         },
         elements: {},
       },
@@ -173,7 +199,11 @@ describe("render", () => {
       "{count * 2}",
       {
         data: {
-          count: { type: "number" },
+          type: "object",
+          properties: {
+            count: { type: "number" },
+          },
+          required: ["count"],
         },
         elements: {},
       },
@@ -191,7 +221,11 @@ describe("render", () => {
       "{text.toUpperCase()}",
       {
         data: {
-          text: { type: "string" },
+          type: "object",
+          properties: {
+            text: { type: "string" },
+          },
+          required: ["text"],
         },
         elements: {},
       },
@@ -209,10 +243,14 @@ describe("render", () => {
       "{numbers.map(x => x * 2).join(', ')}",
       {
         data: {
-          numbers: {
-            type: "array",
-            shape: { type: "number" },
+          type: "object",
+          properties: {
+            numbers: {
+              type: "array",
+              items: { type: "number" },
+            },
           },
+          required: ["numbers"],
         },
         elements: {},
       },
@@ -312,10 +350,14 @@ describe("render", () => {
         "<Test>{items.push(1)}</Test>",
         {
           data: {
-            items: {
-              type: "array",
-              shape: { type: "number" },
+            type: "object",
+            properties: {
+              items: {
+                type: "array",
+                items: { type: "number" },
+              },
             },
+            required: ["items"],
           },
           elements: {
             Test: {
@@ -374,17 +416,25 @@ describe("render", () => {
         "<Test value={missing.nested}>Hello</Test>",
         {
           data: {
-            missing: {
-              type: "object",
-              shape: {
-                nested: { type: "number" },
+            type: "object",
+            properties: {
+              missing: {
+                type: "object",
+                properties: {
+                  nested: { type: "number" },
+                },
+                required: ["nested"],
               },
             },
+            required: ["missing"],
           },
           elements: {
             Test: {
               props: {
-                value: { type: "number" },
+                type: "object",
+                properties: {
+                  value: { type: "number" },
+                },
               },
             },
           },
@@ -408,7 +458,7 @@ describe("render", () => {
       children: [],
     });
 
-    const result = render(
+    const result = render<TestNode>(
       "<Test>Hello</Test>",
       {
         elements: {
@@ -432,16 +482,23 @@ describe("render", () => {
       children: [],
     });
 
-    const result = render(
+    const result = render<TestNode<{ msg: string }>>(
       "<Test msg={show ? 'visible' : 'hidden'}>Text</Test>",
       {
         data: {
-          show: { type: "boolean" },
+          type: "object",
+          properties: {
+            show: { type: "boolean" },
+          },
+          required: ["show"],
         },
         elements: {
           Test: {
             props: {
-              msg: { type: "string" },
+              type: "object",
+              properties: {
+                msg: { type: "string" },
+              },
             },
           },
         },
@@ -462,14 +519,17 @@ describe("render", () => {
       children: children ? [children].flat() : [],
     });
 
-    const result = render(
+    const result = render<TestNode<{ x: number }>>(
       "interface Nice {\n  semi: true\n}\n\nreturn <Test x={10}>Hello</Test>",
       {
         data: {},
         elements: {
           Test: {
             props: {
-              x: { type: "number" },
+              type: "object",
+              properties: {
+                x: { type: "number" },
+              },
             },
           },
         },
@@ -492,16 +552,23 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode<{ value: number }>>(
         "const doubled = count * 2;\nreturn <Test value={doubled}>Text</Test>",
         {
           data: {
-            count: { type: "number" },
+            type: "object",
+            properties: {
+              count: { type: "number" },
+            },
+            required: ["count"],
           },
           elements: {
             Test: {
               props: {
-                value: { type: "number" },
+                type: "object",
+                properties: {
+                  value: { type: "number" },
+                },
               },
             },
           },
@@ -522,11 +589,15 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode>(
         "const upper = name.toUpperCase();\nreturn <Test>{upper}</Test>",
         {
           data: {
-            name: { type: "string" },
+            type: "object",
+            properties: {
+              name: { type: "string" },
+            },
+            required: ["name"],
           },
           elements: {
             Test: { props: {} },
@@ -548,16 +619,23 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode<{ count: number }>>(
         "const filtered = items.filter(x => x > 2);\nconst total = filtered.length;\nreturn <Test count={total}>Text</Test>",
         {
           data: {
-            items: { type: "array", shape: { type: "number" } },
+            type: "object",
+            properties: {
+              items: { type: "array", items: { type: "number" } },
+            },
+            required: ["items"],
           },
           elements: {
             Test: {
               props: {
-                count: { type: "number" },
+                type: "object",
+                properties: {
+                  count: { type: "number" },
+                },
               },
             },
           },
@@ -580,7 +658,7 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode>(
         'function Badge({ label }) {\n  return <Span>{label}</Span>\n}\nreturn <Badge label="hello" />',
         {
           data: {},
@@ -611,7 +689,7 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode>(
         'function Label({ text }) {\n  return <Span>{text}</Span>\n}\nfunction Card({ title }) {\n  return <Div><Label text={title} /></Div>\n}\nreturn <Card title="world" />',
         {
           data: {},
@@ -639,7 +717,7 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode>(
         "function Tag({ label = 'default' }) {\n  return <Span>{label}</Span>\n}\nreturn <Tag />",
         {
           data: {},
@@ -663,11 +741,15 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode>(
         "function Greeting() {\n  return <Span>Hello {name}</Span>\n}\nreturn <Greeting />",
         {
           data: {
-            name: { type: "string" },
+            type: "object",
+            properties: {
+              name: { type: "string" },
+            },
+            required: ["name"],
           },
           elements: {
             Span: { props: {} },
@@ -695,7 +777,7 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode>(
         "function Wrapper({ children }) {\n  return <Div>{children}</Div>\n}\nreturn <Wrapper><Span>inside</Span></Wrapper>",
         {
           data: {},
@@ -730,11 +812,15 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode>(
         "const title = name.toUpperCase();\nfunction Header({ text }) {\n  return <Span>{text}</Span>\n}\nreturn <Div><Header text={title} /></Div>",
         {
           data: {
-            name: { type: "string" },
+            type: "object",
+            properties: {
+              name: { type: "string" },
+            },
+            required: ["name"],
           },
           elements: {
             Span: { props: {} },
@@ -765,11 +851,15 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode>(
         "function Item({ label }) {\n  return <Span>{label}</Span>\n}\nreturn <Div>{items.map(i => <Item label={i} />)}</Div>",
         {
           data: {
-            items: { type: "array", shape: { type: "string" } },
+            type: "object",
+            properties: {
+              items: { type: "array", items: { type: "string" } },
+            },
+            required: ["items"],
           },
           elements: {
             Span: { props: {} },
@@ -798,16 +888,23 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode<{ value: string }>>(
         "<Test value={String(count)}>Text</Test>",
         {
           data: {
-            count: { type: "number" },
+            type: "object",
+            properties: {
+              count: { type: "number" },
+            },
+            required: ["count"],
           },
           elements: {
             Test: {
               props: {
-                value: { type: "string" },
+                type: "object",
+                properties: {
+                  value: { type: "string" },
+                },
               },
             },
           },
@@ -854,14 +951,17 @@ describe("render", () => {
         children: children ? [children].flat() : [],
       });
 
-      const result = render(
+      const result = render<TestNode<{ value: number }>>(
         "const x = 1;\nreturn <Test value={x}>hello</Test>",
         {
           data: {},
           elements: {
             Test: {
               props: {
-                value: { type: "number" },
+                type: "object",
+                properties: {
+                  value: { type: "number" },
+                },
               },
             },
           },

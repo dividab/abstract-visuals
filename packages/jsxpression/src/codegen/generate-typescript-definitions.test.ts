@@ -1,5 +1,6 @@
+import type { JSONSchema7 } from "json-schema";
 import { describe, it, expect } from "vitest";
-import type { ElementSchema, ObjectPropertySchema, PropertySchema, Schema } from "../schema.js";
+import type { ElementSchema, Schema } from "../schema.js";
 import { generateTypeScriptDefinitions } from "./generate-typescript-definitions.js";
 
 describe("generateTypeScriptDefinitions", () => {
@@ -67,7 +68,11 @@ describe("generateTypeScriptDefinitions", () => {
         elements: {
           Button: {
             props: {
-              label: { type: "string", required: true },
+              type: "object",
+              properties: {
+                label: { type: "string" },
+              },
+              required: ["label"],
             },
           },
         },
@@ -86,10 +91,14 @@ describe("generateTypeScriptDefinitions", () => {
         elements: {
           Input: {
             props: {
-              name: { type: "string", required: true },
-              value: { type: "string" },
-              maxLength: { type: "number" },
-              disabled: { type: "boolean" },
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                value: { type: "string" },
+                maxLength: { type: "number" },
+                disabled: { type: "boolean" },
+              },
+              required: ["name"],
             },
           },
         },
@@ -110,7 +119,10 @@ describe("generateTypeScriptDefinitions", () => {
         elements: {
           Button: {
             props: {
-              size: { type: "string", enum: ["sm", "md", "lg"] as const },
+              type: "object",
+              properties: {
+                size: { type: "string", enum: ["sm", "md", "lg"] },
+              },
             },
           },
         },
@@ -128,11 +140,15 @@ describe("generateTypeScriptDefinitions", () => {
         elements: {
           Card: {
             props: {
-              style: {
-                type: "object",
-                shape: {
-                  color: { type: "string" },
-                  backgroundColor: { type: "string" },
+              type: "object",
+              properties: {
+                style: {
+                  type: "object",
+                  properties: {
+                    color: { type: "string" },
+                    backgroundColor: { type: "string" },
+                  },
+                  required: ["color", "backgroundColor"],
                 },
               },
             },
@@ -151,36 +167,44 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate element with record prop", () => {
       const schema: Schema = {
         data: {
-          rec: {
-            type: "record",
-            shape: {
-              type: "number",
+          type: "object",
+          properties: {
+            rec: {
+              type: "object",
+              additionalProperties: {
+                type: "number",
+              },
             },
           },
+          required: ["rec"],
         },
         elements: {},
       };
       const result = generateTypeScriptDefinitions(schema);
-      expect(result).toContain("const rec: Record<string, number>;");
+      expect(result).toContain("const rec: {\n    [key: string]: number;\n  };");
     });
 
     it("should generate element with record that has record as value", () => {
       const schema: Schema = {
         data: {
-          rec: {
-            type: "record",
-            shape: {
-              type: "record",
-              shape: {
-                type: "number",
+          type: "object",
+          properties: {
+            rec: {
+              type: "object",
+              additionalProperties: {
+                type: "object",
+                additionalProperties: {
+                  type: "number",
+                },
               },
             },
           },
+          required: ["rec"],
         },
         elements: {},
       };
       const result = generateTypeScriptDefinitions(schema);
-      expect(result).toContain("const rec: Record<string, Record<string, number>>;");
+      expect(result).toContain("const rec: {\n    [key: string]: {\n      [key: string]: number;\n    };\n  };");
     });
 
     it("should generate element with array prop", () => {
@@ -189,9 +213,12 @@ describe("generateTypeScriptDefinitions", () => {
         elements: {
           List: {
             props: {
-              items: {
-                type: "array",
-                shape: { type: "string" },
+              type: "object",
+              properties: {
+                items: {
+                  type: "array",
+                  items: { type: "string" },
+                },
               },
             },
           },
@@ -210,7 +237,11 @@ describe("generateTypeScriptDefinitions", () => {
         elements: {
           Button: {
             props: {
-              onClick: { type: "function" },
+              type: "object",
+              properties: {
+                // JSON Schema has no function type, so a function prop allows any value
+                onClick: {},
+              },
             },
           },
         },
@@ -219,7 +250,7 @@ describe("generateTypeScriptDefinitions", () => {
       const result = generateTypeScriptDefinitions(schema);
 
       expect(result).toContain("interface ButtonProps");
-      expect(result).toContain("onClick?: (...args: any[]) => any");
+      expect(result).toContain("onClick?: any;");
     });
 
     it("should include children prop by default", () => {
@@ -263,7 +294,10 @@ describe("generateTypeScriptDefinitions", () => {
           Button: {
             description: "A clickable button element",
             props: {
-              label: { type: "string", description: "The button text" },
+              type: "object",
+              properties: {
+                label: { type: "string", description: "The button text" },
+              },
             },
           },
         },
@@ -280,10 +314,10 @@ describe("generateTypeScriptDefinitions", () => {
         data: {},
         elements: {
           Button: {
-            props: { label: { type: "string" } },
+            props: { type: "object", properties: { label: { type: "string" } } },
           },
           Input: {
-            props: { value: { type: "string" } },
+            props: { type: "object", properties: { value: { type: "string" } } },
           },
           Container: {
             props: {},
@@ -306,7 +340,11 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate data with string property", () => {
       const schema: Schema = {
         data: {
-          userName: { type: "string" },
+          type: "object",
+          properties: {
+            userName: { type: "string" },
+          },
+          required: ["userName"],
         },
         elements: {},
       };
@@ -319,9 +357,13 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate data with multiple property types", () => {
       const schema: Schema = {
         data: {
-          name: { type: "string" },
-          age: { type: "number" },
-          active: { type: "boolean" },
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            age: { type: "number" },
+            active: { type: "boolean" },
+          },
+          required: ["name", "age", "active"],
         },
         elements: {},
       };
@@ -336,13 +378,18 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate data with object property", () => {
       const schema: Schema = {
         data: {
-          user: {
-            type: "object",
-            shape: {
-              name: { type: "string" },
-              email: { type: "string" },
+          type: "object",
+          properties: {
+            user: {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                email: { type: "string" },
+              },
+              required: ["name", "email"],
             },
           },
+          required: ["user"],
         },
         elements: {},
       };
@@ -357,19 +404,25 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate data with nested object properties", () => {
       const schema: Schema = {
         data: {
-          user: {
-            type: "object",
-            shape: {
-              name: { type: "string" },
-              profile: {
-                type: "object",
-                shape: {
-                  avatar: { type: "string" },
-                  bio: { type: "string" },
+          type: "object",
+          properties: {
+            user: {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                profile: {
+                  type: "object",
+                  properties: {
+                    avatar: { type: "string" },
+                    bio: { type: "string" },
+                  },
+                  required: ["avatar", "bio"],
                 },
               },
+              required: ["name", "profile"],
             },
           },
+          required: ["user"],
         },
         elements: {},
       };
@@ -385,14 +438,18 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate data with array of primitives", () => {
       const schema: Schema = {
         data: {
-          tags: {
-            type: "array",
-            shape: { type: "string" },
+          type: "object",
+          properties: {
+            tags: {
+              type: "array",
+              items: { type: "string" },
+            },
+            scores: {
+              type: "array",
+              items: { type: "number" },
+            },
           },
-          scores: {
-            type: "array",
-            shape: { type: "number" },
-          },
+          required: ["tags", "scores"],
         },
         elements: {},
       };
@@ -406,16 +463,21 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate data with array of objects", () => {
       const schema: Schema = {
         data: {
-          users: {
-            type: "array",
-            shape: {
-              type: "object",
-              shape: {
-                name: { type: "string" },
-                age: { type: "number" },
+          type: "object",
+          properties: {
+            users: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  age: { type: "number" },
+                },
+                required: ["name", "age"],
               },
             },
           },
+          required: ["users"],
         },
         elements: {},
       };
@@ -431,14 +493,19 @@ describe("generateTypeScriptDefinitions", () => {
     it("should include data property descriptions as JSDoc", () => {
       const schema: Schema = {
         data: {
-          userName: { type: "string", description: "The current user's name" },
-          settings: {
-            type: "object",
-            description: "User preferences",
-            shape: {
-              theme: { type: "string", description: "UI theme preference" },
+          type: "object",
+          properties: {
+            userName: { type: "string", description: "The current user's name" },
+            settings: {
+              type: "object",
+              description: "User preferences",
+              properties: {
+                theme: { type: "string", description: "UI theme preference" },
+              },
+              required: ["theme"],
             },
           },
+          required: ["userName", "settings"],
         },
         elements: {},
       };
@@ -453,8 +520,12 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate data with enum values", () => {
       const schema: Schema = {
         data: {
-          status: { type: "string", enum: ["pending", "active", "completed"] as const },
-          priority: { type: "number", enum: [1, 2, 3] as const },
+          type: "object",
+          properties: {
+            status: { type: "string", enum: ["pending", "active", "completed"] },
+            priority: { type: "number", enum: [1, 2, 3] },
+          },
+          required: ["status", "priority"],
         },
         elements: {},
       };
@@ -472,18 +543,28 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate definitions for both components and data", () => {
       const schema: Schema = {
         data: {
-          userName: { type: "string" },
-          count: { type: "number" },
+          type: "object",
+          properties: {
+            userName: { type: "string" },
+            count: { type: "number" },
+          },
+          required: ["userName", "count"],
         },
         elements: {
           Display: {
             props: {
-              text: { type: "string" },
+              type: "object",
+              properties: {
+                text: { type: "string" },
+              },
             },
           },
           Counter: {
             props: {
-              value: { type: "number" },
+              type: "object",
+              properties: {
+                value: { type: "number" },
+              },
             },
           },
         },
@@ -505,40 +586,45 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate union types", () => {
       const schema: Schema = {
         data: {
-          union: {
-            type: "union",
-            shape: [
-              {
-                type: "object",
-                shape: {
-                  id: {
-                    type: "string",
-                    enum: ["TypeA"],
+          type: "object",
+          properties: {
+            union: {
+              anyOf: [
+                {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                      enum: ["TypeA"],
+                    },
+                    valueA: {
+                      type: "string",
+                    },
                   },
-                  valueA: {
-                    type: "string",
-                  },
+                  required: ["id", "valueA"],
                 },
-              },
-              {
-                type: "object",
-                shape: {
-                  id: {
-                    type: "string",
-                    enum: ["TypeB"],
+                {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                      enum: ["TypeB"],
+                    },
+                    valueB: {
+                      type: "number",
+                    },
                   },
-                  valueB: {
-                    type: "number",
-                  },
+                  required: ["id", "valueB"],
                 },
-              },
-            ],
+              ],
+            },
           },
+          required: ["union"],
         },
       };
 
       const result = generateTypeScriptDefinitions(schema);
-      expect(result).toContain(`id: "TypeA";\n        valueA: string;\n      } | {\n        id: "TypeB";\n        valueB: number;\n      };`);
+      expect(result).toContain(`const union: {\n    id: "TypeA";\n    valueA: string;\n  } | {\n    id: "TypeB";\n    valueB: number;\n  };`);
     });
 
     it("should generate functions", () => {
@@ -551,13 +637,13 @@ describe("generateTypeScriptDefinitions", () => {
             args: [
               {
                 name: "arg1",
-                property: {
+                schema: {
                   type: "number",
                 },
               },
               {
                 name: "arg2",
-                property: {
+                schema: {
                   type: "string",
                 },
               },
@@ -573,50 +659,65 @@ describe("generateTypeScriptDefinitions", () => {
     it("should generate valid TypeScript that can be parsed", () => {
       const schema: Schema = {
         data: {
-          user: {
-            type: "object",
-            shape: {
-              name: { type: "string" },
-              email: { type: "string" },
-              settings: {
-                type: "object",
-                shape: {
-                  theme: { type: "string", enum: ["light", "dark"] as const },
-                  notifications: { type: "boolean" },
-                },
-              },
-            },
-          },
-          items: {
-            type: "array",
-            shape: {
+          type: "object",
+          properties: {
+            user: {
               type: "object",
-              shape: {
-                id: { type: "number" },
-                title: { type: "string" },
-                tags: {
-                  type: "array",
-                  shape: { type: "string" },
+              properties: {
+                name: { type: "string" },
+                email: { type: "string" },
+                settings: {
+                  type: "object",
+                  properties: {
+                    theme: { type: "string", enum: ["light", "dark"] },
+                    notifications: { type: "boolean" },
+                  },
+                  required: ["theme", "notifications"],
                 },
+              },
+              required: ["name", "email", "settings"],
+            },
+            items: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  title: { type: "string" },
+                  tags: {
+                    type: "array",
+                    items: { type: "string" },
+                  },
+                },
+                required: ["id", "title", "tags"],
               },
             },
           },
+          required: ["user", "items"],
         },
         elements: {
           Card: {
             description: "A card element for displaying content",
             props: {
-              title: { type: "string", required: true, description: "Card title" },
-              subtitle: { type: "string", description: "Optional subtitle" },
-              variant: { type: "string", enum: ["default", "outlined", "filled"] as const },
-              onClick: { type: "function" },
+              type: "object",
+              properties: {
+                title: { type: "string", description: "Card title" },
+                subtitle: { type: "string", description: "Optional subtitle" },
+                variant: { type: "string", enum: ["default", "outlined", "filled"] },
+                // JSON Schema has no function type, so a function prop allows any value
+                onClick: {},
+              },
+              required: ["title"],
             },
           },
           List: {
             props: {
-              items: {
-                type: "array",
-                shape: { type: "string" },
+              type: "object",
+              properties: {
+                items: {
+                  type: "array",
+                  items: { type: "string" },
+                },
               },
             },
             // `content` isn't part of ElementSchema; this intersection type documents that it's a legacy/unmodeled field being tested here.
@@ -644,7 +745,7 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("title: string");
       expect(result).toContain("subtitle?: string");
       expect(result).toContain('variant?: "default" | "outlined" | "filled"');
-      expect(result).toContain("onClick?: (...args: any[]) => any");
+      expect(result).toContain("onClick?: any;");
       expect(result).toContain("children?: JSX.Node");
       expect(result).toContain("A card element for displaying content");
 
@@ -683,8 +784,12 @@ describe("generateTypeScriptDefinitions", () => {
         elements: {
           Label: {
             props: {
-              text: { type: "string", required: true },
-              id: { type: "string", required: true },
+              type: "object",
+              properties: {
+                text: { type: "string" },
+                id: { type: "string" },
+              },
+              required: ["text", "id"],
             },
           },
         },
@@ -702,27 +807,35 @@ describe("generateTypeScriptDefinitions", () => {
     it("should handle deeply nested object structures", () => {
       const schema: Schema = {
         data: {
-          config: {
-            type: "object",
-            shape: {
-              level1: {
-                type: "object",
-                shape: {
-                  level2: {
-                    type: "object",
-                    shape: {
-                      level3: {
-                        type: "object",
-                        shape: {
-                          value: { type: "string" },
+          type: "object",
+          properties: {
+            config: {
+              type: "object",
+              properties: {
+                level1: {
+                  type: "object",
+                  properties: {
+                    level2: {
+                      type: "object",
+                      properties: {
+                        level3: {
+                          type: "object",
+                          properties: {
+                            value: { type: "string" },
+                          },
+                          required: ["value"],
                         },
                       },
+                      required: ["level3"],
                     },
                   },
+                  required: ["level2"],
                 },
               },
+              required: ["level1"],
             },
           },
+          required: ["config"],
         },
         elements: {},
       };
@@ -739,13 +852,17 @@ describe("generateTypeScriptDefinitions", () => {
     it("should handle array of arrays", () => {
       const schema: Schema = {
         data: {
-          matrix: {
-            type: "array",
-            shape: {
+          type: "object",
+          properties: {
+            matrix: {
               type: "array",
-              shape: { type: "number" },
+              items: {
+                type: "array",
+                items: { type: "number" },
+              },
             },
           },
+          required: ["matrix"],
         },
         elements: {},
       };
@@ -761,12 +878,17 @@ describe("generateTypeScriptDefinitions", () => {
         elements: {
           Form: {
             props: {
-              id: { type: "string", required: true },
-              name: { type: "string", required: true },
-              title: { type: "string" },
-              description: { type: "string" },
-              onSubmit: { type: "function", required: true },
-              onCancel: { type: "function" },
+              type: "object",
+              properties: {
+                id: { type: "string" },
+                name: { type: "string" },
+                title: { type: "string" },
+                description: { type: "string" },
+                // JSON Schema has no function type, so a function prop allows any value
+                onSubmit: {},
+                onCancel: {},
+              },
+              required: ["id", "name", "onSubmit"],
             },
           },
         },
@@ -779,18 +901,26 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("name: string");
       expect(result).toContain("title?: string");
       expect(result).toContain("description?: string");
-      expect(result).toContain("onSubmit: (...args: any[]) => any");
-      expect(result).toContain("onCancel?: (...args: any[]) => any");
+      expect(result).toContain("onSubmit: any;");
+      expect(result).toContain("onCancel?: any;");
     });
   });
 
-  describe("recursive types", () => {
-    it("should declare a schema that contains itself as a named type", () => {
-      const component: ObjectPropertySchema = { type: "object", name: "Component", shape: { name: { type: "string" } } };
-      component.shape.children = { type: "array", shape: component };
+  describe("$defs", () => {
+    const component: JSONSchema7 = {
+      type: "object",
+      properties: { name: { type: "string" }, children: { type: "array", items: { $ref: "#/$defs/Component" } } },
+      required: ["name", "children"],
+    };
+
+    it("should declare a $def as a named type and refer to it by name", () => {
       const schema: Schema = {
-        data: { components: { type: "array", shape: component } },
-        functions: { first: { args: [{ name: "components", property: { type: "array", shape: component } }], ret: component } },
+        data: {
+          type: "object",
+          properties: { components: { type: "array", items: { $ref: "#/$defs/Component" } } },
+          required: ["components"],
+          $defs: { Component: component },
+        },
       };
 
       const result = generateTypeScriptDefinitions(schema);
@@ -798,30 +928,76 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toContain("  type Component = {\n    name: string;\n");
       expect(result).toContain("    children: Component[];\n  };\n");
       expect(result).toContain("const components: Component[];");
+    });
+
+    it("should refer to the data's $defs by name in function arguments and return values", () => {
+      const schema: Schema = {
+        data: { type: "object", properties: {}, $defs: { Component: component } },
+        functions: {
+          first: {
+            args: [{ name: "components", schema: { type: "array", items: { $ref: "#/$defs/Component" } } }],
+            ret: { $ref: "#/$defs/Component" },
+          },
+        },
+      };
+
+      const result = generateTypeScriptDefinitions(schema);
+
       expect(result).toContain("function first(components: Component[]): Component;");
     });
 
-    it("should name recursive schemas without a name, or with the same name, apart", () => {
-      const a: ObjectPropertySchema = { type: "object", shape: {} };
-      a.shape.next = a;
-      const b: ObjectPropertySchema = { type: "object", shape: {} };
-      b.shape.byKey = { type: "record", shape: { type: "union", shape: [b, { type: "string" }] } };
+    it("should name $defs whose keys aren't identifiers, or make the same identifier, apart", () => {
+      const schema: Schema = {
+        data: {
+          type: "object",
+          properties: { a: { $ref: "#/$defs/tree-node" }, b: { $ref: "#/$defs/tree_node" } },
+          required: ["a", "b"],
+          $defs: {
+            "tree-node": { type: "object", properties: { next: { $ref: "#/$defs/tree-node" } }, required: ["next"] },
+            tree_node: {
+              type: "object",
+              properties: { byKey: { type: "object", additionalProperties: { anyOf: [{ $ref: "#/$defs/tree_node" }, { type: "string" }] } } },
+              required: ["byKey"],
+            },
+          },
+        },
+      };
 
-      const result = generateTypeScriptDefinitions({ data: { a, b } });
+      const result = generateTypeScriptDefinitions(schema);
 
-      expect(result).toContain("type Recursive = {\n");
-      expect(result).toContain("    next: Recursive;\n  };\n  type Recursive2 = {\n    byKey: Record<string, Recursive2 | string>;\n  };");
-      expect(result).toContain("const a: Recursive;");
-      expect(result).toContain("const b: Recursive2;");
+      expect(result).toContain("type tree_node = {\n");
+      expect(result).toContain(
+        "    next: tree_node;\n  };\n  type tree_node2 = {\n    byKey: {\n      [key: string]: tree_node2 | string;\n    };\n  };"
+      );
+      expect(result).toContain("const a: tree_node;");
+      expect(result).toContain("const b: tree_node2;");
     });
 
-    it("should keep a schema used in several places, but not in itself, inline", () => {
-      const point: PropertySchema = { type: "object", shape: { x: { type: "number" } } };
+    it("should keep a schema used in several places, but not as a $def, inline", () => {
+      const point: JSONSchema7 = { type: "object", properties: { x: { type: "number" } }, required: ["x"] };
 
-      const result = generateTypeScriptDefinitions({ data: { from: point, to: point } });
+      const result = generateTypeScriptDefinitions({ data: { type: "object", properties: { from: point, to: point }, required: ["from", "to"] } });
 
-      expect(result).not.toContain("type Recursive");
-      expect(result.match(/x: number;/g)).toHaveLength(2);
+      expect(result).toContain("declare global {\n  const from: {\n    x: number;\n  };\n  const to: {\n    x: number;\n  };\n}");
+    });
+  });
+
+  describe("propertyNames", () => {
+    it("should declare the names propertyNames list as there, only those if it enumerates them, else besides an index signature", () => {
+      const value: JSONSchema7 = { type: "string" };
+      const schema: Schema = {
+        data: {
+          type: "object",
+          properties: {
+            images: { type: "object", propertyNames: { enum: ["front", "side"] }, additionalProperties: value },
+            node: { type: "object", propertyNames: { anyOf: [{ enum: ["baseframe"] }, { type: "string" }] }, additionalProperties: value },
+          },
+          required: ["images", "node"],
+        },
+      };
+      const result = generateTypeScriptDefinitions(schema);
+      expect(result).toContain("  const images: {\n    front: string;\n    side: string;\n  };");
+      expect(result).toContain("  const node: {\n    baseframe: string;\n    [key: string]: string;\n  };");
     });
   });
 });

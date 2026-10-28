@@ -1,6 +1,6 @@
 import type { Program } from "acorn";
 import { isJsxAttribute, isJsxExpressionContainer, type JSXAttribute } from "../../jsx.js";
-import { getAllowedAttributes, getAttributeSchema, getEnumValues, getRequiredAttributes, isAttributeAllowed, type Schema } from "../../schema.js";
+import { getAllowedAttributes, getAttributeEnumValues, getRequiredAttributes, isAttributeAllowed, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
 import { getAttributeSimilarityMatchers, getBestSimilarityMatcherSuggestion, getNodeRange } from "../utils.js";
@@ -29,7 +29,7 @@ export function analyzeElementAttributes(ast: Program, schema: Schema, validatio
 
       const currentContext = validationContext.getSnapshot();
 
-      const allowedAttributes = getAllowedAttributes(schema, tagName);
+      const allowedAttributes = [...getAllowedAttributes(schema, tagName)];
       const requiredAttributes = getRequiredAttributes(schema, tagName);
 
       for (const attribute of node.openingElement.attributes) {
@@ -66,14 +66,13 @@ export function analyzeElementAttributes(ast: Program, schema: Schema, validatio
           continue;
         }
 
-        const attributeSchema = getAttributeSchema(schema, tagName, attributeName);
-        const enumValues = attributeSchema ? getEnumValues(attributeSchema) : undefined;
+        const enumValues = getAttributeEnumValues(schema, tagName, attributeName);
 
         if (enumValues && enumValues.length > 0) {
           const literalValue = getAttributeLiteralValue(attribute);
 
           if (isEnumComparableValue(literalValue) && !enumValues.includes(literalValue)) {
-            const stringEnumValues = enumValues.map((value) => String(value));
+            const stringEnumValues = enumValues.map((value) => (typeof value === "string" ? value : JSON.stringify(value)));
             const suggestionMatch = getBestSimilarityMatcherSuggestion(String(literalValue), stringEnumValues);
 
             let message = `Value ${JSON.stringify(literalValue)} is not allowed for attribute "${attributeName}" on <${tagName}>`;

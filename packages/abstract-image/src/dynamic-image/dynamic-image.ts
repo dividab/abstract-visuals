@@ -1,4 +1,4 @@
-import { AnalysisError, evaluate, compile, render, type FunctionSchema, type PropertySchema, type Schema } from "jsxpression";
+import { AnalysisError, evaluate, compile, render, type FunctionSchema, type Schema } from "jsxpression";
 import type { AbstractImage } from "../model/abstract-image.js";
 import { createComponents } from "./components.js";
 import { baseSchema } from "./schema.js";
@@ -21,7 +21,7 @@ export type DynamicImageError = {
 export function dynamicImage(
   source: string,
   data: Record<string, unknown>,
-  dataSchema?: Record<string, PropertySchema>,
+  dataSchema?: Schema["data"],
   functions?: Record<string, Function>,
   funcSchema?: Record<string, FunctionSchema>
 ): DynamicImageResult {
@@ -52,7 +52,7 @@ export type CompileDynamicImageResult = { readonly type: "Ok"; value: string } |
 
 export function compileDynamicImage(
   source: string,
-  dataSchema?: Record<string, PropertySchema>,
+  dataSchema?: Schema["data"],
   functionSchema?: Record<string, FunctionSchema>
 ): CompileDynamicImageResult {
   try {

@@ -1,135 +1,143 @@
-import type { PropertySchema } from "../../schema.js";
+import type { JSONSchema7, JSONSchema7Definition } from "json-schema";
+import { enumValues, keys, resolve, types } from "../../json-schema.js";
 
-export function mapSchemaTypeToTypeScript(prop: PropertySchema, depth: number = 0, names: Readonly<Record<string, PropertySchema>> = {}): string {
-  const name = Object.keys(names).find((n) => names[n] === prop);
-  if (name !== undefined) {
-    return name;
-  }
-  switch (prop.type) {
-    case "string":
-      if (prop.enum && Array.isArray(prop.enum)) {
-        return prop.enum.map((value) => `"${value}"`).join(" | ");
-      }
-      return "string";
-    case "number":
-      if (prop.enum && Array.isArray(prop.enum)) {
-        return prop.enum.map((value) => String(value)).join(" | ");
-      }
-      return "number";
-    case "boolean":
-      if (prop.enum && Array.isArray(prop.enum)) {
-        return prop.enum.map((value) => String(value)).join(" | ");
-      }
-      return "boolean";
-    case "array": {
-      // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization (e.g. hand-constructed by consumers of this package) and so may not actually carry `shape`
-      const itemType = prop.shape ? mapSchemaTypeToTypeScript(prop.shape, depth, names) : "any";
-      return `${itemType}[]`;
-    }
-    case "object": {
-      // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization (e.g. hand-constructed by consumers of this package) and so may not actually carry `shape`
-      if (prop.shape && typeof prop.shape === "object") {
-        return generateObjectTypeWithJSDoc(prop.shape, depth, names);
-      }
-      // oxlint-disable-next-line typescript/no-explicit-any -- "properties" isn't an ObjectPropertySchema field; kept as a legacy fallback rather than removed by this type-only pass
-      const propAsAny = prop as any;
-      if (propAsAny.properties && typeof propAsAny.properties === "object") {
-        return generateObjectTypeWithJSDoc(propAsAny.properties, depth);
-      }
-      return "object";
-    }
-    case "record": {
-      const valueType = mapSchemaTypeToTypeScript(prop.shape, 0, names);
-      return `Record<string, ${valueType}>`;
-    }
-    case "function":
-      return "(...args: any[]) => any";
-    case "union": {
-      return prop.shape.map((p) => mapSchemaTypeToTypeScript(p, 0, names)).join(" | ");
-    }
-    default:
-      return "any";
-  }
+/** The TypeScript names of a schema's $defs by their keys: each key made an identifier, numbered if another one is the same */
+export function definitionNames(root: JSONSchema7Definition | undefined): Readonly<Record<string, string>> {
+  const defs = typeof root === "object" ? Object.keys(root.$defs ?? {}) : [];
+  return defs.reduce<Record<string, string>>((names, key) => {
+    const identifier = key.replace(/[^\w$]/g, "_");
+    const base = /^[A-Za-z_$]/.test(identifier) ? identifier : `_${identifier}`;
+    const taken = new Set(Object.values(names));
+    const name = taken.has(base) ? `${base}${[...Array(taken.size + 2).keys()].find((i) => i >= 2 && !taken.has(`${base}${i}`))}` : base;
+    return { ...names, [key]: name };
+  }, {});
 }
 
-export function generateObjectTypeWithJSDoc(
-  properties: Record<string, PropertySchema>,
+/**
+ * The TypeScript type of a JSON schema within root: a $ref to one of root's $defs its name in names, any other $ref written out, anyOf and oneOf a
+ * union, allOf an intersection, an object's properties its keys, optional unless required, and its additionalProperties an index signature, or with
+ * propertyNames that list them, the keys they list
+ */
+export function typeScriptType(
+  schema: JSONSchema7Definition,
+  root: JSONSchema7Definition,
+  names: Readonly<Record<string, string>>,
   depth: number = 0,
-  names: Readonly<Record<string, PropertySchema>> = {}
+  refs: ReadonlySet<string> = new Set()
 ): string {
-  let result = "{\n";
+  if (typeof schema === "boolean") {
+    return schema ? "any" : "never";
+  }
+  if (schema.$ref !== undefined) {
+    const name = schema.$ref.startsWith("#/$defs/") ? names[decodeSegment(schema.$ref.slice("#/$defs/".length))] : undefined;
+    if (name !== undefined) {
+      return name;
+    }
+    // A $ref back to a schema being written, which only a $def's name could refer to
+    return refs.has(schema.$ref) ? "any" : typeScriptType(resolve(schema, root), root, names, depth, new Set([...refs, schema.$ref]));
+  }
 
-  // Generate each property with inline JSDoc
-  Object.entries(properties).forEach(([key, value]) => {
-    // Generate comprehensive JSDoc for this property
-    const propertyJSDoc = generatePropertyJSDoc(key, value, "    ", depth);
-    result += propertyJSDoc;
+  const alternatives = schema.anyOf ?? schema.oneOf;
+  if (alternatives !== undefined) {
+    return [...new Set(alternatives.map((s) => typeScriptType(s, root, names, depth, refs)))].join(" | ");
+  }
+  if (schema.allOf !== undefined) {
+    const { allOf, ...own } = schema;
+    const members = [...(hasConstraints(own) ? [own] : []), ...allOf].map((s) => typeScriptType(s, root, names, depth, refs));
+    return [...new Set(members)].map(parenthesize).join(" & ");
+  }
+  if (schema.const !== undefined) {
+    return JSON.stringify(schema.const);
+  }
+  if (schema.enum !== undefined) {
+    return schema.enum.map((value) => JSON.stringify(value)).join(" | ");
+  }
 
-    const nestedType = mapSchemaTypeToTypeScript(value, depth + 1, names);
-    const required = value.required !== false ? "" : "?";
-
-    result += `    ${formatKey(key)}${required}: ${nestedType};\n`;
-  });
-
-  result += "  }";
-  return result;
+  const typeNames = [...types(schema, root)];
+  if (typeNames.length === 0) {
+    return "any";
+  }
+  const typeOf = (typeName: string): string => {
+    switch (typeName) {
+      case "string":
+      case "boolean":
+      case "null":
+        return typeName;
+      case "number":
+      case "integer":
+        return "number";
+      case "array":
+        return Array.isArray(schema.items)
+          ? `[${schema.items.map((s) => typeScriptType(s, root, names, depth, refs)).join(", ")}]`
+          : `${parenthesize(schema.items === undefined ? "any" : typeScriptType(schema.items, root, names, depth, refs))}[]`;
+      case "object":
+        return objectType(schema, root, names, depth, refs);
+      default:
+        return "any";
+    }
+  };
+  return [...new Set(typeNames.map(typeOf))].join(" | ");
 }
 
-export function generatePropertyJSDoc(_propertyName: string, propertySchema: PropertySchema, indent: string = "", _depth: number = 0): string {
-  const comments: Array<string> = [];
+function objectType(
+  schema: JSONSchema7,
+  root: JSONSchema7Definition,
+  names: Readonly<Record<string, string>>,
+  depth: number,
+  refs: ReadonlySet<string>
+): string {
+  const indent = "  ".repeat(depth + 2);
+  // An object with neither properties nor additionalProperties can have any, one with properties only those, as json-schema.ts reads it
+  const additional = schema.additionalProperties ?? (schema.properties === undefined ? true : undefined);
+  const additionalType = additional === undefined || additional === false ? undefined : typeScriptType(additional, root, names, depth + 1, refs);
+  // The names propertyNames list, only those if it enumerates them, else besides any other, declared as there, like a product's properties in a
+  // node, while any other name is through the index signature, which an editor with noUncheckedIndexedAccess types as possibly undefined
+  const listed = schema.propertyNames === undefined ? [] : keys({ propertyNames: schema.propertyNames }, root);
+  const closed = schema.propertyNames !== undefined && enumValues(schema.propertyNames, root) !== undefined;
+  const properties = Object.entries(schema.properties ?? {}).map(
+    ([key, value]) =>
+      `${jsDoc(value, root, indent)}${indent}${formatKey(key)}${schema.required?.includes(key) === true ? "" : "?"}: ${typeScriptType(value, root, names, depth + 1, refs)};\n`
+  );
+  const additionalLines =
+    additionalType === undefined
+      ? []
+      : [
+          ...listed.filter((key) => schema.properties?.[key] === undefined).map((key) => `${indent}${formatKey(key)}: ${additionalType};\n`),
+          ...(closed ? [] : [`${indent}[key: string]: ${additionalType};\n`]),
+        ];
+  return `{\n${[...properties, ...additionalLines].join("")}${"  ".repeat(depth + 1)}}`;
+}
 
-  // Main description
-  if (propertySchema.description) {
-    comments.push(propertySchema.description);
+/** A JSDoc comment of a schema's description and default, empty if it has neither */
+export function jsDoc(schema: JSONSchema7Definition, root: JSONSchema7Definition, indent: string): string {
+  if (typeof schema === "boolean") {
+    return "";
   }
-
-  // Add @property tags for nested object properties (recursive!)
-  // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization and so may not actually carry `shape`
-  if (propertySchema.type === "object" && propertySchema.shape) {
-    comments.push("");
-    Object.entries(propertySchema.shape).forEach(([key, value]) => {
-      if (value.description) {
-        comments.push(`@property ${key} ${value.description}`);
-      }
-    });
-    // oxlint-disable-next-line typescript/no-unnecessary-condition -- defensive check kept for Schema values that bypass zod deserialization and so may not actually carry `shape`
-  } else if (propertySchema.type === "array" && propertySchema.shape.type === "object" && propertySchema.shape.shape) {
-    // For arrays of objects, document the object structure
-    comments.push("");
-    Object.entries(propertySchema.shape.shape).forEach(([key, value]) => {
-      if (value.description) {
-        comments.push(`@property ${key} ${value.description}`);
-      }
-    });
-  }
-
-  // No comments needed
+  const resolved = resolve(schema, root);
+  const comments = [
+    ...(resolved.description !== undefined ? [resolved.description] : []),
+    ...(resolved.default !== undefined ? [`@default ${JSON.stringify(resolved.default)}`] : []),
+  ];
   if (comments.length === 0) {
     return "";
   }
-
-  // Single-line JSDoc
-  if (comments.length === 1) {
-    return `${indent}/** ${comments[0]} */\n`;
-  }
-
-  // Multi-line JSDoc with @property tags
-  let output = `${indent}/**\n`;
-  comments.forEach((comment) => {
-    if (comment === "") {
-      output += `${indent} *\n`;
-    } else {
-      output += `${indent} * ${comment}\n`;
-    }
-  });
-  output += `${indent} */\n`;
-
-  return output;
+  return comments.length === 1
+    ? `${indent}/** ${comments[0]} */\n`
+    : `${indent}/**\n${comments.map((c) => `${indent} * ${c}\n`).join("")}${indent} */\n`;
 }
 
-function formatKey(key: string): string {
-  if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key)) {
-    return key;
-  }
-  return `"${key}"`;
+function hasConstraints(schema: JSONSchema7): boolean {
+  return Object.keys(schema).some((key) => key !== "description" && key !== "title" && key !== "default" && key !== "$id" && key !== "$defs");
+}
+
+function parenthesize(type: string): string {
+  return type.includes("|") || type.includes("&") ? `(${type})` : type;
+}
+
+function decodeSegment(segment: string): string {
+  return decodeURIComponent(segment).replaceAll("~1", "/").replaceAll("~0", "~");
+}
+
+export function formatKey(key: string): string {
+  return /^[A-Za-z_$][\w$]*$/.test(key) ? key : JSON.stringify(key);
 }

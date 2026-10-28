@@ -1,182 +1,36 @@
-import { z } from "zod";
-
-export type StringPropertySchema = {
-  type: "string";
-  format?: "color";
-  description?: string;
-  required?: boolean;
-  default?: string;
-  enum?: ReadonlyArray<string>;
-};
-
-export type NumberPropertySchema = {
-  type: "number";
-  description?: string;
-  required?: boolean;
-  default?: number;
-  enum?: ReadonlyArray<number>;
-};
-
-export type BooleanPropertySchema = {
-  type: "boolean";
-  description?: string;
-  required?: boolean;
-  default?: boolean;
-  enum?: ReadonlyArray<boolean>;
-};
-
-export type FunctionPropertySchema = {
-  type: "function";
-  description?: string;
-  required?: boolean;
-};
-
-export type ObjectPropertySchema = {
-  type: "object";
-  /** The type's name in the generated TypeScript definitions if it contains itself */
-  name?: string;
-  description?: string;
-  required?: boolean;
-  shape: Record<string, PropertySchema>;
-};
-
-export type RecordPropertySchema = {
-  type: "record";
-  /** The type's name in the generated TypeScript definitions if it contains itself */
-  name?: string;
-  description?: string;
-  required?: boolean;
-  shape: PropertySchema;
-};
-
-export type UnionPropertySchema = {
-  type: "union";
-  /** The type's name in the generated TypeScript definitions if it contains itself */
-  name?: string;
-  description?: string;
-  required?: boolean;
-  shape: ReadonlyArray<PropertySchema>;
-};
-
-export type ArrayPropertySchema = {
-  type: "array";
-  /** The type's name in the generated TypeScript definitions if it contains itself */
-  name?: string;
-  description?: string;
-  required?: boolean;
-  shape: PropertySchema;
-};
-
-export type PropertySchema =
-  | StringPropertySchema
-  | NumberPropertySchema
-  | BooleanPropertySchema
-  | FunctionPropertySchema
-  | ObjectPropertySchema
-  | RecordPropertySchema
-  | ArrayPropertySchema
-  | UnionPropertySchema;
+import type { JSONSchema7, JSONSchema7Definition, JSONSchema7Type } from "json-schema";
+import { enumValues, isRequired, keys, property } from "./json-schema.js";
 
 export type ElementSchema = {
   description?: string;
-  props?: Record<string, PropertySchema>;
+  /** The element's attributes, an object's JSON schema: each of its properties an attribute, those it requires the attributes it must have */
+  props?: JSONSchema7;
   allowedChildren?: Array<string>;
 };
 
 export type ArgumentSchema = {
   name: string;
   description?: string;
-  property: PropertySchema;
+  schema: JSONSchema7Definition;
 };
 
+/** A function's arguments and return value, whose $refs refer to the data's $defs */
 export type FunctionSchema = {
   description?: string;
   args?: ReadonlyArray<ArgumentSchema>;
-  ret: PropertySchema;
+  ret: JSONSchema7Definition;
 };
 
-export interface Schema {
-  data?: Record<string, PropertySchema>;
+export type Schema = {
+  /** The data's JSON schema, an object's: each of its properties a variable an expression can read, its $defs what $refs in it refer to */
+  data?: JSONSchema7;
   elements?: Record<string, ElementSchema>;
   functions?: Record<string, FunctionSchema>;
-}
+};
 
-const zodSchema: z.ZodType<PropertySchema> = z.lazy(() =>
-  z.discriminatedUnion("type", [
-    z.object({
-      type: z.literal("string"),
-      format: z.literal("color").optional(),
-      description: z.string().optional(),
-      required: z.boolean().optional(),
-      default: z.string().optional(),
-      enum: z.array(z.string()).optional(),
-    }),
-    z.object({
-      type: z.literal("number"),
-      description: z.string().optional(),
-      required: z.boolean().optional(),
-      default: z.number().optional(),
-      enum: z.array(z.number()).optional(),
-    }),
-    z.object({
-      type: z.literal("boolean"),
-      description: z.string().optional(),
-      required: z.boolean().optional(),
-      default: z.boolean().optional(),
-      enum: z.array(z.boolean()).optional(),
-    }),
-    z.object({
-      type: z.literal("function"),
-      description: z.string().optional(),
-      required: z.boolean().optional(),
-    }),
-    z.object({
-      type: z.literal("object"),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      required: z.boolean().optional(),
-      shape: z.record(z.string(), zodSchema),
-    }),
-    z.object({
-      type: z.literal("record"),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      required: z.boolean().optional(),
-      shape: zodSchema,
-    }),
-    z.object({
-      type: z.literal("array"),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      required: z.boolean().optional(),
-      shape: zodSchema,
-    }),
-    z.object({
-      type: z.literal("union"),
-      name: z.string().optional(),
-      description: z.string().optional(),
-      required: z.boolean().optional(),
-      shape: z.array(zodSchema),
-    }),
-  ])
-);
-
-export function serializePropertySchemaToJson(schema: PropertySchema): string {
-  return JSON.stringify(schema, null, 2);
-}
-
-export function deserializePropertySchemaFromJson(json: string): PropertySchema | undefined {
-  let parsed = {};
-  try {
-    parsed = JSON.parse(json);
-  } catch {
-    return undefined;
-  }
-  const validated = zodSchema.safeParse(parsed);
-  if (!validated.success) {
-    return undefined;
-  }
-  return validated.data;
+/** The names of the variables the data has */
+export function getDataKeys(schema: Schema): ReadonlyArray<string> {
+  return schema.data === undefined ? [] : keys(schema.data, schema.data);
 }
 
 export function isElementAllowed(schema: Schema, tagName: string): boolean {
@@ -187,14 +41,13 @@ export function getElementSchema(schema: Schema, tagName: string): ElementSchema
   return schema.elements?.[tagName];
 }
 
-export function getAllowedAttributes(schema: Schema, tagName: string): Array<string> {
-  const elementConfig = getElementSchema(schema, tagName);
-  return elementConfig?.props ? Object.keys(elementConfig.props) : [];
+export function getAllowedAttributes(schema: Schema, tagName: string): ReadonlyArray<string> {
+  const props = getElementSchema(schema, tagName)?.props;
+  return props === undefined ? [] : keys(props, props);
 }
 
 export function isAttributeAllowed(schema: Schema, tagName: string, attributeName: string): boolean {
-  const allowedAttributes = getAllowedAttributes(schema, tagName);
-  return allowedAttributes.includes(attributeName);
+  return getAllowedAttributes(schema, tagName).includes(attributeName);
 }
 
 export function getAllowedChildren(schema: Schema, tagName: string): Array<string> | undefined {
@@ -222,38 +75,14 @@ export function getAllElements(schema: Schema): Array<string> {
   return schema.elements ? Object.keys(schema.elements) : [];
 }
 
-export function getAttributeSchema(schema: Schema, tagName: string, attributeName: string): PropertySchema | undefined {
-  const elementSchema = getElementSchema(schema, tagName);
-  return elementSchema?.props?.[attributeName];
+export function getRequiredAttributes(schema: Schema, tagName: string): ReadonlyArray<string> {
+  const props = getElementSchema(schema, tagName)?.props;
+  return props === undefined ? [] : keys(props, props).filter((name) => isRequired(props, name, props));
 }
 
-export function getRequiredAttributes(schema: Schema, tagName: string): Array<string> {
-  const elementSchema = getElementSchema(schema, tagName);
-  if (!elementSchema?.props) {
-    return [];
-  }
-
-  const required: Array<string> = [];
-  for (const [attrName, attrSchema] of Object.entries(elementSchema.props)) {
-    if (attrSchema.required === true) {
-      required.push(attrName);
-    }
-  }
-
-  return required;
-}
-
-type PropertyEnumValue = string | number | boolean;
-
-export function getEnumValues(property: PropertySchema): ReadonlyArray<PropertyEnumValue> | undefined {
-  switch (property.type) {
-    case "string":
-      return property.enum;
-    case "number":
-      return property.enum;
-    case "boolean":
-      return property.enum;
-    default:
-      return undefined;
-  }
+/** The values an attribute allows, if its schema lists them */
+export function getAttributeEnumValues(schema: Schema, tagName: string, attributeName: string): ReadonlyArray<JSONSchema7Type> | undefined {
+  const props = getElementSchema(schema, tagName)?.props;
+  const attribute = props === undefined ? undefined : property(props, attributeName, props);
+  return props === undefined || attribute === undefined ? undefined : enumValues(attribute, props);
 }

@@ -1,70 +1,19 @@
-import type { PropertySchema, Schema } from "../../schema.js";
-import { mapSchemaTypeToTypeScript } from "./utils.js";
+import { keys, property } from "../../json-schema.js";
+import type { Schema } from "../../schema.js";
+import { jsDoc, typeScriptType } from "./utils.js";
 
-export function declareDataTypes(schema: Schema, names: Readonly<Record<string, PropertySchema>>): string {
-  let output = `declare global {\n`;
-
-  if (schema.data) {
-    Object.entries(schema.data).forEach(([dataKey, dataSchema]) => {
-      output += generateNestedPropertyJSDoc(dataKey, dataSchema, "  ");
-
-      const type = mapSchemaTypeToTypeScript(dataSchema, 0, names);
-
-      const indentedType = type.includes("\n") ? type.replace(/\n/g, "\n    ").replace(/\n {4}$/, "\n  ") : type;
-      output += `  const ${dataKey}: ${indentedType};\n`;
-    });
+/** The data's variables, each a const of its property's type, and the types of its $defs, named as their $refs are written */
+export function declareDataTypes(schema: Schema, names: Readonly<Record<string, string>>): string {
+  const data = schema.data;
+  if (data === undefined) {
+    return `declare global {\n}\n\nexport {};\n`;
   }
-
-  output += `}\n\n`;
-  output += `export {};\n`;
-
-  return output;
-}
-
-function generateNestedPropertyJSDoc(propertyName: string, propertySchema: PropertySchema, indent: string = ""): string {
-  const comments: Array<string> = [];
-
-  if (propertySchema.description) {
-    comments.push(propertySchema.description);
-  } else {
-    const desc =
-      propertyName.charAt(0).toUpperCase() +
-      propertyName
-        .slice(1)
-        .replace(/([A-Z])/g, " $1")
-        .toLowerCase();
-    comments.push(desc);
-  }
-
-  if (propertySchema.type === "object") {
-    comments.push("");
-    Object.entries(propertySchema.shape).forEach(([key, value]) => {
-      if (value.description) {
-        comments.push(`@property ${key} ${value.description}`);
-      }
-    });
-  } else if (propertySchema.type === "array" && propertySchema.shape.type === "object") {
-    comments.push("");
-    Object.entries(propertySchema.shape.shape).forEach(([key, value]) => {
-      if (value.description) {
-        comments.push(`@property ${key} ${value.description}`);
-      }
-    });
-  }
-
-  if (comments.length === 1) {
-    return `${indent}/** ${comments[0]} */\n`;
-  }
-
-  let output = `${indent}/**\n`;
-  comments.forEach((comment) => {
-    if (comment === "") {
-      output += `${indent} *\n`;
-    } else {
-      output += `${indent} * ${comment}\n`;
-    }
+  const definitions = Object.entries(data.$defs ?? {}).map(
+    ([key, definition]) => `  type ${names[key]} = ${typeScriptType(definition, data, names)};\n`
+  );
+  const variables = keys(data, data).map((key) => {
+    const variable = property(data, key, data) ?? true;
+    return `${jsDoc(variable, data, "  ")}  const ${key}: ${typeScriptType(variable, data, names)};\n`;
   });
-  output += `${indent} */\n`;
-
-  return output;
+  return `declare global {\n${[...definitions, ...variables].join("")}}\n\nexport {};\n`;
 }

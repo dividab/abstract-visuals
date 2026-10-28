@@ -1,64 +1,22 @@
-import type { PropertySchema } from "jsxpression";
+import type { Schema } from "jsxpression";
 
-export function generateDataSchema(data: Record<string, unknown>): Record<string, PropertySchema> {
-  const schema: Record<string, PropertySchema> = {};
+type DataSchema = NonNullable<Schema["data"]>;
 
-  for (const [key, value] of Object.entries(data)) {
-    schema[key] = inferPropertySchema(value);
-  }
-
-  return schema;
+/** The JSON schema of data like the given, each value's schema inferred from it, an array's from its first item */
+export function generateDataSchema(data: Record<string, unknown>): DataSchema {
+  return { type: "object", properties: Object.fromEntries(Object.entries(data).map(([key, value]) => [key, inferSchema(value)])) };
 }
 
-function inferPropertySchema(value: unknown): PropertySchema {
-  if (value === null || value === undefined) {
-    return {
-      type: "string",
-    };
+function inferSchema(value: unknown): DataSchema {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return { type: typeof value as "string" | "number" | "boolean" };
   }
-
-  if (typeof value === "string") {
-    return {
-      type: "string",
-    };
-  }
-
-  if (typeof value === "number") {
-    return {
-      type: "number",
-    };
-  }
-
-  if (typeof value === "boolean") {
-    return {
-      type: "boolean",
-    };
-  }
-
-  if (typeof value === "function") {
-    return {
-      type: "function",
-    };
-  }
-
   if (Array.isArray(value)) {
-    const itemSchema: PropertySchema = value.length > 0 ? inferPropertySchema(value[0]) : { type: "string" };
-    return {
-      type: "array",
-      shape: itemSchema,
-    };
+    return { type: "array", items: value.length > 0 ? inferSchema(value[0]) : {} };
   }
-
-  if (typeof value === "object") {
-    const shape: Record<string, PropertySchema> = {};
-    for (const [k, v] of Object.entries(value)) {
-      shape[k] = inferPropertySchema(v);
-    }
-    return {
-      type: "object",
-      shape,
-    };
+  if (typeof value === "object" && value !== null) {
+    return { type: "object", properties: Object.fromEntries(Object.entries(value).map(([k, v]) => [k, inferSchema(v)])) };
   }
-
-  return { type: "string" };
+  // null, undefined and functions, which JSON schemas don't describe
+  return {};
 }

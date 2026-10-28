@@ -26,7 +26,7 @@
     "build": "tsc -b packages",
     "update-refs": "node --experimental-strip-types scripts/update-refs.ts",
     "typecheck:scripts": "tsc -p scripts/tsconfig.json",
-    "typecheck:tests": "tsc -p packages/abstract-3d/tsconfig.test.json && tsc -p packages/abstract-3d/bench/tsconfig.json",
+    "typecheck:tests": "tsc -p packages/abstract-3d/tsconfig.test.json && tsc -p packages/abstract-3d/bench/tsconfig.json && tsc -p packages/jsxpression/tsconfig.test.json",
     "build-watch": "tsc -b -w --preserveWatchOutput packages",
     "start": "cd packages/abstract-visuals-example && vite",
     "storybook": "start-storybook -p 6006 --ci",

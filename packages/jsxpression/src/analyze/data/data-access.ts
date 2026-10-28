@@ -1,5 +1,7 @@
 import type { AnyNode, ArrowFunctionExpression, CallExpression, Identifier, MemberExpression, Program } from "acorn";
-import type { ArrayPropertySchema, PropertySchema, Schema } from "../../schema.js";
+import type { JSONSchema7Definition } from "json-schema";
+import { items, keys, property, types } from "../../json-schema.js";
+import { getDataKeys, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
@@ -9,9 +11,9 @@ import { isSimpleDataAccess, extractPath, validateSchemaPath } from "./utils.js"
 export function analyzeDataAccess(ast: Program, schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = createAnalysisReport();
 
-  const dataKeys = new Set(Object.keys(schema.data ?? {}));
+  const dataKeys = new Set(getDataKeys(schema));
   const dataPaths = new Set<string>();
-  const arrowFunctionContexts = new Map<ArrowFunctionExpression, Map<string, PropertySchema>>();
+  const arrowFunctionContexts = new Map<ArrowFunctionExpression, Map<string, JSONSchema7Definition>>();
 
   // First pass: collect all data paths and arrow function contexts (including nested ones)
   function collectArrowFunctionContexts(node: AnyNode): void {
@@ -34,7 +36,7 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
           const arrowFunction = args[0];
 
           if (arrayElementType && arrowFunction.params.length > 0) {
-            const parameterTypes = new Map<string, PropertySchema>();
+            const parameterTypes = new Map<string, JSONSchema7Definition>();
 
             // First parameter is always the array element
             if (arrowFunction.params[0]?.type === "Identifier") {
@@ -114,8 +116,8 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
 
       if (arrowFunctionContext && node.object.type === "Identifier") {
         const paramType = arrowFunctionContext.get(node.object.name);
-        if (paramType) {
-          validateParameterAccess(node, paramType, analysisReport, validationContext);
+        if (paramType !== undefined && schema.data !== undefined) {
+          validateParameterAccess(node, paramType, schema.data, analysisReport, validationContext);
           return;
         }
       }
@@ -139,8 +141,8 @@ export function analyzeDataAccess(ast: Program, schema: Schema, validationContex
 
 function findEnclosingArrowContext(
   targetNode: MemberExpression,
-  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, PropertySchema>>
-): Map<string, PropertySchema> | null {
+  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, JSONSchema7Definition>>
+): Map<string, JSONSchema7Definition> | null {
   let best: { arrowFn: ArrowFunctionExpression; size: number } | null = null;
   for (const arrowFn of arrowFunctionContexts.keys()) {
     if (targetNode.start >= arrowFn.start && targetNode.end <= arrowFn.end) {
@@ -156,24 +158,22 @@ function findEnclosingArrowContext(
 function getArrayElementTypeFromCall(
   node: CallExpression,
   schema: Schema,
-  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, PropertySchema>>
-): PropertySchema | null {
+  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, JSONSchema7Definition>>
+): JSONSchema7Definition | null {
   const { callee } = node;
-  const dataKeys = new Set(Object.keys(schema.data ?? {}));
+  const data = schema.data;
+  const dataKeys = new Set(getDataKeys(schema));
 
-  if (callee.type !== "MemberExpression") {
+  if (callee.type !== "MemberExpression" || data === undefined) {
     return null;
   }
 
   if (isSimpleDataAccess(callee, dataKeys)) {
     const path = extractPath(callee);
     if (path[0] !== undefined && dataKeys.has(path[0])) {
-      const schemaPath = path.slice(0, -1); // Remove method name
-      const arraySchema = getSchemaAtPath(schemaPath, schema);
-
-      if (arraySchema?.type === "array") {
-        return getArrayElementType(arraySchema);
-      }
+      // The schema of the path without the method's name, an array's whose items are the callback's first parameter
+      const arraySchema = path.slice(0, -1).reduce<JSONSchema7Definition | undefined>((s, name) => s && property(s, name, data), data);
+      return (arraySchema && items(arraySchema, data)) ?? null;
     }
   } else if (callee.object.type === "MemberExpression") {
     // Handle nested access like group.items.map where group is a parameter
@@ -191,12 +191,8 @@ function getArrayElementTypeFromCall(
       // Find the arrow function context that defines this parameter
       const parameterType = resolveParameterType(paramName, node, arrowFunctionContexts);
 
-      if (parameterType?.type === "object") {
-        const propertySchema = parameterType.shape[propertyName];
-        if (propertySchema?.type === "array") {
-          return getArrayElementType(propertySchema);
-        }
-      }
+      const propertySchema = parameterType ? property(parameterType, propertyName, data) : undefined;
+      return (propertySchema && items(propertySchema, data)) ?? null;
     }
   }
 
@@ -206,8 +202,8 @@ function getArrayElementTypeFromCall(
 function resolveParameterType(
   paramName: string,
   currentNode: AnyNode,
-  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, PropertySchema>>
-): PropertySchema | undefined | null {
+  arrowFunctionContexts: Map<ArrowFunctionExpression, Map<string, JSONSchema7Definition>>
+): JSONSchema7Definition | undefined | null {
   // Find the arrow function that contains this node and has the parameter
   for (const [arrowFunction, parameterTypes] of arrowFunctionContexts.entries()) {
     if (parameterTypes.has(paramName)) {
@@ -228,33 +224,10 @@ function isNodeInsideArrowFunction(targetNode: AnyNode, arrowFunction: ArrowFunc
   return false;
 }
 
-function getSchemaAtPath(path: Array<string>, schema: Schema): PropertySchema | null | undefined {
-  const root = path[0];
-  if (!schema.data || root === undefined) {
-    // oxlint-disable-next-line typescript/no-explicit-any typescript/no-unsafe-return -- this branch returns the raw schema.data record (not a PropertySchema) when no path segments remain; preserved as-is for behavior parity
-    return schema.data as any;
-  }
-
-  let current = schema.data[root];
-
-  for (let i = 1; i < path.length && current; i++) {
-    const prop = path[i];
-    if (prop === undefined) {
-      return undefined;
-    }
-    if (current.type === "object") {
-      current = current.shape[prop];
-    } else {
-      return null;
-    }
-  }
-
-  return current;
-}
-
 function validateParameterAccess(
   node: MemberExpression,
-  paramType: PropertySchema,
+  paramType: JSONSchema7Definition,
+  data: JSONSchema7Definition,
   analysisReport: AnalysisReport,
   validationContext: ValidationContext
 ): void {
@@ -263,29 +236,26 @@ function validateParameterAccess(
   }
 
   const propertyName = node.property.name;
+  const typeNames = types(paramType, data);
 
-  if (paramType.type === "object") {
-    if (!paramType.shape[propertyName]) {
+  if (typeNames.size === 0 || typeNames.has("object")) {
+    if (property(paramType, propertyName, data) === undefined) {
       analysisReport.addIssue(
         "INVALID_PARAMETER_ACCESS",
         `Property '${propertyName}' does not exist on parameter '${(node.object as Identifier).name}'`,
         getNodeRange(node),
         validationContext.getSnapshot(),
-        Object.keys(paramType.shape)
+        [...keys(paramType, data)]
       );
     }
   } else {
     analysisReport.addIssue(
       "INVALID_PARAMETER_ACCESS",
-      `Cannot access property '${propertyName}' on ${paramType.type} type parameter '${(node.object as Identifier).name}'`,
+      `Cannot access property '${propertyName}' on ${[...typeNames].join(" | ")} type parameter '${(node.object as Identifier).name}'`,
       getNodeRange(node),
       validationContext.getSnapshot()
     );
   }
-}
-
-export function getArrayElementType(schema: ArrayPropertySchema): PropertySchema | null {
-  return schema.shape;
 }
 
 function buildParentMap(ast: Program): Map<AnyNode, AnyNode | null> {

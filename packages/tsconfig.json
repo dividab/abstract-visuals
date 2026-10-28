@@ -6,13 +6,13 @@
   },
   "files": [],
   "references": [
-    { "path": "abstract-chart" },
-    { "path": "abstract-document" },
-    { "path": "abstract-image" },
-    { "path": "abstract-3d" },
-    { "path": "abstract-sheet" },
-    { "path": "abstract-visuals-example" },
-    { "path": "handlebars-xml" },
-    { "path": "jsxpression" }
+    { "path": "./abstract-3d" },
+    { "path": "./abstract-chart" },
+    { "path": "./abstract-document" },
+    { "path": "./abstract-image" },
+    { "path": "./abstract-sheet" },
+    { "path": "./abstract-visuals-example" },
+    { "path": "./handlebars-xml" },
+    { "path": "./jsxpression" }
   ]
 }

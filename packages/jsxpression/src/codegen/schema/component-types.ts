@@ -1,5 +1,7 @@
-import type { ElementSchema, PropertySchema, Schema } from "../../schema.js";
-import { mapSchemaTypeToTypeScript } from "./utils.js";
+import type { JSONSchema7 } from "json-schema";
+import { isRequired, keys, property } from "../../json-schema.js";
+import type { ElementSchema, Schema } from "../../schema.js";
+import { jsDoc, typeScriptType } from "./utils.js";
 
 // ElementSchema fields the generator supports that aren't (yet) part of the shared schema type.
 type ElementSchemaExtras = ElementSchema & {
@@ -8,13 +10,13 @@ type ElementSchemaExtras = ElementSchema & {
   examples?: ReadonlyArray<string>;
 };
 
-export function declareComponentTypes(schema: Schema, names: Readonly<Record<string, PropertySchema>>): string {
+export function declareComponentTypes(schema: Schema): string {
   let output = `declare global {\n`;
 
   if (schema.elements) {
     Object.entries(schema.elements).forEach(([elementName, element]) => {
       const interfaceName = `${elementName}Props`;
-      output += generatePropsInterface(interfaceName, element, names, "  ");
+      output += generatePropsInterface(interfaceName, element, "  ");
       output += "\n";
     });
   }
@@ -36,23 +38,23 @@ export function declareComponentTypes(schema: Schema, names: Readonly<Record<str
   return output;
 }
 
-function generatePropsInterface(
-  interfaceName: string,
-  element: ElementSchemaExtras,
-  names: Readonly<Record<string, PropertySchema>>,
-  indent: string = ""
-): string {
+/** The attributes and their schemas, each written within the element's props schema */
+function attributes(props: JSONSchema7 | undefined): ReadonlyArray<readonly [string, JSONSchema7]> {
+  return props === undefined
+    ? []
+    : keys(props, props).map((name) => {
+        const attribute = property(props, name, props) ?? true;
+        return [name, typeof attribute === "boolean" ? {} : attribute] as const;
+      });
+}
+
+function generatePropsInterface(interfaceName: string, element: ElementSchemaExtras, indent: string = ""): string {
   let output = `${indent}interface ${interfaceName} {\n`;
+  const props = element.props ?? {};
 
-  Object.entries(element.props ?? {}).forEach(([propName, prop]) => {
-    const optional = prop.required ? "" : "?";
-    const type = mapSchemaTypeToTypeScript(prop, 0, names);
-    const comment = generatePropComment(prop, `${indent}  `);
-
-    if (comment) {
-      output += comment;
-    }
-    output += `${indent}  ${propName}${optional}: ${type};\n`;
+  attributes(element.props).forEach(([propName, prop]) => {
+    const optional = isRequired(props, propName, props) ? "" : "?";
+    output += `${jsDoc(prop, props, `${indent}  `)}${indent}  ${propName}${optional}: ${typeScriptType(prop, props, {})};\n`;
   });
 
   if (element.content !== false) {
@@ -74,11 +76,11 @@ function generateComponentComment(elementName: string, element: ElementSchemaExt
     comments.push(`${elementName} component`);
   }
 
-  if (element.props && Object.keys(element.props).length > 0) {
+  if (attributes(element.props).length > 0) {
     comments.push("");
     comments.push(`@param props Component props`);
 
-    Object.entries(element.props).forEach(([propName, prop]) => {
+    attributes(element.props).forEach(([propName, prop]) => {
       if (prop.description) {
         comments.push(`@param props.${propName} ${prop.description}`);
       }
@@ -113,41 +115,6 @@ function generateComponentComment(elementName: string, element: ElementSchemaExt
         output += `${indent} * ${line}\n`;
       });
     }
-  });
-  output += `${indent} */\n`;
-
-  return output;
-}
-
-function generatePropComment(prop: PropertySchema, indent: string): string {
-  const comments: Array<string> = [];
-
-  if (prop.description) {
-    comments.push(prop.description);
-  }
-
-  if ((prop.type === "string" || prop.type === "number" || prop.type === "boolean") && prop.default !== undefined) {
-    comments.push(`@default ${JSON.stringify(prop.default)}`);
-  }
-
-  // oxlint-disable-next-line typescript/no-explicit-any -- "enum" isn't a PropertySchema.type variant; kept as-is rather than deleted by this type-only lint pass
-  const propAsAny = prop as any;
-  if (propAsAny.type === "enum" && propAsAny.values) {
-    // oxlint-disable-next-line typescript/no-explicit-any, typescript/no-unsafe-call -- propAsAny.values is untyped ("enum" isn't a PropertySchema.type variant)
-    comments.push(`@values ${propAsAny.values.map((v: any) => `"${v}"`).join(", ")}`);
-  }
-
-  if (comments.length === 0) {
-    return "";
-  }
-
-  if (comments.length === 1) {
-    return `${indent}/** ${comments[0]} */\n`;
-  }
-
-  let output = `${indent}/**\n`;
-  comments.forEach((comment) => {
-    output += `${indent} * ${comment}\n`;
   });
   output += `${indent} */\n`;
 

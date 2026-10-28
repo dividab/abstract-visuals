@@ -113,7 +113,7 @@ return <AbstractImage width={600} height={260}>
       args: [
         {
           name: "str",
-          property: { type: "string" },
+          schema: { type: "string" },
         },
       ],
     },

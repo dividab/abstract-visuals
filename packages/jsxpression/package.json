@@ -17,15 +17,16 @@
   "main": "lib/index.js",
   "types": "lib/index",
   "exports": {
-    ".": "./lib/index.js"
+    ".": "./lib/index.js",
+    "./json-schema": "./lib/json-schema.js"
   },
   "scripts": {
     "test": "vitest run src/**/*.test.ts"
   },
   "dependencies": {
+    "@types/json-schema": "^7.0.15",
     "acorn": "8.15.0",
     "acorn-typescript": "1.4.13",
-    "acorn-walk": "8.3.4",
-    "zod": "^4.4.3"
+    "acorn-walk": "8.3.4"
   }
 }

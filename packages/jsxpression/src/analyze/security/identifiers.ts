@@ -1,6 +1,6 @@
 import type { AnyNode, ArrowFunctionExpression, FunctionDeclaration, Identifier, Program } from "acorn";
 import { getBuiltinGlobals } from "../../builtins.js";
-import type { Schema } from "../../schema.js";
+import { getDataKeys, type Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
 import { getNodeRange } from "../utils.js";
@@ -35,7 +35,7 @@ export function analyzeIdentifiers(ast: Program, schema: Schema, validationConte
         return;
       }
 
-      const dataKeys = Object.keys(schema.data ?? {});
+      const dataKeys = getDataKeys(schema);
       const allowedRoots = ["props", ...dataKeys, ...getBuiltinGlobals(), ...constNames, ...functionNames, ...schemaFunctionNames];
 
       if (allowedRoots.includes(name)) {

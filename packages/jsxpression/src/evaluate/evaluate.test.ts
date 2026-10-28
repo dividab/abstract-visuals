@@ -6,9 +6,12 @@ import type { Schema } from "../schema.js";
 import { evaluate, type Component, type CreateElement, type EvaluateOptions, type Node as EvalNode, type PropsDict } from "./evaluate.js";
 import { EvaluationError } from "./evaluation-error.js";
 
+/** The props the tests' components take and pass on, each whatever the template gives it */
+type Props = Partial<Record<"x" | "y" | "value" | "values" | "msg" | "count" | "result" | "custom" | "nested" | "children", unknown>>;
+
 type Node = {
   type: string;
-  props: Record<string, unknown>;
+  props: Props;
   children: Array<Node>;
 };
 
@@ -26,7 +29,7 @@ describe("evaluate", () => {
   };
 
   it("should evaluate JSX with props", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "TestComponent",
       props: { x: props.x, y: props.y },
       // props.children is genuinely dynamic (mixed strings/numbers/nested Node results); this fixture assumes the Node shape its own assertions expect.
@@ -48,7 +51,7 @@ describe("evaluate", () => {
   });
 
   it("should evaluate JSX with Math operations", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "TestComponent",
       props,
       children: [],
@@ -73,10 +76,10 @@ describe("evaluate", () => {
   });
 
   it("should deep-freeze props to prevent mutations", () => {
-    const TestComponent = (props: PropsDict): Node => {
+    const TestComponent = (props: Props): Node => {
       expect(() => {
         // props.nested's shape isn't known statically; this test only cares that mutating it throws once frozen.
-        (props.nested as Record<string, unknown>).value = 999;
+        (props.nested as { value: number }).value = 999;
       }).toThrow(TypeError);
       return { type: "Test", props, children: [] };
     };
@@ -93,13 +96,13 @@ describe("evaluate", () => {
   });
 
   it("should evaluate nested elements", () => {
-    const OuterComponent = (props: PropsDict): Node => ({
+    const OuterComponent = (props: Props): Node => ({
       type: "Outer",
       props: { x: props.x },
       children: props.children as Array<Node>,
     });
 
-    const InnerComponent = (props: PropsDict): Node => ({
+    const InnerComponent = (props: Props): Node => ({
       type: "Inner",
       props: { y: props.y },
       children: props.children as Array<Node>,
@@ -116,10 +119,10 @@ describe("evaluate", () => {
     expect(result.type).toBe("Outer");
     expect(result.props).toEqual({ x: 10 });
     expect(result.children).toHaveLength(1);
-    const innerNode = result.children[0];
-    expect(innerNode.type).toBe("Inner");
-    expect(innerNode.props).toEqual({ y: 20 });
-    expect(innerNode.children).toEqual(["Text"]);
+    const innerNode = result.children.at(0);
+    expect(innerNode?.type).toBe("Inner");
+    expect(innerNode?.props).toEqual({ y: 20 });
+    expect(innerNode?.children).toEqual(["Text"]);
   });
 
   it("should use custom createElement when provided", () => {
@@ -146,7 +149,7 @@ describe("evaluate", () => {
   });
 
   it("should evaluate conditional expressions with props", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "TestComponent",
       props,
       children: [],
@@ -163,7 +166,7 @@ describe("evaluate", () => {
   });
 
   it("should evaluate array methods on props", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "TestComponent",
       props,
       children: [],
@@ -195,7 +198,7 @@ describe("evaluate", () => {
   });
 
   it("should evaluate logical operators with props", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "TestComponent",
       props,
       children: [],
@@ -212,7 +215,7 @@ describe("evaluate", () => {
   });
 
   it("should flatten and filter children correctly", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "Test",
       props: {},
       children: props.children as Array<Node>,
@@ -240,7 +243,7 @@ describe("evaluate", () => {
   });
 
   it("should handle empty JSX expressions", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "Test",
       props: {},
       children: props.children as Array<Node>,
@@ -255,7 +258,7 @@ describe("evaluate", () => {
   });
 
   it("should evaluate complex nested expressions", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "Test",
       props,
       children: [],
@@ -281,7 +284,7 @@ describe("evaluate", () => {
   });
 
   it("should handle string literals in expressions", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "Test",
       props,
       children: [],
@@ -296,7 +299,7 @@ describe("evaluate", () => {
   });
 
   it("should handle numeric operations", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "Test",
       props,
       children: [],
@@ -311,7 +314,7 @@ describe("evaluate", () => {
   });
 
   it("should handle data access in children", () => {
-    const TestComponent = (props: PropsDict): Node => ({
+    const TestComponent = (props: Props): Node => ({
       type: "Test",
       props: {},
       children: props.children as Array<Node>,
@@ -327,7 +330,7 @@ describe("evaluate", () => {
 
   describe("const declarations", () => {
     it("should evaluate const with literal value", () => {
-      const TestComponent = (props: PropsDict): Node => ({
+      const TestComponent = (props: Props): Node => ({
         type: "Test",
         props,
         children: [],
@@ -341,7 +344,7 @@ describe("evaluate", () => {
     });
 
     it("should evaluate const with computed expression", () => {
-      const TestComponent = (props: PropsDict): Node => ({
+      const TestComponent = (props: Props): Node => ({
         type: "Test",
         props,
         children: [],
@@ -356,7 +359,7 @@ describe("evaluate", () => {
     });
 
     it("should evaluate const referencing data", () => {
-      const TestComponent = (props: PropsDict): Node => ({
+      const TestComponent = (props: Props): Node => ({
         type: "Test",
         props,
         children: [],
@@ -371,7 +374,7 @@ describe("evaluate", () => {
     });
 
     it("should evaluate const with computed array", () => {
-      const TestComponent = (props: PropsDict): Node => ({
+      const TestComponent = (props: Props): Node => ({
         type: "Test",
         props,
         children: [],
@@ -388,7 +391,7 @@ describe("evaluate", () => {
 
   describe("function declarations", () => {
     it("should evaluate user-defined component", () => {
-      const Span = (props: PropsDict): Node => ({
+      const Span = (props: Props): Node => ({
         type: "Span",
         props: {},
         children: props.children as Array<Node>,
@@ -403,7 +406,7 @@ describe("evaluate", () => {
     });
 
     it("should evaluate function with const inside", () => {
-      const Span = (props: PropsDict): Node => ({
+      const Span = (props: Props): Node => ({
         type: "Span",
         props,
         children: [],
@@ -420,13 +423,13 @@ describe("evaluate", () => {
     });
 
     it("should evaluate nested user-defined components", () => {
-      const Span = (props: PropsDict): Node => ({
+      const Span = (props: Props): Node => ({
         type: "Span",
         props: {},
         children: props.children as Array<Node>,
       });
 
-      const Div = (props: PropsDict): Node => ({
+      const Div = (props: Props): Node => ({
         type: "Div",
         props: {},
         children: props.children as Array<Node>,
@@ -441,18 +444,18 @@ describe("evaluate", () => {
 
       expect(result.type).toBe("Div");
       expect(result.children).toHaveLength(1);
-      expect(result.children[0].type).toBe("Span");
-      expect(result.children[0].children).toEqual(["hi"]);
+      expect(result.children.at(0)?.type).toBe("Span");
+      expect(result.children.at(0)?.children).toEqual(["hi"]);
     });
 
     it("should evaluate function with children", () => {
-      const Div = (props: PropsDict): Node => ({
+      const Div = (props: Props): Node => ({
         type: "Div",
         props: {},
         children: props.children as Array<Node>,
       });
 
-      const Span = (props: PropsDict): Node => ({
+      const Span = (props: Props): Node => ({
         type: "Span",
         props: {},
         children: props.children as Array<Node>,
@@ -467,11 +470,11 @@ describe("evaluate", () => {
 
       expect(result.type).toBe("Div");
       expect(result.children).toHaveLength(1);
-      expect(result.children[0].type).toBe("Span");
+      expect(result.children.at(0)?.type).toBe("Span");
     });
 
     it("should evaluate function with default parameter values", () => {
-      const Span = (props: PropsDict): Node => ({
+      const Span = (props: Props): Node => ({
         type: "Span",
         props: {},
         children: props.children as Array<Node>,
@@ -485,7 +488,7 @@ describe("evaluate", () => {
     });
 
     it("should evaluate function with data access", () => {
-      const Span = (props: PropsDict): Node => ({
+      const Span = (props: Props): Node => ({
         type: "Span",
         props: {},
         children: props.children as Array<Node>,
@@ -502,7 +505,7 @@ describe("evaluate", () => {
 
   describe("const and function combined", () => {
     it("should evaluate const used in function body", () => {
-      const Span = (props: PropsDict): Node => ({
+      const Span = (props: Props): Node => ({
         type: "Span",
         props,
         children: [],
@@ -519,13 +522,13 @@ describe("evaluate", () => {
     });
 
     it("should evaluate function used in map with const", () => {
-      const Div = (props: PropsDict): Node => ({
+      const Div = (props: Props): Node => ({
         type: "Div",
         props: {},
         children: props.children as Array<Node>,
       });
 
-      const Span = (props: PropsDict): Node => ({
+      const Span = (props: Props): Node => ({
         type: "Span",
         props: {},
         children: props.children as Array<Node>,
@@ -546,7 +549,7 @@ describe("evaluate", () => {
 
   describe("String builtin", () => {
     it("should evaluate String() conversion", () => {
-      const TestComponent = (props: PropsDict): Node => ({
+      const TestComponent = (props: Props): Node => ({
         type: "Test",
         props,
         children: [],
@@ -560,7 +563,7 @@ describe("evaluate", () => {
     });
 
     it("should evaluate String() with boolean", () => {
-      const TestComponent = (props: PropsDict): Node => ({
+      const TestComponent = (props: Props): Node => ({
         type: "Test",
         props,
         children: [],

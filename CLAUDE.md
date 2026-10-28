@@ -6,7 +6,7 @@ pnpm workspace managed with [lerna](https://lerna.js.org/). Build = TS project r
 
 - `packages/{abstract-image,abstract-chart,abstract-document,abstract-3d,abstract-sheet}`: published npm packages, each with its own README/CHANGELOG
 - `packages/abstract-visuals-example`: storybook/vite example app, not published
-- `packages/{handlebars-xml,jsxpression}`: supporting packages (XML templating, JS expression parsing)
+- `packages/{handlebars-xml,jsxpression}`: supporting packages (XML templating, JS expression parsing; jsxpression's schemas are JSON Schemas, which its `jsxpression/json-schema` reads)
 - `packages/tsconfig.json`: TS project references list — keep in sync with `packages/*` when adding/removing a package
 - `tsconfig.base.json`: shared TypeScript compiler settings, extended by `packages/*/tsconfig.json` and `scripts/tsconfig.json`
 - `scripts/tsconfig.json`: checks `scripts/**/*.ts` (root scripts, not part of the `packages` build)

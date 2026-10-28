@@ -7,63 +7,72 @@ import { analyze } from "./analyze.js";
 describe("analyze - consolidated tests", () => {
   const baseSchema = {
     data: {
-      user: {
-        type: "object",
-        shape: {
-          name: { type: "string" },
-          age: { type: "number" },
-          profile: {
+      type: "object",
+      properties: {
+        user: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            age: { type: "number" },
+            profile: {
+              type: "object",
+              properties: {
+                avatar: { type: "string" },
+                bio: { type: "string" },
+              },
+              required: ["avatar", "bio"],
+            },
+          },
+          required: ["name", "age", "profile"],
+        },
+        text: { type: "string" },
+        items: {
+          type: "array",
+          items: { type: "string" },
+        },
+        numbers: {
+          type: "array",
+          items: { type: "number" },
+        },
+        products: {
+          type: "array",
+          items: {
             type: "object",
-            shape: {
-              avatar: { type: "string" },
-              bio: { type: "string" },
+            properties: {
+              name: { type: "string" },
+              price: { type: "number" },
+              tags: {
+                type: "array",
+                items: { type: "string" },
+              },
             },
+            required: ["name", "price", "tags"],
           },
         },
-      },
-      text: { type: "string" },
-      items: {
-        type: "array",
-        shape: { type: "string" },
-      },
-      numbers: {
-        type: "array",
-        shape: { type: "number" },
-      },
-      products: {
-        type: "array",
-        shape: {
-          type: "object",
-          shape: {
-            name: { type: "string" },
-            price: { type: "number" },
-            tags: {
-              type: "array",
-              shape: { type: "string" },
-            },
-          },
-        },
-      },
-      departments: {
-        type: "array",
-        shape: {
-          type: "object",
-          shape: {
-            name: { type: "string" },
-            employees: {
-              type: "array",
-              shape: {
-                type: "object",
-                shape: {
-                  name: { type: "string" },
-                  role: { type: "string" },
-                  salary: { type: "number" },
+        departments: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              employees: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string" },
+                    role: { type: "string" },
+                    salary: { type: "number" },
+                  },
+                  required: ["name", "role", "salary"],
                 },
               },
             },
+            required: ["name", "employees"],
           },
         },
       },
+      required: ["user", "text", "items", "numbers", "products", "departments"],
     },
     elements: {
       Text: { props: {} },
@@ -90,14 +99,14 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{user.invalid}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Property 'user.invalid' does not exist in schema");
+        expect(result.errors.at(0)?.message).toContain("Property 'user.invalid' does not exist in schema");
       });
 
       it("should block invalid nested properties", () => {
         const ast = parse("<Text>{user.profile.invalid}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Property 'user.profile.invalid' does not exist in schema");
+        expect(result.errors.at(0)?.message).toContain("Property 'user.profile.invalid' does not exist in schema");
       });
 
       it("should report a missing intermediate property and continue analyzing other paths", () => {
@@ -139,15 +148,15 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{products.tags}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("products.tags");
+        expect(result.errors.at(0)?.message).toContain("products.tags");
       });
 
       it("should detect typos on array properties", () => {
         const ast = parse("<Text>{departments.lengdth}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].code).toBe("INVALID_DATA_ACCESS");
-        expect(result.errors[0].suggestions).toContain("length");
+        expect(result.errors.at(0)?.code).toBe("INVALID_DATA_ACCESS");
+        expect(result.errors.at(0)?.suggestions).toContain("length");
       });
 
       it("should allow string members on array elements", () => {
@@ -192,7 +201,7 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{items.push('new')}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("method items.push not allowed");
+        expect(result.errors.at(0)?.message).toContain("method items.push not allowed");
       });
     });
 
@@ -207,7 +216,7 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{products.map((product, i) => product.invalid)}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Property 'invalid' does not exist on parameter 'product'");
+        expect(result.errors.at(0)?.message).toContain("Property 'invalid' does not exist on parameter 'product'");
       });
 
       it("should validate nested arrow functions", () => {
@@ -220,7 +229,7 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{products.map(product => product.tags.map(tag => tag.invalid))}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Cannot access property 'invalid' on string type");
+        expect(result.errors.at(0)?.message).toContain("Cannot access property 'invalid' on string type");
       });
 
       it("should validate index parameters", () => {
@@ -233,7 +242,7 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{items.map((item, i) => i.invalid)}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Cannot access property 'invalid' on number type");
+        expect(result.errors.at(0)?.message).toContain("Cannot access property 'invalid' on number type");
       });
 
       it("should handle complex nested scenarios", () => {
@@ -246,8 +255,8 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{departments.map((dept) => dept.employees.map((employee) => employee.saladry))}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Property 'saladry' does not exist on parameter 'employee'");
-        expect(result.errors[0].suggestions).toEqual(["name", "role", "salary"]);
+        expect(result.errors.at(0)?.message).toContain("Property 'saladry' does not exist on parameter 'employee'");
+        expect(result.errors.at(0)?.suggestions).toEqual(["name", "role", "salary"]);
       });
     });
   });
@@ -350,7 +359,7 @@ describe("analyze - consolidated tests", () => {
               const ast = parse(testExpression);
               const result = analyze(ast, baseSchema);
               expect(result.hasWarnings).toBe(true);
-              expect(result.warnings[0].message).toContain(`${displayName} expects at least ${requiredParams.length} parameter`);
+              expect(result.warnings.at(0)?.message).toContain(`${displayName} expects at least ${requiredParams.length} parameter`);
             });
 
             // Test maximum parameters for non-variadic methods
@@ -384,7 +393,7 @@ describe("analyze - consolidated tests", () => {
               const ast = parse(testExpression);
               const result = analyze(ast, baseSchema);
               expect(result.hasWarnings).toBe(true);
-              expect(result.warnings[0].message).toContain(`${displayName} expects at most ${maxParams} parameter`);
+              expect(result.warnings.at(0)?.message).toContain(`${displayName} expects at most ${maxParams} parameter`);
             });
           });
         });
@@ -400,7 +409,7 @@ describe("analyze - consolidated tests", () => {
         }
 
         describe(`${objectName} properties`, () => {
-          Object.entries(schema.properties!).forEach(([propName, propDef]) => {
+          Object.keys(schema.properties!).forEach((propName) => {
             it(`should allow ${objectName}.${propName} property access`, () => {
               let testExpression: string = "";
 
@@ -429,7 +438,7 @@ describe("analyze - consolidated tests", () => {
           const ast = parse(`<Text>{items.${method}()}</Text>`);
           const result = analyze(ast, baseSchema);
           expect(result.hasErrors).toBe(true);
-          expect(result.errors[0].message).toContain(`method items.${method} not allowed`);
+          expect(result.errors.at(0)?.message).toContain(`method items.${method} not allowed`);
         });
       });
 
@@ -437,14 +446,14 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{Math.random()}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("method Math.random not allowed");
+        expect(result.errors.at(0)?.message).toContain("method Math.random not allowed");
       });
 
       it("should block unknown methods", () => {
         const ast = parse("<Text>{Math.unknownMethod()}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("method Math.unknownMethod not allowed");
+        expect(result.errors.at(0)?.message).toContain("method Math.unknownMethod not allowed");
       });
     });
 
@@ -452,7 +461,11 @@ describe("analyze - consolidated tests", () => {
       it("should work with custom builtin schema", () => {
         const customSchema: Schema = {
           data: {
-            value: { type: "number" },
+            type: "object",
+            properties: {
+              value: { type: "number" },
+            },
+            required: ["value"],
           },
           elements: {
             Text: { props: {} },
@@ -473,7 +486,11 @@ describe("analyze - consolidated tests", () => {
       it("should allow custom String methods in builtin schema", () => {
         const customSchema: Schema = {
           data: {
-            text: { type: "string" },
+            type: "object",
+            properties: {
+              text: { type: "string" },
+            },
+            required: ["text"],
           },
           elements: {
             Text: { props: {} },
@@ -492,7 +509,11 @@ describe("analyze - consolidated tests", () => {
       it("should fall back to default builtin schema when not specified", () => {
         const schemaWithoutBuiltins: Schema = {
           data: {
-            x: { type: "number" },
+            type: "object",
+            properties: {
+              x: { type: "number" },
+            },
+            required: ["x"],
           },
           elements: {
             Text: { props: {} },
@@ -523,7 +544,10 @@ describe("analyze - consolidated tests", () => {
             ...baseSchema.elements,
             Badge: {
               props: {
-                variant: { type: "string", enum: ["primary", "secondary"] },
+                type: "object",
+                properties: {
+                  variant: { type: "string", enum: ["primary", "secondary"] },
+                },
               },
             },
           },
@@ -542,7 +566,10 @@ describe("analyze - consolidated tests", () => {
             ...baseSchema.elements,
             Badge: {
               props: {
-                variant: { type: "string", enum: ["primary", "secondary"] },
+                type: "object",
+                properties: {
+                  variant: { type: "string", enum: ["primary", "secondary"] },
+                },
               },
             },
           },
@@ -551,15 +578,15 @@ describe("analyze - consolidated tests", () => {
         const ast = parse('<Badge variant="danger" />');
         const result = analyze(ast, schema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].code).toBe("INVALID_ATTRIBUTE_VALUE");
-        expect(result.errors[0].suggestions).toEqual(["primary", "secondary"]);
+        expect(result.errors.at(0)?.code).toBe("INVALID_ATTRIBUTE_VALUE");
+        expect(result.errors.at(0)?.suggestions).toEqual(["primary", "secondary"]);
       });
 
       it("should block invalid elements", () => {
         const ast = parse("<InvalidElement>Hello</InvalidElement>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("Element <InvalidElement> not allowed");
+        expect(result.errors.at(0)?.message).toContain("Element <InvalidElement> not allowed");
       });
 
       it("should allow nested valid elements", () => {
@@ -578,19 +605,27 @@ describe("analyze - consolidated tests", () => {
       it("should allow spread with data object", () => {
         const schema: Schema = {
           data: {
-            props: {
-              type: "object",
-              shape: {
-                title: { type: "string" },
-                count: { type: "number" },
+            type: "object",
+            properties: {
+              props: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  count: { type: "number" },
+                },
+                required: ["title", "count"],
               },
             },
+            required: ["props"],
           },
           elements: {
             Card: {
               props: {
-                title: { type: "string" },
-                count: { type: "number" },
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  count: { type: "number" },
+                },
               },
             },
           },
@@ -604,24 +639,33 @@ describe("analyze - consolidated tests", () => {
       it("should allow spread with nested data object", () => {
         const schema: Schema = {
           data: {
-            user: {
-              type: "object",
-              shape: {
-                attributes: {
-                  type: "object",
-                  shape: {
-                    style: { type: "string" },
-                    className: { type: "string" },
+            type: "object",
+            properties: {
+              user: {
+                type: "object",
+                properties: {
+                  attributes: {
+                    type: "object",
+                    properties: {
+                      style: { type: "string" },
+                      className: { type: "string" },
+                    },
+                    required: ["style", "className"],
                   },
                 },
+                required: ["attributes"],
               },
             },
+            required: ["user"],
           },
           elements: {
             Text: {
               props: {
-                style: { type: "string" },
-                className: { type: "string" },
+                type: "object",
+                properties: {
+                  style: { type: "string" },
+                  className: { type: "string" },
+                },
               },
             },
           },
@@ -635,28 +679,37 @@ describe("analyze - consolidated tests", () => {
       it("should allow spread with arrow function parameter", () => {
         const schema: Schema = {
           data: {
-            items: {
-              type: "array",
-              shape: {
-                type: "object",
-                shape: {
-                  name: { type: "string" },
-                  props: {
-                    type: "object",
-                    shape: {
-                      color: { type: "string" },
-                      size: { type: "number" },
+            type: "object",
+            properties: {
+              items: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string" },
+                    props: {
+                      type: "object",
+                      properties: {
+                        color: { type: "string" },
+                        size: { type: "number" },
+                      },
+                      required: ["color", "size"],
                     },
                   },
+                  required: ["name", "props"],
                 },
               },
             },
+            required: ["items"],
           },
           elements: {
             Item: {
               props: {
-                color: { type: "string" },
-                size: { type: "number" },
+                type: "object",
+                properties: {
+                  color: { type: "string" },
+                  size: { type: "number" },
+                },
               },
             },
             div: {
@@ -673,22 +726,30 @@ describe("analyze - consolidated tests", () => {
       it("should allow spread with the parameter itself", () => {
         const schema: Schema = {
           data: {
-            items: {
-              type: "array",
-              shape: {
-                type: "object",
-                shape: {
-                  name: { type: "string" },
-                  value: { type: "number" },
+            type: "object",
+            properties: {
+              items: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string" },
+                    value: { type: "number" },
+                  },
+                  required: ["name", "value"],
                 },
               },
             },
+            required: ["items"],
           },
           elements: {
             Item: {
               props: {
-                name: { type: "string" },
-                value: { type: "number" },
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  value: { type: "number" },
+                },
               },
             },
             div: {
@@ -705,18 +766,26 @@ describe("analyze - consolidated tests", () => {
       it("should allow spread combined with regular attributes", () => {
         const schema: Schema = {
           data: {
-            props: {
-              type: "object",
-              shape: {
-                title: { type: "string" },
+            type: "object",
+            properties: {
+              props: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                },
+                required: ["title"],
               },
             },
+            required: ["props"],
           },
           elements: {
             Card: {
               props: {
-                title: { type: "string" },
-                highlighted: { type: "boolean" },
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  highlighted: { type: "boolean" },
+                },
               },
             },
           },
@@ -730,24 +799,33 @@ describe("analyze - consolidated tests", () => {
       it("should allow multiple spreads", () => {
         const schema: Schema = {
           data: {
-            baseProps: {
-              type: "object",
-              shape: {
-                title: { type: "string" },
+            type: "object",
+            properties: {
+              baseProps: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                },
+                required: ["title"],
+              },
+              extraProps: {
+                type: "object",
+                properties: {
+                  count: { type: "number" },
+                },
+                required: ["count"],
               },
             },
-            extraProps: {
-              type: "object",
-              shape: {
-                count: { type: "number" },
-              },
-            },
+            required: ["baseProps", "extraProps"],
           },
           elements: {
             Card: {
               props: {
-                title: { type: "string" },
-                count: { type: "number" },
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  count: { type: "number" },
+                },
               },
             },
           },
@@ -797,7 +875,7 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{window.alert('hack')}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("method window.alert not allowed");
+        expect(result.errors.at(0)?.message).toContain("method window.alert not allowed");
       });
 
       it("should not block bare document property access (analyzeIdentifiers disabled)", () => {
@@ -812,7 +890,7 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{eval('alert(1)')}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("only member calls allowed");
+        expect(result.errors.at(0)?.message).toContain("only member calls allowed");
       });
 
       it("should allow calling String and Number", () => {
@@ -831,7 +909,7 @@ describe("analyze - consolidated tests", () => {
         const ast = parse("<Text>{new Function('return 1')()}</Text>");
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
-        expect(result.errors[0].message).toContain("new not allowed");
+        expect(result.errors.at(0)?.message).toContain("new not allowed");
       });
     });
   });

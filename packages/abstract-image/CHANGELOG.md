@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [14.0.0] - 2026-10-28
+
+- Breaking: dynamic images use jsxpression 0.4, whose schemas are JSON Schemas. `dynamicImage` and `compileDynamicImage` take the data's schema as one object's JSON Schema, `Schema["data"]`, instead of a record of `PropertySchema`s, and their elements' attributes, `dynamicImageBaseSchema`, are an object's schema each. `generateDataSchema` returns such a schema.
+
 ## [13.3.4] - 2026-10-25
 
 - Added: `createSVG` puts `classNames`' classes on what it draws like `ReactSvg`, `ai-root` on its svg, not a sub image's, and `ai-image` on an embedded picture, and its `className` option, its svg's class besides `ai-root`, e.g. sized to fill its box.

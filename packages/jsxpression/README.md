@@ -35,11 +35,14 @@ import { render } from "jsxpression";
 
 const schema = {
   data: {
-    user: { type: "object", shape: { name: { type: "string" } } },
-    items: { type: "array", shape: { type: "string" } },
+    type: "object",
+    properties: {
+      user: { type: "object", properties: { name: { type: "string" } } },
+      items: { type: "array", items: { type: "string" } },
+    },
   },
   elements: {
-    Text: { props: { size: { type: "number" } } },
+    Text: { props: { type: "object", properties: { size: { type: "number" } } } },
   },
 };
 
@@ -172,50 +175,65 @@ Only safe, read-only operations are exposed. No mutation, no DOM, no network —
 
 ## Schema Definition
 
-Define what data and elements are available:
+Define what data and elements are available, as [JSON Schemas](https://json-schema.org): `$ref`s point into the schema's own `$defs`, `allOf`, `anyOf` and `oneOf` combine schemas, and an object with `properties` but no `additionalProperties` has only those properties. `jsxpression/json-schema` exports what jsxpression reads them with, `resolve`, `property`, `keys`, `items`, `types`, `enumValues` and `isRequired`, e.g. for an editor that suggests names the same way.
 
 ```typescript
 import type { Schema } from "jsxpression";
 
 const schema = {
   //
-  // Data schema — each key becomes a top-level variable in expressions
+  // Data schema — an object's, each property becomes a top-level variable in expressions
   //
   data: {
-    user: {
-      type: "object",
-      description: "User info shown in templates",
-      shape: {
-        name: { type: "string", required: true },
-        age: { type: "number" },
-        isAdmin: { type: "boolean" },
-        role: { type: "string", enum: ["user", "admin", "guest"] },
-        tags: {
-          type: "array",
-          description: "User tags",
-          shape: { type: "string" },
+    type: "object",
+    properties: {
+      user: {
+        type: "object",
+        description: "User info shown in templates",
+        properties: {
+          name: { type: "string" },
+          age: { type: "number" },
+          isAdmin: { type: "boolean" },
+          role: { type: "string", enum: ["user", "admin", "guest"] },
+          tags: {
+            type: "array",
+            description: "User tags",
+            items: { type: "string" },
+          },
+        },
+        required: ["name"],
+      },
+
+      stats: {
+        type: "object",
+        properties: {
+          scores: { type: "array", items: { type: "number" } },
+          // Any key, e.g. stats.byRegion.north
+          byRegion: { type: "object", additionalProperties: { type: "number" } },
         },
       },
-    },
 
-    stats: {
-      type: "object",
-      shape: {
-        scores: { type: "array", shape: { type: "number" } },
-      },
+      // A schema that contains itself, declared as a named type in the generated TypeScript definitions
+      tree: { $ref: "#/$defs/Node" },
+    },
+    $defs: {
+      Node: { type: "object", properties: { label: { type: "string" }, children: { type: "array", items: { $ref: "#/$defs/Node" } } } },
     },
   },
 
   //
-  // Element schema — defines which JSX elements can be used
+  // Element schema — defines which JSX elements can be used, their attributes an object's schema
   //
   elements: {
     Text: {
       description: "Simple text element",
       props: {
-        size: { type: "number" },
-        weight: { type: "string", enum: ["regular", "bold"] },
-        color: { type: "string" },
+        type: "object",
+        properties: {
+          size: { type: "number" },
+          weight: { type: "string", enum: ["regular", "bold"] },
+          color: { type: "string", format: "color" },
+        },
       },
       // no allowedChildren = can contain anything
     },
@@ -223,10 +241,14 @@ const schema = {
     Image: {
       description: "Self-closing image element",
       props: {
-        src: { type: "string", required: true },
-        alt: { type: "string" },
-        width: { type: "number" },
-        height: { type: "number" },
+        type: "object",
+        properties: {
+          src: { type: "string" },
+          alt: { type: "string" },
+          width: { type: "number" },
+          height: { type: "number" },
+        },
+        required: ["src"],
       },
       allowedChildren: [], // means <Image src="..." /> only
     },
@@ -234,8 +256,12 @@ const schema = {
     Card: {
       description: "Wrapper for grouping content",
       props: {
-        title: { type: "string", required: true },
-        highlighted: { type: "boolean" },
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          highlighted: { type: "boolean" },
+        },
+        required: ["title"],
       },
       allowedChildren: ["Text", "Image"], // allowed inside <Card>
     },
@@ -246,8 +272,8 @@ const schema = {
   //
   functions: {
     formatDate: {
-      returnType: { type: "string" },
-      parameters: [{ name: "date", property: { type: "string" } }],
+      ret: { type: "string" },
+      args: [{ name: "date", schema: { type: "string" } }],
     },
   },
 } satisfies Schema;
