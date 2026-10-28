@@ -147,15 +147,15 @@ export type Mesh = {
 export type Material = {
   readonly normal: string;
   readonly opacity?: number;
-  /** Without a type */
+  /** With a type, over its finish's */
   readonly metalness?: number;
-  /** Without a type */
+  /** With a type, over its finish's */
   readonly roughness?: number;
   /** Draw only the front side, e.g. an image on a wall that should not show through from behind. Default is both sides. */
   readonly backfaceCulling?: boolean;
   /**
-   * What the surface is, which the three.js viewer draws with a physical finish of its own, in the material's color, instead of metalness and
-   * roughness
+   * What the surface is, which the three.js viewer draws with a physical finish of its own, in the material's color, its metalness and roughness
+   * unless the material has its own
    */
   readonly type?: MaterialType;
   /** False for parts that shouldn't cast shadows, e.g. symbols, markers and other abstract parts; the three.js viewer's shadows, on by default */
@@ -170,6 +170,19 @@ export type MaterialType = (typeof materialTypes)[number];
 
 /** The material types; a material's `type` that isn't one, e.g. a number from a database, is ignored */
 export const materialTypes = ["painted", "galvanized", "aluminum", "stainless", "copper", "plastic", "rubber", "fabric", "glass"] as const;
+
+/** The usual color of each material type, for a material whose data gives only its type */
+export const materialTypeColors: Record<MaterialType, string> = {
+  painted: "rgb(236, 236, 231)",
+  galvanized: "rgb(165, 170, 172)",
+  aluminum: "rgb(200, 203, 206)",
+  stainless: "rgb(190, 192, 192)",
+  copper: "rgb(184, 115, 51)",
+  plastic: "rgb(60, 60, 60)",
+  rubber: "rgb(30, 30, 30)",
+  fabric: "rgb(230, 230, 220)",
+  glass: "rgb(210, 230, 235)",
+};
 
 export type ImageMesh = {
   readonly type: "Image";

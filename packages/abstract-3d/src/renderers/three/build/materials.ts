@@ -31,10 +31,12 @@ export function createClassMaterial(c: MaterialClass, reflections: boolean): Mat
   if (!c.lit) {
     return new MeshBasicMaterial(common);
   }
-  const metalness = c.type ? (finishes[c.type].metalness ?? 0) : c.metalness;
+  const finish = c.type ? finishes[c.type] : {};
+  const metalness = c.metalness ?? finish.metalness ?? 0;
+  const roughness = c.roughness ?? finish.roughness ?? 1;
   const material = c.type
-    ? new MeshPhysicalMaterial({ ...common, ...finishes[c.type], metalness: reflections ? metalness : Math.min(metalness, plainMetalness) })
-    : new MeshStandardMaterial({ ...common, metalness: reflections ? metalness : Math.min(metalness, plainMetalness), roughness: c.roughness });
+    ? new MeshPhysicalMaterial({ ...common, ...finish, metalness: reflections ? metalness : Math.min(metalness, plainMetalness), roughness })
+    : new MeshStandardMaterial({ ...common, metalness: reflections ? metalness : Math.min(metalness, plainMetalness), roughness });
   return Object.assign(material, { onBeforeCompile: roundEdges });
 }
 
@@ -42,9 +44,9 @@ export function createClassMaterial(c: MaterialClass, reflections: boolean): Mat
 const plainMetalness = 0.25;
 
 /**
- * The physical finish of each type of surface, in the material's color: metals reflect their color; the others are dielectrics with a white
- * reflection; painted sheet has a full, soft clearcoat, fabric a soft sheen. Glass is a thin, smooth, mostly see-through surface, not refracting,
- * which would render the scene once more each frame
+ * The physical finish of each type of surface, in the material's color, its metalness and roughness unless the material has its own: metals reflect
+ * their color; the others are dielectrics with a white reflection; painted sheet has a full, soft clearcoat, fabric a soft sheen. Glass is a thin,
+ * smooth, mostly see-through surface, not refracting, which would render the scene once more each frame
  */
 const finishes: Record<MaterialType, MeshPhysicalMaterialParameters> = {
   painted: { metalness: 0, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.5 },

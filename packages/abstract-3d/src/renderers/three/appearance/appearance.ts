@@ -31,10 +31,12 @@ export type PaintState = StructureState & {
 /** Items of one material class share a material, and are drawn in one batch */
 export type MaterialClass = {
   readonly lit: boolean;
-  /** A physical finish of its own, instead of metalness and roughness */
+  /** A physical finish of its own, its metalness and roughness unless the material has its own */
   readonly type?: MaterialType;
-  readonly metalness: number;
-  readonly roughness: number;
+  /** Set without a type; with one, only the material's own */
+  readonly metalness?: number;
+  /** Set without a type; with one, only the material's own */
+  readonly roughness?: number;
   readonly side: "front" | "back" | "double";
   readonly transparent: boolean;
   /** Opaque solids whose material doesn't turn it off cast shadows */
@@ -82,7 +84,7 @@ export function getMaterialClass(item: Item, { materialState, disabled }: Target
       const type = item.role === "solid" && materialTypes.includes(mat.type as MaterialType) ? mat.type : undefined;
       return {
         lit: item.role === "solid",
-        ...(type ? { type, metalness: 0, roughness: 0 } : { metalness: mat.metalness ?? 0, roughness: mat.roughness ?? 1 }),
+        ...(type ? { type, metalness: mat.metalness, roughness: mat.roughness } : { metalness: mat.metalness ?? 0, roughness: mat.roughness ?? 1 }),
         side: item.role === "text" || material.backfaceCulling ? "front" : "double",
         transparent: getOpacity(material) < 1 || disabled,
         castShadow: item.role === "solid" && getOpacity(material) === 1 && !disabled && material.castShadow !== false,

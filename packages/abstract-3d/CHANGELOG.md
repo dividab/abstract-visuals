@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Changed: a material's own `metalness` and `roughness` are drawn over its `type`'s finish instead of being ignored, so a type is a base finish to adjust
+- Added: `materialTypeColors`, the usual color of each material type, for a material whose data gives only its type
+
 ## [4.0.10] - 2026-10-27
 
 - Changed: sharper text: glyphs are rasterized at 96 px instead of 40, so large or zoomed-in text keeps smooth curves instead of lumpy edges, and their edges are antialiased over one screen pixel, so small text is darker and crisper

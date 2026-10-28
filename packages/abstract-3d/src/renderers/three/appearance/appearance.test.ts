@@ -58,10 +58,15 @@ describe("getMaterialClass", () => {
     expect(classify(solid({ normal: red }, "relation"), relation, { relationsActive: true }).castShadow).toBe(false);
   });
 
-  it("gives solids of a type its finish, in one class whatever their metalness and roughness, unless a material state replaces it", () => {
-    const painted = classify(solid({ normal: red, type: "painted", metalness: 0.45, roughness: 0.4 }), group);
-    expect(painted).toMatchObject({ lit: true, type: "painted" });
-    expect(classify(solid({ normal: "rgb(0,0,255)", type: "painted", metalness: 0.9 }), group)).toEqual(painted);
+  it("gives solids of a type its finish, in one class whatever their color, their own metalness and roughness over it, unless a material state replaces it", () => {
+    const painted = classify(solid({ normal: red, type: "painted" }), group);
+    expect(painted).toMatchObject({ lit: true, type: "painted", metalness: undefined, roughness: undefined });
+    expect(classify(solid({ normal: "rgb(0,0,255)", type: "painted" }), group)).toEqual(painted);
+    expect(classify(solid({ normal: red, type: "painted", metalness: 0.9 }), group)).toMatchObject({
+      type: "painted",
+      metalness: 0.9,
+      roughness: undefined,
+    });
     expect(classify(solid({ normal: red, type: "painted" }), group, { activeComponents: { fan: "Accept" } }).type).toBeUndefined();
   });
 
