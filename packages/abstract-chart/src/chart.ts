@@ -103,7 +103,7 @@ export function createChart(props: ChartProps): Chart {
   };
 }
 
-type Padding = { readonly top: number; readonly right: number; readonly bottom: number; readonly left: number };
+export type Padding = { readonly top: number; readonly right: number; readonly bottom: number; readonly left: number };
 
 export type XAxis = "bottom" | "top";
 export type YAxis = "left" | "right";
@@ -334,7 +334,7 @@ export function createChartDataAxis(
 }
 
 export function inverseTransformPoint(point: Point, chart: Chart, xAxis: XAxis, xAxisIx: number, yAxis: YAxis, yAxisIx: number): Point | undefined {
-  const padding = finalPadding(chart);
+  const padding = plotPadding(chart);
   const xMin = padding.left;
   const xMax = chart.width - padding.right;
   const yMin = chart.height - padding.bottom;
@@ -344,7 +344,8 @@ export function inverseTransformPoint(point: Point, chart: Chart, xAxis: XAxis, 
   return createPoint(x, y);
 }
 
-function finalPadding(chart: Chart): Padding {
+/** The plot's distances from the chart's sides, its axes' ticks and labels drawn there: its padding and an axisWidth per axis on each side */
+export function plotPadding(chart: Chart): Padding {
   return {
     bottom:
       chart.padding.bottom +
@@ -368,7 +369,7 @@ function finalPadding(chart: Chart): Padding {
 export function renderChart(chart: Chart): AbstractImage {
   const { width, height, xAxisesBottom, xAxisesTop, yAxisesLeft, yAxisesRight } = chart;
 
-  const padding = finalPadding(chart);
+  const padding = plotPadding(chart);
 
   const gridWidth = width - padding.left - padding.right;
   const gridHeight = height - padding.bottom - padding.top;
