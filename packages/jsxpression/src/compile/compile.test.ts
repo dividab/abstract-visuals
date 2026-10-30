@@ -57,6 +57,12 @@ describe("compile", () => {
     expect(result).toBe('"use strict";return (count * 2);');
   });
 
+  it("should compile unary operators apart from their arguments", () => {
+    const ast = parse("{typeof value === 'string' ? - -count : (-count) ** 2}");
+    const result = compile(ast);
+    expect(result).toBe('"use strict";return (((typeof value) === "string")?(- (- count)):((- count) ** 2));');
+  });
+
   it("should compile bare method calls", () => {
     const ast = parse("{text.toUpperCase()}");
     const result = compile(ast);

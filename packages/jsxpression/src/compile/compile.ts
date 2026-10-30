@@ -209,7 +209,7 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
     case "ParenthesizedExpression":
       return `(${emitExpression(node.expression, localFunctions)})`;
     case "UnaryExpression":
-      return `${node.operator}${emitExpression(node.argument, localFunctions)}`;
+      return `(${node.operator} ${emitExpression(node.argument, localFunctions)})`;
     case "BinaryExpression":
     case "LogicalExpression":
       return `(${emitExpression(node.left, localFunctions)} ${node.operator} ${emitExpression(node.right, localFunctions)})`;

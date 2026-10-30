@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.1] - 2026-10-30
+
+- Fixed: a unary operator compiles apart from its argument and parenthesized, so `typeof value` no longer runs as the undefined name `typeofvalue`, `- -x` as `--x`, or `(-x) ** 2` as the syntax error `-x ** 2`.
+
 ## [0.4.0] - 2026-10-28
 
 - Breaking: a schema's data, element attributes and function arguments and return values are JSON Schemas instead of `PropertySchema`, which is removed with `serializePropertySchemaToJson` and `deserializePropertySchemaFromJson`.
