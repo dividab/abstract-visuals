@@ -71,7 +71,7 @@
     "playwright-core": "^1.64.1",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "three": "^0.186.1"
+    "three": "^0.187.0"
   },
   "peerDependencies": {
     "react": "catalog:",

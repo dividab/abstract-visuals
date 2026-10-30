@@ -23,7 +23,7 @@ minimumReleaseAgeExclude:
   - react-dom@19.3.0
   - react@19.3.0
   - scheduler@0.28.0
-  - three@0.186.0
+  - three@0.186.0 || 0.187.0
   - "@oxfmt/binding-android-arm-eabi@0.70.0"
   - "@oxfmt/binding-android-arm64@0.70.0"
   - "@oxfmt/binding-darwin-arm64@0.70.0"
