@@ -340,6 +340,8 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
     cullScene(built, camera.position);
   }
   if (v.loaded) {
+    // Floors the viewport to the canvas each frame, as the gizmo restores it rounded, a pixel larger at a fractional pixel ratio
+    renderer.setRenderTarget(null);
     renderer.render(v.scene, camera);
     disposeRetired(v);
   }
