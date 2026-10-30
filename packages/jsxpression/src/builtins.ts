@@ -45,6 +45,7 @@ export interface BuiltinSchema {
   global: boolean;
   intrinsic?: boolean;
   generic?: string; // Generic type parameters, e.g., "<T>" or "<K, V>"
+  index?: string; // The type of an element read by its index, e.g. "T" for `items[0]`
 }
 
 const MATH = "Math";
@@ -395,6 +396,7 @@ const BUILTINS: Record<string, BuiltinSchema> = {
     global: false,
     intrinsic: true,
     generic: "<T>",
+    index: "T",
     methods: {
       map: {
         description: "Calls a defined callback function on each element of an array, and returns an array that contains the results",

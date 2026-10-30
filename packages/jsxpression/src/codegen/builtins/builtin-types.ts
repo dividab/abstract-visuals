@@ -90,6 +90,10 @@ function generateNamespaceDeclaration(namespace: string, schema: BuiltinSchema):
 
     result += `interface ${interfaceName}${genericParam} {\n`;
 
+    if (schema.index) {
+      result += `  [n: number]: ${schema.index};\n`;
+    }
+
     if (schema.properties) {
       for (const [propName, prop] of Object.entries(schema.properties)) {
         result += generateProperty(propName, prop) + "\n";

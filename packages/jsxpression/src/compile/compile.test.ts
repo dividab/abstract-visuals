@@ -63,6 +63,22 @@ describe("compile", () => {
     expect(result).toBe('"use strict";return (((typeof value) === "string")?(- (- count)):((- count) ** 2));');
   });
 
+  it("should compile a return of a conditional expression", () => {
+    const ast = parse("const big = size > 1; return big ? <div>Big</div> : <span>Small</span>;");
+    const result = compile(ast);
+    expect(result).toBe('"use strict";const big = (size > 1);return (big?h("div", null, "Big"):h("span", null, "Small"));');
+  });
+
+  it("should compile destructuring declarations and parameters", () => {
+    const ast = parse(
+      "const { name, size: s = 1, pos: { x }, ...rest } = item; const [first, , third = 0, ...others] = list; return <div>{list.map(({ v }) => v)}</div>;"
+    );
+    const result = compile(ast);
+    expect(result).toBe(
+      '"use strict";const { name, size: s = 1, pos: { x }, ...rest } = item;const [first, , third = 0, ...others] = list;return h("div", null, list.map(({ v }) => v));'
+    );
+  });
+
   it("should compile bare method calls", () => {
     const ast = parse("{text.toUpperCase()}");
     const result = compile(ast);

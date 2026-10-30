@@ -59,6 +59,17 @@ describe("generateTypeScriptDefinitions", () => {
       expect(result).toMatch(/const String: \{\n(?:\s+(?:\/\*\*| \*).*\n)*\s+\(value: any\): string;/);
       expect(result).toMatch(/const Number: \{\n(?:\s+(?:\/\*\*| \*).*\n)*\s+\(value: any\): number;/);
     });
+
+    it("should generate an index signature for reading an array's elements", () => {
+      const schema: Schema = {
+        data: {},
+        elements: {},
+      };
+
+      const result = generateTypeScriptDefinitions(schema);
+
+      expect(result).toContain("  interface Array<T> {\n    [n: number]: T;\n");
+    });
   });
 
   describe("element types generation", () => {

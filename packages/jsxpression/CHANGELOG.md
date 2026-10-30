@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.2] - 2026-10-30
+
+- Fixed: a destructuring declaration or parameter compiles, nested patterns, renames, defaults and rests included, like `const { name, size: s = 1 } = item`, `const [first] = list` and `items.map(({ v }) => v)`, where a declaration declared none of its names and an arrow function's pattern failed to compile.
+- Fixed: a template's return of any expression compiles, like `return big ? <A /> : <B />`, where only a return of an element or a fragment did and any other was left out, so the template returned nothing.
+- Fixed: the generated TypeScript definitions' `Array<T>` has an index signature, so reading an element like `items[0]` type-checks instead of being an implicit `any`.
+
 ## [0.4.1] - 2026-10-30
 
 - Fixed: a unary operator compiles apart from its argument and parenthesized, so `typeof value` no longer runs as the undefined name `typeofvalue`, `- -x` as `--x`, or `(-x) ** 2` as the syntax error `-x ** 2`.

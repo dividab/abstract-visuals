@@ -48,8 +48,8 @@ export function compile(ast: Program): string {
       parts.push(emitVariableDeclaration(statement, localFunctions));
     } else if (statement.type === "FunctionDeclaration") {
       parts.push(emitFunctionDeclaration(statement, localFunctions));
-    } else if (statement.type === "ReturnStatement" && statement.argument && isJsxRoot(statement.argument)) {
-      parts.push(`return ${emitJsxRoot(statement.argument, localFunctions)};`);
+    } else if (statement.type === "ReturnStatement" && statement.argument) {
+      parts.push(`return ${emitExpression(statement.argument, localFunctions)};`);
     } else if (!hasDeclarations && statement.type === "ExpressionStatement" && isJsxRoot(statement.expression)) {
       parts.push(`return ${emitJsxRoot(statement.expression, localFunctions)};`);
     } else if (!hasDeclarations && statement.type === "BlockStatement" && statement.body.length === 1) {
@@ -264,7 +264,7 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
     case "ChainExpression":
       return emitExpression(node.expression, localFunctions);
     case "ArrowFunctionExpression": {
-      const params = node.params.map((param) => emitExpression(param as CompilableExpression, localFunctions)).join(", ");
+      const params = node.params.map((param) => emitPattern(param, localFunctions)).join(", ");
       const body = emitExpression(node.body as CompilableExpression, localFunctions);
       return `(${params}) => ${body}`;
     }
@@ -282,9 +282,8 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
 function emitVariableDeclaration(node: VariableDeclaration, localFunctions: Set<string>): string {
   const decls = node.declarations
     .map((d) => {
-      const name = (d.id as Identifier).name;
       const init = d.init ? emitExpression(d.init, localFunctions) : "undefined";
-      return `${name} = ${init}`;
+      return `${emitPattern(d.id, localFunctions)} = ${init}`;
     })
     .join(", ");
   return `const ${decls};`;
@@ -292,7 +291,7 @@ function emitVariableDeclaration(node: VariableDeclaration, localFunctions: Set<
 
 function emitFunctionDeclaration(node: FunctionDeclaration, localFunctions: Set<string>): string {
   const name = node.id.name;
-  const params = node.params.map((p) => emitParam(p, localFunctions)).join(", ");
+  const params = node.params.map((p) => emitPattern(p, localFunctions)).join(", ");
   const body = emitFunctionBody(node.body, localFunctions);
   return `function ${name}(${params}) ${body}`;
 }
@@ -318,32 +317,32 @@ function emitStatement(statement: Statement, localFunctions: Set<string>): strin
   }
 }
 
-function emitParam(param: Pattern, localFunctions: Set<string>): string {
-  switch (param.type) {
+/** A declaration's or a parameter's name or destructuring pattern, nested patterns, renames, defaults and rests included */
+function emitPattern(pattern: Pattern, localFunctions: Set<string>): string {
+  switch (pattern.type) {
     case "Identifier":
-      return param.name;
+      return pattern.name;
     case "ObjectPattern": {
-      const props = param.properties.map((p) => {
+      const props = pattern.properties.map((p) => {
         if (p.type === "RestElement") {
-          return `...${emitParam(p.argument, localFunctions)}`;
+          return `...${emitPattern(p.argument, localFunctions)}`;
         }
-        const key = (p.key as Identifier).name;
-        if (p.value.type === "AssignmentPattern") {
-          return `${key} = ${emitExpression(p.value.right, localFunctions)}`;
+        if (p.shorthand) {
+          return emitPattern(p.value, localFunctions);
         }
-        if (p.value !== p.key && p.value.type === "Identifier" && p.value.name !== key) {
-          return `${key}: ${emitParam(p.value, localFunctions)}`;
-        }
-        return key;
+        const key = p.computed ? `[${emitExpression(p.key, localFunctions)}]` : getAstKeyString(p.key as Identifier | Literal);
+        return `${key}: ${emitPattern(p.value, localFunctions)}`;
       });
       return `{ ${props.join(", ")} }`;
     }
+    case "ArrayPattern":
+      return `[${pattern.elements.map((element) => (element ? emitPattern(element, localFunctions) : "")).join(", ")}]`;
     case "AssignmentPattern":
-      return `${emitParam(param.left, localFunctions)} = ${emitExpression(param.right, localFunctions)}`;
+      return `${emitPattern(pattern.left, localFunctions)} = ${emitExpression(pattern.right, localFunctions)}`;
     case "RestElement":
-      return `...${emitParam(param.argument, localFunctions)}`;
+      return `...${emitPattern(pattern.argument, localFunctions)}`;
     default:
-      throw CompilationError.fromNode(`Unsupported parameter: ${param.type}`, param);
+      throw CompilationError.fromNode(`Unsupported pattern: ${pattern.type}`, pattern);
   }
 }
 
