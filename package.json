@@ -40,7 +40,7 @@
     "@storybook/addon-actions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
     "@storybook/react": "^8.1.1",
-    "@types/node": "^26.6.5",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "5.0.5",

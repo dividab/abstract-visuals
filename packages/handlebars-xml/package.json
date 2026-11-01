@@ -24,14 +24,14 @@
     "test": "vitest run src/**/*.test.ts"
   },
   "dependencies": {
-    "fast-xml-parser": "^4.5.0",
-    "handlebars": "4.7.8",
+    "fast-xml-parser": "catalog:",
+    "handlebars": "catalog:",
     "json-schema": "^0.4.0",
-    "ts-exhaustive-check": "^1.0.0"
+    "ts-exhaustive-check": "catalog:"
   },
   "devDependencies": {
-    "@types/json-schema": "^7.0.15",
-    "@types/node": "^24.9.2",
-    "@types/xml": "^1.0.11"
+    "@types/json-schema": "catalog:",
+    "@types/node": "catalog:",
+    "@types/xml": "catalog:"
   }
 }

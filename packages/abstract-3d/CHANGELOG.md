@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. The format 
 - Changed: a material's own `metalness` and `roughness` are drawn over its `type`'s finish instead of being ignored, so a type is a base finish to adjust
 - Added: `materialTypeColors`, the usual color of each material type, for a material whose data gives only its type
 - Fixed: the three.js viewer no longer shakes the scene by a pixel after a change at a fractional pixel ratio, e.g. a Windows display at 125% or 150%: the gizmo left the viewport rounded, a pixel larger than the canvas, while frames that render shadows floored it, so frames alternated between the two sizes
+- Fixed: the `react` and `react-dom` peer dependencies are `^19.0.0`, where the published package had pnpm's `catalog:` placeholder
 
 ## [4.0.10] - 2026-10-27
 

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Fixed: depends on handlebars 4.7.10 instead of 4.7.8, whose templates could inject JavaScript or pollute prototypes, and fast-xml-parser 5.
+
 ## [14.0.0] - 2026-10-28
 
 - Breaking: dynamic images use jsxpression 0.4, whose schemas are JSON Schemas. `dynamicImage` and `compileDynamicImage` take the data's schema as one object's JSON Schema, `Schema["data"]`, instead of a record of `PropertySchema`s, and their elements' attributes, `dynamicImageBaseSchema`, are an object's schema each. `generateDataSchema` returns such a schema.

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Fixed: depends on handlebars 4.7.10 instead of 4.7.8, whose templates could inject JavaScript or pollute prototypes, and fast-xml-parser 5.
+
 ## [0.6.0] - 2026-09-10
 
 - Changed: a bare/valueless XML attribute (e.g. `<Foo bar>`, without `="..."`) is now dropped instead of being parsed as the literal boolean `true`. `XmlElement.attributes` was always typed `Record<string, string>`, but with `allowBooleanAttributes` previously enabled a bare attribute violated that at runtime, and downstream consumers (abstract-document, abstract-sheet) assumed every attribute value is a string. Always give attributes an explicit value (e.g. `bold="true"`) — this was already the only documented form.

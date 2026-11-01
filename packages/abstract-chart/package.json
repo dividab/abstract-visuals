@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "abstract-image": "workspace:^",
-    "ts-exhaustive-check": "^1.0.0"
+    "ts-exhaustive-check": "catalog:"
   }
 }

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Publishes packages to npm, re-prompting for OTP on failure instead of aborting.
-# `lerna publish from-package` is safe to rerun: it skips packages already on the registry.
+# `pnpm -r publish` is safe to rerun: it skips packages already on the registry, and rewrites workspace: and catalog:
+# dependencies to real versions, which lerna publish leaves as catalog:.
 # With --web, publishes with `npm publish` instead, which handles 2FA in the browser (passkey/security key),
-# since lerna only supports typing an authenticator-app OTP.
+# since pnpm only supports typing an authenticator-app OTP.
 set -euo pipefail
 
 web=false
@@ -59,7 +60,7 @@ while true; do
     exit 1
   fi
 
-  if pnpm exec lerna publish from-package --yes --otp="$otp"; then
+  if pnpm -r publish --otp="$otp"; then
     exit 0
   fi
 

@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Fixed: depends on handlebars 4.7.10 instead of 4.7.8, whose templates could inject JavaScript or pollute prototypes, and fast-xml-parser 5.
 - Fixed: the DOCX exporter no longer imports Node's `stream`. `exportToStream` writes the document to the given stream with `end`, so bundlers that keep unused code, like vite's bundled dev mode, no longer fail on the missing `Readable` in the browser.
 
 ## [20.3.3] - 2026-10-07

@@ -62,7 +62,7 @@
     "@mapbox/tiny-sdf": "^2.3.0",
     "abstract-image": "workspace:^",
     "three-viewport-gizmo": "^2.2.0",
-    "ts-exhaustive-check": "^1.0.0"
+    "ts-exhaustive-check": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",
@@ -74,8 +74,8 @@
     "three": "^0.187.0"
   },
   "peerDependencies": {
-    "react": "catalog:",
-    "react-dom": "catalog:",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "three": ">=0.186.0"
   },
   "peerDependenciesMeta": {

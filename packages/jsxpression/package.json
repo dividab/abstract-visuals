@@ -24,7 +24,7 @@
     "test": "vitest run src/**/*.test.ts"
   },
   "dependencies": {
-    "@types/json-schema": "^7.0.15",
+    "@types/json-schema": "catalog:",
     "acorn": "8.15.0",
     "acorn-typescript": "1.4.13",
     "acorn-walk": "8.3.4"

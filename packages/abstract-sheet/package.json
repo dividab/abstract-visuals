@@ -24,18 +24,18 @@
     "test": "vitest run src/**/*.test.ts"
   },
   "dependencies": {
-    "fast-xml-parser": "^4.5.0",
+    "fast-xml-parser": "catalog:",
     "fflate": "^0.8.0",
-    "handlebars": "4.7.8",
+    "handlebars": "catalog:",
     "handlebars-xml": "workspace:^",
-    "moment": "^2.30.1",
-    "ts-exhaustive-check": "^1.0.0",
+    "moment": "catalog:",
+    "ts-exhaustive-check": "catalog:",
     "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.1",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
-    "@types/xml": "^1.0.11",
+    "@types/xml": "catalog:",
     "react": "catalog:"
   },
   "peerDependencies": {

@@ -60,7 +60,7 @@ The packages are published on npmjs.org. To publish run this command:
 pnpm publish-npm
 ```
 
-It will build the packages and call `lerna publish` which will figure out which packages has changed, ask for new versions of them, and then publish them. Needs an npm auth token in `~/.npmrc` and, if 2FA is enabled, an OTP, which it will prompt you for — if you enter a wrong or expired one, it re-prompts instead of aborting (rerunning the publish step is safe, it skips packages already on the registry).
+It will build the packages and call `lerna version`, which will figure out which packages has changed and ask for new versions of them, and then `pnpm -r publish` to publish them. Needs an npm auth token in `~/.npmrc` and, if 2FA is enabled, an OTP, which it will prompt you for — if you enter a wrong or expired one, it re-prompts instead of aborting (rerunning the publish step is safe, it skips packages already on the registry).
 
 If your npm 2FA uses a passkey/security key (e.g. fingerprint) instead of an authenticator app, run `pnpm publish-npm --web` instead. It publishes each not-yet-published package with `npm publish` (packed with `pnpm pack` first, so `workspace:^` dependencies become real versions), and npm asks you to authenticate each publish in the browser. If a publish fails, just rerun: already published versions are skipped.
 

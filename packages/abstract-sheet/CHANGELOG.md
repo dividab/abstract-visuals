@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Fixed: depends on handlebars 4.7.10 instead of 4.7.8, whose templates could inject JavaScript or pollute prototypes, and fast-xml-parser 5.
+
 ## [1.3.1] - 2026-09-14
 
 - Fixed: `<ColInfo>`/`<RowInfo>` XML template elements' `widthPixels`/`heightPixels`/`hidden` attributes are now parsed into real numbers/booleans instead of staying raw strings; previously a non-empty string was never falsy/nullish, so the default width/height fallback never applied and `hidden="false"` was written to the spreadsheet as hidden.
