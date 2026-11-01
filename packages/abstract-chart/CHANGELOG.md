@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Added: `renderChart` returns a `RenderedChart`, its `AbstractImage` with where it drew its parts, e.g. to place a page's controls on them: `plotPadding`, and `axisLabels`, each axis' title `Text` as drawn by side, undefined for an axis without a label. `xAxises` and `yAxises` return their titles third, and `generateXAxisLabel` and `generateYAxisLabel` their `Text`.
+- Removed: the `plotPadding` export, a `RenderedChart`'s `plotPadding` in its place.
+
 ## [12.3.0] - 2026-10-28
 
 - Added: `plotPadding`, the plot's distances from a chart's sides, its padding and an `axisWidth` per axis on each side, e.g. to line a page's controls up with the plot, and its `Padding` type.
