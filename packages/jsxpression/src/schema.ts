@@ -1,5 +1,5 @@
-import type { JSONSchema7, JSONSchema7Definition, JSONSchema7Type } from "json-schema";
-import { enumValues, isRequired, keys, property } from "./json-schema.js";
+import type { JSONSchema7, JSONSchema7Definition, JSONSchema7Type, JSONSchema7TypeName } from "json-schema";
+import { enumValues, isRequired, keys, property, types } from "./json-schema.js";
 
 export type ElementSchema = {
   description?: string;
@@ -85,4 +85,11 @@ export function getAttributeEnumValues(schema: Schema, tagName: string, attribut
   const props = getElementSchema(schema, tagName)?.props;
   const attribute = props === undefined ? undefined : property(props, attributeName, props);
   return props === undefined || attribute === undefined ? undefined : enumValues(attribute, props);
+}
+
+/** The types an attribute's value can have, none if it can have any */
+export function getAttributeTypes(schema: Schema, tagName: string, attributeName: string): ReadonlySet<JSONSchema7TypeName> {
+  const props = getElementSchema(schema, tagName)?.props;
+  const attribute = props === undefined ? undefined : property(props, attributeName, props);
+  return props === undefined || attribute === undefined ? new Set() : types(attribute, props);
 }

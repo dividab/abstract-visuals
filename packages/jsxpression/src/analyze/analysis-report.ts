@@ -95,6 +95,22 @@ const ISSUES_DEFINITIONS = {
     severity: 3,
     custom: true,
   },
+  LOOP_NOT_ALLOWED: {
+    severity: 3,
+    custom: true,
+  },
+  IF_NOT_ALLOWED: {
+    severity: 3,
+    custom: true,
+  },
+  SWITCH_NOT_ALLOWED: {
+    severity: 3,
+    custom: true,
+  },
+  LABEL_NOT_ALLOWED: {
+    severity: 3,
+    custom: true,
+  },
   COMPUTED_ACCESS_NOT_ALLOWED: {
     severity: 3,
     custom: true,

@@ -1,6 +1,14 @@
 import type { Program } from "acorn";
+import type { JSONSchema7TypeName } from "json-schema";
 import { isJsxAttribute, isJsxExpressionContainer, type JSXAttribute } from "../../jsx.js";
-import { getAllowedAttributes, getAttributeEnumValues, getRequiredAttributes, isAttributeAllowed, type Schema } from "../../schema.js";
+import {
+  getAllowedAttributes,
+  getAttributeEnumValues,
+  getAttributeTypes,
+  getRequiredAttributes,
+  isAttributeAllowed,
+  type Schema,
+} from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
 import { getAttributeSimilarityMatchers, getBestSimilarityMatcherSuggestion, getNodeRange } from "../utils.js";
@@ -89,6 +97,21 @@ export function analyzeElementAttributes(ast: Program, schema: Schema, validatio
               range,
               currentContext,
               suggestionMatch ? [suggestionMatch] : stringEnumValues
+            );
+          }
+        } else {
+          // A literal value of a type the attribute doesn't take, which an expression's type can't be known of before it's evaluated
+          const literalValue = getAttributeLiteralValue(attribute);
+          const attributeTypes = getAttributeTypes(schema, tagName, attributeName);
+          const literalType = literalValue === null ? "null" : typeof literalValue;
+          const allowed = attributeTypes.has(literalType as JSONSchema7TypeName) || (attributeTypes.has("integer") && Number.isInteger(literalValue));
+
+          if (literalValue !== undefined && attributeTypes.size > 0 && !allowed) {
+            analysisReport.addIssue(
+              "INVALID_ATTRIBUTE_VALUE",
+              `Value ${JSON.stringify(literalValue)} is not allowed for attribute "${attributeName}" on <${tagName}>. Expected ${[...attributeTypes].join(" or ")}`,
+              range,
+              currentContext
             );
           }
         }

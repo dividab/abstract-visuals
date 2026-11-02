@@ -582,6 +582,38 @@ describe("analyze - consolidated tests", () => {
         expect(result.errors.at(0)?.suggestions).toEqual(["primary", "secondary"]);
       });
 
+      it("should report literal attribute values of a type the attribute doesn't take", () => {
+        const schema: Schema = {
+          ...baseSchema,
+          elements: {
+            ...baseSchema.elements,
+            Box: {
+              props: {
+                type: "object",
+                properties: {
+                  width: { type: "number" },
+                  count: { type: "integer" },
+                  label: { type: "string" },
+                  size: { anyOf: [{ type: "number" }, { type: "string" }] },
+                  anything: {},
+                },
+              },
+            },
+          },
+        };
+
+        const valid = parse('<Box width={1.5} count={2} label="a" size="big" anything={true} />');
+        expect(analyze(valid, schema).hasErrors).toBe(false);
+        const ast = parse('<Box width="wide" count={1.5} label={700} size={false} />');
+        const result = analyze(ast, schema);
+        expect(result.errors.map((error) => [error.code, error.message])).toEqual([
+          ["INVALID_ATTRIBUTE_VALUE", 'Value "wide" is not allowed for attribute "width" on <Box>. Expected number'],
+          ["INVALID_ATTRIBUTE_VALUE", 'Value 1.5 is not allowed for attribute "count" on <Box>. Expected integer'],
+          ["INVALID_ATTRIBUTE_VALUE", 'Value 700 is not allowed for attribute "label" on <Box>. Expected string'],
+          ["INVALID_ATTRIBUTE_VALUE", 'Value false is not allowed for attribute "size" on <Box>. Expected number or string'],
+        ]);
+      });
+
       it("should block invalid elements", () => {
         const ast = parse("<InvalidElement>Hello</InvalidElement>");
         const result = analyze(ast, baseSchema);
@@ -910,6 +942,45 @@ describe("analyze - consolidated tests", () => {
         const result = analyze(ast, baseSchema);
         expect(result.hasErrors).toBe(true);
         expect(result.errors.at(0)?.message).toContain("new not allowed");
+      });
+    });
+
+    describe("statements", () => {
+      it("should allow returning a conditional expression", () => {
+        const ast = parse("const n = 1; return n > 1 ? <Text>Big</Text> : <Text>Small</Text>;");
+        const result = analyze(ast, baseSchema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should block the statements a template can't compile", () => {
+        const ast = parse(`if (true) {}
+function f(items) {
+  if (items) {} else {}
+  for (const item of items) {}
+  for (let i = 0; i < 1; i++) {}
+  while (false) {}
+  do {} while (false);
+  switch (items) {}
+  outer: {}
+  try {} catch {}
+  throw 1;
+  debugger;
+}
+return <Text>{f([])}</Text>;`);
+        const result = analyze(ast, baseSchema);
+        expect(result.errors.map((error) => error.message)).toEqual(
+          expect.arrayContaining([
+            "if not allowed",
+            "loops not allowed",
+            "switch not allowed",
+            "labels not allowed",
+            "try not allowed",
+            "throw not allowed",
+            "debugger not allowed",
+          ])
+        );
+        expect(result.errors.filter((error) => error.message === "if not allowed")).toHaveLength(2);
+        expect(result.errors.filter((error) => error.message === "loops not allowed")).toHaveLength(4);
       });
     });
   });

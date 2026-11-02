@@ -1,4 +1,4 @@
-import type { Program, Expression, Super } from "acorn";
+import type { Program, Expression, Node, Super } from "acorn";
 import type { Schema } from "../../schema.js";
 import { traverse } from "../../traverse.js";
 import { createAnalysisReport, type AnalysisReport } from "../analysis-report.js";
@@ -7,8 +7,41 @@ import type { ValidationContext } from "../validation-context.js";
 
 export function analyzeExpressions(ast: Program, _schema: Schema, validationContext: ValidationContext): AnalysisReport {
   const analysisReport = createAnalysisReport();
+  const loop = (node: Node): void => {
+    analysisReport.addIssue("LOOP_NOT_ALLOWED", "loops not allowed", getNodeRange(node), validationContext.getSnapshot(), [
+      "Use an array's methods instead, like map and filter",
+    ]);
+  };
 
   traverse(ast, {
+    // The statements a template compiles are declarations, returns and expressions, which any other would be left out of or fail
+    WhileStatement: loop,
+    DoWhileStatement: loop,
+    ForStatement: loop,
+    ForInStatement: loop,
+    ForOfStatement: loop,
+    IfStatement(node) {
+      analysisReport.addIssue("IF_NOT_ALLOWED", "if not allowed", getNodeRange(node), validationContext.getSnapshot(), [
+        "Use a conditional expression instead: condition ? a : b",
+      ]);
+    },
+    SwitchStatement(node) {
+      analysisReport.addIssue("SWITCH_NOT_ALLOWED", "switch not allowed", getNodeRange(node), validationContext.getSnapshot(), [
+        "Use a conditional expression instead: condition ? a : b",
+      ]);
+    },
+    LabeledStatement(node) {
+      analysisReport.addIssue("LABEL_NOT_ALLOWED", "labels not allowed", getNodeRange(node), validationContext.getSnapshot());
+    },
+    TryStatement(node) {
+      analysisReport.addIssue("TRY_NOT_ALLOWED", "try not allowed", getNodeRange(node), validationContext.getSnapshot());
+    },
+    ThrowStatement(node) {
+      analysisReport.addIssue("THROW_NOT_ALLOWED", "throw not allowed", getNodeRange(node), validationContext.getSnapshot());
+    },
+    DebuggerStatement(node) {
+      analysisReport.addIssue("DEBUGGER_NOT_ALLOWED", "debugger not allowed", getNodeRange(node), validationContext.getSnapshot());
+    },
     NewExpression(node) {
       analysisReport.addIssue("NEW_NOT_ALLOWED", "new not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
