@@ -2,10 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.4.3] - 2026-11-02
+## [0.4.4] - 2026-11-02
 
 - Fixed: the statements a template can't compile are errors, so an editor marks them: `if`, loops (`for`, `for...of`, `for...in`, `while` and `do...while`), `switch`, labels, `try`, `throw` and `debugger`, which were left out of the compiled template without an error, or failed to compile in a function. A conditional expression, like `return big ? <A /> : <B />`, chooses instead of an `if`.
 - Fixed: a literal attribute value of a type the attribute doesn't take is an error, like `width="wide"` for a number, which was only checked against an attribute's enum.
+
+## [0.4.3] - 2026-11-01
+
+- Changed: `@types/json-schema` comes from the repository's shared pnpm catalog, published with the other packages' dependency updates; jsxpression itself is unchanged.
 
 ## [0.4.2] - 2026-10-30
 
