@@ -21,6 +21,8 @@ export type ViewerProps = Omit<ViewerOptions<React.ReactNode>, "hoveredIds" | "o
   readonly sceneFallback?: React.ReactNode;
   readonly className?: string;
   readonly style?: React.CSSProperties;
+  /** The three.js viewer once created, and undefined when it's disposed, e.g. to `fitView` it or move its camera */
+  readonly onViewer?: (viewer: ThreeViewer<string> | undefined) => void;
 };
 
 export function Viewer(props: ViewerProps): React.JSX.Element {
@@ -37,10 +39,19 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
   const viewer = useRef<ThreeViewer<string> | undefined>(undefined);
   const [overlays, setOverlays] = useState<ReadonlyArray<MountedOverlay<string>>>([]);
   const [loaded, setLoaded] = useState(false);
+  // The latest onViewer, so an inline one isn't called again each render
+  const onViewer = useRef(props.onViewer);
+  useLayoutEffect(() => {
+    onViewer.current = props.onViewer;
+  });
 
   useLayoutEffect(() => {
     viewer.current = createViewer(container.current!, { onOverlays: setOverlays, onLoad: () => setLoaded(true) });
-    return () => disposeViewer(viewer.current!);
+    onViewer.current?.(viewer.current);
+    return () => {
+      onViewer.current?.(undefined);
+      disposeViewer(viewer.current!);
+    };
   }, []);
 
   // The latest createGroupId through a stable function, so an inline one doesn't rebuild the scene each render, as 3.x didn't; a new scene does
@@ -62,7 +73,9 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
     () => updateViewer(viewer.current!, { selectedIds, hoveredIds: hoveredIdsExternal, onClickGroup }),
     [selectedIds, hoveredIdsExternal, onClickGroup]
   );
-  useEffect(() => updateViewer(viewer.current!, { view, bufferZones, fitPadding, camera }), [view, bufferZones, fitPadding, camera]);
+  // Apart, so other fit props don't undo a view set by fitView
+  useEffect(() => updateViewer(viewer.current!, { view }), [view]);
+  useEffect(() => updateViewer(viewer.current!, { bufferZones, fitPadding, camera }), [bufferZones, fitPadding, camera]);
   useEffect(() => updateViewer(viewer.current!, { controls }), [controls]);
   useEffect(() => updateViewer(viewer.current!, { gizmo }), [gizmo]);
   useEffect(() => updateViewer(viewer.current!, { lights, environmentIntensity, studio }), [lights, environmentIntensity, studio]);

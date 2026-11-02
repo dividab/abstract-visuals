@@ -1,6 +1,8 @@
 import React from "react";
+import type { View } from "../../../abstract-3d/src/abstract-3d.js";
+import { views } from "../../../abstract-3d/src/abstract-3d.js";
 import type * as React3Js from "../../../abstract-3d/src/renderers/react/index.js";
-import { Viewer } from "../../../abstract-3d/src/renderers/react/index.js";
+import { fitView, Viewer } from "../../../abstract-3d/src/renderers/react/index.js";
 import { edgesScene } from "./edges-scene.js";
 import { systemair2 } from "./generated/systemair-2.js";
 import { systemair3 } from "./generated/systemair-3.js";
@@ -23,6 +25,13 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
   const [typed, setTyped] = React.useState(true);
   const [shadows, setShadows] = React.useState(true);
   const [studio, setStudio] = React.useState<"on" | "off" | "compare">("on");
+  const viewer = React.useRef<React3Js.ThreeViewer<string> | undefined>(undefined);
+  const onViewer = React.useCallback((v: React3Js.ThreeViewer<string> | undefined) => (viewer.current = v), []);
+  const fit = (view: View): void => {
+    if (viewer.current) {
+      fitView(viewer.current, view);
+    }
+  };
 
   const camera = React.useMemo((): React3Js.Camera => {
     if (cameraType === "Orthographic") {
@@ -200,6 +209,16 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
             </select>
           </label>
         </div>
+        {studio !== "compare" && (
+          <div style={{ padding: 8 }}>
+            View:
+            {views.map((v) => (
+              <button key={v} onClick={() => fit(v)} style={{ marginLeft: 8 }}>
+                {v}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 3D + overlays container */}
@@ -294,6 +313,7 @@ export function Abstract3DAutoSizeExample(): React.ReactNode {
             studio={studio === "on"}
             bufferZones={{ left: left, right: right, top: top, bottom: bottom }}
             style={{ backgroundColor: "var(--viewer)" }}
+            onViewer={onViewer}
           />
         )}
       </div>

@@ -14,6 +14,7 @@ import {
   type WebGLRenderTarget,
 } from "three";
 import type { ViewportGizmo } from "three-viewport-gizmo";
+import type { View } from "../../../abstract-3d.js";
 import type { StructureState } from "../appearance/appearance.js";
 import type { BuiltScene } from "../build/build.js";
 import { animateScene, buildScene, cullScene, disposeScene, getPickables, getPickedItem, paintScene } from "../build/build.js";
@@ -163,6 +164,17 @@ export function invalidate<Content>(v: Viewer<Content>): void {
   if (!v.loop.frame && !v.disposed && v.size.width > 0 && v.size.height > 0) {
     v.loop.frame = requestAnimationFrame((now) => renderFrame(v, now));
   }
+}
+
+/**
+ * Turns the camera to look from the view at the scene's center, and fits the scene inside the buffer zones, as a viewcube click that resets zoom and
+ * pan; the view is kept for later fits, e.g. for a new canvas aspect
+ */
+export function fitView<Content>(v: Viewer<Content>, view: View): void {
+  v.options = { ...v.options, view };
+  v.controls.orbit.target.set(0, 0, 0);
+  fitPose(v);
+  invalidate(v);
 }
 
 export function disposeViewer<Content>(v: Viewer<Content>): void {
