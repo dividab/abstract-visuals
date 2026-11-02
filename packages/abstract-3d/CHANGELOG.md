@@ -4,12 +4,23 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
-- Changed: a material's own `metalness` and `roughness` are drawn over its `type`'s finish instead of being ignored, so a type is a base finish to adjust
-- Added: `materialTypeColors`, the usual color of each material type, for a material whose data gives only its type
+## [4.1.0] - 2026-11-02
+
 - Added: `fitView(viewer, view)` in `abstract-3d/three` and `abstract-3d/react`, which turns the camera to a view and fits the scene inside the buffer zones, as a viewcube click with `resetZoomAndPanOnClick`; the view is kept for later fits, e.g. for a new canvas aspect
 - Added: the React `Viewer`'s `onViewer` prop, called with the three.js viewer once it's created and with undefined when it's disposed, e.g. to `fitView` it or move its camera, which replaces 3.x's `canvasProps.onCreated`; its type is `ThreeViewer`
-- Fixed: the three.js viewer no longer shakes the scene by a pixel after a change at a fractional pixel ratio, e.g. a Windows display at 125% or 150%: the gizmo left the viewport rounded, a pixel larger than the canvas, while frames that render shadows floored it, so frames alternated between the two sizes
+
+## [4.0.17] - 2026-11-01
+
 - Fixed: the `react` and `react-dom` peer dependencies are `^19.0.0`, where the published package had pnpm's `catalog:` placeholder
+
+## [4.0.13] - 2026-10-30
+
+- Fixed: the three.js viewer no longer shakes the scene by a pixel after a change at a fractional pixel ratio, e.g. a Windows display at 125% or 150%: the gizmo left the viewport rounded, a pixel larger than the canvas, while frames that render shadows floored it, so frames alternated between the two sizes
+
+## [4.0.11] - 2026-10-28
+
+- Changed: a material's own `metalness` and `roughness` are drawn over its `type`'s finish instead of being ignored, so a type is a base finish to adjust
+- Added: `materialTypeColors`, the usual color of each material type, for a material whose data gives only its type
 
 ## [4.0.10] - 2026-10-27
 
