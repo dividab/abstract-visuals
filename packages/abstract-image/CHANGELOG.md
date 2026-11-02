@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [14.1.0] - 2026-11-02
+
+- Fixed: a dynamic image's template must return an `<AbstractImage>`, its schema's `root`. `dynamicImage`, `compileDynamicImage` and `renderDynamicImage` fail one that returns another element, a value or nothing, which drew nothing without an error.
+- Added: `dynamicImage`'s error has the analysis's issues, as `compileDynamicImage`'s has, and each issue its `range` in the template, its lines and columns counted from 0, like to select it in an editor.
+- Changed: depends on jsxpression 0.5, whose stricter analysis and evaluation dynamic images get, like recursion and an attribute value of the wrong type being errors.
+
+## [14.0.3] - 2026-11-01
 
 - Fixed: depends on handlebars 4.7.10 instead of 4.7.8, whose templates could inject JavaScript or pollute prototypes, and fast-xml-parser 5.
 

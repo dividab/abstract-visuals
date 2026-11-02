@@ -577,4 +577,53 @@ describe("evaluate", () => {
       expect(result.props.value).toBe("true");
     });
   });
+
+  describe("attribute values", () => {
+    const schema: Schema = {
+      elements: {
+        Test: {
+          props: {
+            type: "object",
+            properties: { x: { type: "number" }, count: { type: "integer" }, value: { type: "string", enum: ["a", "b"] }, custom: {} },
+          },
+        },
+      },
+    };
+    const evaluateWith = (source: string, data: Record<string, unknown>): unknown =>
+      evaluate(compile(parse(source)), schema, { data, components: { Test: (props: Props): Node => ({ type: "Test", props, children: [] }) } });
+
+    it("should allow values of the attribute's types and among its values, or undefined", () => {
+      expect(() =>
+        evaluateWith("<Test x={x} count={count} value={value} custom={custom} />", { x: 1.5, count: 2, value: "a", custom: [1] })
+      ).not.toThrow();
+      expect(() => evaluateWith("<Test x={missing.x} />", { missing: {} })).not.toThrow();
+    });
+
+    it("should fail a value of a type the attribute doesn't take or not among its values", () => {
+      expect(() => evaluateWith("<Test x={x} />", { x: "wide" })).toThrow(
+        new EvaluationError('Type string is not allowed for attribute "x" on <Test>. Expected number')
+      );
+      expect(() => evaluateWith("<Test count={count} />", { count: 1.5 })).toThrow(
+        new EvaluationError('Type number is not allowed for attribute "count" on <Test>. Expected integer')
+      );
+      expect(() => evaluateWith("<Test x={x} />", { x: [1] })).toThrow(
+        new EvaluationError('Type array is not allowed for attribute "x" on <Test>. Expected number')
+      );
+      expect(() => evaluateWith("<Test value={value} />", { value: "c" })).toThrow(
+        new EvaluationError('Value "c" is not allowed for attribute "value" on <Test>. Expected "a", "b"')
+      );
+    });
+
+    it("should fail a required attribute that's undefined", () => {
+      const required: Schema = { elements: { Test: { props: { type: "object", properties: { x: { type: "number" } }, required: ["x"] } } } };
+      const evaluateRequired = (source: string, data: Record<string, unknown>): unknown =>
+        evaluate(compile(parse(source)), required, { data, components: { Test: (props: Props): Node => ({ type: "Test", props, children: [] }) } });
+
+      expect(() => evaluateRequired("<Test x={x} />", { x: 1 })).not.toThrow();
+      expect(() => evaluateRequired("<Test x={undefined} />", {})).toThrow(new EvaluationError('Required attribute "x" missing on <Test>'));
+      expect(() => evaluateRequired("<Test x={missing.x} />", { missing: {} })).toThrow(
+        new EvaluationError('Required attribute "x" missing on <Test>')
+      );
+    });
+  });
 });

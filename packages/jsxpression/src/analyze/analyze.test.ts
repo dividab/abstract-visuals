@@ -607,10 +607,10 @@ describe("analyze - consolidated tests", () => {
         const ast = parse('<Box width="wide" count={1.5} label={700} size={false} />');
         const result = analyze(ast, schema);
         expect(result.errors.map((error) => [error.code, error.message])).toEqual([
-          ["INVALID_ATTRIBUTE_VALUE", 'Value "wide" is not allowed for attribute "width" on <Box>. Expected number'],
-          ["INVALID_ATTRIBUTE_VALUE", 'Value 1.5 is not allowed for attribute "count" on <Box>. Expected integer'],
-          ["INVALID_ATTRIBUTE_VALUE", 'Value 700 is not allowed for attribute "label" on <Box>. Expected string'],
-          ["INVALID_ATTRIBUTE_VALUE", 'Value false is not allowed for attribute "size" on <Box>. Expected number or string'],
+          ["INVALID_ATTRIBUTE_VALUE", 'Type string is not allowed for attribute "width" on <Box>. Expected number'],
+          ["INVALID_ATTRIBUTE_VALUE", 'Type number is not allowed for attribute "count" on <Box>. Expected integer'],
+          ["INVALID_ATTRIBUTE_VALUE", 'Type number is not allowed for attribute "label" on <Box>. Expected string'],
+          ["INVALID_ATTRIBUTE_VALUE", 'Type boolean is not allowed for attribute "size" on <Box>. Expected number or string'],
         ]);
       });
 
@@ -943,6 +943,51 @@ describe("analyze - consolidated tests", () => {
         expect(result.hasErrors).toBe(true);
         expect(result.errors.at(0)?.message).toContain("new not allowed");
       });
+
+      it("should allow functions calling other functions", () => {
+        const ast = parse(
+          "function double(x) { return x * 2; } function quadruple(x) { return double(double(x)); } return <Text>{quadruple(1)}</Text>;"
+        );
+        const result = analyze(ast, baseSchema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should allow calling a const's arrow function, and arrow functions with a block body", () => {
+        const ast = parse(`const q = (): number => {
+  const one = 1;
+  return one;
+};
+const double = (x: number) => x * 2;
+return <Text>{double(q())}{[1].map((x) => { const y = x + 1; return y; })}</Text>;`);
+        const result = analyze(ast, baseSchema);
+        expect(result.hasErrors).toBe(false);
+      });
+
+      it("should block recursion through a const's arrow function", () => {
+        const ast = parse("const q = (n) => q(n); function f(n) { return g(n); } const g = (n) => f(n); return <Text>{q(1)}{f(1)}</Text>;");
+        const result = analyze(ast, baseSchema);
+        expect(result.errors.map((error) => error.message)).toEqual([
+          "q calls itself, recursion not allowed",
+          "f calls itself through g, recursion not allowed",
+          "g calls itself through f, recursion not allowed",
+        ]);
+      });
+
+      it("should block recursion, direct, through other functions or by passing a function on", () => {
+        const ast = parse(`function f(n) { return n <= 0 ? 1 : f(n - 1) + f(n - 1); }
+function even(n) { return n === 0 || odd(n - 1); }
+function odd(n) { return n !== 0 && even(n - 1); }
+function walk(items) { return items.map(walk); }
+return <Text>{f(40)}{even(2)}{walk([])}</Text>;`);
+        const result = analyze(ast, baseSchema);
+        expect(result.errors.map((error) => error.message)).toEqual([
+          "f calls itself, recursion not allowed",
+          "f calls itself, recursion not allowed",
+          "even calls itself through odd, recursion not allowed",
+          "odd calls itself through even, recursion not allowed",
+          "walk calls itself, recursion not allowed",
+        ]);
+      });
     });
 
     describe("statements", () => {
@@ -996,45 +1041,6 @@ return <Text>{f([])}</Text>;`);
       const result = analyze(ast, baseSchema);
       expect(result.hasErrors).toBe(true);
       expect(result.errors.length).toBeGreaterThan(1);
-    });
-  });
-
-  describe("return requirement", () => {
-    it("should allow bare JSX without return (no declarations)", () => {
-      const ast = parse("<Text>hello</Text>");
-      const result = analyze(ast, baseSchema);
-      expect(result.issues.filter((i) => i.code === "RETURN_REQUIRED")).toHaveLength(0);
-    });
-
-    it("should require return when const is present", () => {
-      const ast = parse("const x = 1;\n<Text>hello</Text>");
-      const result = analyze(ast, baseSchema);
-      expect(result.issues.some((i) => i.code === "RETURN_REQUIRED")).toBe(true);
-    });
-
-    it("should allow const + return", () => {
-      const ast = parse("const x = 1\nreturn <Text>hello</Text>");
-      const result = analyze(ast, baseSchema);
-      expect(result.issues.filter((i) => i.code === "RETURN_REQUIRED")).toHaveLength(0);
-    });
-
-    it("should require return when function is present", () => {
-      const ast = parse("function Foo() {\n  return <Text>hi</Text>\n}\n<Foo />");
-      const result = analyze(ast, baseSchema);
-      expect(result.issues.some((i) => i.code === "RETURN_REQUIRED")).toBe(true);
-    });
-
-    it("should allow function + return", () => {
-      const ast = parse("function Foo() {\n  return <Text>hi</Text>\n}\nreturn <Foo />");
-      const result = analyze(ast, baseSchema);
-      expect(result.issues.filter((i) => i.code === "RETURN_REQUIRED")).toHaveLength(0);
-    });
-
-    it("should give helpful message for bare JSX after declarations", () => {
-      const ast = parse("const x = 1;\n<Text>hello</Text>");
-      const result = analyze(ast, baseSchema);
-      const issue = result.issues.find((i) => i.code === "RETURN_REQUIRED");
-      expect(issue?.message).toContain("Add 'return' before the JSX");
     });
   });
 });

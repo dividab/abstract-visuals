@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.0] - 2026-11-02
+
+- Fixed: a function that calls itself, directly, through other functions or by passing itself on, like to an array's `map`, is an error, as recursion could hang a template.
+- Added: a const's arrow function can be called like a declared function, `const double = (x) => x * 2`, and an arrow function can have a block body, `(x) => { const y = x * 2; return y; }`, which were errors. An arrow function returning an object, `() => ({ a: 1 })`, compiles as one, which compiled as a block.
+- Added: a schema's `root`, the element a template must return, like an image's canvas. A template that returns anything that can't be it is an error, like another element, a number or nothing, while a variable, a function's result or a local function's element can't be known before the template runs.
+- Fixed: an attribute's value is checked against its schema as the template is evaluated, a variable's or the data's like a literal's is analyzed, so `width={w}` with `w` a string fails instead of being drawn with. A value of the wrong type is told by its type, like `Type string is not allowed for attribute "width" on <AbstractImage>. Expected number`, as it can come from the data, and so is a literal's by the analysis; one of the right type but not among the attribute's values is told by the value. An undefined value is allowed, as if the attribute wasn't given, unless the attribute is required, like `width={undefined}` on an element that requires `width`.
+
 ## [0.4.4] - 2026-11-02
 
 - Fixed: the statements a template can't compile are errors, so an editor marks them: `if`, loops (`for`, `for...of`, `for...in`, `while` and `do...while`), `switch`, labels, `try`, `throw` and `debugger`, which were left out of the compiled template without an error, or failed to compile in a function. A conditional expression, like `return big ? <A /> : <B />`, chooses instead of an `if`.

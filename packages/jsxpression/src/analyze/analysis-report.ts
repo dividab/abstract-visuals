@@ -67,10 +67,6 @@ const ISSUES_DEFINITIONS = {
     severity: 3,
     custom: true,
   },
-  ARROW_FUNCTION_BLOCK_BODY_NOT_ALLOWED: {
-    severity: 3,
-    custom: true,
-  },
   FUNCTION_NOT_ALLOWED: {
     severity: 3,
     custom: true,
@@ -100,6 +96,14 @@ const ISSUES_DEFINITIONS = {
     custom: true,
   },
   IF_NOT_ALLOWED: {
+    severity: 3,
+    custom: true,
+  },
+  RECURSION_NOT_ALLOWED: {
+    severity: 3,
+    custom: true,
+  },
+  ROOT_REQUIRED: {
     severity: 3,
     custom: true,
   },

@@ -69,6 +69,12 @@ describe("compile", () => {
     expect(result).toBe('"use strict";const big = (size > 1);return (big?h("div", null, "Big"):h("span", null, "Small"));');
   });
 
+  it("should compile arrow functions with a block body, and returning an object", () => {
+    const ast = parse("const q = () => { const one = 1; return one; }; const o = () => ({ a: q() }); return <div>{o().a}</div>;");
+    const result = compile(ast);
+    expect(result).toBe('"use strict";const q = () => { const one = 1; return one; };const o = () => ({ a: q() });return h("div", null, o().a);');
+  });
+
   it("should compile destructuring declarations and parameters", () => {
     const ast = parse(
       "const { name, size: s = 1, pos: { x }, ...rest } = item; const [first, , third = 0, ...others] = list; return <div>{list.map(({ v }) => v)}</div>;"

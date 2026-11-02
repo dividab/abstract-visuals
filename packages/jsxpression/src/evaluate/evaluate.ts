@@ -1,4 +1,14 @@
-import { canHaveChildren, isElementAllowed, type Schema } from "../schema.js";
+import type { JSONSchema7Type } from "json-schema";
+import {
+  canHaveChildren,
+  getAttributeEnumValues,
+  getAttributeTypes,
+  getRequiredAttributes,
+  isElementAllowed,
+  isOfTypes,
+  type Schema,
+  typeOf,
+} from "../schema.js";
 import { EvaluationError } from "./evaluation-error.js";
 
 export type ComponentDict = Record<string, Component>;
@@ -77,6 +87,29 @@ function createH(components: ComponentDict, createElement: CreateElement, schema
   return function h(type, props, ...children) {
     if (typeof type === "function") {
       return createElement(type as Component, props, ...children.flat().filter(Boolean)) as Node;
+    }
+
+    // An attribute's value as it's evaluated, which the analysis only knows of when it's a literal, like a variable's or the data's, of a type the
+    // attribute doesn't take, told by its type as it can come from the data, or of the right type but not among its values, told by the value, while
+    // it can be undefined as if it wasn't given, unless it's required
+    for (const name of getRequiredAttributes(schema, type)) {
+      if (props?.[name] === undefined) {
+        throw new EvaluationError(`Required attribute "${name}" missing on <${type}>`);
+      }
+    }
+    for (const [name, value] of Object.entries(props ?? {})) {
+      const valueTypes = getAttributeTypes(schema, type, name);
+      if (value !== undefined && !isOfTypes(value, valueTypes)) {
+        throw new EvaluationError(
+          `Type ${typeOf(value)} is not allowed for attribute "${name}" on <${type}>. Expected ${[...valueTypes].join(" or ")}`
+        );
+      }
+      const enumValues = getAttributeEnumValues(schema, type, name);
+      if (value !== undefined && enumValues !== undefined && !enumValues.includes(value as JSONSchema7Type)) {
+        throw new EvaluationError(
+          `Value ${JSON.stringify(value)} is not allowed for attribute "${name}" on <${type}>. Expected ${enumValues.map((v) => JSON.stringify(v)).join(", ")}`
+        );
+      }
     }
 
     const Component = components[type];

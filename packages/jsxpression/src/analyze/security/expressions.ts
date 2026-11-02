@@ -57,16 +57,6 @@ export function analyzeExpressions(ast: Program, _schema: Schema, validationCont
     YieldExpression(node) {
       analysisReport.addIssue("YIELD_NOT_ALLOWED", "yield not allowed", getNodeRange(node), validationContext.getSnapshot());
     },
-    ArrowFunctionExpression(node) {
-      if (node.body.type === "BlockStatement") {
-        analysisReport.addIssue(
-          "ARROW_FUNCTION_BLOCK_BODY_NOT_ALLOWED",
-          "arrow functions with block body not allowed",
-          getNodeRange(node),
-          validationContext.getSnapshot()
-        );
-      }
-    },
     ObjectExpression(node) {
       for (const property of node.properties) {
         if (property.type === "Property" && property.computed) {

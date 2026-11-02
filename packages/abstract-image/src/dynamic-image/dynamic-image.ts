@@ -14,7 +14,12 @@ export type DynamicImageResult =
 export type DynamicImageError = {
   type: "RENDER_ERROR";
   message: string;
-  issues?: ReadonlyArray<{ code: string; message: string }>;
+  /** The analysis's issues, each where it is in the template, its lines and columns counted from 0 */
+  issues?: ReadonlyArray<{
+    code: string;
+    message: string;
+    range: { start: { line: number; column: number }; end: { line: number; column: number } };
+  }>;
   cause?: unknown;
 };
 
@@ -29,23 +34,32 @@ export function dynamicImage(
     const imageUrls: Array<string> = [];
     const schema: Schema = dataSchema ? { ...baseSchema, data: dataSchema, functions: funcSchema } : baseSchema;
 
-    const image = render<AbstractImage>(source, schema, {
+    const image = render(source, schema, {
       data,
       functions,
       components: createComponents(imageUrls),
     });
 
-    return { type: "Ok", image, imageUrls };
+    return { type: "Ok", image: abstractImage(image), imageUrls };
   } catch (error) {
     return {
       type: "Err",
       error: {
         type: "RENDER_ERROR",
         message: error instanceof Error ? error.message : String(error),
+        issues: error instanceof AnalysisError ? error.report.issues.map((i) => ({ code: i.code, message: i.message, range: i.range })) : undefined,
         cause: error,
       },
     };
   }
+}
+
+/** What a template returned, which the analysis can't know is an image when it's a variable or a function's result, like `return image;` */
+function abstractImage(value: unknown): AbstractImage {
+  if (typeof value !== "object" || value === null || !("components" in value)) {
+    throw new Error(`Templates must return <AbstractImage>`);
+  }
+  return value as AbstractImage;
 }
 
 export type CompileDynamicImageResult = { readonly type: "Ok"; value: string } | { readonly type: "Err"; readonly error: DynamicImageError };
@@ -66,7 +80,7 @@ export function compileDynamicImage(
       error: {
         type: "RENDER_ERROR",
         message: error instanceof Error ? error.message : String(error),
-        issues: error instanceof AnalysisError ? error.report.issues.map((i) => ({ code: i.code, message: i.message })) : undefined,
+        issues: error instanceof AnalysisError ? error.report.issues.map((i) => ({ code: i.code, message: i.message, range: i.range })) : undefined,
         cause: error,
       },
     };
@@ -78,11 +92,13 @@ export function renderDynamicImage(jsString: string, data: Record<string, unknow
   try {
     return {
       type: "Ok",
-      image: evaluate(jsString, baseSchema, {
-        data,
-        functions,
-        components: createComponents(imageUrls),
-      }),
+      image: abstractImage(
+        evaluate(jsString, baseSchema, {
+          data,
+          functions,
+          components: createComponents(imageUrls),
+        })
+      ),
       imageUrls,
     };
   } catch (error) {

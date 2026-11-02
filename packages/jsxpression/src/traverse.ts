@@ -1,4 +1,4 @@
-import type { Node, Program } from "acorn";
+import type { Node } from "acorn";
 import { base, type RecursiveVisitors, type SimpleVisitors, simple, type WalkerCallback } from "acorn-walk";
 import {
   isJsxEmptyExpression,
@@ -155,7 +155,7 @@ const jsxWalkers: ExtendedRecursiveVisitors = {
   },
 };
 
-export function traverse(ast: Program, visitors: ExtendedSimpleVisitors): void {
+export function traverse(ast: Node, visitors: ExtendedSimpleVisitors): void {
   simple(ast, visitors as SimpleVisitors<unknown>, {
     ...base,
     ...jsxWalkers,

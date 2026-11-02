@@ -265,8 +265,12 @@ function emitExpression(node: CompilableExpression, localFunctions: Set<string>)
       return emitExpression(node.expression, localFunctions);
     case "ArrowFunctionExpression": {
       const params = node.params.map((param) => emitPattern(param, localFunctions)).join(", ");
-      const body = emitExpression(node.body as CompilableExpression, localFunctions);
-      return `(${params}) => ${body}`;
+      // A block's statements as a function's, an object as itself, not as a block
+      if (node.body.type === "BlockStatement") {
+        return `(${params}) => ${emitFunctionBody(node.body, localFunctions)}`;
+      }
+      const body = emitExpression(node.body, localFunctions);
+      return node.body.type === "ObjectExpression" ? `(${params}) => (${body})` : `(${params}) => ${body}`;
     }
     case "JSXElement":
       return emitJsxElement(node, localFunctions);

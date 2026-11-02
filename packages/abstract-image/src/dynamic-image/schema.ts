@@ -1,6 +1,7 @@
 import type { Schema } from "jsxpression";
 
 export const baseSchema: Schema = {
+  root: "AbstractImage",
   elements: {
     AbstractImage: {
       description: "Root container — defines the image canvas and its coordinate system.",

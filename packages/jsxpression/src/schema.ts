@@ -26,6 +26,8 @@ export type Schema = {
   data?: JSONSchema7;
   elements?: Record<string, ElementSchema>;
   functions?: Record<string, FunctionSchema>;
+  /** The element a template must return, like an image's canvas, if any */
+  root?: string;
 };
 
 /** The names of the variables the data has */
@@ -92,4 +94,14 @@ export function getAttributeTypes(schema: Schema, tagName: string, attributeName
   const props = getElementSchema(schema, tagName)?.props;
   const attribute = props === undefined ? undefined : property(props, attributeName, props);
   return props === undefined || attribute === undefined ? new Set() : types(attribute, props);
+}
+
+/** A value's JSON Schema type, or its JavaScript type if it has none, like a function's */
+export function typeOf(value: unknown): string {
+  return value === null ? "null" : Array.isArray(value) ? "array" : typeof value;
+}
+
+/** Whether a value has one of the types, any if there are none, an integer being a whole number */
+export function isOfTypes(value: unknown, valueTypes: ReadonlySet<JSONSchema7TypeName>): boolean {
+  return valueTypes.size === 0 || valueTypes.has(typeOf(value) as JSONSchema7TypeName) || (valueTypes.has("integer") && Number.isInteger(value));
 }
