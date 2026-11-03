@@ -129,14 +129,18 @@ describe("buildScene", () => {
     expect(position.toArray().map((v) => Math.round(v * 1000) / 1000 + 0)).toEqual([5, 1, 0]);
   });
 
-  it("hides culled lines that face away from the camera", () => {
-    const built = build(scene([group([culledLine(vec3(0, 0, 0), vec3(10, 0, 0), vec3(0, 0, 1), 1, red)])]));
+  it("doesn't draw culled lines that face away from the camera", () => {
+    const built = build(
+      scene([
+        group([culledLine(vec3(0, 0, 0), vec3(10, 0, 0), vec3(0, 0, 1), 1, red), culledLine(vec3(0, 0, 0), vec3(20, 0, 0), vec3(0, 0, -1), 1, red)]),
+      ])
+    );
     const line = built.parts.find((p) => p.kind === "line")!;
     const endX = (): number => (line.object.geometry.getAttribute("instanceEnd") as unknown as { readonly getX: (i: number) => number }).getX(0);
     cullScene(built, new Vector3(0, 0, -100));
-    expect(endX()).toBe(0);
+    expect([line.object.geometry.instanceCount, endX()]).toEqual([1, 20]);
     cullScene(built, new Vector3(0, 0, 100));
-    expect(endX()).toBe(10);
+    expect([line.object.geometry.instanceCount, endX()]).toEqual([1, 10]);
   });
 
   it("disposes its batches and materials", () => {

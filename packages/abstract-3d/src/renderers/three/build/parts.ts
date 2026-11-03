@@ -50,8 +50,9 @@ export type Part =
       readonly kind: "line";
       readonly object: LineSegments2;
       readonly segments: ReadonlyArray<Segment>;
-      /** World start, end and normal of each segment, while the drawn positions collapse hidden ones */
+      /** World start, end and normal, and color, of each segment, while the drawn ones are its visible ones packed first */
       readonly world: Float32Array;
+      readonly rgb: Float32Array;
       readonly visible: Uint8Array;
       readonly positions: InterleavedBuffer;
       readonly colors: InterleavedBuffer;
@@ -114,6 +115,7 @@ export function createLinePart(segments: ReadonlyArray<Segment>, thickness: numb
     object: line,
     segments,
     world: new Float32Array(segments.length * 9),
+    rgb: new Float32Array(segments.length * 3),
     visible: new Uint8Array(segments.length).fill(1),
     positions: (geometry.getAttribute("instanceStart") as InterleavedBufferAttribute).data,
     colors: (geometry.getAttribute("instanceColorStart") as InterleavedBufferAttribute).data,
@@ -145,7 +147,6 @@ export function placeSlot(part: Part, slot: number, matrix: Matrix4): void {
       part.world.set(vector.set(start.x, start.y, start.z).applyMatrix4(matrix).toArray(), slot * 9);
       part.world.set(vector.set(end.x, end.y, end.z).applyMatrix4(matrix).toArray(), slot * 9 + 3);
       part.world.set(normal ? vector.set(normal.x, normal.y, normal.z).transformDirection(matrix).toArray() : [0, 0, 0], slot * 9 + 6);
-      writeSegment(part, slot);
       break;
     }
     default:
@@ -165,7 +166,7 @@ export function paintSlot(part: Part, slot: number, rgba: Vector4): void {
       }
       break;
     case "line":
-      part.colors.array.set([rgba.x, rgba.y, rgba.z, rgba.x, rgba.y, rgba.z], slot * 6);
+      part.rgb.set([rgba.x, rgba.y, rgba.z], slot * 3);
       break;
     default:
       part.object.material.color.setRGB(rgba.x, rgba.y, rgba.z);
@@ -188,8 +189,7 @@ export function flushPart(part: Part, moved: boolean): void {
       part.object.boundingSphere = null;
       break;
     case "line":
-      part.positions.needsUpdate = true;
-      part.colors.needsUpdate = true;
+      writeSegments(part);
       break;
     default:
   }
@@ -214,19 +214,20 @@ export function cullLines(part: Part, cameraPosition: Vector3): void {
   if (part.kind !== "line") {
     return;
   }
-  part.segments.forEach((segment, slot) => {
+  const changed = part.segments.reduce((acc, segment, slot) => {
     const w = slot * 9;
     const mid = vector
       .fromArray(part.world, w)
       .add(normal.fromArray(part.world, w + 3))
       .multiplyScalar(0.5);
     const facing = !segment.normal || normal.fromArray(part.world, w + 6).dot(mid.subVectors(cameraPosition, mid)) > 0 ? 1 : 0;
-    if (facing !== part.visible[slot]) {
-      part.visible[slot] = facing;
-      writeSegment(part, slot);
-      part.positions.needsUpdate = true;
-    }
-  });
+    const flipped = facing !== part.visible[slot];
+    part.visible[slot] = facing;
+    return acc || flipped;
+  }, false);
+  if (changed) {
+    writeSegments(part);
+  }
 }
 
 export function disposePart(part: Part): void {
@@ -239,13 +240,20 @@ export function disposePart(part: Part): void {
   (Array.isArray(materials) ? materials : [materials]).forEach((m: Material) => m.dispose());
 }
 
-/** A hidden segment collapses to its start */
-function writeSegment(part: Extract<Part, { readonly kind: "line" }>, slot: number): void {
-  const w = slot * 9;
-  part.positions.array.set(
-    part.visible[slot] ? part.world.subarray(w, w + 6) : [...part.world.subarray(w, w + 3), ...part.world.subarray(w, w + 3)],
-    slot * 6
-  );
+/** Packs the visible segments first and draws only those, as a hidden one collapsed to a point still drew a dot of the line's caps */
+function writeSegments(part: Extract<Part, { readonly kind: "line" }>): void {
+  const drawn = part.segments.reduce((d, _, slot) => {
+    if (!part.visible[slot]) {
+      return d;
+    }
+    const rgb = part.rgb.subarray(slot * 3, slot * 3 + 3);
+    part.positions.array.set(part.world.subarray(slot * 9, slot * 9 + 6), d * 6);
+    part.colors.array.set([...rgb, ...rgb], d * 6);
+    return d + 1;
+  }, 0);
+  part.object.geometry.instanceCount = drawn;
+  part.positions.needsUpdate = true;
+  part.colors.needsUpdate = true;
 }
 
 const textVertexShader = /* glsl */ `
