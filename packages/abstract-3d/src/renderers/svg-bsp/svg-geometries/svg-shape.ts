@@ -1,0 +1,34 @@
+import type { Vec3, Vec2, Shape, Material } from "../../../abstract-3d.js";
+import { vec3ZMean, vec3TransRot, vec3RotCombine, vec3, vec3Zero } from "../../../abstract-3d.js";
+import { rgbGrayScale } from "../../../utils.js";
+import { svgPolygon } from "../svg-encoding.js";
+import type { zOrderElement, SvgOptions } from "./shared.js";
+import { gray, isOpaque, zElem, transparent } from "./shared.js";
+
+export function shape(
+  s: Shape,
+  point: (x: number, y: number) => Vec2,
+  material: Material,
+  opts: SvgOptions,
+  parentPos: Vec3,
+  parentRot: Vec3
+): ReadonlyArray<zOrderElement> {
+  const pos = vec3TransRot(s.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, s.rot ?? vec3Zero);
+  const rotatedPoints = s.points.map((p) => vec3TransRot(vec3(p.x, p.y, 0), pos, rot));
+  const points = rotatedPoints.map(({ x, y }) => point(x, y));
+  const color = material.normal;
+  const [strokeColor, fill] = opts.only_stroke
+    ? [opts.gray_scale ? gray : color, opts.background]
+    : [transparent, opts.gray_scale ? rgbGrayScale(color) : color];
+  const opacity = material.opacity ?? 1.0;
+  return [
+    zElem(
+      svgPolygon(rot, points, fill, opacity, strokeColor, 0),
+      vec3ZMean(...rotatedPoints),
+      rotatedPoints,
+      isOpaque(fill, opacity) && !s.holes?.length,
+      { fill, opacity, stroke: strokeColor, strokeWidth: 0 }
+    ),
+  ];
+}

@@ -29,7 +29,6 @@ import { plane } from "./svg-geometries/svg-plane.js";
 import { polygon } from "./svg-geometries/svg-polygon.js";
 import { shape } from "./svg-geometries/svg-shape.js";
 import { text } from "./svg-geometries/svg-text.js";
-import { orderElements } from "./svg-order.js";
 
 export type SvgScene = {
   readonly scene: Scene;
@@ -110,8 +109,12 @@ function renderInternal(
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
   const unitCenterFlipped = vec3Flip(unitCenter);
 
-  const elements = [...orderElements(scene.groups.flatMap((g) => svgGroup(g, unitCenterFlipped, unitRot, point, opts)))];
+  const elements = Array<zOrderElement>();
+  for (const g of scene.groups) {
+    elements.push(...svgGroup(g, unitCenterFlipped, unitRot, point, opts));
+  }
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
+  elements.sort((a, b) => a.zOrder - b.zOrder);
   const visibleViews = calculateVisibleViews(view, scene.rotation_deprecated);
 
   // Dimensions are drawn for the flat views

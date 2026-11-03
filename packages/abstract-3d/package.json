@@ -56,6 +56,11 @@
       "ts": "./src/renderers/svg/index.ts",
       "types": "./lib/renderers/svg/index.d.ts",
       "import": "./lib/renderers/svg/index.js"
+    },
+    "./svg-bsp": {
+      "ts": "./src/renderers/svg-bsp/index.ts",
+      "types": "./lib/renderers/svg-bsp/index.d.ts",
+      "import": "./lib/renderers/svg-bsp/index.js"
     }
   },
   "dependencies": {

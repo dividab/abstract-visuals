@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [4.1.2] - 2026-11-03
 
-- Changed: 4.0.6's svg renderer changes are reverted, as ordering a large scene's faces by the BSP tree took seconds: faces are ordered pairwise again, and the `"TopLeft"` and `"TopRight"` views are isometric again
+- Changed: the svg renderer draws its elements by mean depth again, as before 4.0.0, as ordering a large scene's faces by a BSP tree or pairwise took seconds; nothing hidden is left out, and a closed cylinder's facets turned away and its end seen at an angle are drawn as before 4.0.0. The `"TopLeft"` and `"TopRight"` views are isometric again, not three-quarter
 
 ## [4.1.0] - 2026-11-02
 
