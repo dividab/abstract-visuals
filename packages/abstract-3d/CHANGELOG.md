@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [4.1.2] - 2026-11-03
+
+- Changed: 4.0.6's svg renderer changes are reverted, as ordering a large scene's faces by the BSP tree took seconds: faces are ordered pairwise again, and the `"TopLeft"` and `"TopRight"` views are isometric again
+
 ## [4.1.0] - 2026-11-02
 
 - Added: `fitView(viewer, view)` in `abstract-3d/three` and `abstract-3d/react`, which turns the camera to a view and fits the scene inside the buffer zones, as a viewcube click with `resetZoomAndPanOnClick`; the view is kept for later fits, e.g. for a new canvas aspect

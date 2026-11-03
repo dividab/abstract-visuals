@@ -2,23 +2,15 @@ import type { Vec2, Vec3, View } from "../../../abstract-3d.js";
 import { vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 
 /**
- * An element and its mean depth, and the points it covers in view space (x right, y up, z toward the viewer), by which it's ordered when given,
- * whether it hides what's behind it, and the style of a plain polygon, without holes, by which its pieces are drawn when it's split
+ * An element and its mean depth, and the points it covers in view space (x right, y up, z toward the viewer), by which it's ordered when given, and
+ * whether it hides what's behind it
  */
-export type zOrderElement = {
-  readonly element: string;
-  readonly zOrder: number;
-  readonly polygon?: ReadonlyArray<Vec3>;
-  readonly opaque?: boolean;
-  readonly style?: PolygonStyle;
-};
-export type PolygonStyle = { readonly fill: string; readonly opacity: number; readonly stroke: string; readonly strokeWidth: number };
-export const zElem = (element: string, zOrder: number, polygon?: ReadonlyArray<Vec3>, opaque?: boolean, style?: PolygonStyle): zOrderElement => ({
+export type zOrderElement = { readonly element: string; readonly zOrder: number; readonly polygon?: ReadonlyArray<Vec3>; readonly opaque?: boolean };
+export const zElem = (element: string, zOrder: number, polygon?: ReadonlyArray<Vec3>, opaque?: boolean): zOrderElement => ({
   element,
   zOrder,
   ...(polygon && { polygon }),
   ...(opaque && { opaque }),
-  ...(style && { style }),
 });
 
 /** Whether a fill hides what's behind it: fully opaque, and not transparent, e.g. a sketch's default background */
@@ -42,7 +34,7 @@ export const black = "rgb(15, 15, 15)";
 
 export type ImageDataUri = `data:image/png;base64,${string}` | `data:image/jpeg;base64,${string}` | `data:image/svg+xml,${string}`;
 
-/** A view, or a three-quarter one from the front's top left or top right, which shows the front foremost, the top and that side */
+/** A view, or an isometric one from the front's top left or top right, which shows the front, the top and that side, foreshortened alike */
 export type SvgView = View | "TopLeft" | "TopRight";
 
 export type SvgOptions = {

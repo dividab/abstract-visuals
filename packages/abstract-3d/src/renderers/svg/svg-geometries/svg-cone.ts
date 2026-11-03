@@ -42,8 +42,7 @@ export function cone(
           svgPolygon(rot, points, fill, opacity, stroke, stBW),
           vec3ZMean(currBot, prevBot, topPos),
           [currBot, prevBot, topPos],
-          isOpaque(fill, opacity),
-          { fill, opacity, stroke, strokeWidth: stBW }
+          isOpaque(fill, opacity)
         )
       );
     }
