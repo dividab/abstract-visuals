@@ -78,6 +78,10 @@ export function getMaterialClass(item: Item, { materialState, disabled }: Target
     case "dimension":
       return { ...unlit, side: "front", transparent: (material.opacity ?? 1) < 1 };
     default: {
+      // Faded so far that lighting barely shows, so unlit, to need no lit shader compiled when relations turn active
+      if (disabled) {
+        return { ...unlit, side: item.role === "text" || material.backfaceCulling ? "front" : "double", transparent: true };
+      }
       // A material state's color and finish replace the material's
       const mat = materialState ? stateMaterials[materialState] : material;
       // Only a known type, as data may have a type of its own, e.g. a number
@@ -86,8 +90,8 @@ export function getMaterialClass(item: Item, { materialState, disabled }: Target
         lit: item.role === "solid",
         ...(type ? { type, metalness: mat.metalness, roughness: mat.roughness } : { metalness: mat.metalness ?? 0, roughness: mat.roughness ?? 1 }),
         side: item.role === "text" || material.backfaceCulling ? "front" : "double",
-        transparent: getOpacity(material) < 1 || disabled,
-        castShadow: item.role === "solid" && getOpacity(material) === 1 && !disabled && material.castShadow !== false,
+        transparent: getOpacity(material) < 1,
+        castShadow: item.role === "solid" && getOpacity(material) === 1 && material.castShadow !== false,
       };
     }
   }

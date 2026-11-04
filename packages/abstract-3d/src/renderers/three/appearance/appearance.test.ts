@@ -88,6 +88,12 @@ describe("getMaterialClass", () => {
     expect(classify(solid({ normal: red }), group, { relationsActive: true, activeComponents: { fan: "Accept" } }).transparent).toBe(false);
   });
 
+  it("draws disabled groups unlit, in one class whatever their finish", () => {
+    const disabled = classify(solid({ normal: red, type: "painted" }), group, { relationsActive: true });
+    expect(disabled).toMatchObject({ lit: false, side: "double", transparent: true });
+    expect(classify(solid({ normal: red, type: "galvanized", metalness: 0.9 }), group, { relationsActive: true })).toEqual(disabled);
+  });
+
   it("uses the material state's metalness and roughness", () => {
     expect(classify(solid({ normal: red }), group, { activeComponents: { fan: "Error" } })).toMatchObject({ metalness: 0.5, roughness: 0.5 });
   });
