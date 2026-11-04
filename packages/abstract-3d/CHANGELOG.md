@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Changed: while relations are active, the groups faded as disabled are drawn unlit, so activating them the first time doesn't compile a lit shader for each finish, which took seconds
+
 ## [4.1.2] - 2026-11-03
 
 - Changed: the svg renderer draws its elements by mean depth again, as before 4.0.0, as ordering a large scene's faces by a BSP tree or pairwise took seconds; nothing hidden is left out, and a closed cylinder's facets turned away and its end seen at an angle are drawn as before 4.0.0. The `"TopLeft"` and `"TopRight"` views are isometric again, not three-quarter
