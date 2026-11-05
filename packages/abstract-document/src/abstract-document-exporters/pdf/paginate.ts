@@ -11,9 +11,6 @@ export function paginate(
   desiredSizes: Map<object, AD.Size.Size>
 ): ReadonlyArray<Page> {
   const resources = getResources(document);
-  const pdf = new pdfKit({ compress: false, autoFirstPage: false, bufferPages: true });
-
-  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
   const pages = new Array<Page>();
   for (const section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
