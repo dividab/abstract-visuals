@@ -10,6 +10,7 @@ import {
   bounds3Merge,
   bounds3ToSize,
   boundsScene,
+  dimensionPlacements,
   group,
   rotationForCameraPos,
   sizeBoundsForCameraPos,
@@ -209,9 +210,13 @@ function dxfDimensions(
       blockRecord: "",
     };
   }
+  const placements = dimensionPlacements(d.dimensions, d.textHeight);
   return d.dimensions
-    .filter((d) => d.views?.[0] && visibleViews[d.views[0]] === true)
-    .map((d) => dxfDimension(d, parentPos, parentRot, sceneRotation, viewRotation, handleRef))
+    .flatMap((dim, i) =>
+      dim.views?.[0] && visibleViews[dim.views[0]] === true
+        ? [dxfDimension(dim, parentPos, parentRot, sceneRotation, viewRotation, d.textHeight, placements[i], handleRef)]
+        : []
+    )
     .reduce<DxfDimensionDefinition>(
       (prev, curr) => ({
         block: prev.block + curr.block,

@@ -1,6 +1,6 @@
 import { Euler, Matrix4, Quaternion, Vector3 } from "three";
 import type { Group, Mesh, Relation, Scene, Vec3 } from "../../../abstract-3d.js";
-import { dimensionConvertToTypeMesh, vec3, vec3Scale, vec3Zero } from "../../../abstract-3d.js";
+import { dimensionConvertToTypeMesh, dimensionPlacements, vec3, vec3Scale, vec3Zero } from "../../../abstract-3d.js";
 
 /**
  * Scene → flat items with world matrices, with no GPU objects, so everything here is testable in Node; groups transform as the r3f renderer's
@@ -68,8 +68,15 @@ export function compileScene(scene: Scene, createGroupId?: (g: Group) => string)
     ...relations.map((relation): Target => ({ kind: "relation", relation })),
   ];
   scene.groups.forEach((g, i) => addGroup(out, g, matrix, undefined, "group", i));
+  const placements = dimensionPlacements(dimensions, scene.dimensions_deprecated?.textHeight);
   dimensions.forEach((dimension, i) => {
-    const mesh = dimensionConvertToTypeMesh(dimension, scene.rotation_deprecated ?? vec3Zero, scene.dimensions_deprecated?.material);
+    const mesh = dimensionConvertToTypeMesh(
+      dimension,
+      scene.rotation_deprecated ?? vec3Zero,
+      scene.dimensions_deprecated?.material,
+      scene.dimensions_deprecated?.textHeight,
+      placements[i]
+    );
     const base = { style: "dimension", target: scene.groups.length + i, data: undefined, animation: undefined } as const;
     addMeshes(out, mesh.meshes, matrix.clone().multiply(transform(mesh.pos, mesh.rot)), base);
   });

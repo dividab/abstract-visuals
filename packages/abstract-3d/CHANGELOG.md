@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Added: `Dimensions.textHeight`, the height of every dimension's text in the scene's units, which their arrows, gaps and lines are sized by; 44 as before if not set
+- Added: `dimensionPlacements(dimensions, textHeight)`, where each dimension's line, arrows and text are drawn, decided for the dimensions on the same line together, with the bounds of everything it draws to size the scene by; `dimensionMeshifyAlignedDimension` and `dimensionConvertToTypeMesh` take it with the text height, and every renderer passes them
+- Changed: a dimension line too near the line inside it on the same side, or the measured points for the innermost, is drawn further out, so there's the text height and a gap on both sides between the texts on the lines; at the text height 44, lines 110 apart, as aircalc's, stay where they are
+- Changed: a dimension too short for its arrows and text draws its arrows outside its extension lines, their tails cut short where the room past them is taken, or a dot on an extension line it shares with a neighbour or where there's no room for an arrow outside it, and its text past its end or start when the text doesn't fit between them either, instead of only its text; whether the text fits is measured by its own width instead of 7 characters'
+- Changed: a dimension text with no room on its line, between neighbours on both sides, is lifted off the line with a leader into the room before the next line out on the same side, or past the outermost line, as near the dimension as it fits between the extension lines crossing that room and the other lifted texts
 - Changed: while relations are active, the groups faded as disabled are drawn unlit, so activating them the first time doesn't compile a lit shader for each finish, which took seconds
 
 ## [4.1.2] - 2026-11-03

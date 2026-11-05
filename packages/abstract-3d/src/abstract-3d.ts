@@ -22,7 +22,36 @@ export type Renderer = "react" | "ai_schematic" | "ai_detailed" | "dxf";
 export type Dimensions = {
   readonly dimensions: ReadonlyArray<Dimension>;
   readonly material: Material;
+  /** The height of every dimension's text in the scene's units, which their arrows, gaps and lines are sized by; 44 if not set */
+  readonly textHeight?: number;
 };
+
+/** Where a dimension's arrows and text are drawn, see `dimensionPlacements` */
+export type DimensionPlacement = {
+  /** The dimension's `linePosition`, moved out where its line is too near the line inside it or the measured points for the text height */
+  readonly linePosition: Vec3;
+  readonly start: DimensionTerminator;
+  readonly end: DimensionTerminator;
+  readonly text: DimensionTextPlacement;
+  /** Everything the dimension draws: its extension lines, its dimension line with its arrows, tails and dots, and its text */
+  readonly bounds: Bounds3;
+};
+
+/**
+ * An arrow inside the extension line, an arrow outside it pointing in with the dimension line `tail` long past it, or a dot where a neighbour shares
+ * the extension line
+ */
+export type DimensionTerminator = { readonly type: "inside" } | { readonly type: "outside"; readonly tail: number } | { readonly type: "dot" };
+
+/**
+ * The text between the arrows, past the start or the end of the dimension line, or lifted off it outwards with a leader, its middle `along` from the
+ * dimension's middle towards its end
+ */
+export type DimensionTextPlacement =
+  | { readonly type: "inside" }
+  | { readonly type: "start" }
+  | { readonly type: "end" }
+  | { readonly type: "lifted"; readonly along: number };
 
 export type Dimension = DimensionMesh | DimensionAligned;
 
@@ -1143,6 +1172,240 @@ export function dimensionIsOfTypeMesh(dimension: Dimension): dimension is Dimens
   return "meshes" in dimension;
 }
 
+const defaultDimensionTextHeight = 44;
+// The sizes as shares of the text height
+const dimensionGap = 8 / defaultDimensionTextHeight;
+const dimensionArrowLength = 40 / defaultDimensionTextHeight;
+const dimensionArrowHalfBase = 10 / defaultDimensionTextHeight;
+const dimensionLineThickness = 0.5 / defaultDimensionTextHeight;
+/** How far the dimension line goes past an extension line with an outside arrow */
+const dimensionArrowTail = 60 / defaultDimensionTextHeight;
+const fontGlyphWidthRatio = 0.4815;
+
+/** A dimension's measured length, its text and how wide the text is drawn */
+function dimensionMeasure(
+  dimension: DimensionAligned,
+  textHeight: number
+): { readonly length: number; readonly text: string; readonly rows: ReadonlyArray<string>; readonly textWidth: number } {
+  const length = vec3Length(vec3Sub(dimension.measurementEnd, dimension.measurementStart));
+  const text = dimension.text ?? length.toFixed(1).replace(/[.,]0$/, "");
+  const rows = text.split("\n");
+  return { length, text, rows, textWidth: Math.max(...rows.map((r) => r.length)) * textHeight * fontGlyphWidthRatio };
+}
+
+type DimensionSpan = {
+  readonly index: number;
+  readonly view: View;
+  /** The direction along the line, the same for the dimensions measured either way along it */
+  readonly along: Vec3;
+  /** Where the dimension line crosses the plane through the origin across it, the same for the dimensions on one line */
+  readonly linePoint: Vec3;
+  readonly linePosition: Vec3;
+  readonly measurementStart: Vec3;
+  readonly measurementEnd: Vec3;
+  /** The direction from the measured points out to the line */
+  readonly outward: Vec3;
+  /** How far out the line is, the outer edge of the text on it */
+  readonly row: number;
+  /** How far out the outermost measured point is */
+  readonly measured: number;
+  readonly min: number;
+  readonly max: number;
+  readonly startIsMin: boolean;
+  readonly textWidth: number;
+  readonly textBlockHeight: number;
+};
+
+/**
+ * Where each dimension's arrows and text are drawn, decided for the dimensions on the same line together, undefined for a mesh dimension:
+ *
+ * - Each line moved out where it's too near the line inside it on the same side, or the measured points, to leave room between them for a lifted text
+ * - The arrows inside and the text between them when both fit
+ * - Else a dot where a neighbour shares the extension line, else an arrow outside it, its tail cut short where the room past it is taken
+ * - The text between the arrows when it fits, else past the end or the start where there's room for it, else lifted off the line into the room before
+ *   the next line out, as near the dimension as it fits between the extension lines crossing that room, else between the arrows anyway
+ */
+export function dimensionPlacements(
+  dimensions: ReadonlyArray<Dimension>,
+  textHeight: number = defaultDimensionTextHeight
+): ReadonlyArray<DimensionPlacement | undefined> {
+  const tolerance = textHeight * 0.01;
+  const arrow = textHeight * dimensionArrowLength;
+  const tail = textHeight * dimensionArrowTail;
+  const gap = textHeight * dimensionGap;
+  const dot = textHeight * dimensionArrowHalfBase;
+
+  const lines = Array<Array<DimensionSpan>>();
+  dimensions.forEach((d, index) => {
+    if (dimensionIsOfTypeMesh(d)) {
+      return;
+    }
+    const direction = vec3Normalize(vec3Sub(d.measurementEnd, d.measurementStart));
+    const flip = Math.abs(direction.x) > 1e-6 ? direction.x < 0 : Math.abs(direction.y) > 1e-6 ? direction.y < 0 : direction.z < 0;
+    const along = flip ? vec3Scale(direction, -1) : direction;
+    const start = vec3Dot(d.measurementStart, along);
+    const end = vec3Dot(d.measurementEnd, along);
+    const linePoint = vec3Sub(d.linePosition, vec3Scale(along, vec3Dot(d.linePosition, along)));
+    const outward = vec3Normalize(vec3Sub(linePoint, vec3Sub(d.measurementStart, vec3Scale(along, start))));
+    const { textWidth, rows } = dimensionMeasure(d, textHeight);
+    const span: DimensionSpan = {
+      index,
+      view: d.views?.[0] ?? "front",
+      along,
+      linePoint,
+      linePosition: d.linePosition,
+      measurementStart: d.measurementStart,
+      measurementEnd: d.measurementEnd,
+      outward,
+      row: vec3Dot(d.linePosition, outward),
+      measured: Math.max(vec3Dot(d.measurementStart, outward), vec3Dot(d.measurementEnd, outward)),
+      min: Math.min(start, end),
+      max: Math.max(start, end),
+      startIsMin: start <= end,
+      textWidth,
+      textBlockHeight: rows.length * textHeight,
+    };
+    const line = lines.find(
+      ([s]) => s && s.view === span.view && vec3Dot(s.along, along) > 1 - 1e-6 && vec3Length(vec3Sub(s.linePoint, span.linePoint)) < tolerance
+    );
+    if (line) {
+      line.push(span);
+    } else {
+      lines.push([span]);
+    }
+  });
+
+  const sameSide = (a: DimensionSpan | undefined, b: DimensionSpan): boolean =>
+    a !== undefined && a.view === b.view && vec3Dot(a.along, b.along) > 1 - 1e-6 && vec3Dot(a.outward, b.outward) > 1 - 1e-6;
+  // How far out each line is moved to: room for a lifted text, the text height and a gap on both sides, past the text on each line inside it on the same side,
+  // or past the measured points
+  const rows = new Map<ReadonlyArray<DimensionSpan>, number>();
+  for (const line of lines.toSorted((a, b) => (a[0]?.row ?? 0) - (b[0]?.row ?? 0))) {
+    const [first] = line;
+    if (!first) {
+      continue;
+    }
+    const height = Math.max(...line.map((s) => s.textBlockHeight));
+    const inner = lines.filter(([s]) => sameSide(s, first) && (s?.row ?? 0) < first.row - tolerance);
+    rows.set(
+      line,
+      Math.max(
+        first.row,
+        Math.max(...line.map((s) => s.measured)) + textHeight + 2 * gap + height,
+        ...inner.map((l) => (rows.get(l) ?? 0) + 2 * gap + Math.max(...l.map((s) => s.textBlockHeight)) + height)
+      )
+    );
+  }
+
+  const placements = new Map<number, DimensionPlacement>();
+  for (const line of lines) {
+    const [first] = line;
+    if (!first) {
+      continue;
+    }
+    const row = rows.get(line) ?? first.row;
+    // The lines further out on the same side, whose extension lines cross this line and the room past it
+    const outer = lines.filter(([s]) => sameSide(s, first) && (s?.row ?? 0) > first.row + tolerance);
+    const crossings = outer.flat().flatMap((s): ReadonlyArray<readonly [number, number]> => [
+      [s.min, s.min],
+      [s.max, s.max],
+    ]);
+    // Up to the text on the next line out
+    const liftRoom = Math.min(...outer.map((l) => (rows.get(l) ?? 0) - Math.max(...l.map((s) => s.textBlockHeight)))) - row;
+    const taken = [...line.map((s): readonly [number, number] => [s.min, s.max]), ...crossings];
+    const lineLifted = Array<readonly [number, number]>();
+    const free = (from: number, to: number): boolean => !taken.some(([min, max]) => min < to - tolerance && max > from + tolerance);
+    // The edge nearest `from` of the first place from it, past it when `sign` is 1 and before it when -1, where `width` fits between the crossing extension lines and the texts lifted already
+    const liftAt = (from: number, width: number, sign: number): number =>
+      sign *
+      [...crossings, ...lineLifted]
+        .map(([min, max]): readonly [number, number] => (sign > 0 ? [min, max] : [-max, -min]))
+        .toSorted((a, b) => a[0] - b[0])
+        .reduce((at, [min, max]) => (min < at + width - tolerance && max > at + tolerance ? Math.max(at, max) : at), sign * from);
+    for (const s of line.toSorted((a, b) => a.min - b.min)) {
+      const length = s.max - s.min;
+      const textSpace = s.textWidth + 2 * gap;
+      const fits = length >= textSpace + 2 * arrow;
+      // The room past each end, a gap short of what's taken there
+      const minRoom = Math.min(...taken.filter(([min]) => min < s.min - tolerance).map(([, max]) => s.min - max - gap));
+      const maxRoom = Math.min(...taken.filter(([, max]) => max > s.max + tolerance).map(([min]) => min - s.max - gap));
+      // A dot where a neighbour shares the extension line, or where there's no room for an arrow outside it
+      const minDot = minRoom < arrow || line.some((o) => o !== s && (Math.abs(o.min - s.min) < tolerance || Math.abs(o.max - s.min) < tolerance));
+      const maxDot = maxRoom < arrow || line.some((o) => o !== s && (Math.abs(o.min - s.max) < tolerance || Math.abs(o.max - s.max) < tolerance));
+      // A dot reaches into the dimension by its radius
+      const dotsSpace = ((minDot ? 1 : 0) + (maxDot ? 1 : 0)) * dot;
+      const liftAfter = liftAt(s.max, textSpace, 1);
+      const liftBefore = liftAt(s.min, textSpace, -1);
+      const text =
+        fits || length >= textSpace + dotsSpace
+          ? "inside"
+          : free(s.max, s.max + tail + textSpace)
+            ? "max"
+            : free(s.min - tail - textSpace, s.min)
+              ? "min"
+              : liftRoom >= s.textBlockHeight + 2 * gap
+                ? "lifted"
+                : "inside";
+      // The tail past an outside arrow without the text past it is cut to the room there
+      const minTail = text === "min" ? tail : Math.min(tail, minRoom);
+      const maxTail = text === "max" ? tail : Math.min(tail, maxRoom);
+      // How far past each end the dimension line, arrows, dots and the text past it go
+      const minReach = fits ? 0 : minDot ? dot : text === "min" ? tail + textSpace : minTail;
+      const maxReach = fits ? 0 : maxDot ? dot : text === "max" ? tail + textSpace : maxTail;
+      if (!fits && !minDot) {
+        taken.push([s.min - minReach, s.min]);
+      }
+      if (!fits && !maxDot) {
+        taken.push([s.max, s.max + maxReach]);
+      }
+      // Before the start only past the texts lifted for the dimensions before it, so their leaders don't cross
+      const liftsAfter = liftAfter - s.max < s.min - liftBefore || lineLifted.some(([, max]) => max > liftBefore - textSpace + tolerance);
+      const liftedMiddle = liftsAfter ? liftAfter + textSpace / 2 : liftBefore - textSpace / 2;
+      if (text === "lifted") {
+        lineLifted.push(liftsAfter ? [liftAfter, liftAfter + textSpace] : [liftBefore - textSpace, liftBefore]);
+      }
+      const middle = (s.min + s.max) / 2;
+      const liftedAlong = liftedMiddle - middle;
+      const atMin: DimensionTerminator = fits ? { type: "inside" } : minDot ? { type: "dot" } : { type: "outside", tail: minTail };
+      const atMax: DimensionTerminator = fits ? { type: "inside" } : maxDot ? { type: "dot" } : { type: "outside", tail: maxTail };
+      // The rectangle the dimension line and its text take, from the inner edge of the text on the line to the outer edge of the lifted text, and the measured points
+      const textMiddle = text === "lifted" ? liftedMiddle : middle;
+      const lo = Math.min(s.min - minReach, textMiddle - s.textWidth / 2);
+      const hi = Math.max(s.max + maxReach, textMiddle + s.textWidth / 2);
+      const linePoint = vec3Add(s.linePoint, vec3Scale(s.outward, row - s.row));
+      const corners = [lo, hi].flatMap((t) =>
+        [row - s.textBlockHeight, text === "lifted" ? row + gap + s.textBlockHeight : row].map((u) =>
+          vec3Add(linePoint, vec3Add(vec3Scale(s.along, t), vec3Scale(s.outward, u - row)))
+        )
+      );
+      const common = {
+        linePosition: vec3Add(s.linePosition, vec3Scale(s.outward, row - s.row)),
+        bounds: bounds3FromVec3Array([s.measurementStart, s.measurementEnd, ...corners]),
+      };
+      placements.set(
+        s.index,
+        s.startIsMin
+          ? {
+              ...common,
+              start: atMin,
+              end: atMax,
+              text:
+                text === "lifted" ? { type: "lifted", along: liftedAlong } : { type: text === "min" ? "start" : text === "max" ? "end" : "inside" },
+            }
+          : {
+              ...common,
+              start: atMax,
+              end: atMin,
+              text:
+                text === "lifted" ? { type: "lifted", along: -liftedAlong } : { type: text === "max" ? "start" : text === "min" ? "end" : "inside" },
+            }
+      );
+    }
+  }
+  return dimensions.map((_, i) => placements.get(i));
+}
+
+/** Draws the dimension as `placement` places it, its text `textHeight` high; as if alone on its line if not given */
 export function dimensionMeshifyAlignedDimension(
   dimension: DimensionAligned,
   sceneRotation: Vec3,
@@ -1150,25 +1413,27 @@ export function dimensionMeshifyAlignedDimension(
   onCreateLine: (start: Vec3, end: Vec3, norm: Vec3, thickness: number, mat: Material) => void,
   onCreateText: (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3, dir: Vec3, normal: Vec3) => void,
   onCreatePolygon: (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material) => void,
-  dimensionsMaterial?: Material
+  dimensionsMaterial?: Material,
+  textHeight: number = defaultDimensionTextHeight,
+  placement?: DimensionPlacement
 ): void {
   const defaultMaterial = { normal: "rgb(0, 0, 0)", opacity: 1.0, roughness: 1.0, metalness: 0.0 };
   const material = dimension.material ?? dimensionsMaterial ?? defaultMaterial;
-  const fontGlyphWidthRatio = 0.4815;
-  const textSize = 44;
-  const textOffset = 8;
-  const textThreshold = textOffset + textSize * fontGlyphWidthRatio * 7;
-  const lineThickness = 0.5;
-  const arrowLength = 40;
-  const arrowHalfBase = 10;
+  const place = placement ?? dimensionPlacements([dimension], textHeight)[0];
+  if (!place) {
+    return;
+  }
+  const gap = textHeight * dimensionGap;
+  const lineThickness = textHeight * dimensionLineThickness;
+  const arrowLength = textHeight * dimensionArrowLength;
+  const arrowHalfBase = textHeight * dimensionArrowHalfBase;
+  const tail = textHeight * dimensionArrowTail;
 
-  const lp = dimension.linePosition;
+  const lp = place.linePosition;
   const ms = dimension.measurementStart;
   const me = dimension.measurementEnd;
-  const measurementLength = vec3Length(vec3Sub(me, ms));
-  const measurement = dimension.text ?? measurementLength.toFixed(1).replace(/[.,]0$/, "");
-  const measurementRows = measurement.split("\n");
-  const textHeight = measurementRows.length * textSize;
+  const { length: measurementLength, text: measurement, rows: measurementRows, textWidth } = dimensionMeasure(dimension, textHeight);
+  const textBlockHeight = measurementRows.length * textHeight;
 
   const view = dimension.views?.[0] ?? "front";
   const basis = dimensionViewBasises[view];
@@ -1184,7 +1449,7 @@ export function dimensionMeshifyAlignedDimension(
   const linesDiff = vec3Sub(ls, ms);
   const dirBetweenLines = vec3Normalize(linesDiff);
   const measurementWidth = vec3Length(linesDiff);
-  const displacedDistance = measurementWidth - textHeight / 2;
+  const displacedDistance = measurementWidth - textBlockHeight / 2;
   const offsetDisplaced = vec3Scale(offset, displacedDistance / measurementWidth);
   const lsDisplaced = vec3Add(ms, offsetDisplaced);
   const leDisplaced = vec3Add(me, offsetDisplaced);
@@ -1205,44 +1470,82 @@ export function dimensionMeshifyAlignedDimension(
   const finalBasis = dimensionViewBasises.front;
   const finalSide = getDimensionSide(dirBetweenLines, finalBasis);
   const finalDir = getDimensionTextDirection(finalSide, finalBasis);
-  onCreateText(lcDisplaced, measurement, textSize, material, textRot, finalDir, vec3(0, 0, 1));
+  // Past an end the text starts after the outside arrow's tail, lifted it's a gap out from the text on the line
+  const textOutside = tail + gap + textWidth / 2;
+  const halfTextWidth = gap + textWidth / 2;
+  const textPos =
+    place.text.type === "start"
+      ? vec3Sub(lsDisplaced, vec3Scale(direction, textOutside))
+      : place.text.type === "end"
+        ? vec3Add(leDisplaced, vec3Scale(direction, textOutside))
+        : place.text.type === "lifted"
+          ? vec3Add(lcDisplaced, vec3Add(vec3Scale(direction, place.text.along), vec3Scale(dirBetweenLines, textBlockHeight + gap)))
+          : lcDisplaced;
+  onCreateText(textPos, measurement, textHeight, material, textRot, finalDir, vec3(0, 0, 1));
 
-  if (measurementLength > textThreshold) {
-    const textWidth = Math.max(...measurementRows.map((t) => t.length)) * (textSize * fontGlyphWidthRatio);
-    const lineDir = vec3Normalize(vec3Sub(leDisplaced, lsDisplaced));
-    const halfTextWidth = textOffset + textWidth * 0.5;
-    const leftEnd = vec3Sub(lcDisplaced, vec3Scale(lineDir, halfTextWidth));
-    const rightStart = vec3Add(lcDisplaced, vec3Scale(lineDir, halfTextWidth));
-
-    onCreateLine(lsDisplaced, leftEnd, basis.normal, lineThickness, material);
-    onCreateLine(rightStart, leDisplaced, basis.normal, lineThickness, material);
-
-    //arrows
-    const arrowBaseStart = vec3Add(lsDisplaced, vec3Scale(lineDir, arrowLength));
-    const arrowBaseEnd = vec3Add(leDisplaced, vec3Scale(lineDir, -arrowLength));
-    const arrowBaseStart1 = vec3Add(arrowBaseStart, vec3Scale(dirBetweenLines, arrowHalfBase));
-    const arrowBaseStart2 = vec3Add(arrowBaseStart, vec3Scale(dirBetweenLines, -arrowHalfBase));
-    const arrowBaseEnd1 = vec3Add(arrowBaseEnd, vec3Scale(dirBetweenLines, arrowHalfBase));
-    const arrowBaseEnd2 = vec3Add(arrowBaseEnd, vec3Scale(dirBetweenLines, -arrowHalfBase));
-
-    //the winding order needs to be correct according to the normal
-    const polygonFacing = (a: Vec3, b: Vec3, c: Vec3): void => {
-      const ab = vec3Sub(b, a);
-      const ac = vec3Sub(c, a);
-      const triangleNormal = vec3Cross(ab, ac);
-
-      if (vec3Dot(triangleNormal, basis.normal) >= 0) {
-        onCreatePolygon(a, b, c, material);
-      } else {
-        onCreatePolygon(a, c, b, material);
-      }
-    };
-    polygonFacing(lsDisplaced, arrowBaseStart2, arrowBaseStart1);
-    polygonFacing(leDisplaced, arrowBaseEnd1, arrowBaseEnd2);
+  // The lifted text's leader, from the middle of the dimension line to the text's near side
+  if (place.text.type === "lifted") {
+    onCreateLine(
+      lcDisplaced,
+      vec3Sub(textPos, vec3Scale(direction, Math.sign(place.text.along) * halfTextWidth)),
+      basis.normal,
+      lineThickness,
+      material
+    );
   }
+
+  // The dimension line, broken by the text between the arrows if it fits there
+  if (place.text.type !== "inside") {
+    onCreateLine(lsDisplaced, leDisplaced, basis.normal, lineThickness, material);
+  } else if (measurementLength / 2 > halfTextWidth) {
+    onCreateLine(lsDisplaced, vec3Sub(lcDisplaced, vec3Scale(direction, halfTextWidth)), basis.normal, lineThickness, material);
+    onCreateLine(vec3Add(lcDisplaced, vec3Scale(direction, halfTextWidth)), leDisplaced, basis.normal, lineThickness, material);
+  }
+
+  //the winding order needs to be correct according to the normal
+  const polygonFacing = (a: Vec3, b: Vec3, c: Vec3): void => {
+    const ab = vec3Sub(b, a);
+    const ac = vec3Sub(c, a);
+    const triangleNormal = vec3Cross(ab, ac);
+
+    if (vec3Dot(triangleNormal, basis.normal) >= 0) {
+      onCreatePolygon(a, b, c, material);
+    } else {
+      onCreatePolygon(a, c, b, material);
+    }
+  };
+  // An arrow pointing at the extension line from inside or outside it, the outside one with the line's tail past it, or a dot on it
+  const terminator = (tip: Vec3, inward: Vec3, kind: DimensionTerminator): void => {
+    if (kind.type === "dot") {
+      const corners = [0, 1, 2, 3, 4, 5, 6, 7].map((i) =>
+        vec3Add(
+          tip,
+          vec3Add(
+            vec3Scale(inward, Math.cos((i * Math.PI) / 4) * arrowHalfBase),
+            vec3Scale(dirBetweenLines, Math.sin((i * Math.PI) / 4) * arrowHalfBase)
+          )
+        )
+      );
+      corners.forEach((c, i) => polygonFacing(tip, c, corners.at((i + 1) % corners.length) ?? c));
+      return;
+    }
+    const base = vec3Add(tip, vec3Scale(inward, kind.type === "outside" ? -arrowLength : arrowLength));
+    polygonFacing(tip, vec3Add(base, vec3Scale(dirBetweenLines, arrowHalfBase)), vec3Sub(base, vec3Scale(dirBetweenLines, arrowHalfBase)));
+    if (kind.type === "outside") {
+      onCreateLine(tip, vec3Sub(tip, vec3Scale(inward, kind.tail)), basis.normal, lineThickness, material);
+    }
+  };
+  terminator(lsDisplaced, direction, place.start);
+  terminator(leDisplaced, vec3Scale(direction, -1), place.end);
 }
 
-export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: Vec3, dimensionsMaterial?: Material): DimensionMesh {
+export function dimensionConvertToTypeMesh(
+  dimension: Dimension,
+  sceneRotation: Vec3,
+  dimensionsMaterial?: Material,
+  textHeight?: number,
+  placement?: DimensionPlacement
+): DimensionMesh {
   if (dimensionIsOfTypeMesh(dimension)) {
     return dimension;
   }
@@ -1257,7 +1560,17 @@ export function dimensionConvertToTypeMesh(dimension: Dimension, sceneRotation: 
   const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material): void => {
     meshes.push(polygon([p1, p2, p3], mat));
   };
-  dimensionMeshifyAlignedDimension(dimension, sceneRotation, vec3Zero, onCreateLine, onCreateText, onCreatePolygon, dimensionsMaterial);
+  dimensionMeshifyAlignedDimension(
+    dimension,
+    sceneRotation,
+    vec3Zero,
+    onCreateLine,
+    onCreateText,
+    onCreatePolygon,
+    dimensionsMaterial,
+    textHeight,
+    placement
+  );
 
   return {
     meshes,

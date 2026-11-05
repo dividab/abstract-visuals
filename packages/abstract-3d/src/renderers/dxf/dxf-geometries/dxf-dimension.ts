@@ -1,4 +1,12 @@
-import { type Dimension, dimensionIsOfTypeMesh, type Vec3, vec3Length, vec3Sub, vec3TransRot } from "../../../abstract-3d.js";
+import {
+  type Dimension,
+  type DimensionPlacement,
+  dimensionIsOfTypeMesh,
+  type Vec3,
+  vec3Length,
+  vec3Sub,
+  vec3TransRot,
+} from "../../../abstract-3d.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { type DxfDimensionDefinition, dxfEncDimension } from "../dxf-encoding/dxf-dimension.js";
 
@@ -8,6 +16,8 @@ export function dxfDimension(
   parentRot: Vec3,
   sceneRotation: Vec3,
   viewRotation: Vec3,
+  textHeight: number | undefined,
+  placement: DimensionPlacement | undefined,
   handleRef: Handle
 ): DxfDimensionDefinition {
   if (dimensionIsOfTypeMesh(dimension)) {
@@ -21,5 +31,5 @@ export function dxfDimension(
   const me = vec3TransRot(dimension.measurementEnd, parentPos, parentRot);
   const lp = vec3TransRot(dimension.linePosition, parentPos, parentRot);
   const text = dimension.text ?? `${vec3Length(vec3Sub(me, ms))}`;
-  return dxfEncDimension(ms, me, lp, text, 7, sceneRotation, viewRotation, dimension.views ?? ["front"], handleRef);
+  return dxfEncDimension(ms, me, lp, text, 7, sceneRotation, viewRotation, dimension.views ?? ["front"], textHeight, placement, handleRef);
 }

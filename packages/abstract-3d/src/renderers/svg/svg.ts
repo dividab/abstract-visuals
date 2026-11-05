@@ -15,6 +15,7 @@ import {
   vec2Zero,
   vec3Flip,
   dimensionConvertToTypeMesh,
+  dimensionPlacements,
 } from "../../abstract-3d.js";
 import type { Optional } from "../../utils.js";
 import { calculateVisibleViews, isViewVisible } from "../../utils.js";
@@ -118,8 +119,16 @@ function renderInternal(
   const visibleViews = calculateVisibleViews(view, scene.rotation_deprecated);
 
   // Dimensions are drawn for the flat views
-  for (const dim of isometric ? [] : (scene.dimensions_deprecated?.dimensions ?? [])) {
-    const d = dimensionConvertToTypeMesh(dim, scene.rotation_deprecated ?? vec3Zero, scene.dimensions_deprecated?.material);
+  const dimensions = isometric ? [] : (scene.dimensions_deprecated?.dimensions ?? []);
+  const placements = dimensionPlacements(dimensions, scene.dimensions_deprecated?.textHeight);
+  for (const [i, dim] of dimensions.entries()) {
+    const d = dimensionConvertToTypeMesh(
+      dim,
+      scene.rotation_deprecated ?? vec3Zero,
+      scene.dimensions_deprecated?.material,
+      scene.dimensions_deprecated?.textHeight,
+      placements[i]
+    );
     if (isViewVisible(d.views[0], visibleViews)) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
