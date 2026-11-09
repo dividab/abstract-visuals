@@ -1,6 +1,17 @@
 import { Color, SRGBColorSpace } from "three";
 import type { Scene, Group, Material, Relation, Vec3, GroupType, AirType } from "../../abstract-3d.js";
-import { vec3Zero, vec3PosX, vec3PosY, vec3Rot, vec3Sub, vec3TransRot, vec3RotCombine, vec3RotInverse } from "../../abstract-3d.js";
+import {
+  vec3Zero,
+  vec3PosX,
+  vec3PosY,
+  vec3Rot,
+  vec3Sub,
+  vec3TransRot,
+  vec3RotCombine,
+  vec3RotInverse,
+  groupTextBackgrounds,
+  sceneTextHeight,
+} from "../../abstract-3d.js";
 import type { MutableIfc } from "./ifc-encoding.js";
 import { add, guid, ifcFile, point, real, ref, refs, serialize, str } from "./ifc-encoding.js";
 import type { Polyline, Triangulation } from "./ifc-geometry.js";
@@ -259,11 +270,13 @@ export function render(scene: Scene, options: IfcOptions = {}): string {
 
   const center = scene.center_deprecated ?? vec3Zero;
   const sceneRot = scene.rotation_deprecated ?? vec3Zero;
+  const textHeight = sceneTextHeight(scene.groups);
+  const groups = scene.groups.map((g) => groupTextBackgrounds(g, textHeight));
   // A scene that is something as a whole is one element, with its groups as the parts of it
   const roots =
     scene.id !== undefined || scene.name !== undefined || scene.type !== undefined
-      ? [{ pos: vec3Zero, id: scene.id, name: scene.name, type: scene.type, groups: scene.groups }]
-      : scene.groups;
+      ? [{ pos: vec3Zero, id: scene.id, name: scene.name, type: scene.type, groups }]
+      : groups;
   const elements = mergeSameId(roots)
     .flatMap((g) => elementNode(g, vec3TransRot(g.pos, center, sceneRot), vec3RotCombine(sceneRot, g.rot ?? vec3Zero), g.layer) ?? [])
     .map((node, i) => element(m, node, `${i + 1}`, { element: storey, placement: storeyPlacement, pos: vec3Zero, rot: vec3Zero }, c));

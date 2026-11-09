@@ -1,5 +1,5 @@
 import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
-import { vec3Zero, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
+import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight } from "../../abstract-3d.js";
 import type { MutableStep } from "./step-encoding.js";
 import {
   GEOMETRIC_REPRESENTATION_CONTEXT_3D,
@@ -39,8 +39,9 @@ export const render = (scene: Scene): string => {
     throw Error("Context 3d is not correct");
   }
 
+  const textHeight = sceneTextHeight(scene.groups);
   for (const g of scene.groups) {
-    stepGroup(g, scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero, m);
+    stepGroup(groupTextBackgrounds(g, textHeight), scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero, m);
   }
 
   return `${HEADER(date ?? DEFAULT_DATE_UNIX)}${m.step}${ENDSEC()}`;

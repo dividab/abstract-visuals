@@ -216,7 +216,7 @@ function createPart(
     case "text":
       return createTextPart(
         items.flatMap(({ mesh: { geometry: g } }) =>
-          g.type === "Text" ? [{ text: g.text, fontSize: g.fontSize, local: transform(g.pos, g.rot) }] : []
+          g.type === "Text" ? [{ text: g.text, fontSize: g.fontSize ?? compiled.textHeight, local: transform(g.pos, g.rot) }] : []
         ),
         options.atlas
       );

@@ -12,7 +12,9 @@ import {
   boundsScene,
   dimensionPlacements,
   group,
+  groupTextBackgrounds,
   rotationForCameraPos,
+  sceneTextHeight,
   sizeBoundsForCameraPos,
   vec3,
   vec3Add,
@@ -104,8 +106,9 @@ const renderInternal = (
   const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin);
   const pos = options.origin === "SameAsScene" ? vec3Zero : vec3NegateY(vec3Add(unitCenter, vec3Add(offset, dxfOriginOffset)));
   const visibleViews = calculateVisibleViews(options.view, scene.rotation_deprecated);
+  const textHeight = sceneTextHeight(scene.groups);
   return {
-    groups: scene.groups.reduce((a, c) => a + dxfGroup(c, pos, unitRot, options, handleRef), ""),
+    groups: scene.groups.reduce((a, c) => a + dxfGroup(groupTextBackgrounds(c, textHeight), pos, unitRot, options, handleRef), ""),
     dimensions: dxfDimensions(
       scene.dimensions_deprecated,
       pos,
@@ -114,6 +117,7 @@ const renderInternal = (
       viewRotation,
       visibleViews,
       options,
+      textHeight,
       handleRef
     ),
     size,
@@ -201,6 +205,7 @@ function dxfDimensions(
   viewRotation: Vec3,
   visibleViews: Record<string, boolean>,
   options: DxfOptions,
+  textHeight: number,
   handleRef: Handle
 ): DxfDimensionDefinition {
   if (!d || !options.showDimensions) {
@@ -210,11 +215,11 @@ function dxfDimensions(
       blockRecord: "",
     };
   }
-  const placements = dimensionPlacements(d.dimensions, d.textHeight);
+  const placements = dimensionPlacements(d.dimensions, textHeight);
   return d.dimensions
     .flatMap((dim, i) =>
       dim.views?.[0] && visibleViews[dim.views[0]] === true
-        ? [dxfDimension(dim, parentPos, parentRot, sceneRotation, viewRotation, d.textHeight, placements[i], handleRef)]
+        ? [dxfDimension(dim, parentPos, parentRot, sceneRotation, viewRotation, textHeight, placements[i], handleRef)]
         : []
     )
     .reduce<DxfDimensionDefinition>(
@@ -248,7 +253,13 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
   const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
 
   const bounds2 = bounds3FromPosAndSize(offset, scene.size_deprecated);
-  const groupRoot = group([], offset, vec3Zero, scene.groups);
+  const textHeight = sceneTextHeight(scene.groups);
+  const groupRoot = group(
+    [],
+    offset,
+    vec3Zero,
+    scene.groups.map((g) => groupTextBackgrounds(g, textHeight))
+  );
   const handleRef = dxfHandleInit();
   const dimensions = dxfDimensions(
     scene.dimensions_deprecated,
@@ -258,6 +269,7 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
     viewRotation,
     visibleViews,
     opts,
+    textHeight,
     handleRef
   );
   return dxfBuild(dxfGroup(groupRoot, center, unitRot, opts, handleRef), dimensions, bounds2, scene.size_deprecated, center);

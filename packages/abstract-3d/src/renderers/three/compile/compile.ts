@@ -1,6 +1,14 @@
 import { Euler, Matrix4, Quaternion, Vector3 } from "three";
 import type { Group, Mesh, Relation, Scene, Vec3 } from "../../../abstract-3d.js";
-import { dimensionConvertToTypeMesh, dimensionPlacements, vec3, vec3Scale, vec3Zero } from "../../../abstract-3d.js";
+import {
+  dimensionConvertToTypeMesh,
+  dimensionPlacements,
+  groupTextBackgrounds,
+  sceneTextHeight,
+  vec3,
+  vec3Scale,
+  vec3Zero,
+} from "../../../abstract-3d.js";
 
 /**
  * Scene → flat items with world matrices, with no GPU objects, so everything here is testable in Node; groups transform as the r3f renderer's
@@ -48,6 +56,8 @@ export type CompiledScene = {
   readonly matrix: Matrix4;
   /** World matrix of each top-level group */
   readonly roots: ReadonlyArray<Matrix4>;
+  /** The height of the scene's texts without a font size, see `sceneTextHeight` */
+  readonly textHeight: number;
 };
 
 type Output = { readonly items: Array<Item>; readonly animations: Array<Animation> };
@@ -67,14 +77,15 @@ export function compileScene(scene: Scene, createGroupId?: (g: Group) => string)
     ...dimensions.map((d): Target => ({ kind: "dimension", id: d.id })),
     ...relations.map((relation): Target => ({ kind: "relation", relation })),
   ];
-  scene.groups.forEach((g, i) => addGroup(out, g, matrix, undefined, "group", i));
-  const placements = dimensionPlacements(dimensions, scene.dimensions_deprecated?.textHeight);
+  const textHeight = sceneTextHeight(scene.groups);
+  scene.groups.forEach((g, i) => addGroup(out, groupTextBackgrounds(g, textHeight), matrix, undefined, "group", i));
+  const placements = dimensionPlacements(dimensions, textHeight);
   dimensions.forEach((dimension, i) => {
     const mesh = dimensionConvertToTypeMesh(
       dimension,
       scene.rotation_deprecated ?? vec3Zero,
       scene.dimensions_deprecated?.material,
-      scene.dimensions_deprecated?.textHeight,
+      textHeight,
       placements[i]
     );
     const base = { style: "dimension", target: scene.groups.length + i, data: undefined, animation: undefined } as const;
@@ -83,7 +94,7 @@ export function compileScene(scene: Scene, createGroupId?: (g: Group) => string)
   relations.forEach((relation, i) =>
     relation.groups?.forEach((g) => addGroup(out, g, matrix, undefined, "relation", scene.groups.length + dimensions.length + i))
   );
-  return { ...out, targets, matrix, roots: scene.groups.map((g) => matrix.clone().multiply(transform(g.pos, g.rot))) };
+  return { ...out, targets, matrix, roots: scene.groups.map((g) => matrix.clone().multiply(transform(g.pos, g.rot))), textHeight };
 }
 
 function addGroup(out: Output, g: Group, parent: Matrix4, parentAnimation: number | undefined, style: "group" | "relation", target: number): void {
