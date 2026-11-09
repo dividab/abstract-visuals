@@ -38,7 +38,10 @@ export type DimensionPlacement = {
   readonly bounds: Bounds3;
 };
 
-/** The text a gap from the dimension line, out from its middle, out from the line or, `inward`, towards the measured points */
+/**
+ * The text a gap from the dimension line, out from its middle, out from the line or, `inward`, towards the measured points; a text of several rows
+ * has its first row over the line, as the text reads, and the rest under it
+ */
 export type DimensionTextPlacement = { readonly inward: boolean };
 
 export type Dimension = DimensionMesh | DimensionAligned;
@@ -1285,6 +1288,9 @@ type DimensionSpan = {
   readonly max: number;
   readonly startIsMin: boolean;
   readonly textWidth: number;
+  /** A text of several rows, on both sides of the line */
+  readonly split: boolean;
+  /** How far the text takes out from each side of the line it's on */
   readonly textBlockHeight: number;
 };
 
@@ -1330,7 +1336,9 @@ export function dimensionPlacements(
       max: Math.max(start, end),
       startIsMin: start <= end,
       textWidth,
-      textBlockHeight: textHeight * (1 + dimensionTextRowStep * (rows.length - 1)),
+      split: rows.length > 1,
+      // Its first row on one side, the rest on the other
+      textBlockHeight: textHeight * (1 + dimensionTextRowStep * Math.max(0, rows.length - 2)),
     };
     const line = lines.find(
       ([s]) => s && s.view === span.view && vec3Dot(s.along, along) > 1 - 1e-6 && vec3Length(vec3Sub(s.linePoint, span.linePoint)) < tolerance
@@ -1359,7 +1367,7 @@ export function dimensionPlacements(
     const placeCost = (l: Placed, placed: ReadonlyArray<Placed>): number =>
       (l.inward ? (l.s === sorted[0] || l.s === sorted.at(-1) ? 5 : 4) : 0) +
       placed
-        .filter((o) => o.inward === l.inward)
+        .filter((o) => o.inward === l.inward || o.s.split || l.s.split)
         .reduce(
           (sum, o) =>
             sum +
@@ -1378,7 +1386,10 @@ export function dimensionPlacements(
           (states, s) =>
             states
               .flatMap(({ placed, cost }) =>
-                [false, true].map((inward) => ({ placed: [...placed, { s, inward }], cost: cost + placeCost({ s, inward }, placed) }))
+                (s.split ? [false] : [false, true]).map((inward) => ({
+                  placed: [...placed, { s, inward }],
+                  cost: cost + placeCost({ s, inward }, placed),
+                }))
               )
               .toSorted((a, b) => a.cost - b.cost)
               .slice(0, 64),
@@ -1391,7 +1402,7 @@ export function dimensionPlacements(
   // How far a line's texts, or the marks at its ends, take on each side of it
   const mark = textHeight * dimensionMark;
   const reach = (placed: ReadonlyArray<{ readonly s: DimensionSpan; readonly inward: boolean }>, inward: boolean): number =>
-    Math.max(mark, ...placed.filter((l) => l.inward === inward).map((l) => gap + l.s.textBlockHeight));
+    Math.max(mark, ...placed.filter((l) => l.inward === inward || l.s.split).map((l) => gap + l.s.textBlockHeight));
   // How far out each line is moved to: its texts towards the measured points a gap past them or past the texts out from the line inside it on the same
   // side
   const rows = new Map<DimensionSpan, number>();
@@ -1408,19 +1419,21 @@ export function dimensionPlacements(
     );
   }
 
-  // Every text's rectangle, along its line from its left to its right and out from its bottom to its top
+  // Every text's rectangle on each side it's on, along its line from its left to its right and out from its bottom to its top
   const texts = decisions.flatMap(({ first, placed }) =>
-    placed.map(({ s, inward }) => {
-      const row = rows.get(first) ?? first.row;
-      const middle = (s.min + s.max) / 2;
-      return {
-        s,
-        left: middle - s.textWidth / 2,
-        right: middle + s.textWidth / 2,
-        bottom: inward ? row - gap - s.textBlockHeight : row + gap,
-        top: inward ? row - gap : row + gap + s.textBlockHeight,
-      };
-    })
+    placed.flatMap(({ s, inward }) =>
+      (s.split ? [false, true] : [inward]).map((side) => {
+        const row = rows.get(first) ?? first.row;
+        const middle = (s.min + s.max) / 2;
+        return {
+          s,
+          left: middle - s.textWidth / 2,
+          right: middle + s.textWidth / 2,
+          bottom: side ? row - gap - s.textBlockHeight : row + gap,
+          top: side ? row - gap : row + gap + s.textBlockHeight,
+        };
+      })
+    )
   );
   const placements = new Map<number, DimensionPlacement>();
   for (const { first, placed } of decisions) {
@@ -1447,7 +1460,7 @@ export function dimensionPlacements(
       // The rectangle the dimension line, the marks at its ends and its text take, and the extension lines
       const middle = (s.min + s.max) / 2;
       const corners = [Math.min(s.min, middle - s.textWidth / 2), Math.max(s.max, middle + s.textWidth / 2)].flatMap((t) =>
-        [inward ? -gap - s.textBlockHeight : -mark, inward ? mark : gap + s.textBlockHeight].map((u) => at(t, row + u))
+        [inward || s.split ? -gap - s.textBlockHeight : -mark, inward && !s.split ? mark : gap + s.textBlockHeight].map((u) => at(t, row + u))
       );
       const linePosition = vec3Add(s.linePosition, vec3Scale(s.outward, row - s.row));
       placements.set(s.index, {
@@ -1486,7 +1499,6 @@ export function dimensionMeshifyAlignedDimension(
   const ms = dimension.measurementStart;
   const me = dimension.measurementEnd;
   const { rows: measurementRows } = dimensionMeasure(dimension, textHeight);
-  const textBlockHeight = textHeight * (1 + dimensionTextRowStep * (measurementRows.length - 1));
 
   const view = dimension.views?.[0] ?? "front";
   const basis = dimensionViewBasises[view];
@@ -1540,12 +1552,14 @@ export function dimensionMeshifyAlignedDimension(
   const finalBasis = dimensionViewBasises.front;
   const finalSide = getDimensionSide(dirBetweenLines, finalBasis);
   const finalDir = getDimensionTextDirection(finalSide, finalBasis);
-  const textPos = vec3Add(lc, vec3Scale(dirBetweenLines, (place.text.inward ? -1 : 1) * (gap + textBlockHeight / 2)));
-  // Each row a text of its own, the first at the top, as the text reads
+  // Each row a text of its own: one row a gap out from the line or towards the measured points, of several the first a gap over the line, as the
+  // text reads, and the rest from a gap under it
   const textUp = vec3Normalize(vec3Cross(basis.normal, textDir));
   measurementRows.forEach((row, i) =>
     onCreateText(
-      vec3Add(textPos, vec3Scale(textUp, ((measurementRows.length - 1) / 2 - i) * dimensionTextRowStep * textHeight)),
+      measurementRows.length === 1
+        ? vec3Add(lc, vec3Scale(dirBetweenLines, (place.text.inward ? -1 : 1) * (gap + textHeight / 2)))
+        : vec3Add(lc, vec3Scale(textUp, i === 0 ? gap + textHeight / 2 : -(gap + textHeight / 2 + (i - 1) * dimensionTextRowStep * textHeight))),
       row,
       textHeight,
       material,

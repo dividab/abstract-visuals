@@ -143,14 +143,21 @@ describe("dimensionPlacements", () => {
     expect(geometries([dim(0, 67)], 0).map((g) => g.type)).not.toContain("Polygon");
   });
 
-  it("draws each row of the text as a text of its own, the first as near the line as a text of one row, the next 1.2 text heights past it", () => {
-    const texts = geometries([alignedDimension(vec3Zero, vec3(1000, 0, 0), vec3(0, -110, 0), "1000\nkg", ["front"])], 0).flatMap((g) =>
+  it("draws the first row of a text of several over the line, as the text reads, and the rest under it, 1.2 text heights apart", () => {
+    const texts = geometries([alignedDimension(vec3Zero, vec3(1000, 0, 0), vec3(0, -200, 0), "1000\nkg\n10 kg", ["front"])], 0).flatMap((g) =>
       g.type === "Text" ? [[g.text, g.pos.y]] : []
     );
     expect(texts).toEqual([
-      ["1000", expect.closeTo(-140)],
-      ["kg", expect.closeTo(-140 - 1.2 * 44)],
+      ["1000", expect.closeTo(-200 + 8 + 22)],
+      ["kg", expect.closeTo(-200 - 8 - 22)],
+      ["10 kg", expect.closeTo(-200 - 8 - 22 - 1.2 * 44)],
     ]);
+  });
+
+  it("leaves the room a text of several rows takes on both sides of the line", () => {
+    // The outer line moved out past the inner line's text and a gap, and a gap and its text's two rows under the line, on the inner line's side too
+    const dims = [dim(0, 1000), alignedDimension(vec3Zero, vec3(1000, 0, 0), vec3(0, -150, 0), "1000\nkg\n10 kg", ["front"])];
+    expect(dimensionPlacements(dims).map((p) => p?.linePosition.y)).toEqual([-110, expect.closeTo(-(110 + 8 + 44 + 8 + 8 + 44 + 1.2 * 44))]);
   });
 
   it("lets a text wider than its dimension overhang it where nothing's in the way", () => {
