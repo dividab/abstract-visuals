@@ -117,7 +117,7 @@ const run = (width: number, count: number, gap: number): ReadonlyArray<Dimension
 describe("dimensionPlacements", () => {
   it("draws the text a gap out from the line, out from the dimension's middle, extension lines to marks across the line at its ends and arrows inside them", () => {
     expect(dimensionPlacements([dim(0, 1000)])).toEqual([expect.objectContaining({ text: centred })]);
-    // Extension lines from the measured points to marks 10 to each side of the line, arrows 30 long pointing at them, the text a gap of 8 and half the
+    // Extension lines from the measured points to marks 10 to each side of the line, arrows 22.5 long pointing at them, the text a gap of 8 and half the
     // text height of 44 out from it
     expect(geometries([dim(0, 1000)], 0)).toEqual([
       expect.objectContaining({ type: "CulledLine", start: vec3(0, 0, 0), end: vec3(0, -100, 0) }),
@@ -127,20 +127,28 @@ describe("dimensionPlacements", () => {
       expect.objectContaining({ type: "CulledLine", start: vec3(0, -110, 0), end: vec3(1000, -110, 0) }),
       expect.objectContaining({
         type: "Polygon",
-        points: expect.arrayContaining([vec3(0, -110, 0), vec3(44 * (30 / 44), -102.5, 0), vec3(44 * (30 / 44), -117.5, 0)]),
+        points: expect.arrayContaining([
+          vec3(0, -110, 0),
+          vec3(44 * (22.5 / 44), -110 + 44 * (5.625 / 44), 0),
+          vec3(44 * (22.5 / 44), -110 - 44 * (5.625 / 44), 0),
+        ]),
       }),
       expect.objectContaining({
         type: "Polygon",
-        points: expect.arrayContaining([vec3(1000, -110, 0), vec3(1000 - 44 * (30 / 44), -102.5, 0), vec3(1000 - 44 * (30 / 44), -117.5, 0)]),
+        points: expect.arrayContaining([
+          vec3(1000, -110, 0),
+          vec3(1000 - 44 * (22.5 / 44), -110 + 44 * (5.625 / 44), 0),
+          vec3(1000 - 44 * (22.5 / 44), -110 - 44 * (5.625 / 44), 0),
+        ]),
       }),
       expect.objectContaining({ type: "Text", pos: vec3(500, -140, 0) }),
     ]);
   });
 
   it("leaves the arrows out where they don't both fit with a gap between them", () => {
-    // Two arrows of 30 and a gap of 8
-    expect(geometries([dim(0, 68)], 0).map((g) => g.type)).toContain("Polygon");
-    expect(geometries([dim(0, 67)], 0).map((g) => g.type)).not.toContain("Polygon");
+    // Two arrows of 22.5 and a gap of 8
+    expect(geometries([dim(0, 53)], 0).map((g) => g.type)).toContain("Polygon");
+    expect(geometries([dim(0, 52)], 0).map((g) => g.type)).not.toContain("Polygon");
   });
 
   it("draws the first row of a text of several over the line, as the text reads, and the rest under it, 1.2 text heights apart", () => {
@@ -232,7 +240,7 @@ describe("dimensionPlacements", () => {
       expect.anything(),
       expect.anything(),
       expect.anything(),
-      expect.objectContaining({ type: "Polygon", points: expect.arrayContaining([vec3(88 * (30 / 44), -95, 0)]) }),
+      expect.objectContaining({ type: "Polygon", points: expect.arrayContaining([vec3(88 * (22.5 / 44), -110 + 88 * (5.625 / 44), 0)]) }),
       expect.anything(),
       expect.objectContaining({ type: "Text", fontSize: 88, pos: vec3(500, -110 - 16 - 44, 0) }),
     ]);

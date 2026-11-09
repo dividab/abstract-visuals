@@ -1250,8 +1250,8 @@ const defaultDimensionTextHeight = 44;
 const dimensionGap = 8 / defaultDimensionTextHeight;
 /** How far the marks at a dimension's ends go to each side of the dimension line, short of the text's digits a gap from it */
 const dimensionMark = 10 / defaultDimensionTextHeight;
-const dimensionArrowLength = 30 / defaultDimensionTextHeight;
-const dimensionArrowHalfBase = 7.5 / defaultDimensionTextHeight;
+const dimensionArrowLength = 22.5 / defaultDimensionTextHeight;
+const dimensionArrowHalfBase = 5.625 / defaultDimensionTextHeight;
 /** How far apart the rows of a dimension's text are, as `textSize` measures them, each drawn as a text of its own so every renderer spaces them alike */
 const dimensionTextRowStep = 1.2;
 /** The lines' thickness, whatever the text height, as the three renderer draws it in pixels */
@@ -1521,9 +1521,7 @@ export function dimensionMeshifyAlignedDimension(
   // An arrow inside each end, pointing at its mark, where both fit with a gap of the line between them
   const arrowLength = textHeight * dimensionArrowLength;
   const arrowHalfBase = textHeight * dimensionArrowHalfBase;
-  // TEMPORARY: arrows hidden to compare without them
-  const showArrows: boolean = false;
-  if (showArrows && vec3Length(vec3Sub(le, ls)) >= 2 * arrowLength + gap) {
+  if (vec3Length(vec3Sub(le, ls)) >= 2 * arrowLength + gap) {
     for (const [tip, inward] of [
       [ls, direction],
       [le, vec3Scale(direction, -1)],
