@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [4.1.5] - 2026-11-10
+
+- Changed: a gizmo click turns the camera itself, eased over 400 ms, together with the target, distance and orthographic zoom that `resetZoomAndPanOnClick` fits, instead of the gizmo's own animation followed by a jump to the fit; the controls stay still during the turn, so the camera no longer spins near the top and bottom views or snaps at the end
+- Fixed: with `resetZoomAndPanOnClick`, a gizmo click fits the scene to the clicked side, edge or corner, where it fitted it to the viewer's `view`
+- Fixed: dragging the gizmo turns the camera from the first pixel, where it waited 10 pixels and then jumped by all of them
+- Fixed: a press on the gizmo released without a drag or a click on a side no longer leaves the camera controls disabled
+- Fixed: hovering the gizmo highlights its sides at once, where the highlight waited for the next frame something else rendered
+- Fixed: gizmo labels drawn before their web font loaded are redrawn in it once it has, by a new gizmo, where the redraw kept the old labels and detached the gizmo from the controls
+- Fixed: disposing the viewer frees all of the gizmo's textures, materials and geometries and removes its element, where only every other one was freed
+
+## [4.1.4] - 2026-11-04
+
 - Changed: while relations are active, the groups faded as disabled are drawn unlit, so activating them the first time doesn't compile a lit shader for each finish, which took seconds
 
 ## [4.1.2] - 2026-11-03
