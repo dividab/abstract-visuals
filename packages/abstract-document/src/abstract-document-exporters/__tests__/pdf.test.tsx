@@ -2,7 +2,7 @@ import path from "path";
 import * as S from "stream";
 import PDFParser from "pdf2json";
 import { describe, test, expect } from "vitest";
-import { AbstractDoc, Paragraph, Section, Table, TableCell, TableRow, TextRun, render } from "../../abstract-document-jsx/index.js";
+import { AbstractDoc, PageBreak, Paragraph, Section, Table, TableCell, TableRow, TextRun, render } from "../../abstract-document-jsx/index.js";
 import * as AD from "../../abstract-document/index.js";
 import { exportToBytes, exportToStream } from "../pdf/render.js";
 import { testAbsolutePositionGroup } from "./pdf/absolute-position-group.js";
@@ -159,6 +159,74 @@ describe("export pdf", () => {
     expect(diffJson(outputs[0], outputs[1])).toBe("");
   });
 
+  test("header and footer are laid out and placed within their own margins when they differ from the content margins", async () => {
+    const pageStyle = AD.PageStyle.create({
+      contentMargins: { top: 100, bottom: 100, left: 100, right: 100 },
+      headerMargins: { top: 20, bottom: 0, left: 20, right: 20 },
+      footerMargins: { top: 0, bottom: 20, left: 40, right: 60 },
+    });
+    const page = AD.MasterPage.create({
+      style: pageStyle,
+      header: [render(text("header-end", "End")), render(text("header-center", "Center"))],
+      footer: [
+        render(
+          <Table columnWidths={[Infinity, 100, Infinity]}>
+            <TableRow>
+              <TableCell>{text("footer-start")}</TableCell>
+              <TableCell>{text("footer-center", "Center")}</TableCell>
+              <TableCell>{text("footer-end", "End")}</TableCell>
+            </TableRow>
+          </Table>
+        ),
+      ],
+    });
+    const body = [text("body-start"), text("body-center", "Center"), text("body-end", "End")];
+    const document = render(
+      <AbstractDoc>
+        <Section page={page}>
+          {body}
+          <PageBreak />
+          {body}
+        </Section>
+      </AbstractDoc>
+    );
+    const bytes = await exportToBytes(document);
+    // pdf2json requires an unpooled buffer, as in the fixture tests below.
+    const buffer = Buffer.alloc(bytes.length);
+    buffer.set(bytes);
+    const parsed = (await getJsonFromPdf(buffer)) as {
+      readonly Pages: ReadonlyArray<{
+        readonly Width: number;
+        readonly Texts: ReadonlyArray<{ readonly x: number; readonly w: number; readonly R: ReadonlyArray<{ readonly T: string }> }>;
+      }>;
+    };
+    expect(parsed.Pages).toHaveLength(2);
+
+    const pointsPerUnit = AD.PageStyle.getWidth(pageStyle) / parsed.Pages[0]!.Width;
+    for (const p of parsed.Pages) {
+      // pdf2json offsets x by a constant, so compare against the body text whose edges are known
+      const edges = (t: string): { readonly start: number; readonly center: number; readonly end: number } => {
+        const item = p.Texts.find((i) => decodeURIComponent(i.R[0]!.T) === t);
+        if (!item) {
+          throw new Error(`Missing text ${t}`);
+        }
+        const start = item.x * pointsPerUnit;
+        return { start, center: start + item.w / 2, end: start + item.w };
+      };
+      const bodyStart = edges("body-start").start; // content left = 100
+      const bodyCenter = edges("body-center").center; // page center
+      const bodyEnd = edges("body-end").end; // page width - content right 100
+
+      // Header margins 20/20: right edge 80 to the right of the content, same center as the content
+      expect(edges("header-end").end - bodyEnd).toBeCloseTo(80, 0);
+      expect(edges("header-center").center - bodyCenter).toBeCloseTo(0, 0);
+      // Footer margins 40/60: the Infinity columns fill the width between them
+      expect(edges("footer-start").start - bodyStart).toBeCloseTo(-60, 0);
+      expect(edges("footer-center").center - bodyCenter).toBeCloseTo(-10, 0);
+      expect(edges("footer-end").end - bodyEnd).toBeCloseTo(40, 0);
+    }
+  });
+
   [
     testAbsolutePositionGroup,
     testAbsolutePositionHeaderAndFooter,
@@ -285,6 +353,14 @@ describe("export pdf", () => {
       });
     });
 });
+
+function text(t: string, alignment?: AD.ParagraphStyle.TextAlignment): React.JSX.Element {
+  return (
+    <Paragraph style={AD.ParagraphStyle.create({ alignment })}>
+      <TextRun text={t} />
+    </Paragraph>
+  );
+}
 
 // pdfkit stamps Info.CreationDate with the wall-clock time of export (pdfkit.js: `CreationDate: new Date()`),
 // so two exports of otherwise-identical content can legitimately disagree by a second or more under load

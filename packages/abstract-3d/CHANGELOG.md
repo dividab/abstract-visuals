@@ -12,6 +12,19 @@ All notable changes to this project will be documented in this file. The format 
 - Changed: a dimension is drawn as its dimension line with a short mark across it at each end, as far to each side, an extension line from each measured point to it, broken half a gap short of each text it'd cross, an arrow inside each end pointing at it where both fit with a gap between them, and its text a gap from it, out from the dimension's middle; a text of several rows has its first row over the line, as the text reads, and the rest under it, each drawn as a text of its own, 1.2 text heights apart, so every renderer spaces them alike, with room left for it on both sides of the line
 - Changed: a dimension's text, out from its middle, overhangs the dimension where it's wider and nothing's in the way, else it's drawn on the other side of the line, towards the measured points, alternating with its neighbours', even where every other one's still clash; placed together for the dimensions on a line, whichever is the clearest: texts out from the line and apart, and where it's even, the ones at the ends of the line out from it, with room past them
 - Changed: a dimension line too near the measured points, or the line inside it on the same side, for the texts and marks between them is drawn further out, a gap past them; at the text height 44, lines 88 apart, as aircalc's, stay where they are
+
+## [4.1.5] - 2026-11-10
+
+- Changed: a gizmo click turns the camera itself, eased over 400 ms, together with the target, distance and orthographic zoom that `resetZoomAndPanOnClick` fits, instead of the gizmo's own animation followed by a jump to the fit; the controls stay still during the turn, so the camera no longer spins near the top and bottom views or snaps at the end
+- Fixed: with `resetZoomAndPanOnClick`, a gizmo click fits the scene to the clicked side, edge or corner, where it fitted it to the viewer's `view`
+- Fixed: dragging the gizmo turns the camera from the first pixel, where it waited 10 pixels and then jumped by all of them
+- Fixed: a press on the gizmo released without a drag or a click on a side no longer leaves the camera controls disabled
+- Fixed: hovering the gizmo highlights its sides at once, where the highlight waited for the next frame something else rendered
+- Fixed: gizmo labels drawn before their web font loaded are redrawn in it once it has, by a new gizmo, where the redraw kept the old labels and detached the gizmo from the controls
+- Fixed: disposing the viewer frees all of the gizmo's textures, materials and geometries and removes its element, where only every other one was freed
+
+## [4.1.4] - 2026-11-04
+
 - Changed: while relations are active, the groups faded as disabled are drawn unlit, so activating them the first time doesn't compile a lit shader for each finish, which took seconds
 
 ## [4.1.2] - 2026-11-03

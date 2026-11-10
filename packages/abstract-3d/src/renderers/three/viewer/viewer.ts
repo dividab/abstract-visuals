@@ -6,6 +6,7 @@ import {
   NeutralToneMapping,
   OrthographicCamera,
   PerspectiveCamera,
+  type Quaternion,
   Raycaster,
   Scene as ThreeScene,
   Vector2,
@@ -24,7 +25,7 @@ import type { Placement } from "../camera/camera.js";
 import { fitCamera } from "../camera/camera.js";
 import type { Controls } from "../camera/controls.js";
 import { configureControls, createControls, setPose } from "../camera/controls.js";
-import { createGizmo } from "../camera/gizmo.js";
+import { createGizmo, disposeGizmo } from "../camera/gizmo.js";
 import type { CompiledScene } from "../compile/compile.js";
 import { compileScene } from "../compile/compile.js";
 import type { TierGovernor } from "../quality/quality.js";
@@ -46,6 +47,9 @@ import { createOverlayLayer, setOverlays } from "./overlays.js";
  */
 
 type Hit = { readonly item: number; readonly target: number; readonly point: Vector3 };
+
+/** Where the camera looks from: it looks at the target from the distance, turned by the quaternion */
+type Pose = { readonly quaternion: Quaternion; readonly target: Vector3; readonly distance: number; readonly zoom: number };
 
 export type Viewer<Content> = {
   options: ViewerOptions<Content>;
@@ -77,6 +81,8 @@ export type Viewer<Content> = {
   /** The previous build and ground shadow, out of the scene, disposed once the next frame has given their shader programs to the new ones */
   readonly retired: { built?: BuiltScene; shadow?: GroundShadow };
   gizmo?: ViewportGizmo;
+  /** A gizmo click's turn of the camera, from when it was clicked; where it ends is known once the gizmo moved the camera there */
+  turn?: { readonly from: Pose; readonly to?: Pose; readonly start: number };
   shadow?: GroundShadow;
   /** The key light that casts the solids' shadows on themselves */
   keyLight?: Group;
@@ -91,6 +97,8 @@ export type Viewer<Content> = {
 
 /** Pointer travel in CSS pixels below which a press and release is a click, not a drag */
 const clickTolerance = 4;
+/** How long a gizmo click's turn of the camera takes */
+const turnMs = 400;
 
 export function createViewer<Content>(container: HTMLElement, options: ViewerOptions<Content>): Viewer<Content> {
   if (getComputedStyle(container).position === "static") {
@@ -184,7 +192,9 @@ export function disposeViewer<Content>(v: Viewer<Content>): void {
   v.listeners.abort();
   v.resizeObserver.disconnect();
   v.controls.orbit.dispose();
-  v.gizmo?.dispose();
+  if (v.gizmo) {
+    disposeGizmo(v.gizmo);
+  }
   disposeRetired(v);
   if (v.built) {
     disposeScene(v.built);
@@ -337,7 +347,12 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
   }
   const { built, camera, gizmo } = v;
   renderer.info.reset();
-  const moving = v.controls.orbit.update(Math.min(interval / 1000, 0.1)) || !!gizmo?.animating;
+  if (v.turn?.to) {
+    turnCamera(v, v.turn.from, v.turn.to, (now - v.turn.start) / turnMs);
+  }
+  // Not during a turn, as the controls would look at the target with the world's up instead of the turn's roll, which spins the camera near the
+  // top and bottom views and snaps it at their end
+  const moving = !!v.turn || v.controls.orbit.update(Math.min(interval / 1000, 0.1));
   if (moving && loop.wasMoving && v.governor && recordFrame(v.governor, interval)) {
     renderer.setPixelRatio(getPixelRatio(v.governor.tier, window.devicePixelRatio));
   }
@@ -397,44 +412,117 @@ function fitPose<Content>(v: Viewer<Content>): void {
   }
 }
 
-function fitScene<Content>(v: Viewer<Content>): Placement | undefined {
-  const { scene, view = "front", bufferZones = {}, fitPadding = 0 } = v.options;
+function fitScene<Content>(v: Viewer<Content>, view: View | Quaternion = v.options.view ?? "front"): Placement | undefined {
+  const { scene, bufferZones = {}, fitPadding = 0 } = v.options;
   return scene && fitCamera(v.camera, { view, size: scene.size_deprecated, canvas: v.size, bufferZones, fitPadding });
 }
 
-function updateGizmo<Content>(v: Viewer<Content>): void {
-  v.gizmo?.dispose();
+function updateGizmo<Content>(v: Viewer<Content>, fontsLoaded = false): void {
+  if (v.gizmo) {
+    disposeGizmo(v.gizmo);
+  }
+  // A click's turn that the old gizmo hadn't moved the camera to the end of would never end
+  if (v.turn && !v.turn.to) {
+    endTurn(v);
+  }
   const { gizmo } = v.options;
-  v.gizmo = gizmo && createGizmo(v.camera, v.renderer, v.container, gizmo).attachControls(v.controls.orbit);
-  v.gizmo?.addEventListener("change", () => invalidate(v));
+  v.gizmo = gizmo && createGizmo(v.camera, v.renderer, v.container, gizmo, () => invalidate(v)).attachControls(v.controls.orbit);
+  v.gizmo?.addEventListener("change", () => onGizmoChange(v));
   v.gizmo?.addEventListener("start", () => onGizmoStart(v));
-  // Its labels are drawn once, so ones drawn before the page's web fonts loaded are redrawn when they have
+  v.gizmo?.addEventListener("end", () => onGizmoEnd(v));
+  // Its labels are drawn into its textures once, so ones drawn before their web font loaded are replaced by a new one once it has, unless replaced
+  // or disposed meanwhile; loading starts it if nothing has, and gives no faces for a system font or one that failed. Only once, so a font that
+  // never checks as loaded can't replace it again and again. Not by its set(options), which leaves it detached from the controls and keeps every
+  // other old label
   const created = v.gizmo;
-  if (created && document.fonts.status !== "loaded") {
-    document.fonts.ready.then(() => redrawGizmo(v, created)).catch(() => undefined);
+  const font = created && `${created.options.font?.weight ?? ""} 16px ${created.options.font?.family ?? "sans-serif"}`;
+  if (created && font && !fontsLoaded && !document.fonts.check(font)) {
+    document.fonts
+      .load(font)
+      .then((faces) => faces.length > 0 && v.gizmo === created && !v.disposed && replaceGizmo(v))
+      .catch(() => undefined);
   }
 }
 
-/** Unless the gizmo was replaced or the viewer disposed meanwhile */
-function redrawGizmo<Content>(v: Viewer<Content>, gizmo: ViewportGizmo): void {
-  if (v.gizmo === gizmo && !v.disposed) {
-    gizmo.set(gizmo.options);
-    invalidate(v);
+function replaceGizmo<Content>(v: Viewer<Content>): void {
+  updateGizmo(v, true);
+  invalidate(v);
+}
+
+/** A click starts a turn, from where a turn going on has got to */
+function onGizmoStart<Content>(v: Viewer<Content>): void {
+  if (v.gizmo?.animating) {
+    v.turn = { from: getPose(v), start: performance.now() };
   }
+}
+
+/** Dragging the gizmo stops a turn going on; a click's changes come while it's animating, or before the turn knows where it ends */
+function onGizmoChange<Content>(v: Viewer<Content>): void {
+  if (!v.gizmo?.animating && v.turn?.to) {
+    v.turn = undefined;
+  }
+  invalidate(v);
 }
 
 /**
- * A click turns the camera, which can also move the target back to the scene's center and fit the scene. The gizmo turns around its target at the
- * distance it read when pressed, its internal `_distance`, so that's set to the fitted one
+ * The gizmo, not animated, moved the camera to the clicked view at once; it's moved back, to turn from there in the next frames, eased, and with the
+ * target and distance too, as a click can also move the target back to the scene's center and fit the scene to the view. An orthographic camera's
+ * zoom starts at the one that shows as much on the fitted projection as before
  */
-function onGizmoStart<Content>(v: Viewer<Content>): void {
-  const { gizmo } = v.options;
-  const reset = gizmo?.type === "Viewcube" ? gizmo.viewcubeProps?.resetZoomAndPanOnClick : gizmo?.viewportProps?.resetZoomAndPanOnClick;
-  const placement = v.gizmo?.animating && reset ? fitScene(v) : undefined;
-  if (placement) {
-    v.controls.orbit.target.set(0, 0, 0);
-    Object.assign(v.gizmo!, { _distance: placement.distance });
+function onGizmoEnd<Content>(v: Viewer<Content>): void {
+  const { turn, camera } = v;
+  if (turn && !turn.to) {
+    const { gizmo } = v.options;
+    const reset = gizmo?.type === "Viewcube" ? gizmo.viewcubeProps?.resetZoomAndPanOnClick : gizmo?.viewportProps?.resetZoomAndPanOnClick;
+    const quaternion = camera.quaternion.clone();
+    const height = (): number => ("isOrthographicCamera" in camera ? camera.top - camera.bottom : 1);
+    const before = height();
+    const placement = reset ? fitScene(v, quaternion) : undefined;
+    const from = { ...turn.from, zoom: (turn.from.zoom * height()) / before };
+    const to = placement ? { quaternion, target: new Vector3(), distance: placement.distance, zoom: 1 } : { ...turn.from, quaternion };
+    v.turn = { ...turn, from, to };
+    setCameraPose(v, from);
   }
+  // Its end, also of a press during a turn, enabled the controls, which the turn enables when it ends
+  if (v.turn) {
+    v.controls.orbit.enabled = false;
+  }
+}
+
+function turnCamera<Content>(v: Viewer<Content>, from: Pose, to: Pose, progress: number): void {
+  const t = Math.min(1, progress);
+  const eased = t * t * (3 - 2 * t);
+  const lerp = (a: number, b: number): number => a + (b - a) * eased;
+  setCameraPose(v, {
+    quaternion: from.quaternion.clone().slerp(to.quaternion, eased),
+    target: from.target.clone().lerp(to.target, eased),
+    distance: lerp(from.distance, to.distance),
+    zoom: lerp(from.zoom, to.zoom),
+  });
+  if (t === 1) {
+    endTurn(v);
+  }
+}
+
+/** The controls the click disabled are enabled again */
+function endTurn<Content>(v: Viewer<Content>): void {
+  v.turn = undefined;
+  v.controls.orbit.enabled = v.controls.current.options.enabled ?? true;
+}
+
+function getPose<Content>({ camera, controls }: Viewer<Content>): Pose {
+  const target = controls.orbit.target.clone();
+  return { quaternion: camera.quaternion.clone(), target, distance: camera.position.distanceTo(target), zoom: camera.zoom };
+}
+
+function setCameraPose<Content>(v: Viewer<Content>, { quaternion, target, distance, zoom }: Pose): void {
+  const { camera } = v;
+  camera.quaternion.copy(quaternion);
+  camera.position.set(0, 0, distance).applyQuaternion(quaternion).add(target);
+  camera.zoom = zoom;
+  camera.updateProjectionMatrix();
+  v.controls.orbit.target.copy(target);
+  v.gizmo?.cameraUpdate();
 }
 
 function onPointerMove<Content>(v: Viewer<Content>, event: PointerEvent): void {
