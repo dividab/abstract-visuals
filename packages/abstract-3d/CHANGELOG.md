@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. The format 
 ## [4.2.0] - 2026-11-10
 
 - Added: `sceneTextHeight(groups)`, the text height of a scene, `textHeightForSize(size)` of its objects' size without its texts: 32 up to 3600 on the longest side, else as many steps of 2^¼ above it as the longest side needs, rounded up, so a text is at most 19% larger than in proportion to the scene's size. Every renderer draws its texts without a font size and its dimensions at it, their text, marks, gaps and lines sized by it
+- Changed: a dimension's text, marks, gaps and lines are sized by the scene's text height, so they scale with the size of the unit, where its text was always 44: 32 up to 3600 on the longest side, larger above it
 - Changed: `Text.fontSize` is optional, the scene's text height if not set; `boundsText` and `boundsGroup` take the text height for it, 44 if not given, and `boundsScene` the scene's
 - Added: `Text.background`, a circle or a rectangle a depth behind the text, padded past it, with an outline, which every renderer draws at the text's size; `groupTextBackgrounds(group, textHeight)` turns them into the meshes drawn
 - Added: `textSize(text, fontSize)`, how wide and high a text is drawn, as `boundsText` measures it
