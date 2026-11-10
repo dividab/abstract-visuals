@@ -18,3 +18,4 @@ tmp/
 gitleaks-report.json
 stats.html
 packages/abstract-3d/bench/out/
+.playwright-mcp/

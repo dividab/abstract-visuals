@@ -1,4 +1,5 @@
-import type { OrthographicCamera, PerspectiveCamera } from "three";
+import type { OrthographicCamera, PerspectiveCamera, Quaternion } from "three";
+import { Vector3 } from "three";
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { Vec3, View } from "../../../abstract-3d.js";
 import { vec3 } from "../../../abstract-3d.js";
@@ -13,7 +14,8 @@ export type CameraOptions =
 export type BufferZones = { readonly left?: number; readonly right?: number; readonly top?: number; readonly bottom?: number };
 
 export type FitInput = {
-  readonly view: View;
+  /** A view, or the camera's orientation, e.g. one the gizmo turns it to */
+  readonly view: View | Quaternion;
   /** The scene's size */
   readonly size: Vec3;
   /** In CSS pixels */
@@ -65,7 +67,18 @@ export function fitCamera(
 }
 
 /** The direction to look from, the scene's size as seen on screen and its aspect */
-function getViewTransform(view: View, size: Vec3): readonly [Vec3, Vec3, number] {
+function getViewTransform(view: View | Quaternion, size: Vec3): readonly [Vec3, Vec3, number] {
+  if (typeof view !== "string") {
+    // The extent of the scene's box along the camera's right, up and backward axes, which for a view's orientation is the size below
+    const orientation = view;
+    const extent = (x: number, y: number, z: number): number => {
+      const axis = new Vector3(x, y, z).applyQuaternion(orientation);
+      return Math.abs(axis.x) * size.x + Math.abs(axis.y) * size.y + Math.abs(axis.z) * size.z;
+    };
+    const back = new Vector3(0, 0, 1).applyQuaternion(orientation);
+    const [width, height] = [extent(1, 0, 0), extent(0, 1, 0)];
+    return [vec3(back.x, back.y, back.z), vec3(width, height, extent(0, 0, 1)), width / height];
+  }
   switch (view) {
     case "front":
     case "back":
