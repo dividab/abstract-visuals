@@ -1,5 +1,5 @@
 import { dimensionMeshifyAlignedDimension } from "../../../abstract-3d.js";
-import type { DimensionAligned, View, Material, Vec3 } from "../../../abstract-3d.js";
+import type { DimensionAligned, DimensionPlacement, View, Material, Vec3 } from "../../../abstract-3d.js";
 import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_BLOCK_RECORD_TABLE_HANDLE, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 import { dxfEncLine } from "./dxf-line.js";
@@ -21,6 +21,8 @@ export function dxfEncDimension(
   sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
+  textHeight: number | undefined,
+  placement: DimensionPlacement | undefined,
   handleRef: Handle
 ): DxfDimensionDefinition {
   const blockRecordHandle = dxfHandleNext(handleRef);
@@ -38,6 +40,8 @@ export function dxfEncDimension(
       sceneRotation,
       viewRotation,
       views,
+      textHeight,
+      placement,
       handleRef
     ),
     blockRecord: dxfEncodeDimensionBlockRecord(blockName, blockRecordHandle),
@@ -128,6 +132,8 @@ function dxfEncodeDimensionBlock(
   sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
+  textHeight: number | undefined,
+  placement: DimensionPlacement | undefined,
   handleRef: Handle
 ): string {
   return `0
@@ -166,6 +172,8 @@ ${dxfEncodeDimensionGeometry(
   sceneRotation,
   viewRotation,
   views,
+  textHeight,
+  placement,
   handleRef
 )}0
 ENDBLK
@@ -194,6 +202,8 @@ function dxfEncodeDimensionGeometry(
   sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
+  textHeight: number | undefined,
+  placement: DimensionPlacement | undefined,
   handleRef: Handle
 ): string {
   let entities = "";
@@ -214,6 +224,16 @@ function dxfEncodeDimensionGeometry(
     text,
     views,
   };
-  dimensionMeshifyAlignedDimension(dimension, sceneRotation, viewRotation, onCreateLine, onCreateText, onCreatePolygon);
+  dimensionMeshifyAlignedDimension(
+    dimension,
+    sceneRotation,
+    viewRotation,
+    onCreateLine,
+    onCreateText,
+    onCreatePolygon,
+    undefined,
+    textHeight,
+    placement
+  );
   return entities;
 }

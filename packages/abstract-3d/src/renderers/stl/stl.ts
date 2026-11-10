@@ -1,14 +1,22 @@
 import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
-import { vec3Zero, vec3TransRot, vec3RotCombine } from "../../abstract-3d.js";
+import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight } from "../../abstract-3d.js";
 import { stlBox } from "./stl-geometries/stl-box.js";
 import { stlCone } from "./stl-geometries/stl-cone.js";
 import { stlCylinder } from "./stl-geometries/stl-cylinder.js";
 import { stlPlane } from "./stl-geometries/stl-plane.js";
 import { stlPolygon } from "./stl-geometries/stl-polygon.js";
 
-export const render = (scene: Scene): string =>
-  `solid
-` + scene.groups.reduce((a, c) => a + stlGroup(c, scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero), "");
+export const render = (scene: Scene): string => {
+  const textHeight = sceneTextHeight(scene.groups);
+  return (
+    `solid
+` +
+    scene.groups.reduce(
+      (a, c) => a + stlGroup(groupTextBackgrounds(c, textHeight), scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero),
+      ""
+    )
+  );
+};
 
 function stlGroup(g: Group, parentPos: Vec3, parentRot: Vec3): string {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);

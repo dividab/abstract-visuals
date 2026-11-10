@@ -14,7 +14,8 @@ export function text(
   fill: string,
   opts: SvgOptions,
   parentPos: Vec3,
-  parentRot: Vec3
+  parentRot: Vec3,
+  textHeight: number
 ): ReadonlyArray<zOrderElement> {
   const pos = vec3TransRot(t.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, t.rot ?? vec3Zero);
@@ -27,7 +28,7 @@ export function text(
   }
 
   const texts = Array<zOrderElement>();
-  const fontSize = t.fontSize;
+  const fontSize = t.fontSize ?? textHeight;
   const strings = t.text.split("\n");
   let posY = strings.length === 1 ? 0 : (fontSize * strings.length - fontSize) / 2;
   for (const s of strings) {
