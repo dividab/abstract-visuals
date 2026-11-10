@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Fixed: the PDF exporter measures the header and footer with `headerMargins` and `footerMargins` again, as before 18.1.0, instead of `contentMargins`. When they differed, what depends on the available width (End or Center alignment, `Infinity` table columns, wrapping) was laid out for the content width but drawn from the header or footer margin, e.g. right aligned footer text ended too far left.
 - Fixed: depends on handlebars 4.7.10 instead of 4.7.8, whose templates could inject JavaScript or pollute prototypes, and fast-xml-parser 5.
 - Fixed: the DOCX exporter no longer imports Node's `stream`. `exportToStream` writes the document to the given stream with `end`, so bundlers that keep unused code, like vite's bundled dev mode, no longer fail on the missing `Readable` in the browser.
 

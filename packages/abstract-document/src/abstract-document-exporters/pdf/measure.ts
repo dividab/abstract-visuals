@@ -53,11 +53,14 @@ function measureSection(
   const contentAvailableSize = AD.Size.create(contentAvailableWidth, pageHeight);
   const sectionSizes = children.map((e) => measureSectionElement(pdfKit, resources, contentAvailableSize, e));
 
-  const headerAvailableWidth = pageWidth - (pageContentMargins.left + pageContentMargins.right);
+  // The header and footer are drawn inside their own margins, so measure them with those margins too
+  const pageHeaderMargins = AD.LayoutFoundation.orDefault(section.page.style.headerMargins);
+  const headerAvailableWidth = pageWidth - (pageHeaderMargins.left + pageHeaderMargins.right);
   const headerAvailableSize = AD.Size.create(headerAvailableWidth, pageHeight);
   const headerSizes = header.map((e) => measureSectionElement(pdfKit, resources, headerAvailableSize, e));
 
-  const footerAvailableWidth = pageWidth - (pageContentMargins.left + pageContentMargins.right);
+  const pageFooterMargins = AD.LayoutFoundation.orDefault(section.page.style.footerMargins);
+  const footerAvailableWidth = pageWidth - (pageFooterMargins.left + pageFooterMargins.right);
   const footerAvailableSize = AD.Size.create(footerAvailableWidth, pageHeight);
   const footerSizes = footer.map((e) => measureSectionElement(pdfKit, resources, footerAvailableSize, e));
 
