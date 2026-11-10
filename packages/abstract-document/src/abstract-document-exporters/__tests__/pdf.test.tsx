@@ -190,7 +190,10 @@ describe("export pdf", () => {
         </Section>
       </AbstractDoc>
     );
-    const buffer = Buffer.from(await exportToBytes(document));
+    const bytes = await exportToBytes(document);
+    // pdf2json requires an unpooled buffer, as in the fixture tests below.
+    const buffer = Buffer.alloc(bytes.length);
+    buffer.set(bytes);
     const parsed = (await getJsonFromPdf(buffer)) as {
       readonly Pages: ReadonlyArray<{
         readonly Width: number;
