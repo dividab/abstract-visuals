@@ -32,6 +32,7 @@ import {
 } from "docx";
 import * as AD from "../../abstract-document/index.js";
 import { transcodeAvifImages } from "../shared/avif-to-png.js";
+import { docxColor } from "./color.js";
 import { renderImage } from "./render-image.js";
 
 const abstractDocToDocxFontRatio = 2;
@@ -171,12 +172,12 @@ function renderHyperLink(hyperLink: AD.HyperLink.HyperLink, style: AD.TextStyle.
     text: hyperLink.text,
     font: style.fontFamily ?? "Helvetica",
     size: fontSize,
-    color: style.color ?? "#0000ff",
+    color: docxColor(style.color) ?? "#0000ff",
     bold: style.bold ?? style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color ?? "#0000ff",
+          color: docxColor(style.color) ?? "#0000ff",
           type: UnderlineType.SINGLE,
         }
       : undefined,
@@ -252,32 +253,32 @@ function renderTable(table: AD.Table.Table, resources: AD.Resources.Resources, c
     },
     borders: {
       top: {
-        color: style.cellStyle.borderColor ?? undefined,
+        color: docxColor(style.cellStyle.borderColor),
         size: 0,
         style: BorderStyle.NONE,
       },
       right: {
-        color: style.cellStyle.borderColor ?? undefined,
+        color: docxColor(style.cellStyle.borderColor),
         size: 0,
         style: BorderStyle.NONE,
       },
       bottom: {
-        color: style.cellStyle.borderColor ?? undefined,
+        color: docxColor(style.cellStyle.borderColor),
         size: 0,
         style: BorderStyle.NONE,
       },
       left: {
-        color: style.cellStyle.borderColor ?? undefined,
+        color: docxColor(style.cellStyle.borderColor),
         size: 0,
         style: BorderStyle.NONE,
       },
       insideHorizontal: {
-        color: style.cellStyle.borderColor ?? undefined,
+        color: docxColor(style.cellStyle.borderColor),
         size: 0,
         style: BorderStyle.NONE,
       },
       insideVertical: {
-        color: style.cellStyle.borderColor ?? undefined,
+        color: docxColor(style.cellStyle.borderColor),
         size: 0,
         style: BorderStyle.NONE,
       },
@@ -331,7 +332,7 @@ function renderCell(
     verticalAlign:
       style.verticalAlignment === "Top" ? VerticalAlign.TOP : style.verticalAlignment === "Bottom" ? VerticalAlign.BOTTOM : VerticalAlign.CENTER,
     shading: {
-      fill: style.background ?? undefined,
+      fill: docxColor(style.background),
     },
     columnSpan: cell.columnSpan,
     rowSpan: cell.rowSpan,
@@ -347,22 +348,22 @@ function renderCell(
     },
     borders: {
       top: {
-        color: style.borderColor ?? undefined,
+        color: docxColor(style.borderColor),
         size: styleBorders.top * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.top ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       right: {
-        color: style.borderColor ?? undefined,
+        color: docxColor(style.borderColor),
         size: styleBorders.right * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.right ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       bottom: {
-        color: style.borderColor ?? undefined,
+        color: docxColor(style.borderColor),
         size: styleBorders.bottom * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.bottom ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
       left: {
-        color: style.borderColor ?? undefined,
+        color: docxColor(style.borderColor),
         size: styleBorders.left * abstractDocBorderToDocxBorderSizeRatio,
         style: styleBorders.left ? BorderStyle.SINGLE : BorderStyle.NONE,
       },
@@ -440,12 +441,12 @@ function renderPageNumber(style: AD.TextStyle.TextStyle): TextRun {
   return new TextRun({
     font: style.fontFamily ?? "Helvetica",
     size: fontSize,
-    color: style.color ?? "#000000",
+    color: docxColor(style.color) ?? "#000000",
     bold: style.bold ?? style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color,
+          color: docxColor(style.color),
           type: UnderlineType.SINGLE,
         }
       : undefined,
@@ -458,12 +459,12 @@ function renderTotalPages(style: AD.TextStyle.TextStyle): TextRun {
   return new TextRun({
     font: style.fontFamily ?? "Helvetica",
     size: fontSize,
-    color: style.color ?? "#000000",
+    color: docxColor(style.color) ?? "#000000",
     bold: style.bold ?? style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color,
+          color: docxColor(style.color),
           type: UnderlineType.SINGLE,
         }
       : undefined,
@@ -478,12 +479,12 @@ function renderText(style: AD.TextStyle.TextStyle, text: string): TextRun {
     text: text,
     font: style.fontFamily ?? "Helvetica",
     size: fontSize,
-    color: style.color ?? "#000000",
+    color: docxColor(style.color) ?? "#000000",
     bold: style.bold ?? style.fontWeight === "bold",
     characterSpacing: style.characterSpacing,
     underline: style.underline
       ? {
-          color: style.color,
+          color: docxColor(style.color),
           type: UnderlineType.SINGLE,
         }
       : undefined,

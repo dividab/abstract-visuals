@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.5.3] - 2026-11-11
+
+- Fixed: the DOCX exporter takes the colors the PDF exporter takes. CSS color names, e.g. `black` or `white`, and 3 digit hex, e.g. `#abc`, are written as 6 digit hex, and other colors are left out, as the PDF exporter leaves them out. Since 19.2.0, which updated docx to 9, such a color made docx throw `Invalid hex value 'black'. Expected 6 digit hex value`, so `exportToStream` emitted an error instead of writing the document.
+
 ## [20.5.2] - 2026-11-11
 
 - Fixed: `Markdown` leaves out the nodes it has no element for that have no children, e.g. html like `<br>`, inline code, a thematic break (`---`) or an image, as before 20.2.0. Since 20.2.0 such a node threw `Cannot read properties of undefined (reading 'forEach')`, so the whole document failed.

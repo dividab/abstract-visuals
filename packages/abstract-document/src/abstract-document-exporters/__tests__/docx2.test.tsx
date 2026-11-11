@@ -3,7 +3,8 @@ import * as S from "stream";
 import * as DiffJsXml from "diff-js-xml";
 import jszip from "jszip";
 import { describe, test, expect } from "vitest";
-import { render } from "../../abstract-document-jsx/index.js";
+import { AbstractDoc, Paragraph, Section, Table, TableCell, TableRow, TextRun, render } from "../../abstract-document-jsx/index.js";
+import * as AD from "../../abstract-document/index.js";
 import { exportToStream } from "../docx2/render.js";
 import { saveBufferInTmpDir, streamToBuffer } from "./test-utils/index.js";
 import { testGroup } from "./tests-docx2/group.js";
@@ -87,6 +88,37 @@ describe("export docx", () => {
         expect(actual).toEqual(expected);
       }
     });
+  });
+
+  test("CSS color names and 3 digit hex are exported as 6 digit hex, and unknown colors are left out", async () => {
+    // docx only takes 6 digit hex and threw for e.g. "black", so the document was never written
+    const border = AD.LayoutFoundation.create({ top: 1, right: 1, bottom: 1, left: 1 });
+    const cellStyle = AD.TableCellStyle.create({ background: "white", borderColor: "#abc", borders: border });
+    const abstractDoc = render(
+      <AbstractDoc>
+        <Section>
+          <Table columnWidths={[100]}>
+            <TableRow>
+              <TableCell style={cellStyle}>
+                <Paragraph>
+                  <TextRun text="named" style={AD.TextStyle.create({ color: "Black" })} />
+                  <TextRun text="unknown" style={AD.TextStyle.create({ color: "not-a-color" })} />
+                </Paragraph>
+              </TableCell>
+            </TableRow>
+          </Table>
+        </Section>
+      </AbstractDoc>
+    );
+    const docxStream = new S.PassThrough();
+    const error = new Promise<unknown>((resolve) => docxStream.on("error", resolve));
+    exportToStream(docxStream, abstractDoc);
+    const docxBuffer = await Promise.race([streamToBuffer(docxStream), error.then((e) => Promise.reject(e))]);
+    const xml = (await (await jszip.loadAsync(docxBuffer)).file("word/document.xml")?.async("string")) ?? "";
+    expect(xml).toContain('w:color w:val="000000"');
+    expect(xml).toContain('w:fill="ffffff"');
+    expect(xml).toContain('w:color="aabbcc"');
+    expect(xml).not.toContain("not-a-color");
   });
 });
 
