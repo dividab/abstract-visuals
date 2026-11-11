@@ -48,6 +48,7 @@
     "fast-xml-parser": "catalog:",
     "handlebars": "catalog:",
     "handlebars-xml": "workspace:^",
+    "linebreak": "^1.1.0",
     "moment": "catalog:",
     "pdfkit": "^0.20.2",
     "remark-parse": "^6.0.3",

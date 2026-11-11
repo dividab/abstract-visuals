@@ -1,3 +1,4 @@
+import LineBreaker from "linebreak";
 import * as AD from "../../abstract-document/index.js";
 import { getFontNameStyle, transformText } from "./font.js";
 
@@ -86,16 +87,16 @@ export function layoutParagraphRows(
   const wordsWiderThanRow = rows
     .flat()
     .filter((atom): atom is AD.TextRun.TextRun => atom.type === "TextRun" && getDesiredSize(atom, desiredSizes).width >= availableWidth);
-  if (style.wordBreak === "Whitespace") {
-    // The word overflows its row on one line, but was measured as pdfkit wraps it
-    for (const word of wordsWiderThanRow) {
+  for (const word of wordsWiderThanRow) {
+    if (wordBreak(word, resources, style) === "Whitespace") {
+      // The word overflows its row on one line, but was measured as pdfkit wraps it
       const { width } = getDesiredSize(word, desiredSizes);
       desiredSizes.set(word, { width, height: stringHeight(word, pdf, word.text, Infinity, resources, style.textStyle) });
     }
   }
   const hasWordWiderThanRow = wordsWiderThanRow.length > 0;
   const alignment = parseAlignment(style.alignment);
-  const splitRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdf, resources, style.textStyle, style.wordBreak);
+  const splitRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdf, resources, style);
   const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdf, splitRows, desiredSizes, alignment, style.textStyle);
   return { rows: combinedRows, desiredSizes: newDesiredSizes, hasWordWiderThanRow };
 }
@@ -127,13 +128,15 @@ function rowsSplit(
   alignment: PdfKitAlignment,
   pdf: PDFKit.PDFDocument,
   resources: AD.Resources.Resources,
-  defaultStyle: AD.TextStyle.TextStyle,
-  wordBreak: AD.ParagraphStyle.WordBreak = "Anywhere"
+  paragraphStyle: AD.ParagraphStyle.ParagraphStyle
 ): ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> {
   const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
-  const splitWords = wordBreak === "Anywhere";
+  const defaultStyle = paragraphStyle.textStyle;
+  const splits = (atom: AD.Atom.Atom): atom is AD.TextRun.TextRun =>
+    atom.type === "TextRun" && wordBreak(atom, resources, paragraphStyle) === "Anywhere";
 
   for (const row of rows) {
+    const splitWords = row.some(splits);
     if (splitWords ? row.length < 1 : row.length <= 1) {
       newRows.push(row);
       continue;
@@ -191,7 +194,7 @@ function rowsSplit(
 
       //it is now longer than the remaning size
       const remSize = availableWidth - (currentWidth + nextWidthIfSpace);
-      const splittedWord = splitWords ? splitWord(atom, remSize, availableWidth, pdf, resources, defaultStyle) : [];
+      const splittedWord = splits(atom) ? splitWord(atom, remSize, availableWidth, currentWidth > 0, pdf, resources, defaultStyle) : [];
       if (splittedWord.length > 0) {
         const [first, ...rest] = splittedWord;
         if (!first) {
@@ -199,13 +202,15 @@ function rowsSplit(
         }
         // Each part is one line, as high as an unsplit word of one line. The word's measured height is for pdfkit's
         // own wrapping of it, which can have fewer lines than the parts, e.g. when the first part continues a row.
-        //add the first to the current row
-        const newFirstRowAtom = { ...atom, text: first.text };
-        desiredSizes.set(newFirstRowAtom, {
-          width: first.width,
-          height: stringHeight(atom, pdf, first.text, availableWidth, resources, defaultStyle),
-        });
-        currentRow.push(newFirstRowAtom);
+        //add the first to the current row, unless nothing of the word fits there
+        if (first.text !== "") {
+          const newFirstRowAtom = { ...atom, text: first.text };
+          desiredSizes.set(newFirstRowAtom, {
+            width: first.width,
+            height: stringHeight(atom, pdf, first.text, availableWidth, resources, defaultStyle),
+          });
+          currentRow.push(newFirstRowAtom);
+        }
 
         //then add new rows
         for (const part of rest) {
@@ -230,54 +235,95 @@ function rowsSplit(
   return newRows;
 }
 
-/*
-  the first entry fits inside the current row
-*/
+/**
+ * Splits a word wider than a row into the parts drawn on each row, or none when it fits a row of its own. The first part continues the current row,
+ * and is empty when no part of the word fits there. A part ends where the first of these fits the row: the last break Unicode line breaking (UAX #14)
+ * allows, e.g. after "/" or "-" but not between "/" and a digit, the last break after any "/", or, as browsers do, only on a row of its own, the last
+ * character.
+ */
 function splitWord(
   word: AD.TextRun.TextRun,
   firstRowRemainingWidth: number,
   rowWidth: number,
+  continuesRow: boolean,
   pdf: PDFKit.PDFDocument,
   resources: AD.Resources.Resources,
   defaultStyle: AD.TextStyle.TextStyle
 ): ReadonlyArray<LongWordSplit> {
-  const strings: Array<LongWordSplit> = [];
-  const totalWidth = stringWidth(word, pdf, word.text, resources, defaultStyle);
-  if (totalWidth < rowWidth) {
+  const text = word.text;
+  const width = (part: string): number => stringWidth(word, pdf, part, resources, defaultStyle);
+  if (width(text) < rowWidth) {
     return [];
   }
 
-  let currentString = "";
-  let atFirstRow = true;
-  for (const char of word.text) {
-    const remWidth = atFirstRow ? firstRowRemainingWidth : rowWidth;
-    const newString = currentString + char;
-    const newWidth = stringWidth(word, pdf, newString, resources, defaultStyle);
-    if (newWidth < remWidth) {
-      currentString = newString;
-      continue;
+  const unicodeBreaks = lineBreakOpportunities(text);
+  const slashBreaks = [...text.matchAll(/\//gu)].map((match) => match.index + 1);
+  const unicodeAndSlashBreaks = [...new Set([...unicodeBreaks, ...slashBreaks])].sort((a, b) => a - b);
+
+  const parts: Array<LongWordSplit> = [];
+  let start = 0;
+  while (start < text.length) {
+    const isFirst = parts.length === 0;
+    const available = isFirst ? firstRowRemainingWidth : rowWidth;
+    const rest = text.slice(start);
+    const restWidth = width(rest);
+    if (restWidth < available) {
+      parts.push({ text: rest, width: restWidth });
+      break;
     }
-
-    strings.push({
-      text: currentString,
-      width: newWidth,
-    });
-
-    //reset
-    currentString = char;
-    atFirstRow = false;
+    const from = start;
+    const fits = (end: number): boolean => width(text.slice(from, end)) < available;
+    const lastFittingBreak = (breaks: ReadonlyArray<number>): number | undefined =>
+      breaks.findLast((end) => end > from && end < text.length && fits(end));
+    const end =
+      lastFittingBreak(unicodeBreaks) ??
+      lastFittingBreak(unicodeAndSlashBreaks) ??
+      (isFirst && continuesRow ? from : lastFittingCharacter(text, from, fits));
+    const part = text.slice(from, end);
+    parts.push({ text: part, width: width(part) });
+    start = end;
   }
+  return parts;
+}
 
-  //add any remainder
-  if (currentString !== "") {
-    const newWidth = stringWidth(word, pdf, currentString, resources, defaultStyle);
-    strings.push({
-      text: currentString,
-      width: newWidth,
-    });
+/** The positions in the text where Unicode line breaking (UAX #14) allows a break, before the character at each */
+function lineBreakOpportunities(text: string): ReadonlyArray<number> {
+  const breaker = new LineBreaker(text);
+  const positions: Array<number> = [];
+  for (let lineBreak = breaker.nextBreak(); lineBreak !== null; lineBreak = breaker.nextBreak()) {
+    positions.push(lineBreak.position);
   }
+  return positions;
+}
 
-  return strings;
+/** The end of the longest part from start that fits, with at least one character so that the split moves on */
+function lastFittingCharacter(text: string, start: number, fits: (end: number) => boolean): number {
+  const [firstCharacter = "", ...characters] = text.slice(start);
+  let end = start + firstCharacter.length;
+  for (const character of characters) {
+    if (!fits(end + character.length)) {
+      break;
+    }
+    end += character.length;
+  }
+  return end;
+}
+
+/** Where a word may be split: its text style's wordBreak, else its paragraph's */
+function wordBreak(
+  textRun: AD.TextRun.TextRun,
+  resources: AD.Resources.Resources,
+  paragraphStyle: AD.ParagraphStyle.ParagraphStyle
+): AD.TextStyle.WordBreak {
+  const style = AD.Resources.getNestedStyle(
+    paragraphStyle.textStyle,
+    textRun.style,
+    "TextStyle",
+    textRun.styleName,
+    resources,
+    textRun.nestedStyleNames ?? []
+  ) as AD.TextStyle.TextStyle;
+  return style.wordBreak ?? paragraphStyle.wordBreak ?? "Anywhere";
 }
 
 export function rowsCombineTextRuns(

@@ -3,7 +3,7 @@ import type * as Position from "./position.js";
 import * as TextStyle from "./text-style.js";
 
 export type TextAlignment = "Start" | "Center" | "End" | "Justify";
-export type WordBreak = "Anywhere" | "Whitespace";
+export type WordBreak = TextStyle.WordBreak;
 
 export interface ParagraphStyle {
   readonly type: "ParagraphStyle";

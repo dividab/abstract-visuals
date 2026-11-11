@@ -1,6 +1,7 @@
 export type TextBaseline = "top" | "bottom" | "middle" | "alphabetic" | "hanging";
 export type TextFontWeight = "light" | "normal" | "mediumBold" | "bold" | "extraBold";
 export type TextTransform = "normal" | "uppercase" | "lowercase";
+export type WordBreak = "Anywhere" | "Whitespace";
 
 export interface TextStyle {
   readonly type: "TextStyle";
@@ -27,6 +28,8 @@ export interface TextStyle {
   readonly opacity?: number;
   readonly characterSpacing?: number;
   readonly transform?: TextTransform;
+  /** Overrides the paragraph's wordBreak for this text */
+  readonly wordBreak?: WordBreak;
 }
 
 export interface TextStyleProps {
@@ -53,6 +56,7 @@ export interface TextStyleProps {
   readonly opacity?: number;
   readonly characterSpacing?: number;
   readonly transform?: TextTransform;
+  readonly wordBreak?: WordBreak;
 }
 
 export function create(props?: TextStyleProps): TextStyle {
@@ -101,6 +105,7 @@ export function overrideWith(overrider: TextStyle | undefined, toOverride: TextS
     opacity: a.opacity ?? b.opacity,
     characterSpacing: a.characterSpacing ?? b.characterSpacing,
     transform: a.transform ?? b.transform,
+    wordBreak: a.wordBreak ?? b.wordBreak,
     ...overriddenFontWeight,
   });
 }

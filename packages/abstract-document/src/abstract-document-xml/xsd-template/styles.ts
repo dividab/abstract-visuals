@@ -245,7 +245,7 @@ export const paragraphStyle = `<xs:complexType name="ParagraphStyle">
 	</xs:attribute>
 	<xs:attribute name="wordBreak">
 		<xs:annotation>
-			<xs:documentation>Where a row may break, possible values "Anywhere" (default, a word wider than the row is split between characters) | "Whitespace" (only between words, a word wider than the row overflows it)</xs:documentation>
+			<xs:documentation>Where a row may break, possible values "Anywhere" (default, a word wider than the row is split, preferably after "/" or "-" and only between characters when nothing else fits) | "Whitespace" (only between words, a word wider than the row overflows it)</xs:documentation>
 		</xs:annotation>
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
@@ -281,6 +281,17 @@ export const textStyle = `<xs:complexType name="TextStyle">
 				<xs:enumeration value="normal" />
 				<xs:enumeration value="uppercase" />
 				<xs:enumeration value="lowercase" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
+	<xs:attribute name="wordBreak">
+		<xs:annotation>
+			<xs:documentation>Overrides the paragraph's wordBreak for this text, possible values "Anywhere" (default, a word wider than the row is split, preferably after "/" or "-" and only between characters when nothing else fits) | "Whitespace" (only between words, a word wider than the row overflows it)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Anywhere" />
+				<xs:enumeration value="Whitespace" />
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:attribute>

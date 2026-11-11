@@ -230,21 +230,59 @@ describe("export pdf", () => {
   // "64559050/64559051" is about 94 pt wide in 10 pt Helvetica, wider than the 60 pt cell
   const longWord = "64559050/64559051";
 
-  test("a word wider than the row is split between its characters by default", async () => {
-    const rows = await wordBreakRows(undefined);
-    expect(rows.join(" ").replaceAll(" ", "")).toBe(`short${longWord}word`);
-    expect(rows).not.toContain(longWord);
-    // The long word continues on the rows after "short", in pieces that fit the cell
-    const pieces = rows.filter((r) => r !== "short" && r !== "word");
-    expect(pieces.length).toBeGreaterThan(1);
+  test("a word wider than the row is split by default, after a slash also before a digit", async () => {
+    expect(await cellRows(<Paragraph>{run(`short ${longWord} word`)}</Paragraph>)).toEqual(["short", "64559050/", "64559051", "word"]);
+  });
+
+  test("a word wider than the row is split where Unicode line breaking allows, e.g. after a slash or a hyphen", async () => {
+    expect(await cellRows(<Paragraph>{run("Supply/Exhaust-Air-Units")}</Paragraph>)).toEqual(["Supply/", "Exhaust-Air-", "Units"]);
+  });
+
+  test("a word wider than the row without a break is split between its characters on rows of its own", async () => {
+    const rows = await cellRows(<Paragraph>{run("ab Authorisationcode")}</Paragraph>);
+    expect(rows[0]).toBe("ab");
+    expect(rows.slice(1).join("")).toBe("Authorisationcode");
+    expect(rows.length).toBeGreaterThan(2);
   });
 
   test("a word wider than the row overflows it, unsplit, when wordBreak is Whitespace", async () => {
-    expect(await wordBreakRows("Whitespace")).toEqual(["short", longWord, "word"]);
+    expect(await cellRows(<Paragraph style={whitespace}>{run(`short ${longWord} word`)}</Paragraph>)).toEqual(["short", longWord, "word"]);
   });
 
   test("a paragraph gets wordBreak from its named style", async () => {
-    expect(await wordBreakRows(undefined, "Whitespace")).toEqual(["short", longWord, "word"]);
+    const styles = { [AD.StyleKey.create("ParagraphStyle", "Cell")]: whitespace };
+    expect(await cellRows(<Paragraph styleName="Cell">{run(`short ${longWord} word`)}</Paragraph>, styles)).toEqual(["short", longWord, "word"]);
+  });
+
+  test("a text run's wordBreak overrides its paragraph's", async () => {
+    expect(
+      await cellRows(
+        <Paragraph style={whitespace}>
+          {run(`${longWord} `)}
+          {run(longWord, AD.TextStyle.create({ wordBreak: "Anywhere" }))}
+        </Paragraph>
+      )
+    ).toEqual([longWord, "64559050/", "64559051"]);
+    expect(
+      await cellRows(
+        <Paragraph>
+          {run(`${longWord} `)}
+          {run(longWord, AD.TextStyle.create({ wordBreak: "Whitespace" }))}
+        </Paragraph>
+      )
+    ).toEqual(["64559050/", "64559051", longWord]);
+  });
+
+  test("a text run gets wordBreak from its named style", async () => {
+    const styles = { [AD.StyleKey.create("TextStyle", "Unit")]: AD.TextStyle.create({ wordBreak: "Whitespace" }) };
+    expect(
+      await cellRows(
+        <Paragraph>
+          <TextRun styleName="Unit" text={longWord} />
+        </Paragraph>,
+        styles
+      )
+    ).toEqual([longWord]);
   });
 
   test("the rows of a split word are one line high each, and what comes after is placed below them", async () => {
@@ -252,8 +290,8 @@ describe("export pdf", () => {
     // what came after, which was placed for the height pdfkit measured for the text
     const style = AD.ParagraphStyle.create({ textStyle: AD.TextStyle.create({ fontSize: 8, lineGap: 3 }) });
     const ys = await cellRowYs("CLEVA-1000 Left/CLEVA-1000 Right", style);
-    // "CLEVA-1000 L", "eft/CLEVA-100" and "0 Right", then next and after
-    expect(ys.length).toBe(5);
+    // "CLEVA-1000", "Left/", "CLEVA-1000" and "Right", then next and after
+    expect(ys.length).toBe(6);
     expectEqualGaps(ys);
   });
 
@@ -264,48 +302,6 @@ describe("export pdf", () => {
     expect(ys.length).toBe(3);
     expectEqualGaps(ys);
   });
-
-  async function wordBreakRows(
-    wordBreak: AD.ParagraphStyle.WordBreak | undefined,
-    namedStyleWordBreak?: AD.ParagraphStyle.WordBreak
-  ): Promise<ReadonlyArray<string>> {
-    const styles = namedStyleWordBreak
-      ? {
-          [AD.StyleKey.create("ParagraphStyle", "Cell")]: AD.ParagraphStyle.create({ wordBreak: namedStyleWordBreak }),
-        }
-      : undefined;
-    const texts = await pageTexts(
-      <AbstractDoc styles={styles}>
-        <Section>
-          <Table columnWidths={[60, Infinity]}>
-            <TableRow>
-              <TableCell>
-                <Paragraph styleName={namedStyleWordBreak ? "Cell" : undefined} style={AD.ParagraphStyle.create({ wordBreak })}>
-                  <TextRun text={`short ${longWord} word`} />
-                </Paragraph>
-              </TableCell>
-              <TableCell>
-                <Paragraph>
-                  <TextRun text="next" />
-                </Paragraph>
-              </TableCell>
-            </TableRow>
-          </Table>
-        </Section>
-      </AbstractDoc>
-    );
-    // The cell's text joined per row, top to bottom, without the other cell
-    const cellTexts = texts.filter((t) => t.text !== "next");
-    const ys = [...new Set(cellTexts.map((t) => t.y))].sort((a, b) => a - b);
-    return ys.map((y) =>
-      cellTexts
-        .filter((t) => t.y === y)
-        .sort((a, b) => a.x - b.x)
-        .map((t) => t.text)
-        .join("")
-        .trim()
-    );
-  }
 
   [
     testAbsolutePositionGroup,
@@ -433,6 +429,36 @@ describe("export pdf", () => {
       });
     });
 });
+
+const whitespace = AD.ParagraphStyle.create({ wordBreak: "Whitespace" });
+
+function run(text: string, style?: AD.TextStyle.TextStyle): React.JSX.Element {
+  return <TextRun text={text} style={style} />;
+}
+
+/** The paragraph's text in a 60 pt wide table cell, joined per row, top to bottom */
+async function cellRows(paragraph: React.JSX.Element, styles?: AD.Types.Indexer<AD.Style.Style>): Promise<ReadonlyArray<string>> {
+  const texts = await pageTexts(
+    <AbstractDoc styles={styles}>
+      <Section>
+        <Table columnWidths={[60]}>
+          <TableRow>
+            <TableCell>{paragraph}</TableCell>
+          </TableRow>
+        </Table>
+      </Section>
+    </AbstractDoc>
+  );
+  const ys = [...new Set(texts.map((t) => t.y))].sort((a, b) => a - b);
+  return ys.map((y) =>
+    texts
+      .filter((t) => t.y === y)
+      .sort((a, b) => a.x - b.x)
+      .map((t) => t.text)
+      .join("")
+      .trim()
+  );
+}
 
 /** The y of each row of text, for the text in a 60 pt wide table cell, then "next" in the row below and "after" below the table */
 async function cellRowYs(text: string, style: AD.ParagraphStyle.ParagraphStyle): Promise<ReadonlyArray<number>> {

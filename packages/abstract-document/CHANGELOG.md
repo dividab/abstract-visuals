@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Added: `TextStyle`'s `wordBreak`, which overrides the paragraph's `wordBreak` for the text, e.g. a unit in a run of its own that should overflow its table cell rather than be split. Named and nested text styles pass it on like the other text style properties, and the XML schema has the attribute.
+- Changed: the PDF exporter's default `wordBreak`, `"Anywhere"`, splits a word wider than its row where Unicode line breaking (UAX #14) allows, e.g. after `/` or `-`, then after any `/` (UAX #14 has no break between `/` and a digit, e.g. in `64559050/64559051`), and only when nothing else fits between characters, as browsers do with `overflow-wrap: anywhere`. A word split between characters starts on a row of its own instead of filling the rest of the row before it. Before, the word was split between characters only, e.g. `Function/Description/(Area)` became `Function/Description/(Ar` and `ea)` instead of `Function/`, `Description/` and `(Area)`.
 - Fixed: in the PDF exporter, a word wider than its row with `wordBreak` `"Whitespace"` is one line high, and what comes after the paragraph is placed below it. The word and the paragraph were measured as pdfkit wraps the word, so the row was as high as the lines pdfkit would split the word into, though the word is drawn unsplit on one line, e.g. a table row with `Authorisation` in a narrow cell was two lines high.
 
 ## [20.4.0] - 2026-11-11
