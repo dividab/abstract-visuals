@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [20.5.2] - 2026-11-11
 
 - Fixed: `Markdown` leaves out the nodes it has no element for that have no children, e.g. html like `<br>`, inline code, a thematic break (`---`) or an image, as before 20.2.0. Since 20.2.0 such a node threw `Cannot read properties of undefined (reading 'forEach')`, so the whole document failed.
 
