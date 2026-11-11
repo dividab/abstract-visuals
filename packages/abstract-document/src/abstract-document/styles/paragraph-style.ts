@@ -3,11 +3,13 @@ import type * as Position from "./position.js";
 import * as TextStyle from "./text-style.js";
 
 export type TextAlignment = "Start" | "Center" | "End" | "Justify";
+export type WordBreak = "Anywhere" | "Whitespace";
 
 export interface ParagraphStyle {
   readonly type: "ParagraphStyle";
   readonly position: Position.Position;
   readonly alignment?: TextAlignment;
+  readonly wordBreak?: WordBreak;
   readonly margins: LayoutFoundation.LayoutFoundation;
   readonly textStyle: TextStyle.TextStyle;
 }
@@ -15,15 +17,17 @@ export interface ParagraphStyle {
 export interface ParagraphStyleProps {
   readonly position?: Position.Position;
   readonly alignment?: TextAlignment;
+  readonly wordBreak?: WordBreak;
   readonly margins?: LayoutFoundation.LayoutFoundation;
   readonly textStyle?: TextStyle.TextStyle;
 }
 
 export function create(props?: ParagraphStyleProps): ParagraphStyle {
-  const { alignment, margins = LayoutFoundation.create(), position = "relative", textStyle = TextStyle.create() } = props ?? {};
+  const { alignment, wordBreak, margins = LayoutFoundation.create(), position = "relative", textStyle = TextStyle.create() } = props ?? {};
   return {
     type: "ParagraphStyle",
     alignment,
+    wordBreak,
     margins,
     position,
     textStyle,
@@ -35,6 +39,7 @@ export function overrideWith(overrider: ParagraphStyle | undefined, toOverride: 
   const b: ParagraphStyleProps = toOverride ?? {};
   return create({
     alignment: a.alignment ?? b.alignment,
+    wordBreak: a.wordBreak ?? b.wordBreak,
     margins: LayoutFoundation.overrideWith(a.margins, b.margins),
     textStyle: TextStyle.overrideWith(a.textStyle, b.textStyle),
   });

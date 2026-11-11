@@ -15,18 +15,20 @@ export function rowsSplit(
   alignment: PdfKitAlignment,
   pdf: PDFKit.PDFDocument,
   resources: AD.Resources.Resources,
-  defaultStyle: AD.TextStyle.TextStyle
+  defaultStyle: AD.TextStyle.TextStyle,
+  wordBreak: AD.ParagraphStyle.WordBreak = "Anywhere"
 ): ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> {
   const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
+  const splitWords = wordBreak === "Anywhere";
 
   for (const row of rows) {
-    if (row.length < 1) {
+    if (splitWords ? row.length < 1 : row.length <= 1) {
       newRows.push(row);
       continue;
     }
 
     const width = row.reduce((a, b) => a + getDesiredSize(b, desiredSizes).width, 0);
-    if (width < availableWidth) {
+    if (splitWords ? width < availableWidth : width <= availableWidth) {
       newRows.push(row);
       continue;
     }
@@ -79,7 +81,7 @@ export function rowsSplit(
 
       //it is now longer than the remaning size
       const remSize = availableWidth - (currentWidth + nextWidthIfSpace);
-      const splittedWord = splitWord(atom, remSize, availableWidth, pdf, resources, defaultStyle);
+      const splittedWord = splitWords ? splitWord(atom, remSize, availableWidth, pdf, resources, defaultStyle) : [];
       if (splittedWord.length > 0) {
         const heightPerRow = height / splittedWord.length;
         const [first, ...rest] = splittedWord;

@@ -227,6 +227,77 @@ describe("export pdf", () => {
     }
   });
 
+  // "64559050/64559051" is about 94 pt wide in 10 pt Helvetica, wider than the 60 pt cell
+  const longWord = "64559050/64559051";
+
+  test("a word wider than the row is split between its characters by default", async () => {
+    const rows = await wordBreakRows(undefined);
+    expect(rows.join(" ").replaceAll(" ", "")).toBe(`short${longWord}word`);
+    expect(rows).not.toContain(longWord);
+    // The long word continues on the rows after "short", in pieces that fit the cell
+    const pieces = rows.filter((r) => r !== "short" && r !== "word");
+    expect(pieces.length).toBeGreaterThan(1);
+  });
+
+  test("a word wider than the row overflows it, unsplit, when wordBreak is Whitespace", async () => {
+    expect(await wordBreakRows("Whitespace")).toEqual(["short", longWord, "word"]);
+  });
+
+  test("a paragraph gets wordBreak from its named style", async () => {
+    expect(await wordBreakRows(undefined, "Whitespace")).toEqual(["short", longWord, "word"]);
+  });
+
+  async function wordBreakRows(
+    wordBreak: AD.ParagraphStyle.WordBreak | undefined,
+    namedStyleWordBreak?: AD.ParagraphStyle.WordBreak
+  ): Promise<ReadonlyArray<string>> {
+    const styles = namedStyleWordBreak
+      ? {
+          [AD.StyleKey.create("ParagraphStyle", "Cell")]: AD.ParagraphStyle.create({ wordBreak: namedStyleWordBreak }),
+        }
+      : undefined;
+    const document = render(
+      <AbstractDoc styles={styles}>
+        <Section>
+          <Table columnWidths={[60, Infinity]}>
+            <TableRow>
+              <TableCell>
+                <Paragraph styleName={namedStyleWordBreak ? "Cell" : undefined} style={AD.ParagraphStyle.create({ wordBreak })}>
+                  <TextRun text={`short ${longWord} word`} />
+                </Paragraph>
+              </TableCell>
+              <TableCell>
+                <Paragraph>
+                  <TextRun text="next" />
+                </Paragraph>
+              </TableCell>
+            </TableRow>
+          </Table>
+        </Section>
+      </AbstractDoc>
+    );
+    const bytes = await exportToBytes(document);
+    // pdf2json requires an unpooled buffer, as in the fixture tests below.
+    const buffer = Buffer.alloc(bytes.length);
+    buffer.set(bytes);
+    const parsed = (await getJsonFromPdf(buffer)) as {
+      readonly Pages: ReadonlyArray<{
+        readonly Texts: ReadonlyArray<{ readonly x: number; readonly y: number; readonly R: ReadonlyArray<{ readonly T: string }> }>;
+      }>;
+    };
+    // The cell's text joined per row, top to bottom, without the other cell
+    const texts = parsed.Pages[0]!.Texts.map((t) => ({ y: t.y, x: t.x, text: decodeURIComponent(t.R[0]!.T) })).filter((t) => t.text !== "next");
+    const ys = [...new Set(texts.map((t) => t.y))].sort((a, b) => a - b);
+    return ys.map((y) =>
+      texts
+        .filter((t) => t.y === y)
+        .sort((a, b) => a.x - b.x)
+        .map((t) => t.text)
+        .join("")
+        .trim()
+    );
+  }
+
   [
     testAbsolutePositionGroup,
     testAbsolutePositionHeaderAndFooter,

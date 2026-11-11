@@ -283,7 +283,7 @@ function renderParagraph(
   let y = finalRect.y + styleMargins.top;
   let newHeight = styleMargins.top + styleMargins.bottom;
   const alignment = parseAlignment(style.alignment);
-  const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdfKit, resources, style.textStyle);
+  const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdfKit, resources, style.textStyle, style.wordBreak);
   const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdfKit, newRows, desiredSizes, alignment, style.textStyle);
   for (let r = 0; r < combinedRows.length; r++) {
     const row = combinedRows[r]!;

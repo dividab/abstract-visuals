@@ -243,6 +243,17 @@ export const paragraphStyle = `<xs:complexType name="ParagraphStyle">
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:attribute>
+	<xs:attribute name="wordBreak">
+		<xs:annotation>
+			<xs:documentation>Where a row may break, possible values "Anywhere" (default, a word wider than the row is split between characters) | "Whitespace" (only between words, a word wider than the row overflows it)</xs:documentation>
+		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="Anywhere" />
+				<xs:enumeration value="Whitespace" />
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:attribute>
 </xs:complexType>`;
 
 export const textStyle = `<xs:complexType name="TextStyle">
