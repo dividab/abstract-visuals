@@ -11,8 +11,8 @@ type LongWordSplit = {
 export type ParagraphRows = {
   readonly rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>;
   readonly desiredSizes: Map<object, AD.Size.Size>;
-  /** A word wider than its row was split between its characters */
-  readonly hasSplitWord: boolean;
+  /** A word is wider than its row, so it is split or overflows the row */
+  readonly hasWordWiderThanRow: boolean;
 };
 
 /** The rows a paragraph is drawn in, shared by measure and render so that they agree on its height */
@@ -83,10 +83,21 @@ export function layoutParagraphRows(
     rows.push(currentRow);
   }
 
+  const wordsWiderThanRow = rows
+    .flat()
+    .filter((atom): atom is AD.TextRun.TextRun => atom.type === "TextRun" && getDesiredSize(atom, desiredSizes).width >= availableWidth);
+  if (style.wordBreak === "Whitespace") {
+    // The word overflows its row on one line, but was measured as pdfkit wraps it
+    for (const word of wordsWiderThanRow) {
+      const { width } = getDesiredSize(word, desiredSizes);
+      desiredSizes.set(word, { width, height: stringHeight(word, pdf, word.text, Infinity, resources, style.textStyle) });
+    }
+  }
+  const hasWordWiderThanRow = wordsWiderThanRow.length > 0;
   const alignment = parseAlignment(style.alignment);
-  const split = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdf, resources, style.textStyle, style.wordBreak);
-  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdf, split.rows, desiredSizes, alignment, style.textStyle);
-  return { rows: combinedRows, desiredSizes: newDesiredSizes, hasSplitWord: split.hasSplitWord };
+  const splitRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdf, resources, style.textStyle, style.wordBreak);
+  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdf, splitRows, desiredSizes, alignment, style.textStyle);
+  return { rows: combinedRows, desiredSizes: newDesiredSizes, hasWordWiderThanRow };
 }
 
 /** The height of the rows as render draws them, each as high as its highest atom */
@@ -118,10 +129,9 @@ function rowsSplit(
   resources: AD.Resources.Resources,
   defaultStyle: AD.TextStyle.TextStyle,
   wordBreak: AD.ParagraphStyle.WordBreak = "Anywhere"
-): { readonly rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>; readonly hasSplitWord: boolean } {
+): ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> {
   const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
   const splitWords = wordBreak === "Anywhere";
-  let hasSplitWord = false;
 
   for (const row of rows) {
     if (splitWords ? row.length < 1 : row.length <= 1) {
@@ -183,7 +193,6 @@ function rowsSplit(
       const remSize = availableWidth - (currentWidth + nextWidthIfSpace);
       const splittedWord = splitWords ? splitWord(atom, remSize, availableWidth, pdf, resources, defaultStyle) : [];
       if (splittedWord.length > 0) {
-        hasSplitWord = true;
         const [first, ...rest] = splittedWord;
         if (!first) {
           continue;
@@ -218,7 +227,7 @@ function rowsSplit(
     }
     newRows.push(lastWasSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow);
   }
-  return { rows: newRows, hasSplitWord };
+  return newRows;
 }
 
 /*

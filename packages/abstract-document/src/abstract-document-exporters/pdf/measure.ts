@@ -203,10 +203,11 @@ function measureParagraph(
     }
   }
 
-  // A word wider than its row is split into rows by render, which pdfkit's wrapping above doesn't know of, so measure
-  // the rows render draws. A copy of the sizes, so the split parts aren't added to the measured sizes.
+  // pdfkit's wrapping above splits a word wider than its row in its own way, but render splits it by the paragraph's
+  // wordBreak or lets it overflow the row, so measure the rows render draws. A copy of the sizes, so the split parts
+  // aren't added to the measured sizes.
   const layout = layoutParagraphRows(paragraph.children, contentAvailableWidth, new Map(desiredSizes), style, pdfKit, resources);
-  if (layout.hasSplitWord) {
+  if (layout.hasWordWiderThanRow) {
     paragraphHeight = styleMargins.top + styleMargins.bottom + rowsHeight(layout.rows, layout.desiredSizes);
   }
 

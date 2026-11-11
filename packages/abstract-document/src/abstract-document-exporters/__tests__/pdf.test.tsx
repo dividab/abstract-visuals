@@ -250,44 +250,19 @@ describe("export pdf", () => {
   test("the rows of a split word are one line high each, and what comes after is placed below them", async () => {
     // A lineGap and a word that continues a row made the parts share the word's height, overlapping each other and
     // what came after, which was placed for the height pdfkit measured for the text
-    const textStyle = AD.TextStyle.create({ fontSize: 8, lineGap: 3 });
-    const paragraph = (t: string): React.JSX.Element => (
-      <Paragraph style={AD.ParagraphStyle.create({ textStyle })}>
-        <TextRun text={t} />
-      </Paragraph>
-    );
-    const document = render(
-      <AbstractDoc>
-        <Section>
-          <Table columnWidths={[60]}>
-            <TableRow>
-              <TableCell>{paragraph("CLEVA-1000 Left/CLEVA-1000 Right")}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{paragraph("next")}</TableCell>
-            </TableRow>
-          </Table>
-          {paragraph("after")}
-        </Section>
-      </AbstractDoc>
-    );
-    const bytes = await exportToBytes(document);
-    // pdf2json requires an unpooled buffer, as in the fixture tests below.
-    const buffer = Buffer.alloc(bytes.length);
-    buffer.set(bytes);
-    const parsed = (await getJsonFromPdf(buffer)) as {
-      readonly Pages: ReadonlyArray<{ readonly Texts: ReadonlyArray<{ readonly y: number; readonly R: ReadonlyArray<{ readonly T: string }> }> }>;
-    };
-    const texts = parsed.Pages[0]!.Texts.map((t) => ({ y: t.y, text: decodeURIComponent(t.R[0]!.T).trim() }));
-    const ys = [...new Set(texts.map((t) => t.y))].sort((a, b) => a - b);
+    const style = AD.ParagraphStyle.create({ textStyle: AD.TextStyle.create({ fontSize: 8, lineGap: 3 }) });
+    const ys = await cellRowYs("CLEVA-1000 Left/CLEVA-1000 Right", style);
     // "CLEVA-1000 L", "eft/CLEVA-100" and "0 Right", then next and after
     expect(ys.length).toBe(5);
-    expect(texts.find((t) => t.y === ys[ys.length - 2])?.text).toBe("next");
-    expect(texts.find((t) => t.y === ys[ys.length - 1])?.text).toBe("after");
-    const gaps = ys.slice(1).map((y, i) => y - ys[i]!);
-    for (const gap of gaps) {
-      expect(gap).toBeCloseTo(gaps[0]!, 2);
-    }
+    expectEqualGaps(ys);
+  });
+
+  test("a word that overflows its row with wordBreak Whitespace is one line high, and what comes after is placed below it", async () => {
+    // pdfkit's wrapping split the word when measuring, so the row was measured as more lines than were drawn
+    const ys = await cellRowYs(longWord, AD.ParagraphStyle.create({ wordBreak: "Whitespace" }));
+    // The word, then next and after
+    expect(ys.length).toBe(3);
+    expectEqualGaps(ys);
   });
 
   async function wordBreakRows(
@@ -299,7 +274,7 @@ describe("export pdf", () => {
           [AD.StyleKey.create("ParagraphStyle", "Cell")]: AD.ParagraphStyle.create({ wordBreak: namedStyleWordBreak }),
         }
       : undefined;
-    const document = render(
+    const texts = await pageTexts(
       <AbstractDoc styles={styles}>
         <Section>
           <Table columnWidths={[60, Infinity]}>
@@ -319,20 +294,11 @@ describe("export pdf", () => {
         </Section>
       </AbstractDoc>
     );
-    const bytes = await exportToBytes(document);
-    // pdf2json requires an unpooled buffer, as in the fixture tests below.
-    const buffer = Buffer.alloc(bytes.length);
-    buffer.set(bytes);
-    const parsed = (await getJsonFromPdf(buffer)) as {
-      readonly Pages: ReadonlyArray<{
-        readonly Texts: ReadonlyArray<{ readonly x: number; readonly y: number; readonly R: ReadonlyArray<{ readonly T: string }> }>;
-      }>;
-    };
     // The cell's text joined per row, top to bottom, without the other cell
-    const texts = parsed.Pages[0]!.Texts.map((t) => ({ y: t.y, x: t.x, text: decodeURIComponent(t.R[0]!.T) })).filter((t) => t.text !== "next");
-    const ys = [...new Set(texts.map((t) => t.y))].sort((a, b) => a - b);
+    const cellTexts = texts.filter((t) => t.text !== "next");
+    const ys = [...new Set(cellTexts.map((t) => t.y))].sort((a, b) => a - b);
     return ys.map((y) =>
-      texts
+      cellTexts
         .filter((t) => t.y === y)
         .sort((a, b) => a.x - b.x)
         .map((t) => t.text)
@@ -467,6 +433,55 @@ describe("export pdf", () => {
       });
     });
 });
+
+/** The y of each row of text, for the text in a 60 pt wide table cell, then "next" in the row below and "after" below the table */
+async function cellRowYs(text: string, style: AD.ParagraphStyle.ParagraphStyle): Promise<ReadonlyArray<number>> {
+  const paragraph = (t: string): React.JSX.Element => (
+    <Paragraph style={style}>
+      <TextRun text={t} />
+    </Paragraph>
+  );
+  const texts = await pageTexts(
+    <AbstractDoc>
+      <Section>
+        <Table columnWidths={[60]}>
+          <TableRow>
+            <TableCell>{paragraph(text)}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>{paragraph("next")}</TableCell>
+          </TableRow>
+        </Table>
+        {paragraph("after")}
+      </Section>
+    </AbstractDoc>
+  );
+  const ys = [...new Set(texts.map((t) => t.y))].sort((a, b) => a - b);
+  expect(texts.find((t) => t.y === ys[ys.length - 2])?.text.trim()).toBe("next");
+  expect(texts.find((t) => t.y === ys[ys.length - 1])?.text.trim()).toBe("after");
+  return ys;
+}
+
+function expectEqualGaps(ys: ReadonlyArray<number>): void {
+  const gaps = ys.slice(1).map((y, i) => y - ys[i]!);
+  for (const gap of gaps) {
+    expect(gap).toBeCloseTo(gaps[0]!, 2);
+  }
+}
+
+/** The texts on the first page of the exported document */
+async function pageTexts(document: React.JSX.Element): Promise<ReadonlyArray<{ readonly x: number; readonly y: number; readonly text: string }>> {
+  const bytes = await exportToBytes(render(document));
+  // pdf2json requires an unpooled buffer, as in the fixture tests below.
+  const buffer = Buffer.alloc(bytes.length);
+  buffer.set(bytes);
+  const parsed = (await getJsonFromPdf(buffer)) as {
+    readonly Pages: ReadonlyArray<{
+      readonly Texts: ReadonlyArray<{ readonly x: number; readonly y: number; readonly R: ReadonlyArray<{ readonly T: string }> }>;
+    }>;
+  };
+  return parsed.Pages[0]!.Texts.map((t) => ({ x: t.x, y: t.y, text: decodeURIComponent(t.R[0]!.T) }));
+}
 
 function text(t: string, alignment?: AD.ParagraphStyle.TextAlignment): React.JSX.Element {
   return (
