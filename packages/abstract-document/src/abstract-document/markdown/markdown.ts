@@ -28,9 +28,10 @@ function preProcessMarkdownAst(
   d: number,
   listItemParams?: ListItemParams
 ): MarkDownProcessData {
-  if (ast.type === "text" || ast.type === "break") {
+  if (!("children" in ast)) {
+    // Text and breaks are added by their parent, other nodes without children are left out
     return { atoms, paragraphs };
-  } // Need to convice TS that we never go below this line with a Str element.
+  }
 
   ast.children.forEach((child) => {
     const style = styles.slice(); // create a new copy of styles

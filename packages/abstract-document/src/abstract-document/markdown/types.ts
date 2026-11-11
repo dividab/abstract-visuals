@@ -10,7 +10,8 @@ export type AstChildElements =
   | AstSuperscript
   | AstList
   | AstListItem
-  | AstBreak;
+  | AstBreak
+  | AstLeaf;
 export type AstElements = AstRoot | AstChildElements;
 
 export interface AstMetaLoc {
@@ -75,6 +76,11 @@ export interface AstListItem {
 
 export interface AstBreak {
   readonly type: "break";
+}
+
+/** A node remark-parse creates without children, which the export leaves out, e.g. html, inline code or a thematic break */
+export interface AstLeaf {
+  readonly type: "inlineCode" | "code" | "html" | "thematicBreak" | "image" | "imageReference" | "footnoteReference" | "definition";
 }
 
 export interface MarkDownProcessData {
