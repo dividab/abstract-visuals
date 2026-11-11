@@ -12,7 +12,7 @@ import { preProcess } from "./pre-process.js";
 import { renderImage } from "./render-image.js";
 import { registerDefaultStdFonts } from "./std-fonts.js";
 import type { PdfKitAlignment } from "./textRunRow.js";
-import { rowsCombineTextRuns, rowsSplit } from "./textRunRow.js";
+import { layoutParagraphRows, parseAlignment } from "./textRunRow.js";
 import { updatePageRefs } from "./update-refs.js";
 
 export type PdfExportOptions = {
@@ -221,70 +221,17 @@ function renderParagraph(
   const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
   const availableWidth = finalRect.width - (styleMargins.left + styleMargins.right);
 
-  const rows: Array<Array<AD.Atom.Atom>> = [];
-  let currentRow: Array<AD.Atom.Atom> = [];
-  let currentWidth = 0;
-  let previousAtomType: string | undefined = undefined;
-  for (const atom of paragraph.children) {
-    if (atom.type === "LineBreak") {
-      currentRow.push(atom);
-      rows.push(currentRow);
-      currentRow = [];
-      continue;
-    }
-
-    if (!previousAtomType) {
-      // First atom
-      previousAtomType = atom.type;
-      currentRow.push(atom);
-      const atomSize = getDesiredSize(atom, desiredSizes);
-      currentWidth = atomSize.width;
-      continue;
-    }
-
-    if (atom.type !== "Image") {
-      // Atom is Text
-      if (previousAtomType === "Image") {
-        // Previous was image
-        rows.push(currentRow);
-        currentRow = [];
-        currentWidth = 0;
-        previousAtomType = atom.type;
-      }
-      currentRow.push(atom);
-      continue;
-    }
-
-    // Atom is Image
-    if (previousAtomType !== "Image") {
-      // Previous was not image
-      rows.push(currentRow);
-      currentRow = [];
-      currentWidth = 0;
-      previousAtomType = atom.type;
-    }
-    const atomSize = getDesiredSize(atom, desiredSizes);
-    if (currentWidth + atomSize.width < availableWidth || currentRow.length === 0) {
-      // Image fits in current row/current row is empty
-      currentRow.push(atom);
-      currentWidth += atomSize.width;
-    } else {
-      // Image does not fit in current row
-      rows.push(currentRow);
-      currentRow = [atom];
-      currentWidth = atomSize.width;
-    }
-  }
-  if (currentRow.length > 0) {
-    // Add any remaning children to a new row.
-    rows.push(currentRow);
-  }
-
   let y = finalRect.y + styleMargins.top;
   let newHeight = styleMargins.top + styleMargins.bottom;
   const alignment = parseAlignment(style.alignment);
-  const newRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdfKit, resources, style.textStyle, style.wordBreak);
-  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdfKit, newRows, desiredSizes, alignment, style.textStyle);
+  const { rows: combinedRows, desiredSizes: newDesiredSizes } = layoutParagraphRows(
+    paragraph.children,
+    availableWidth,
+    desiredSizes,
+    style,
+    pdfKit,
+    resources
+  );
   for (let r = 0; r < combinedRows.length; r++) {
     const row = combinedRows[r]!;
     const isLast = r === combinedRows.length - 1;
@@ -338,21 +285,6 @@ function renderParagraph(
 
     y += rowHeight;
     newHeight += rowHeight;
-  }
-}
-
-function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | undefined): PdfKitAlignment {
-  switch (paragraphAlignment) {
-    case "Start":
-      return "left";
-    case "Center":
-      return "center";
-    case "End":
-      return "right";
-    case "Justify":
-      return "justify";
-    default:
-      return "left";
   }
 }
 

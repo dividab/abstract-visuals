@@ -3,6 +3,7 @@ import * as AD from "../../abstract-document/index.js";
 import { registerFonts, getFontNameStyle, transformText } from "./font.js";
 import { getHeaderAndFooter } from "./header-footer.js";
 import type { Page } from "./page.js";
+import { layoutParagraphRows, rowsHeight } from "./textRunRow.js";
 
 const widthOfStringCache = new Map<string, number>();
 const heightOfStringCache = new Map<string, number>();
@@ -200,6 +201,13 @@ function measureParagraph(
       });
       paragraphHeight += height;
     }
+  }
+
+  // A word wider than its row is split into rows by render, which pdfkit's wrapping above doesn't know of, so measure
+  // the rows render draws. A copy of the sizes, so the split parts aren't added to the measured sizes.
+  const layout = layoutParagraphRows(paragraph.children, contentAvailableWidth, new Map(desiredSizes), style, pdfKit, resources);
+  if (layout.hasSplitWord) {
+    paragraphHeight = styleMargins.top + styleMargins.bottom + rowsHeight(layout.rows, layout.desiredSizes);
   }
 
   desiredSizes.set(paragraph, AD.Size.create(availableSize.width, paragraphHeight));

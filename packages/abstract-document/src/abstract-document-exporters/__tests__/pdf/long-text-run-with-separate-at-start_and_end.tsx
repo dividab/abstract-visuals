@@ -67,7 +67,7 @@ export const testLongTextRunWithSeparateAtStartAndEnd: ExportTestDef = {
           },
           {
             x: -0.25,
-            y: 1.053,
+            y: 1.144,
             w: 590.86,
             sw: 0.32553125,
             A: "left",
@@ -81,7 +81,7 @@ export const testLongTextRunWithSeparateAtStartAndEnd: ExportTestDef = {
           },
           {
             x: -0.25,
-            y: 1.686,
+            y: 1.866,
             w: 591.98,
             sw: 0.32553125,
             A: "left",
@@ -95,7 +95,7 @@ export const testLongTextRunWithSeparateAtStartAndEnd: ExportTestDef = {
           },
           {
             x: -0.25,
-            y: 2.318,
+            y: 2.589,
             w: 590.87,
             sw: 0.32553125,
             A: "left",
@@ -109,7 +109,7 @@ export const testLongTextRunWithSeparateAtStartAndEnd: ExportTestDef = {
           },
           {
             x: -0.25,
-            y: 2.95,
+            y: 3.311,
             w: 593.64,
             sw: 0.32553125,
             A: "left",
@@ -123,7 +123,7 @@ export const testLongTextRunWithSeparateAtStartAndEnd: ExportTestDef = {
           },
           {
             x: -0.25,
-            y: 3.582,
+            y: 4.034,
             w: 593.09,
             sw: 0.32553125,
             A: "left",
@@ -137,7 +137,7 @@ export const testLongTextRunWithSeparateAtStartAndEnd: ExportTestDef = {
           },
           {
             x: -0.25,
-            y: 4.214,
+            y: 4.756,
             w: 122.85,
             sw: 0.32553125,
             A: "left",

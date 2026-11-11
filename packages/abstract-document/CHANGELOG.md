@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. The format 
 ## [Unreleased]
 
 - Added: `ParagraphStyle`'s `wordBreak`, where the PDF exporter may break a row wider than the paragraph. `"Anywhere"`, the default, splits a word wider than the row between its characters, as since 19.1.0. `"Whitespace"` breaks only between words, as before 19.1.0, so such a word overflows the row, e.g. `(mm)` in a narrow table cell stays on one line. A named style's `wordBreak` applies to the paragraphs using it, and the XML schema has the attribute.
+- Fixed: in the PDF exporter, the rows of a word split because it is wider than its row are one line high each, and what comes after the paragraph is placed below them. Since 19.1.0 the parts shared the height pdfkit measured for the unsplit word, which has fewer lines when the word continues a row or the text has a `lineGap`, so they overlapped each other and what came after, e.g. the next table row.
 
 ## [20.3.18] - 2026-11-10
 

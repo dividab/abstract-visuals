@@ -247,6 +247,49 @@ describe("export pdf", () => {
     expect(await wordBreakRows(undefined, "Whitespace")).toEqual(["short", longWord, "word"]);
   });
 
+  test("the rows of a split word are one line high each, and what comes after is placed below them", async () => {
+    // A lineGap and a word that continues a row made the parts share the word's height, overlapping each other and
+    // what came after, which was placed for the height pdfkit measured for the text
+    const textStyle = AD.TextStyle.create({ fontSize: 8, lineGap: 3 });
+    const paragraph = (t: string): React.JSX.Element => (
+      <Paragraph style={AD.ParagraphStyle.create({ textStyle })}>
+        <TextRun text={t} />
+      </Paragraph>
+    );
+    const document = render(
+      <AbstractDoc>
+        <Section>
+          <Table columnWidths={[60]}>
+            <TableRow>
+              <TableCell>{paragraph("CLEVA-1000 Left/CLEVA-1000 Right")}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>{paragraph("next")}</TableCell>
+            </TableRow>
+          </Table>
+          {paragraph("after")}
+        </Section>
+      </AbstractDoc>
+    );
+    const bytes = await exportToBytes(document);
+    // pdf2json requires an unpooled buffer, as in the fixture tests below.
+    const buffer = Buffer.alloc(bytes.length);
+    buffer.set(bytes);
+    const parsed = (await getJsonFromPdf(buffer)) as {
+      readonly Pages: ReadonlyArray<{ readonly Texts: ReadonlyArray<{ readonly y: number; readonly R: ReadonlyArray<{ readonly T: string }> }> }>;
+    };
+    const texts = parsed.Pages[0]!.Texts.map((t) => ({ y: t.y, text: decodeURIComponent(t.R[0]!.T).trim() }));
+    const ys = [...new Set(texts.map((t) => t.y))].sort((a, b) => a - b);
+    // "CLEVA-1000 L", "eft/CLEVA-100" and "0 Right", then next and after
+    expect(ys.length).toBe(5);
+    expect(texts.find((t) => t.y === ys[ys.length - 2])?.text).toBe("next");
+    expect(texts.find((t) => t.y === ys[ys.length - 1])?.text).toBe("after");
+    const gaps = ys.slice(1).map((y, i) => y - ys[i]!);
+    for (const gap of gaps) {
+      expect(gap).toBeCloseTo(gaps[0]!, 2);
+    }
+  });
+
   async function wordBreakRows(
     wordBreak: AD.ParagraphStyle.WordBreak | undefined,
     namedStyleWordBreak?: AD.ParagraphStyle.WordBreak

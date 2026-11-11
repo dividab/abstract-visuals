@@ -8,7 +8,108 @@ type LongWordSplit = {
   readonly width: number;
 };
 
-export function rowsSplit(
+export type ParagraphRows = {
+  readonly rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>;
+  readonly desiredSizes: Map<object, AD.Size.Size>;
+  /** A word wider than its row was split between its characters */
+  readonly hasSplitWord: boolean;
+};
+
+/** The rows a paragraph is drawn in, shared by measure and render so that they agree on its height */
+export function layoutParagraphRows(
+  children: ReadonlyArray<AD.Atom.Atom>,
+  availableWidth: number,
+  desiredSizes: Map<object, AD.Size.Size>,
+  style: AD.ParagraphStyle.ParagraphStyle,
+  pdf: PDFKit.PDFDocument,
+  resources: AD.Resources.Resources
+): ParagraphRows {
+  const rows: Array<Array<AD.Atom.Atom>> = [];
+  let currentRow: Array<AD.Atom.Atom> = [];
+  let currentWidth = 0;
+  let previousAtomType: string | undefined = undefined;
+  for (const atom of children) {
+    if (atom.type === "LineBreak") {
+      currentRow.push(atom);
+      rows.push(currentRow);
+      currentRow = [];
+      continue;
+    }
+
+    if (!previousAtomType) {
+      // First atom
+      previousAtomType = atom.type;
+      currentRow.push(atom);
+      const atomSize = getDesiredSize(atom, desiredSizes);
+      currentWidth = atomSize.width;
+      continue;
+    }
+
+    if (atom.type !== "Image") {
+      // Atom is Text
+      if (previousAtomType === "Image") {
+        // Previous was image
+        rows.push(currentRow);
+        currentRow = [];
+        currentWidth = 0;
+        previousAtomType = atom.type;
+      }
+      currentRow.push(atom);
+      continue;
+    }
+
+    // Atom is Image
+    if (previousAtomType !== "Image") {
+      // Previous was not image
+      rows.push(currentRow);
+      currentRow = [];
+      currentWidth = 0;
+      previousAtomType = atom.type;
+    }
+    const atomSize = getDesiredSize(atom, desiredSizes);
+    if (currentWidth + atomSize.width < availableWidth || currentRow.length === 0) {
+      // Image fits in current row/current row is empty
+      currentRow.push(atom);
+      currentWidth += atomSize.width;
+    } else {
+      // Image does not fit in current row
+      rows.push(currentRow);
+      currentRow = [atom];
+      currentWidth = atomSize.width;
+    }
+  }
+  if (currentRow.length > 0) {
+    // Add any remaning children to a new row.
+    rows.push(currentRow);
+  }
+
+  const alignment = parseAlignment(style.alignment);
+  const split = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdf, resources, style.textStyle, style.wordBreak);
+  const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdf, split.rows, desiredSizes, alignment, style.textStyle);
+  return { rows: combinedRows, desiredSizes: newDesiredSizes, hasSplitWord: split.hasSplitWord };
+}
+
+/** The height of the rows as render draws them, each as high as its highest atom */
+export function rowsHeight(rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>, desiredSizes: Map<object, AD.Size.Size>): number {
+  return rows.reduce((sum, row) => sum + row.reduce((max, atom) => Math.max(max, getDesiredSize(atom, desiredSizes).height), 0), 0);
+}
+
+export function parseAlignment(paragraphAlignment: AD.ParagraphStyle.TextAlignment | undefined): PdfKitAlignment {
+  switch (paragraphAlignment) {
+    case "Start":
+      return "left";
+    case "Center":
+      return "center";
+    case "End":
+      return "right";
+    case "Justify":
+      return "justify";
+    default:
+      return "left";
+  }
+}
+
+function rowsSplit(
   rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>,
   availableWidth: number,
   desiredSizes: Map<object, AD.Size.Size>,
@@ -17,9 +118,10 @@ export function rowsSplit(
   resources: AD.Resources.Resources,
   defaultStyle: AD.TextStyle.TextStyle,
   wordBreak: AD.ParagraphStyle.WordBreak = "Anywhere"
-): ReadonlyArray<ReadonlyArray<AD.Atom.Atom>> {
+): { readonly rows: ReadonlyArray<ReadonlyArray<AD.Atom.Atom>>; readonly hasSplitWord: boolean } {
   const newRows: Array<ReadonlyArray<AD.Atom.Atom>> = [];
   const splitWords = wordBreak === "Anywhere";
+  let hasSplitWord = false;
 
   for (const row of rows) {
     if (splitWords ? row.length < 1 : row.length <= 1) {
@@ -40,9 +142,7 @@ export function rowsSplit(
 
     for (let i = 0; i < row.length; i++) {
       const atom = row[i]!;
-      const size = getDesiredSize(atom, desiredSizes);
-      const width = size.width;
-      const height = size.height;
+      const width = getDesiredSize(atom, desiredSizes).width;
 
       if (atom.type !== "TextRun") {
         currentRow.push(atom);
@@ -83,21 +183,29 @@ export function rowsSplit(
       const remSize = availableWidth - (currentWidth + nextWidthIfSpace);
       const splittedWord = splitWords ? splitWord(atom, remSize, availableWidth, pdf, resources, defaultStyle) : [];
       if (splittedWord.length > 0) {
-        const heightPerRow = height / splittedWord.length;
+        hasSplitWord = true;
         const [first, ...rest] = splittedWord;
         if (!first) {
           continue;
         }
+        // Each part is one line, as high as an unsplit word of one line. The word's measured height is for pdfkit's
+        // own wrapping of it, which can have fewer lines than the parts, e.g. when the first part continues a row.
         //add the first to the current row
         const newFirstRowAtom = { ...atom, text: first.text };
-        desiredSizes.set(newFirstRowAtom, { width: first.width, height: heightPerRow });
+        desiredSizes.set(newFirstRowAtom, {
+          width: first.width,
+          height: stringHeight(atom, pdf, first.text, availableWidth, resources, defaultStyle),
+        });
         currentRow.push(newFirstRowAtom);
 
         //then add new rows
         for (const part of rest) {
           newRows.push(currentRow);
           const newAtom = { ...atom, text: part.text };
-          desiredSizes.set(newAtom, { width: part.width, height: heightPerRow });
+          desiredSizes.set(newAtom, {
+            width: part.width,
+            height: stringHeight(atom, pdf, part.text, availableWidth, resources, defaultStyle),
+          });
           currentRow = [newAtom];
           currentWidth = part.width;
         }
@@ -110,7 +218,7 @@ export function rowsSplit(
     }
     newRows.push(lastWasSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow);
   }
-  return newRows;
+  return { rows: newRows, hasSplitWord };
 }
 
 /*
@@ -295,6 +403,34 @@ function stringWidth(
   resources: AD.Resources.Resources,
   defaultStyle: AD.TextStyle.TextStyle
 ): number {
+  const { style, textOptions } = setTextRunFont(textRun, pdf, resources, defaultStyle);
+  return pdf.widthOfString(transformText(pdf, text, style.transform), { ...textOptions, lineBreak: false });
+}
+
+/** The height of text in a row of the given width, measured like measure measures a TextRun */
+function stringHeight(
+  textRun: AD.TextRun.TextRun,
+  pdf: PDFKit.PDFDocument,
+  text: string,
+  rowWidth: number,
+  resources: AD.Resources.Resources,
+  defaultStyle: AD.TextStyle.TextStyle
+): number {
+  const { style, textOptions } = setTextRunFont(textRun, pdf, resources, defaultStyle);
+  return pdf.heightOfString(transformText(pdf, text, style.transform), {
+    ...textOptions,
+    width: style.lineBreak === false ? Infinity : rowWidth,
+    lineBreak: style.lineBreak ?? true,
+  });
+}
+
+/** Makes the TextRun's font current and returns its style and the pdfkit options its text is measured with */
+function setTextRunFont(
+  textRun: AD.TextRun.TextRun,
+  pdf: PDFKit.PDFDocument,
+  resources: AD.Resources.Resources,
+  defaultStyle: AD.TextStyle.TextStyle
+): { readonly style: AD.TextStyle.TextStyle; readonly textOptions: PDFKit.Mixins.TextOptions } {
   const style = (AD.Resources.getNestedStyle(
     defaultStyle,
     textRun.style,
@@ -304,21 +440,18 @@ function stringWidth(
     textRun.nestedStyleNames ?? []
   ) ?? defaultStyle) as AD.TextStyle.TextStyle;
 
-  const font = getFontNameStyle(style);
-  const fontSize = AD.TextStyle.calculateFontSize(style, 10);
   pdf
-    .font(font)
-    .fontSize(fontSize)
+    .font(getFontNameStyle(style))
+    .fontSize(AD.TextStyle.calculateFontSize(style, 10))
     .fillColor(style.color ?? "black");
 
   const textOptions = {
     underline: style.underline ?? false,
     indent: style.indent ?? 0,
-    lineBreak: false,
     ...(style.characterSpacing !== undefined ? { characterSpacing: style.characterSpacing } : {}),
     ...(style.lineGap !== undefined ? { lineGap: style.lineGap } : {}),
   };
-  return pdf.widthOfString(transformText(pdf, text, style.transform), textOptions);
+  return { style, textOptions };
 }
 
 function getDesiredSize(element: object, desiredSizes: Map<object, AD.Size.Size>): AD.Size.Size {
