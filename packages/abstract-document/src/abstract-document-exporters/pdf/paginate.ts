@@ -393,7 +393,7 @@ function splitTableAt(
 
   const availableSize = getDesiredSize(table, desiredSizes);
   const pdf = new pdfKit();
-  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  registerFonts(pdf, document);
   const headSizes = measureTable(pdf, resources, availableSize, tableHead);
   const tailSizes = measureTable(pdf, resources, availableSize, tableTail);
 

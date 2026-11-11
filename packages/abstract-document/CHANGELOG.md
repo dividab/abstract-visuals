@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [20.5.1] - 2026-11-11
+
+- Fixed: the PDF exporter reads each font file once per font name instead of again every time the text switches to a style that shares its file with another style, e.g. a font with the same file for normal, bold and italic, or a light or medium style falling back to the normal file. pdfkit doesn't cache a font under its name when it equals a font it already has open, and the exporter measures and draws with several pdfkit documents, so such a report read the font hundreds of times, e.g. a 6 page report with Ubuntu Sans in all its styles took 3 seconds instead of 0.2.
+
+## [20.5.0] - 2026-11-11
 
 - Added: `TextStyle`'s `wordBreak`, which overrides the paragraph's `wordBreak` for the text, e.g. a unit in a run of its own that should overflow its table cell rather than be split. Named and nested text styles pass it on like the other text style properties, and the XML schema has the attribute.
 - Changed: the PDF exporter's default `wordBreak`, `"Anywhere"`, splits a word wider than its row where Unicode line breaking (UAX #14) allows, e.g. after `/` or `-`, then after any `/` (UAX #14 has no break between `/` and a digit, e.g. in `64559050/64559051`), and only when nothing else fits between characters, as browsers do with `overflow-wrap: anywhere`. A word split between characters starts on a row of its own instead of filling the rest of the row before it. Before, the word was split between characters only, e.g. `Function/Description/(Area)` became `Function/Description/(Ar` and `ea)` instead of `Function/`, `Description/` and `(Area)`.

@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.6.3] - 2026-11-11
+
+- Fixed: `validateXml` finds the line and column of each element and attribute by binary search instead of counting the lines from the start of the text, so its time grows with the size of the XML instead of with its size times its number of lines, e.g. a 16 000 line rendered report validates in 0.1 instead of 1.7 seconds. The errors and their ranges are the same.
+
+## [0.6.2] - 2026-11-01
 
 - Fixed: depends on handlebars 4.7.10 instead of 4.7.8, whose templates could inject JavaScript or pollute prototypes, and fast-xml-parser 5.
 
