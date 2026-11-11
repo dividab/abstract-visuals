@@ -55,8 +55,28 @@ function fontHasChar(font: PdfKitFont, char: string): boolean {
   return font.characterToGlyph?.(codePoint) !== ".notdef";
 }
 
-export function registerFonts(registerFont: (fontName: string, fontSource: AD.Font.FontSource) => void, document: AD.AbstractDoc.AbstractDoc): void {
+/**
+ * Registers the document's fonts on `pdf` under the names `getFontName` gives them. pdfkit's `font()` caches a font it opens under its name, except
+ * when the font equals one it already has open, as when styles share a file (e.g. one file for normal, bold and italic, or a light style falling back
+ * to normal): it returns without caching it and reads the file again on every `font()` with that name, so `font()` here caches those too.
+ */
+export function registerFonts(pdf: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc): void {
   const resources = getResources(document);
+  const registered = new Set<string>();
+  const registerFont = (fontName: string, fontSource: AD.Font.FontSource): void => {
+    pdf.registerFont(fontName, fontSource);
+    registered.add(fontName);
+  };
+  const pdfFonts = pdf as unknown as { readonly _font: unknown; readonly _fontFamilies: Record<string, unknown> };
+  // pdfkit's font(src, size) and font(src, family, size)
+  const openFont = pdf.font.bind(pdf) as (src: PDFKit.Mixins.PDFFontSource, familyOrSize?: string | number, size?: number) => PDFKit.PDFDocument;
+  pdf.font = (src: PDFKit.Mixins.PDFFontSource, familyOrSize?: string | number, size?: number) => {
+    openFont(src, familyOrSize, size);
+    if (typeof src === "string" && registered.has(src)) {
+      pdfFonts._fontFamilies[src] ??= pdfFonts._font;
+    }
+    return pdf;
+  };
   for (const [fontName, font] of Object.entries(resources.fonts ?? {})) {
     // Required
     registerFont(fontName, font.normal);

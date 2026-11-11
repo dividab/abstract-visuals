@@ -70,13 +70,17 @@ export function validateXml(fullXml: string, xsdSchema: ReadonlyArray<XmlElement
 
       const entryPointSchema = xsdSchema[0]!;
       let pos = 0;
-      const lines = cleanedXml.split("\n");
+      // The index each line ends at, its "\n" or the end of the text
+      const lineEnds: Array<number> = [];
+      for (const line of cleanedXml.split("\n")) {
+        lineEnds.push((lineEnds.at(-1) ?? -1) + 1 + line.length);
+      }
       const getRangeOfElement = (text: string, incrementPosition: boolean = true): Range => {
         const position = cleanedXml.indexOf(text, pos);
         if (incrementPosition) {
           pos = position >= pos ? position + text.length : pos;
         }
-        const monacoPosition = getPositionFromIndex(lines, position);
+        const monacoPosition = getPositionFromIndex(lineEnds, position);
         return toRange(monacoPosition.lineNumber, monacoPosition.column, monacoPosition.lineNumber, monacoPosition.column + text.length);
       };
 
@@ -211,18 +215,27 @@ const getErrorMessage = (error: XmlError): string => error.message.split(/[\t\n]
 
 const createError = (message: string, type: ErrorType, range: Range): XmlError => ({ message, type, range });
 
-function getPositionFromIndex(lines: ReadonlyArray<string>, index: number): Position {
-  let totalLength = 0;
-  for (const [lineNumber, line] of lines.entries()) {
-    totalLength += line.length;
-    if (totalLength >= index - lineNumber) {
-      return {
-        lineNumber: lineNumber + 1,
-        column: 1 + index - (totalLength - line.length) - lineNumber || 1, // "- lineNumber" because of \n characters
-      };
+/**
+ * The position of the index in the text whose lines end at `lineEnds`, the line found by binary search since this runs for every element and
+ * attribute
+ */
+function getPositionFromIndex(lineEnds: ReadonlyArray<number>, index: number): Position {
+  // The first line ending at or after the index
+  let low = 0;
+  let high = lineEnds.length;
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (lineEnds[middle]! >= index) {
+      high = middle;
+    } else {
+      low = middle + 1;
     }
   }
-  return { lineNumber: lines.length, column: 1 };
+  if (low === lineEnds.length) {
+    return { lineNumber: lineEnds.length, column: 1 };
+  }
+  const lineStart = low === 0 ? 0 : lineEnds[low - 1]! + 1;
+  return { lineNumber: low + 1, column: 1 + index - lineStart || 1 };
 }
 
 const toRange = (startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number): Range => ({

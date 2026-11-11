@@ -10,7 +10,7 @@ const heightOfStringCache = new Map<string, number>();
 
 export function measure(pdfKit: PDFKit.PDFDocument, document: AD.AbstractDoc.AbstractDoc): Map<object, AD.Size.Size> {
   const pdf = new pdfKit();
-  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  registerFonts(pdf, document);
   const result = mergeMaps(document.children.map((s) => measureSection(pdf, document, s)));
   widthOfStringCache.clear();
   heightOfStringCache.clear();
@@ -23,7 +23,7 @@ export function measurePages(
   pages: ReadonlyArray<Page>
 ): Map<object, AD.Size.Size> {
   const pdf = new pdfKit();
-  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  registerFonts(pdf, document);
   return mergeMaps(
     pages.flatMap((page) => page.columns.map(({ elements }) => measureSection(pdf, document, page.section, page.header, page.footer, elements)))
   );

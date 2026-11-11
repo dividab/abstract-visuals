@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [20.5.1] - 2026-11-11
+
+- Fixed: the PDF exporter reads each font file once per font name instead of again every time the text switches to a style that shares its file with another style, e.g. a font with the same file for normal, bold and italic, or a light or medium style falling back to the normal file. pdfkit doesn't cache a font under its name when it equals a font it already has open, and the exporter measures and draws with several pdfkit documents, so such a report read the font hundreds of times, e.g. a 6 page report with Ubuntu Sans in all its styles took 3 seconds instead of 0.2.
+
+## [20.5.0] - 2026-11-11
 
 - Fixed: `Markdown` leaves out the nodes it has no element for that have no children, e.g. html like `<br>`, inline code, a thematic break (`---`) or an image, as before 20.2.0. Since 20.2.0 such a node threw `Cannot read properties of undefined (reading 'forEach')`, so the whole document failed.
 

@@ -49,7 +49,7 @@ function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDo
   const pdf = new PDFDocument({ ...options, autoFirstPage: false, bufferPages: true });
 
   const document = preProcess(ad);
-  registerFonts((fontName: string, fontSource: AD.Font.FontSource) => pdf.registerFont(fontName, fontSource), document);
+  registerFonts(pdf, document);
   const desiredSizes = measure(PDFDocument, document);
   const pages = paginate(PDFDocument, document, desiredSizes);
   const updatedPages = updatePageRefs(pages);
