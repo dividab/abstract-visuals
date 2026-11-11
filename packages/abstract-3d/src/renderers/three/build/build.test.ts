@@ -96,8 +96,8 @@ describe("buildScene", () => {
   });
 
   it("keeps dimensions in their own group, and doesn't pick hidden ones", () => {
-    // Its text is centered half a text height of 44 above the line, here at the origin
-    const dimension = alignedDimension(vec3(-500, 78, 0), vec3(500, 78, 0), vec3(0, -22, 0), "1000", ["front"], undefined, "dim");
+    // Its text, the empty scene's 32 high, is centered a gap and half its height out from the line, over the origin
+    const dimension = alignedDimension(vec3(-500, 100, 0), vec3(500, 100, 0), vec3(0, 30, 0), "1000", ["front"], undefined, "dim");
     const built = build(scene([], { dimensions_deprecated: { dimensions: [dimension], material: red } }));
     expect(built.dimensions.children.length).toBeGreaterThan(0);
     expect(pickId(built, 0)).toBe("dim");

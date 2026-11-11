@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+## [4.2.0] - 2026-11-10
+
+- Added: `sceneTextHeight(groups)`, the text height of a scene, `textHeightForSize(size)` of its objects' size without its texts: 32 up to 3600 on the longest side, else as many steps of 2^¼ above it as the longest side needs, rounded up, so a text is at most 19% larger than in proportion to the scene's size. Every renderer draws its texts without a font size and its dimensions at it, their text, marks, gaps and lines sized by it
+- Changed: a dimension's text, marks, gaps and lines are sized by the scene's text height, so they scale with the size of the unit, where its text was always 44: 32 up to 3600 on the longest side, larger above it
+- Changed: `Text.fontSize` is optional, the scene's text height if not set; `boundsText` and `boundsGroup` take the text height for it, 44 if not given, and `boundsScene` the scene's
+- Added: `Text.background`, a circle or a rectangle a depth behind the text, padded past it, with an outline, which every renderer draws at the text's size; `groupTextBackgrounds(group, textHeight)` turns them into the meshes drawn
+- Added: `textSize(text, fontSize)`, how wide and high a text is drawn, as `boundsText` measures it
+- Added: `dimensionPlacements(dimensions, textHeight)`, where each dimension's line and text are drawn, decided for the dimensions on the same line together, with the bounds of everything it draws to size the scene by; `dimensionMeshifyAlignedDimension` and `dimensionConvertToTypeMesh` take it with the text height, and every renderer passes them
+- Changed: a dimension is drawn as its dimension line with a short mark across it at each end, as far to each side, an extension line from each measured point to it, broken half a gap short of each text it'd cross, an arrow inside each end pointing at it where both fit with a gap between them, and its text a gap from it, out from the dimension's middle; a text of several rows has its first row over the line, as the text reads, and the rest under it, each drawn as a text of its own, 1.2 text heights apart, so every renderer spaces them alike, with room left for it on both sides of the line
+- Changed: a dimension's text, out from its middle, overhangs the dimension where it's wider and nothing's in the way, else it's drawn on the other side of the line, towards the measured points, alternating with its neighbours', even where every other one's still clash; placed together for the dimensions on a line, whichever is the clearest: texts out from the line and apart, and where it's even, the ones at the ends of the line out from it, with room past them
+- Changed: a dimension line too near the measured points, or the line inside it on the same side, for the texts and marks between them is drawn further out, a gap past them; at the text height 44, lines 88 apart, as aircalc's, stay where they are
+
 ## [4.1.5] - 2026-11-10
 
 - Changed: a gizmo click turns the camera itself, eased over 400 ms, together with the target, distance and orthographic zoom that `resetZoomAndPanOnClick` fits, instead of the gizmo's own animation followed by a jump to the fit; the controls stay still during the turn, so the camera no longer spins near the top and bottom views or snaps at the end

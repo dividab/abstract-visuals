@@ -15,6 +15,9 @@ import {
   vec2Zero,
   vec3Flip,
   dimensionConvertToTypeMesh,
+  dimensionPlacements,
+  groupTextBackgrounds,
+  sceneTextHeight,
 } from "../../abstract-3d.js";
 import type { Optional } from "../../utils.js";
 import { calculateVisibleViews, isViewVisible } from "../../utils.js";
@@ -110,9 +113,10 @@ function renderInternal(
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
   const unitCenterFlipped = vec3Flip(unitCenter);
 
+  const textHeight = sceneTextHeight(scene.groups);
   const elements = [
     ...orderElements(
-      scene.groups.flatMap((g) => svgGroup(g, unitCenterFlipped, unitRot, point, opts)),
+      scene.groups.flatMap((g) => svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, unitRot, point, opts, textHeight)),
       point
     ),
   ];
@@ -120,28 +124,43 @@ function renderInternal(
   const visibleViews = calculateVisibleViews(view, scene.rotation_deprecated);
 
   // Dimensions are drawn for the flat views
-  for (const dim of angled ? [] : (scene.dimensions_deprecated?.dimensions ?? [])) {
-    const d = dimensionConvertToTypeMesh(dim, scene.rotation_deprecated ?? vec3Zero, scene.dimensions_deprecated?.material);
+  const dimensions = angled ? [] : (scene.dimensions_deprecated?.dimensions ?? []);
+  const placements = dimensionPlacements(dimensions, textHeight);
+  for (const [i, dim] of dimensions.entries()) {
+    const d = dimensionConvertToTypeMesh(
+      dim,
+      scene.rotation_deprecated ?? vec3Zero,
+      scene.dimensions_deprecated?.material,
+      textHeight,
+      placements[i]
+    );
     if (isViewVisible(d.views[0], visibleViews)) {
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
-        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts));
+        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts, textHeight));
       }
     }
   }
   return { elements, size: svgSize, center: svgCenter };
 }
 
-function svgGroup(g: Group, parentPos: Vec3, parentRot: Vec3, point: (x: number, y: number) => Vec2, opts: SvgOptions): ReadonlyArray<zOrderElement> {
+function svgGroup(
+  g: Group,
+  parentPos: Vec3,
+  parentRot: Vec3,
+  point: (x: number, y: number) => Vec2,
+  opts: SvgOptions,
+  textHeight: number
+): ReadonlyArray<zOrderElement> {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
   const elements = Array<zOrderElement>();
   for (const m of g.meshes ?? []) {
-    elements.push(...svgMesh(m, pos, rot, point, m.material, opts));
+    elements.push(...svgMesh(m, pos, rot, point, m.material, opts, textHeight));
   }
   for (const sg of g.groups ?? []) {
-    elements.push(...svgGroup(sg, pos, rot, point, opts));
+    elements.push(...svgGroup(sg, pos, rot, point, opts, textHeight));
   }
   return elements;
 }
@@ -152,7 +171,8 @@ function svgMesh(
   parentRot: Vec3,
   point: (x: number, y: number) => Vec2,
   material: Material,
-  opts: SvgOptions
+  opts: SvgOptions,
+  textHeight: number
 ): ReadonlyArray<zOrderElement> {
   switch (mesh.geometry.type) {
     case "Box":
@@ -171,7 +191,7 @@ function svgMesh(
     case "Shape":
       return shape(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Text":
-      return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot);
+      return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot, textHeight);
     case "Image":
       return image(mesh.geometry, point, opts, parentPos, parentRot);
     case "Tube":
