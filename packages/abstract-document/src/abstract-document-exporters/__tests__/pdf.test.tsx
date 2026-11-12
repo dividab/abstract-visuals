@@ -1,7 +1,9 @@
 import path from "path";
 import * as S from "stream";
 import PDFParser from "pdf2json";
-import { describe, test, expect } from "vitest";
+// oxlint-disable-next-line import/no-named-as-default -- standard pdfkit import idiom
+import PDFDocument from "pdfkit";
+import { describe, test, expect, vi } from "vitest";
 import { AbstractDoc, PageBreak, Paragraph, Section, Table, TableCell, TableRow, TextRun, render } from "../../abstract-document-jsx/index.js";
 import * as AD from "../../abstract-document/index.js";
 import { exportToBytes, exportToStream } from "../pdf/render.js";
@@ -245,6 +247,45 @@ describe("export pdf", () => {
     expect(rows.length).toBeGreaterThan(2);
   });
 
+  test("a long word without a break is measured about a row of it per row, not all the rest of it for each row", async () => {
+    // e.g. a missing text in a report, written as its key and the values of all the unit's properties, took minutes: splitting the word and pdfkit's
+    // wrapping of it both measured all the rest of the word for each row, 533 times its length here
+    const word = "Authorisationcode".repeat(100);
+    const widthOfString = vi.spyOn(PDFDocument.prototype, "widthOfString");
+    const rows = await cellRows(<Paragraph>{run(word)}</Paragraph>);
+    const measured = widthOfString.mock.calls.reduce((sum, [text]) => sum + String(text).length, 0);
+    widthOfString.mockRestore();
+    expect(word.startsWith(rows.join(""))).toBe(true);
+    expect(measured).toBeLessThan(100 * word.length);
+  });
+
+  test("a table split between pages is measured once, not all the rest of it again for each page it continues on", async () => {
+    // 4 times the rows measured 8.3 times as much text, now about 5 times as much, the longer row numbers too
+    expect((await tableTextMeasured(800)) / (await tableTextMeasured(200))).toBeLessThan(6);
+  });
+
+  test("the parts of a table with side margins and an auto width column are measured at its width, so each page gets the rows that fit it", async () => {
+    // The parts were measured again with the margins taken off the width a second time, so each row, wrapping in the narrower column, was measured
+    // two lines high and the pages after the first got about half the rows that fit them
+    const style = AD.TableStyle.create({ margins: AD.LayoutFoundation.create({ left: 100, right: 100 }) });
+    const rows = await rowsPerPage(
+      <AbstractDoc>
+        <Section>
+          <Table columnWidths={[Infinity]} style={style}>
+            {Array.from({ length: 150 }, (_, i) => (
+              <TableRow key={i}>
+                <TableCell>{text(`Row ${i} lorem ipsum dolor sit amet consectetur adipiscing`)}</TableCell>
+              </TableRow>
+            ))}
+          </Table>
+        </Section>
+      </AbstractDoc>
+    );
+    expect(rows.length).toBeGreaterThan(2);
+    // Every page but the last is full
+    expect(rows.slice(1, -1)).toEqual(rows.slice(1, -1).map(() => rows[0]));
+  });
+
   test("a word wider than the row overflows it, unsplit, when wordBreak is Whitespace", async () => {
     expect(await cellRows(<Paragraph style={whitespace}>{run(`short ${longWord} word`)}</Paragraph>)).toEqual(["short", longWord, "word"]);
   });
@@ -458,6 +499,39 @@ async function cellRows(paragraph: React.JSX.Element, styles?: AD.Types.Indexer<
       .join("")
       .trim()
   );
+}
+
+/** The number of rows of text on each page of the exported document */
+async function rowsPerPage(document: React.JSX.Element): Promise<ReadonlyArray<number>> {
+  const bytes = await exportToBytes(render(document));
+  // pdf2json requires an unpooled buffer, as in the fixture tests below.
+  const buffer = Buffer.alloc(bytes.length);
+  buffer.set(bytes);
+  const parsed = (await getJsonFromPdf(buffer)) as { readonly Pages: ReadonlyArray<{ readonly Texts: ReadonlyArray<{ readonly y: number }> }> };
+  return parsed.Pages.map((p) => new Set(p.Texts.map((t) => t.y)).size);
+}
+
+/** The characters pdfkit measures while exporting a table of rows with their number, one per row */
+async function tableTextMeasured(rowCount: number): Promise<number> {
+  const widthOfString = vi.spyOn(PDFDocument.prototype, "widthOfString");
+  await exportToBytes(
+    render(
+      <AbstractDoc>
+        <Section>
+          <Table columnWidths={[200]}>
+            {Array.from({ length: rowCount }, (_, i) => (
+              <TableRow key={i}>
+                <TableCell>{text(`Row ${i}`)}</TableCell>
+              </TableRow>
+            ))}
+          </Table>
+        </Section>
+      </AbstractDoc>
+    )
+  );
+  const characters = widthOfString.mock.calls.reduce((sum, [t]) => sum + String(t).length, 0);
+  widthOfString.mockRestore();
+  return characters;
 }
 
 /** The y of each row of text, for the text in a 60 pt wide table cell, then "next" in the row below and "after" below the table */

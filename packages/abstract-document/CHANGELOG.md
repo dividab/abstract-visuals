@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.5.4] - 2026-11-12
+
+- Fixed: the PDF exporter measures a word wider than its row about a row of it at a time. Splitting the word measured all the rest of it for each row, and so did pdfkit's wrapping of it, whose height the exporter replaces with the height of the rows it draws, so a long word without a break was slow, e.g. a report with missing texts, each written as its key with the values of all the unit's properties, took minutes. The words are split as before.
+- Fixed: the PDF exporter measures a table split between pages once. For each page the table continued on it measured all the rest of the table again, so the time grew with the rows times the pages, e.g. a table of 200 rows over 29 pages took 0.9 seconds to split and now takes 0.01. Only the rows' heights are worked out again for each part, as the row spans it cuts change them. The parts of a table with side margins and an auto width column were also measured narrower than they're drawn, the margins taken off the width a second time, so text that wrapped there made the pages after the first get fewer rows than fit them, e.g. half when each row's text wrapped to two lines.
+
 ## [20.5.3] - 2026-11-11
 
 - Fixed: the DOCX exporter takes the colors the PDF exporter takes. CSS color names, e.g. `black` or `white`, and 3 digit hex, e.g. `#abc`, are written as 6 digit hex, and other colors are left out, as the PDF exporter leaves them out. Since 19.2.0, which updated docx to 9, such a color made docx throw `Invalid hex value 'black'. Expected 6 digit hex value`, so `exportToStream` emitted an error instead of writing the document.

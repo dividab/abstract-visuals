@@ -252,38 +252,82 @@ function splitWord(
 ): ReadonlyArray<LongWordSplit> {
   const text = word.text;
   const width = (part: string): number => stringWidth(word, pdf, part, resources, defaultStyle);
-  if (width(text) < rowWidth) {
+  const wordWidth = width(text);
+  if (wordWidth < rowWidth) {
     return [];
   }
 
   const unicodeBreaks = lineBreakOpportunities(text);
   const slashBreaks = [...text.matchAll(/\//gu)].map((match) => match.index + 1);
   const unicodeAndSlashBreaks = [...new Set([...unicodeBreaks, ...slashBreaks])].sort((a, b) => a - b);
+  // The end of each character, where a part may end when no break fits
+  const characterEnds: Array<number> = [];
+  for (const character of text) {
+    characterEnds.push((characterEnds.at(-1) ?? 0) + character.length);
+  }
 
   const parts: Array<LongWordSplit> = [];
   let start = 0;
   while (start < text.length) {
     const isFirst = parts.length === 0;
     const available = isFirst ? firstRowRemainingWidth : rowWidth;
-    const rest = text.slice(start);
-    const restWidth = width(rest);
-    if (restWidth < available) {
-      parts.push({ text: rest, width: restWidth });
+    const from = start;
+    const first = characterEnds.findIndex((end) => end > from);
+    // As many characters as fit the row if they're as wide as the word's on average
+    const guess = Math.min(Math.max(first + Math.floor(available / (wordWidth / characterEnds.length)) - 1, first), characterEnds.length - 1);
+    const last = lastFitting(characterEnds, first, guess, (end) => width(text.slice(from, end)) < available);
+    if (characterEnds[last] === text.length) {
+      const rest = text.slice(from);
+      parts.push({ text: rest, width: width(rest) });
       break;
     }
-    const from = start;
-    const fits = (end: number): boolean => width(text.slice(from, end)) < available;
-    const lastFittingBreak = (breaks: ReadonlyArray<number>): number | undefined =>
-      breaks.findLast((end) => end > from && end < text.length && fits(end));
+    // A part longer than the longest that fits doesn't fit either, so every break up to its end fits
+    const fittingEnd = characterEnds[last] ?? from;
+    const lastFittingBreak = (breaks: ReadonlyArray<number>): number | undefined => breaks.findLast((end) => end > from && end <= fittingEnd);
     const end =
       lastFittingBreak(unicodeBreaks) ??
       lastFittingBreak(unicodeAndSlashBreaks) ??
-      (isFirst && continuesRow ? from : lastFittingCharacter(text, from, fits));
+      (isFirst && continuesRow ? from : characterEnds[Math.max(last, first)]!);
     const part = text.slice(from, end);
     parts.push({ text: part, width: width(part) });
     start = end;
   }
   return parts;
+}
+
+/**
+ * The index of the last of the ascending ends from `first` that fits, `first - 1` when none does. A longer part never fits where a shorter one
+ * doesn't, so it steps 1, 2, 4… away from the guess until an end is on the other side of it, then halves the step back, which takes a few
+ * measurements of about a row each, or two when the guess is right, instead of one per character, or one of all the rest of a long word.
+ */
+function lastFitting(ends: ReadonlyArray<number>, first: number, guess: number, fits: (end: number) => boolean): number {
+  let fitting = first - 1;
+  let notFitting = ends.length;
+  let step = 1;
+  if (fits(ends[guess]!)) {
+    fitting = guess;
+    while (fitting + step < ends.length && fits(ends[fitting + step]!)) {
+      fitting += step;
+      step *= 2;
+    }
+    notFitting = Math.min(fitting + step, ends.length);
+  } else {
+    notFitting = guess;
+    while (notFitting - step >= first && !fits(ends[notFitting - step]!)) {
+      notFitting -= step;
+      step *= 2;
+    }
+    fitting = Math.max(notFitting - step, first - 1);
+  }
+  while (notFitting - fitting > 1) {
+    const middle = Math.floor((fitting + notFitting) / 2);
+    if (fits(ends[middle]!)) {
+      fitting = middle;
+    } else {
+      notFitting = middle;
+    }
+  }
+  return fitting;
 }
 
 /** The positions in the text where Unicode line breaking (UAX #14) allows a break, before the character at each */
@@ -294,19 +338,6 @@ function lineBreakOpportunities(text: string): ReadonlyArray<number> {
     positions.push(lineBreak.position);
   }
   return positions;
-}
-
-/** The end of the longest part from start that fits, with at least one character so that the split moves on */
-function lastFittingCharacter(text: string, start: number, fits: (end: number) => boolean): number {
-  const [firstCharacter = "", ...characters] = text.slice(start);
-  let end = start + firstCharacter.length;
-  for (const character of characters) {
-    if (!fits(end + character.length)) {
-      break;
-    }
-    end += character.length;
-  }
-  return end;
 }
 
 /** Where a word may be split: its text style's wordBreak, else its paragraph's */

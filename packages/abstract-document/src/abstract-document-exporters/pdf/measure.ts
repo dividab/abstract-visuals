@@ -95,7 +95,7 @@ function measureSectionElement(
     case "Paragraph":
       return measureParagraph(pdf, resources, availableSize, element);
     case "Table":
-      return measureTable(pdf, resources, availableSize, element);
+      return measureTable(resources, availableSize, element, (e, size) => measureSectionElement(pdf, resources, size, e));
     case "Group":
       return measureGroup(pdf, resources, availableSize, element);
     case "PageBreak":
@@ -152,6 +152,7 @@ function measureParagraph(
     let concatenatedText = "";
     let hasAtomImage = false;
     let textOptions: AD.TextStyle.TextStyle | undefined = undefined;
+    let hasWordWiderThanRow = false;
     for (const atom of row) {
       if (atom.type === "Image") {
         hasAtomImage = true;
@@ -170,6 +171,7 @@ function measureParagraph(
         concatenatedText += transformText(pdfKit, atom.text, atomTextStyle.transform);
         textOptions = getBiggestStyle(atom, atomTextStyle, textOptions);
       }
+      hasWordWiderThanRow ||= atom.type === "TextRun" && atomSize.width >= contentAvailableSize.width;
       desiredSizes.set(atom, atomSize);
       currentRowWidth += atomSize.width;
       currentRowHeight = Math.max(atomSize.height, currentRowHeight);
@@ -183,7 +185,8 @@ function measureParagraph(
       paragraphHeight += currentRowHeight;
     } else if (hasAtomImage) {
       paragraphHeight += desiredHeight + currentRowHeight;
-    } else {
+    } else if (!hasWordWiderThanRow) {
+      // A row with a word wider than it gets the height of the rows layoutParagraphRows lays out below instead
       // const height = heightOfString(
       //   pdfKit,
       //   textOptions?.fontFamily ?? "Helvetica",
@@ -231,11 +234,15 @@ function getBiggestStyle(
   return textOptions;
 }
 
+/**
+ * The sizes of the table, its rows and cells, and the elements in its cells, each of which `measureElement` measures at the width its cell gives it,
+ * or looks up when it's measured already, as for the parts of a table split between pages, whose cells have the elements and widths they had
+ */
 export function measureTable(
-  pdfKit: PDFKit.PDFDocument,
   resources: AD.Resources.Resources,
   availableSize: AD.Size.Size,
-  table: AD.Table.Table
+  table: AD.Table.Table,
+  measureElement: (element: AD.SectionElement.SectionElement, availableSize: AD.Size.Size) => ReadonlyMap<object, AD.Size.Size>
 ): Map<object, AD.Size.Size> {
   const style = AD.Resources.getStyle(undefined, table.style, "TableStyle", table.styleName, resources) as AD.TableStyle.TableStyle;
   const styleMargins = AD.LayoutFoundation.orDefault(style.margins);
@@ -270,8 +277,7 @@ export function measureTable(
       let cellDesiredHeight = cellStylePadding.top + cellStylePadding.bottom;
 
       for (const element of cell.children) {
-        const elementAvailableSize = AD.Size.create(contentAvailableWidth, Infinity);
-        const elementSizes = measureSectionElement(pdfKit, resources, elementAvailableSize, element);
+        const elementSizes = measureElement(element, AD.Size.create(contentAvailableWidth, Infinity));
         elementSizes.forEach((v, k) => desiredSizes.set(k, v));
         const elementSize = getDesiredSize(element, desiredSizes);
         if (!AD.Position.isPositionAbsolute(element)) {
@@ -411,7 +417,7 @@ function measureTextRun(
     resources,
     textRun.nestedStyleNames ?? []
   ) as AD.TextStyle.TextStyle;
-  return measureText(pdf, textRun.text, style, availableSize, true);
+  return measureText(pdf, textRun.text, style, availableSize, true, true);
 }
 
 function measureHyperLink(
@@ -495,7 +501,8 @@ function measureText(
   text: string,
   textStyle: AD.TextStyle.TextStyle,
   availableSize: AD.Size.Size,
-  measureWithSpaces?: boolean
+  measureWithSpaces?: boolean,
+  isWord?: boolean
 ): AD.Size.Size {
   const font = getFontNameStyle(textStyle);
   const fontSize = AD.TextStyle.calculateFontSize(textStyle, 10);
@@ -524,7 +531,9 @@ function measureText(
   }
 
   const width = Math.min(availableSize.width, measuredWidth);
-  const lineWidth = textStyle.lineBreak === false ? Infinity : availableSize.width;
+  // A word wider than the row is one line high, as layoutParagraphRows measures the rows it's split on or overflows, and pdfkit's wrapping of it
+  // measures all the rest of the word for each line
+  const lineWidth = textStyle.lineBreak === false || (isWord && measuredWidth >= availableSize.width) ? Infinity : availableSize.width;
   const options = {
     width: lineWidth,
     ...textOptions,

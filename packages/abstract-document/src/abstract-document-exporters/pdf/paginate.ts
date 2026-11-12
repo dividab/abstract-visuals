@@ -1,28 +1,21 @@
 import * as AD from "../../abstract-document/index.js";
 import { getResources } from "../shared/get_resources.js";
-import { registerFonts } from "./font.js";
 import { getHeaderAndFooter } from "./header-footer.js";
 import { measureTable } from "./measure.js";
 import type { Page, PageColumn } from "./page.js";
 
-export function paginate(
-  pdfKit: PDFKit.PDFDocument,
-  document: AD.AbstractDoc.AbstractDoc,
-  desiredSizes: Map<object, AD.Size.Size>
-): ReadonlyArray<Page> {
+export function paginate(document: AD.AbstractDoc.AbstractDoc, desiredSizes: Map<object, AD.Size.Size>): ReadonlyArray<Page> {
   const resources = getResources(document);
   const pages = new Array<Page>();
   for (const section of document.children) {
     const previousPage = pages.length > 0 ? pages[pages.length - 1] : undefined;
-    pages.push(...paginateSection(pdfKit, document, resources, desiredSizes, previousPage, section));
+    pages.push(...paginateSection(resources, desiredSizes, previousPage, section));
   }
 
   return pages;
 }
 
 function paginateSection(
-  pdfKit: PDFKit.PDFDocument,
-  document: AD.AbstractDoc.AbstractDoc,
   parentResources: AD.Resources.Resources,
   desiredSizes: Map<object, AD.Size.Size>,
   previousPage: Page | undefined,
@@ -70,16 +63,7 @@ function paginateSection(
         elementsHeight -= elementSize.height; //TODO: handle absolute positioned elements
 
         //Try to split table
-        const [tableHead, tableTail] = splitTable(
-          pdfKit,
-          document,
-          resources,
-          desiredSizes,
-          element,
-          elementsHeight,
-          availableHeight,
-          elements.length
-        );
+        const [tableHead, tableTail] = splitTable(resources, desiredSizes, element, elementsHeight, availableHeight, elements.length);
 
         const tableSplit: Array<AD.Table.Table> = [];
         if (tableHead) {
@@ -120,8 +104,6 @@ function paginateSection(
 }
 
 function splitTable(
-  pdfKit: PDFKit.PDFDocument,
-  document: AD.AbstractDoc.AbstractDoc,
   resources: AD.Resources.Resources,
   desiredSizes: Map<object, AD.Size.Size>,
   table: AD.Table.Table,
@@ -148,7 +130,7 @@ function splitTable(
         return [undefined, table];
       }
 
-      const [newTableHead, newTableRest] = splitTableAt(pdfKit, document, resources, desiredSizes, table, Math.max(rowIndex, 1));
+      const [newTableHead, newTableRest] = splitTableAt(resources, desiredSizes, table, Math.max(rowIndex, 1));
 
       if (newTableHead.children.length > 0) {
         tableHead = newTableHead;
@@ -342,8 +324,6 @@ function getDesiredSize(element: object, desiredSizes: Map<object, AD.Size.Size>
 }
 
 function splitTableAt(
-  pdfKit: PDFKit.PDFDocument,
-  document: AD.AbstractDoc.AbstractDoc,
   resources: AD.Resources.Resources,
   desiredSizes: Map<object, AD.Size.Size>,
   table: AD.Table.Table,
@@ -379,7 +359,7 @@ function splitTableAt(
   const tailRows: Array<AD.TableRow.TableRow> = [{ ...splitRow, children: firstTailRow }];
   tailRows.push(...table.children.slice(splitIndex + 1));
 
-  //Create tables and remeasure them
+  //Create tables and measure their rows
   const tableHead = {
     ...table,
     style: { ...table.style, margins: { ...table.style.margins, bottom: 0 } },
@@ -391,11 +371,13 @@ function splitTableAt(
     children: tailRows,
   };
 
+  // The cells' elements keep the sizes they were measured to, as the cells keep their widths, so only the rows' heights, which the cut row spans
+  // change, are measured again. Measuring the elements of all the rest of the table again for each page it continues on took long for long tables.
   const availableSize = getDesiredSize(table, desiredSizes);
-  const pdf = new pdfKit();
-  registerFonts(pdf, document);
-  const headSizes = measureTable(pdf, resources, availableSize, tableHead);
-  const tailSizes = measureTable(pdf, resources, availableSize, tableTail);
+  const measured = (element: AD.SectionElement.SectionElement): ReadonlyMap<object, AD.Size.Size> =>
+    new Map([[element, getDesiredSize(element, desiredSizes)]]);
+  const headSizes = measureTable(resources, availableSize, tableHead, measured);
+  const tailSizes = measureTable(resources, availableSize, tableTail, measured);
 
   headSizes.forEach((value, key) => desiredSizes.set(key, value));
   tailSizes.forEach((value, key) => desiredSizes.set(key, value));

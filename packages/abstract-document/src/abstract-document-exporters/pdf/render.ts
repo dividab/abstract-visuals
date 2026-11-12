@@ -51,7 +51,7 @@ function createDocument(options: PdfExportOptions, ad: AD.AbstractDoc.AbstractDo
   const document = preProcess(ad);
   registerFonts(pdf, document);
   const desiredSizes = measure(PDFDocument, document);
-  const pages = paginate(PDFDocument, document, desiredSizes);
+  const pages = paginate(document, desiredSizes);
   const updatedPages = updatePageRefs(pages);
   const pageDesiredSizes = measurePages(PDFDocument, document, updatedPages);
 
