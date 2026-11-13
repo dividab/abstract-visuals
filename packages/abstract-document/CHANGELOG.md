@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.5.5] - 2026-11-13
+
+- Fixed: the XML row shortcuts `TextRow`, `HyperLinkRow` and `ImageRow` pass `columnSpan` and `rowSpan` to their cell as numbers. docx 9.15 rejects strings, so e.g. `<TextRow columnSpan="2" text="x"/>` threw `Invalid value '2' specified. Must be an integer.` The XML schema now declares both attributes `xs:integer`.
+- Fixed: the DOCX exporter writes a table's grid from its `columnWidths` instead of placeholder widths.
+- Fixed: `differentFirstPage="1"` on a `header` or `footer` works like `"true"`, as `xs:boolean` allows.
+- Fixed: an image `width` or `height` that isn't a number becomes 0, like other numeric attributes, instead of `NaN`.
+- Changed: depends on docx 9.15.3 instead of 9.7.1.
+
 ## [20.5.4] - 2026-11-12
 
 - Fixed: the PDF exporter measures a word wider than its row about a row of it at a time. Splitting the word measured all the rest of it for each row, and so did pdfkit's wrapping of it, whose height the exporter replaces with the height of the rows it draws, so a long word without a break was slow, e.g. a report with missing texts, each written as its key with the values of all the unit's properties, took minutes. The words are split as before.
