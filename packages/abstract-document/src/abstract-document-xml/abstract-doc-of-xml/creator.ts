@@ -40,19 +40,22 @@ export const creators: (styleNames: Record<string, string>) => Record<string, AD
     AbstractDoc: ((props, children: ReadonlyArray<Section.Section>) => AbstractDoc.create(props, children)) as ADCreatorFn,
     Section: ((props, children: ReadonlyArray<SectionElement.SectionElement>) => Section.create(props, children)) as ADCreatorFn,
     Paragraph: ((props, children: ReadonlyArray<Atom.Atom>) => Paragraph.create(props, children)) as ADCreatorFn,
-    TextRow: (props) => TextRow({ ...props, text: requireText(props) }, styleNames),
-    TextCell: (props) => TextCell({ ...props, text: requireText(props) }, styleNames),
+    TextRow: (props) => TextRow({ ...numericSpans(props), text: requireText(props) }, styleNames),
+    TextCell: (props) => TextCell({ ...numericSpans(props), text: requireText(props) }, styleNames),
     TextParagraph: (props) => TextParagraph({ ...props, text: requireText(props) }, styleNames),
-    HyperLinkRow: (props) => HyperLinkRow({ ...props, text: requireText(props), target: requireTarget(props, "HyperLinkRow") }, styleNames),
+    HyperLinkRow: (props) =>
+      HyperLinkRow({ ...numericSpans(props), text: requireText(props), target: requireTarget(props, "HyperLinkRow") }, styleNames),
     HyperLinkParagraph: (props) =>
       HyperLinkParagraph({ ...props, text: requireText(props), target: requireTarget(props, "HyperLinkParagraph") }, styleNames),
-    HyperLinkCell: (props) => HyperLinkCell({ ...props, text: requireText(props), target: requireTarget(props, "HyperLinkCell") }, styleNames),
+    HyperLinkCell: (props) =>
+      HyperLinkCell({ ...numericSpans(props), text: requireText(props), target: requireTarget(props, "HyperLinkCell") }, styleNames),
     TextRun: (props) => TextRun.create({ ...props, text: requireText(props) }),
     HyperLink: (props) => HyperLink.create({ ...props, text: requireText(props), target: requireTarget(props, "HyperLink") }),
     LinkTarget: (props) => LinkTarget.create({ name: requireName(props) }),
     LineBreak: (props) => LineBreak.create(props),
-    ImageRow: ((props: Record<string, unknown>) => ImageRow(imageProps(props) as unknown as ImageRowProps, styleNames)) as ADCreatorFn,
-    ImageCell: ((props: Record<string, unknown>) => ImageCell(imageProps(props) as unknown as ImageCellProps, styleNames)) as ADCreatorFn,
+    ImageRow: ((props: Record<string, unknown>) => ImageRow(imageProps(numericSpans(props)) as unknown as ImageRowProps, styleNames)) as ADCreatorFn,
+    ImageCell: ((props: Record<string, unknown>) =>
+      ImageCell(imageProps(numericSpans(props)) as unknown as ImageCellProps, styleNames)) as ADCreatorFn,
     ImageParagraph: ((props: Record<string, unknown>) =>
       ImageParagraph(imageProps(props) as unknown as ImageParagraphProps, styleNames)) as ADCreatorFn,
     Image: ((props: Record<string, unknown>) => Image.create(imageProps(props) as unknown as Image.ImageProps)) as ADCreatorFn,
@@ -396,9 +399,7 @@ const zero = createPoint(0, 0);
 const size = createSize(0, 0);
 function imageProps(props: Record<string, unknown>): Record<string, unknown> {
   return {
-    ...props,
-    width: Number(props["width"]),
-    height: Number(props["height"]),
+    ...numberProps(props, ["width", "height"]),
     imageResource: ImageResource.create({
       id: props["src"] as string,
       abstractImage: createAbstractImage(zero, size, white, [createBinaryImage(zero, zero, "png", { type: "url", url: props["src"] as string })]),
@@ -407,8 +408,20 @@ function imageProps(props: Record<string, unknown>): Record<string, unknown> {
   };
 }
 
+// Creators that build nested objects from numeric attributes need them as numbers up front. The propsCreators pass only converts the object a
+// creator returns afterwards, e.g. for the Row shortcuts the TableRow and not its TableCell, for ImageParagraph the Paragraph and not its Image
+function numberProps(props: Record<string, unknown>, names: ReadonlyArray<string>): Record<string, unknown> {
+  const numbers = names.map((name): readonly [string, unknown] => {
+    const value = props[name];
+    return [name, typeof value === "string" ? strToNum(value) : value];
+  });
+  return { ...props, ...Object.fromEntries(numbers) };
+}
+
+const numericSpans = (props: Record<string, unknown> | undefined): Record<string, unknown> => numberProps(props ?? {}, ["columnSpan", "rowSpan"]);
+
 // bold/italic/etc. are declared `xs:boolean` in the XSD schema; XSD's boolean lexical space is {true, false, 1, 0}
-const strToBool = (str: string | undefined): boolean => str === "true" || str === "1";
+export const strToBool = (str: string | undefined): boolean => str === "true" || str === "1";
 
 const strToNum = (str: string | undefined): number => {
   const num = Number(str);

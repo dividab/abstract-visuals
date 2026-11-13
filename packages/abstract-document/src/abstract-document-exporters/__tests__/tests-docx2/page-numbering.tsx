@@ -73,8 +73,38 @@ export const testPageNumbering: ExportTestDef = {
               <w:szCs w:val="20"/>
             </w:rPr>
             <w:fldChar w:fldCharType="begin"/>
+          </w:r>
+          <w:r>
+            <w:rPr>
+              <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
+              <w:b w:val="false"/>
+              <w:bCs w:val="false"/>
+              <w:color w:val="000000"/>
+              <w:sz w:val="20"/>
+              <w:szCs w:val="20"/>
+            </w:rPr>
             <w:instrText xml:space="preserve">PAGE</w:instrText>
+          </w:r>
+          <w:r>
+            <w:rPr>
+              <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
+              <w:b w:val="false"/>
+              <w:bCs w:val="false"/>
+              <w:color w:val="000000"/>
+              <w:sz w:val="20"/>
+              <w:szCs w:val="20"/>
+            </w:rPr>
             <w:fldChar w:fldCharType="separate"/>
+          </w:r>
+          <w:r>
+            <w:rPr>
+              <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
+              <w:b w:val="false"/>
+              <w:bCs w:val="false"/>
+              <w:color w:val="000000"/>
+              <w:sz w:val="20"/>
+              <w:szCs w:val="20"/>
+            </w:rPr>
             <w:fldChar w:fldCharType="end"/>
           </w:r>
           <w:r>
@@ -98,14 +128,44 @@ export const testPageNumbering: ExportTestDef = {
               <w:szCs w:val="20"/>
             </w:rPr>
             <w:fldChar w:fldCharType="begin"/>
+          </w:r>
+          <w:r>
+            <w:rPr>
+              <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
+              <w:b w:val="false"/>
+              <w:bCs w:val="false"/>
+              <w:color w:val="000000"/>
+              <w:sz w:val="20"/>
+              <w:szCs w:val="20"/>
+            </w:rPr>
             <w:instrText xml:space="preserve">NUMPAGES</w:instrText>
+          </w:r>
+          <w:r>
+            <w:rPr>
+              <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
+              <w:b w:val="false"/>
+              <w:bCs w:val="false"/>
+              <w:color w:val="000000"/>
+              <w:sz w:val="20"/>
+              <w:szCs w:val="20"/>
+            </w:rPr>
             <w:fldChar w:fldCharType="separate"/>
+          </w:r>
+          <w:r>
+            <w:rPr>
+              <w:rFonts w:ascii="Helvetica" w:cs="Helvetica" w:eastAsia="Helvetica" w:hAnsi="Helvetica"/>
+              <w:b w:val="false"/>
+              <w:bCs w:val="false"/>
+              <w:color w:val="000000"/>
+              <w:sz w:val="20"/>
+              <w:szCs w:val="20"/>
+            </w:rPr>
             <w:fldChar w:fldCharType="end"/>
           </w:r>
         </w:p>
         <w:sectPr>
-          <w:headerReference w:type="default" r:id="rId7"/>
-          <w:footerReference w:type="default" r:id="rId8"/>
+          <w:headerReference w:type="default" r:id="rId6"/>
+          <w:footerReference w:type="default" r:id="rId7"/>
           <w:pgSz w:w="11900" w:h="16840" w:orient="portrait"/>
           <w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0"/>
           <w:pgNumType/>

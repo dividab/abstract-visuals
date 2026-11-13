@@ -240,6 +240,7 @@ function renderTable(table: AD.Table.Table, resources: AD.Resources.Resources, c
 
   return new Table({
     layout: "fixed",
+    columnWidths,
     alignment: style.alignment === "Left" ? AlignmentType.LEFT : style.alignment === "Right" ? AlignmentType.RIGHT : AlignmentType.CENTER,
     margins: {
       top: styleMargins.top * abstractDocPixelToDocxDXARatio,

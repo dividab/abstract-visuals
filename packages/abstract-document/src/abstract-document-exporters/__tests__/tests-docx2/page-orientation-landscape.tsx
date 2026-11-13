@@ -80,8 +80,8 @@ export const testPageOrientationLandscape: ExportTestDef = {
           </w:r>
         </w:p>
         <w:sectPr>
-          <w:headerReference w:type="default" r:id="rId7"/>
-          <w:footerReference w:type="default" r:id="rId8"/>
+          <w:headerReference w:type="default" r:id="rId6"/>
+          <w:footerReference w:type="default" r:id="rId7"/>
           <w:pgSz w:w="16840" w:h="11900" w:orient="landscape"/>
           <w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0"/>
           <w:pgNumType/>

@@ -17,8 +17,8 @@ export const textRow = `<xs:complexType name="TextRow">
 		</xs:annotation>
 	</xs:attribute>
 	<xs:attribute name="target" type="xs:string" />
-	<xs:attribute name="columnSpan" type="xs:string" />
-	<xs:attribute name="rowSpan" type="xs:string" />
+	<xs:attribute name="columnSpan" type="xs:integer" />
+	<xs:attribute name="rowSpan" type="xs:integer" />
 	<xs:attribute name="text" type="xs:string" use="required" />
 </xs:complexType>`;
 export const textRowElement = `<xs:element name="TextRow" type="TextRow" maxOccurs="unbounded" />`;
@@ -42,8 +42,8 @@ export const textCell = `<xs:complexType name="TextCell">
 		</xs:annotation>
 	</xs:attribute>
 	<xs:attribute name="target" type="xs:string" />
-	<xs:attribute name="columnSpan" type="xs:string" />
-	<xs:attribute name="rowSpan" type="xs:string" />
+	<xs:attribute name="columnSpan" type="xs:integer" />
+	<xs:attribute name="rowSpan" type="xs:integer" />
 	<xs:attribute name="text" type="xs:string" use="required" />
 </xs:complexType>`;
 export const textCellElement = `<xs:element name="TextCell" type="TextCell" minOccurs="0" maxOccurs="unbounded" />`;
@@ -131,8 +131,8 @@ export const imageRow = `<xs:complexType name="ImageRow">
 		<xs:documentation>Shortcut to create a \\<TableRow> \\<TableCell> \\<Paragraph> \\<Image src text="..." /> \\</Paragraph> \\</TableCell> \\</TableRow></xs:documentation>
 	</xs:annotation>
 	<xs:attribute name="styleNames" type="xs:string" />
-	<xs:attribute name="columnSpan" type="xs:string" />
-	<xs:attribute name="rowSpan" type="xs:string" />
+	<xs:attribute name="columnSpan" type="xs:integer" />
+	<xs:attribute name="rowSpan" type="xs:integer" />
 	<xs:attribute name="src" type="xs:string" use="required" />
 	<xs:attribute name="width" type="xs:decimal" use="required" />
 	<xs:attribute name="height" type="xs:decimal" use="required" />
@@ -168,8 +168,8 @@ export const imageCell = `<xs:complexType name="ImageCell">
 		<xs:documentation>Shortcut to create a \\<ImageCell> \\<Paragraph> \\<Image src="..." /> \\</Paragraph> \\</TableCell></xs:documentation>
 	</xs:annotation>
 	<xs:attribute name="styleNames" type="xs:string" />
-	<xs:attribute name="columnSpan" type="xs:string" />
-	<xs:attribute name="rowSpan" type="xs:string" />
+	<xs:attribute name="columnSpan" type="xs:integer" />
+	<xs:attribute name="rowSpan" type="xs:integer" />
 	<xs:attribute name="src" type="xs:string" use="required" />
 	<xs:attribute name="width" type="xs:decimal" use="required" />
 	<xs:attribute name="height" type="xs:decimal" use="required" />

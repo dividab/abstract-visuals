@@ -91,9 +91,9 @@ export const testSimpleTable: ExportTestDef = {
           </w:tblCellMar>
         </w:tblPr>
         <w:tblGrid>
-          <w:gridCol w:w="100"/>
-          <w:gridCol w:w="100"/>
-          <w:gridCol w:w="100"/>
+          <w:gridCol w:w="3000"/>
+          <w:gridCol w:w="2000"/>
+          <w:gridCol w:w="1000"/>
         </w:tblGrid>
         <w:tr>
           <w:trPr>
@@ -109,7 +109,7 @@ export const testSimpleTable: ExportTestDef = {
                 <w:bottom w:val="none" w:sz="0"/>
                 <w:right w:val="none" w:sz="0"/>
               </w:tcBorders>
-              <w:shd/>
+              <w:shd w:val="clear"/>
               <w:tcMar>
                 <w:top w:type="dxa" w:w="0"/>
                 <w:left w:type="dxa" w:w="0"/>
@@ -148,7 +148,7 @@ export const testSimpleTable: ExportTestDef = {
                 <w:bottom w:val="none" w:sz="0"/>
                 <w:right w:val="none" w:sz="0"/>
               </w:tcBorders>
-              <w:shd/>
+              <w:shd w:val="clear"/>
               <w:tcMar>
                 <w:top w:type="dxa" w:w="0"/>
                 <w:left w:type="dxa" w:w="0"/>
@@ -187,7 +187,7 @@ export const testSimpleTable: ExportTestDef = {
                 <w:bottom w:val="none" w:sz="0"/>
                 <w:right w:val="none" w:sz="0"/>
               </w:tcBorders>
-              <w:shd/>
+              <w:shd w:val="clear"/>
               <w:tcMar>
                 <w:top w:type="dxa" w:w="0"/>
                 <w:left w:type="dxa" w:w="0"/>
@@ -231,8 +231,8 @@ export const testSimpleTable: ExportTestDef = {
         </w:r>
       </w:p>
       <w:sectPr>
-        <w:headerReference w:type="default" r:id="rId7"/>
-        <w:footerReference w:type="default" r:id="rId8"/>
+        <w:headerReference w:type="default" r:id="rId6"/>
+        <w:footerReference w:type="default" r:id="rId7"/>
         <w:pgSz w:w="11900" w:h="16840" w:orient="portrait"/>
         <w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0"/>
         <w:pgNumType/>

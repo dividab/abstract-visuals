@@ -12,6 +12,41 @@ describe("creator.ts propsCreators", () => {
     await expect(exportToBytes(doc)).resolves.toBeInstanceOf(Uint8Array);
   });
 
+  test("Row shortcuts pass columnSpan/rowSpan to their cell as numbers, not strings (docx rejects '2')", () => {
+    const [doc] = abstractDocXml(
+      `<AbstractDoc><Section><Table columnWidths="1,1">
+        <TextRow columnSpan="2" rowSpan="1" text="x"/>
+        <HyperLinkRow columnSpan="2" text="x" target="https://example.com"/>
+        <ImageRow columnSpan="2" src="x.png" width="1" height="1"/>
+      </Table></Section></AbstractDoc>`,
+      {},
+      {}
+    );
+    const rows = (doc as unknown as { children: Array<{ children: Array<{ children: Array<{ children: Array<unknown> }> }> }> }).children[0]
+      ?.children[0]?.children;
+    expect(rows?.map((row) => row.children[0])).toMatchObject([{ columnSpan: 2, rowSpan: 1 }, { columnSpan: 2 }, { columnSpan: 2 }]);
+  });
+
+  test("differentFirstPage accepts '1' like the other xs:boolean attributes, not only 'true'", () => {
+    const [doc] = abstractDocXml(
+      `<AbstractDoc><Section><page>
+        <header differentFirstPage="1"><TextParagraph text="first"/></header>
+        <header><TextParagraph text="rest"/></header>
+      </page></Section></AbstractDoc>`,
+      {},
+      {}
+    );
+    const page = (doc as unknown as { children: Array<{ page: { header: Array<unknown>; frontHeader?: Array<unknown> } }> }).children[0]?.page;
+    expect(page?.frontHeader).toHaveLength(1);
+    expect(page?.header).toHaveLength(1);
+  });
+
+  test("Image width/height that aren't numbers fall back to 0 like other numeric attributes, not NaN", () => {
+    const [doc] = abstractDocXml('<AbstractDoc><Section><ImageParagraph src="x.png" width="abc" height="2"/></Section></AbstractDoc>', {}, {});
+    const image = (doc as unknown as { children: Array<{ children: Array<{ children: Array<unknown> }> }> }).children[0]?.children[0]?.children[0];
+    expect(image).toMatchObject({ type: "Image", width: 0, height: 2 });
+  });
+
   test("TextRun without a text attribute defaults to an empty string instead of throwing on undefined.replaceAll", () => {
     const [doc] = abstractDocXml("<AbstractDoc><Section><Paragraph><TextRun/></Paragraph></Section></AbstractDoc>", {}, {});
     const textRun = (doc as unknown as { children: Array<{ children: Array<{ children: Array<{ text: unknown }> }> }> }).children[0]?.children[0]

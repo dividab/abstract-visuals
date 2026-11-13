@@ -92,7 +92,7 @@ export const testSingleImage: ExportTestDef = {
               <wp:inline distT="0" distB="0" distL="0" distR="0">
                 <wp:extent cx="1905000" cy="1428750"/>
                 <wp:effectExtent t="0" r="0" b="0" l="0"/>
-                <wp:docPr id="1" name="" descr="" title=""/>
+                <wp:docPr id="*" name=""/>
                 <wp:cNvGraphicFramePr>
                   <a:graphicFrameLocks
                     xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
@@ -132,8 +132,8 @@ export const testSingleImage: ExportTestDef = {
             </w:r>
           </w:p>
           <w:sectPr>
-            <w:headerReference w:type="default" r:id="rId7"/>
-            <w:footerReference w:type="default" r:id="rId8"/>
+            <w:headerReference w:type="default" r:id="rId6"/>
+            <w:footerReference w:type="default" r:id="rId7"/>
             <w:pgSz w:w="11900" w:h="16840" w:orient="portrait"/>
             <w:pgMar w:top="0" w:right="0" w:bottom="0" w:left="0" w:header="0" w:footer="0" w:gutter="0"/>
             <w:pgNumType/>

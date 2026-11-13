@@ -95,7 +95,7 @@ export const testMixedTextRunAndImages: ExportTestDef = {
 					<wp:inline distT="0" distB="0" distL="0" distR="0">
 						<wp:extent cx="1905000" cy="1428750"/>
 						<wp:effectExtent t="0" r="0" b="0" l="0"/>
-						<wp:docPr id="1" name="" descr="" title=""/>
+						<wp:docPr id="*" name=""/>
 						<wp:cNvGraphicFramePr>
 							<a:graphicFrameLocks
 								xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
@@ -149,7 +149,7 @@ export const testMixedTextRunAndImages: ExportTestDef = {
 						<wp:inline distT="0" distB="0" distL="0" distR="0">
 							<wp:extent cx="2032000" cy="1524000"/>
 							<wp:effectExtent t="0" r="0" b="0" l="0"/>
-							<wp:docPr id="1" name="" descr="" title=""/>
+							<wp:docPr id="*" name=""/>
 							<wp:cNvGraphicFramePr>
 								<a:graphicFrameLocks
 									xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>

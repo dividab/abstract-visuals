@@ -6,7 +6,7 @@ import type { Font } from "../../abstract-document/primitives/font.js";
 import type { Resources } from "../../abstract-document/resources.js";
 import * as StyleKey from "../../abstract-document/styles/style-key.js";
 import type { ADCreatorFn } from "./creator.js";
-import { creators, propsCreators } from "./creator.js";
+import { creators, propsCreators, strToBool } from "./creator.js";
 
 export type TemplateInput = {
   readonly template: string;
@@ -78,10 +78,10 @@ function abstractDocXmlRecursive(creators: Record<string, ADCreatorFn>, xmlEleme
       // Some special keys should directly have an array of children as value instead of an object with children key
       const arrayedElements = ["header", "footer", "headerRows"];
       const childrenOnly = arrayedElements.findIndex((e) => e === childName) !== -1;
-      const differentFirstPage = childElement.attributes["differentFirstPage"];
-      if (differentFirstPage === "true" && childName === "header") {
+      const differentFirstPage = strToBool(childElement.attributes["differentFirstPage"]);
+      if (differentFirstPage && childName === "header") {
         props["frontHeader"] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
-      } else if (differentFirstPage === "true" && childName === "footer") {
+      } else if (differentFirstPage && childName === "footer") {
         props["frontFooter"] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
       } else {
         props[childName] = abstractDocXmlRecursive(creators, childElement, childrenOnly);
