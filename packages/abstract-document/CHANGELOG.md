@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.5.6] - 2026-11-13
+
+- Fixed: an `ImageParagraph`, `ImageRow` or `ImageCell` `width` or `height` that isn't a finite number, e.g. `width="inf"`, fills the available size again, as before 20.5.5. 20.5.5 made it 0, which sizes the image from the other attribute and the image's proportions, so e.g. a wide drawing with `width="inf" height="380"` ran off the page instead of being scaled down to the page width, and `horizontalAlignment="Center"` no longer centered the image across the page.
+
 ## [20.5.5] - 2026-11-13
 
 - Fixed: the XML row shortcuts `TextRow`, `HyperLinkRow` and `ImageRow` pass `columnSpan` and `rowSpan` to their cell as numbers. docx 9.15 rejects strings, so e.g. `<TextRow columnSpan="2" text="x"/>` threw `Invalid value '2' specified. Must be an integer.` The XML schema now declares both attributes `xs:integer`.

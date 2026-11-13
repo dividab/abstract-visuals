@@ -399,7 +399,7 @@ const zero = createPoint(0, 0);
 const size = createSize(0, 0);
 function imageProps(props: Record<string, unknown>): Record<string, unknown> {
   return {
-    ...numberProps(props, ["width", "height"]),
+    ...numberProps(props, ["width", "height"], strToImageSize),
     imageResource: ImageResource.create({
       id: props["src"] as string,
       abstractImage: createAbstractImage(zero, size, white, [createBinaryImage(zero, zero, "png", { type: "url", url: props["src"] as string })]),
@@ -410,15 +410,22 @@ function imageProps(props: Record<string, unknown>): Record<string, unknown> {
 
 // Creators that build nested objects from numeric attributes need them as numbers up front. The propsCreators pass only converts the object a
 // creator returns afterwards, e.g. for the Row shortcuts the TableRow and not its TableCell, for ImageParagraph the Paragraph and not its Image
-function numberProps(props: Record<string, unknown>, names: ReadonlyArray<string>): Record<string, unknown> {
+function numberProps(props: Record<string, unknown>, names: ReadonlyArray<string>, toNumber: (str: string) => number): Record<string, unknown> {
   const numbers = names.map((name): readonly [string, unknown] => {
     const value = props[name];
-    return [name, typeof value === "string" ? strToNum(value) : value];
+    return [name, typeof value === "string" ? toNumber(value) : value];
   });
   return { ...props, ...Object.fromEntries(numbers) };
 }
 
-const numericSpans = (props: Record<string, unknown> | undefined): Record<string, unknown> => numberProps(props ?? {}, ["columnSpan", "rowSpan"]);
+const numericSpans = (props: Record<string, unknown> | undefined): Record<string, unknown> =>
+  numberProps(props ?? {}, ["columnSpan", "rowSpan"], strToNum);
+
+// An image size that isn't a finite number, e.g. width="inf", fills the available size, as the exporters do with any non-finite size
+const strToImageSize = (str: string): number => {
+  const num = Number(str);
+  return Number.isFinite(num) ? num : Infinity;
+};
 
 // bold/italic/etc. are declared `xs:boolean` in the XSD schema; XSD's boolean lexical space is {true, false, 1, 0}
 export const strToBool = (str: string | undefined): boolean => str === "true" || str === "1";

@@ -41,10 +41,10 @@ describe("creator.ts propsCreators", () => {
     expect(page?.header).toHaveLength(1);
   });
 
-  test("Image width/height that aren't numbers fall back to 0 like other numeric attributes, not NaN", () => {
-    const [doc] = abstractDocXml('<AbstractDoc><Section><ImageParagraph src="x.png" width="abc" height="2"/></Section></AbstractDoc>', {}, {});
+  test("Image width/height that aren't finite numbers, e.g. width='inf', are Infinity, which fills the available size, not 0", () => {
+    const [doc] = abstractDocXml('<AbstractDoc><Section><ImageParagraph src="x.png" width="inf" height="2"/></Section></AbstractDoc>', {}, {});
     const image = (doc as unknown as { children: Array<{ children: Array<{ children: Array<unknown> }> }> }).children[0]?.children[0]?.children[0];
-    expect(image).toMatchObject({ type: "Image", width: 0, height: 2 });
+    expect(image).toMatchObject({ type: "Image", width: Infinity, height: 2 });
   });
 
   test("TextRun without a text attribute defaults to an empty string instead of throwing on undefined.replaceAll", () => {
