@@ -37,7 +37,7 @@ export function createClassMaterial(c: MaterialClass, reflections: boolean): Mat
   const material = c.type
     ? new MeshPhysicalMaterial({ ...common, ...finish, metalness: reflections ? metalness : Math.min(metalness, plainMetalness), roughness })
     : new MeshStandardMaterial({ ...common, metalness: reflections ? metalness : Math.min(metalness, plainMetalness), roughness });
-  return Object.assign(material, { onBeforeCompile: roundEdges });
+  return Object.assign(material, { onBeforeCompile: c.type === "galvanized" ? galvanize : roundEdges });
 }
 
 /** The most metalness without reflections */
@@ -154,6 +154,50 @@ reflectedLight.indirectSpecular *= edgeShade;`
     clearcoatNormal = normal;
   }
 #endif`
+    );
+}
+
+/** Rounded edges and galvanized spangle: 10 mm zinc crystals of their own brightness and roughness, faded out where only a few pixels wide */
+function galvanize(shader: { vertexShader: string; fragmentShader: string }): void {
+  roundEdges(shader);
+  shader.fragmentShader = shader.fragmentShader
+    .replace(
+      "#include <common>",
+      `#include <common>
+vec2 spangleHash( vec2 p ) {
+  vec3 q = fract( p.xyx * vec3( 0.1031, 0.1030, 0.0973 ) );
+  q += dot( q, q.yzx + 33.33 );
+  return fract( ( q.xx + q.yz ) * q.zy );
+}`
+    )
+    .replace(
+      "#include <color_fragment>",
+      `#include <color_fragment>
+vec3 facePoint = vBoxPoint / 10.0;
+vec3 faceNormal = abs( cross( dFdx( vBoxPoint ), dFdy( vBoxPoint ) ) );
+vec2 spanglePoint = faceNormal.x > max( faceNormal.y, faceNormal.z ) ? facePoint.yz : faceNormal.y > faceNormal.z ? facePoint.xz : facePoint.xy;
+vec2 spangleCell = floor( spanglePoint );
+vec2 nearestCell = spangleCell;
+float nearest = 8.0;
+for ( int y = -1; y <= 1; y++ ) {
+  for ( int x = -1; x <= 1; x++ ) {
+    vec2 cell = spangleCell + vec2( x, y );
+    vec2 offset = cell + spangleHash( cell ) - spanglePoint;
+    float cellDistance = dot( offset, offset );
+    if ( cellDistance < nearest ) {
+      nearest = cellDistance;
+      nearestCell = cell;
+    }
+  }
+}
+vec2 spanglePixel = fwidth( spanglePoint );
+float spangle = ( spangleHash( nearestCell + 17.0 ).x - 0.5 ) * ( 1.0 - smoothstep( 0.1, 0.4, max( spanglePixel.x, spanglePixel.y ) ) );
+diffuseColor.rgb *= 1.0 + 0.1 * spangle;`
+    )
+    .replace(
+      "#include <roughnessmap_fragment>",
+      `#include <roughnessmap_fragment>
+roughnessFactor = clamp( roughnessFactor + 0.3 * spangle, 0.05, 1.0 );`
     );
 }
 

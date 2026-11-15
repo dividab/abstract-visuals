@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Changed: the three.js viewer draws a `galvanized` material with spangle, zinc crystals about 10 scene units across, each a little brighter or darker and glossier or duller, faded out where they'd be only a few pixels wide
+
 ## [4.2.0] - 2026-11-10
 
 - Added: `sceneTextHeight(groups)`, the text height of a scene, `textHeightForSize(size)` of its objects' size without its texts: 32 up to 3600 on the longest side, else as many steps of 2^¼ above it as the longest side needs, rounded up, so a text is at most 19% larger than in proportion to the scene's size. Every renderer draws its texts without a font size and its dimensions at it, their text, marks, gaps and lines sized by it
