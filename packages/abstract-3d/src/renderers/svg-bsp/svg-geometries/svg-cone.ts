@@ -1,7 +1,7 @@
 import type { Cone, Vec2, Vec3, Material } from "../../../abstract-3d.js";
 import { vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3ZMean, equals } from "../../../abstract-3d.js";
 import { rgbGrayScale } from "../../../utils.js";
-import { svgCircle, svgPolygon } from "../svg-encoding.js";
+import { svgCircle } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
 import { gray, isOpaque, stBW, zElem, transparent } from "./shared.js";
 
@@ -36,15 +36,13 @@ export function cone(
     botVec3Array.push(currBot);
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
-      const points = [point(currBot.x, currBot.y), point(prevBot.x, prevBot.y), point(topPos.x, topPos.y), point(topPos.x, topPos.y)];
       zOrderComponents.push(
-        zElem(
-          svgPolygon(rot, points, fill, opacity, stroke, stBW),
-          vec3ZMean(currBot, prevBot, topPos),
-          [currBot, prevBot, topPos],
-          isOpaque(fill, opacity),
-          { fill, opacity, stroke, strokeWidth: stBW }
-        )
+        zElem("", vec3ZMean(currBot, prevBot, topPos), [currBot, prevBot, topPos], isOpaque(fill, opacity), {
+          fill,
+          opacity,
+          stroke,
+          strokeWidth: stBW,
+        })
       );
     }
     currentAngle += angleStep;

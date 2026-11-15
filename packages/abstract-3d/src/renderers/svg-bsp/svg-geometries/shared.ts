@@ -3,7 +3,8 @@ import { vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 
 /**
  * An element and its mean depth, and the points it covers in view space (x right, y up, z toward the viewer), by which it's ordered when given,
- * whether it hides what's behind it, and the style of a plain polygon, without holes, by which its pieces are drawn when it's split
+ * whether it hides what's behind it, and the style of a plain polygon, without holes, by which it's drawn as a path, also its pieces when it's split.
+ * `edges` is of a piece, whether the edge from each point to the next is the polygon's own, not a cut
  */
 export type zOrderElement = {
   readonly element: string;
@@ -11,6 +12,7 @@ export type zOrderElement = {
   readonly polygon?: ReadonlyArray<Vec3>;
   readonly opaque?: boolean;
   readonly style?: PolygonStyle;
+  readonly edges?: ReadonlyArray<boolean>;
 };
 export type PolygonStyle = { readonly fill: string; readonly opacity: number; readonly stroke: string; readonly strokeWidth: number };
 export const zElem = (element: string, zOrder: number, polygon?: ReadonlyArray<Vec3>, opaque?: boolean, style?: PolygonStyle): zOrderElement => ({

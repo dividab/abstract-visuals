@@ -24,8 +24,6 @@ export function plane(
   const v3 = vec3tr(half.x, half.y);
   const v4 = vec3tr(-half.x, half.y);
 
-  const points = [point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)];
-
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
     ? [opts.gray_scale ? gray : material.normal, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(material.normal) : material.normal, 0];
@@ -33,7 +31,17 @@ export function plane(
   const plain = !holes?.length;
   return [
     zElem(
-      svgPolygon(rot, points, fill, opacity, strokeColor, strokeThickness, holes),
+      plain
+        ? ""
+        : svgPolygon(
+            rot,
+            [point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)],
+            fill,
+            opacity,
+            strokeColor,
+            strokeThickness,
+            holes
+          ),
       vec3ZMean(v1, v2, v3, v4),
       [v1, v2, v3, v4],
       isOpaque(fill, opacity) && plain,

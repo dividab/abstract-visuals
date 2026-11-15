@@ -1,7 +1,7 @@
 import type { Cylinder, Vec2, Vec3, Material } from "../../../abstract-3d.js";
 import { vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3ZMean, equals } from "../../../abstract-3d.js";
 import { rgbGrayScale } from "../../../utils.js";
-import { svgCircle, svgPolygon } from "../svg-encoding.js";
+import { svgCircle } from "../svg-encoding.js";
 import type { SvgOptions, zOrderElement } from "./shared.js";
 import { getArea, gray, isOpaque, stBW, transparent, zElem } from "./shared.js";
 
@@ -45,12 +45,11 @@ export function cylinder(
     topVec3Array.push(currTop);
     const mid = currentAngle - angleStep / 2;
     if (i !== 0 && !(cullBack && vec3TransRot(vec3(Math.sin(mid), 0, Math.cos(mid)), vec3Zero, rot).z < -1e-6)) {
-      const prevBot = botVec3Array[i - 1]!;
-      const prevTop = topVec3Array[i - 1]!;
-
-      const points = [point(currBot.x, currBot.y), point(prevBot.x, prevBot.y), point(prevTop.x, prevTop.y), point(currTop.x, currTop.y)];
-      const polygon = [currBot, prevBot, prevTop, currTop];
-      zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(...polygon), polygon, opaque, style));
+      const polygon = [currBot, botVec3Array[i - 1]!, topVec3Array[i - 1]!, currTop];
+      // Seen edge on, a closed cylinder's facet is only a line along its end
+      if (c.open || Math.abs(getArea(polygon)) >= minArea) {
+        zOrderComponents.push(zElem("", vec3ZMean(...polygon), polygon, opaque, style));
+      }
     }
     currentAngle += angleStep;
   }
@@ -70,13 +69,13 @@ export function cylinder(
           opaque && !holes?.length
         )
       );
-    } else {
-      const points = ring.map((p) => point(p.x, p.y));
+    } else if (Math.abs(getArea(ring)) >= minArea) {
       // Not seen edge on, when it's only a line along the facets' edges
-      if (Math.abs(getArea(points)) >= 1e-6) {
-        zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), circlePos.z, ring, opaque && !c.holes?.length, style));
-      }
+      zOrderComponents.push(zElem("", circlePos.z, ring, opaque && !c.holes?.length, style));
     }
   }
   return zOrderComponents;
 }
+
+/** Of a face on screen, in the scene's units squared, below which it's seen edge on */
+const minArea = 1e-6;

@@ -1,16 +1,15 @@
 import type { Vec2, Vec3 } from "../../abstract-3d.js";
-import { vec3Zero } from "../../abstract-3d.js";
-import { svgEdges, svgPolygon } from "./svg-encoding.js";
 import type { zOrderElement } from "./svg-geometries/shared.js";
-import { isOpaque } from "./svg-geometries/shared.js";
 
 /**
  * Elements in drawing order, back to front, by a BSP tree of their planes: of each node, what's behind its plane is drawn first, then what's in it,
- * then what's in front of it. An element on both sides of a plane is split by it when it's a plain polygon, its pieces stroked only along its own
- * edges, else put on the side of its center, and drawn whole again where nothing drawn between its pieces overlaps it on screen. Elements without
- * points are drawn last, by mean depth. Elements entirely inside an opaque convex polygon drawn after them are left out, as they can't be seen
+ * then what's in front of it. An element on both sides of a plane is split by it when it's a plain polygon, its pieces given with which of their
+ * edges are its own, else put on the side of its center, and drawn whole again where nothing drawn between its pieces overlaps it on screen. Elements
+ * without points are drawn last, by mean depth. Elements entirely inside an opaque convex polygon drawn after them are left out, as they can't be
+ * seen, pieces as soon as they're behind one, so what's hidden isn't split further. The tree's work is limited by the number of elements, past which
+ * what's left, the farthest, is drawn by mean depth, so a scene whose faces cut through each other all over is ordered roughly, not slowly
  */
-export function orderElements(elements: ReadonlyArray<zOrderElement>, point: (x: number, y: number) => Vec2): ReadonlyArray<zOrderElement> {
+export function orderElements(elements: ReadonlyArray<zOrderElement>): ReadonlyArray<zOrderElement> {
   const pieces: Array<Piece> = [];
   const pointless: Array<zOrderElement> = [];
   for (const element of elements) {
@@ -20,7 +19,7 @@ export function orderElements(elements: ReadonlyArray<zOrderElement>, point: (x:
       pointless.push(element);
     }
   }
-  const drawn: Drawn = { pieces: [], items: [], spans: new Map() };
+  const drawn: Drawn = { pieces: [], items: [], spans: new Map(), culled: new Set() };
   draw(pieces, drawn);
   const state = getHidden(drawn.items);
   mergeSplit(drawn, state);
@@ -28,7 +27,7 @@ export function orderElements(elements: ReadonlyArray<zOrderElement>, point: (x:
   for (let i = 0; i < drawn.pieces.length; i++) {
     const p = drawn.pieces[i]!;
     if (state[i] !== skip) {
-      ordered.push(state[i] === whole || !p.edges ? p.element : createPieceElement(p, point));
+      ordered.push(state[i] === whole || !p.edges ? p.element : { ...p.element, polygon: p.points, edges: p.edges });
     }
   }
   return [...ordered, ...pointless.sort((a, b) => a.zOrder - b.zOrder)];
@@ -38,6 +37,16 @@ export function orderElements(elements: ReadonlyArray<zOrderElement>, point: (x:
 const eps = 1e-3;
 /** The planes tried at a node, spread over its pieces, of which the one splitting the fewest is taken */
 const candidates = 8;
+/**
+ * The work a scene's tree gets, which takes up to a second: a piece sorted at a node is 1 and a split 16, this many per element, and as many more as
+ * a small scene with faces through each other needs
+ */
+const [workPerElement, workAtLeast, workPerSplit] = [256, 2 ** 20, 16];
+/** The opaque faces of a plane that what's behind it is tested against, its largest */
+const maxOccluders = 8;
+/** The cells along the screen of the finest grid of occluders, a level up halving them; 2 to the power of its levels */
+const [gridCells, gridLevels] = [256, 8];
+const noCell: ReadonlyArray<number> = [];
 /** A drawn piece's state: drawn as it is, left out, or drawn as its whole element */
 const [skip, whole] = [1, 2];
 
@@ -57,35 +66,85 @@ type Item = {
   /** The winding on screen of an opaque convex polygon, 1 or -1, by which it can hide others; 0 for others */
   readonly occluder: number;
 };
-/** Pieces in drawing order, their items, and of each split element the first and last of its pieces */
+/** A node's pieces, and the opaque faces of the nearest plane they're all behind, which hide the pieces inside them on screen */
+type Task = { readonly pieces: ReadonlyArray<Piece>; readonly occluders: ReadonlyArray<Item>; readonly inPlane?: boolean };
+/** Pieces in drawing order, their items, of each split element the first and last of its pieces, and the elements with a piece left out as hidden */
 type Drawn = {
   readonly pieces: Array<Piece>;
   readonly items: Array<Item>;
   readonly spans: Map<zOrderElement, { readonly first: number; readonly last: number }>;
+  readonly culled: Set<zOrderElement>;
 };
 
-/** The tree walked as it's built, with a stack instead of recursion, as it's as deep as a scene's planes can be many: back, then in, then front */
+/**
+ * The tree walked as it's built, with a stack instead of recursion, as it's as deep as a scene's planes can be many: front, then in, then back, so
+ * the work goes to what's nearest when it runs out; drawn the other way
+ */
 function draw(pieces: ReadonlyArray<Piece>, drawn: Drawn): void {
-  const stack: Array<{ readonly pieces: ReadonlyArray<Piece>; readonly inPlane?: boolean }> = [{ pieces }];
+  const stack: Array<Task> = [{ pieces, occluders: [] }];
+  const nearest: Array<Piece> = [];
+  let work = workPerElement * pieces.length + workAtLeast;
   while (stack.length > 0) {
     const task = stack.pop()!;
-    const plane = task.inPlane ? undefined : getSplitter(task.pieces);
+    work -= task.pieces.length;
+    const plane = task.inPlane || work <= 0 ? undefined : getSplitter(task.pieces);
     if (plane) {
-      const [back, inPlane, front]: [Array<Piece>, Array<Piece>, Array<Piece>] = [[], [], []];
+      const [back, inPlane, front, across]: [Array<Piece>, Array<Piece>, Array<Piece>, Array<Piece>] = [[], [], [], []];
+      const occluders: Array<Item> = [];
       for (const p of task.pieces) {
-        partition(p, plane, back, inPlane, front);
+        // An element's pieces share its plane, which they're in, though its points may be off it by more than eps
+        const side = p.plane === plane ? 0 : getSide(p.points, plane);
+        if (side === 2 && p.element.style && p.points.length >= 3 && work > 0) {
+          work -= workPerSplit;
+          split(p, plane, back, front, task.occluders, drawn.culled);
+        } else {
+          (side === 0 ? inPlane : side < 0 ? back : side === 1 ? front : across).push(p);
+        }
+        const occluder = side === 0 && p.element.opaque ? createItem(p.points, true) : undefined;
+        if (occluder && occluder.occluder !== 0) {
+          occluders.push(occluder);
+        }
       }
-      stack.push({ pieces: front }, { pieces: inPlane, inPlane: true }, { pieces: back });
+      occluders.sort((a, b) => (b.max.x - b.min.x) * (b.max.y - b.min.y) - (a.max.x - a.min.x) * (a.max.y - a.min.y));
+      occluders.length = Math.min(occluders.length, maxOccluders);
+      // What's behind the plane and inside one of its opaque faces can't be seen
+      let kept = 0;
+      for (const p of back) {
+        if (isCovered(p.points, occluders)) {
+          drawn.culled.add(p.element);
+        } else {
+          back[kept++] = p;
+        }
+      }
+      back.length = kept;
+      // On both sides, unsplit: on the side of its center, where it's not all behind the plane
+      for (const p of across) {
+        let sum = 0;
+        for (const point of p.points) {
+          sum += getDistance(point, plane);
+        }
+        (sum < 0 ? back : front).push(p);
+      }
+      stack.push(
+        { pieces: back, occluders: occluders.length > 0 ? occluders : task.occluders },
+        { pieces: inPlane, occluders: task.occluders, inPlane: true },
+        { pieces: front, occluders: task.occluders }
+      );
       continue;
     }
-    // In a plane, as given; else a leaf, whose pieces have no plane, by mean depth
-    for (const p of task.inPlane ? task.pieces : [...task.pieces].sort((a, b) => a.element.zOrder - b.element.zOrder)) {
-      if (p.edges) {
-        drawn.spans.set(p.element, { first: drawn.spans.get(p.element)?.first ?? drawn.pieces.length, last: drawn.pieces.length });
-      }
-      drawn.pieces.push(p);
-      drawn.items.push(createItem(p.points, !!p.element.opaque));
+    // In a plane, as given; else a leaf, whose pieces have no plane, or what's left when the work has run out, by mean depth
+    const list = task.inPlane ? task.pieces : [...task.pieces].sort((a, b) => a.element.zOrder - b.element.zOrder);
+    for (let i = list.length - 1; i >= 0; i--) {
+      nearest.push(list[i]!);
     }
+  }
+  for (let i = nearest.length - 1; i >= 0; i--) {
+    const p = nearest[i]!;
+    if (p.edges) {
+      drawn.spans.set(p.element, { first: drawn.spans.get(p.element)?.first ?? drawn.pieces.length, last: drawn.pieces.length });
+    }
+    drawn.pieces.push(p);
+    drawn.items.push(createItem(p.points, !!p.element.opaque));
   }
 }
 
@@ -110,25 +169,18 @@ function getSplitter(pieces: ReadonlyArray<Piece>): Plane | undefined {
   return best;
 }
 
-/** Behind, in or in front of the plane; split by it if on both sides and a plain polygon, else on the side of its center */
-function partition(piece: Piece, plane: Plane, back: Array<Piece>, inPlane: Array<Piece>, front: Array<Piece>): void {
-  // An element's pieces share its plane, which they're in, though its points may be off it by more than eps
-  const side = piece.plane === plane ? 0 : getSide(piece.points, plane);
-  if (side === 2 && piece.element.style && piece.points.length >= 3) {
-    split(piece, plane, back, front);
-  } else if (side === 2) {
-    let sum = 0;
-    for (const p of piece.points) {
-      sum += getDistance(p, plane);
-    }
-    (sum < 0 ? back : front).push(piece);
-  } else {
-    (side === 0 ? inPlane : side < 0 ? back : front).push(piece);
-  }
-}
-
-/** Sutherland–Hodgman against the plane, both ways; an edge of a piece along the cut isn't the element's own */
-function split(piece: Piece, plane: Plane, back: Array<Piece>, front: Array<Piece>): void {
+/**
+ * Sutherland–Hodgman against the plane, both ways; an edge of a piece along the cut isn't the element's own. A piece inside one of the occluders,
+ * which it's behind, is left out
+ */
+function split(
+  piece: Piece,
+  plane: Plane,
+  back: Array<Piece>,
+  front: Array<Piece>,
+  occluders: ReadonlyArray<Item>,
+  culled: Set<zOrderElement>
+): void {
   const { points, edges } = piece;
   const [b, f] = [
     { points: Array<Vec3>(), edges: Array<boolean>() },
@@ -159,19 +211,16 @@ function split(piece: Piece, plane: Plane, back: Array<Piece>, front: Array<Piec
     }
     dp = dq;
   }
-  if (b.points.length >= 3) {
-    back.push({ ...piece, ...b });
+  for (const [half, side] of [
+    [b, back],
+    [f, front],
+  ] as const) {
+    if (half.points.length >= 3 && isCovered(half.points, occluders)) {
+      culled.add(piece.element);
+    } else if (half.points.length >= 3) {
+      side.push({ ...piece, ...half });
+    }
   }
-  if (f.points.length >= 3) {
-    front.push({ ...piece, ...f });
-  }
-}
-
-function createPieceElement({ element, points, edges = [] }: Piece, point: (x: number, y: number) => Vec2): zOrderElement {
-  const { fill, opacity, stroke, strokeWidth } = element.style!;
-  const screen = points.map((p) => point(p.x, p.y));
-  const outline = strokeWidth > 0 && isOpaque(stroke, 1) && edges.includes(true) ? svgEdges(screen, edges, stroke, strokeWidth) : "";
-  return { ...element, element: svgPolygon(vec3Zero, screen, fill, opacity, stroke, 0) + outline, polygon: points };
 }
 
 /** By Newell's method, unless they're a line or a point, or seen edge on */
@@ -203,37 +252,58 @@ function getSide(points: ReadonlyArray<Vec3>, plane: Plane): number {
   return min >= -eps ? (max > eps ? 1 : 0) : max <= eps ? -1 : 2;
 }
 
-/** Of items drawn back to front, `skip` for those inside an opaque convex polygon drawn after them; a sweep along x over their bounds on screen */
+/**
+ * Of items drawn back to front, `skip` for those inside an opaque convex polygon drawn after them. From the last drawn, each is tested against the
+ * occluders so far, kept by the cells they overlap of the grid level whose cells their shorter side fits in: one that contains an item is in the cell
+ * of the item's corner, at one of the levels
+ */
 function getHidden(items: ReadonlyArray<Item>): Uint8Array {
   const state = new Uint8Array(items.length);
-  const active: Array<number> = [];
-  for (const i of [...items.keys()].sort((a, b) => items[a]!.min.x - items[b]!.min.x)) {
+  let [minX, minY, maxX, maxY] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const { min, max } of items) {
+    [minX, minY, maxX, maxY] = [Math.min(minX, min.x), Math.min(minY, min.y), Math.max(maxX, max.x), Math.max(maxY, max.y)];
+  }
+  const finest = Math.max(maxX - minX, maxY - minY, eps) / gridCells;
+  const cells = new Map<number, Array<number>>();
+  for (let i = items.length - 1; i >= 0; i--) {
     const a = items[i]!;
-    // Those whose bounds end before this one's start are dropped in place
-    let kept = 0;
-    for (const j of active) {
-      const b = items[j]!;
-      if (b.max.x > a.min.x + eps) {
-        active[kept++] = j;
-        // Along x they overlap, by the sweep, which a vertical line's zero width wouldn't by bounds
-        const [back, front] = [Math.min(i, j), Math.max(i, j)];
-        state[back] ||= a.min.y < b.max.y - eps && b.min.y < a.max.y - eps && covers(items[front]!, items[back]!) ? skip : 0;
+    for (let level = 0; cells.size > 0 && level <= gridLevels && state[i] === 0; level++) {
+      const size = finest * 2 ** level;
+      const cell = cells.get((level * 512 + Math.floor((a.min.x - minX) / size)) * 512 + Math.floor((a.min.y - minY) / size)) ?? noCell;
+      for (let k = 0; k < cell.length && state[i] === 0; k++) {
+        const b = items[cell[k]!]!;
+        const inside = b.min.x <= a.min.x + eps && b.min.y <= a.min.y + eps && b.max.x >= a.max.x - eps && b.max.y >= a.max.y - eps;
+        state[i] = inside && covers(b, a.points) ? skip : 0;
       }
     }
-    active.length = kept;
-    active.push(i);
+    // What a hidden occluder hides is hidden by what hides it
+    if (a.occluder !== 0 && state[i] === 0) {
+      const level = Math.max(0, Math.ceil(Math.log2(Math.min(a.max.x - a.min.x, a.max.y - a.min.y) / finest)));
+      const size = finest * 2 ** level;
+      for (let x = Math.floor((a.min.x - minX) / size); x <= Math.floor((a.max.x - minX) / size); x++) {
+        for (let y = Math.floor((a.min.y - minY) / size); y <= Math.floor((a.max.y - minY) / size); y++) {
+          const key = (level * 512 + x) * 512 + y;
+          const cell = cells.get(key);
+          if (cell) {
+            cell.push(i);
+          } else {
+            cells.set(key, [i]);
+          }
+        }
+      }
+    }
   }
   return state;
 }
 
 /**
  * A split element whose pieces have nothing else drawn between them that overlaps it on screen is drawn whole where its last piece is, its other
- * pieces skipped, unless they're all hidden
+ * pieces skipped, unless they're all hidden, or one was left out as hidden, behind what the whole would be drawn over
  */
-function mergeSplit({ pieces, items, spans }: Drawn, state: Uint8Array): void {
+function mergeSplit({ pieces, items, spans, culled }: Drawn, state: Uint8Array): void {
   for (const [element, { first, last }] of spans) {
     const bounds = createItem(element.polygon!, false);
-    let [blocked, visible] = [false, false];
+    let [blocked, visible] = [culled.has(element), false];
     for (let k = first; k <= last && !blocked; k++) {
       const own = pieces[k]!.element === element;
       visible ||= own && state[k] !== skip;
@@ -276,15 +346,25 @@ function createItem(points: ReadonlyArray<Vec3>, opaque: boolean): Item {
 const overlaps = (a: Pick<Item, "min" | "max">, b: Pick<Item, "min" | "max">): boolean =>
   a.min.x < b.max.x - eps && b.min.x < a.max.x - eps && a.min.y < b.max.y - eps && b.min.y < a.max.y - eps;
 
-/** Whether the front's opaque convex polygon contains all of the back's points on screen, so the back can't be seen; not for a single point, e.g. text */
-function covers({ points, occluder }: Item, back: Item): boolean {
-  if (occluder === 0 || back.points.length < 2) {
+/** Whether one of the occluders, which the points are behind, contains them all on screen */
+function isCovered(points: ReadonlyArray<Vec3>, occluders: ReadonlyArray<Item>): boolean {
+  for (const occluder of occluders) {
+    if (covers(occluder, points)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Whether the front's opaque convex polygon contains all of the points on screen, so they can't be seen; not for a single point, e.g. text */
+function covers({ points, occluder }: Item, back: ReadonlyArray<Vec3>): boolean {
+  if (occluder === 0 || back.length < 2) {
     return false;
   }
   for (let i = 0; i < points.length; i++) {
     const [p, q] = [points[i]!, points[(i + 1) % points.length]!];
     const tolerance = -eps * Math.hypot(q.x - p.x, q.y - p.y);
-    for (const r of back.points) {
+    for (const r of back) {
       if (occluder * ((q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x)) < tolerance) {
         return false;
       }

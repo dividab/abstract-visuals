@@ -33,6 +33,7 @@ import { polygon } from "./svg-geometries/svg-polygon.js";
 import { shape } from "./svg-geometries/svg-shape.js";
 import { text } from "./svg-geometries/svg-text.js";
 import { orderElements } from "./svg-order.js";
+import { encodeElements } from "./svg-paths.js";
 
 export type SvgScene = {
   readonly scene: Scene;
@@ -43,35 +44,25 @@ export type SvgScene = {
 export type SvgWithSize = { readonly image: string; readonly width: number; readonly height: number };
 
 export function renderScenes(scenes: ReadonlyArray<SvgScene>, baseOptions?: Optional<SvgOptions>): SvgWithSize {
-  const allElements = Array<zOrderElement>();
+  let content = "";
   const bounds = Array<Bounds2>();
 
   for (const view of scenes) {
-    const { elements, size, center } = renderInternal(view.scene, { ...baseOptions, ...view.options }, view.pos);
-    allElements.push(...elements);
-    const newBounds = bounds2FromPosAndSize(center, size);
+    const rendered = renderInternal(view.scene, { ...baseOptions, ...view.options }, view.pos);
+    content += rendered.content;
+    const newBounds = bounds2FromPosAndSize(rendered.center, rendered.size);
     bounds.push(newBounds);
   }
   const mergedBounds = bounds2Merge(...bounds);
   const size = bounds2ToSize(mergedBounds);
-  const image = svg(
-    mergedBounds.min,
-    size,
-    allElements.reduce((a, { element }) => `${a} ${element}`, ""),
-    baseOptions?.className ?? ""
-  );
+  const image = svg(mergedBounds.min, size, content, baseOptions?.className ?? "");
   return { image, width: size.x, height: size.y };
 }
 
 export function render(scene: Scene, options?: Optional<SvgOptions>): SvgWithSize {
-  const { elements, size, center } = renderInternal(scene, options, vec2Zero);
+  const { content, size, center } = renderInternal(scene, options, vec2Zero);
 
-  const image = svg(
-    vec2(center.x - size.x / 2, center.y - size.y / 2),
-    size,
-    elements.reduce((a, { element }) => `${a} ${element}`, ""),
-    options?.className ?? ""
-  );
+  const image = svg(vec2(center.x - size.x / 2, center.y - size.y / 2), size, content, options?.className ?? "");
   return { image, width: size.x, height: size.y };
 }
 
@@ -80,7 +71,7 @@ function renderInternal(
   options: Optional<SvgOptions> | undefined,
   offset: Vec2
 ): {
-  readonly elements: ReadonlyArray<zOrderElement>;
+  readonly content: string;
   readonly size: Vec2;
   readonly center: Vec2;
 } {
@@ -114,12 +105,11 @@ function renderInternal(
   const unitCenterFlipped = vec3Flip(unitCenter);
 
   const textHeight = sceneTextHeight(scene.groups);
-  const elements = [
-    ...orderElements(
-      scene.groups.flatMap((g) => svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, unitRot, point, opts, textHeight)),
-      point
-    ),
-  ];
+  const ordered = orderElements(
+    scene.groups.flatMap((g) => svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, unitRot, point, opts, textHeight))
+  );
+  // The dimensions' elements are drawn after the scene's, as they're given
+  const dimensionElements: Array<zOrderElement> = [];
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   const visibleViews = calculateVisibleViews(view, scene.rotation_deprecated);
 
@@ -138,11 +128,12 @@ function renderInternal(
       const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
       const rot = vec3RotCombine(unitRot, d.rot);
       for (const m of d.meshes) {
-        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts, textHeight));
+        dimensionElements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts, textHeight));
       }
     }
   }
-  return { elements, size: svgSize, center: svgCenter };
+  const content = encodeElements(ordered, point) + encodeElements(dimensionElements, point);
+  return { content, size: svgSize, center: svgCenter };
 }
 
 function svgGroup(
@@ -187,9 +178,9 @@ function svgMesh(
     case "Line":
       return line(mesh.geometry, point, material.normal, opts, parentPos, parentRot);
     case "Polygon":
-      return polygon(mesh.geometry, point, material, opts, parentPos, parentRot);
+      return polygon(mesh.geometry, material, opts, parentPos, parentRot);
     case "Shape":
-      return shape(mesh.geometry, point, material, opts, parentPos, parentRot);
+      return shape(mesh.geometry, material, opts, parentPos, parentRot);
     case "Text":
       return text(mesh.geometry, point, material.normal, opts, parentPos, parentRot, textHeight);
     case "Image":

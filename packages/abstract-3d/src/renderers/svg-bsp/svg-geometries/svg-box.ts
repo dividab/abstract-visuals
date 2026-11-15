@@ -37,7 +37,7 @@ export function box(
     const plain = !holes?.length;
     return [
       zElem(
-        svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes),
+        plain ? "" : svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes),
         vec3ZMean(...polygon),
         polygon,
         opaque && plain,

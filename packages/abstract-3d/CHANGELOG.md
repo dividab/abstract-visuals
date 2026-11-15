@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Changed: the `abstract-3d/svg-bsp` renderer orders a scene whose faces cut through each other all over in a fraction of a second, where it took a minute or more: pieces behind an opaque face that covers them are left out before they're split further, the tree's work is limited by the number of elements, past which what's left, the farthest, is drawn by mean depth, and hidden elements are found by a grid
+- Changed: the `abstract-3d/svg-bsp` renderer draws plain polygons as paths, which makes its svg a half to a quarter of the size: those of one style drawn one after the other share its attributes in a group, and are one path when they're unstroked and opaque; polygons that are neither filled nor stroked are left out
+
 ## [4.2.0] - 2026-11-10
 
 - Added: `sceneTextHeight(groups)`, the text height of a scene, `textHeightForSize(size)` of its objects' size without its texts: 32 up to 3600 on the longest side, else as many steps of 2^¼ above it as the longest side needs, rounded up, so a text is at most 19% larger than in proportion to the scene's size. Every renderer draws its texts without a font size and its dimensions at it, their text, marks, gaps and lines sized by it
