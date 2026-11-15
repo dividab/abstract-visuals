@@ -51,7 +51,12 @@ export interface Chart {
   readonly textColor: Color;
   readonly textOutlineColor: Color;
   readonly labelLayout: LabelLayout;
-  readonly padding: Padding;
+  /**
+   * Outside its axes. Undefined, the default unless its labelLayout is "original", which draws its axes' titles in a padding of 10: as large as
+   * what's drawn, its axes' titles at the outer edges of their axisWidth, a side without axes as far out as the other axes' tick labels reach past
+   * the plot
+   */
+  readonly padding: Padding | undefined;
   readonly axisWidth: Padding;
   readonly xPixelsPerTick: number;
   readonly yPixelsPerTick: number;
@@ -84,12 +89,15 @@ export function createChart(props: ChartProps): Chart {
     textColor: props.textColor ?? black,
     textOutlineColor: props.textOutlineColor ?? transparent,
     labelLayout: props.labelLayout ?? "original",
-    padding: {
-      top: props.padding?.top ?? 10,
-      right: props.padding?.right ?? 10,
-      bottom: props.padding?.bottom ?? 10,
-      left: props.padding?.left ?? 10,
-    },
+    padding:
+      props.padding || (props.labelLayout ?? "original") === "original"
+        ? {
+            top: props.padding?.top ?? 10,
+            right: props.padding?.right ?? 10,
+            bottom: props.padding?.bottom ?? 10,
+            left: props.padding?.left ?? 10,
+          }
+        : undefined,
     axisWidth: {
       top: props.axisWidth?.top ?? 50,
       right: props.axisWidth?.right ?? 50,
@@ -344,26 +352,60 @@ export function inverseTransformPoint(point: Point, chart: Chart, xAxis: XAxis, 
   return createPoint(x, y);
 }
 
-/** The plot's distances from the chart's sides, its axes' ticks and labels drawn there: its padding and an axisWidth per axis on each side */
+const axisKeys = ["xAxisesBottom", "xAxisesTop", "yAxisesLeft", "yAxisesRight"] as const;
+
+/**
+ * The plot's distances from the chart's sides, its axes' ticks and labels drawn there: an axisWidth per axis on each side, and its padding or,
+ * without one, how far the tick labels reach past a side without axes
+ */
 function plotPadding(chart: Chart): Padding {
-  return {
-    bottom:
-      chart.padding.bottom +
-      (chart.xAxisesBottom.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesBottom.filter((a) => !a.noTicks || a.label).length) *
-        chart.axisWidth.bottom,
-    top:
-      chart.padding.top +
-      (chart.xAxisesTop.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesTop.filter((a) => !a.noTicks || a.label).length) *
-        chart.axisWidth.top,
-    left:
-      chart.padding.left +
-      (chart.yAxisesLeft.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesLeft.filter((a) => !a.noTicks || a.label).length) *
-        chart.axisWidth.left,
-    right:
-      chart.padding.right +
-      (chart.yAxisesRight.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesRight.filter((a) => !a.noTicks || a.label).length) *
-        chart.axisWidth.right,
-  };
+  const bottom =
+    (chart.xAxisesBottom.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesBottom.filter((a) => !a.noTicks || a.label).length) *
+    chart.axisWidth.bottom;
+  const top =
+    (chart.xAxisesTop.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesTop.filter((a) => !a.noTicks || a.label).length) *
+    chart.axisWidth.top;
+  const left =
+    (chart.yAxisesLeft.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesLeft.filter((a) => !a.noTicks || a.label).length) *
+    chart.axisWidth.left;
+  const right =
+    (chart.yAxisesRight.filter((a) => !a.noTicks || a.label).length + chart.chartDataAxisesRight.filter((a) => !a.noTicks || a.label).length) *
+    chart.axisWidth.right;
+  if (chart.padding) {
+    return {
+      bottom: chart.padding.bottom + bottom,
+      top: chart.padding.top + top,
+      left: chart.padding.left + left,
+      right: chart.padding.right + right,
+    };
+  }
+  // How far the tick labels reach past each side of a plot that ends at the axes: a tick at the fraction t of its axis, its label centered on it,
+  // an x tick's half its width, estimated from its characters, a y tick's half its line, each side moved in by as much as the labels past it need
+  const width = chart.width - left - right;
+  const height = chart.height - top - bottom;
+  const past = { bottom: 0, top: 0, left: 0, right: 0 };
+  for (const key of axisKeys) {
+    const x = key === "xAxisesBottom" || key === "xAxisesTop";
+    const length = x ? width : height;
+    const start = x ? "left" : "bottom";
+    const end = x ? "right" : "top";
+    for (const axis of chart[key]) {
+      if (axis.noTicks) {
+        continue;
+      }
+      for (const tick of getTicks(length / (x ? chart.xPixelsPerTick : chart.yPixelsPerTick), axis)) {
+        const t = transformValue(tick.value, 0, 1, axis);
+        const half = (axis.tickFontSize ?? chart.fontSize) * (x ? 0.28 * (tick.label ?? formatNumber(tick.value, axis.numberFormat)).length : 0.5);
+        if (t < 1) {
+          past[start] = Math.max(past[start], (half - t * length) / (1 - t));
+        }
+        if (t > 0) {
+          past[end] = Math.max(past[end], (half - (1 - t) * length) / t);
+        }
+      }
+    }
+  }
+  return { bottom: bottom || past.bottom, top: top || past.top, left: left || past.left, right: right || past.right };
 }
 
 /** A chart's drawing and where it drew its parts, e.g. to place a page's controls on them: its plot's padding and its axes' titles, by side */
@@ -494,12 +536,12 @@ export function xAxises(
     }
 
     if (axis.label) {
-      const axisLabelPosY = lineY + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
+      const axisLabelPosY = lineY + dirFactor * (axisWidth - (chart.padding ? 1 : 0.5) * (axis.axisFontSize ?? chart.fontSize));
 
       const label = ((): Text => {
         switch (chart.labelLayout) {
           case "original":
-            return generateXAxisLabel(xMax + chart.padding.right, lineY + (axis.tickLabelDisp ?? 10), "uniform", "down", axis, chart);
+            return generateXAxisLabel(xMax + (chart.padding?.right ?? 0), lineY + (axis.tickLabelDisp ?? 10), "uniform", "down", axis, chart);
           case "end":
             return generateXAxisLabel(xMax, axisLabelPosY, "left", "uniform", axis, chart);
           case "center":
@@ -560,12 +602,12 @@ export function yAxises(
     }
 
     if (axis.label) {
-      const axisLabelPosX = lineX + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
+      const axisLabelPosX = lineX + dirFactor * (axisWidth - (chart.padding ? 1 : 0.5) * (axis.axisFontSize ?? chart.fontSize));
       const rotation = yAxis === "left" ? -90 : 90;
       const label = ((): Text => {
         switch (chart.labelLayout) {
           case "original":
-            return generateYAxisLabel(axisLabelPosX, yMax + 0.5 * chart.padding.bottom, rotation, "uniform", "up", axis, chart);
+            return generateYAxisLabel(axisLabelPosX, yMax + 0.5 * (chart.padding?.bottom ?? 0), rotation, "uniform", "up", axis, chart);
           case "end":
             return generateYAxisLabel(axisLabelPosX, yMax, rotation, yAxis, "uniform", axis, chart);
           case "center":
@@ -662,10 +704,10 @@ export function generateDataAxisesX(
 
     components.push(createLine({ x: xMin, y: lineY }, { x: xMax, y: lineY }, axis.axisColor ?? gray, axis.thickness ?? 1));
 
-    const axisLabelPosY = lineY + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
+    const axisLabelPosY = lineY + dirFactor * (axisWidth - (chart.padding ? 1 : 0.5) * (axis.axisFontSize ?? chart.fontSize));
     switch (chart.labelLayout) {
       case "original":
-        components.push(generateXAxisLabel(xMax + chart.padding.right, yMin + (axis.tickLabelDisp ?? 10), "uniform", "up", linear, chart));
+        components.push(generateXAxisLabel(xMax + (chart.padding?.right ?? 0), yMin + (axis.tickLabelDisp ?? 10), "uniform", "up", linear, chart));
         break;
       case "end":
         components.push(generateXAxisLabel(xMax, axisLabelPosY, "left", "uniform", linear, chart));
@@ -758,10 +800,12 @@ export function generateDataAxisesY(
 
     components.push(createLine({ x: lineX, y: yMin }, { x: lineX, y: yMax }, axis.axisColor ?? gray, axis.thickness ?? 1));
     const rotation = yAxis === "left" ? -90 : 90;
-    const axisLabelPosX = lineX + dirFactor * (axisWidth - (axis.axisFontSize ?? chart.fontSize));
+    const axisLabelPosX = lineX + dirFactor * (axisWidth - (chart.padding ? 1 : 0.5) * (axis.axisFontSize ?? chart.fontSize));
     switch (chart.labelLayout) {
       case "original":
-        components.push(generateYAxisLabel(xMax + chart.padding.right, yMin + (axis.tickLabelDisp ?? 10), rotation, "uniform", "up", linear, chart));
+        components.push(
+          generateYAxisLabel(xMax + (chart.padding?.right ?? 0), yMin + (axis.tickLabelDisp ?? 10), rotation, "uniform", "up", linear, chart)
+        );
         break;
       case "end":
         components.push(generateYAxisLabel(axisLabelPosX, yMax, rotation, "left", "uniform", linear, chart));

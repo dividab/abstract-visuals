@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. The format 
 
 - Added: `renderChart` returns a `RenderedChart`, its `AbstractImage` with where it drew its parts, e.g. to place a page's controls on them: `plotPadding`, and `axisLabels`, each axis' title `Text` as drawn by side, undefined for an axis without a label. `xAxises` and `yAxises` return their titles third, and `generateXAxisLabel` and `generateYAxisLabel` their `Text`.
 - Removed: the `plotPadding` export, a `RenderedChart`'s `plotPadding` in its place.
+- Changed: a chart without a `padding`, unless its `labelLayout` is `"original"`, which draws its axes' titles in a padding of 10, is as large as what's drawn: its axes' titles at the outer edges of their `axisWidth`, and a side without axes as far out as the other axes' tick labels reach past the plot, an x tick label's width estimated from its characters. A `Chart`'s `padding` is undefined then.
 
 ## [12.3.0] - 2026-10-28
 
