@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
-- Changed: the three.js viewer draws a `galvanized` material with spangle, zinc crystals about 10 scene units across, each a little brighter or darker and glossier or duller, faded out where they'd be only a few pixels wide
+- Changed: the three.js viewer draws a `galvanized` material with spangle, ragged zinc crystals about 10 scene units across, clustering into lighter and darker patches, each shaded, grainy and tilted a little of its own, faded out where they'd be only a few pixels wide; lighter than its color, as zinc reflects more than the matte gray it's usually given, and less shiny, at a roughness of 0.5
 
 ## [4.2.0] - 2026-11-10
 

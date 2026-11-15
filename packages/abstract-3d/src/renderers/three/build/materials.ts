@@ -50,7 +50,7 @@ const plainMetalness = 0.25;
  */
 const finishes: Record<MaterialType, MeshPhysicalMaterialParameters> = {
   painted: { metalness: 0, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.5 },
-  galvanized: { metalness: 1, roughness: 0.35 },
+  galvanized: { metalness: 1, roughness: 0.5 },
   aluminum: { metalness: 1, roughness: 0.4 },
   stainless: { metalness: 1, roughness: 0.2 },
   copper: { metalness: 1, roughness: 0.25 },
@@ -157,7 +157,7 @@ reflectedLight.indirectSpecular *= edgeShade;`
     );
 }
 
-/** Rounded edges and galvanized spangle: 10 mm zinc crystals of their own brightness and roughness, faded out where only a few pixels wide */
+/** Rounded edges and galvanized spangle: ragged, grainy 10 mm zinc crystals, each shaded and tilted of its own, faded out below 3 pixels wide */
 function galvanize(shader: { vertexShader: string; fragmentShader: string }): void {
   roundEdges(shader);
   shader.fragmentShader = shader.fragmentShader
@@ -168,36 +168,58 @@ vec2 spangleHash( vec2 p ) {
   vec3 q = fract( p.xyx * vec3( 0.1031, 0.1030, 0.0973 ) );
   q += dot( q, q.yzx + 33.33 );
   return fract( ( q.xx + q.yz ) * q.zy );
+}
+float spangleNoise( vec2 p ) {
+  vec2 i = floor( p );
+  vec2 f = smoothstep( 0.0, 1.0, fract( p ) );
+  return mix( mix( spangleHash( i ).x, spangleHash( i + vec2( 1.0, 0.0 ) ).x, f.x ), mix( spangleHash( i + vec2( 0.0, 1.0 ) ).x, spangleHash( i + 1.0 ).x, f.x ), f.y );
 }`
     )
     .replace(
-      "#include <color_fragment>",
-      `#include <color_fragment>
+      "#include <normal_fragment_maps>",
+      `#include <normal_fragment_maps>
 vec3 facePoint = vBoxPoint / 10.0;
-vec3 faceNormal = abs( cross( dFdx( vBoxPoint ), dFdy( vBoxPoint ) ) );
-vec2 spanglePoint = faceNormal.x > max( faceNormal.y, faceNormal.z ) ? facePoint.yz : faceNormal.y > faceNormal.z ? facePoint.xz : facePoint.xy;
-vec2 spangleCell = floor( spanglePoint );
+// The interpolated normal in the part's own space, so curved parts switch plane cleanly instead of per pixel
+vec3 faceNormal = abs( transpose( vBoxRotation ) * normal );
+bool faceX = faceNormal.x > max( faceNormal.y, faceNormal.z );
+bool faceY = !faceX && faceNormal.y > faceNormal.z;
+vec2 spanglePoint = faceX ? facePoint.yz : faceY ? facePoint.xz : facePoint.xy;
+vec3 spangleU = faceX ? vec3( 0.0, 1.0, 0.0 ) : vec3( 1.0, 0.0, 0.0 );
+vec3 spangleV = faceX || faceY ? vec3( 0.0, 0.0, 1.0 ) : vec3( 0.0, 1.0, 0.0 );
+// Warped, so the crystals' edges are ragged instead of straight
+vec2 warpedPoint = spanglePoint + 0.4 * vec2( spangleNoise( spanglePoint * 2.5 ), spangleNoise( spanglePoint * 2.5 + 7.3 ) ) +
+  0.15 * vec2( spangleNoise( spanglePoint * 7.0 + 3.1 ), spangleNoise( spanglePoint * 7.0 + 11.7 ) );
+vec2 spangleCell = floor( warpedPoint );
 vec2 nearestCell = spangleCell;
+vec2 nearestOffset = vec2( 0.0 );
 float nearest = 8.0;
 for ( int y = -1; y <= 1; y++ ) {
   for ( int x = -1; x <= 1; x++ ) {
     vec2 cell = spangleCell + vec2( x, y );
-    vec2 offset = cell + spangleHash( cell ) - spanglePoint;
+    vec2 offset = cell + spangleHash( cell ) - warpedPoint;
     float cellDistance = dot( offset, offset );
     if ( cellDistance < nearest ) {
       nearest = cellDistance;
       nearestCell = cell;
+      nearestOffset = offset;
     }
   }
 }
+// Fades from 8 pixels a crystal to 3, and the grain within it, 12 to a crystal, likewise
 vec2 spanglePixel = fwidth( spanglePoint );
-float spangle = ( spangleHash( nearestCell + 17.0 ).x - 0.5 ) * ( 1.0 - smoothstep( 0.1, 0.4, max( spanglePixel.x, spanglePixel.y ) ) );
-diffuseColor.rgb *= 1.0 + 0.1 * spangle;`
-    )
-    .replace(
-      "#include <roughnessmap_fragment>",
-      `#include <roughnessmap_fragment>
-roughnessFactor = clamp( roughnessFactor + 0.3 * spangle, 0.05, 1.0 );`
+float spanglePixels = max( spanglePixel.x, spanglePixel.y );
+float spangleFade = 1.0 - smoothstep( 0.125, 0.33, spanglePixels );
+float grainFade = 1.0 - smoothstep( 0.125, 0.33, 12.0 * spanglePixels );
+vec3 spangleRandom = vec3( spangleHash( nearestCell + 17.0 ), spangleHash( nearestCell + 31.0 ).x ) - 0.5;
+// Partly shared by neighbouring crystals, so they cluster into lighter and darker patches, and shading across each crystal, as its facets catch
+// the light
+float spangle = ( 0.5 * spangleRandom.z + 0.7 * ( spangleNoise( nearestCell * 0.3 ) - 0.5 ) + 0.5 * dot( nearestOffset, spangleRandom.xy ) ) * spangleFade;
+float grain = ( spangleNoise( spanglePoint * 12.0 ) - 0.5 ) * grainFade;
+// Zinc reflects more than the matte gray galvanized is usually given in
+diffuseColor.rgb *= 1.25 * ( 1.0 + 0.16 * spangle + 0.08 * grain );
+roughnessFactor = clamp( roughnessFactor + 0.1 * spangle + 0.1 * grain, 0.05, 1.0 );
+// Each crystal tilted a few degrees, so it catches reflections of its own
+normal = normalize( normal + 0.05 * spangleFade * vBoxRotation * ( spangleRandom.x * spangleU + spangleRandom.y * spangleV ) );`
     );
 }
 
