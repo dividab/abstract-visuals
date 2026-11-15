@@ -23,7 +23,7 @@ if ! npm whoami >/dev/null 2>&1; then
 fi
 
 if [ "$web" = false ] && ! pnpm whoami >/dev/null 2>&1; then
-  echo "pnpm can't authenticate to npm: remove the stale //registry.npmjs.org/:_authToken line from ~/.config/pnpm/auth.ini (see README)."
+  echo "pnpm can't authenticate to npm: remove the stale npmjs token from ~/.config/pnpm/auth.ini (pnpm 11) or config.yaml (pnpm 12), see README."
   exit 1
 fi
 
