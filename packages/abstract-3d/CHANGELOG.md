@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.2.7] - 2026-11-17
+
+- Fixed: the DXF renderer draws each dimension's line, end marks and extension lines at its measured points, where since 4.2.0 they were drawn where the dimension is in the scene, off by the scene's offset into the DXF and turned by its view; the DIMENSION entity's line position is the one drawn, moved out where `dimensionPlacements` moves it, so CAD programs that redraw dimensions from it draw them in the same place
+- Fixed: the DXF's dimension style is scaled by the scene's text height, where it was always 44, so CAD programs that redraw dimensions draw their text at the height drawn; `renderScenes` scales it by the largest of its scenes' text heights, as a file has one dimension style
+
 ## [4.2.6] - 2026-11-17
 
 - Added: the DXF renderer's `layers` option, `{ type: "ByGroupLayer", baseLayer, layers, dimLayer }`, which puts each group's meshes on the DXF layer named by its `layer`, or its nearest parent's, if `layers` lists it, else on layer `0`, styled by `baseLayer`; the listed layers are written to the layer table with their color, and the entities on them are drawn by layer (BYLAYER), so recoloring a layer in CAD recolors its entities. Dimensions are drawn on `dimLayer` if `layers` lists it, else on `0`. Set for all of `renderScenes`' scenes together, not per scene, as a file has one layer table

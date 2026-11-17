@@ -28,9 +28,16 @@ export function dxfDimension(
       blockRecord: "",
     };
   }
-  const ms = vec3TransRot(dimension.measurementStart, parentPos, parentRot);
-  const me = vec3TransRot(dimension.measurementEnd, parentPos, parentRot);
-  const lp = vec3TransRot(dimension.linePosition, parentPos, parentRot);
+  const tr = (v: Vec3): Vec3 => vec3TransRot(v, parentPos, parentRot);
+  const ms = tr(dimension.measurementStart);
+  const me = tr(dimension.measurementEnd);
+  // The placement is in the scene's coordinates, as the measured points before they're moved into the DXF's
+  const place = placement && {
+    ...placement,
+    linePosition: tr(placement.linePosition),
+    endLines: placement.endLines.map(([start, end]) => [tr(start), tr(end)] as const),
+  };
+  const lp = place?.linePosition ?? tr(dimension.linePosition);
   const text = dimension.text ?? `${vec3Length(vec3Sub(me, ms))}`;
-  return dxfEncDimension(ms, me, lp, text, style, sceneRotation, viewRotation, dimension.views ?? ["front"], textHeight, placement, handleRef);
+  return dxfEncDimension(ms, me, lp, text, style, sceneRotation, viewRotation, dimension.views ?? ["front"], textHeight, place, handleRef);
 }

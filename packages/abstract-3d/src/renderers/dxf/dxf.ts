@@ -92,8 +92,10 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   const allBounds = Array<Bounds3>();
   const handleRef = dxfHandleInit();
   const originOffset = originOffsetFromScenes(scenes, baseOptions?.origin ?? "Center");
+  // The file has one dimension style, so it's scaled by the largest of the scenes' text heights, usually views of one unit with the same
+  let allTextHeight: number | undefined = undefined;
   for (const view of scenes) {
-    const { groups, dimensions, size, center } = renderInternal(
+    const { groups, dimensions, size, center, textHeight } = renderInternal(
       view.scene,
       optionsDef({ ...baseOptions, ...view.options, origin: "Center" }),
       vec3Add(view.pos, originOffset),
@@ -106,19 +108,20 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
       blockRecord: allDimensions.blockRecord + dimensions.blockRecord,
     };
     allBounds.push(bounds3FromPosAndSize(center, size));
+    allTextHeight = Math.max(allTextHeight ?? textHeight, textHeight);
   }
   const bounds = bounds3Merge(...allBounds);
   const layers = dxfEncLayerDefs(handleRef, baseOptions?.layers);
-  return dxfBuild(allGroups, allDimensions, layers, bounds, bounds3ToSize(bounds), bounds3Center(bounds));
+  return dxfBuild(allGroups, allDimensions, layers, allTextHeight, bounds, bounds3ToSize(bounds), bounds3Center(bounds));
 }
 
 export const render = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
   const bounds = boundsScene(scene);
   const handleRef = dxfHandleInit();
-  const { groups, dimensions, size, center } = renderInternal(scene, opts, vec3Zero, handleRef);
+  const { groups, dimensions, size, center, textHeight } = renderInternal(scene, opts, vec3Zero, handleRef);
   const layers = dxfEncLayerDefs(handleRef, options?.layers);
-  return dxfBuild(groups, dimensions, layers, bounds, size, center);
+  return dxfBuild(groups, dimensions, layers, textHeight, bounds, size, center);
 };
 
 const renderInternal = (
@@ -131,6 +134,7 @@ const renderInternal = (
   readonly dimensions: DxfDimensionDefinition;
   readonly size: Vec3;
   readonly center: Vec3;
+  readonly textHeight: number;
 } => {
   const viewRotation = rotationForCameraPos(options.view);
   const unitRot = vec3RotCombine(viewRotation, scene.rotation_deprecated ?? vec3Zero);
@@ -156,6 +160,7 @@ const renderInternal = (
     ),
     size,
     center: pos,
+    textHeight,
   };
 };
 
@@ -340,5 +345,13 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
     handleRef
   );
   const layers = dxfEncLayerDefs(handleRef, options?.layers);
-  return dxfBuild(dxfGroup(groupRoot, center, unitRot, undefined, opts, handleRef), dimensions, layers, bounds2, scene.size_deprecated, center);
+  return dxfBuild(
+    dxfGroup(groupRoot, center, unitRot, undefined, opts, handleRef),
+    dimensions,
+    layers,
+    textHeight,
+    bounds2,
+    scene.size_deprecated,
+    center
+  );
 };
