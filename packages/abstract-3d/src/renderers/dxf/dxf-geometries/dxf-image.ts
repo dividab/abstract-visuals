@@ -1,11 +1,10 @@
 import type { AbstractImage, Component } from "abstract-image";
 import { type ImageMesh, type Vec3, vec2Scale, vec3, vec3Add, vec3Rot, vec3RotCombine, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
-import type { DxfDynamicColor } from "../dxf-encoding/dxf-color.js";
 import { DEFAULT_CIRCLE_SIDE_COUNT, type Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEncLine } from "../dxf-encoding/dxf-line.js";
 import { dxfEncLwPolyline } from "../dxf-encoding/dxf-lwpolyline.js";
 
-export function dxfImage(i: ImageMesh, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
+export function dxfImage(i: ImageMesh, style: string, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const half = vec2Scale(i.size, 0.5);
   const offset = vec3Rot(vec3(-half.x, half.y, 0), vec3Zero, i.rot ?? vec3Zero);
   const pos = vec3TransRot(vec3Add(i.pos, offset), parentPos, parentRot);
@@ -17,39 +16,38 @@ export function dxfImage(i: ImageMesh, parentPos: Vec3, parentRot: Vec3, handleR
         y: -i.size.y / i.image.image.size.height,
         z: 1,
       };
-      return abstractImageToDxf3D(i.image.image, pos, rot, scale, handleRef);
+      return abstractImageToDxf3D(i.image.image, style, pos, rot, scale, handleRef);
     }
     default:
       return "";
   }
 }
 
-function abstractImageToDxf3D(image: AbstractImage, pos: Vec3, rot: Vec3, scale: Vec3, handleRef: Handle): string {
-  return image.components.map((comp) => abstractImageComponentToDxf3D(comp, pos, rot, scale, handleRef)).join("");
+function abstractImageToDxf3D(image: AbstractImage, style: string, pos: Vec3, rot: Vec3, scale: Vec3, handleRef: Handle): string {
+  return image.components.map((comp) => abstractImageComponentToDxf3D(comp, pos, rot, scale, style, handleRef)).join("");
 }
 
-function abstractImageComponentToDxf3D(comp: Component, pos: Vec3, rot: Vec3, scale: Vec3, handleRef: Handle): string {
+function abstractImageComponentToDxf3D(comp: Component, pos: Vec3, rot: Vec3, scale: Vec3, style: string, handleRef: Handle): string {
   const vec3tr = (x: number, y: number): Vec3 => vec3TransRot(vec3(x * scale.x, y * scale.y, 0), pos, rot);
-  const strokeColor: DxfDynamicColor = 7;
 
   let dxf = "";
   switch (comp.type) {
     case "group": {
-      dxf += comp.children.map((child) => abstractImageComponentToDxf3D(child, pos, rot, scale, handleRef)).join("");
+      dxf += comp.children.map((child) => abstractImageComponentToDxf3D(child, pos, rot, scale, style, handleRef)).join("");
       break;
     }
     case "line": {
-      dxf += dxfEncLine(vec3tr(comp.start.x, comp.start.y), vec3tr(comp.end.x, comp.end.y), strokeColor, handleRef);
+      dxf += dxfEncLine(vec3tr(comp.start.x, comp.start.y), vec3tr(comp.end.x, comp.end.y), style, handleRef);
       break;
     }
     case "polyline": {
       const points = comp.points.map((p) => vec3tr(p.x, p.y));
-      dxf += dxfEncLwPolyline(pos, points, strokeColor, false, handleRef) ?? "";
+      dxf += dxfEncLwPolyline(pos, points, style, false, handleRef) ?? "";
       break;
     }
     case "polygon": {
       const points = comp.points.map((p) => vec3tr(p.x, p.y));
-      dxf += dxfEncLwPolyline(pos, points, strokeColor, true, handleRef) ?? "";
+      dxf += dxfEncLwPolyline(pos, points, style, true, handleRef) ?? "";
       break;
     }
     case "ellipse": {
@@ -62,7 +60,7 @@ function abstractImageComponentToDxf3D(comp: Component, pos: Vec3, rot: Vec3, sc
         const y = comp.topLeft.y + r2 + r2 * Math.sin(t);
         points.push(vec3tr(x, y));
       }
-      dxf += dxfEncLwPolyline(pos, points, strokeColor, true, handleRef) ?? "";
+      dxf += dxfEncLwPolyline(pos, points, style, true, handleRef) ?? "";
       break;
     }
     case "rectangle": {
@@ -73,7 +71,7 @@ function abstractImageComponentToDxf3D(comp: Component, pos: Vec3, rot: Vec3, sc
         vec3tr(comp.bottomRight.x, comp.bottomRight.y),
         vec3tr(comp.topLeft.x, comp.bottomRight.y),
       ];
-      dxf += dxfEncLwPolyline(pos, points, strokeColor, true, handleRef) ?? "";
+      dxf += dxfEncLwPolyline(pos, points, style, true, handleRef) ?? "";
       break;
     }
     default:

@@ -1,3 +1,4 @@
+import { white, cyan } from "abstract-image";
 import FileSaver from "file-saver";
 import React from "react";
 import type { Group, Scene } from "../../../abstract-3d/src/abstract-3d.js";
@@ -12,6 +13,7 @@ import * as Svg from "../../../abstract-3d/src/renderers/svg/index.js";
 import { dxf2dExportImage, DXF_DATA_URL } from "../../../abstract-image/src/exporters/dxf2d-export-image.js";
 import { createSVG } from "../../../abstract-image/src/exporters/svg-export-image.js";
 import { ai } from "./double-view-ai.js";
+import { demoLayers } from "./generated/demo-layers.js";
 import { demoRotated } from "./generated/demo-rotated.js";
 import { demo } from "./generated/demo.js";
 import { componentGeometries } from "./generated/double-view-component-geometries.js";
@@ -156,6 +158,16 @@ export function Abstract3DExample(): React.ReactNode {
           }
         >
           DXF new dims rotated
+        </button>
+        <button
+          onClick={() => {
+            const dxf = Dxf.render(demoLayers as Scene, {
+              layers: { type: "ByGroupLayer", baseLayer: { color: white }, layers: { symbols: { color: cyan } } },
+            });
+            FileSaver.saveAs(new Blob([dxf], { type: "text/plain" }), "dxf_bylayer.dxf");
+          }}
+        >
+          DXF BYLAYER
         </button>
         <button
           onClick={() =>

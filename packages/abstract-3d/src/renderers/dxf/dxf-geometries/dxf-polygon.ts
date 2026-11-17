@@ -1,4 +1,4 @@
-import { type Polygon, type Material, type Vec3, vec3RotCombine, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
+import { type Polygon, type Vec3, vec3RotCombine, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
@@ -6,9 +6,8 @@ import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
 const QUAD_STRIDE = 4;
 const TRIANGLE_STRIDE = 3;
 
-export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
+export function dxfPolygon(p: Polygon, style: string, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   let polygonString = "";
-  const col = m.normal;
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
   const points = p.points.map((p) => vec3TransRot(p, pos, rot));
@@ -19,7 +18,7 @@ export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: 
     const vec3 = points[i + 2];
     const vec4 = points[i + 3];
     if (vec1 && vec2 && vec3 && vec4) {
-      polygonString += dxfEnc3DFace(vec1, vec2, vec3, vec4, col, handleRef);
+      polygonString += dxfEnc3DFace(vec1, vec2, vec3, vec4, style, handleRef);
     }
     i += QUAD_STRIDE;
   }
@@ -32,7 +31,7 @@ export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: 
         const vec2 = points[i - 1];
         const vec3 = points[i - 2];
         if (vec1 && vec2 && vec3) {
-          polygonString += dxfEnc3DFaceTriangle(vec3, vec2, vec1, col, handleRef);
+          polygonString += dxfEnc3DFaceTriangle(vec3, vec2, vec1, style, handleRef);
         }
         break;
       }
@@ -41,7 +40,7 @@ export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: 
         const vec2 = points[i - 1];
         const vec3 = points[i + 1];
         if (vec1 && vec2 && vec3) {
-          polygonString += dxfEnc3DFaceTriangle(vec2, vec1, vec3, col, handleRef);
+          polygonString += dxfEnc3DFaceTriangle(vec2, vec1, vec3, style, handleRef);
         }
         break;
       }
@@ -50,7 +49,7 @@ export function dxfPolygon(p: Polygon, m: Material, parentPos: Vec3, parentRot: 
         const vec2 = points[i + 1];
         const vec3 = points[i + 2];
         if (vec1 && vec2 && vec3) {
-          polygonString += dxfEnc3DFaceTriangle(vec1, vec2, vec3, col, handleRef);
+          polygonString += dxfEnc3DFaceTriangle(vec1, vec2, vec3, style, handleRef);
         }
         break;
       }

@@ -27,21 +27,21 @@ AA3
 ${DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
-  8
-A3D
-  6
+8
+0
+6
 Continuous
 100
 AcDbBlockReference
-  2
+2
 ${blockId}
- 10
+10
 0.0
- 20
+20
 0.0
- 30
+30
 0.0
-  0
+0
 ENDSEC
   0
 SECTION

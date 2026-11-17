@@ -21,6 +21,7 @@ export function dxfEncMText(
   dir: Vec3,
   normal: Vec3,
   fontSize: number,
+  style: string,
   handleRef: Handle,
   attachment: DxfMTextAttachment = DxfMTextAttachment.MiddleCenter,
   blockRefHandle?: string
@@ -33,8 +34,7 @@ ${dxfHandleNext(handleRef)}
 ${blockRefHandle ?? DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
-8
-0
+${style}
 100
 AcDbMText
 10

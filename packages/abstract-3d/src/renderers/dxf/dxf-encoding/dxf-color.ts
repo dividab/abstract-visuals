@@ -1,4 +1,43 @@
-import { type Vec3, vec3, vec3DistSquared } from "../../../abstract-3d.js";
+import { type Vec3, vec3 } from "../../../abstract-3d.js";
+import type { DxfLayer, DxfLayerOptions } from "../dxf.js";
+import { dxfHandleNext, type Handle } from "./dxf-common.js";
+
+const DEFAULT_LAYER_TABLE: string = `0
+TABLE
+2
+LAYER
+5
+2
+330
+0
+100
+AcDbSymbolTable
+70
+1
+0
+LAYER
+5
+10
+330
+2
+100
+AcDbSymbolTableRecord
+100
+AcDbLayerTableRecord
+2
+0
+70
+0
+62
+7
+6
+CONTINUOUS
+370
+-3
+390
+F
+0
+ENDTAB`;
 
 export type DxfDynamicColor = 7; // this color becomes white on a black background and black on a white background (therefore theme/dxf viewer dependent)
 export type DxfColor = DxfDynamicColor | string;
@@ -7,32 +46,50 @@ export function dxfColor(color: DxfColor): string {
   return typeof color === "number"
     ? `62\n7`
     : `62
-  256
-  420
-  ${dxfBitShiftColor(color)}`;
+7
+420
+${dxfBitShiftColorFromStr(color)}`;
 }
 
-export function dxfApproximateAciFromRealColor(colorNormal: string | undefined): number {
-  const ERROR_COLOR = 6; //magenta
-  const ACI_COLOR_COUNT = 256;
-  if (DXF_ACI_COLOR_TABLE.length !== ACI_COLOR_COUNT || colorNormal === undefined) {
-    return ERROR_COLOR; //magenta
+export function dxfEncLayerDefs(handleRef: Handle, options?: DxfLayerOptions): string {
+  //if no options exist, return the default one
+  if (!options) {
+    return DEFAULT_LAYER_TABLE;
   }
 
-  const originalColor = colorNormalToVec3Color(colorNormal);
-  let closestColor = 0;
-  let smallestDistance = Number.POSITIVE_INFINITY;
-  for (let i = 0; i < ACI_COLOR_COUNT; i++) {
-    const color = DXF_ACI_COLOR_TABLE[i];
-    if (color !== undefined) {
-      const distance = vec3DistSquared(originalColor, color);
-      if (distance < smallestDistance) {
-        smallestDistance = distance;
-        closestColor = i;
-      }
-    }
+  const layerHandleId = dxfHandleNext(handleRef);
+
+  const layers: Record<string, DxfLayer> = {
+    ...options.layers,
+    "0": options.baseLayer,
+  };
+  const layerCount = Object.keys(layers).length.toString();
+
+  let table = "";
+  table += "0\nTABLE\n";
+  table += "2\nLAYER\n";
+  table += "5\n" + layerHandleId + "\n";
+  table += "330\n0\n";
+  table += "100\nAcDbSymbolTable\n";
+  table += "70\n" + layerCount + "\n";
+
+  for (const [name, layer] of Object.entries(layers).toSorted((a, b) => a[0].localeCompare(b[0]))) {
+    table += "0\nLAYER\n";
+    table += "5\n" + dxfHandleNext(handleRef) + "\n";
+    table += "330\n" + layerHandleId + "\n";
+    table += "100\nAcDbSymbolTableRecord\n";
+    table += "100\nAcDbLayerTableRecord\n";
+    table += "2\n" + name + "\n";
+    table += "70\n0\n";
+    table += "62\n7\n";
+    table += `420\n${dxfBitShiftColor(layer.color.r, layer.color.g, layer.color.b)}\n`;
+    table += "6\nCONTINUOUS\n";
+    table += "370\n-3\n";
+    table += "390\nF\n";
   }
-  return closestColor;
+
+  table += "0\nENDTAB";
+  return table;
 }
 
 function colorNormalToVec3Color(colorNormal: string): Vec3 {
@@ -55,272 +112,16 @@ function colorNormalToVec3Color(colorNormal: string): Vec3 {
   return vec3(r % 256, g % 256, b % 256);
 }
 
-function dxfBitShiftColor(color: string): number {
-  const originalColor = colorNormalToVec3Color(color);
+function dxfBitShiftColorFromStr(color: string): number {
+  const oc = colorNormalToVec3Color(color);
+  return dxfBitShiftColor(oc.x, oc.y, oc.z);
+}
 
+function dxfBitShiftColor(r: number, g: number, b: number): number {
   // oxlint-disable-next-line no-bitwise
-  const colorAsInt = (originalColor.x << 16) + (originalColor.y << 8) + originalColor.z;
+  const colorAsInt = (r << 16) + (g << 8) + b;
   if (Number.isNaN(colorAsInt)) {
     return 0;
   }
   return colorAsInt;
 }
-
-const DXF_ACI_COLOR_TABLE: ReadonlyArray<Vec3> = [
-  vec3(0, 0, 0),
-  vec3(255, 0, 0),
-  vec3(255, 255, 0),
-  vec3(0, 255, 0),
-  vec3(0, 255, 255),
-  vec3(0, 0, 255),
-  vec3(255, 0, 255),
-  vec3(255, 255, 255),
-  vec3(128, 128, 128),
-  vec3(192, 192, 192),
-  vec3(255, 0, 0),
-  vec3(255, 127, 127),
-  vec3(204, 0, 0),
-  vec3(204, 102, 102),
-  vec3(153, 0, 0),
-  vec3(153, 76, 76),
-  vec3(127, 0, 0),
-  vec3(127, 63, 63),
-  vec3(76, 0, 0),
-  vec3(76, 38, 38),
-  vec3(255, 63, 0),
-  vec3(255, 159, 127),
-  vec3(204, 51, 0),
-  vec3(204, 127, 102),
-  vec3(153, 38, 0),
-  vec3(153, 95, 76),
-  vec3(127, 31, 0),
-  vec3(127, 79, 63),
-  vec3(76, 19, 0),
-  vec3(76, 47, 38),
-  vec3(255, 127, 0),
-  vec3(255, 191, 127),
-  vec3(204, 102, 0),
-  vec3(204, 153, 102),
-  vec3(153, 76, 0),
-  vec3(153, 114, 76),
-  vec3(127, 63, 0),
-  vec3(127, 95, 63),
-  vec3(76, 38, 0),
-  vec3(76, 57, 38),
-  vec3(255, 191, 0),
-  vec3(255, 223, 127),
-  vec3(204, 153, 0),
-  vec3(204, 178, 102),
-  vec3(153, 114, 0),
-  vec3(153, 133, 76),
-  vec3(127, 95, 0),
-  vec3(127, 111, 63),
-  vec3(76, 57, 0),
-  vec3(76, 66, 38),
-  vec3(255, 255, 0),
-  vec3(255, 255, 127),
-  vec3(204, 204, 0),
-  vec3(204, 204, 102),
-  vec3(153, 153, 0),
-  vec3(153, 153, 76),
-  vec3(127, 127, 0),
-  vec3(127, 127, 63),
-  vec3(76, 76, 0),
-  vec3(76, 76, 38),
-  vec3(191, 255, 0),
-  vec3(223, 255, 127),
-  vec3(153, 204, 0),
-  vec3(178, 204, 102),
-  vec3(114, 153, 0),
-  vec3(133, 153, 76),
-  vec3(95, 127, 0),
-  vec3(111, 127, 63),
-  vec3(57, 76, 0),
-  vec3(66, 76, 38),
-  vec3(127, 255, 0),
-  vec3(191, 255, 127),
-  vec3(102, 204, 0),
-  vec3(153, 204, 102),
-  vec3(76, 153, 0),
-  vec3(114, 153, 76),
-  vec3(63, 127, 0),
-  vec3(95, 127, 63),
-  vec3(38, 76, 0),
-  vec3(57, 76, 38),
-  vec3(63, 255, 0),
-  vec3(159, 255, 127),
-  vec3(51, 204, 0),
-  vec3(127, 204, 102),
-  vec3(38, 153, 0),
-  vec3(95, 153, 76),
-  vec3(31, 127, 0),
-  vec3(79, 127, 63),
-  vec3(19, 76, 0),
-  vec3(47, 76, 38),
-  vec3(0, 255, 0),
-  vec3(127, 255, 127),
-  vec3(0, 204, 0),
-  vec3(102, 204, 102),
-  vec3(0, 153, 0),
-  vec3(76, 153, 76),
-  vec3(0, 127, 0),
-  vec3(63, 127, 63),
-  vec3(0, 76, 0),
-  vec3(38, 76, 38),
-  vec3(0, 255, 63),
-  vec3(127, 255, 191),
-  vec3(0, 204, 51),
-  vec3(102, 204, 127),
-  vec3(0, 153, 38),
-  vec3(76, 153, 114),
-  vec3(0, 127, 31),
-  vec3(63, 127, 95),
-  vec3(0, 76, 19),
-  vec3(38, 76, 47),
-  vec3(0, 255, 127),
-  vec3(127, 255, 223),
-  vec3(0, 204, 102),
-  vec3(102, 204, 153),
-  vec3(0, 153, 76),
-  vec3(76, 153, 133),
-  vec3(0, 127, 63),
-  vec3(63, 127, 111),
-  vec3(0, 76, 38),
-  vec3(38, 76, 57),
-  vec3(0, 255, 191),
-  vec3(127, 255, 255),
-  vec3(0, 204, 153),
-  vec3(102, 204, 178),
-  vec3(0, 153, 114),
-  vec3(76, 153, 144),
-  vec3(0, 127, 95),
-  vec3(63, 127, 119),
-  vec3(0, 76, 57),
-  vec3(38, 76, 66),
-  vec3(0, 255, 255),
-  vec3(127, 255, 255),
-  vec3(0, 204, 204),
-  vec3(102, 204, 204),
-  vec3(0, 153, 153),
-  vec3(76, 153, 153),
-  vec3(0, 127, 127),
-  vec3(63, 127, 127),
-  vec3(0, 76, 76),
-  vec3(38, 76, 76),
-  vec3(0, 191, 255),
-  vec3(127, 223, 255),
-  vec3(0, 153, 204),
-  vec3(102, 178, 204),
-  vec3(0, 114, 153),
-  vec3(76, 133, 153),
-  vec3(0, 95, 127),
-  vec3(63, 111, 127),
-  vec3(0, 57, 76),
-  vec3(38, 66, 76),
-  vec3(0, 127, 255),
-  vec3(127, 191, 255),
-  vec3(0, 102, 204),
-  vec3(102, 153, 204),
-  vec3(0, 76, 153),
-  vec3(76, 114, 153),
-  vec3(0, 63, 127),
-  vec3(63, 95, 127),
-  vec3(0, 38, 76),
-  vec3(38, 57, 76),
-  vec3(0, 63, 255),
-  vec3(127, 159, 255),
-  vec3(0, 51, 204),
-  vec3(102, 127, 204),
-  vec3(0, 38, 153),
-  vec3(76, 95, 153),
-  vec3(0, 31, 127),
-  vec3(63, 79, 127),
-  vec3(0, 19, 76),
-  vec3(38, 47, 76),
-  vec3(0, 0, 255),
-  vec3(127, 127, 255),
-  vec3(0, 0, 204),
-  vec3(102, 102, 204),
-  vec3(0, 0, 153),
-  vec3(76, 76, 153),
-  vec3(0, 0, 127),
-  vec3(63, 63, 127),
-  vec3(0, 0, 76),
-  vec3(38, 38, 76),
-  vec3(63, 0, 255),
-  vec3(159, 127, 255),
-  vec3(51, 0, 204),
-  vec3(127, 102, 204),
-  vec3(38, 0, 153),
-  vec3(95, 76, 153),
-  vec3(31, 0, 127),
-  vec3(79, 63, 127),
-  vec3(19, 0, 76),
-  vec3(47, 38, 76),
-  vec3(127, 0, 255),
-  vec3(191, 127, 255),
-  vec3(102, 0, 204),
-  vec3(153, 102, 204),
-  vec3(76, 0, 153),
-  vec3(114, 76, 153),
-  vec3(63, 0, 127),
-  vec3(95, 63, 127),
-  vec3(38, 0, 76),
-  vec3(57, 38, 76),
-  vec3(191, 0, 255),
-  vec3(223, 127, 255),
-  vec3(153, 0, 204),
-  vec3(178, 102, 204),
-  vec3(114, 0, 153),
-  vec3(133, 76, 153),
-  vec3(95, 0, 127),
-  vec3(111, 63, 127),
-  vec3(57, 0, 76),
-  vec3(66, 38, 76),
-  vec3(255, 0, 255),
-  vec3(255, 127, 255),
-  vec3(204, 0, 204),
-  vec3(204, 102, 204),
-  vec3(153, 0, 153),
-  vec3(153, 76, 153),
-  vec3(127, 0, 127),
-  vec3(127, 63, 127),
-  vec3(76, 0, 76),
-  vec3(76, 38, 76),
-  vec3(255, 0, 191),
-  vec3(255, 127, 223),
-  vec3(204, 0, 153),
-  vec3(204, 102, 178),
-  vec3(153, 0, 114),
-  vec3(153, 76, 133),
-  vec3(127, 0, 95),
-  vec3(127, 63, 111),
-  vec3(76, 0, 57),
-  vec3(76, 38, 66),
-  vec3(255, 0, 127),
-  vec3(255, 127, 191),
-  vec3(204, 0, 102),
-  vec3(204, 102, 153),
-  vec3(153, 0, 76),
-  vec3(153, 76, 114),
-  vec3(127, 0, 63),
-  vec3(127, 63, 95),
-  vec3(76, 0, 38),
-  vec3(76, 38, 57),
-  vec3(255, 0, 63),
-  vec3(255, 127, 159),
-  vec3(204, 0, 51),
-  vec3(204, 102, 127),
-  vec3(153, 0, 38),
-  vec3(153, 76, 95),
-  vec3(127, 0, 31),
-  vec3(127, 63, 79),
-  vec3(76, 0, 19),
-  vec3(76, 38, 47),
-  vec3(255, 255, 255),
-  vec3(192, 192, 192),
-  vec3(128, 128, 128),
-  vec3(64, 64, 64),
-  vec3(0, 0, 0),
-  vec3(0, 0, 0),
-];

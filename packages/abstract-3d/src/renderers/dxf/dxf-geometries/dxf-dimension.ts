@@ -17,6 +17,7 @@ export function dxfDimension(
   sceneRotation: Vec3,
   viewRotation: Vec3,
   textHeight: number | undefined,
+  style: string,
   placement: DimensionPlacement | undefined,
   handleRef: Handle
 ): DxfDimensionDefinition {
@@ -31,5 +32,5 @@ export function dxfDimension(
   const me = vec3TransRot(dimension.measurementEnd, parentPos, parentRot);
   const lp = vec3TransRot(dimension.linePosition, parentPos, parentRot);
   const text = dimension.text ?? `${vec3Length(vec3Sub(me, ms))}`;
-  return dxfEncDimension(ms, me, lp, text, 7, sceneRotation, viewRotation, dimension.views ?? ["front"], textHeight, placement, handleRef);
+  return dxfEncDimension(ms, me, lp, text, style, sceneRotation, viewRotation, dimension.views ?? ["front"], textHeight, placement, handleRef);
 }

@@ -10,6 +10,7 @@ export const dxfEncHeader = (
   center: Vec3,
   blockId: string,
   size: Vec3,
+  layers: string,
   dimBlocks: string,
   dimBlockRecords: string,
   dimScale: number = 44.0,
@@ -1266,64 +1267,7 @@ Solid line
 0.0
   0
 ENDTAB
-  0
-TABLE
-  2
-LAYER
-  5
-2
-330
-0
-100
-AcDbSymbolTable
- 70
-     2
-  0
-LAYER
-  5
-10
-330
-2
-100
-AcDbSymbolTableRecord
-100
-AcDbLayerTableRecord
-  2
-0
- 70
-     0
- 62
-     7
-  6
-CONTINUOUS
-370
-    -3
-390
-F
-  0
-LAYER
-  5
-28
-330
-2
-100
-AcDbSymbolTableRecord
-100
-AcDbLayerTableRecord
-  2
-A3D
- 70
-     0
- 62
-     7
-  6
-CONTINUOUS
-370
-    -3
-390
-F
-  0
-ENDTAB
+${layers}
   0
 TABLE
   2
@@ -1404,9 +1348,9 @@ APPID
 0
 100
 AcDbSymbolTable
- 70
-     3
-  0
+70
+2
+0
 APPID
   5
 12
@@ -1418,20 +1362,6 @@ AcDbSymbolTableRecord
 AcDbRegAppTableRecord
   2
 ACAD
- 70
-     1
-  0
-APPID
-  5
-21
-330
-9
-100
-AcDbSymbolTableRecord
-100
-AcDbRegAppTableRecord
-  2
-A3D
  70
      1
   0
@@ -1640,14 +1570,14 @@ AcDbEntity
 AcDbBlockEnd
 ${dimBlocks}0
 BLOCK
-  5
+5
 2C
 330
 2D
 100
 AcDbEntity
-  8
-A3D
+8
+0
 100
 AcDbBlockBegin
   2

@@ -1,3 +1,5 @@
+import type { Color } from "abstract-image";
+import { exhaustiveCheck } from "ts-exhaustive-check";
 import {
   type Bounds3,
   type Dimensions,
@@ -25,6 +27,7 @@ import {
 } from "../../abstract-3d.js";
 import { type Optional, calculateVisibleViews } from "../../utils.js";
 import { dxfBuild } from "./dxf-encoding/dxf-build.js";
+import { dxfColor, dxfEncLayerDefs, type DxfColor } from "./dxf-encoding/dxf-color.js";
 import { DEFAULT_CIRCLE_SIDE_COUNT, type DxfOrigin, type Handle, dxfHandleInit } from "./dxf-encoding/dxf-common.js";
 import type { DxfDimensionDefinition } from "./dxf-encoding/dxf-dimension.js";
 import { dxfBox } from "./dxf-geometries/dxf-box.js";
@@ -40,13 +43,41 @@ export type DxfOptions = {
   readonly origin: DxfOrigin;
   readonly cylinderSideCount: number;
   readonly showDimensions: boolean;
+  readonly layers?: DxfLayerOptions;
+};
+
+export type DxfLayerOptions = {
+  /**
+   * The groups have their own layers that are inherited down to its children unless a child group has its own layer name. The names of the group's
+   * layers will be the ones that this option will use to match against the defined layers that can be defined in `baseLayer` and `layers`. Specific
+   * layers can be overridden inside the `layers` option, whilst a matched layer that doesn't exist there will use the `baseLayer` instead as a
+   * fallback
+   */
+  readonly type: "ByGroupLayer";
+
+  /** The layer to use as the fallback base layer. Automatically named `0` */
+  readonly baseLayer: DxfLayer;
+
+  /**
+   * Definitions of specific layers that must match the layers of a group.\
+   * The key is the name of the group layer to override.\
+   * The layer named `0` is defined on the `baseLayer` property.
+   */
+  readonly layers: Record<string, DxfLayer> & { ["0"]?: never };
+
+  /** Dimension layer name. If undefined, the base layer will be used */
+  readonly dimLayer?: string;
+};
+
+export type DxfLayer = {
+  readonly color: Color;
 };
 
 export type DxfScenesOptionsBase = Omit<DxfOptions, "origin"> & { readonly origin: Exclude<DxfOrigin, "SameAsScene"> };
 
 export type DxfScene = {
   readonly scene: Scene;
-  readonly options?: Optional<DxfOptions>;
+  readonly options?: Optional<Omit<DxfOptions, "layers">>;
   readonly pos: Vec3;
 };
 
@@ -59,14 +90,14 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
   };
 
   const allBounds = Array<Bounds3>();
-  const handle = dxfHandleInit();
+  const handleRef = dxfHandleInit();
   const originOffset = originOffsetFromScenes(scenes, baseOptions?.origin ?? "Center");
   for (const view of scenes) {
     const { groups, dimensions, size, center } = renderInternal(
       view.scene,
       optionsDef({ ...baseOptions, ...view.options, origin: "Center" }),
       vec3Add(view.pos, originOffset),
-      handle
+      handleRef
     );
     allGroups += groups;
     allDimensions = {
@@ -77,14 +108,17 @@ export function renderScenes(scenes: ReadonlyArray<DxfScene>, baseOptions?: Opti
     allBounds.push(bounds3FromPosAndSize(center, size));
   }
   const bounds = bounds3Merge(...allBounds);
-  return dxfBuild(allGroups, allDimensions, bounds, bounds3ToSize(bounds), bounds3Center(bounds));
+  const layers = dxfEncLayerDefs(handleRef, baseOptions?.layers);
+  return dxfBuild(allGroups, allDimensions, layers, bounds, bounds3ToSize(bounds), bounds3Center(bounds));
 }
 
 export const render = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
   const bounds = boundsScene(scene);
-  const { groups, dimensions, size, center } = renderInternal(scene, opts, vec3Zero, dxfHandleInit());
-  return dxfBuild(groups, dimensions, bounds, size, center);
+  const handleRef = dxfHandleInit();
+  const { groups, dimensions, size, center } = renderInternal(scene, opts, vec3Zero, handleRef);
+  const layers = dxfEncLayerDefs(handleRef, options?.layers);
+  return dxfBuild(groups, dimensions, layers, bounds, size, center);
 };
 
 const renderInternal = (
@@ -108,7 +142,7 @@ const renderInternal = (
   const visibleViews = calculateVisibleViews(options.view, scene.rotation_deprecated);
   const textHeight = sceneTextHeight(scene.groups);
   return {
-    groups: scene.groups.reduce((a, c) => a + dxfGroup(groupTextBackgrounds(c, textHeight), pos, unitRot, options, handleRef), ""),
+    groups: scene.groups.reduce((a, c) => a + dxfGroup(groupTextBackgrounds(c, textHeight), pos, unitRot, undefined, options, handleRef), ""),
     dimensions: dxfDimensions(
       scene.dimensions_deprecated,
       pos,
@@ -154,35 +188,66 @@ function originOffsetFromBounds(bounds: Bounds3, origin: DxfOrigin): Vec3 {
   }
 }
 
-function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOptions, handleRef: Handle): string {
+function dxfDimStyle(options: DxfOptions): string {
+  if (!options.layers) {
+    return `8\n0\n${dxfColor(7)}`;
+  }
+
+  const dimensionLayer = options.layers.dimLayer;
+  if (dimensionLayer && Object.hasOwn(options.layers.layers, dimensionLayer)) {
+    return `8\n${dimensionLayer}`;
+  }
+
+  return `8\n0`;
+}
+
+function dxfEntityStyle(layer: string | undefined, color: DxfColor, options: DxfOptions): string {
+  if (!options.layers) {
+    return `8\n0\n${dxfColor(color)}`;
+  }
+
+  switch (options.layers.type) {
+    // oxlint-disable-next-line typescript/no-unnecessary-condition -- only one layer strategy so far; the switch keeps adding the next one exhaustive
+    case "ByGroupLayer": {
+      return `8\n${layer !== undefined && Object.hasOwn(options.layers.layers, layer) ? layer : "0"}\n62\n256`;
+    }
+    default:
+      return exhaustiveCheck(options.layers.type);
+  }
+}
+
+function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, parentLayer: string | undefined, options: DxfOptions, handleRef: Handle): string {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
+  const layer = g.layer ?? parentLayer;
 
   let dxf = "";
   for (const mesh of g.meshes ?? []) {
+    const color = mesh.geometry.type === "Image" ? 7 : mesh.material.normal;
+    const entityStyle = dxfEntityStyle(layer, color, options);
     switch (mesh.geometry.type) {
       case "Plane": {
-        dxf += dxfPlane(mesh.geometry, mesh.material, pos, rot, handleRef);
+        dxf += dxfPlane(mesh.geometry, entityStyle, pos, rot, handleRef);
         break;
       }
       case "Box": {
-        dxf += dxfBox(mesh.geometry, mesh.material, pos, rot, handleRef);
+        dxf += dxfBox(mesh.geometry, entityStyle, pos, rot, handleRef);
         break;
       }
       case "Cylinder": {
-        dxf += dxfCylinder(mesh.geometry, mesh.material, options.cylinderSideCount, pos, rot, handleRef);
+        dxf += dxfCylinder(mesh.geometry, entityStyle, options.cylinderSideCount, pos, rot, handleRef);
         break;
       }
       case "Cone": {
-        dxf += dxfCone(mesh.geometry, mesh.material, options.cylinderSideCount, pos, rot, handleRef);
+        dxf += dxfCone(mesh.geometry, entityStyle, options.cylinderSideCount, pos, rot, handleRef);
         break;
       }
       case "Polygon": {
-        dxf += dxfPolygon(mesh.geometry, mesh.material, pos, rot, handleRef);
+        dxf += dxfPolygon(mesh.geometry, entityStyle, pos, rot, handleRef);
         break;
       }
       case "Image": {
-        dxf += dxfImage(mesh.geometry, pos, rot, handleRef);
+        dxf += dxfImage(mesh.geometry, entityStyle, pos, rot, handleRef);
         break;
       }
       default:
@@ -191,7 +256,7 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, options: DxfOption
   }
 
   for (const group of g.groups ?? []) {
-    dxf += dxfGroup(group, pos, rot, options, handleRef);
+    dxf += dxfGroup(group, pos, rot, layer, options, handleRef);
   }
 
   return dxf;
@@ -215,11 +280,12 @@ function dxfDimensions(
       blockRecord: "",
     };
   }
+  const style = dxfDimStyle(options);
   const placements = dimensionPlacements(d.dimensions, textHeight);
   return d.dimensions
     .flatMap((dim, i) =>
       dim.views?.[0] && visibleViews[dim.views[0]] === true
-        ? [dxfDimension(dim, parentPos, parentRot, sceneRotation, viewRotation, textHeight, placements[i], handleRef)]
+        ? [dxfDimension(dim, parentPos, parentRot, sceneRotation, viewRotation, textHeight, style, placements[i], handleRef)]
         : []
     )
     .reduce<DxfDimensionDefinition>(
@@ -238,6 +304,7 @@ function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
     origin: options?.origin ?? "BottomLeftFront",
     cylinderSideCount: options?.cylinderSideCount ?? DEFAULT_CIRCLE_SIDE_COUNT,
     showDimensions: options?.showDimensions ?? true,
+    layers: options?.layers,
   };
 }
 
@@ -272,5 +339,6 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
     textHeight,
     handleRef
   );
-  return dxfBuild(dxfGroup(groupRoot, center, unitRot, opts, handleRef), dimensions, bounds2, scene.size_deprecated, center);
+  const layers = dxfEncLayerDefs(handleRef, options?.layers);
+  return dxfBuild(dxfGroup(groupRoot, center, unitRot, undefined, opts, handleRef), dimensions, layers, bounds2, scene.size_deprecated, center);
 };

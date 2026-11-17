@@ -1,9 +1,9 @@
-import { type Cylinder, type Material, type Vec3, equals, vec3, vec3RotCombine, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
+import { type Cylinder, type Vec3, equals, vec3, vec3RotCombine, vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
 
-export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
+export function dxfCylinder(c: Cylinder, style: string, sides: number, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
   const vec3tr = (x: number, y: number, z: number): Vec3 => vec3TransRot(vec3(x, y, z), pos, rot);
@@ -34,16 +34,16 @@ export function dxfCylinder(c: Cylinder, m: Material, sides: number, parentPos: 
       const prevTop = topVec3Array[i - 1]!;
       if (!c.open) {
         dxfString +=
-          dxfEnc3DFaceTriangle(botPos, prevBot, currBot, m.normal, handleRef) + dxfEnc3DFaceTriangle(topPos, prevTop, currTop, m.normal, handleRef);
+          dxfEnc3DFaceTriangle(botPos, prevBot, currBot, style, handleRef) + dxfEnc3DFaceTriangle(topPos, prevTop, currTop, style, handleRef);
       }
-      dxfString += dxfEnc3DFace(currBot, prevBot, prevTop, currTop, m.normal, handleRef);
+      dxfString += dxfEnc3DFace(currBot, prevBot, prevTop, currTop, style, handleRef);
     }
     currentAngle += angleStep;
   }
 
   if (!equals(angleStart, angleEnd - Math.PI * 2) && angleLength > 0.0) {
-    dxfString += dxfEnc3DFace(botPos, botVec3Array[0]!, topVec3Array[0]!, topPos, m.normal, handleRef);
-    dxfString += dxfEnc3DFace(botPos, topPos, topVec3Array[sides]!, botVec3Array[sides]!, m.normal, handleRef);
+    dxfString += dxfEnc3DFace(botPos, botVec3Array[0]!, topVec3Array[0]!, topPos, style, handleRef);
+    dxfString += dxfEnc3DFace(botPos, topPos, topVec3Array[sides]!, botVec3Array[sides]!, style, handleRef);
   }
 
   return dxfString;

@@ -1,5 +1,4 @@
 import { vec3, vec3Cross, vec3Dot, vec3Length, vec3Normalize, vec3Sub, type Vec3 } from "../../../abstract-3d.js";
-import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfOCSXYAxis, type Handle } from "./dxf-common.js";
 
 type LwPolylinePlane = {
@@ -19,7 +18,7 @@ const EPSILON = 1e-6;
 export function dxfEncLwPolyline(
   planePos: Vec3,
   points: ReadonlyArray<Vec3>,
-  col: DxfColor,
+  style: string,
   closed: boolean,
   handleRef: Handle,
   blockRefHandle?: string
@@ -45,20 +44,20 @@ export function dxfEncLwPolyline(
       ...dxfOCSXYAxis(normal),
     };
 
-    return encodeLwPolyline(points, plane, col, false, handleRef, blockRefHandle);
+    return encodeLwPolyline(points, plane, style, false, handleRef, blockRefHandle);
   }
 
   const plane = findPlane(planePos, points);
   if (!plane || !isCoplanar(points, plane)) {
     return undefined;
   }
-  return encodeLwPolyline(points, plane, col, closed, handleRef, blockRefHandle);
+  return encodeLwPolyline(points, plane, style, closed, handleRef, blockRefHandle);
 }
 
 function encodeLwPolyline(
   points: ReadonlyArray<Vec3>,
   plane: LwPolylinePlane,
-  col: DxfColor,
+  style: string,
   closed: boolean,
   handleRef: Handle,
   blockRefHandle?: string
@@ -70,8 +69,7 @@ function encodeLwPolyline(
   dxf += `5\n${dxfHandleNext(handleRef)}\n`;
   dxf += `330\n${blockRefHandle ?? DXF_MODEL_SPACE_HANDLE}\n`;
   dxf += "100\nAcDbEntity\n";
-  dxf += `${dxfColor(col)}\n`;
-  dxf += "8\n0\n";
+  dxf += `${style}\n`;
   dxf += "100\nAcDbPolyline\n";
   dxf += `90\n${points.length}\n`;
   dxf += `70\n${closed ? 1 : 0}\n`;

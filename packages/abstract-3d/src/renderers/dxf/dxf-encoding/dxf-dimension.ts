@@ -1,6 +1,5 @@
 import { dimensionMeshifyAlignedDimension } from "../../../abstract-3d.js";
 import type { DimensionAligned, DimensionPlacement, View, Material, Vec3 } from "../../../abstract-3d.js";
-import { type DxfColor, dxfColor } from "./dxf-color.js";
 import { DXF_BLOCK_RECORD_TABLE_HANDLE, DXF_MODEL_SPACE_HANDLE, dxfHandleNext, dxfRound, type Handle } from "./dxf-common.js";
 import { dxfEncLine } from "./dxf-line.js";
 import { DxfMTextAttachment, dxfEncMText, encodeDxfFormattedText } from "./dxf-mtext.js";
@@ -17,7 +16,7 @@ export function dxfEncDimension(
   measurementEnd: Vec3,
   linePosition: Vec3,
   text: string,
-  col: DxfColor,
+  style: string,
   sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
@@ -28,7 +27,7 @@ export function dxfEncDimension(
   const blockRecordHandle = dxfHandleNext(handleRef);
   const blockName = `*D${blockRecordHandle}`;
   return {
-    entity: dxfEncodeDimensionEntity(blockName, measurementStart, measurementEnd, linePosition, text, col, handleRef),
+    entity: dxfEncodeDimensionEntity(blockName, measurementStart, measurementEnd, linePosition, text, style, handleRef),
     block: dxfEncodeDimensionBlock(
       blockName,
       blockRecordHandle,
@@ -36,7 +35,7 @@ export function dxfEncDimension(
       measurementEnd,
       linePosition,
       text,
-      col,
+      style,
       sceneRotation,
       viewRotation,
       views,
@@ -54,7 +53,7 @@ function dxfEncodeDimensionEntity(
   measurementEnd: Vec3,
   linePosition: Vec3,
   text: string,
-  col: DxfColor,
+  style: string,
   handleRef: Handle
 ): string {
   return `0
@@ -65,9 +64,7 @@ ${dxfHandleNext(handleRef)}
 ${DXF_MODEL_SPACE_HANDLE}
 100
 AcDbEntity
-8
-0
-${dxfColor(col)}
+${style}
 100
 AcDbDimension
 2
@@ -128,7 +125,7 @@ function dxfEncodeDimensionBlock(
   measurementEnd: Vec3,
   linePosition: Vec3,
   text: string,
-  col: DxfColor,
+  style: string,
   sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
@@ -168,7 +165,7 @@ ${dxfEncodeDimensionGeometry(
   measurementEnd,
   linePosition,
   text,
-  col,
+  style,
   sceneRotation,
   viewRotation,
   views,
@@ -198,7 +195,7 @@ function dxfEncodeDimensionGeometry(
   measurementEnd: Vec3,
   linePosition: Vec3,
   text: string,
-  col: DxfColor,
+  style: string,
   sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
@@ -209,13 +206,13 @@ function dxfEncodeDimensionGeometry(
   let entities = "";
 
   const onCreateLine = (start: Vec3, end: Vec3, _norm: Vec3, _thickness: number, _mat: Material): void => {
-    entities += dxfEncLine(start, end, col, handleRef, blockRecordHandle);
+    entities += dxfEncLine(start, end, style, handleRef, blockRecordHandle);
   };
   const onCreateText = (pos: Vec3, measurement: string, fontSize: number, _mat: Material, _rot: Vec3, dir: Vec3, norm: Vec3): void => {
-    entities += dxfEncMText(pos, measurement, dir, norm, fontSize, handleRef, DxfMTextAttachment.MiddleCenter, blockRecordHandle);
+    entities += dxfEncMText(pos, measurement, dir, norm, fontSize, style, handleRef, DxfMTextAttachment.MiddleCenter, blockRecordHandle);
   };
   const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, _mat: Material): void => {
-    entities += dxfEncSolidTriangle(p1, p2, p3, col, handleRef, blockRecordHandle);
+    entities += dxfEncSolidTriangle(p1, p2, p3, style, handleRef, blockRecordHandle);
   };
   const dimension: DimensionAligned = {
     linePosition,
