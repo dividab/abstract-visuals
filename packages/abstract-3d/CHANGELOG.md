@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.2.6]
 
 - Added: the DXF renderer's `layers` option, `{ type: "ByGroupLayer", baseLayer, layers, dimLayer }`, which puts each group's meshes on the DXF layer named by its `layer`, or its nearest parent's, if `layers` lists it, else on layer `0`, styled by `baseLayer`; the listed layers are written to the layer table with their color, and the entities on them are drawn by layer (BYLAYER), so recoloring a layer in CAD recolors its entities. Dimensions are drawn on `dimLayer` if `layers` lists it, else on `0`. Set for all of `renderScenes`' scenes together, not per scene, as a file has one layer table
 - Changed: without the `layers` option, every DXF entity is written on layer `0`, as readers already drew them, and the layer table has only `0`, without the unused `A3D` layer and application id
