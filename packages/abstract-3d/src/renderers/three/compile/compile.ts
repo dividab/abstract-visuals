@@ -129,7 +129,7 @@ function addMeshes(out: Output, meshes: ReadonlyArray<Mesh>, matrix: Matrix4, ba
   });
 }
 
-/** A box as a rounded rectangle across its thinnest side, extruded through it, grown by `grow` on every side, e.g. for its outline */
+/** A box as a rounded rectangle across its thinnest side, extruded through it, grown by `grow` in its plane, e.g. for its outline, an even rim */
 function createRoundedSlab(mesh: Mesh, grow: number): Mesh {
   const g = mesh.geometry as Extract<Mesh["geometry"], { readonly type: "Box" }>;
   const { x, y, z } = g.size;
@@ -148,7 +148,7 @@ function createRoundedSlab(mesh: Mesh, grow: number): Mesh {
   }
   quaternion.setFromEuler(euler.set(g.rot?.x ?? 0, g.rot?.y ?? 0, g.rot?.z ?? 0)).multiply(turned.setFromEuler(euler.set(turn.x, turn.y, turn.z)));
   euler.setFromQuaternion(quaternion);
-  return { ...mesh, geometry: { type: "Shape", points, pos: g.pos, rot: vec3(euler.x, euler.y, euler.z), thickness: thickness + 2 * grow } };
+  return { ...mesh, geometry: { type: "Shape", points, pos: g.pos, rot: vec3(euler.x, euler.y, euler.z), thickness } };
 }
 
 /** The item's world matrix at `seconds` into its animations, written to `out` */

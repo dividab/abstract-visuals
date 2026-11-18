@@ -120,8 +120,9 @@ describe("compileScene", () => {
     expect([Math.max(...slab.points.map((p) => p.x)), Math.max(...slab.points.map((p) => p.y))]).toEqual([10, 5]);
     expect(slab.points.some((p) => Math.abs(p.x) === 10 && Math.abs(p.y) === 5)).toBe(false);
     const outline = getItem(compiled, 1).mesh.geometry;
-    // Past it by 0.17 of the empty scene's 32 high text on every side
-    expect(outline.type === "Shape" && outline.thickness).toBeCloseTo(2 + 2 * 0.17 * 32);
+    // Past it in its plane by 0.17 of the empty scene's 32 high text, as thick
+    assert(outline.type === "Shape");
+    expect([outline.thickness, Math.max(...outline.points.map((p) => p.x))]).toEqual([2, 10 + 0.17 * 32]);
     expect(apply(compiled.items.at(0)?.matrix, 0, 0, 0)).toEqual([5, 0, 0]);
   });
 
