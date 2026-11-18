@@ -318,8 +318,8 @@ function createPart(
       const part = createImagePart(
         entries[0]!.geometry,
         local,
-        // A disabled group's symbols are see-through, but in an error or warning, which alpha testing would discard
-        createImageMaterial(first.mesh.material.backfaceCulling, (options.useAlphaTest ?? true) && (!disabled || symbolState !== undefined))
+        // A disabled group's symbols are see-through, which alpha testing would discard
+        createImageMaterial(first.mesh.material.backfaceCulling, (options.useAlphaTest ?? true) && !disabled)
       );
       if (g.type === "Image" && options.textures) {
         const url = getImageUrl(g.image);

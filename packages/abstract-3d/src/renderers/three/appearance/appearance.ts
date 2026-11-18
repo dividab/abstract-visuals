@@ -55,7 +55,7 @@ export type MaterialClass = {
 export const HOVERED = 1;
 export const SELECTED = 2;
 
-/** Of a disabled group's solids and symbols, its symbols faded less, so they still tell what it is, and not at all in an error or warning */
+/** Of a disabled group's solids and symbols, its symbols faded less, so they still tell what it is */
 const disabledOpacities: Partial<Record<Item["role"], number>> = { solid: 0.125, image: 0.6 };
 /** Of an active relation's slab and insertion symbol, the products theme's primary green */
 export const hotspotColor = "#188a72";
@@ -135,7 +135,7 @@ export function getHighlight(target: Target, targetIndex: number, state: PaintSt
 }
 
 /** The item's linear color and opacity by its target's highlight, written to `out`; hovered colors are darkened, selected groups are boxed instead */
-export function getItemColor(item: Item, { materialState, symbolState, disabled }: TargetState, highlight: number, out: Vector4): Vector4 {
+export function getItemColor(item: Item, { materialState, disabled }: TargetState, highlight: number, out: Vector4): Vector4 {
   const { material } = item.mesh;
   const hovered = highlight % SELECTED === HOVERED;
   const selected = highlight >= SELECTED;
@@ -158,7 +158,7 @@ export function getItemColor(item: Item, { materialState, symbolState, disabled 
       const style = materialState && item.role !== "image" ? stateMaterials[materialState].normal : material.normal;
       return item.role === "line"
         ? setColor(out, material.normal, false, 1)
-        : setColor(out, style, hovered, opacity * (disabled && !(item.role === "image" && symbolState) ? (disabledOpacities[item.role] ?? 1) : 1));
+        : setColor(out, style, hovered, opacity * (disabled ? (disabledOpacities[item.role] ?? 1) : 1));
     }
   }
 }

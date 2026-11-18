@@ -8,8 +8,9 @@ All notable changes to this project will be documented in this file. The format 
 - Changed: an active relation's boxes are drawn as slabs with rounded corners across their thinnest side, in the products theme's primary green, `#188a72`, rather than its own color, at 70% opacity, solid while hovered, outlined in black 0.17 text heights wide
 - Changed: a group's `bounds` are in the axes its position is in, its parent's, rather than its own, so an assembly's precomputed bounds, e.g. of the room each part takes, are passed as they are
 - Changed: a selected group's symbols are tinted toward the selection's blue
-- Changed: a disabled group's symbols, e.g. while relations are active, are a little see-through, at 60% opacity, less than its solids, but not those in an error or warning
+- Changed: a disabled group's symbols, e.g. while relations are active, are a little see-through, at 60% opacity, less than its solids, those in an error or warning too
 - Changed: an error's color is the products theme's, `#ab0e0e`, and a warning's, `rgb(247, 215, 101)`, in the fill of groups without symbols and in the frames and badges of symbols
+- Changed: images, e.g. components' symbols, aren't written to depth, as flat markers, so they never cut the insertion symbols over them
 - Fixed: the selection box's edges are smoothed by the canvas's multisampling, as the wide lines were jagged
 
 ## [4.3.1] - 2026-11-18

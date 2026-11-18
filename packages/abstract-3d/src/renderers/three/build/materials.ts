@@ -223,8 +223,14 @@ normal = normalize( normal + 0.05 * spangleFade * vBoxRotation * ( spangleRandom
     );
 }
 
+/** Not written to depth, as flat markers, so they never cut the insertion symbols over them */
 export function createImageMaterial(backfaceCulling: boolean | undefined, useAlphaTest: boolean): MeshBasicMaterial {
-  return new MeshBasicMaterial({ side: backfaceCulling ? FrontSide : DoubleSide, alphaTest: useAlphaTest ? 0.8 : 0, transparent: true });
+  return new MeshBasicMaterial({
+    side: backfaceCulling ? FrontSide : DoubleSide,
+    alphaTest: useAlphaTest ? 0.8 : 0,
+    transparent: true,
+    depthWrite: false,
+  });
 }
 
 export function getImageUrl(image: Image): string {
