@@ -26,11 +26,13 @@ export type ViewerProps = Omit<ViewerOptions<React.ReactNode>, "hoveredIds" | "o
 };
 
 export function Viewer(props: ViewerProps): React.JSX.Element {
-  const { scene, createGroupId, useAlphaTest, selectedIds, hoveredIdsExternal, onClickGroup, view, bufferZones, fitPadding, controls } = props;
+  const { scene, createGroupId, useAlphaTest, selectedIds, hoveredIdsExternal, onClickGroup, view, controls } = props;
   const { lights, environmentIntensity, studio, groundShadow, shadows, quality, showDimensions, popovers, getTooltips } = props;
   const { onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed, sceneFallback, className, style } = props;
   // Equal by value, so inline objects don't refit the camera, recreate the gizmo or rebuild the scene
   const camera = useStableValue(props.camera);
+  const bufferZones = useStableValue(props.bufferZones);
+  const fitPadding = useStableValue(props.fitPadding);
   const gizmo = useStableValue(props.controlsHelper);
   const activeComponents = useStableValue(props.activeComponents);
   const activeRelations = useStableValue(props.activeRelations);

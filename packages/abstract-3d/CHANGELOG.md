@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Fixed: the React `Viewer` compares `bufferZones` and `fitPadding` by value, as `camera`, so an inline object no longer refits the camera on every render, which snapped it back while turning it
+
 ## [4.3.0] - 2026-11-18
 
 - Changed: the three.js viewer boxes selected groups on their solids' bounds, in their top-level group's axes, the box tinted, with bold edges, faint where hidden, instead of coloring them blue, so their colors stay their own
