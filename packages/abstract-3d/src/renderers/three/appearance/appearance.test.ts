@@ -160,9 +160,9 @@ describe("getItemColor", () => {
     expect(paint(solid({ normal: red, opacity: 0.8 }), group, { relationsActive: true })).toEqual(rgba(red, 0.1));
   });
 
-  it("makes disabled groups' symbols a little see-through, less than their solids, in an error or warning too", () => {
-    expect(paint(symbol, group, { relationsActive: true })).toEqual(rgba("rgb(255, 255, 255)", 0.6));
-    expect(paint(symbol, group, { relationsActive: true, activeComponents: { fan: "Error" } })).toEqual(rgba("rgb(255, 255, 255)", 0.6));
+  it("keeps disabled groups' symbols, as they tell what each is", () => {
+    expect(paint(symbol, group, { relationsActive: true })).toEqual(rgba("rgb(255, 255, 255)"));
+    expect(paint(symbol, group, { relationsActive: true, activeComponents: { fan: "Error" } })).toEqual(rgba("rgb(255, 255, 255)"));
   });
 
   it("keeps the colors of selected groups, as they're boxed instead", () => {

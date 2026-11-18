@@ -55,8 +55,7 @@ export type MaterialClass = {
 export const HOVERED = 1;
 export const SELECTED = 2;
 
-/** Of a disabled group's solids and symbols, its symbols faded less, so they still tell what it is */
-const disabledOpacities: Partial<Record<Item["role"], number>> = { solid: 0.125, image: 0.6 };
+const disabledOpacity = 0.125;
 /** Of an active relation's slab and insertion symbol, the products theme's primary green */
 export const hotspotColor = "#188a72";
 /** Of the inverted hull around a relation's slab */
@@ -158,7 +157,7 @@ export function getItemColor(item: Item, { materialState, disabled }: TargetStat
       const style = materialState && item.role !== "image" ? stateMaterials[materialState].normal : material.normal;
       return item.role === "line"
         ? setColor(out, material.normal, false, 1)
-        : setColor(out, style, hovered, opacity * (disabled ? (disabledOpacities[item.role] ?? 1) : 1));
+        : setColor(out, style, hovered, item.role === "solid" && disabled ? opacity * disabledOpacity : opacity);
     }
   }
 }

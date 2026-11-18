@@ -72,7 +72,7 @@ type Output = { readonly items: Array<Item>; readonly animations: Array<Animatio
 type ItemBase = Pick<Item, "style" | "target" | "data" | "animation">;
 
 /** Of the scene's text height, as wide as the insertion symbol's edge */
-const outlineWidth = 0.17;
+const outlineWidth = 0.08;
 /** Of a relation's slab's shorter side, its corners' radius */
 const slabRounding = 0.04;
 /** Straight segments per rounded corner */
