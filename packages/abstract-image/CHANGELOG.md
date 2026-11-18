@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [14.1.3] - 2026-11-18
+- Fixed: Added logic to extract and include layers from an external dxf image. The names of the layers are also renamed to a unique name to avoid collision.
+
 ## [14.1.0] - 2026-11-02
 
 - Fixed: a dynamic image's template must return an `<AbstractImage>`, its schema's `root`. `dynamicImage`, `compileDynamicImage` and `renderDynamicImage` fail one that returns another element, a value or nothing, which drew nothing without an error.
