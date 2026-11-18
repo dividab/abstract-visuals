@@ -1,5 +1,5 @@
 import { Euler, Matrix4, Quaternion, Vector3 } from "three";
-import type { Group, Mesh, Relation, Scene, Vec3 } from "../../../abstract-3d.js";
+import type { Bounds3, Group, Mesh, Relation, Scene, Vec3 } from "../../../abstract-3d.js";
 import {
   dimensionConvertToTypeMesh,
   dimensionPlacements,
@@ -22,7 +22,14 @@ export type Style = "group" | "dimension" | "relation" | "outline";
 
 /** What a pointer event on an item is about, and what hover and selection apply to */
 export type Target =
-  | { readonly kind: "group"; readonly id: string; readonly root: number; readonly rootData: Record<string, string> | undefined }
+  | {
+      readonly kind: "group";
+      readonly id: string;
+      readonly root: number;
+      readonly rootData: Record<string, string> | undefined;
+      /** The top-level group's own extent, boxed when it's selected */
+      readonly bounds?: Bounds3;
+    }
   | { readonly kind: "dimension"; readonly id: string | undefined }
   | { readonly kind: "relation"; readonly relation: Relation };
 
@@ -73,7 +80,7 @@ export function compileScene(scene: Scene, createGroupId?: (g: Group) => string)
   const dimensions = scene.dimensions_deprecated?.dimensions ?? [];
   const relations = scene.relations ?? [];
   const targets: ReadonlyArray<Target> = [
-    ...scene.groups.map((g, root): Target => ({ kind: "group", id: createGroupId?.(g) ?? "", root, rootData: g.data })),
+    ...scene.groups.map((g, root): Target => ({ kind: "group", id: createGroupId?.(g) ?? "", root, rootData: g.data, bounds: g.bounds })),
     ...dimensions.map((d): Target => ({ kind: "dimension", id: d.id })),
     ...relations.map((relation): Target => ({ kind: "relation", relation })),
   ];

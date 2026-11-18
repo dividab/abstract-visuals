@@ -116,6 +116,19 @@ describe("buildScene", () => {
     expect(built.selection.object.visible).toBe(false);
   });
 
+  it("boxes a selected group on its own bounds, where it has them, in its axes", () => {
+    const turned: Group = {
+      ...group([box(vec3(10, 20, 30), red)], vec3(100, 0, 0), vec3(0, Math.PI / 2, 0), [], { id: "a" }),
+      bounds: { min: vec3(-20, -10, -15), max: vec3(20, 10, 15) },
+    };
+    const built = build(scene([turned]));
+    paintScene(built, { ...idle, dimensionsClickable: true, selectedIds: { a: true } });
+    const start = built.selection.front.geometry.getAttribute("instanceStart");
+    const xs = Array.from({ length: start.count }, (_, i) => Math.round(new Vector3().fromBufferAttribute(start, i).z));
+    // Its x from -20 to 20, turned a quarter around y, is z from 20 to -20
+    expect([Math.min(...xs), Math.max(...xs)]).toEqual([-20, 20]);
+  });
+
   it("keeps dimensions in their own group, and doesn't pick hidden ones", () => {
     // Its text, the empty scene's 32 high, is centered a gap and half its height out from the line, over the origin
     const dimension = alignedDimension(vec3(-500, 100, 0), vec3(500, 100, 0), vec3(0, 30, 0), "1000", ["front"], undefined, "dim");

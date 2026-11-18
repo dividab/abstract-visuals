@@ -2,8 +2,9 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [4.4.0] - 2026-11-18
 
+- Added: a group's `bounds`, its extent in its own axes, e.g. the room it takes in an assembly where its solids are smaller; the three.js viewer boxes a selected top-level group on them instead of its solids' bounds
 - Fixed: the React `Viewer` compares `bufferZones` and `fitPadding` by value, as `camera`, so an inline object no longer refits the camera on every render, which snapped it back while turning it
 
 ## [4.3.0] - 2026-11-18

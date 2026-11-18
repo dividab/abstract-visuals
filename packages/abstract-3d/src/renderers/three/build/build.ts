@@ -11,6 +11,7 @@ import {
   Vector3,
   Vector4,
 } from "three";
+import type { Bounds3 } from "../../../abstract-3d.js";
 import type { PaintState, StructureState, TargetState } from "../appearance/appearance.js";
 import { getHighlight, getItemColor, getMaterialClass, getTargetStates, SELECTED } from "../appearance/appearance.js";
 import type { CompiledScene } from "../compile/compile.js";
@@ -177,7 +178,7 @@ export function paintScene(built: BuiltScene, state: PaintState): void {
     const boxes: Array<SelectionBox> = [];
     compiled.targets.forEach((target, t) => {
       if (target.kind === "group" && highlights[t]! >= SELECTED) {
-        const box = built.boxes[t] ?? getTargetBox(built, t, target.root);
+        const box = built.boxes[t] ?? getTargetBox(built, t, target);
         built.boxes[t] = box;
         if (!box.bounds.isEmpty()) {
           boxes.push(box);
@@ -188,9 +189,16 @@ export function paintScene(built: BuiltScene, state: PaintState): void {
   }
 }
 
-/** The bounds of the target's solids, not its symbols, texts or lines, in its top-level group's axes */
-function getTargetBox(built: BuiltScene, t: number, root: number): SelectionBox {
+/** The top-level group's own bounds, else its solids', not its symbols, texts or lines, in its axes */
+function getTargetBox(
+  built: BuiltScene,
+  t: number,
+  { root, bounds: own }: { readonly root: number; readonly bounds?: Bounds3 | undefined }
+): SelectionBox {
   const matrix = built.compiled.roots[root]!;
+  if (own) {
+    return { bounds: new Box3(new Vector3(own.min.x, own.min.y, own.min.z), new Vector3(own.max.x, own.max.y, own.max.z)), matrix };
+  }
   const inverse = new Matrix4().copy(matrix).invert();
   const bounds = new Box3();
   for (const i of built.itemsOfTarget[t]!) {
