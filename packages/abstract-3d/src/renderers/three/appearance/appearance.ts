@@ -7,8 +7,6 @@ import type { Item, Target } from "../compile/compile.js";
 /** Material classes and per-instance colors of items, by the viewer's state, as the r3f renderer's materials */
 
 export type MaterialState = "Accept" | "Error" | "Warning";
-/** @deprecated The viewer frames and badges the symbols of groups in an error or warning itself */
-export const ERROR_IMG_KEY = "error";
 
 /** The state that decides material classes, so changing it rebuilds the scene */
 export type StructureState = {

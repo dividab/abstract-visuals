@@ -7,7 +7,6 @@ export type { CompiledScene } from "./compile/compile.js";
 export { buildScene, disposeScene } from "./build/build.js";
 export type { BuildOptions, BuiltScene } from "./build/build.js";
 export { createGlyphAtlas } from "./text/text.js";
-export { ERROR_IMG_KEY } from "./appearance/appearance.js";
 export type { MaterialState } from "./appearance/appearance.js";
 export type { CameraOptions, BufferZones, FitPadding } from "./camera/camera.js";
 export type { ControlsOptions } from "./camera/controls.js";

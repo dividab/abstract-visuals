@@ -60,8 +60,6 @@ export type ViewerOptions<Content> = {
   /** The resolution: `low` 1 and `medium` up to 1.5 pixels per CSS pixel, `high`, the default, the screen's; `auto` high until moving gets slow */
   readonly quality?: Quality;
   readonly useAlphaTest?: boolean;
-  /** @deprecated Ignored, as the viewer frames and badges the symbols of groups in an error or warning itself */
-  readonly materialStateImages?: Record<string, string>;
   readonly popovers?: ReadonlyArray<Popover<Content>>;
   readonly getTooltips?: (id: string) => ReadonlyArray<Popover<Content>>;
   /** Mounts popover and tooltip content, e.g. as React portals; without it, strings and DOM nodes are mounted directly */
@@ -87,7 +85,6 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   activeComponents: ["build"],
   activeRelations: ["build"],
   useAlphaTest: ["build"],
-  materialStateImages: [],
   selectedIds: ["paint"],
   hoveredIds: ["paint"],
   showDimensions: ["dimensions"],

@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. The format 
 
 - Changed: the three.js viewer boxes selected groups on their solids' bounds, in their top-level group's axes, the box tinted, with bold edges, faint where hidden, instead of coloring them blue, so their colors stay their own
 - Changed: an error or warning on a group with symbol images frames each symbol in the state's color with a badge on its corner, a red circle for an error, a yellow triangle for a warning, each with a white exclamation mark, instead of filling the group, which keeps its own colors and finishes; groups without symbols, e.g. profiles, are still filled, as is every accepted group
-- Deprecated: `materialStateImages` and `ERROR_IMG_KEY`, ignored, as the viewer badges the symbols itself instead of replacing them by the error image
+- Removed: `materialStateImages` and `ERROR_IMG_KEY`, as the viewer badges the symbols itself instead of replacing them by the error image
 - Added: `fitPadding` per side, `{ left, right, top, bottom }`, each a fraction of the scene's half width or height on screen, the scene shifted away from the larger side, e.g. more room below it for dimensions there; a number pads every side alike, as before. Its type is exported as `FitPadding`
 
 ## [4.2.7] - 2026-11-17
