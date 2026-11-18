@@ -108,8 +108,8 @@ export type Group = {
   readonly layer?: string;
   readonly type?: GroupType;
   /**
-   * Its extent in its own axes, e.g. the room it takes in an assembly where its solids are smaller, which the three.js viewer boxes when a top-level
-   * group is selected instead of its solids' bounds
+   * Its extent in the axes its position is in, its parent's, e.g. the room it takes in an assembly where its solids are smaller, which the three.js
+   * viewer boxes when a top-level group is selected instead of its solids' bounds
    */
   readonly bounds?: Bounds3;
   /** The application's own data, not read by the renderers */

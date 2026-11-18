@@ -120,9 +120,14 @@ describe("getMaterialClass", () => {
     ]);
   });
 
-  it("draws relations unlit on both sides, and their outlines on the back", () => {
-    expect(classify(solid({ normal: red }, "relation"), relation)).toMatchObject({ lit: false, side: "double", transparent: false });
-    expect(classify(solid({ normal: red }, "outline"), relation)).toMatchObject({ lit: false, side: "back" });
+  it("draws relations unlit on both sides, see-through but hiding their outlines, drawn after them, which show only around them", () => {
+    expect(classify(solid({ normal: red }, "relation"), relation)).toMatchObject({ lit: false, side: "double", transparent: true, depthWrite: true });
+    expect(classify(solid({ normal: red }, "outline"), relation)).toMatchObject({ lit: false, side: "back", transparent: true, last: true });
+  });
+
+  it("outlines relations in black, also while hovered", () => {
+    expect(paint(solid({ normal: red }, "outline"), relation)).toEqual(rgba("rgb(0, 0, 0)"));
+    expect(paint(solid({ normal: red }, "outline"), relation, { hoveredTarget: 0 })).toEqual(rgba("rgb(0, 0, 0)"));
   });
 });
 
@@ -155,15 +160,15 @@ describe("getItemColor", () => {
     expect(paint(solid({ normal: red, opacity: 0.8 }), group, { relationsActive: true })).toEqual(rgba(red, 0.1));
   });
 
+  it("makes disabled groups' symbols a little see-through, less than their solids, but not in an error or warning", () => {
+    expect(paint(symbol, group, { relationsActive: true })).toEqual(rgba("rgb(255, 255, 255)", 0.6));
+    expect(paint(symbol, group, { relationsActive: true, activeComponents: { fan: "Error" } })).toEqual(rgba("rgb(255, 255, 255)"));
+  });
+
   it("keeps the colors of selected groups, as they're boxed instead", () => {
     expect(paint(solid({ normal: red }), group, { selectedIds: { fan: true } })).toEqual(rgba(red));
     expect(paint(item(text(vec3Zero, "A", 1, { normal: red }), "group", "text"), group, { selectedIds: { fan: true } })).toEqual(rgba(red));
-    expect(paint(solid({ normal: red }), group, { selectedIds: { fan: true }, activeComponents: { fan: "Error" } })).toEqual(rgba("#b82f3a"));
-  });
-
-  it("outlines relations in black, also while hovered", () => {
-    expect(paint(solid({ normal: "rgb(0,148,91)" }, "outline"), relation)).toEqual(rgba("rgb(0, 0, 0)"));
-    expect(paint(solid({ normal: "rgb(0,148,91)" }, "outline"), relation, { hoveredTarget: 0 })).toEqual(rgba("rgb(0, 0, 0)"));
+    expect(paint(solid({ normal: red }), group, { selectedIds: { fan: true }, activeComponents: { fan: "Error" } })).toEqual(rgba("#ab0e0e"));
   });
 
   it("keeps lines in their material's color", () => {
@@ -179,7 +184,8 @@ describe("getItemColor", () => {
     expect(paint(d, dimension, { selectedIds: { fan: true }, relationsActive: true })).toEqual(rgba(red));
   });
 
-  it("darkens hovered relations", () => {
-    expect(paint(solid({ normal: red }, "relation"), relation, { hoveredTarget: 0 })).toEqual(rgba(shade(-0.4, red)!));
+  it("draws relations in the theme green, see-through, darker and solid while hovered", () => {
+    expect(paint(solid({ normal: red }, "relation"), relation)).toEqual(rgba("#188a72", 0.7));
+    expect(paint(solid({ normal: red }, "relation"), relation, { hoveredTarget: 0 })).toEqual(rgba(shade(-0.4, "#188a72")!));
   });
 });

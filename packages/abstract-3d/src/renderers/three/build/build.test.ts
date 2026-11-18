@@ -5,6 +5,7 @@ import { alignedDimension, box, culledLine, group, sphere, text, vec3, vec3Zero 
 import type { PaintState, StructureState } from "../appearance/appearance.js";
 import type { CompiledScene } from "../compile/compile.js";
 import { compileScene } from "../compile/compile.js";
+import { placeHotspots } from "../hotspots/hotspots.js";
 import type { GlyphBitmap } from "../text/text.js";
 import { createGlyphAtlas, SDF_BUFFER } from "../text/text.js";
 import type { BuiltScene } from "./build.js";
@@ -116,7 +117,7 @@ describe("buildScene", () => {
     expect(built.selection.object.visible).toBe(false);
   });
 
-  it("boxes a selected group on its own bounds, where it has them, in its axes", () => {
+  it("boxes a selected group on its own bounds, where it has them, in the axes its position is in, not turned with it", () => {
     const turned: Group = {
       ...group([box(vec3(10, 20, 30), red)], vec3(100, 0, 0), vec3(0, Math.PI / 2, 0), [], { id: "a" }),
       bounds: { min: vec3(-20, -10, -15), max: vec3(20, 10, 15) },
@@ -124,9 +125,9 @@ describe("buildScene", () => {
     const built = build(scene([turned]));
     paintScene(built, { ...idle, dimensionsClickable: true, selectedIds: { a: true } });
     const start = built.selection.front.geometry.getAttribute("instanceStart");
-    const xs = Array.from({ length: start.count }, (_, i) => Math.round(new Vector3().fromBufferAttribute(start, i).z));
-    // Its x from -20 to 20, turned a quarter around y, is z from 20 to -20
-    expect([Math.min(...xs), Math.max(...xs)]).toEqual([-20, 20]);
+    const zs = Array.from({ length: start.count }, (_, i) => Math.round(new Vector3().fromBufferAttribute(start, i).z));
+    // Its z from -15 to 15 in the scene's axes, though the group is turned a quarter around y
+    expect([Math.min(...zs), Math.max(...zs)]).toEqual([-15, 15]);
   });
 
   it("keeps dimensions in their own group, and doesn't pick hidden ones", () => {
@@ -142,8 +143,48 @@ describe("buildScene", () => {
   it("builds the active relations only", () => {
     const s = scene([], { relations: [relation("r1"), relation("r2")] });
     expect(build(s).parts).toHaveLength(0);
-    // A relation's box and its outline
-    expect(batches(build(s, { relationsActive: true }, ["r1"])).map((b) => b.instanceCount)).toEqual([1, 1]);
+    const built = build(s, { relationsActive: true }, ["r1"]);
+    // A relation's slab and its outline, drawn after it
+    expect(batches(built).map((b) => [b.instanceCount, b.renderOrder])).toEqual([
+      [1, 0],
+      [1, 1],
+    ]);
+    expect(built.hotspots.boxes.map((b) => b.target)).toEqual([0]);
+  });
+
+  it("puts each active relation's insertion symbol on its side facing the camera while seen edge on, flat on its face toward the camera while face on", () => {
+    const slab = { id: "r1", pos: vec3Zero, groups: [group([box(vec3(10, 100, 100), red)])] };
+    const built = build(scene([], { relations: [slab] }), { relationsActive: true }, ["r1"]);
+    const { hotspots } = built;
+    const camera = new PerspectiveCamera();
+    camera.position.set(0, 0, 100);
+    camera.updateMatrixWorld();
+    placeHotspots(hotspots, camera);
+    const [symbol] = hotspots.symbols;
+    assert(symbol);
+    // The slab across x, seen edge on: on its front side, the symbol 3.4 of the empty scene's 32 high text
+    expect([...symbol.position.toArray(), symbol.scale.x].map((v) => Math.round(v * 1000) / 1000 + 0)).toEqual([0, 0, 50, 108.8]);
+    // Seen face on, in the middle of its face toward the camera, lying flat on it
+    const facing = new PerspectiveCamera();
+    facing.position.set(100, 0, 0);
+    facing.lookAt(0, 0, 0);
+    facing.updateMatrixWorld();
+    placeHotspots(hotspots, facing);
+    expect(symbol.position.toArray().map((v) => Math.round(v * 1000) / 1000 + 0)).toEqual([5, 0, 0]);
+    expect(
+      new Vector3(0, 0, 1)
+        .applyQuaternion(symbol.quaternion)
+        .toArray()
+        .map((v) => Math.round(v * 1000) / 1000 + 0)
+    ).toEqual([1, 0, 0]);
+    placeHotspots(hotspots, camera);
+    // Its symbol picks the relation, though it's mostly past the relation's shape
+    built.root.updateMatrixWorld();
+    const raycaster = new Raycaster();
+    raycaster.setFromCamera(new Vector2(0, 0.0005), camera);
+    const [hit] = raycaster.intersectObjects(hotspots.symbols, false);
+    assert(hit);
+    expect(built.compiled.items[getPickedItem(built, hit) ?? -1]?.target).toBe(0);
   });
 
   it("fades and moves disabled groups to a transparent batch", () => {

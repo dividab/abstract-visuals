@@ -108,13 +108,20 @@ describe("compileScene", () => {
     expect(compiled.targets[items.at(0)?.target ?? -1]).toEqual({ kind: "dimension", id: "fan" });
   });
 
-  it("adds relation shapes, with an outline around their boxes", () => {
-    const relation = { id: "r1", pos: vec3Zero, groups: [group([box(vec3(10, 10, 10), red), sphere(1, red)], vec3(5, 0, 0))] };
+  it("adds relation shapes, their boxes as slabs with rounded corners across their thinnest side, with an outline around them", () => {
+    const relation = { id: "r1", pos: vec3Zero, groups: [group([box(vec3(2, 10, 20), red), sphere(1, red)], vec3(5, 0, 0))] };
     const compiled = compileScene(scene([], { relations: [relation] }));
     expect(compiled.items.map((i) => i.style)).toEqual(["relation", "outline", "relation"]);
     expect(compiled.targets[getItem(compiled, 0).target]).toEqual({ kind: "relation", relation });
+    const slab = getItem(compiled, 0).mesh.geometry;
+    assert(slab.type === "Shape");
+    // Across x, its 20 along z and 10 along y, its corners rounded by 0.04 of 10
+    expect(slab.thickness).toBe(2);
+    expect([Math.max(...slab.points.map((p) => p.x)), Math.max(...slab.points.map((p) => p.y))]).toEqual([10, 5]);
+    expect(slab.points.some((p) => Math.abs(p.x) === 10 && Math.abs(p.y) === 5)).toBe(false);
     const outline = getItem(compiled, 1).mesh.geometry;
-    expect(outline.type === "Box" && outline.size).toEqual(vec3(10.125, 10.125, 10.125));
+    // Past it by 0.17 of the empty scene's 32 high text on every side
+    expect(outline.type === "Shape" && outline.thickness).toBeCloseTo(2 + 2 * 0.17 * 32);
     expect(apply(compiled.items.at(0)?.matrix, 0, 0, 0)).toEqual([5, 0, 0]);
   });
 

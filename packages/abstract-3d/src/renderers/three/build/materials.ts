@@ -27,7 +27,7 @@ import { stateMaterials } from "../appearance/appearance.js";
  */
 export function createClassMaterial(c: MaterialClass, reflections: boolean): Material {
   const side = c.side === "front" ? FrontSide : c.side === "back" ? BackSide : DoubleSide;
-  const common = { side, transparent: c.transparent, depthWrite: !c.transparent };
+  const common = { side, transparent: c.transparent, depthWrite: c.depthWrite ?? !c.transparent };
   if (!c.lit) {
     return new MeshBasicMaterial(common);
   }
@@ -232,7 +232,7 @@ export function getImageUrl(image: Image): string {
 }
 
 /** How far a symbol's state frame and badge reach past each side of it, of its shorter side */
-export const symbolStatePadding = 0.4;
+export const symbolStatePadding = 0.48;
 
 /** The symbol framed in its state's color, with the state's badge on the frame's top right corner, drawn past the symbol by `symbolStatePadding` */
 export function loadSymbolStateTexture(cache: TextureCache, url: string, state: SymbolState, size: Vec2): TextureEntry {
@@ -323,7 +323,7 @@ function drawSymbolState(symbol: CanvasImageSource, state: SymbolState, size: Ve
   ctx.beginPath();
   ctx.roundRect(frame, frame, width - 2 * frame, height - 2 * frame, 0.1 * side);
   ctx.stroke();
-  const [x, y, r] = [width - frame, frame, 0.2 * side];
+  const [x, y, r] = [width - frame, frame, 0.25 * side];
   // An error's badge is a circle, a warning's a triangle large enough to hold the same mark, each with a white ring that parts it from the symbol
   const error = state === "Error";
   ctx.beginPath();

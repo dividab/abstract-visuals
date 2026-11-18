@@ -45,20 +45,31 @@ export type MaterialClass = {
   readonly transparent: boolean;
   /** Opaque solids whose material doesn't turn it off cast shadows */
   readonly castShadow: boolean;
+  /** Written to depth though transparent, e.g. a relation's slab, so its outline shows only around it */
+  readonly depthWrite?: boolean;
+  /** Drawn after the other transparent classes, e.g. a relation's outline after its slab */
+  readonly last?: boolean;
 };
 
 /** Bit flags of how a target is highlighted, so only targets whose highlight changed need a repaint */
 export const HOVERED = 1;
 export const SELECTED = 2;
 
-const disabledOpacity = 0.125;
-export const selectColor = "rgb(14,82,184)";
-/** Of the inverted hull around a relation's boxes */
+/** Of a disabled group's solids and symbols, its symbols faded less, so they still tell what it is, and not at all in an error or warning */
+const disabledOpacities: Partial<Record<Item["role"], number>> = { solid: 0.125, image: 0.6 };
+/** Of an active relation's slab and insertion symbol, the products theme's primary green */
+export const hotspotColor = "#188a72";
+/** Of the inverted hull around a relation's slab */
 const outlineColor = "rgb(0, 0, 0)";
+/** Of an active relation's slab, solid while hovered */
+const relationOpacity = 0.7;
+export const selectColor = "rgb(14,82,184)";
+/** How far a selected group's symbols are tinted toward `selectColor` */
+const symbolTint = 0.8;
 export const stateMaterials: Record<MaterialState, Material> = {
   Accept: { normal: "rgb(0,148,91)", metalness: 0.5, roughness: 0.5 },
-  Error: { normal: "#b82f3a", metalness: 0.5, roughness: 0.5 },
-  Warning: { normal: "rgb(240, 197, 48)", metalness: 0.5, roughness: 0.5 },
+  Error: { normal: "#ab0e0e", metalness: 0.5, roughness: 0.5 },
+  Warning: { normal: "rgb(247, 215, 101)", metalness: 0.5, roughness: 0.5 },
 };
 const unlit = { lit: false, metalness: 0, roughness: 1, transparent: false, castShadow: false } as const;
 /** Of glass without an opacity of its own */
@@ -82,9 +93,9 @@ export function getMaterialClass(item: Item, { materialState, disabled }: Target
   const { material } = item.mesh;
   switch (item.style) {
     case "relation":
-      return { ...unlit, side: "double" };
+      return { ...unlit, side: "double", transparent: true, depthWrite: true };
     case "outline":
-      return { ...unlit, side: "back" };
+      return { ...unlit, side: "back", transparent: true, last: true };
     case "dimension":
       return { ...unlit, side: "front", transparent: (material.opacity ?? 1) < 1 };
     default: {
@@ -124,23 +135,30 @@ export function getHighlight(target: Target, targetIndex: number, state: PaintSt
 }
 
 /** The item's linear color and opacity by its target's highlight, written to `out`; hovered colors are darkened, selected groups are boxed instead */
-export function getItemColor(item: Item, { materialState, disabled }: TargetState, highlight: number, out: Vector4): Vector4 {
+export function getItemColor(item: Item, { materialState, symbolState, disabled }: TargetState, highlight: number, out: Vector4): Vector4 {
   const { material } = item.mesh;
   const hovered = highlight % SELECTED === HOVERED;
   const selected = highlight >= SELECTED;
   const opacity = getOpacity(material);
   switch (item.style) {
     case "relation":
-      return setColor(out, material.normal, hovered, 1);
+      return setColor(out, hotspotColor, hovered, hovered ? 1 : relationOpacity);
     case "outline":
       return setColor(out, outlineColor, false, 1);
     case "dimension":
       return setColor(out, selected ? selectColor : material.normal, false, opacity);
     default: {
+      // A selected group's symbols tinted toward its box's blue
+      if (item.role === "image" && selected) {
+        const key = `selected ${material.normal}`;
+        const color = colors.get(key) ?? new Color(material.normal).lerp(new Color(selectColor), symbolTint);
+        colors.set(key, color);
+        return out.set(color.r, color.g, color.b, opacity);
+      }
       const style = materialState && item.role !== "image" ? stateMaterials[materialState].normal : material.normal;
       return item.role === "line"
         ? setColor(out, material.normal, false, 1)
-        : setColor(out, style, hovered, item.role === "solid" && disabled ? opacity * disabledOpacity : opacity);
+        : setColor(out, style, hovered, opacity * (disabled && !(item.role === "image" && symbolState) ? (disabledOpacities[item.role] ?? 1) : 1));
     }
   }
 }

@@ -17,6 +17,8 @@ import { getHighlight, getItemColor, getMaterialClass, getTargetStates, SELECTED
 import type { CompiledScene } from "../compile/compile.js";
 import { getItemMatrix, transform } from "../compile/compile.js";
 import { createSolidGeometry, getSolidShape, keepGeometries } from "../geometry/geometry.js";
+import type { HotspotBox, Hotspots } from "../hotspots/hotspots.js";
+import { createHotspots, disposeHotspots, getHotspotItem, paintHotspots } from "../hotspots/hotspots.js";
 import type { Selection, SelectionBox } from "../selection/selection.js";
 import { createSelection, disposeSelection, setSelection } from "../selection/selection.js";
 import type { GlyphAtlas } from "../text/text.js";
@@ -33,6 +35,7 @@ import {
   disposePart,
   flushPart,
   getHitSlot,
+  getSlotBox,
   paintSlot,
   placeSlot,
 } from "./parts.js";
@@ -70,6 +73,8 @@ export type BuiltScene = {
   readonly highlights: Int8Array;
   /** The edges of the selected groups' boxes */
   readonly selection: Selection;
+  /** The active relations' insertion symbols */
+  readonly hotspots: Hotspots;
   /** Each group target's box, once it's been selected */
   readonly boxes: Array<SelectionBox | undefined>;
   readonly partOfObject: ReadonlyMap<Object3D, number>;
@@ -127,6 +132,19 @@ export function buildScene(compiled: CompiledScene, options: BuildOptions): Buil
     return part;
   });
   keepGeometries(options.geometries, usedShapes);
+  const hotspotBoxes: Array<HotspotBox> = [];
+  compiled.items.forEach((item, i) => {
+    if (partOfItem[i]! >= 0) {
+      const part = parts[partOfItem[i]!]!;
+      placeSlot(part, slotOfItem[i]!, getItemMatrix(compiled, item, 0, world));
+      const box = item.style === "relation" ? getSlotBox(part, slotOfItem[i]!) : undefined;
+      if (box) {
+        hotspotBoxes.push({ ...box, target: item.target, item: i });
+      }
+    }
+  });
+  const hotspots = createHotspots(hotspotBoxes, hotspotSymbolSize * compiled.textHeight);
+  root.add(hotspots.object);
 
   const built: BuiltScene = {
     compiled,
@@ -141,30 +159,28 @@ export function buildScene(compiled: CompiledScene, options: BuildOptions): Buil
     animatedItems,
     highlights: new Int8Array(compiled.targets.length).fill(-1),
     selection,
+    hotspots,
     boxes: [],
     partOfObject: new Map(parts.map((part, p) => [part.object, p])),
     state,
   };
-  compiled.items.forEach((item, i) => {
-    if (partOfItem[i]! >= 0) {
-      placeSlot(parts[partOfItem[i]!]!, slotOfItem[i]!, getItemMatrix(compiled, item, 0, world));
-    }
-  });
   paintScene(built, { ...options.structure, dimensionsClickable: false });
   parts.forEach((part) => flushPart(part, true));
   return built;
 }
 
-/** Repaints the targets whose highlight changed, and boxes the selected groups */
+/** Repaints the targets whose highlight changed, boxes the selected groups and colors the hotspots */
 export function paintScene(built: BuiltScene, state: PaintState): void {
   const { compiled, parts, highlights } = built;
   const touched = new Set<Part>();
   let selectionChanged = false;
+  let hotspotsChanged = false;
   for (let t = 0; t < compiled.targets.length; t++) {
     const target = compiled.targets[t]!;
     const highlight = getHighlight(target, t, state);
     if (highlight !== highlights[t]) {
       selectionChanged ||= target.kind === "group" && highlight >= SELECTED !== highlights[t]! >= SELECTED;
+      hotspotsChanged ||= target.kind === "relation";
       highlights[t] = highlight;
       built.itemsOfTarget[t]!.forEach((i) => {
         const part = parts[built.partOfItem[i]!]!;
@@ -174,6 +190,9 @@ export function paintScene(built: BuiltScene, state: PaintState): void {
     }
   }
   touched.forEach((part) => flushPart(part, false));
+  if (hotspotsChanged) {
+    paintHotspots(built.hotspots, highlights);
+  }
   if (selectionChanged) {
     const boxes: Array<SelectionBox> = [];
     compiled.targets.forEach((target, t) => {
@@ -189,16 +208,18 @@ export function paintScene(built: BuiltScene, state: PaintState): void {
   }
 }
 
-/** The top-level group's own bounds, else its solids', not its symbols, texts or lines, in its axes */
+/** The top-level group's own bounds in the scene's axes, else its solids', not its symbols, texts or lines, in its own axes */
 function getTargetBox(
   built: BuiltScene,
   t: number,
   { root, bounds: own }: { readonly root: number; readonly bounds?: Bounds3 | undefined }
 ): SelectionBox {
-  const matrix = built.compiled.roots[root]!;
+  // Its own bounds in the scene's axes, which its position is in
   if (own) {
-    return { bounds: new Box3(new Vector3(own.min.x, own.min.y, own.min.z), new Vector3(own.max.x, own.max.y, own.max.z)), matrix };
+    const bounds = new Box3(new Vector3(own.min.x, own.min.y, own.min.z), new Vector3(own.max.x, own.max.y, own.max.z));
+    return { bounds, matrix: built.compiled.matrix };
   }
+  const matrix = built.compiled.roots[root]!;
   const inverse = new Matrix4().copy(matrix).invert();
   const bounds = new Box3();
   for (const i of built.itemsOfTarget[t]!) {
@@ -222,7 +243,7 @@ export function cullScene(built: BuiltScene, cameraPosition: Vector3): void {
   built.parts.forEach((part) => cullLines(part, cameraPosition));
 }
 
-/** The shown objects that can be picked; lines aren't picked */
+/** The shown objects that can be picked, but lines and the hotspots' symbols, which are picked first */
 export function getPickables(built: BuiltScene): Array<Object3D> {
   const pickables: Array<Object3D> = [];
   built.parts.forEach((part) => {
@@ -233,17 +254,21 @@ export function getPickables(built: BuiltScene): Array<Object3D> {
   return pickables;
 }
 
-/** The index of the compiled item hit */
+/** The index of the compiled item hit, also of a hotspot's symbol */
 export function getPickedItem(built: BuiltScene, hit: Intersection): number | undefined {
   const p = built.partOfObject.get(hit.object);
-  const slot = p === undefined ? undefined : getHitSlot(built.parts[p]!, hit);
-  return slot === undefined ? undefined : built.itemsOfPart[p!]![slot];
+  if (p === undefined) {
+    return getHotspotItem(built.hotspots, hit.object);
+  }
+  const slot = getHitSlot(built.parts[p]!, hit);
+  return slot === undefined ? undefined : built.itemsOfPart[p]![slot];
 }
 
 export function disposeScene(built: BuiltScene): void {
   built.state.disposed = true;
   built.parts.forEach(disposePart);
   disposeSelection(built.selection);
+  disposeHotspots(built.hotspots);
   built.root.removeFromParent();
 }
 
@@ -281,19 +306,20 @@ function createPart(
       if (first.role === "solid") {
         const c = getMaterialClass(first, targetStates[first.target]!);
         const part = createSolidPart(entries, createClassMaterial(c, options.studio !== false));
-        Object.assign(part.object, { castShadow: c.castShadow, receiveShadow: c.lit });
+        Object.assign(part.object, { castShadow: c.castShadow, receiveShadow: c.lit, renderOrder: c.last ? 1 : 0 });
         return part;
       }
       // Images are hidden until their texture loads; a symbol in a state is drawn larger, framed and badged
       const g = first.mesh.geometry;
-      const { symbolState } = targetStates[first.target]!;
+      const { symbolState, disabled } = targetStates[first.target]!;
       const pad = g.type === "Image" && symbolState ? 2 * symbolStatePadding * Math.min(g.size.x, g.size.y) : 0;
       const local =
         g.type === "Image" && pad ? entries[0]!.local.clone().scale(new Vector3(1 + pad / g.size.x, 1 + pad / g.size.y, 1)) : entries[0]!.local;
       const part = createImagePart(
         entries[0]!.geometry,
         local,
-        createImageMaterial(first.mesh.material.backfaceCulling, options.useAlphaTest ?? true)
+        // A disabled group's symbols are see-through, but in an error or warning, which alpha testing would discard
+        createImageMaterial(first.mesh.material.backfaceCulling, (options.useAlphaTest ?? true) && (!disabled || symbolState !== undefined))
       );
       if (g.type === "Image" && options.textures) {
         const url = getImageUrl(g.image);
@@ -323,5 +349,7 @@ function showImage(
   }
 }
 
+/** Of the scene's text height, so it grows with the unit as its texts do */
+const hotspotSymbolSize = 3.4;
 const world = new Matrix4();
 const color = new Vector4();

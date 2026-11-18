@@ -1,12 +1,12 @@
 import { Euler, Matrix4, Quaternion, Vector3 } from "three";
-import type { Bounds3, Group, Mesh, Relation, Scene, Vec3 } from "../../../abstract-3d.js";
+import type { Bounds3, Group, Mesh, Relation, Scene, Vec2, Vec3 } from "../../../abstract-3d.js";
 import {
   dimensionConvertToTypeMesh,
   dimensionPlacements,
   groupTextBackgrounds,
   sceneTextHeight,
+  vec2,
   vec3,
-  vec3Scale,
   vec3Zero,
 } from "../../../abstract-3d.js";
 
@@ -67,14 +67,20 @@ export type CompiledScene = {
   readonly textHeight: number;
 };
 
-type Output = { readonly items: Array<Item>; readonly animations: Array<Animation> };
+/** `outline` is how far a relation's slab's outline reaches past it */
+type Output = { readonly items: Array<Item>; readonly animations: Array<Animation>; readonly outline: number };
 type ItemBase = Pick<Item, "style" | "target" | "data" | "animation">;
 
-const outlineScale = 1.0125;
+/** Of the scene's text height, as wide as the insertion symbol's edge */
+const outlineWidth = 0.17;
+/** Of a relation's slab's shorter side, its corners' radius */
+const slabRounding = 0.04;
+/** Straight segments per rounded corner */
+const cornerSteps = 6;
 
 /** Targets are the top-level groups, then the dimensions, then the relations */
 export function compileScene(scene: Scene, createGroupId?: (g: Group) => string): CompiledScene {
-  const out: Output = { items: [], animations: [] };
+  const out: Output = { items: [], animations: [], outline: outlineWidth * sceneTextHeight(scene.groups) };
   const center = scene.center_deprecated ?? vec3Zero;
   const matrix = new Matrix4().makeTranslation(-center.x, -center.y, -center.z).multiply(transform(vec3Zero, scene.rotation_deprecated));
   const dimensions = scene.dimensions_deprecated?.dimensions ?? [];
@@ -114,12 +120,35 @@ function addGroup(out: Output, g: Group, parent: Matrix4, parentAnimation: numbe
 
 function addMeshes(out: Output, meshes: ReadonlyArray<Mesh>, matrix: Matrix4, base: ItemBase): void {
   meshes.forEach((mesh) => {
-    out.items.push({ ...base, mesh, role: getRole(mesh), matrix });
-    if (base.style === "relation" && mesh.geometry.type === "Box") {
-      const outline = { ...mesh, geometry: { ...mesh.geometry, size: vec3Scale(mesh.geometry.size, outlineScale) } };
-      out.items.push({ ...base, style: "outline", mesh: outline, role: "solid", matrix });
+    // A relation's box as a rounded slab, outlined
+    const slab = base.style === "relation" && mesh.geometry.type === "Box" && !mesh.geometry.holes?.length;
+    out.items.push({ ...base, mesh: slab ? createRoundedSlab(mesh, 0) : mesh, role: getRole(mesh), matrix });
+    if (slab) {
+      out.items.push({ ...base, style: "outline", mesh: createRoundedSlab(mesh, out.outline), role: "solid", matrix });
     }
   });
+}
+
+/** A box as a rounded rectangle across its thinnest side, extruded through it, grown by `grow` on every side, e.g. for its outline */
+function createRoundedSlab(mesh: Mesh, grow: number): Mesh {
+  const g = mesh.geometry as Extract<Mesh["geometry"], { readonly type: "Box" }>;
+  const { x, y, z } = g.size;
+  // The shape's x and y along the box's broader sides, turned there before the box's own turn
+  const [width, height, thickness, turn] =
+    x <= y && x <= z ? [z, y, x, vec3(0, Math.PI / 2, 0)] : y <= z ? [x, z, y, vec3(-Math.PI / 2, 0, 0)] : [x, y, z, vec3Zero];
+  const r = slabRounding * Math.min(width, height) + grow;
+  const [w, h] = [width + 2 * grow, height + 2 * grow];
+  const points: Array<Vec2> = [];
+  for (let corner = 0; corner < 4; corner++) {
+    const [cx, cy] = [(corner === 0 || corner === 3 ? 1 : -1) * (w / 2 - r), (corner < 2 ? 1 : -1) * (h / 2 - r)];
+    for (let step = 0; step <= cornerSteps; step++) {
+      const angle = ((corner + step / cornerSteps) * Math.PI) / 2;
+      points.push(vec2(cx + r * Math.cos(angle), cy + r * Math.sin(angle)));
+    }
+  }
+  quaternion.setFromEuler(euler.set(g.rot?.x ?? 0, g.rot?.y ?? 0, g.rot?.z ?? 0)).multiply(turned.setFromEuler(euler.set(turn.x, turn.y, turn.z)));
+  euler.setFromQuaternion(quaternion);
+  return { ...mesh, geometry: { type: "Shape", points, pos: g.pos, rot: vec3(euler.x, euler.y, euler.z), thickness: thickness + 2 * grow } };
 }
 
 /** The item's world matrix at `seconds` into its animations, written to `out` */
@@ -166,6 +195,7 @@ function getRole(mesh: Mesh): Role {
 const scratch = new Matrix4();
 const euler = new Euler();
 const quaternion = new Quaternion();
+const turned = new Quaternion();
 const position = new Vector3();
 const scale = new Vector3();
 

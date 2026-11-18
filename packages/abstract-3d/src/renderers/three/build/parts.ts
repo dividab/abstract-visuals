@@ -182,6 +182,15 @@ export function addSlotBounds(part: Part, slot: number, inverse: Matrix4, bounds
   }
 }
 
+/** A solid slot's geometry's bounds, and its world matrix */
+export function getSlotBox(part: Part, slot: number): { readonly bounds: Box3; readonly matrix: Matrix4 } | undefined {
+  if (part.kind !== "solid") {
+    return undefined;
+  }
+  const bounds = part.object.getBoundingBoxAt(part.object.getGeometryIdAt(slot), new Box3());
+  return bounds ? { bounds, matrix: part.object.getMatrixAt(slot, new Matrix4()) } : undefined;
+}
+
 /** Uploads what placing and painting changed, and the bounds for culling and picking when slots moved */
 export function flushPart(part: Part, moved: boolean): void {
   switch (part.kind) {

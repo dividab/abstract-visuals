@@ -28,6 +28,7 @@ import { configureControls, createControls, setPose } from "../camera/controls.j
 import { createGizmo, disposeGizmo } from "../camera/gizmo.js";
 import type { CompiledScene } from "../compile/compile.js";
 import { compileScene } from "../compile/compile.js";
+import { getHotspotHit, placeHotspots } from "../hotspots/hotspots.js";
 import type { TierGovernor } from "../quality/quality.js";
 import { getPixelRatio, recordFrame } from "../quality/quality.js";
 import { createKeyLight, disposeKeyLight } from "../shadow/key-light.js";
@@ -365,6 +366,7 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
   camera.updateMatrixWorld();
   if (built) {
     cullScene(built, camera.position);
+    placeHotspots(built.hotspots, camera);
   }
   if (v.loaded) {
     // Floors the viewport to the canvas each frame, as the gizmo restores it rounded, a pixel larger at a fractional pixel ratio
@@ -588,7 +590,10 @@ function pick<Content>(v: Viewer<Content>, event: MouseEvent): Hit | undefined {
   const start = performance.now();
   const rect = v.canvas.getBoundingClientRect();
   raycaster.setFromCamera(ndc.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1), v.camera);
-  const hits = raycaster.intersectObjects(getPickables(built), false);
+  // A hotspot's symbol first, as it's drawn over what's behind its middle
+  const all = raycaster.intersectObjects(getPickables(built), false);
+  const symbol = getHotspotHit(built.hotspots, raycaster, all);
+  const hits = symbol ? [symbol] : all;
   v.stats.pickMs = performance.now() - start;
   for (const hit of hits) {
     const item = getPickedItem(built, hit);

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [4.4.0] - 2026-11-18
 
+- Added: an insertion symbol on each active relation's slab, a rounded square in the slab's green, edged in black, with a white plus, 3.4 text heights on every relation: facing the camera on the slab's edge that faces it most, leaning to the left of the screen and kept until another edge faces it clearly more, sliding onto the slab's near face and lying flat on it as the slab turns to face the camera; hidden whole by what's in front of its middle, never cut, darker while hovered, and it picks the relation
+- Changed: an active relation's boxes are drawn as slabs with rounded corners across their thinnest side, in the products theme's primary green, `#188a72`, rather than its own color, at 70% opacity, solid while hovered, outlined in black 0.17 text heights wide
+- Changed: a group's `bounds` are in the axes its position is in, its parent's, rather than its own, so an assembly's precomputed bounds, e.g. of the room each part takes, are passed as they are
+- Changed: a selected group's symbols are tinted toward the selection's blue
+- Changed: a disabled group's symbols, e.g. while relations are active, are a little see-through, at 60% opacity, less than its solids, but not those in an error or warning
+- Changed: an error's color is the products theme's, `#ab0e0e`, and a warning's, `rgb(247, 215, 101)`, in the fill of groups without symbols and in the frames and badges of symbols
+- Fixed: the selection box's edges are smoothed by the canvas's multisampling, as the wide lines were jagged
+
+## [4.3.1] - 2026-11-18
+
 - Added: a group's `bounds`, its extent in its own axes, e.g. the room it takes in an assembly where its solids are smaller; the three.js viewer boxes a selected top-level group on them instead of its solids' bounds
 - Fixed: the React `Viewer` compares `bufferZones` and `fitPadding` by value, as `camera`, so an inline object no longer refits the camera on every render, which snapped it back while turning it
 
