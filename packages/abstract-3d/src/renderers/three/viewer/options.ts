@@ -1,7 +1,7 @@
 import type { Object3D } from "three";
 import type { Group, Relation, Scene, Vec3, View } from "../../../abstract-3d.js";
 import type { MaterialState } from "../appearance/appearance.js";
-import type { BufferZones, CameraOptions } from "../camera/camera.js";
+import type { BufferZones, CameraOptions, FitPadding } from "../camera/camera.js";
 import type { ControlsOptions } from "../camera/controls.js";
 import type { ControlsHelper } from "../camera/gizmo.js";
 import type { Quality } from "../quality/quality.js";
@@ -25,8 +25,10 @@ export type ViewerOptions<Content> = {
   readonly scene?: Scene;
   /** The id of a top-level group, which its hover, selection, material state and events are by; groups without an id can't be clicked */
   readonly createGroupId?: (g: Group) => string;
+  /** Boxed on their solids' bounds, tinted, with bold edges, faint where hidden; their colors stay their own */
   readonly selectedIds?: Record<string, boolean>;
   readonly hoveredIds?: ReadonlyArray<string>;
+  /** Fills the groups' solids with the state's color, but an error or warning on a group with symbol images frames and badges its symbols instead */
   readonly activeComponents?: Record<string, MaterialState>;
   /**
    * The ids of the relations whose shape is drawn to be clicked, e.g. where a component can be inserted. While defined, even when empty, only the
@@ -38,7 +40,7 @@ export type ViewerOptions<Content> = {
   readonly camera?: CameraOptions;
   readonly view?: View;
   readonly bufferZones?: BufferZones;
-  readonly fitPadding?: number;
+  readonly fitPadding?: FitPadding;
   readonly controls?: ControlsOptions;
   readonly gizmo?: ControlsHelper;
   /** Lights added to the studio and key light that light the scene; none by default */
@@ -58,6 +60,7 @@ export type ViewerOptions<Content> = {
   /** The resolution: `low` 1 and `medium` up to 1.5 pixels per CSS pixel, `high`, the default, the screen's; `auto` high until moving gets slow */
   readonly quality?: Quality;
   readonly useAlphaTest?: boolean;
+  /** @deprecated Ignored, as the viewer frames and badges the symbols of groups in an error or warning itself */
   readonly materialStateImages?: Record<string, string>;
   readonly popovers?: ReadonlyArray<Popover<Content>>;
   readonly getTooltips?: (id: string) => ReadonlyArray<Popover<Content>>;
@@ -84,7 +87,7 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   activeComponents: ["build"],
   activeRelations: ["build"],
   useAlphaTest: ["build"],
-  materialStateImages: ["build"],
+  materialStateImages: [],
   selectedIds: ["paint"],
   hoveredIds: ["paint"],
   showDimensions: ["dimensions"],

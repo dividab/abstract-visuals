@@ -50,4 +50,13 @@ describe("fitCamera", () => {
     // The usable area is 400 x 400, so the scene's 4000 width sets 10 world units per pixel
     expect(fitOrthographic({ bufferZones: { right: 400 } })).toEqual([-2000, 6000, 2000, -2000, 1]);
   });
+
+  it("pads each side by its fraction of the scene's half size, the scene shifted away from the larger side", () => {
+    // Padded 4200 x 2600, narrower than the 2:1 canvas, so 1300 high and 2600 wide either side of its center, 100 left of and 100 above the scene's
+    expect(fitOrthographic({ fitPadding: { left: 0.1, right: 0, top: 0.4, bottom: 0.2 } })).toEqual([-2700, 2500, 1400, -1200, 1]);
+    // Backed off until the padded height, 1.2 times the scene's, fits, the view offset moving the scene up by the padding's 200 world units
+    const [camera, placement] = fitPerspective({ fitPadding: { top: 0, bottom: 0.4 } });
+    expect(placement!.distance).toBeCloseTo(1.2 * (1000 / tan + 500));
+    expect(camera.view!.offsetY).toBeCloseTo(200 / ((2 * placement!.distance * tan) / 400));
+  });
 });

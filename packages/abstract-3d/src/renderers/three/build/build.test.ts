@@ -77,7 +77,7 @@ describe("buildScene", () => {
     expect(pickId(built, 0)).toBe("label");
   });
 
-  it("repaints the hovered and selected targets", () => {
+  it("repaints the hovered targets, not the selected ones", () => {
     const built = build(scene([part("a", 0), part("b", 20)]));
     const batch = firstBatch(built);
     const color = (instance: number): ReadonlyArray<number> =>
@@ -92,7 +92,28 @@ describe("buildScene", () => {
     expect(color(0)).toEqual([1, 0, 0, 1]);
     paintScene(built, { ...state, hoveredTarget: undefined, selectedIds: { a: true } });
     expect(color(1)).toEqual(before);
-    expect(color(0)).not.toEqual([1, 0, 0, 1]);
+    expect(color(0)).toEqual([1, 0, 0, 1]);
+  });
+
+  it("boxes the selected groups on their solids' bounds, in their top-level group's axes, tinted, with their edges", () => {
+    const turned = group([box(vec3(10, 20, 30), red, vec3(5, 0, 0))], vec3(100, 0, 0), vec3(0, Math.PI / 2, 0), [], { id: "a" });
+    const built = build(scene([turned, part("b", 20)]));
+    const state: PaintState = { ...idle, dimensionsClickable: true };
+    expect(built.selection.object.visible).toBe(false);
+    paintScene(built, { ...state, selectedIds: { a: true } });
+    expect([built.selection.object.visible, built.selection.volumes.children.length]).toEqual([true, 1]);
+    const start = built.selection.front.geometry.getAttribute("instanceStart");
+    const end = built.selection.front.geometry.getAttribute("instanceEnd");
+    expect(start.count).toBe(12);
+    // The box from x 0 to 10, y -10 to 10 and z -15 to 15, turned a quarter around y and moved to x 100
+    const points = [start, end].flatMap((a) =>
+      Array.from({ length: a.count }, (_, i) => new Vector3().fromBufferAttribute(a, i).round().toArray().join())
+    );
+    expect(new Set(points)).toEqual(
+      new Set(["85,-10,0", "115,-10,0", "85,10,0", "115,10,0", "85,-10,-10", "115,-10,-10", "85,10,-10", "115,10,-10"])
+    );
+    paintScene(built, { ...state, selectedIds: {} });
+    expect(built.selection.object.visible).toBe(false);
   });
 
   it("keeps dimensions in their own group, and doesn't pick hidden ones", () => {

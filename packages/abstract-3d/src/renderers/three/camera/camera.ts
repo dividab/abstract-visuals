@@ -21,8 +21,14 @@ export type FitInput = {
   /** In CSS pixels */
   readonly canvas: { readonly width: number; readonly height: number };
   readonly bufferZones: BufferZones;
-  readonly fitPadding: number;
+  readonly fitPadding: FitPadding;
 };
+
+/**
+ * Room around the scene, as fractions of its half width or height on screen, on every side or per side, e.g. more below it for dimensions there; the
+ * scene shifted off the usable area's center by the difference between opposite sides
+ */
+export type FitPadding = number | { readonly left?: number; readonly right?: number; readonly top?: number; readonly bottom?: number };
 
 /** Where to place the camera: its distance from the target, and the direction from the target to it */
 export type Placement = { readonly distance: number; readonly direction: Vec3 };
@@ -40,30 +46,43 @@ export function fitCamera(
   const usableW = Math.max(1, canvas.width - left - right);
   const usableH = Math.max(1, canvas.height - top - bottom);
   const usableAspect = usableW / usableH;
+  const pad =
+    typeof fitPadding === "number"
+      ? { left: fitPadding, right: fitPadding, top: fitPadding, bottom: fitPadding }
+      : { left: 0, right: 0, top: 0, bottom: 0, ...fitPadding };
+  // The padded scene's width and height as multiples of the scene's, and its center's offset from the scene's in world units
+  const [scaleX, scaleY] = [1 + (pad.left + pad.right) / 2, 1 + (pad.top + pad.bottom) / 2];
+  const [offsetX, offsetY] = [((pad.right - pad.left) * size.x) / 4, ((pad.top - pad.bottom) * size.y) / 4];
   camera.zoom = 1;
 
   if ("isOrthographicCamera" in camera) {
-    const pad = 1 + fitPadding;
-    // Constrained by the scene's width when it's wider than the usable area, else by its height
+    // Constrained by the padded scene's width when it's wider than the usable area, else by its height
     const [halfW, halfH] =
-      sceneAspect > usableAspect
-        ? [(size.x / 2) * pad, (size.x / 2 / usableAspect) * pad]
-        : [((usableAspect * size.y) / 2) * pad, (size.y / 2) * pad];
-    // Extended by the buffer zones, at the world units per CSS pixel of the usable area
+      (sceneAspect * scaleX) / scaleY > usableAspect
+        ? [(size.x / 2) * scaleX, (size.x / 2 / usableAspect) * scaleX]
+        : [((usableAspect * size.y) / 2) * scaleY, (size.y / 2) * scaleY];
+    // Around the padded scene's center, extended by the buffer zones, at the world units per CSS pixel of the usable area
     const [wpp, hpp] = [(halfW * 2) / usableW, (halfH * 2) / usableH];
-    Object.assign(camera, { left: -halfW - left * wpp, right: halfW + right * wpp, top: halfH + top * hpp, bottom: -halfH - bottom * hpp });
+    Object.assign(camera, {
+      left: offsetX - halfW - left * wpp,
+      right: offsetX + halfW + right * wpp,
+      top: offsetY + halfH + top * hpp,
+      bottom: offsetY - halfH - bottom * hpp,
+    });
     camera.updateProjectionMatrix();
     const fovTan = Math.tan((45 * Math.PI) / 360);
     return { distance: size.z * 0.5 + Math.max(size.x, size.y) * 2 * fovTan, direction };
   }
 
-  // The field of view describes the usable area; the view offset extends the rendered frustum from it to the full canvas
+  // The field of view describes the usable area; the view offset extends the rendered frustum from it to the full canvas, and moves the padded
+  // scene's center to the usable area's, at the world units per CSS pixel at the target
   const tan = Math.tan((camera.fov * Math.PI) / 360);
-  const distance = Math.max(size.y / 2 / tan, size.x / 2 / (tan * usableAspect)) + size.z * 0.5;
+  const distance = Math.max(scaleY * (size.y / 2 / tan + size.z * 0.5), scaleX * (size.x / 2 / (tan * usableAspect) + size.z * 0.5));
+  const wpp = (2 * distance * tan) / usableH;
   camera.aspect = usableAspect;
-  camera.setViewOffset(usableW, usableH, -left, -top, canvas.width, canvas.height);
+  camera.setViewOffset(usableW, usableH, -left + offsetX / wpp, -top - offsetY / wpp, canvas.width, canvas.height);
   camera.updateProjectionMatrix();
-  return { distance: distance * (1 + fitPadding), direction };
+  return { distance, direction };
 }
 
 /** The direction to look from, the scene's size as seen on screen and its aspect */

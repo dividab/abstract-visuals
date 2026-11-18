@@ -1,4 +1,5 @@
 import {
+  Box3,
   type BufferGeometry,
   Group,
   type Intersection,
@@ -7,19 +8,22 @@ import {
   type MeshBasicMaterial,
   type Object3D,
   type Texture,
-  type Vector3,
+  Vector3,
   Vector4,
 } from "three";
 import type { PaintState, StructureState, TargetState } from "../appearance/appearance.js";
-import { getHighlight, getItemColor, getMaterialClass, getTargetStates } from "../appearance/appearance.js";
+import { getHighlight, getItemColor, getMaterialClass, getTargetStates, SELECTED } from "../appearance/appearance.js";
 import type { CompiledScene } from "../compile/compile.js";
 import { getItemMatrix, transform } from "../compile/compile.js";
 import { createSolidGeometry, getSolidShape, keepGeometries } from "../geometry/geometry.js";
+import type { Selection, SelectionBox } from "../selection/selection.js";
+import { createSelection, disposeSelection, setSelection } from "../selection/selection.js";
 import type { GlyphAtlas } from "../text/text.js";
 import type { TextureCache } from "./materials.js";
-import { createClassMaterial, createImageMaterial, getImageUrl, loadTexture } from "./materials.js";
+import { createClassMaterial, createImageMaterial, getImageUrl, loadSymbolStateTexture, loadTexture, symbolStatePadding } from "./materials.js";
 import type { Part } from "./parts.js";
 import {
+  addSlotBounds,
   createImagePart,
   createLinePart,
   createSolidPart,
@@ -42,7 +46,6 @@ export type BuildOptions = {
   readonly atlas: GlyphAtlas;
   /** Without it images aren't shown */
   readonly textures?: TextureCache;
-  readonly materialStateImages?: Record<string, string>;
   readonly useAlphaTest?: boolean;
   readonly onTextureLoaded?: () => void;
   /** Lit by the studio, whose reflections metals show; true by default */
@@ -64,12 +67,16 @@ export type BuiltScene = {
   readonly animatedItems: ReadonlyArray<number>;
   /** Each target's painted highlight, -1 before the first paint */
   readonly highlights: Int8Array;
+  /** The edges of the selected groups' boxes */
+  readonly selection: Selection;
+  /** Each group target's box, once it's been selected */
+  readonly boxes: Array<SelectionBox | undefined>;
   readonly partOfObject: ReadonlyMap<Object3D, number>;
   readonly state: { disposed: boolean };
 };
 
 export function buildScene(compiled: CompiledScene, options: BuildOptions): BuiltScene {
-  const targetStates = getTargetStates(compiled.targets, options.structure);
+  const targetStates = getTargetStates(compiled.targets, compiled.items, options.structure);
   const active = new Set(options.activeRelations);
   const groups = new Map<string, Array<number>>();
   const itemsOfTarget = compiled.targets.map((): Array<number> => []);
@@ -102,8 +109,8 @@ export function buildScene(compiled: CompiledScene, options: BuildOptions): Buil
     }
   });
 
-  const [root, dimensions] = [new Group(), new Group()];
-  root.add(dimensions);
+  const [root, dimensions, selection] = [new Group(), new Group(), createSelection()];
+  root.add(dimensions, selection.object);
   const usedShapes = new Set<string>();
   const itemsOfPart = [...groups.values()];
   const partOfItem = new Int32Array(compiled.items.length).fill(-1);
@@ -132,6 +139,8 @@ export function buildScene(compiled: CompiledScene, options: BuildOptions): Buil
     itemsOfTarget,
     animatedItems,
     highlights: new Int8Array(compiled.targets.length).fill(-1),
+    selection,
+    boxes: [],
     partOfObject: new Map(parts.map((part, p) => [part.object, p])),
     state,
   };
@@ -145,13 +154,16 @@ export function buildScene(compiled: CompiledScene, options: BuildOptions): Buil
   return built;
 }
 
-/** Repaints the targets whose highlight changed */
+/** Repaints the targets whose highlight changed, and boxes the selected groups */
 export function paintScene(built: BuiltScene, state: PaintState): void {
   const { compiled, parts, highlights } = built;
   const touched = new Set<Part>();
-  compiled.targets.forEach((target, t) => {
+  let selectionChanged = false;
+  for (let t = 0; t < compiled.targets.length; t++) {
+    const target = compiled.targets[t]!;
     const highlight = getHighlight(target, t, state);
     if (highlight !== highlights[t]) {
+      selectionChanged ||= target.kind === "group" && highlight >= SELECTED !== highlights[t]! >= SELECTED;
       highlights[t] = highlight;
       built.itemsOfTarget[t]!.forEach((i) => {
         const part = parts[built.partOfItem[i]!]!;
@@ -159,8 +171,32 @@ export function paintScene(built: BuiltScene, state: PaintState): void {
         touched.add(part);
       });
     }
-  });
+  }
   touched.forEach((part) => flushPart(part, false));
+  if (selectionChanged) {
+    const boxes: Array<SelectionBox> = [];
+    compiled.targets.forEach((target, t) => {
+      if (target.kind === "group" && highlights[t]! >= SELECTED) {
+        const box = built.boxes[t] ?? getTargetBox(built, t, target.root);
+        built.boxes[t] = box;
+        if (!box.bounds.isEmpty()) {
+          boxes.push(box);
+        }
+      }
+    });
+    setSelection(built.selection, boxes);
+  }
+}
+
+/** The bounds of the target's solids, not its symbols, texts or lines, in its top-level group's axes */
+function getTargetBox(built: BuiltScene, t: number, root: number): SelectionBox {
+  const matrix = built.compiled.roots[root]!;
+  const inverse = new Matrix4().copy(matrix).invert();
+  const bounds = new Box3();
+  for (const i of built.itemsOfTarget[t]!) {
+    addSlotBounds(built.parts[built.partOfItem[i]!]!, built.slotOfItem[i]!, inverse, bounds);
+  }
+  return { bounds, matrix };
 }
 
 /** Moves the animated items to `seconds` into their animations */
@@ -199,6 +235,7 @@ export function getPickedItem(built: BuiltScene, hit: Intersection): number | un
 export function disposeScene(built: BuiltScene): void {
   built.state.disposed = true;
   built.parts.forEach(disposePart);
+  disposeSelection(built.selection);
   built.root.removeFromParent();
 }
 
@@ -239,16 +276,20 @@ function createPart(
         Object.assign(part.object, { castShadow: c.castShadow, receiveShadow: c.lit });
         return part;
       }
-      // Images are hidden until their texture loads
+      // Images are hidden until their texture loads; a symbol in a state is drawn larger, framed and badged
+      const g = first.mesh.geometry;
+      const { symbolState } = targetStates[first.target]!;
+      const pad = g.type === "Image" && symbolState ? 2 * symbolStatePadding * Math.min(g.size.x, g.size.y) : 0;
+      const local =
+        g.type === "Image" && pad ? entries[0]!.local.clone().scale(new Vector3(1 + pad / g.size.x, 1 + pad / g.size.y, 1)) : entries[0]!.local;
       const part = createImagePart(
         entries[0]!.geometry,
-        entries[0]!.local,
+        local,
         createImageMaterial(first.mesh.material.backfaceCulling, options.useAlphaTest ?? true)
       );
-      const g = first.mesh.geometry;
       if (g.type === "Image" && options.textures) {
-        const url = getImageUrl(g.image, targetStates[first.target]!.materialState, options.materialStateImages);
-        const entry = loadTexture(options.textures, url);
+        const url = getImageUrl(g.image);
+        const entry = symbolState ? loadSymbolStateTexture(options.textures, url, symbolState, g.size) : loadTexture(options.textures, url);
         if (entry.texture) {
           showImage(part.object, entry.texture, state, undefined);
         } else {

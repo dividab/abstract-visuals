@@ -7,6 +7,7 @@ import type { Item, Target } from "../compile/compile.js";
 /** Material classes and per-instance colors of items, by the viewer's state, as the r3f renderer's materials */
 
 export type MaterialState = "Accept" | "Error" | "Warning";
+/** @deprecated The viewer frames and badges the symbols of groups in an error or warning itself */
 export const ERROR_IMG_KEY = "error";
 
 /** The state that decides material classes, so changing it rebuilds the scene */
@@ -16,8 +17,13 @@ export type StructureState = {
   readonly relationsActive: boolean;
 };
 
-/** A target's material state, and whether it's disabled: faded and not clickable while relations are active */
-export type TargetState = { readonly materialState?: MaterialState; readonly disabled: boolean };
+/**
+ * A target's material state, filling its solids, or for an error or warning on a group with symbol images, shown on those instead, framed and badged;
+ * and whether it's disabled: faded and not clickable while relations are active
+ */
+export type TargetState = { readonly materialState?: MaterialState; readonly symbolState?: SymbolState; readonly disabled: boolean };
+
+export type SymbolState = Exclude<MaterialState, "Accept">;
 
 /** The state that only changes colors */
 export type PaintState = StructureState & {
@@ -48,11 +54,10 @@ export const HOVERED = 1;
 export const SELECTED = 2;
 
 const disabledOpacity = 0.125;
-const selectColor = "rgb(14,82,184)";
-const textSelectColor = "rgb(0, 26, 65)";
+export const selectColor = "rgb(14,82,184)";
 /** Of the inverted hull around a relation's boxes */
 const outlineColor = "rgb(0, 0, 0)";
-const stateMaterials: Record<MaterialState, Material> = {
+export const stateMaterials: Record<MaterialState, Material> = {
   Accept: { normal: "rgb(0,148,91)", metalness: 0.5, roughness: 0.5 },
   Error: { normal: "#b82f3a", metalness: 0.5, roughness: 0.5 },
   Warning: { normal: "rgb(240, 197, 48)", metalness: 0.5, roughness: 0.5 },
@@ -61,10 +66,17 @@ const unlit = { lit: false, metalness: 0, roughness: 1, transparent: false, cast
 /** Of glass without an opacity of its own */
 const glassOpacity = 0.25;
 
-export function getTargetStates(targets: ReadonlyArray<Target>, structure: StructureState): ReadonlyArray<TargetState> {
-  return targets.map((target) => {
-    const materialState = target.kind === "group" ? structure.activeComponents?.[target.id] : undefined;
-    return { materialState, disabled: target.kind === "group" && structure.relationsActive && materialState !== "Accept" };
+export function getTargetStates(targets: ReadonlyArray<Target>, items: ReadonlyArray<Item>, structure: StructureState): ReadonlyArray<TargetState> {
+  const hasSymbol = new Uint8Array(targets.length);
+  for (const item of items) {
+    if (item.role === "image" && item.style === "group") {
+      hasSymbol[item.target] = 1;
+    }
+  }
+  return targets.map((target, t) => {
+    const state = target.kind === "group" ? structure.activeComponents?.[target.id] : undefined;
+    const disabled = target.kind === "group" && structure.relationsActive && state !== "Accept";
+    return state !== undefined && state !== "Accept" && hasSymbol[t] ? { symbolState: state, disabled } : { materialState: state, disabled };
   });
 }
 
@@ -113,7 +125,7 @@ export function getHighlight(target: Target, targetIndex: number, state: PaintSt
   }
 }
 
-/** The item's linear color and opacity by its target's highlight, written to `out`; hovered colors are darkened */
+/** The item's linear color and opacity by its target's highlight, written to `out`; hovered colors are darkened, selected groups are boxed instead */
 export function getItemColor(item: Item, { materialState, disabled }: TargetState, highlight: number, out: Vector4): Vector4 {
   const { material } = item.mesh;
   const hovered = highlight % SELECTED === HOVERED;
@@ -127,13 +139,7 @@ export function getItemColor(item: Item, { materialState, disabled }: TargetStat
     case "dimension":
       return setColor(out, selected ? selectColor : material.normal, false, opacity);
     default: {
-      const style = selected
-        ? item.role === "text"
-          ? textSelectColor
-          : selectColor
-        : materialState && item.role !== "image"
-          ? stateMaterials[materialState].normal
-          : material.normal;
+      const style = materialState && item.role !== "image" ? stateMaterials[materialState].normal : material.normal;
       return item.role === "line"
         ? setColor(out, material.normal, false, 1)
         : setColor(out, style, hovered, item.role === "solid" && disabled ? opacity * disabledOpacity : opacity);

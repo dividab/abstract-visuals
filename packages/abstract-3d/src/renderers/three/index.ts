@@ -9,7 +9,7 @@ export type { BuildOptions, BuiltScene } from "./build/build.js";
 export { createGlyphAtlas } from "./text/text.js";
 export { ERROR_IMG_KEY } from "./appearance/appearance.js";
 export type { MaterialState } from "./appearance/appearance.js";
-export type { CameraOptions, BufferZones } from "./camera/camera.js";
+export type { CameraOptions, BufferZones, FitPadding } from "./camera/camera.js";
 export type { ControlsOptions } from "./camera/controls.js";
 export type { ControlsHelper, ViewcubeOptions, AxesOptions, GizmoAlignment } from "./camera/gizmo.js";
 export type { Quality, Tier } from "./quality/quality.js";

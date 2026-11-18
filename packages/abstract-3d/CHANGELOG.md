@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.3.0] - 2026-11-18
+
+- Changed: the three.js viewer boxes selected groups on their solids' bounds, in their top-level group's axes, the box tinted, with bold edges, faint where hidden, instead of coloring them blue, so their colors stay their own
+- Changed: an error or warning on a group with symbol images frames each symbol in the state's color with a badge on its corner, a red circle for an error, a yellow triangle for a warning, each with a white exclamation mark, instead of filling the group, which keeps its own colors and finishes; groups without symbols, e.g. profiles, are still filled, as is every accepted group
+- Deprecated: `materialStateImages` and `ERROR_IMG_KEY`, ignored, as the viewer badges the symbols itself instead of replacing them by the error image
+- Added: `fitPadding` per side, `{ left, right, top, bottom }`, each a fraction of the scene's half width or height on screen, the scene shifted away from the larger side, e.g. more room below it for dimensions there; a number pads every side alike, as before. Its type is exported as `FitPadding`
+
 ## [4.2.7] - 2026-11-17
 
 - Fixed: the DXF renderer draws each dimension's line, end marks and extension lines at its measured points, where since 4.2.0 they were drawn where the dimension is in the scene, off by the scene's offset into the DXF and turned by its view; the DIMENSION entity's line position is the one drawn, moved out where `dimensionPlacements` moves it, so CAD programs that redraw dimensions from it draw them in the same place

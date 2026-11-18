@@ -1,5 +1,6 @@
 import {
   BatchedMesh,
+  Box3,
   type BufferGeometry,
   FrontSide,
   InstancedBufferAttribute,
@@ -174,6 +175,13 @@ export function paintSlot(part: Part, slot: number, rgba: Vector4): void {
   }
 }
 
+/** Adds a solid slot's bounds, in the axes whose inverse world matrix is `inverse`, to `bounds` */
+export function addSlotBounds(part: Part, slot: number, inverse: Matrix4, bounds: Box3): void {
+  if (part.kind === "solid" && part.object.getBoundingBoxAt(part.object.getGeometryIdAt(slot), box)) {
+    bounds.union(box.applyMatrix4(scratch.multiplyMatrices(inverse, part.object.getMatrixAt(slot, scratch))));
+  }
+}
+
 /** Uploads what placing and painting changed, and the bounds for culling and picking when slots moved */
 export function flushPart(part: Part, moved: boolean): void {
   switch (part.kind) {
@@ -281,6 +289,7 @@ void main() {
 }`;
 
 const scratch = new Matrix4();
+const box = new Box3();
 const glyph = new Matrix4();
 const vector = new Vector3();
 const normal = new Vector3();

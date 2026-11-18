@@ -15,9 +15,9 @@ import {
   type Texture,
   TextureLoader,
 } from "three";
-import type { Image, MaterialType } from "../../../abstract-3d.js";
-import type { MaterialClass, MaterialState } from "../appearance/appearance.js";
-import { ERROR_IMG_KEY } from "../appearance/appearance.js";
+import type { Image, MaterialType, Vec2 } from "../../../abstract-3d.js";
+import type { MaterialClass, SymbolState } from "../appearance/appearance.js";
+import { stateMaterials } from "../appearance/appearance.js";
 
 /** White materials, colored per instance, for each material class; images' materials and textures */
 
@@ -227,9 +227,26 @@ export function createImageMaterial(backfaceCulling: boolean | undefined, useAlp
   return new MeshBasicMaterial({ side: backfaceCulling ? FrontSide : DoubleSide, alphaTest: useAlphaTest ? 0.8 : 0, transparent: true });
 }
 
-export function getImageUrl(image: Image, materialState: MaterialState | undefined, materialStateImages: Record<string, string> | undefined): string {
-  const errorUrl = materialState === "Error" ? materialStateImages?.[ERROR_IMG_KEY] : undefined;
-  return errorUrl ?? (image.type === "AbstractImage" ? `data:image/svg+xml,${createSVG(image.image)}` : image.url);
+export function getImageUrl(image: Image): string {
+  return image.type === "AbstractImage" ? `data:image/svg+xml,${createSVG(image.image)}` : image.url;
+}
+
+/** How far a symbol's state frame and badge reach past each side of it, of its shorter side */
+export const symbolStatePadding = 0.4;
+
+/** The symbol framed in its state's color, with the state's badge on the frame's top right corner, drawn past the symbol by `symbolStatePadding` */
+export function loadSymbolStateTexture(cache: TextureCache, url: string, state: SymbolState, size: Vec2): TextureEntry {
+  const key = `${state} ${size.x} ${size.y} ${url}`;
+  const cached = cache.get(key);
+  if (cached) {
+    return cached;
+  }
+  // An SVG is drawn in from itself, at the state's resolution, instead of from its smaller texture
+  const symbol = isSvg(url) ? decodeImage(url) : loadTexture(cache, url).loading.then((t) => t?.image as CanvasImageSource | undefined);
+  const entry: TextureEntry = { loading: symbol.then((image) => image && drawSymbolState(image, state, size)) };
+  entry.loading = entry.loading.then((t) => (entry.texture = t && applyFilters(t)));
+  cache.set(key, entry);
+  return entry;
 }
 
 /** A url's texture, loaded once; `texture` is set once it's loaded, so a rebuild shows it right away instead of a frame later */
@@ -241,8 +258,7 @@ export function loadTexture(cache: TextureCache, url: string): TextureEntry {
   if (cached) {
     return cached;
   }
-  const svg = url.startsWith("data:image/svg+xml") || url.endsWith(".svg") || url.includes(".svg?");
-  const entry: TextureEntry = { loading: svg ? loadSvg(url) : loader.loadAsync(url).catch(() => undefined) };
+  const entry: TextureEntry = { loading: isSvg(url) ? loadSvg(url) : loader.loadAsync(url).catch(() => undefined) };
   entry.loading = entry.loading.then((t) => (entry.texture = t && applyFilters(t)));
   cache.set(url, entry);
   return entry;
@@ -257,15 +273,25 @@ export function disposeTextures(cache: TextureCache): void {
 
 const loader = new TextureLoader();
 const svgSize = 512;
+/** Of a symbol in a state, its frame and badge sharp closer up */
+const symbolStateSize = 1024;
 
-/** SVGs are rasterized at up to 512 px, as their own size is often small; from the r3f renderer's react-image-material.tsx */
-function loadSvg(url: string): Promise<Texture | undefined> {
+function isSvg(url: string): boolean {
+  return url.startsWith("data:image/svg+xml") || url.endsWith(".svg") || url.includes(".svg?");
+}
+
+function decodeImage(url: string): Promise<HTMLImageElement | undefined> {
   const image = new Image();
   image.src = url;
   return image.decode().then(
-    () => rasterize(image),
+    () => image,
     () => undefined
   );
+}
+
+/** SVGs are rasterized at up to 512 px, as their own size is often small; from the r3f renderer's react-image-material.tsx */
+function loadSvg(url: string): Promise<Texture | undefined> {
+  return decodeImage(url).then((image) => image && rasterize(image));
 }
 
 function rasterize(image: HTMLImageElement): Texture | undefined {
@@ -273,6 +299,58 @@ function rasterize(image: HTMLImageElement): Texture | undefined {
   const canvas = document.createElement("canvas");
   Object.assign(canvas, { width: image.naturalWidth * scale, height: image.naturalHeight * scale });
   canvas.getContext("2d")?.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return new CanvasTexture(canvas);
+}
+
+/** Drawn in the symbol's units, scaled to the canvas */
+function drawSymbolState(symbol: CanvasImageSource, state: SymbolState, size: Vec2): Texture | undefined {
+  const side = Math.min(size.x, size.y);
+  const pad = symbolStatePadding * side;
+  const [width, height] = [size.x + 2 * pad, size.y + 2 * pad];
+  const scale = symbolStateSize / Math.max(width, height);
+  const canvas = document.createElement("canvas");
+  Object.assign(canvas, { width: Math.round(width * scale), height: Math.round(height * scale) });
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return undefined;
+  }
+  const color = stateMaterials[state].normal;
+  ctx.scale(scale, scale);
+  ctx.drawImage(symbol, pad, pad, size.x, size.y);
+  // The frame a gap out from the symbol, its badge's center on the frame's top right corner
+  const frame = pad - 0.085 * side;
+  Object.assign(ctx, { lineWidth: 0.07 * side, strokeStyle: color, lineJoin: "round", lineCap: "round" });
+  ctx.beginPath();
+  ctx.roundRect(frame, frame, width - 2 * frame, height - 2 * frame, 0.1 * side);
+  ctx.stroke();
+  const [x, y, r] = [width - frame, frame, 0.2 * side];
+  // An error's badge is a circle, a warning's a triangle large enough to hold the same mark, each with a white ring that parts it from the symbol
+  const error = state === "Error";
+  ctx.beginPath();
+  if (error) {
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+  } else {
+    // Higher than centered on the badge's point, so the mark, where the error's is, sits in its middle
+    ctx.moveTo(x, y - 1.3 * r);
+    ctx.lineTo(x + 1.25 * r, y + 0.8 * r);
+    ctx.lineTo(x - 1.25 * r, y + 0.8 * r);
+    ctx.closePath();
+  }
+  Object.assign(ctx, { lineWidth: 0.08 * side, strokeStyle: "white", fillStyle: color });
+  ctx.stroke();
+  ctx.fill();
+  // Rounds the triangle's corners
+  Object.assign(ctx, { lineWidth: 0.12 * r, strokeStyle: color });
+  ctx.stroke();
+  // The exclamation mark, the same for both
+  Object.assign(ctx, { lineWidth: 0.24 * r, strokeStyle: "white", fillStyle: "white" });
+  ctx.beginPath();
+  ctx.moveTo(x, y - 0.55 * r);
+  ctx.lineTo(x, y + 0.12 * r);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(x, y + 0.48 * r, 0.13 * r, 0, Math.PI * 2);
+  ctx.fill();
   return new CanvasTexture(canvas);
 }
 
