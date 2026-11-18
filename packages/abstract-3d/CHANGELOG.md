@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.3.5] - 2026-11-18
+
+- Changed: a disabled group's symbols are drawn over the relations' slabs and their outlines, under the insertion symbols, while relations are active
+
 ## [4.3.4] - 2026-11-18
 
 - Changed: a disabled group's symbols, e.g. while relations are active, are drawn as they are, rather than a little see-through

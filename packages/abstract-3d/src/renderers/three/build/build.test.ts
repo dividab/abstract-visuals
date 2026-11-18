@@ -1,7 +1,7 @@
 import { BatchedMesh, InstancedMesh, Matrix4, PerspectiveCamera, Raycaster, Vector2, Vector3, Vector4 } from "three";
 import { assert, describe, expect, it } from "vitest";
 import type { Group, Scene } from "../../../abstract-3d.js";
-import { alignedDimension, box, culledLine, group, sphere, text, vec3, vec3Zero } from "../../../abstract-3d.js";
+import { alignedDimension, box, culledLine, group, image, sphere, text, vec3, vec3Zero } from "../../../abstract-3d.js";
 import type { PaintState, StructureState } from "../appearance/appearance.js";
 import type { CompiledScene } from "../compile/compile.js";
 import { compileScene } from "../compile/compile.js";
@@ -43,6 +43,10 @@ const firstBatch = (built: BuiltScene): BatchedMesh => {
 };
 const relation = (id: string): NonNullable<Scene["relations"]>[number] => ({ id, pos: vec3Zero, groups: [group([box(vec3(1, 1, 1), red)])] });
 const batches = (built: BuiltScene): ReadonlyArray<BatchedMesh> => built.root.children.filter((o): o is BatchedMesh => o instanceof BatchedMesh);
+
+/** Each image's render order and whether it's depth tested */
+const getImageDrawing = (built: BuiltScene): ReadonlyArray<unknown> =>
+  built.parts.flatMap((p) => (p.kind === "image" ? [[p.object.renderOrder, p.object.material.depthTest]] : []));
 
 /** The id of the group under the screen center for a camera at `x` looking down -z */
 function pickId(built: BuiltScene, x: number): string | undefined {
@@ -185,6 +189,13 @@ describe("buildScene", () => {
     const [hit] = raycaster.intersectObjects(hotspots.symbols, false);
     assert(hit);
     expect(built.compiled.items[getPickedItem(built, hit) ?? -1]?.target).toBe(0);
+  });
+
+  it("draws disabled groups' symbols over the relations' slabs, only while relations are active", () => {
+    const symbol = image(vec3(10, 10, 0), red, { type: "Url", url: "symbol.png" });
+    const s = scene([group([symbol], vec3Zero, vec3Zero, [], { id: "a" })]);
+    expect(getImageDrawing(build(s))).toEqual([[0, true]]);
+    expect(getImageDrawing(build(s, { relationsActive: true }))).toEqual([[2, false]]);
   });
 
   it("fades and moves disabled groups to a transparent batch", () => {

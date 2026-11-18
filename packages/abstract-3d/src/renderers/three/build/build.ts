@@ -311,7 +311,7 @@ function createPart(
       }
       // Images are hidden until their texture loads; a symbol in a state is drawn larger, framed and badged
       const g = first.mesh.geometry;
-      const { symbolState } = targetStates[first.target]!;
+      const { symbolState, disabled } = targetStates[first.target]!;
       const pad = g.type === "Image" && symbolState ? 2 * symbolStatePadding * Math.min(g.size.x, g.size.y) : 0;
       const local =
         g.type === "Image" && pad ? entries[0]!.local.clone().scale(new Vector3(1 + pad / g.size.x, 1 + pad / g.size.y, 1)) : entries[0]!.local;
@@ -320,6 +320,11 @@ function createPart(
         local,
         createImageMaterial(first.mesh.material.backfaceCulling, options.useAlphaTest ?? true)
       );
+      // A disabled group's symbols over the relations' slabs and outlines, as they tell what each component is, and under the insertion symbols
+      if (disabled) {
+        part.object.material.depthTest = false;
+        part.object.renderOrder = 2;
+      }
       if (g.type === "Image" && options.textures) {
         const url = getImageUrl(g.image);
         const entry = symbolState ? loadSymbolStateTexture(options.textures, url, symbolState, g.size) : loadTexture(options.textures, url);
