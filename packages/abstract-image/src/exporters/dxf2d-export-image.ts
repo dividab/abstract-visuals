@@ -82,6 +82,14 @@ type BlockRecord = {
   readonly name: string;
 };
 
+type DxfLayer = {
+  readonly name: string;
+  readonly color: number | undefined;
+  readonly colorInt: number | undefined;
+  readonly lineType: string | undefined;
+  readonly flags: number | undefined;
+};
+
 export function dxf2dExportImageEncoded(root: AbstractImage, options?: Optional<DxfOptions>): Uint8Array {
   return encodeWindows1252(dxf2dExportImage(root, options));
 }
@@ -114,20 +122,30 @@ export function dxf2dExportImage(root: AbstractImage, options?: Optional<DxfOpti
   let entities = "";
   let blocks = "";
   const blockRecords: Array<BlockRecord> = [];
+  const layers: Array<DxfLayer> = [];
   blocks += createSpaceBlock("*Model_Space", modelSpaceHandle, newHandle);
   blocks += createSpaceBlock("*Paper_Space", paperSpaceHandle, newHandle);
   for (const component of root.components) {
-    const [newEntities, newBlocks, newBlockRecords] = componentDxf(component, layer, root.size, modelSpaceHandle, externalCache, opts, newHandle);
+    const [newEntities, newBlocks, newBlockRecords, newLayers] = componentDxf(
+      component,
+      layer,
+      root.size,
+      modelSpaceHandle,
+      externalCache,
+      opts,
+      newHandle
+    );
     entities += newEntities;
     blocks += newBlocks;
     blockRecords.push(...newBlockRecords);
+    layers.push(...newLayers);
   }
 
   /* TABLES */
   dxf += "0\nSECTION\n2\nTABLES\n";
   dxf += createVPortTable(newHandle);
   dxf += createLTypeTable(newHandle);
-  dxf += createLayerTable(newHandle);
+  dxf += createLayerTable(newHandle, layers);
   dxf += createStyleTable(newHandle);
   dxf += createViewTable(newHandle);
   dxf += createUcsTable(newHandle);
@@ -179,35 +197,45 @@ function componentDxf(
   externalCache: Map<string, DxfInsert>,
   options: Required<DxfOptions>,
   newHandle: () => string
-): readonly [string, string, ReadonlyArray<BlockRecord>] {
+): readonly [string, string, ReadonlyArray<BlockRecord>, ReadonlyArray<DxfLayer>] {
   let entities = "";
   let blocks = "";
   const blockRecords: Array<BlockRecord> = [];
+  const layers: Array<DxfLayer> = [];
 
   if (c.type === "group") {
     for (const child of c.children) {
-      const [newEntities, newBlocks, newBlockRecords] = componentDxf(child, layer, size, modelSpaceHandle, externalCache, options, newHandle);
+      const [newEntities, newBlocks, newBlockRecords, newLayers] = componentDxf(
+        child,
+        layer,
+        size,
+        modelSpaceHandle,
+        externalCache,
+        options,
+        newHandle
+      );
       entities += newEntities;
       blocks += newBlocks;
       blockRecords.push(...newBlockRecords);
+      layers.push(...newLayers);
     }
-    return [entities, blocks, blockRecords];
+    return [entities, blocks, blockRecords, layers];
   }
 
   if (c.type === "binaryimage") {
     if (c.data.type !== "url") {
-      return [entities, blocks, blockRecords];
+      return [entities, blocks, blockRecords, layers];
     }
     const imageData = options.imageDataByUrl[c.data.url];
     const url =
       imageData === undefined ? c.data.url : typeof imageData === "string" ? imageData : DXF_DATA_URL + dxf2dExportImage(imageData, options);
     if (typeof url !== "string" || !url.startsWith(DXF_DATA_URL)) {
-      return [entities, blocks, blockRecords];
+      return [entities, blocks, blockRecords, layers];
     }
 
     const dxfStringRaw = url.split(DXF_DATA_URL)[1];
     if (!dxfStringRaw) {
-      return [entities, blocks, blockRecords];
+      return [entities, blocks, blockRecords, layers];
     }
     const dxfString = dxfStringRaw
       .split("\n")
@@ -216,12 +244,12 @@ function componentDxf(
 
     const version = extractStandard(dxfString);
     if (version !== DXF_STANDARD) {
-      return [entities, blocks, blockRecords];
+      return [entities, blocks, blockRecords, layers];
     }
 
     const extents = extractExtents(dxfString);
     if (!extents) {
-      return [entities, blocks, blockRecords];
+      return [entities, blocks, blockRecords, layers];
     }
 
     const scale = getScale(extents, c);
@@ -229,13 +257,15 @@ function componentDxf(
     const cachedInsert = externalCache.get(cachKey);
     if (cachedInsert) {
       entities += createExternalInsert(cachedInsert, c, size, modelSpaceHandle, newHandle);
-      return [entities, blocks, blockRecords];
+      return [entities, blocks, blockRecords, layers];
     }
 
     const externalBlockRecords = extractBlockRecords(dxfString);
 
     const newBlockRecordHandle = newHandle();
-    const newName = `EMBEDED_IMAGE_${randomID()}_${scale.x.toPrecision(4).replace(".", "_")}X${scale.y.toPrecision(4).replace(".", "_")}`;
+    const randomId = randomID();
+    const newName = `EMB_IMG${randomId}_${scale.x.toPrecision(4).replace(".", "_")}X${scale.y.toPrecision(4).replace(".", "_")}`;
+    const newLayerPrefix = `EMB_LAY_${randomId}`;
 
     const initOldHandlesMap = new Map<string, string>();
 
@@ -256,11 +286,12 @@ function componentDxf(
       scaleDxf(extractBlocks(dxfString, newName, `*EXT_PS_${newName}`), scale.y, scale.y, size.height),
       initOldHandlesMap,
       newBlockRecordHandle,
+      newLayerPrefix,
       newHandle
     );
 
     if (!newEntities) {
-      return [entities, blocks, blockRecords];
+      return [entities, blocks, blockRecords, layers];
     }
 
     blocks += stripBlocks(newBlocks, [newName, `*EXT_PS_${newName}`]);
@@ -331,7 +362,13 @@ function componentDxf(
     externalCache.set(cachKey, insert);
     entities += createExternalInsert(insert, c, size, modelSpaceHandle, newHandle);
 
-    return [entities, blocks, blockRecords];
+    // Extract and rename the layers
+    const newLayers = extractLayers(dxfString, newLayerPrefix);
+    if (newLayers) {
+      layers.push(...newLayers);
+    }
+
+    return [entities, blocks, blockRecords, layers];
   }
 
   if (c.type === "line") {
@@ -380,7 +417,7 @@ function componentDxf(
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer.toString() + "\n";
     entities += "330\n" + handle + "\n";
-    return [entities, blocks, blockRecords];
+    return [entities, blocks, blockRecords, layers];
   }
 
   if (c.type === "polyline") {
@@ -424,7 +461,7 @@ function componentDxf(
     entities += "100\nAcDbEntity\n";
     entities += "8\n" + layer.toString() + "\n";
     entities += "330\n" + handle + "\n";
-    return [entities, blocks, blockRecords];
+    return [entities, blocks, blockRecords, layers];
   }
 
   if (c.type === "text") {
@@ -467,7 +504,7 @@ function componentDxf(
       entities += "73\n" + verticalAlignment.toString() + "\n";
     }
 
-    return [entities, blocks, blockRecords];
+    return [entities, blocks, blockRecords, layers];
   }
 
   if (c.type === "ellipse") {
@@ -494,7 +531,7 @@ function componentDxf(
       options,
       newHandle
     );
-    return [entities, blocks, blockRecords];
+    return [entities, blocks, blockRecords, layers];
   }
 
   if (c.type === "polygon") {
@@ -509,7 +546,7 @@ function componentDxf(
       options,
       newHandle
     );
-    return [entities, blocks, blockRecords];
+    return [entities, blocks, blockRecords, layers];
   }
 
   if (c.type === "rectangle") {
@@ -525,10 +562,10 @@ function componentDxf(
       options,
       newHandle
     );
-    return [entities, blocks, blockRecords];
+    return [entities, blocks, blockRecords, layers];
   }
 
-  return [entities, blocks, blockRecords];
+  return [entities, blocks, blockRecords, layers];
 }
 
 function invert(d: number, height: number): number {
@@ -613,6 +650,45 @@ function extractBlocks(dxf: string, newModelSpace: string, newPaperSpace: string
   return blocks;
 }
 
+function extractLayers(dxf: string, newName: string): ReadonlyArray<DxfLayer> | undefined {
+  const tableMatch = /^[ \t]*0\r?\n[ \t]*TABLE\r?\n[ \t]*2\r?\n[ \t]*LAYER\r?\n[\s\S]*?^[ \t]*0\r?\n[ \t]*ENDTAB\b/m;
+  const entryMatch = /^[ \t]*0\r?\n[ \t]*LAYER\r?\n((?:[ \t]*(?!0[ \t]*\r?\n)\d+[ \t]*\r?\n[^\r\n]*\r?\n)*)/gm;
+  const pairMatch = /^[ \t]*(\d+)[ \t]*\r?\n([^\r\n]*)\r?\n/gm;
+
+  const table = tableMatch.exec(dxf)?.[0];
+  if (!table) {
+    return undefined;
+  }
+
+  const entries = [...table.matchAll(entryMatch)];
+  if (entries.length === 0) {
+    return undefined;
+  }
+
+  return entries
+    .map((m) => {
+      const pairs = [...(m?.[1]?.matchAll(pairMatch) ?? [])].map((p) => [Number(p[1]), p?.[2]?.trim()] as const);
+      const get = (code: number): string | undefined => pairs.find(([c]) => c === code)?.[1];
+      const getNum = (code: number): number | undefined => {
+        const val = pairs.find(([c]) => c === code)?.[1];
+        return val && !Number.isNaN(val) ? Number(val) : undefined;
+      };
+
+      return {
+        name: get(2),
+        color: getNum(62),
+        colorInt: getNum(420),
+        lineType: get(6),
+        flags: getNum(70),
+      };
+    })
+    .filter((l) => l.name !== undefined)
+    .map((l) => ({
+      ...l,
+      name: `${newName}_${l.name}`,
+    }));
+}
+
 function extractExtents(dxf: string): DxfExtents | undefined {
   const min = /\$EXTMIN\s+10\s+([-\d.]+)\s+20\s+([-\d.]+)/.exec(dxf);
   const max = /\$EXTMAX\s+10\s+([-\d.]+)\s+20\s+([-\d.]+)/.exec(dxf);
@@ -634,6 +710,7 @@ function remapHandleIds(
   blocks: string | undefined,
   initHandleMap: Map<string, string>,
   _rootModelHandle: string,
+  newName: string,
   newHandle: () => string
 ): [string | undefined, string] {
   if (entities === undefined || blocks === undefined) {
@@ -641,6 +718,7 @@ function remapHandleIds(
   }
 
   const handleGroupCodes = new Set(["5", "330", "340", "331", "350", "360"]);
+  const layerGroupCode = "8";
   const ents = new Set(DXF_ENTITIES);
   ents.add("BLOCK");
   ents.add("ENDBLK");
@@ -683,6 +761,15 @@ function remapHandleIds(
           continue;
         }
       }
+
+      //remap layers
+      if (!inEntityHeader && i + 1 < lines.length && groupCode === layerGroupCode) {
+        out.push(groupCode);
+        out.push(`${newName}_${next}`);
+        i += 2;
+        continue;
+      }
+
       out.push(line);
       i++;
     }
@@ -898,8 +985,8 @@ function createLTypeTable(newHandle: () => string): string {
   return table;
 }
 
-function createLayerTable(newHandle: () => string): string {
-  const layers = ["0", "1", "A3D", "Lines", "Text"];
+function createLayerTable(newHandle: () => string, externalLayers: ReadonlyArray<DxfLayer>): string {
+  const localLayers = ["0", "1", "A3D", "Lines", "Text"];
   const layerId = newHandle();
 
   let table = "";
@@ -908,9 +995,9 @@ function createLayerTable(newHandle: () => string): string {
   table += "5\n" + layerId + "\n";
   table += "330\n0\n";
   table += "100\nAcDbSymbolTable\n";
-  table += "70\n" + layers.length.toString() + "\n";
+  table += "70\n" + (localLayers.length + externalLayers.length).toString() + "\n";
 
-  for (const layer of layers) {
+  for (const layer of localLayers) {
     table += "0\nLAYER\n";
     table += "5\n" + newHandle() + "\n";
     table += "330\n" + layerId + "\n";
@@ -919,6 +1006,23 @@ function createLayerTable(newHandle: () => string): string {
     table += "2\n" + layer + "\n";
     table += "70\n0\n62\n7\n";
     table += "6\nCONTINUOUS\n";
+    table += "370\n-3\n";
+    table += "390\nF\n"; //???
+  }
+
+  for (const layer of externalLayers) {
+    table += "0\nLAYER\n";
+    table += "5\n" + newHandle() + "\n";
+    table += "330\n" + layerId + "\n";
+    table += "100\nAcDbSymbolTableRecord\n";
+    table += "100\nAcDbLayerTableRecord\n";
+    table += "2\n" + layer.name + "\n";
+    table += `70\n${layer.flags ?? 0}\n`;
+    table += `62\n${layer.color ?? 7}\n`;
+    if (layer.colorInt) {
+      table += `420\n${layer.colorInt}\n`;
+    }
+    table += `6\n${layer.lineType ?? "CONTINUOUS"}\n`;
     table += "370\n-3\n";
     table += "390\nF\n"; //???
   }
@@ -1292,7 +1396,7 @@ function handleGenerator(): { newHandle: () => string; currentHandle: () => stri
 }
 
 function randomID(): string {
-  return "xxxxxxxxxxxxxxxx".replaceAll("x", () => Math.round(Math.random() * 16).toString(16)).toLocaleUpperCase();
+  return "xxxxxxxx".replaceAll("x", () => Math.round(Math.random() * 16).toString(16)).toLocaleUpperCase();
 }
 
 function isBlack(color: Color): boolean {

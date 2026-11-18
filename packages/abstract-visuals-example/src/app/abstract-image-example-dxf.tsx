@@ -59,17 +59,38 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
   const epsUrl = toDataUrl("text/plain", eps);
 
   const dynamicImg = `<AbstractImage width={1191} height={842}>
-    <Image src={data.square} x={0} y={0} width={1191} height={842} />
-    <Image src={data.ahu} x={100} y={0} width={400} height={200} />
-    <Image src={data.dxf1} x={200} y={200} width={200} height={200} />
+    <Image src={square} x={0} y={0} width={1191} height={842} />
+    <Image src={ahu} x={0} y={200} width={400} height={200} />
+    <Image src={dxf1} x={200} y={300} width={200} height={200} />
   </AbstractImage>`;
-  const ai = dynamicImage(dynamicImg, { ahu: "sketch", square: "square", dxf1: "dxf1" });
+
+  const ai = dynamicImage(
+    dynamicImg,
+    {
+      ahu: "ahu",
+      square: "square",
+      dxf1: "dxf1"
+    },
+    {
+      type: "object",
+      properties: {
+        data: {
+          type: "object",
+          properties: {
+            square: { type: "string" },
+            ahu: { type: "string" },
+            dxf1: { type: "string" },
+          }
+        }
+      }
+    }
+  );
 
   const dxf2 =
     ai.type === "Ok"
       ? dxf2dExportImage(ai.image, {
           imageDataByUrl: {
-            sketch: `${DXF_DATA_URL}${unitDxf}`,
+            ahu: `${DXF_DATA_URL}${unitDxf}`,
             square: `${DXF_DATA_URL}${squareDxf}`,
             dxf1: `${DXF_DATA_URL}${dxf}`,
           },
