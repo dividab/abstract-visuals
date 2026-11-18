@@ -667,7 +667,7 @@ function extractLayers(dxf: string, newName: string): ReadonlyArray<DxfLayer> | 
 
   return entries
     .map((m) => {
-      const pairs = [...(m?.[1]?.matchAll(pairMatch) ?? [])].map((p) => [Number(p[1]), p?.[2]?.trim()] as const);
+      const pairs = [...(m[1]?.matchAll(pairMatch) ?? [])].map((p) => [Number(p[1]), p[2]?.trim()] as const);
       const get = (code: number): string | undefined => pairs.find(([c]) => c === code)?.[1];
       const getNum = (code: number): number | undefined => {
         const val = pairs.find(([c]) => c === code)?.[1];
