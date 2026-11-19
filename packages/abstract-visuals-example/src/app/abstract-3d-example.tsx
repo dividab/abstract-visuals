@@ -177,7 +177,7 @@ export function Abstract3DExample(): React.ReactNode {
           DXF
         </button>
         <button onClick={() => FileSaver.saveAs(new Blob([Stl.render(systemair)], { type: "text/plain" }), `a3d.stl`)}>STL</button>
-        <button onClick={() => FileSaver.saveAs(new Blob([Step.render(systemair)], { type: "text/plain" }), `a3d.stp`)}>STEP</button>
+        <button onClick={() => FileSaver.saveAs(new Blob([Step.render(demoLayers as Scene)], { type: "text/plain" }), `a3d.stp`)}>STEP</button>
         <button
           onClick={() =>
             FileSaver.saveAs(
