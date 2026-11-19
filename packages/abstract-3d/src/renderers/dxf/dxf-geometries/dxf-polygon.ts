@@ -3,60 +3,16 @@ import { dxfEnc3DFace } from "../dxf-encoding/dxf-3dface.js";
 import type { Handle } from "../dxf-encoding/dxf-common.js";
 import { dxfEnc3DFaceTriangle } from "../dxf-encoding/dxf-triangle.js";
 
-const QUAD_STRIDE = 4;
-const TRIANGLE_STRIDE = 3;
-
+/** As in the other renderers, a quad for 4 points, else a list of triangles */
 export function dxfPolygon(p: Polygon, style: string, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
-  let polygonString = "";
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
-  const points = p.points.map((p) => vec3TransRot(p, pos, rot));
-  let i = 0;
-  while (points.length - i >= QUAD_STRIDE) {
-    const vec1 = points[i];
-    const vec2 = points[i + 1];
-    const vec3 = points[i + 2];
-    const vec4 = points[i + 3];
-    if (vec1 && vec2 && vec3 && vec4) {
-      polygonString += dxfEnc3DFace(vec1, vec2, vec3, vec4, style, handleRef);
-    }
-    i += QUAD_STRIDE;
+  const points = p.points.map((pt) => vec3TransRot(pt, pos, rot));
+  const [p0, p1, p2, p3] = points;
+  if (points.length === 4 && p0 && p1 && p2 && p3) {
+    return dxfEnc3DFace(p0, p1, p2, p3, style, handleRef);
   }
-
-  if (i <= points.length && TRIANGLE_STRIDE <= points.length) {
-    const lastArrayLength = points.length - i;
-    switch (lastArrayLength) {
-      case 1: {
-        const vec1 = points[i];
-        const vec2 = points[i - 1];
-        const vec3 = points[i - 2];
-        if (vec1 && vec2 && vec3) {
-          polygonString += dxfEnc3DFaceTriangle(vec3, vec2, vec1, style, handleRef);
-        }
-        break;
-      }
-      case 2: {
-        const vec1 = points[i];
-        const vec2 = points[i - 1];
-        const vec3 = points[i + 1];
-        if (vec1 && vec2 && vec3) {
-          polygonString += dxfEnc3DFaceTriangle(vec2, vec1, vec3, style, handleRef);
-        }
-        break;
-      }
-      case 3: {
-        const vec1 = points[i];
-        const vec2 = points[i + 1];
-        const vec3 = points[i + 2];
-        if (vec1 && vec2 && vec3) {
-          polygonString += dxfEnc3DFaceTriangle(vec1, vec2, vec3, style, handleRef);
-        }
-        break;
-      }
-      default:
-        break;
-    }
-  }
-
-  return polygonString;
+  return Array.from({ length: Math.floor(points.length / 3) }, (_, i) =>
+    dxfEnc3DFaceTriangle(points[i * 3]!, points[i * 3 + 1]!, points[i * 3 + 2]!, style, handleRef)
+  ).join("");
 }

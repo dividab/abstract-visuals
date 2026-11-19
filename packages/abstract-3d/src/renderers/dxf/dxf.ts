@@ -35,8 +35,13 @@ import { dxfCone } from "./dxf-geometries/dxf-cone.js";
 import { dxfCylinder } from "./dxf-geometries/dxf-cylinder.js";
 import { dxfDimension } from "./dxf-geometries/dxf-dimension.js";
 import { dxfImage } from "./dxf-geometries/dxf-image.js";
+import { dxfLine } from "./dxf-geometries/dxf-line.js";
 import { dxfPlane } from "./dxf-geometries/dxf-plane.js";
 import { dxfPolygon } from "./dxf-geometries/dxf-polygon.js";
+import { dxfShape } from "./dxf-geometries/dxf-shape.js";
+import { dxfSphere } from "./dxf-geometries/dxf-sphere.js";
+import { dxfText } from "./dxf-geometries/dxf-text.js";
+import { dxfTube } from "./dxf-geometries/dxf-tube.js";
 
 export type DxfOptions = {
   readonly view: View;
@@ -146,7 +151,10 @@ const renderInternal = (
   const visibleViews = calculateVisibleViews(options.view, scene.rotation_deprecated);
   const textHeight = sceneTextHeight(scene.groups);
   return {
-    groups: scene.groups.reduce((a, c) => a + dxfGroup(groupTextBackgrounds(c, textHeight), pos, unitRot, undefined, options, handleRef), ""),
+    groups: scene.groups.reduce(
+      (a, c) => a + dxfGroup(groupTextBackgrounds(c, textHeight), pos, unitRot, undefined, options, textHeight, handleRef),
+      ""
+    ),
     dimensions: dxfDimensions(
       scene.dimensions_deprecated,
       pos,
@@ -221,7 +229,15 @@ function dxfEntityStyle(layer: string | undefined, color: DxfColor, options: Dxf
   }
 }
 
-function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, parentLayer: string | undefined, options: DxfOptions, handleRef: Handle): string {
+function dxfGroup(
+  g: Group,
+  parentPos: Vec3,
+  parentRot: Vec3,
+  parentLayer: string | undefined,
+  options: DxfOptions,
+  textHeight: number,
+  handleRef: Handle
+): string {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
   const layer = g.layer ?? parentLayer;
@@ -255,13 +271,34 @@ function dxfGroup(g: Group, parentPos: Vec3, parentRot: Vec3, parentLayer: strin
         dxf += dxfImage(mesh.geometry, entityStyle, pos, rot, handleRef);
         break;
       }
-      default:
+      case "Shape": {
+        dxf += dxfShape(mesh.geometry, entityStyle, pos, rot, handleRef);
         break;
+      }
+      case "Sphere": {
+        dxf += dxfSphere(mesh.geometry, entityStyle, options.cylinderSideCount, pos, rot, handleRef);
+        break;
+      }
+      case "Tube": {
+        dxf += dxfTube(mesh.geometry, entityStyle, options.cylinderSideCount, pos, rot, handleRef);
+        break;
+      }
+      case "Line":
+      case "CulledLine": {
+        dxf += dxfLine(mesh.geometry, entityStyle, pos, rot, handleRef);
+        break;
+      }
+      case "Text": {
+        dxf += dxfText(mesh.geometry, entityStyle, textHeight, pos, rot, handleRef);
+        break;
+      }
+      default:
+        exhaustiveCheck(mesh.geometry);
     }
   }
 
   for (const group of g.groups ?? []) {
-    dxf += dxfGroup(group, pos, rot, layer, options, handleRef);
+    dxf += dxfGroup(group, pos, rot, layer, options, textHeight, handleRef);
   }
 
   return dxf;
@@ -346,7 +383,7 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
   );
   const layers = dxfEncLayerDefs(handleRef, options?.layers);
   return dxfBuild(
-    dxfGroup(groupRoot, center, unitRot, undefined, opts, handleRef),
+    dxfGroup(groupRoot, center, unitRot, undefined, opts, textHeight, handleRef),
     dimensions,
     layers,
     textHeight,

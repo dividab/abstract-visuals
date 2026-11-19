@@ -1,7 +1,30 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import { describe, expect, it } from "vitest";
-import type { Scene, Vec3, View } from "../../abstract-3d.js";
-import { box, sceneTextHeight, vec3, vec3Add, vec3Dot, vec3Normalize, vec3Scale, vec3Sub, vec3Zero, views } from "../../abstract-3d.js";
+import type { Mesh, Scene, Vec3, View } from "../../abstract-3d.js";
+import {
+  box,
+  circleCurve,
+  group,
+  line,
+  polygon,
+  sceneTextHeight,
+  shape,
+  sphere,
+  splineCurve,
+  text,
+  tube,
+  vec2,
+  vec3,
+  vec3Add,
+  vec3Cross,
+  vec3Dot,
+  vec3Length,
+  vec3Normalize,
+  vec3Scale,
+  vec3Sub,
+  vec3Zero,
+  views,
+} from "../../abstract-3d.js";
 import { render } from "./dxf.js";
 
 const black = { normal: "rgb(0, 0, 0)" };
@@ -123,6 +146,73 @@ describe("dxf dimension texts", () => {
         expect({ text, dir: roundVec(dir), normal: roundVec(normal) }).toEqual({ text, dir: roundVec(expected), normal: vec3(0, 0, 1) });
       }
     });
+  });
+});
+
+const meshEntities = (mesh: Mesh): ReadonlyArray<ReadonlyArray<readonly [string, string]>> =>
+  entities(render({ size_deprecated: vec3Zero, groups: [group([mesh])] }, { origin: "SameAsScene" }));
+const pointKey = (p: Vec3): string => [p.x, p.y, p.z].map((n) => n.toFixed(2)).join();
+
+/** Each 3DFACE's corners, three if its last two are the same */
+const faces = (mesh: Mesh): ReadonlyArray<ReadonlyArray<Vec3>> =>
+  meshEntities(mesh)
+    .filter((e) => e.at(0)?.[1] === "3DFACE")
+    .map((e) => {
+      const corners = ["0", "1", "2", "3"].map((k) => vec3(value(e, `1${k}`), value(e, `2${k}`), value(e, `3${k}`)));
+      return vec3Length(vec3Sub(corners.at(2) ?? vec3Zero, corners.at(3) ?? vec3Zero)) < 1e-9 ? corners.slice(0, 3) : corners;
+    });
+
+const area = (mesh: Mesh): number =>
+  faces(mesh).reduce(
+    (sum, f) =>
+      sum + f.slice(2).reduce((s, p, i) => s + vec3Length(vec3Cross(vec3Sub(f.at(i + 1) ?? p, f.at(0) ?? p), vec3Sub(p, f.at(0) ?? p))) / 2, 0),
+    0
+  );
+
+/** Whether every edge is shared by two faces */
+const closed = (mesh: Mesh): boolean => {
+  const edges = faces(mesh).flatMap((f) => f.map((p, i) => [pointKey(p), pointKey(f.at((i + 1) % f.length) ?? p)].sort().join("|")));
+  return edges.every((e) => edges.filter((other) => other === e).length === 2);
+};
+
+describe("dxf geometries", () => {
+  const star = Array.from({ length: 10 }, (_, i) =>
+    vec2((i % 2 ? 20 : 50) * Math.cos((i * Math.PI) / 5), (i % 2 ? 20 : 50) * Math.sin((i * Math.PI) / 5))
+  );
+
+  it("cuts a concave shape into triangles that cover it, whichever way its points go", () => {
+    expect(area(shape(star, vec3Zero, black))).toBeCloseTo(10 * 500 * Math.sin(Math.PI / 5), 0);
+    expect(area(shape([...star].reverse(), vec3Zero, black, 0, vec3(0.3, 0.8, 0.1)))).toBeCloseTo(10 * 500 * Math.sin(Math.PI / 5), 0);
+  });
+
+  it("closes a thick shape with walls, leaving out repeated points", () => {
+    const l = shape(
+      [vec2(0, 0), vec2(0, 100), vec2(50, 100), vec2(50, 50), vec2(50, 50), vec2(100, 50), vec2(100, 0), vec2(0, 0)],
+      vec3Zero,
+      black,
+      10
+    );
+    expect(area(l)).toBeCloseTo(7500 * 2 + 400 * 10, 3);
+    expect(closed(l)).toBe(true);
+  });
+
+  it("closes spheres and tubes", () => {
+    const bend = splineCurve(Array.from({ length: 7 }, (_, i) => vec3(85.8 * Math.cos((i * Math.PI) / 12), 85.8 * Math.sin((i * Math.PI) / 12), 0)));
+    const s = splineCurve([vec3(0, 0, 0), vec3(50, 20, 0), vec3(100, 0, 30)]);
+    for (const mesh of [sphere(30, black), tube(bend, 11.5, black), tube(circleCurve(50, 0, Math.PI * 2), 5, black), tube(s, 5, black)]) {
+      expect(closed(mesh)).toBe(true);
+    }
+  });
+
+  it("draws a polygon's points as triangles unless they're a quad", () => {
+    expect(faces(polygon([vec3(0, 0, 0), vec3(50, 0, 0), vec3(0, 50, 0), vec3(50, 0, 0), vec3(50, 50, 0), vec3(0, 50, 0)], black))).toHaveLength(2);
+    expect(faces(polygon([vec3(0, 0, 0), vec3(50, 0, 0), vec3(50, 50, 0), vec3(0, 50, 0)], black)).map((f) => f.length)).toEqual([4]);
+  });
+
+  it("draws lines and text", () => {
+    expect(meshEntities(line(vec3(0, 0, 0), vec3(100, 0, 0), 1, black)).filter((e) => e.at(0)?.[1] === "LINE")).toHaveLength(1);
+    const mtext = meshEntities(text(vec3(10, 20, 0), "Hello", 20, black)).find((e) => e.at(0)?.[1] === "MTEXT");
+    expect([mtext?.find(([c]) => c === "1")?.[1], value(mtext ?? [], "10"), value(mtext ?? [], "20")]).toEqual(["Hello", 10, 20]);
   });
 });
 

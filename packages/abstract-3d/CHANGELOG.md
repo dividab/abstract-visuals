@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file. The format 
 - Fixed: STEP's boxes and planes are closed solids, their faces sharing their edges, rather than loose faces
 - Fixed: STEP colors hex colors, e.g. `#F4F8F4`, rather than black
 - Fixed: STEP makes a product of each mesh, as meshes of a kind shared one, which viewers, e.g. eDrawings, drew once for each of them
+- Added: DXF exports shapes, spheres, tubes, lines and text: a shape as its outline cut into triangles, also if it's concave, on both sides of its thickness with walls between them, its holes left out; a sphere and a tube as faces, the tube along the same arcs and splines as in STEP; lines as LINEs; text as MTEXT in its own plane, left out if it faces away
+- Fixed: DXF draws a polygon's points as a quad if there are 4, else as triangles, as the other renderers do, rather than as quads
 
 ## [4.3.6] - 2026-11-19
 
