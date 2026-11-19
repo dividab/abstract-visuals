@@ -1,4 +1,6 @@
-import type { Vec2, Vec3 } from "../../abstract-3d.js";
+import type { Material, Vec2, Vec3 } from "../../abstract-3d.js";
+import { vec3 } from "../../abstract-3d.js";
+import { parseColorString } from "../../utils.js";
 
 export type MutableStep = { refs: Map<string, number>; step: string; geoContext3d: number };
 
@@ -73,12 +75,27 @@ export const SURFACE_CURVE = (CIRCLE: number, PCURVE1: number, PCURVE2: number, 
 export const SEAM_CURVE = (LINE: number, PCURVE1: number, PCURVE2: number, m: MutableStep): number =>
   mutate(`SEAM_CURVE('',#${LINE},(#${PCURVE1},#${PCURVE2}),.PCURVE_S1.)`, m);
 
-export const ADVANCED_FACE = (faceBound: number, planeOrSurface: number, m: MutableStep, type: "T" | "F"): number =>
-  mutate(`ADVANCED_FACE('',(#${faceBound}),#${planeOrSurface},.${type}.)`, m);
+export const ADVANCED_FACE = (faceBounds: ReadonlyArray<number>, planeOrSurface: number, m: MutableStep, type: "T" | "F"): number =>
+  mutate(`ADVANCED_FACE('',(${faceBounds.map((b) => `#${b}`).join(",")}),#${planeOrSurface},.${type}.)`, m);
+
+export const VERTEX_LOOP = (VERTEX_POINT: number, m: MutableStep): number => mutate(`VERTEX_LOOP('',#${VERTEX_POINT})`, m);
+
+export const SPHERICAL_SURFACE = (AXIS2_PLACEMENT_3D: number, radius: number, m: MutableStep): number =>
+  mutate(`SPHERICAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${stepNumber(radius)})`, m);
+
+export const TOROIDAL_SURFACE = (AXIS2_PLACEMENT_3D: number, majorRadius: number, minorRadius: number, m: MutableStep): number =>
+  mutate(`TOROIDAL_SURFACE('',#${AXIS2_PLACEMENT_3D},${stepNumber(majorRadius)},${stepNumber(minorRadius)})`, m);
+
+export const POLYLINE = (CARTESIAN_POINTS: ReadonlyArray<number>, m: MutableStep): number =>
+  mutate(`POLYLINE('',(${CARTESIAN_POINTS.map((p) => `#${p}`).join(",")}))`, m);
+
+export const GEOMETRIC_CURVE_SET = (curves: ReadonlyArray<number>, m: MutableStep): number =>
+  mutate(`GEOMETRIC_CURVE_SET('',(${curves.map((c) => `#${c}`).join(",")}))`, m);
 
 export const OPEN_SHELL = (ADVANCED_FACE: number, m: MutableStep): number => mutate(`OPEN_SHELL('',(#${ADVANCED_FACE}))`, m);
 
-export const FACE_BOUND = (EDGE_LOOP: number, type: "T" | "F", m: MutableStep): number => mutate(`FACE_BOUND('',#${EDGE_LOOP},.${type}.)`, m);
+export const FACE_BOUND = (EDGE_or_VERTEX_LOOP: number, type: "T" | "F", m: MutableStep): number =>
+  mutate(`FACE_BOUND('',#${EDGE_or_VERTEX_LOOP},.${type}.)`, m);
 
 export const EDGE_LOOP = (ORIENTED_EDGE: ReadonlyArray<number>, m: MutableStep): number =>
   mutate(`EDGE_LOOP('',(${ORIENTED_EDGE.map((af) => `#${af}`).join(",")}))`, m);
@@ -106,12 +123,14 @@ export const MANIFOLD_SURFACE_SHAPE_REPRESENTATION = (
   m: MutableStep
 ): number => mutate(`MANIFOLD_SURFACE_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${CLOSED_SHELL}),#${GEOMETRY_CONTEXT})`, m);
 
-export const ADVANCED_BREP_SHAPE_REPRESENTATION = (
+/** Solids are an advanced brep, curves a wireframe */
+export const SHAPE_REPRESENTATION = (
+  type: "ADVANCED_BREP_SHAPE_REPRESENTATION" | "GEOMETRICALLY_BOUNDED_WIREFRAME_SHAPE_REPRESENTATION",
   AXIS2_PLACEMENT_3D: number,
-  MANIFOLD_SOLID_BREP: number,
+  items: ReadonlyArray<number>,
   GEOMETRY_CONTEXT: number,
   m: MutableStep
-): number => mutate(`ADVANCED_BREP_SHAPE_REPRESENTATION('',(#${AXIS2_PLACEMENT_3D},#${MANIFOLD_SOLID_BREP}),#${GEOMETRY_CONTEXT})`, m);
+): number => mutate(`${type}('',(#${AXIS2_PLACEMENT_3D},${items.map((b) => `#${b}`).join(",")}),#${GEOMETRY_CONTEXT})`, m);
 
 export const CLOSED_SHELL = (ADVANCED_FACE: ReadonlyArray<number>, m: MutableStep): number =>
   mutate(`CLOSED_SHELL('',(${ADVANCED_FACE.map((af) => `#${af}`).join(",")}))`, m);
@@ -123,11 +142,15 @@ export const MANIFOLD_SOLID_BREP = (closedRef: number, m: MutableStep): number =
 export const AXIS2_PLACEMENT_3D = (CARTESIAN_POINT: number, DIRECTION_NORMAL: number, DIRECTION_PLANE_DIRECITON: number, m: MutableStep): number =>
   mutate(`AXIS2_PLACEMENT_3D('',#${CARTESIAN_POINT},#${DIRECTION_NORMAL},#${DIRECTION_PLANE_DIRECITON})`, m);
 
-export const MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION = (STYLED_ITEM: number, GEOMETRY_CONTEXT: number, m: MutableStep): number =>
-  mutate(`MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(#${STYLED_ITEM}),#${GEOMETRY_CONTEXT})`, m);
+export const MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION = (
+  STYLED_ITEMS: ReadonlyArray<number>,
+  GEOMETRY_CONTEXT: number,
+  m: MutableStep
+): number =>
+  mutate(`MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(${STYLED_ITEMS.map((s) => `#${s}`).join(",")}),#${GEOMETRY_CONTEXT})`, m);
 
-export const STYLED_ITEM = (PRESENTATION_STYLE_ASSIGNMENT: number, MANIFOLD_SOLID_BREP: number, m: MutableStep): number =>
-  mutate(`STYLED_ITEM('color',(#${PRESENTATION_STYLE_ASSIGNMENT}),#${MANIFOLD_SOLID_BREP})`, m);
+export const STYLED_ITEM = (PRESENTATION_STYLE_ASSIGNMENT: number, item: number, m: MutableStep): number =>
+  mutate(`STYLED_ITEM('color',(#${PRESENTATION_STYLE_ASSIGNMENT}),#${item})`, m);
 
 export const PRESENTATION_STYLE_ASSIGNMENT = (SURFACE_STYLE_USAGE: number, CURVE_STYLE: number, m: MutableStep): number =>
   mutate(`PRESENTATION_STYLE_ASSIGNMENT((#${SURFACE_STYLE_USAGE},#${CURVE_STYLE}))`, m);
@@ -206,11 +229,36 @@ export const PRODUCT_DEFINITION = (productDefinitionFormation: number, productDe
 
 export const PRODUCT_DEFINITION_FORMATION = (product: number, m: MutableStep): number => mutate(`PRODUCT_DEFINITION_FORMATION('','',#${product})`, m);
 
-export const PRODUCT = (productContext: number, name: string, m: MutableStep): number =>
-  mutate(`PRODUCT('${name}','${name}','',(#${productContext}))`, m);
+export const PRODUCT = (productContext: number, id: string, name: string, m: MutableStep): number =>
+  mutate(`PRODUCT('${id}','${name}','',(#${productContext}))`, m);
 
 export const PRODUCT_CONTEXT = (applicationContext: number, m: MutableStep): number =>
   mutate(`PRODUCT_CONTEXT('',#${applicationContext},'mechanical')`, m);
 
 export const PRODUCT_DEFINITION_CONTEXT = (applicationContext: number, m: MutableStep): number =>
   mutate(`PRODUCT_DEFINITION_CONTEXT('part definition',#${applicationContext},'design')`, m);
+
+/** A product of the solids (MANIFOLD_SOLID_BREPs) or curves (a GEOMETRIC_CURVE_SET), colored by the material */
+export const stepProduct = (kind: "solids" | "curves", items: ReadonlyArray<number>, name: string, mat: Material, m: MutableStep): void => {
+  const placement = AXIS2_PLACEMENT_3D(CARTESIAN_POINT(vec3(0, 0, 0), m), DIRECTION(vec3(0, 0, 1), m), DIRECTION(vec3(1, 0, 0), m), m);
+  const type = kind === "solids" ? "ADVANCED_BREP_SHAPE_REPRESENTATION" : "GEOMETRICALLY_BOUNDED_WIREFRAME_SHAPE_REPRESENTATION";
+  const shape = SHAPE_REPRESENTATION(type, placement, items, m.geoContext3d, m);
+  const applicationContext = APPLICATION_CONTEXT(m);
+  // A product of its own, by its shape's id, as one shared by every mesh of a name has all their shapes, and viewers draw it for each of them
+  const product = PRODUCT(PRODUCT_CONTEXT(applicationContext, m), `${name}-${shape}`, name, m);
+  const definition = PRODUCT_DEFINITION(PRODUCT_DEFINITION_FORMATION(product, m), PRODUCT_DEFINITION_CONTEXT(applicationContext, m), m);
+  SHAPE_DEFINITION_REPRESENTATION(PRODUCT_DEFINITION_SHAPE(definition, m), shape, m);
+
+  // Hex as well as rgb(), e.g. "#F4F8F4"
+  const color = COLOUR_RGB(parseColorString(mat.normal), m);
+  const style = PRESENTATION_STYLE_ASSIGNMENT(
+    SURFACE_STYLE_USAGE(SURFACE_SIDE_STYLE(SURFACE_STYLE_FILL_AREA(FILL_AREA_STYLE(FILL_AREA_STYLE_COLOUR(color, m), m), m), m), m),
+    CURVE_STYLE(DRAUGHTING_PRE_DEFINED_CURVE_FONT("continuous", m), color, m),
+    m
+  );
+  MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION(
+    items.map((item) => STYLED_ITEM(style, item, m)),
+    m.geoContext3d,
+    m
+  );
+};

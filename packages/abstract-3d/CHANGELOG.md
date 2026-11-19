@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.3.7] - 2026-11-19
+
+- Added: STEP exports polygons, shapes, spheres, tubes and lines: a polygon as its quad or triangles and a shape as its outline extruded by its thickness, each 0.1 thick if flat; a sphere exactly, as is a tube along a circle or along a spline through points on an arc, e.g. a bend, and a tube along any other spline faceted; lines as wires. Text and images are left out
+- Added: STEP cuts the holes in boxes, planes, shapes and untapered whole cylinders, round ones as circles
+- Added: STEP exports an open cylinder as a wall 0.1 thick without ends, and a part of a cylinder closed by flat walls from its axis, as the viewer draws them
+- Changed: STEP's planes are 0.1 thick, rather than 0.0001, so viewers tell their sides apart, e.g. eDrawings' selection color no longer z-fights with the other side's
+- Fixed: STEP's boxes and planes are closed solids, their faces sharing their edges, rather than loose faces
+- Fixed: STEP colors hex colors, e.g. `#F4F8F4`, rather than black
+- Fixed: STEP makes a product of each mesh, as meshes of a kind shared one, which viewers, e.g. eDrawings, drew once for each of them
+
 ## [4.3.6] - 2026-11-19
 
 - Added: an image's `flip`, mirroring it across its own x and/or y axis, e.g. a symbol pointing the other way while still facing the viewer, which no rotation gives; a symbol's state badge stays upright on its top right corner

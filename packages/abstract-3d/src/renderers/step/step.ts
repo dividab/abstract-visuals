@@ -1,3 +1,4 @@
+import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
 import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight } from "../../abstract-3d.js";
 import type { MutableStep } from "./step-encoding.js";
@@ -14,7 +15,12 @@ import {
 import { stepBox } from "./step-geometries/step-box.js";
 import { stepCone } from "./step-geometries/step-cone.js";
 import { stepCylinder } from "./step-geometries/step-cylinder.js";
+import { stepLine } from "./step-geometries/step-line.js";
 import { stepPlane } from "./step-geometries/step-plane.js";
+import { stepPolygon } from "./step-geometries/step-polygon.js";
+import { stepShape } from "./step-geometries/step-shape.js";
+import { stepSphere } from "./step-geometries/step-sphere.js";
+import { stepTube } from "./step-geometries/step-tube.js";
 
 const DEFAULT_DATE_UNIX = "1970-01-01T00:00:00";
 
@@ -65,8 +71,28 @@ function stepGroup(g: Group, parentPos: Vec3, parentRot: Vec3, m: MutableStep): 
       case "Cone":
         stepCone(mesh.geometry, mesh.material, pos, rot, m);
         break;
-      default:
+      case "Polygon":
+        stepPolygon(mesh.geometry, mesh.material, pos, rot, m);
         break;
+      case "Shape":
+        stepShape(mesh.geometry, mesh.material, pos, rot, m);
+        break;
+      case "Sphere":
+        stepSphere(mesh.geometry, mesh.material, pos, rot, m);
+        break;
+      case "Tube":
+        stepTube(mesh.geometry, mesh.material, pos, rot, m);
+        break;
+      case "Line":
+      case "CulledLine":
+        stepLine(mesh.geometry, mesh.material, pos, rot, m);
+        break;
+      // Text's background is a mesh of its own, from groupTextBackgrounds; STEP has no images
+      case "Text":
+      case "Image":
+        break;
+      default:
+        exhaustiveCheck(mesh.geometry);
     }
   }
 

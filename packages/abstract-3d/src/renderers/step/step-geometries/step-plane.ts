@@ -1,18 +1,14 @@
-import type { Plane, Material, Vec3, Box } from "../../../abstract-3d.js";
-import { vec3 } from "../../../abstract-3d.js";
+import type { Plane, Material, Vec3 } from "../../../abstract-3d.js";
+import { vec3TransRot, vec3RotCombine, vec3Zero } from "../../../abstract-3d.js";
 import type { MutableStep } from "../step-encoding.js";
-import { stepBox } from "./step-box.js";
-
-const PLANE_THICKNESS = 1e-4;
+import { stepProduct } from "../step-encoding.js";
+import { PLANE_THICKNESS, rectangle, stepExtrusion } from "./step-prism.js";
 
 export function stepPlane(p: Plane, mat: Material, parentPos: Vec3, parentRot: Vec3, m: MutableStep): void {
-  //convert it into a box
-  const box: Box = {
-    type: "Box",
-    pos: p.pos,
-    rot: p.rot,
-    holes: p.holes,
-    size: vec3(p.size.x, p.size.y, PLANE_THICKNESS),
-  };
-  stepBox(box, mat, parentPos, parentRot, m);
+  const pos = vec3TransRot(p.pos, parentPos, parentRot);
+  const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
+  const brep = stepExtrusion(rectangle(p.size), p.holes, PLANE_THICKNESS, pos, rot, m);
+  if (brep !== undefined) {
+    stepProduct("solids", [brep], "Plane", mat, m);
+  }
 }
