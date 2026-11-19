@@ -5,15 +5,17 @@ import { dxfEncLine } from "../dxf-encoding/dxf-line.js";
 import { dxfEncLwPolyline } from "../dxf-encoding/dxf-lwpolyline.js";
 
 export function dxfImage(i: ImageMesh, style: string, parentPos: Vec3, parentRot: Vec3, handleRef: Handle): string {
+  // A flipped image runs the other way from the opposite corner
+  const sign = vec3(i.flip?.x ? -1 : 1, i.flip?.y ? -1 : 1, 1);
   const half = vec2Scale(i.size, 0.5);
-  const offset = vec3Rot(vec3(-half.x, half.y, 0), vec3Zero, i.rot ?? vec3Zero);
+  const offset = vec3Rot(vec3(-half.x * sign.x, half.y * sign.y, 0), vec3Zero, i.rot ?? vec3Zero);
   const pos = vec3TransRot(vec3Add(i.pos, offset), parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, i.rot ?? vec3Zero);
   switch (i.image.type) {
     case "AbstractImage": {
       const scale = {
-        x: i.size.x / i.image.image.size.width,
-        y: -i.size.y / i.image.image.size.height,
+        x: (sign.x * i.size.x) / i.image.image.size.width,
+        y: (-sign.y * i.size.y) / i.image.image.size.height,
         z: 1,
       };
       return abstractImageToDxf3D(i.image.image, style, pos, rot, scale, handleRef);

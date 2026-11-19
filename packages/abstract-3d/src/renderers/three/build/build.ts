@@ -327,7 +327,7 @@ function createPart(
       }
       if (g.type === "Image" && options.textures) {
         const url = getImageUrl(g.image);
-        const entry = symbolState ? loadSymbolStateTexture(options.textures, url, symbolState, g.size) : loadTexture(options.textures, url);
+        const entry = symbolState ? loadSymbolStateTexture(options.textures, url, symbolState, g.size, g.flip) : loadTexture(options.textures, url);
         if (entry.texture) {
           showImage(part.object, entry.texture, state, undefined);
         } else {

@@ -48,7 +48,11 @@ export function getSolidShape(g: Mesh["geometry"]): SolidShape | undefined {
           };
     }
     case "Image":
-      return { key: "Plane", local: transform(g.pos, g.rot, undefined, vec3(g.size.x, g.size.y, 1)) };
+      // A negative scale mirrors it, three.js then winding its faces the other way so it still faces the same side
+      return {
+        key: "Plane",
+        local: transform(g.pos, g.rot, undefined, vec3(g.flip?.x ? -g.size.x : g.size.x, g.flip?.y ? -g.size.y : g.size.y, 1)),
+      };
     case "Sphere":
       return { key: g.type, local: transform(g.pos, vec3Zero, undefined, vec3(g.radius, g.radius, g.radius)) };
     case "Cone":

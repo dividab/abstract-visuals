@@ -215,6 +215,8 @@ export type ImageMesh = {
   readonly rot?: Vec3;
   readonly size: Vec2;
   readonly image: Image;
+  /** Mirrors the image across its own axes, e.g. a symbol pointing the other way while still facing the viewer, which no rotation gives */
+  readonly flip?: { readonly x: boolean; readonly y: boolean };
 };
 
 export type Image =
@@ -1106,7 +1108,14 @@ export const box = (
   },
   material,
 });
-export const image = (size: Vec3, material: Material, image: ImageMesh["image"], pos: Vec3 = vec3Zero, rot: Vec3 = vec3Zero): Mesh => ({
+export const image = (
+  size: Vec3,
+  material: Material,
+  image: ImageMesh["image"],
+  pos: Vec3 = vec3Zero,
+  rot: Vec3 = vec3Zero,
+  flip?: ImageMesh["flip"]
+): Mesh => ({
   material,
   geometry: {
     type: "Image",
@@ -1114,6 +1123,7 @@ export const image = (size: Vec3, material: Material, image: ImageMesh["image"],
     pos,
     size,
     rot,
+    ...(flip === undefined ? {} : { flip }),
   },
 });
 

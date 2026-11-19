@@ -15,7 +15,7 @@ import {
   type Texture,
   TextureLoader,
 } from "three";
-import type { Image, MaterialType, Vec2 } from "../../../abstract-3d.js";
+import type { Image, ImageMesh, MaterialType, Vec2 } from "../../../abstract-3d.js";
 import type { MaterialClass, SymbolState } from "../appearance/appearance.js";
 import { stateMaterials } from "../appearance/appearance.js";
 
@@ -241,15 +241,15 @@ export function getImageUrl(image: Image): string {
 export const symbolStatePadding = 0.48;
 
 /** The symbol framed in its state's color, with the state's badge on the frame's top right corner, drawn past the symbol by `symbolStatePadding` */
-export function loadSymbolStateTexture(cache: TextureCache, url: string, state: SymbolState, size: Vec2): TextureEntry {
-  const key = `${state} ${size.x} ${size.y} ${url}`;
+export function loadSymbolStateTexture(cache: TextureCache, url: string, state: SymbolState, size: Vec2, flip: ImageMesh["flip"]): TextureEntry {
+  const key = `${state} ${size.x} ${size.y} ${flip?.x ?? false} ${flip?.y ?? false} ${url}`;
   const cached = cache.get(key);
   if (cached) {
     return cached;
   }
   // An SVG is drawn in from itself, at the state's resolution, instead of from its smaller texture
   const symbol = isSvg(url) ? decodeImage(url) : loadTexture(cache, url).loading.then((t) => t?.image as CanvasImageSource | undefined);
-  const entry: TextureEntry = { loading: symbol.then((image) => image && drawSymbolState(image, state, size)) };
+  const entry: TextureEntry = { loading: symbol.then((image) => image && drawSymbolState(image, state, size, flip)) };
   entry.loading = entry.loading.then((t) => (entry.texture = t && applyFilters(t)));
   cache.set(key, entry);
   return entry;
@@ -309,7 +309,7 @@ function rasterize(image: HTMLImageElement): Texture | undefined {
 }
 
 /** Drawn in the symbol's units, scaled to the canvas */
-function drawSymbolState(symbol: CanvasImageSource, state: SymbolState, size: Vec2): Texture | undefined {
+function drawSymbolState(symbol: CanvasImageSource, state: SymbolState, size: Vec2, flip: ImageMesh["flip"]): Texture | undefined {
   const side = Math.min(size.x, size.y);
   const pad = symbolStatePadding * side;
   const [width, height] = [size.x + 2 * pad, size.y + 2 * pad];
@@ -329,7 +329,9 @@ function drawSymbolState(symbol: CanvasImageSource, state: SymbolState, size: Ve
   ctx.beginPath();
   ctx.roundRect(frame, frame, width - 2 * frame, height - 2 * frame, 0.1 * side);
   ctx.stroke();
-  const [x, y, r] = [width - frame, frame, 0.25 * side];
+  // A flipped image's texture is mirrored on it, so its badge is drawn mirrored on the mirrored corner, to show upright on the top right
+  const [x, y, r] = [flip?.x ? frame : width - frame, flip?.y ? height - frame : frame, 0.25 * side];
+  ctx.transform(flip?.x ? -1 : 1, 0, 0, flip?.y ? -1 : 1, flip?.x ? 2 * x : 0, flip?.y ? 2 * y : 0);
   // An error's badge is a circle, a warning's a triangle large enough to hold the same mark, each with a white ring that parts it from the symbol
   const error = state === "Error";
   ctx.beginPath();

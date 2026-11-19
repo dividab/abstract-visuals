@@ -178,8 +178,8 @@ export const svgImage = (p: Vec2, size: Vec2, rot: Vec3, data: EmbededImage, bac
 
   // scale maps image-space coords → world coords, so the wrapper SVG and rect
   // must use image-space dimensions: imgW * scale.x = size.x (the desired world size).
-  const imgW = scale ? size.x / scale.x : size.x;
-  const imgH = scale ? size.y / scale.y : size.y;
+  const imgW = scale ? size.x / Math.abs(scale.x) : size.x;
+  const imgH = scale ? size.y / Math.abs(scale.y) : size.y;
   const bg = background ? `<rect width="${imgW.toFixed(0)}" height="${imgH.toFixed(0)}" fill="${background}"/>` : "";
   return `<g transform="${matrix}"><svg class="${classNames.image}" width="${imgW.toFixed(0)}" height="${imgH.toFixed(0)}">${bg}${data.svg}</svg></g>`;
 };

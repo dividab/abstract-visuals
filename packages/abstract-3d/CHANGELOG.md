@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.4.0] - 2026-11-19
+
+- Added: an image's `flip`, mirroring it across its own x and/or y axis, e.g. a symbol pointing the other way while still facing the viewer, which no rotation gives; a symbol's state badge stays upright on its top right corner
+
 ## [4.3.5] - 2026-11-18
 
 - Changed: a disabled group's symbols are drawn over the relations' slabs and their outlines, under the insertion symbols, while relations are active
