@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.5.8] - 2026-11-20
+
+- Changed: depends on pdfkit 0.21 instead of 0.20, and on linebreak 2 instead of 1, the version pdfkit wraps text with, so the rows the PDF exporter lays out break where pdfkit's do.
+- Changed: an embedded font that sets `USE_TYPO_METRICS` in its OS/2 table is laid out by its typo ascender, descender and line gap instead of its `hhea` metrics (fontkit 3, pdfkit 0.21), as Word and browsers lay it out. Its text can sit higher in its line, and where the typo metrics add up to less, its lines are closer together.
+- Fixed: underlines, strikethroughs and links of text with a `baseline` other than `top` are drawn at the text instead of one ascent below it (pdfkit 0.21).
+- Fixed: internal links (`HyperLink` with a `#` target) work in Chrome and other PDFium based readers, which couldn't find some of their targets (pdfkit 0.21).
+- Fixed: the default Helvetica fonts work when the PDF exporter is bundled into a file for Node, where pdfkit couldn't find them (`Cannot find module '#standard-fonts/Helvetica'`).
+
 ## [20.5.6] - 2026-11-13
 
 - Fixed: an `ImageParagraph`, `ImageRow` or `ImageCell` `width` or `height` that isn't a finite number, e.g. `width="inf"`, fills the available size again, as before 20.5.5. 20.5.5 made it 0, which sizes the image from the other attribute and the image's proportions, so e.g. a wide drawing with `width="inf" height="380"` ran off the page instead of being scaled down to the page width, and `horizontalAlignment="Center"` no longer centered the image across the page.

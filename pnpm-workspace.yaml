@@ -65,6 +65,7 @@ minimumReleaseAgeExclude:
   - oxfmt@0.70.0
   - oxlint@1.85.0
   - "@react-three/fiber@9.8.0"
+  - pdfkit@0.21.0
 
 catalog:
   "@vitejs/plugin-react": "^6.1.2"

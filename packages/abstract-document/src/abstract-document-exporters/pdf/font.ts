@@ -5,7 +5,8 @@ import { getResources } from "../shared/get_resources.js";
 
 // Characters the current font may lack, with replacements in order of preference. pdfkit doesn't warn about
 // missing characters: built-in fonts only cover WinAnsi and encode anything else as wrong bytes (U+2212 → `"`),
-// and embedded fonts draw their missing-character glyph.
+// and embedded fonts draw their missing-character glyph. Built-in fonts have U+202F and U+2011 since pdfkit 0.21,
+// which draws them as a no-break space and a hyphen.
 const fallbackChars: Readonly<Record<string, ReadonlyArray<string>>> = {
   "\u{202F}": ["\u{00A0}", " "], // narrow no-break space
   "\u{2009}": [" "], // thin space

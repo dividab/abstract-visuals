@@ -4,12 +4,13 @@ import HelveticaBold from "pdfkit/standard-fonts/HelveticaBold";
 import HelveticaBoldOblique from "pdfkit/standard-fonts/HelveticaBoldOblique";
 import HelveticaOblique from "pdfkit/standard-fonts/HelveticaOblique";
 
-// pdfkit 0.20's browser build stopped bundling standard font data and requires
-// registering it explicitly via `registerStdFonts` before it's used, or `.font("Helvetica")`
-// (the default fallback in font.ts) throws. The Node build self-registers standard fonts
-// lazily instead and doesn't export `registerStdFonts` at all, so this reads it off the
-// namespace object with a feature check instead of a named import - a named import of a
-// binding that doesn't exist would fail to resolve entirely under Node's ESM loader.
+// pdfkit's browser build doesn't bundle standard font data and requires registering it
+// explicitly via `registerStdFonts` before it's used, or `.font("Helvetica")` (the default
+// fallback in font.ts) throws. The Node build loads standard fonts lazily from pdfkit's
+// package directory, which fails once pdfkit is bundled into another file, so they're
+// registered there too. pdfkit 0.20's Node build doesn't export `registerStdFonts`, so this
+// reads it off the namespace object with a feature check instead of a named import - a named
+// import of a binding that doesn't exist would fail to resolve under Node's ESM loader.
 const pdfkitExports = PdfkitModule as unknown as {
   registerStdFonts?: (...fonts: ReadonlyArray<unknown>) => void;
 };

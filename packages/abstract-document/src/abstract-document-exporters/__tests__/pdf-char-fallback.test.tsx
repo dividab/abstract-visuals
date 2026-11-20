@@ -27,9 +27,12 @@ describe("pdf character fallback", () => {
 
   test("built-in font replaces characters outside WinAnsi", () => {
     const pdf = withFont("Helvetica");
-    expect(transformText(pdf, "1\u{202F}234,5", undefined)).toBe("1\u{00A0}234,5");
     expect(transformText(pdf, "\u{2212}12,5", undefined)).toBe("-12,5");
-    expect(transformText(pdf, "a\u{2009}b\u{2007}c\u{2011}d", undefined)).toBe("a b\u{00A0}c-d");
+    expect(transformText(pdf, "a\u{2009}b\u{2007}c", undefined)).toBe("a b\u{00A0}c");
+  });
+
+  test("built-in font keeps the characters pdfkit maps into WinAnsi", () => {
+    expect(transformText(withFont("Helvetica"), "1\u{202F}234\u{2011}5", undefined)).toBe("1\u{202F}234\u{2011}5");
   });
 
   test("built-in font keeps missing characters that have no fallback", () => {
@@ -79,7 +82,7 @@ describe("pdf character fallback", () => {
     const measuredWidths = processed.children[0]!.children.map((p) =>
       (p as AD.Paragraph.Paragraph).children.reduce((sum, atom) => sum + (sizes.get(atom)?.width ?? NaN), 0)
     );
-    expect(drawn.map((d) => d.text)).toEqual(["SUM -12\u{00A0}345,5", "total \u{2212}12\u{202F}345,5 kr"]);
+    expect(drawn.map((d) => d.text)).toEqual(["SUM -12\u{202F}345,5", "total \u{2212}12\u{202F}345,5 kr"]);
     for (const [i, { x, width }] of drawn.entries()) {
       expect(x + width).toBeCloseTo(pageWidth, 6);
       expect(measuredWidths[i]).toBeCloseTo(width, 6);

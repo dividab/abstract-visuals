@@ -1,4 +1,4 @@
-import LineBreaker from "linebreak";
+import { LineBreaker } from "linebreak";
 import * as AD from "../../abstract-document/index.js";
 import { getFontNameStyle, transformText } from "./font.js";
 
