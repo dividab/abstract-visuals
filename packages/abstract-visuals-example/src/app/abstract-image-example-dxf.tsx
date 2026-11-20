@@ -69,7 +69,7 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
     {
       ahu: "ahu",
       square: "square",
-      dxf1: "dxf1"
+      dxf1: "dxf1",
     },
     {
       type: "object",
@@ -80,9 +80,9 @@ export function AbstractImageExampleDxf(): React.JSX.Element {
             square: { type: "string" },
             ahu: { type: "string" },
             dxf1: { type: "string" },
-          }
-        }
-      }
+          },
+        },
+      },
     }
   );
 
