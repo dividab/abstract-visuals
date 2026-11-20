@@ -127,6 +127,17 @@ const equal: HelperFunc = {
   func: (a: unknown, b: unknown) => a === b,
 };
 
+const startsWith: HelperFunc = {
+  name: "startsWith",
+  description: "Checks if the text starts with the prefix",
+  args: [
+    { name: "text", description: "Text", type: string },
+    { name: "prefix", description: "Prefix", type: string },
+  ],
+  returnType: bool,
+  func: (text: unknown, prefix: unknown) => typeof text === "string" && typeof prefix === "string" && text.startsWith(prefix),
+};
+
 const lessThan: HelperFunc = {
   name: "lessThan",
   description: "Checks if a < b",
@@ -293,6 +304,7 @@ export const helpers: ReadonlyArray<HelperFunc> = [
   multiply,
   divide,
   equal,
+  startsWith,
   lessThan,
   greaterThan,
   lessThanEqual,
