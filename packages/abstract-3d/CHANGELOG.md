@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.3.8] - 2026-11-20
+
+- Fixed: the viewer no longer logs "THREE.Object3D.add: object not an instance of THREE.Object3D" on each build without active relations
+
 ## [4.3.7] - 2026-11-19
 
 - Added: STEP exports polygons, shapes, spheres, tubes and lines: a polygon as its quad or triangles and a shape as its outline extruded by its thickness, each 0.1 thick if flat; a sphere exactly, as is a tube along a circle or along a spline through points on an arc, e.g. a bend, and a tube along any other spline faceted; lines as wires. Text and images are left out

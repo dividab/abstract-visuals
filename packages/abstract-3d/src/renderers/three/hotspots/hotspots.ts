@@ -54,20 +54,19 @@ const anchorBias = 0.75;
 
 export function createHotspots(boxes: ReadonlyArray<HotspotBox>, symbolSize: number): Hotspots {
   const thinAxes = new Uint8Array(boxes.length);
+  const symbols: Array<Mesh<PlaneGeometry, MeshBasicMaterial>> = [];
+  const object = new Group();
   for (let b = 0; b < boxes.length; b++) {
     const { bounds, matrix } = boxes[b]!;
     // Thinnest as drawn, scaled by its matrix
     bounds.getSize(size).multiply(scale.setFromMatrixScale(matrix));
     thinAxes[b] = size.x <= size.y && size.x <= size.z ? 0 : size.y <= size.z ? 1 : 2;
-  }
-  const symbols = boxes.map(() => {
     const symbol = new Mesh(symbolPlane, new MeshBasicMaterial({ transparent: true, depthWrite: false }));
     symbol.material.onBeforeCompile = atAnchorDepth;
     Object.assign(symbol, { frustumCulled: false, renderOrder: 4 });
-    return symbol;
-  });
-  const object = new Group();
-  object.add(...symbols);
+    symbols.push(symbol);
+    object.add(symbol);
+  }
   object.visible = boxes.length > 0;
   return { object, boxes, symbols, thinAxes, sides: new Int8Array(boxes.length).fill(-1), textures: new Map(), symbolSize };
 }
