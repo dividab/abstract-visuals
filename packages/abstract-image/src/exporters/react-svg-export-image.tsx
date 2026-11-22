@@ -1,12 +1,12 @@
-import { fromByteArray } from "base64-js";
 import React from "react";
 import type { AbstractImage } from "../model/abstract-image.js";
 import { classNames } from "../model/class-names.js";
 import type { Color } from "../model/color.js";
-import type { AbstractFontWeight, Component, GrowthDirection } from "../model/component.js";
+import type { AbstractFontWeight, Component, Text } from "../model/component.js";
 import type { Point } from "../model/point.js";
 import { createPoint } from "../model/point.js";
 import type { Optional } from "../model/shared.js";
+import { getBaselineAdjustment, getBinaryImageHref, getTextAnchor } from "./svg-shared.js";
 
 export interface ReactSvgCallbacks {
   readonly onClick?: MouseCallback;
@@ -21,6 +21,10 @@ export type ReactSvgOptions = {
   readonly imageDataByUrl: Record<string, `data:image/${string},${string}` | AbstractImage>;
 };
 
+type ImageDataByUrl = ReactSvgOptions["imageDataByUrl"];
+
+const noImageData: ImageDataByUrl = {};
+
 /** Drawn with `classNames`' classes on its parts; `className` its svg's class besides `classNames.root`, e.g. sized to fill its box */
 export function ReactSvg({
   image,
@@ -33,9 +37,9 @@ export function ReactSvg({
   readonly options?: Optional<ReactSvgOptions>;
   readonly className?: string;
 }): React.JSX.Element {
-  const opts: ReactSvgOptions = {
-    imageDataByUrl: options?.imageDataByUrl ?? {},
-  };
+  const imageDataByUrl = options?.imageDataByUrl ?? noImageData;
+  // The same elements while its image is, so React skips them when only its callbacks or class change
+  const children = React.useMemo(() => renderComponents(image.components, imageDataByUrl), [image, imageDataByUrl]);
   const cb = callbacks ?? {};
   const id = "ai_root";
   return (
@@ -45,15 +49,13 @@ export function ReactSvg({
       className={className ? `${classNames.root} ${className}` : classNames.root}
       width={`${image.size.width}px`}
       height={`${image.size.height}px`}
-      viewBox={[0, 0, image.size.width, image.size.height].join(" ")}
+      viewBox={`0 0 ${image.size.width} ${image.size.height}`}
       onClick={_callback(cb.onClick, id)}
       onDoubleClick={_callback(cb.onDoubleClick, id)}
       onMouseMove={_callback(cb.onMouseMove, id)}
       onContextMenu={_callback(cb.onContextMenu, id)}
     >
-      {image.components.map((c, i) => (
-        <JsxComponent key={i} component={c} options={opts} />
-      ))}
+      {children}
     </svg>
   );
 }
@@ -85,17 +87,6 @@ function makePartClass(id: string | undefined, className?: string): string | und
   return part && className ? `${part} ${className}` : (part ?? className);
 }
 
-/** A sub image's svg, without the root's class, id or callbacks */
-function subImageSvg(image: AbstractImage, options: ReactSvgOptions): React.JSX.Element {
-  return (
-    <svg width={`${image.size.width}px`} height={`${image.size.height}px`} viewBox={[0, 0, image.size.width, image.size.height].join(" ")}>
-      {image.components.map((c, i) => (
-        <JsxComponent key={i} component={c} options={options} />
-      ))}
-    </svg>
-  );
-}
-
 function getIdAttr(target: Element | undefined, rootId: string): string | undefined {
   if (!target || target.id === rootId) {
     return undefined;
@@ -108,73 +99,63 @@ function getIdAttr(target: Element | undefined, rootId: string): string | undefi
   return parts[1];
 }
 
-function JsxComponent({ component, options }: { readonly component: Component; readonly options: ReactSvgOptions }): React.JSX.Element {
+/** Components' elements, rendered by plain calls rather than a React component each, so each is one element and fiber */
+function renderComponents(components: ReadonlyArray<Component>, imageDataByUrl: ImageDataByUrl): Array<React.ReactNode> {
+  const elements: Array<React.ReactNode> = [];
+  for (const [i, c] of components.entries()) {
+    elements.push(renderComponent(c, imageDataByUrl, i));
+  }
+  return elements;
+}
+
+/** A sub image's svg, without the root's class, id or callbacks */
+function renderSubImage(image: AbstractImage, imageDataByUrl: ImageDataByUrl): React.JSX.Element {
+  return (
+    <svg width={`${image.size.width}px`} height={`${image.size.height}px`} viewBox={`0 0 ${image.size.width} ${image.size.height}`}>
+      {renderComponents(image.components, imageDataByUrl)}
+    </svg>
+  );
+}
+
+function renderComponent(component: Component, imageDataByUrl: ImageDataByUrl, key: number): React.ReactNode {
   switch (component.type) {
     case "group":
       return (
-        <g name={component.name}>
-          {component.children.flatMap((c, i) => (
-            <JsxComponent key={i} component={c} options={options} />
-          ))}
+        <g key={key} name={component.name}>
+          {renderComponents(component.children, imageDataByUrl)}
         </g>
       );
     case "binaryimage": {
-      const x = component.topLeft.x;
-      const y = component.topLeft.y;
-      const width = component.bottomRight.x - component.topLeft.x;
-      const height = component.bottomRight.y - component.topLeft.y;
-      const id = makeIdAttr(component.id);
-      if (component.data.type === "url") {
-        const data = options.imageDataByUrl[component.data.url];
-        if (data === undefined) {
-          return <></>;
-        }
-        if (typeof data === "string") {
-          return <image x={x} y={y} width={width} height={height} id={id} className={classNames.image} href={data} />;
-        }
-        const scale = Math.min(width / (data.size.width || 1), height / (data.size.height || 1));
-        return <g transform={`translate(${x}, ${y}) scale(${scale})`}>{subImageSvg(data, options)}</g>;
-      } else if (component.format === "png" || component.format === "avif") {
-        const base64 = fromByteArray(component.data.bytes);
-        return (
-          <image
-            x={x}
-            y={y}
-            width={width}
-            height={height}
-            id={id}
-            className={classNames.image}
-            href={`data:image/${component.format};base64,${base64}`}
-          />
-        );
-      } else if (component.format === "svg") {
-        const svg = String.fromCharCode(...component.data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
-        const bytes = [];
-        for (let i = 0; i < svg.length; ++i) {
-          bytes.push(svg.charCodeAt(i));
-        }
-        const base64 = fromByteArray(new Uint8Array(bytes));
-        return <image x={x} y={y} width={width} height={height} id={id} className={classNames.image} href={`data:image/svg+xml;base64,${base64}`} />;
+      const { x, y } = component.topLeft;
+      const width = component.bottomRight.x - x;
+      const height = component.bottomRight.y - y;
+      const data = component.data.type === "url" ? imageDataByUrl[component.data.url] : getBinaryImageHref(component.format, component.data.bytes);
+      if (data === undefined) {
+        return null;
       }
-      return <></>;
+      if (typeof data === "string") {
+        return <image key={key} x={x} y={y} width={width} height={height} id={makeIdAttr(component.id)} className={classNames.image} href={data} />;
+      }
+      const scale = Math.min(width / (data.size.width || 1), height / (data.size.height || 1));
+      return (
+        <g key={key} transform={`translate(${x}, ${y}) scale(${scale})`}>
+          {renderSubImage(data, imageDataByUrl)}
+        </g>
+      );
     }
     case "subimage": {
+      const scale = Math.min(component.size.width / (component.image.size.width || 1), component.size.height / (component.image.size.height || 1));
       return (
-        <g
-          transform={`translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${Math.min(
-            component.size.width / (component.image.size.width || 1),
-            component.size.height / (component.image.size.height || 1)
-          )})`}
-        >
-          {subImageSvg(component.image, options)}
+        <g key={key} transform={`translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})`}>
+          {renderSubImage(component.image, imageDataByUrl)}
         </g>
       );
     }
     case "line": {
-      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const dashed = component.strokeDashStyle.dashes.length > 0;
       return (
         <line
+          key={key}
           id={makeIdAttr(component.id)}
           className={makePartClass(component.id)}
           x1={component.start.x}
@@ -185,153 +166,166 @@ function JsxComponent({ component, options }: { readonly component: Component; r
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           strokeLinecap={component.strokeLineCap}
-          strokeDasharray={strokeDasharray}
-          strokeDashoffset={strokeDashoffset}
+          strokeDasharray={dashed ? component.strokeDashStyle.dashes.join(" ") : undefined}
+          strokeDashoffset={dashed ? component.strokeDashStyle.offset : undefined}
         />
       );
     }
-    case "text": {
-      if (!component.text) {
-        return <></>;
-      }
-      const alignmentBaseline = getBaselineAdjustment(component.verticalGrowthDirection);
-      const transform = `rotate(${component.clockwiseRotationDegrees} ${component.position.x} ${component.position.y})`;
-      const lines = component.text.split("\n");
-      const tSpans = lines.map((t, i) => (
-        <TSpan
-          key={t}
-          text={t}
-          x={component.position.x}
-          y={component.position.y + i * component.fontSize}
-          fontSize={component.fontSize}
-          alignmentBaseline={alignmentBaseline}
-          lineHeight={component.fontSize}
-        />
-      ));
-
-      const baseStyle = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: getTextFontWeight(component.fontWeight),
-        fontFamily: component.fontFamily,
-      };
-      return (
-        <>
-          {component.strokeThickness > 0 && (
-            <text
-              style={baseStyle}
-              stroke={colorToRgb(component.strokeColor)}
-              strokeWidth={component.strokeThickness}
-              transform={transform}
-              id={makeIdAttr(component.id)}
-              className={makePartClass(component.id, component.className)}
-            >
-              {tSpans}
-            </text>
-          )}
-          {/* Its colors attributes, which a class overrides, e.g. a hovered axis label */}
-          <text
-            style={baseStyle}
-            fill={colorToRgb(component.textColor)}
-            transform={transform}
-            id={makeIdAttr(component.id)}
-            className={makePartClass(component.id, component.className)}
-          >
-            {tSpans}
-          </text>
-        </>
-      );
-    }
+    case "text":
+      return component.text ? renderText(component, key) : null;
     case "ellipse": {
-      const rx = Math.abs(component.bottomRight.x - component.topLeft.x) * 0.5;
-      const ry = Math.abs(component.bottomRight.y - component.topLeft.y) * 0.5;
-      const cx = (component.bottomRight.x + component.topLeft.x) * 0.5;
-      const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
-      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const { topLeft, bottomRight } = component;
+      const dashed = component.strokeDashStyle.dashes.length > 0;
       return (
         <ellipse
+          key={key}
           id={makeIdAttr(component.id)}
           className={makePartClass(component.id)}
-          cx={cx}
-          cy={cy}
-          rx={rx}
-          ry={ry}
+          cx={(bottomRight.x + topLeft.x) * 0.5}
+          cy={(bottomRight.y + topLeft.y) * 0.5}
+          rx={Math.abs(bottomRight.x - topLeft.x) * 0.5}
+          ry={Math.abs(bottomRight.y - topLeft.y) * 0.5}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
-          strokeDasharray={strokeDasharray}
-          strokeDashoffset={strokeDashoffset}
+          strokeDasharray={dashed ? component.strokeDashStyle.dashes.join(" ") : undefined}
+          strokeDashoffset={dashed ? component.strokeDashStyle.offset : undefined}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       );
     }
     case "polyline": {
-      const linePoints = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
-      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const dashed = component.strokeDashStyle.dashes.length > 0;
       return (
         <polyline
+          key={key}
           id={makeIdAttr(component.id)}
           className={makePartClass(component.id)}
-          points={linePoints}
+          points={getPoints(component.points)}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           strokeLinejoin={component.strokeLineJoin}
           strokeLinecap={component.strokeLineCap}
-          strokeDasharray={strokeDasharray}
-          strokeDashoffset={strokeDashoffset}
+          strokeDasharray={dashed ? component.strokeDashStyle.dashes.join(" ") : undefined}
+          strokeDashoffset={dashed ? component.strokeDashStyle.offset : undefined}
           fill="none"
         />
       );
     }
     case "polygon": {
-      const points = component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" ");
-      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const dashed = component.strokeDashStyle.dashes.length > 0;
       return (
         <polygon
+          key={key}
           id={makeIdAttr(component.id)}
           className={makePartClass(component.id)}
-          points={points}
+          points={getPoints(component.points)}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
           strokeLinejoin={component.strokeLineJoin}
-          strokeDasharray={strokeDasharray}
-          strokeDashoffset={strokeDashoffset}
+          strokeDasharray={dashed ? component.strokeDashStyle.dashes.join(" ") : undefined}
+          strokeDashoffset={dashed ? component.strokeDashStyle.offset : undefined}
           fillOpacity={colorToOpacity(component.fillColor)}
           fill={colorToRgb(component.fillColor)}
         />
       );
     }
     case "rectangle": {
-      const strokeDasharray = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.dashes.join(" ") : undefined;
-      const strokeDashoffset = component.strokeDashStyle.dashes.length > 0 ? component.strokeDashStyle.offset : undefined;
+      const { topLeft, bottomRight, radius } = component;
+      const dashed = component.strokeDashStyle.dashes.length > 0;
       return (
         <rect
+          key={key}
           id={makeIdAttr(component.id)}
           className={makePartClass(component.id)}
-          x={component.topLeft.x}
-          y={component.topLeft.y}
-          width={Math.abs(component.bottomRight.x - component.topLeft.x)}
-          height={Math.abs(component.bottomRight.y - component.topLeft.y)}
+          x={topLeft.x}
+          y={topLeft.y}
+          width={Math.abs(bottomRight.x - topLeft.x)}
+          height={Math.abs(bottomRight.y - topLeft.y)}
           stroke={colorToRgb(component.strokeColor)}
           strokeWidth={component.strokeThickness}
           strokeOpacity={colorToOpacity(component.strokeColor)}
-          strokeDasharray={strokeDasharray}
-          strokeDashoffset={strokeDashoffset}
+          strokeDasharray={dashed ? component.strokeDashStyle.dashes.join(" ") : undefined}
+          strokeDashoffset={dashed ? component.strokeDashStyle.offset : undefined}
           fillOpacity={colorToOpacity(component.fillColor)}
-          {...(component.radius ? { rx: component.radius.x.toString(), ry: component.radius.y.toString() } : {})}
+          rx={radius?.x}
+          ry={radius?.y}
           fill={colorToRgb(component.fillColor)}
         />
       );
     }
     default:
-      return <></>;
+      return null;
   }
+}
+
+function renderText(component: Text, key: number): React.JSX.Element {
+  const { position, fontSize } = component;
+  const alignmentBaseline = getBaselineAdjustment(component.verticalGrowthDirection);
+  const transform = `rotate(${component.clockwiseRotationDegrees} ${position.x} ${position.y})`;
+  const id = makeIdAttr(component.id);
+  const className = makePartClass(component.id, component.className);
+  const style = {
+    textAnchor: getTextAnchor(component.horizontalGrowthDirection),
+    fontSize: `${fontSize}px`,
+    fontWeight: getTextFontWeight(component.fontWeight),
+    fontFamily: component.fontFamily,
+  };
+  // Its lines' tspans, each a tspan per run alternating outside and inside <sub>, shared by its stroke and fill
+  const tSpans: Array<React.JSX.Element> = [];
+  const subStyle = { fontSize: `${fontSize * 0.8}px` };
+  for (const [i, line] of component.text.split("\n").entries()) {
+    const runs: Array<React.JSX.Element> = [];
+    for (const [j, run] of line.split(/<\/?sub>/).entries()) {
+      runs.push(
+        j % 2 === 1 ? (
+          <tspan key={j} baselineShift="sub" alignmentBaseline={alignmentBaseline} style={subStyle}>
+            {run}
+          </tspan>
+        ) : (
+          <tspan key={j} alignmentBaseline={alignmentBaseline}>
+            {run}
+          </tspan>
+        )
+      );
+    }
+    tSpans.push(
+      <tspan key={i} x={position.x} y={position.y + i * fontSize} height={`${fontSize}px`}>
+        {runs}
+      </tspan>
+    );
+  }
+  return (
+    <React.Fragment key={key}>
+      {component.strokeThickness > 0 && (
+        <text
+          style={style}
+          stroke={colorToRgb(component.strokeColor)}
+          strokeWidth={component.strokeThickness}
+          transform={transform}
+          id={id}
+          className={className}
+        >
+          {tSpans}
+        </text>
+      )}
+      {/* Its colors attributes, which a class overrides, e.g. a hovered axis label */}
+      <text style={style} fill={colorToRgb(component.textColor)} transform={transform} id={id} className={className}>
+        {tSpans}
+      </text>
+    </React.Fragment>
+  );
+}
+
+function getPoints(points: ReadonlyArray<Point>): string {
+  let s = "";
+  for (const p of points) {
+    s += s ? ` ${p.x},${p.y}` : `${p.x},${p.y}`;
+  }
+  return s;
 }
 
 function getTextFontWeight(fontWeight: AbstractFontWeight): React.CSSProperties["fontWeight"] {
@@ -344,76 +338,8 @@ function getTextFontWeight(fontWeight: AbstractFontWeight): React.CSSProperties[
   }
 }
 
-function TSpan({
-  text,
-  x,
-  y,
-  fontSize,
-  alignmentBaseline,
-  lineHeight,
-}: {
-  readonly text: string;
-  readonly x: number;
-  readonly y: number;
-  readonly fontSize: number;
-  readonly alignmentBaseline: "baseline" | "central" | "hanging";
-  readonly lineHeight: number;
-}): React.JSX.Element {
-  const split = text.split("<sub>").flatMap((t) => t.split("</sub>"));
-  let inside = false;
-  const tags: Array<React.JSX.Element> = [];
-  for (let i = 0; i < split.length; ++i) {
-    const splitText = split[i];
-    if (inside) {
-      tags.push(
-        <tspan key={i} baselineShift="sub" alignmentBaseline={alignmentBaseline} style={{ fontSize: (fontSize * 0.8).toString() + "px" }}>
-          {splitText}
-        </tspan>
-      );
-    } else {
-      tags.push(
-        <tspan key={i} alignmentBaseline={alignmentBaseline}>
-          {splitText}
-        </tspan>
-      );
-    }
-    inside = !inside;
-  }
-  return (
-    <tspan x={x} y={y} height={lineHeight.toString() + "px"}>
-      {tags}
-    </tspan>
-  );
-}
-
-function getBaselineAdjustment(d: GrowthDirection): "baseline" | "central" | "hanging" {
-  if (d === "up") {
-    return "baseline";
-  }
-  if (d === "uniform") {
-    return "central";
-  }
-  if (d === "down") {
-    return "hanging";
-  }
-  throw new Error("Unknown text alignment " + d);
-}
-
-function getTextAnchor(d: GrowthDirection): "end" | "middle" | "start" {
-  if (d === "left") {
-    return "end";
-  }
-  if (d === "uniform") {
-    return "middle";
-  }
-  if (d === "right") {
-    return "start";
-  }
-  throw new Error("Unknown text anchor " + d);
-}
-
 function colorToRgb(color: Color): string {
-  return color.css ?? "rgb(" + color.r.toString() + "," + color.g.toString() + "," + color.b.toString() + ")";
+  return color.css ?? `rgb(${color.r},${color.g},${color.b})`;
 }
 
 function colorToOpacity(color: Color): string {

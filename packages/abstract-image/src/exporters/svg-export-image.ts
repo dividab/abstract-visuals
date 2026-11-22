@@ -1,9 +1,11 @@
-import { fromByteArray } from "base64-js";
 import type { AbstractImage } from "../model/abstract-image.js";
 import { classNames } from "../model/class-names.js";
 import type { Color } from "../model/color.js";
-import type { Component, GrowthDirection } from "../model/component.js";
+import type { Component } from "../model/component.js";
+import type { DashStyle } from "../model/dash-style.js";
+import type { Point } from "../model/point.js";
 import type { Optional } from "../model/shared.js";
+import { getBaselineAdjustment, getBinaryImageHref, getTextAnchor } from "./svg-shared.js";
 
 export const SVG_DATA_URL = "data:image/svg+xml,";
 
@@ -15,387 +17,141 @@ export type SvgOptions = {
   readonly className: string;
 };
 
+type ImageDataByUrl = SvgOptions["imageDataByUrl"];
+
 /** Drawn with `classNames`' classes like ReactSvg, its svg's `classNames.root` and `className`, an embedded picture's `classNames.image` */
 export function createSVG(image: AbstractImage, options?: Optional<SvgOptions>): string {
   const className = options?.className ? `${classNames.root} ${options.className}` : classNames.root;
-  return svgElement(image, options, className);
+  const width = options?.pixelWidth ?? image.size.width;
+  const height = options?.pixelHeight ?? image.size.height;
+  return svgElement(image, options?.imageDataByUrl ?? {}, ` class="${className}" width="${width}px" height="${height}px"`);
 }
 
-/** An image's svg, a sub image's without a class */
-function svgElement(image: AbstractImage, options: Optional<SvgOptions> | undefined, className: string | undefined): string {
-  const opts: SvgOptions = {
-    imageDataByUrl: options?.imageDataByUrl ?? {},
-    pixelWidth: options?.pixelWidth ?? image.size.width,
-    pixelHeight: options?.pixelHeight ?? image.size.height,
-    className: "",
-  };
-  const subOptions: SvgOptions = { ...opts, pixelWidth: 0, pixelHeight: 0 };
-  const imageElements = image.components.map((c: Component) => abstractComponentToSVG(c, subOptions));
-
-  return createElement(
-    "svg",
-    {
-      xmlns: "http://www.w3.org/2000/svg",
-      class: className ?? "",
-      width: `${opts.pixelWidth}px`,
-      height: `${opts.pixelHeight}px`,
-      viewBox: [0, 0, image.size.width, image.size.height].join(" "),
-    },
-    imageElements
-  );
+/** An image's svg, `attributes` its root's class and size, a sub image's its own size */
+function svgElement(image: AbstractImage, imageDataByUrl: ImageDataByUrl, attributes: string | undefined): string {
+  const { width, height } = image.size;
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg"${attributes ?? ` width="${width}px" height="${height}px"`} viewBox="0 0 ${width} ${height}">`;
+  for (const c of image.components) {
+    svg += componentToSvg(c, imageDataByUrl);
+  }
+  return svg + "</svg>";
 }
 
-function abstractComponentToSVG(component: Component, options: SvgOptions): string {
+function componentToSvg(component: Component, imageDataByUrl: ImageDataByUrl): string {
   switch (component.type) {
-    case "group":
-      return createElement(
-        "g",
-        {
-          name: component.name,
-        },
-        component.children.map((c) => abstractComponentToSVG(c, options))
-      );
-    case "binaryimage": {
-      const x = component.topLeft.x.toString();
-      const y = component.topLeft.y.toString();
-      const width = (component.bottomRight.x - component.topLeft.x).toString();
-      const height = (component.bottomRight.y - component.topLeft.y).toString();
-
-      if (component.data.type === "url") {
-        const data = options.imageDataByUrl[component.data.url];
-        if (typeof data === "string" || data === undefined) {
-          return createElement("image", { x, y, width, height, class: classNames.image, href: data ?? component.data.url }, []);
-        }
-
-        const scale = Math.min(
-          (component.bottomRight.x - component.topLeft.x) / (data.size.width || 1),
-          (component.bottomRight.y - component.topLeft.y) / (data.size.height || 1)
-        );
-        return createElement("g", { transform: `translate(${x}, ${y}) scale(${scale})` }, [svgElement(data, options, undefined)]);
-      } else if (component.format === "png" || component.format === "avif") {
-        const base64 = fromByteArray(component.data.bytes);
-        return createElement("image", { x, y, width, height, class: classNames.image, href: `data:image/${component.format};base64,${base64}` }, []);
-      } else if (component.format === "svg") {
-        const svg = String.fromCharCode(...component.data.bytes).replace('<?xml version="1.0" encoding="utf-8"?>', "");
-        const bytes = [];
-        for (let i = 0; i < svg.length; ++i) {
-          bytes.push(svg.charCodeAt(i));
-        }
-        const base64 = fromByteArray(new Uint8Array(bytes));
-        return createElement("image", { x, y, width, height, class: classNames.image, href: `data:image/svg+xml;base64,${base64}` }, []);
+    case "group": {
+      let g = component.name ? `<g name="${component.name}">` : "<g>";
+      for (const c of component.children) {
+        g += componentToSvg(c, imageDataByUrl);
       }
-      return "";
+      return g + "</g>";
+    }
+    case "binaryimage": {
+      const { x, y } = component.topLeft;
+      const width = component.bottomRight.x - x;
+      const height = component.bottomRight.y - y;
+      const data = component.data.type === "url" ? (imageDataByUrl[component.data.url] ?? component.data.url) : undefined;
+      if (typeof data === "object") {
+        const scale = Math.min(width / (data.size.width || 1), height / (data.size.height || 1));
+        return `<g transform="translate(${x}, ${y}) scale(${scale})">${svgElement(data, imageDataByUrl, undefined)}</g>`;
+      }
+      const href = component.data.type === "url" ? data : getBinaryImageHref(component.format, component.data.bytes);
+      if (href === undefined) {
+        return "";
+      }
+      return `<image x="${x}" y="${y}" width="${width}" height="${height}" class="${classNames.image}"${href ? ` href="${href}"` : ""}></image>`;
     }
     case "subimage": {
       const scale = Math.min(component.size.width / (component.image.size.width || 1), component.size.height / (component.image.size.height || 1));
-      return createElement("g", { transform: `translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})` }, [
-        svgElement(component.image, { ...options, pixelWidth: undefined, pixelHeight: undefined }, undefined),
-      ]);
+      return `<g transform="translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})">${svgElement(component.image, imageDataByUrl, undefined)}</g>`;
     }
     case "line": {
-      const dashStyle: Attributes =
-        component.strokeDashStyle.dashes.length > 0
-          ? {
-              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
-              strokeDashoffset: component.strokeDashStyle.offset.toString(),
-            }
-          : {};
-      return createElement(
-        "line",
-        {
-          x1: component.start.x.toString(),
-          y1: component.start.y.toString(),
-          x2: component.end.x.toString(),
-          y2: component.end.y.toString(),
-          stroke: colorToRgb(component.strokeColor),
-          strokeOpacity: colorToOpacity(component.strokeColor),
-          strokeWidth: component.strokeThickness.toString(),
-          ...(component.strokeLineCap ? { strokeLinecap: component.strokeLineCap } : {}),
-          ...dashStyle,
-        },
-        []
-      );
+      const { start, end } = component;
+      const cap = component.strokeLineCap ? ` stroke-linecap="${component.strokeLineCap}"` : "";
+      return `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}"${getStroke(component.strokeColor, component.strokeThickness)}${cap}${getDash(component.strokeDashStyle)}></line>`;
     }
     case "polyline": {
-      const dashStyle: Attributes =
-        component.strokeDashStyle.dashes.length > 0
-          ? {
-              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
-              strokeDashoffset: component.strokeDashStyle.offset.toString(),
-            }
-          : {};
-      return createElement(
-        "polyline",
-        {
-          fill: "none",
-          points: component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" "),
-          stroke: colorToRgb(component.strokeColor),
-          strokeOpacity: colorToOpacity(component.strokeColor),
-          strokeWidth: component.strokeThickness.toString(),
-          ...(component.strokeLineJoin ? { strokeLinejoin: component.strokeLineJoin } : {}),
-          ...(component.strokeLineCap ? { strokeLinecap: component.strokeLineCap } : {}),
-          ...dashStyle,
-        },
-        []
-      );
+      const join = component.strokeLineJoin ? ` stroke-linejoin="${component.strokeLineJoin}"` : "";
+      const cap = component.strokeLineCap ? ` stroke-linecap="${component.strokeLineCap}"` : "";
+      return `<polyline fill="none"${getPoints(component.points)}${getStroke(component.strokeColor, component.strokeThickness)}${join}${cap}${getDash(component.strokeDashStyle)}></polyline>`;
+    }
+    case "polygon": {
+      const join = component.strokeLineJoin ? ` stroke-linejoin="${component.strokeLineJoin}"` : "";
+      return `<polygon${getPoints(component.points)}${getStroke(component.strokeColor, component.strokeThickness)}${getFill(component.fillColor)}${join}${getDash(component.strokeDashStyle)}></polygon>`;
+    }
+    case "ellipse": {
+      const { topLeft, bottomRight } = component;
+      const rx = Math.abs(bottomRight.x - topLeft.x) * 0.5;
+      const ry = Math.abs(bottomRight.y - topLeft.y) * 0.5;
+      const cx = (bottomRight.x + topLeft.x) * 0.5;
+      const cy = (bottomRight.y + topLeft.y) * 0.5;
+      return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"${getStroke(component.strokeColor, component.strokeThickness)}${getFill(component.fillColor)}${getDash(component.strokeDashStyle)}></ellipse>`;
+    }
+    case "rectangle": {
+      const { topLeft, bottomRight, radius } = component;
+      const width = Math.abs(bottomRight.x - topLeft.x);
+      const height = Math.abs(bottomRight.y - topLeft.y);
+      const r = radius ? ` rx="${radius.x}" ry="${radius.y}"` : "";
+      return `<rect x="${topLeft.x}" y="${topLeft.y}" width="${width}" height="${height}"${getStroke(component.strokeColor, component.strokeThickness)}${getFill(component.fillColor)}${r}${getDash(component.strokeDashStyle)}></rect>`;
     }
     case "text": {
       if (!component.text) {
         return "";
       }
-      const lineHeight = component.fontSize;
-
-      const shadowStyle = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: component.fontWeight,
-        fontFamily: component.fontFamily,
-        stroke: colorToRgb(component.strokeColor),
-        strokeOpacity: colorToOpacity(component.strokeColor),
-        strokeWidth: component.strokeThickness.toString() + "px",
-      };
-
-      const style = {
-        textAnchor: getTextAnchor(component.horizontalGrowthDirection),
-        fontSize: component.fontSize.toString() + "px",
-        fontWeight: component.fontWeight,
-        fontFamily: component.fontFamily,
-        fill: colorToRgb(component.textColor),
-        fillOpacity: colorToOpacity(component.textColor),
-      };
-
+      const { position, fontSize } = component;
       const alignmentBaseline = getBaselineAdjustment(component.verticalGrowthDirection);
-
-      const transform =
-        "rotate(" +
-        component.clockwiseRotationDegrees.toString() +
-        " " +
-        component.position.x.toString() +
-        " " +
-        component.position.y.toString() +
-        ")";
-
-      const lines: Array<string> = component.text.split("\n");
-
-      const tSpans = lines.map((t, i) => {
-        const split = t.split("<sub>").flatMap((t) => t.split("</sub>"));
+      const font = `text-anchor:${getTextAnchor(component.horizontalGrowthDirection)};font-size:${fontSize}px;font-weight:${component.fontWeight};${component.fontFamily ? `font-family:${component.fontFamily};` : ""}`;
+      const transform = ` transform="rotate(${component.clockwiseRotationDegrees} ${position.x} ${position.y})"`;
+      // Its lines' tspans, each a tspan per run alternating outside and inside <sub>
+      let tSpans = "";
+      for (const [i, line] of component.text.split("\n").entries()) {
+        tSpans += `<tspan x="${position.x}" y="${position.y + i * fontSize}" height="${fontSize}px">`;
         let inside = false;
-        const tags: Array<string> = [];
-        for (const st of split) {
-          if (inside) {
-            tags.push(
-              createElement(
-                "tspan",
-                {
-                  "baseline-shift": "sub",
-                  "font-size": (component.fontSize * 0.8).toString(),
-                  "alignment-baseline": alignmentBaseline,
-                },
-                [escapeXml(st)]
-              )
-            );
-          } else {
-            tags.push(createElement("tspan", { "alignment-baseline": alignmentBaseline }, [escapeXml(st)]));
-          }
+        for (const run of line.split(/<\/?sub>/)) {
+          tSpans += inside
+            ? `<tspan baseline-shift="sub" font-size="${fontSize * 0.8}" alignment-baseline="${alignmentBaseline}">${escapeXml(run)}</tspan>`
+            : `<tspan alignment-baseline="${alignmentBaseline}">${escapeXml(run)}</tspan>`;
           inside = !inside;
         }
-        return createElement(
-          "tspan",
-          {
-            x: component.position.x.toString(),
-            y: (component.position.y + i * lineHeight).toString(),
-            height: lineHeight.toString() + "px",
-          },
-          tags
-        );
-      });
-      const cs: Array<string> = [];
-
-      if (component.strokeThickness > 0) {
-        cs.push(createElement("text", { style: objectToAttributeValue(shadowStyle), transform: transform }, tSpans));
+        tSpans += "</tspan>";
       }
-      cs.push(createElement("text", { style: objectToAttributeValue(style), transform: transform }, tSpans));
-      return cs.join();
-    }
-    case "ellipse": {
-      const dashStyle: Attributes =
-        component.strokeDashStyle.dashes.length > 0
-          ? {
-              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
-              strokeDashoffset: component.strokeDashStyle.offset.toString(),
-            }
-          : {};
-      const rx = Math.abs(component.bottomRight.x - component.topLeft.x) * 0.5;
-      const ry = Math.abs(component.bottomRight.y - component.topLeft.y) * 0.5;
-      const cx = (component.bottomRight.x + component.topLeft.x) * 0.5;
-      const cy = (component.bottomRight.y + component.topLeft.y) * 0.5;
-      return createElement(
-        "ellipse",
-        {
-          cx: cx.toString(),
-          cy: cy.toString(),
-          rx: rx.toString(),
-          ry: ry.toString(),
-          stroke: colorToRgb(component.strokeColor),
-          strokeOpacity: colorToOpacity(component.strokeColor),
-          strokeWidth: component.strokeThickness.toString(),
-          fill: colorToRgb(component.fillColor),
-          fillOpacity: colorToOpacity(component.fillColor),
-          ...dashStyle,
-        },
-        []
-      );
-    }
-    case "polygon": {
-      const dashStyle: Attributes =
-        component.strokeDashStyle.dashes.length > 0
-          ? {
-              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
-              strokeDashoffset: component.strokeDashStyle.offset.toString(),
-            }
-          : {};
-      return createElement(
-        "polygon",
-        {
-          points: component.points.map((p) => p.x.toString() + "," + p.y.toString()).join(" "),
-          stroke: colorToRgb(component.strokeColor),
-          strokeOpacity: colorToOpacity(component.strokeColor),
-          strokeWidth: component.strokeThickness.toString(),
-          fill: colorToRgb(component.fillColor),
-          fillOpacity: colorToOpacity(component.fillColor),
-          ...(component.strokeLineJoin ? { strokeLinejoin: component.strokeLineJoin } : {}),
-          ...dashStyle,
-        },
-        []
-      );
-    }
-    case "rectangle": {
-      const dashStyle: Attributes =
-        component.strokeDashStyle.dashes.length > 0
-          ? {
-              strokeDasharray: component.strokeDashStyle.dashes.join(" "),
-              strokeDashoffset: component.strokeDashStyle.offset.toString(),
-            }
-          : {};
-      return createElement(
-        "rect",
-        {
-          x: component.topLeft.x.toString(),
-          y: component.topLeft.y.toString(),
-          width: Math.abs(component.bottomRight.x - component.topLeft.x).toString(),
-          height: Math.abs(component.bottomRight.y - component.topLeft.y).toString(),
-          stroke: colorToRgb(component.strokeColor),
-          strokeOpacity: colorToOpacity(component.strokeColor),
-          strokeWidth: component.strokeThickness.toString(),
-          fill: colorToRgb(component.fillColor),
-          fillOpacity: colorToOpacity(component.fillColor),
-          ...(component.radius ? { rx: component.radius.x.toString(), ry: component.radius.y.toString() } : {}),
-          ...dashStyle,
-        },
-        []
-      );
+      const fill = `<text style="${font}fill:${colorToRgb(component.textColor)};fill-opacity:${component.textColor.a / 255};"${transform}>${tSpans}</text>`;
+      const { strokeColor, strokeThickness } = component;
+      return strokeThickness > 0
+        ? `<text style="${font}stroke:${colorToRgb(strokeColor)};stroke-opacity:${strokeColor.a / 255};stroke-width:${strokeThickness}px;"${transform}>${tSpans}</text>${fill}`
+        : fill;
     }
     default:
       return "";
   }
 }
 
-interface Attributes {
-  readonly [key: string]: string;
+function getStroke(color: Color, thickness: number): string {
+  return ` stroke="${colorToRgb(color)}" stroke-opacity="${color.a / 255}" stroke-width="${thickness}"`;
 }
 
-function createElement(elementName: string, attributes: Attributes, innerElements: Array<string>): string {
-  const formattedName = convertUpperToHyphenLower(elementName);
-  let element = `<${formattedName}`;
-
-  if (Object.keys(attributes).length > 0) {
-    element = Object.keys(attributes).reduce((previousValue: string, currentValue: string) => {
-      if (attributes[currentValue]) {
-        return previousValue + ` ${convertUpperToHyphenLower(currentValue)}="${attributes[currentValue]}"`;
-      } else {
-        return previousValue;
-      }
-    }, element);
-  }
-
-  element += ">";
-
-  if (innerElements.length > 0) {
-    element = innerElements.reduce((previousValue: string, currentValue: string) => {
-      if (!currentValue || currentValue.length < 1) {
-        return previousValue;
-      } else {
-        return previousValue + currentValue;
-      }
-    }, element);
-  }
-
-  element += `</${formattedName}>`;
-
-  return element;
+function getFill(color: Color): string {
+  return ` fill="${colorToRgb(color)}" fill-opacity="${color.a / 255}"`;
 }
 
-function objectToAttributeValue(attributes: Attributes): string {
-  if (Object.keys(attributes).length > 0) {
-    return Object.keys(attributes).reduce((previousValue: string, currentValue: string) => {
-      if (attributes[currentValue]) {
-        return previousValue + `${convertUpperToHyphenLower(currentValue)}:${attributes[currentValue]};`;
-      } else {
-        return previousValue;
-      }
-    }, "");
-  }
-
-  return "";
+function getDash(dashStyle: DashStyle): string {
+  return dashStyle.dashes.length > 0 ? ` stroke-dasharray="${dashStyle.dashes.join(" ")}" stroke-dashoffset="${dashStyle.offset}"` : "";
 }
 
-function upperToHyphenLower(match: string): string {
-  return "-" + match.toLowerCase();
-}
-
-function convertUpperToHyphenLower(elementName: string): string {
-  return elementName !== "viewBox" ? elementName.replace(/[A-Z]/g, upperToHyphenLower) : elementName;
-}
-
-function getBaselineAdjustment(d: GrowthDirection): "baseline" | "central" | "hanging" {
-  if (d === "up") {
-    return "baseline";
+function getPoints(points: ReadonlyArray<Point>): string {
+  let s = "";
+  for (const p of points) {
+    s += s ? ` ${p.x},${p.y}` : `${p.x},${p.y}`;
   }
-  if (d === "uniform") {
-    return "central";
-  }
-  if (d === "down") {
-    return "hanging";
-  }
-  throw new Error("Unknown text alignment " + d);
-}
-
-function getTextAnchor(d: GrowthDirection): string {
-  if (d === "left") {
-    return "end";
-  }
-  if (d === "uniform") {
-    return "middle";
-  }
-  if (d === "right") {
-    return "start";
-  }
-  throw new Error("Unknown text anchor " + d);
+  return s ? ` points="${s}"` : "";
 }
 
 function colorToRgb(color: Color): string {
-  return `rgb(${color.r.toString()}, ${color.g.toString()}, ${color.b.toString()})`;
+  return `rgb(${color.r}, ${color.g}, ${color.b})`;
 }
 
-function colorToOpacity(color: Color): string {
-  return (color.a / 255).toString();
-}
+const xmlEntities: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" };
 
 function escapeXml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;") // the '&' must be replaced first
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+  return text.replace(/[&<>"']/g, (c) => xmlEntities[c] ?? c);
 }

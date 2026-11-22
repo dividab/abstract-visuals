@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [14.2.1] - 2026-11-22
+
+- Changed: `createSVG` builds its markup about twice as fast, and `ReactSvg` renders each part as one element instead of a component each, and keeps them while its `image` and `imageDataByUrl` are the same, so React skips them when only its callbacks or class change.
+- Fixed: `createSVG` and `ReactSvg` embed a large svg image, which overflowed the stack.
+- Fixed: `createSVG` no longer puts a `,` between a stroked text's outline and its fill.
+- Fixed: `createSVG` draws an `AbstractImage` from `imageDataByUrl` at its size instead of 0 by 0, which hid it, as `ReactSvg` does.
+- Fixed: `ReactSvg` keys a text's lines by position, so repeated lines, e.g. two empty ones, no longer warn of duplicate keys.
+
 ## [14.2.0] - 2026-11-22
 
 - Added: a `Color`'s `css`, the page's CSS color it is, e.g. a theme's variable `"var(--color-text)"`, which `ReactSvg` draws in place of its argb, its alpha its own, so one drawing follows the page's theme; the other exports draw its argb.
