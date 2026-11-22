@@ -1,16 +1,5 @@
 import type { Box, BoxEdge, Vec2, Vec3, Material } from "../../../abstract-3d.js";
-import {
-  vec3Scale,
-  vec3TransRot,
-  vec3RotCombine,
-  vec3Zero,
-  vec3,
-  vec3ZMean,
-  vec3Add,
-  vec3Sub,
-  vec3Length,
-  boxEdgeRadius,
-} from "../../../abstract-3d.js";
+import { vec3Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3ZMean, vec3Add, vec3Sub, vec3Length } from "../../../abstract-3d.js";
 import { rgbGrayScale } from "../../../utils.js";
 import { svgPolygon } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
@@ -121,7 +110,7 @@ export function box(
   const color = material.normal;
   const opacity = material.opacity ?? 1.0;
   const [strokeColor, fill, strokeUse] = opts.only_stroke
-    ? [opts.stroke_color || (opts.gray_scale ? gray : color), opts.background, opts.stroke_thickness]
+    ? [opts.gray_scale ? gray : color, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(color) : color, 0];
 
   const faces: ReadonlyArray<[Corners, number, Box["holes"]]> = [
@@ -135,7 +124,7 @@ export function box(
       const v = vec3tr(c);
       return point(v.x, v.y);
     });
-    if (!b.radius && !b.edgeRadius) {
+    if (!b.radius) {
       elements.push(zElem(svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes, parentPos), mean));
       continue;
     }
@@ -149,7 +138,8 @@ export function box(
       .map(([c, edge], i) => {
         const prev = corners[(i + corners.length - 1) % corners.length]![0];
         const next = corners[(i + 1) % corners.length]![0];
-        const r = Math.min(boxEdgeRadius(b, edge), vec3Length(vec3Sub(prev, c)) / 2, vec3Length(vec3Sub(next, c)) / 2);
+        const radius = (b.roundedEdges?.includes(edge) ?? true) ? (b.radius ?? 0) : 0;
+        const r = Math.min(radius, vec3Length(vec3Sub(prev, c)) / 2, vec3Length(vec3Sub(next, c)) / 2);
         if (r <= 0) {
           return svgPoint(point, vec3tr(c));
         }

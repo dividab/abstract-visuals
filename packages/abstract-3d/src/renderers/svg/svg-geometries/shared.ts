@@ -22,8 +22,6 @@ export type SvgOptions = {
   readonly stroke_thickness: number;
   readonly only_stroke: boolean;
   readonly gray_scale: boolean;
-  /** `only_stroke`'s outlines' color, e.g. a CSS variable that follows a page's theme, instead of each material's or `gray_scale`'s gray */
-  readonly stroke_color: string;
   readonly background: string;
   readonly rotation: number;
   readonly imageBg: boolean;

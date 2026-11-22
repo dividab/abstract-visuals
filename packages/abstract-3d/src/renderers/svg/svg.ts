@@ -89,7 +89,6 @@ function renderInternal(
     stroke_thickness: options?.stroke_thickness ?? 2,
     only_stroke: options?.only_stroke ?? false,
     gray_scale: options?.gray_scale ?? false,
-    stroke_color: options?.stroke_color ?? "",
     background: options?.background ?? "rgba(255,255,255,0)",
     font: options?.font ?? "",
     imageDataByUrl: options?.imageDataByUrl ?? {},
@@ -118,7 +117,7 @@ function renderInternal(
   for (const g of scene.groups) {
     elements.push(...svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, viewRot, point, opts, textHeight));
   }
-  const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false, stroke_color: "" };
+  const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
   elements.sort((a, b) => a.zOrder - b.zOrder);
 
   // Dimensions are drawn for the flat views

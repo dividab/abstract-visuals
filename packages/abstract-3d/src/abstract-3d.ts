@@ -368,16 +368,7 @@ export type Box = {
   readonly radius?: number;
   /** The edges `radius` rounds, all by default; e.g. only the outer ones of the boxes a corner piece is made of */
   readonly roundedEdges?: ReadonlyArray<BoxEdge>;
-  /**
-   * An edge's own radius instead of `radius`, e.g. 0 for a sharp one; the svg renderer draws each, the three.js viewer shades the rounded ones by the
-   * largest
-   */
-  readonly edgeRadius?: Partial<Record<BoxEdge, number>>;
 };
-
-/** The radius an edge of a box is rounded by, 0 for sharp: its `edgeRadius`, else `radius` if `roundedEdges` has it */
-export const boxEdgeRadius = (b: Box, edge: BoxEdge): number =>
-  b.edgeRadius?.[edge] ?? (b.roundedEdges?.includes(edge) === false ? 0 : (b.radius ?? 0));
 
 /** A box's edges, by the two sides they're between, front is +z; along x, y, then z */
 export type BoxEdge = (typeof boxEdges)[number];
@@ -1161,8 +1152,7 @@ export const box = (
   rot = vec3Zero,
   holes: ReadonlyArray<Hole> = [],
   radius?: number,
-  roundedEdges?: ReadonlyArray<BoxEdge>,
-  edgeRadius?: Partial<Record<BoxEdge, number>>
+  roundedEdges?: ReadonlyArray<BoxEdge>
 ): BoxMesh => ({
   geometry: {
     type: "Box",
@@ -1172,7 +1162,6 @@ export const box = (
     holes,
     ...(radius === undefined ? {} : { radius }),
     ...(roundedEdges === undefined ? {} : { roundedEdges }),
-    ...(edgeRadius === undefined ? {} : { edgeRadius }),
   },
   material,
 });

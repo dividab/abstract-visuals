@@ -22,7 +22,7 @@ export function cylinder(
   const color = material.normal;
   const opacity = material.opacity ?? 1.0;
   const [stroke, fill] = opts.only_stroke
-    ? [opts.stroke_color || (opts.gray_scale ? gray : color), opts.background]
+    ? [opts.gray_scale ? gray : color, opts.background]
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color];
   const zOrderComponents = Array<zOrderElement>();
 

@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file. The format 
 ## [5.1.0] - 2026-11-22
 
 - Added: the svg renderer draws a box's `radius`, each face's corners at its `roundedEdges` seen end-on rounded as quarter circles, at most half the shorter side; a rounded box's faces seen edge-on are left out, the faces they're between drawing its rounded outline
-- Added: the svg renderer's `stroke_color`, `only_stroke`'s outlines' color, e.g. a CSS variable that follows a page's theme, instead of each material's
 - Added: `Lathe`, a profile turned about the y axis, e.g. an arrow, and `lathe` to make one: its points' x the radius, its ends off the axis closed, its `edgeRadius` rounding its corners and a tip on the axis. The viewer and IFC draw it as one rounded solid; SVG as one faceted solid with sharp edges; DXF, STEP and STL draw each side as a cylinder with sharp edges, and `latheCylinders` gives them
 - Fixed: the viewer draws see-through solids before images, so a see-through solid behind an image, e.g. an arrow behind a symbol, is no longer drawn over it
 
