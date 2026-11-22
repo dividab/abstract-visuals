@@ -413,9 +413,9 @@ function getTextAnchor(d: GrowthDirection): "end" | "middle" | "start" {
 }
 
 function colorToRgb(color: Color): string {
-  return "rgb(" + color.r.toString() + "," + color.g.toString() + "," + color.b.toString() + ")";
+  return color.css ?? "rgb(" + color.r.toString() + "," + color.g.toString() + "," + color.b.toString() + ")";
 }
 
 function colorToOpacity(color: Color): string {
-  return (color.a / 255).toString();
+  return color.css ? "1" : (color.a / 255).toString();
 }

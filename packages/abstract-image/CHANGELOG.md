@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [14.2.0] - 2026-11-22
+
+- Added: a `Color`'s `css`, the page's CSS color it is, e.g. a theme's variable `"var(--color-text)"`, which `ReactSvg` draws in place of its argb, its alpha its own, so one drawing follows the page's theme; the other exports draw its argb.
+
 ## [14.1.3] - 2026-11-18
 
 - Fixed: Added logic to extract and include layers from an external dxf image. The names of the layers are also renamed to a unique name to avoid collision.

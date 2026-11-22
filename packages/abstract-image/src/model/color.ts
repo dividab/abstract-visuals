@@ -3,6 +3,8 @@ export interface Color {
   readonly r: number;
   readonly g: number;
   readonly b: number;
+  /** The page's CSS color it is, e.g. a theme's variable, which ReactSvg draws, its alpha its own, so it follows the page; other exports its argb */
+  readonly css?: string;
 }
 
 export function fromArgb(a: number, r: number, g: number, b: number): Color {
