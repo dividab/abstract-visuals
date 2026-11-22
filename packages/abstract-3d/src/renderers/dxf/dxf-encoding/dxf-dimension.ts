@@ -17,7 +17,6 @@ export function dxfEncDimension(
   linePosition: Vec3,
   text: string,
   style: string,
-  sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
   textHeight: number | undefined,
@@ -36,7 +35,6 @@ export function dxfEncDimension(
       linePosition,
       text,
       style,
-      sceneRotation,
       viewRotation,
       views,
       textHeight,
@@ -126,7 +124,6 @@ function dxfEncodeDimensionBlock(
   linePosition: Vec3,
   text: string,
   style: string,
-  sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
   textHeight: number | undefined,
@@ -166,7 +163,6 @@ ${dxfEncodeDimensionGeometry(
   linePosition,
   text,
   style,
-  sceneRotation,
   viewRotation,
   views,
   textHeight,
@@ -196,7 +192,6 @@ function dxfEncodeDimensionGeometry(
   linePosition: Vec3,
   text: string,
   style: string,
-  sceneRotation: Vec3,
   viewRotation: Vec3,
   views: ReadonlyArray<View>,
   textHeight: number | undefined,
@@ -221,16 +216,6 @@ function dxfEncodeDimensionGeometry(
     text,
     views,
   };
-  dimensionMeshifyAlignedDimension(
-    dimension,
-    sceneRotation,
-    viewRotation,
-    onCreateLine,
-    onCreateText,
-    onCreatePolygon,
-    undefined,
-    textHeight,
-    placement
-  );
+  dimensionMeshifyAlignedDimension(dimension, viewRotation, onCreateLine, onCreateText, onCreatePolygon, undefined, textHeight, placement);
   return entities;
 }

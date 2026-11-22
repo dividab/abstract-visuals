@@ -1,6 +1,6 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
-import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight } from "../../abstract-3d.js";
+import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight, bounds3Center } from "../../abstract-3d.js";
 import type { MutableStep } from "./step-encoding.js";
 import {
   GEOMETRIC_REPRESENTATION_CONTEXT_3D,
@@ -46,8 +46,9 @@ export const render = (scene: Scene): string => {
   }
 
   const textHeight = sceneTextHeight(scene.groups);
+  const center = bounds3Center(scene.bounds);
   for (const g of scene.groups) {
-    stepGroup(groupTextBackgrounds(g, textHeight), scene.center_deprecated ?? vec3Zero, scene.rotation_deprecated ?? vec3Zero, m);
+    stepGroup(groupTextBackgrounds(g, textHeight), center, vec3Zero, m);
   }
 
   return `${HEADER(date ?? DEFAULT_DATE_UNIX)}${m.step}${ENDSEC()}`;

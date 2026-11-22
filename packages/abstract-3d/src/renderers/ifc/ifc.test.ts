@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Group, Scene } from "../../abstract-3d.js";
-import { box, culledLine, cylinder, group, line, plane, roundHole, sphere, vec2, vec3, vec3Zero } from "../../abstract-3d.js";
+import { bounds3Zero, box, culledLine, cylinder, group, line, plane, roundHole, sphere, vec2, vec3, vec3Zero } from "../../abstract-3d.js";
 import { guid, ifcFile, real, str } from "./ifc-encoding.js";
 import { polyline, triangulate } from "./ifc-geometry.js";
 import { render } from "./ifc.js";
 
 const red = { normal: "rgb(255, 0, 0)", opacity: 0.5 };
-const scene = (groups: Scene["groups"], relations?: Scene["relations"]): Scene => ({ size_deprecated: vec3Zero, groups, relations });
+const scene = (groups: Scene["groups"], relations?: Scene["relations"]): Scene => ({ bounds: bounds3Zero, groups, relations });
 const count = (ifc: string, entity: string): number => ifc.split(`=${entity}(`).length - 1;
 const ids = (s: string): ReadonlyArray<string> => Array.from(s.matchAll(/#(\d+)/g), (match) => match.at(1) ?? "");
 /** Random GlobalIds replaced, to compare files */

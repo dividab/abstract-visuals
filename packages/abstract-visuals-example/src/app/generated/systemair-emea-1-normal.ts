@@ -1,15 +1,9 @@
 /* oxlint-disable max-lines */
 export const systemairEmea1Normal = {
   scene: {
-    center_deprecated: {
-      x: 520.5,
-      y: 25,
-      z: 65.5,
-    },
-    size_deprecated: {
-      x: 2642,
-      y: 2038,
-      z: 1303,
+    bounds: {
+      min: { x: -800.5, y: -994, z: -586 },
+      max: { x: 1841.5, y: 1044, z: 717 },
     },
     groups: [
       {
@@ -26664,7 +26658,7 @@ export const systemairEmea1Normal = {
         ],
       },
     ],
-    dimensions_deprecated: {
+    dimensions: {
       dimensions: [
         {
           views: ["front"],
@@ -33111,11 +33105,6 @@ export const systemairEmea1Normal = {
         metalness: 0,
         roughness: 0,
       },
-    },
-    rotation_deprecated: {
-      x: 0,
-      y: 0,
-      z: 0,
     },
     hotSpots_deprecated: [],
   },

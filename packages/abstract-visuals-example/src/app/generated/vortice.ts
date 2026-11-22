@@ -2,15 +2,9 @@
 import type { A3D } from "../../../../abstract-3d/src/index.js";
 
 export const vortice: A3D.Scene = {
-  center_deprecated: {
-    x: 30,
-    y: -3.67394039744206e-15,
-    z: -4.499279347985573e-31,
-  },
-  size_deprecated: {
-    x: 3540,
-    y: 1650,
-    z: 1478,
+  bounds: {
+    min: { x: -1740, y: -825, z: -739 },
+    max: { x: 1800, y: 825, z: 739 },
   },
   hotSpots_deprecated: [
     {
@@ -15379,7 +15373,7 @@ export const vortice: A3D.Scene = {
       ],
     },
   ],
-  dimensions_deprecated: {
+  dimensions: {
     dimensions: [],
     material: {
       type: "Basic",
@@ -15464,11 +15458,6 @@ export const vortice: A3D.Scene = {
         },
       },
     },
-  },
-  rotation_deprecated: {
-    x: -3.141592653589793,
-    y: 0,
-    z: -3.141592653589793,
   },
   data: {},
 } as unknown as A3D.Scene;

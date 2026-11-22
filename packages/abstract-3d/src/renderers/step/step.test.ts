@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Mesh } from "../../abstract-3d.js";
 import {
+  bounds3Zero,
   box,
   circleCurve,
   cone,
@@ -24,8 +25,7 @@ import {
 import { render } from "./step.js";
 
 const red = { normal: "rgb(255, 0, 0)" };
-const step = (meshes: ReadonlyArray<Mesh>, rot = vec3Zero): string =>
-  render({ size_deprecated: vec3Zero, groups: [group(meshes, vec3(10, 20, 30), rot)] });
+const step = (meshes: ReadonlyArray<Mesh>, rot = vec3Zero): string => render({ bounds: bounds3Zero, groups: [group(meshes, vec3(10, 20, 30), rot)] });
 const count = (s: string, entity: string): number => s.split(` = ${entity}(`).length - 1;
 const refs = (s: string): ReadonlyArray<string> => Array.from(s.matchAll(/#(\d+)/g), (match) => match.at(1) ?? "");
 

@@ -1,6 +1,7 @@
 import { Color, SRGBColorSpace } from "three";
 import type { Scene, Group, Material, Relation, Vec3, GroupType, AirType } from "../../abstract-3d.js";
 import {
+  vec3Add,
   vec3Zero,
   vec3PosX,
   vec3PosY,
@@ -11,6 +12,7 @@ import {
   vec3RotInverse,
   groupTextBackgrounds,
   sceneTextHeight,
+  bounds3Center,
 } from "../../abstract-3d.js";
 import type { MutableIfc } from "./ifc-encoding.js";
 import { add, guid, ifcFile, point, real, ref, refs, serialize, str } from "./ifc-encoding.js";
@@ -268,8 +270,7 @@ export function render(scene: Scene, options: IfcOptions = {}): string {
   aggregate(m, c, site, [building]);
   aggregate(m, c, building, [storey]);
 
-  const center = scene.center_deprecated ?? vec3Zero;
-  const sceneRot = scene.rotation_deprecated ?? vec3Zero;
+  const center = bounds3Center(scene.bounds);
   const textHeight = sceneTextHeight(scene.groups);
   const groups = scene.groups.map((g) => groupTextBackgrounds(g, textHeight));
   // A scene that is something as a whole is one element, with its groups as the parts of it
@@ -278,13 +279,13 @@ export function render(scene: Scene, options: IfcOptions = {}): string {
       ? [{ pos: vec3Zero, id: scene.id, name: scene.name, type: scene.type, groups }]
       : groups;
   const elements = mergeSameId(roots)
-    .flatMap((g) => elementNode(g, vec3TransRot(g.pos, center, sceneRot), vec3RotCombine(sceneRot, g.rot ?? vec3Zero), g.layer) ?? [])
+    .flatMap((g) => elementNode(g, vec3Add(g.pos, center), g.rot ?? vec3Zero, g.layer) ?? [])
     .map((node, i) => element(m, node, `${i + 1}`, { element: storey, placement: storeyPlacement, pos: vec3Zero, rot: vec3Zero }, c));
   if (elements.length > 0) {
     add(m, `IFCRELCONTAINEDINSPATIALSTRUCTURE(${c.owner()},$,$,${refs(elements)},${ref(storey)})`);
   }
   for (const relation of scene.relations ?? []) {
-    relationPorts(m, relation, center, sceneRot, options.port, c);
+    relationPorts(m, relation, center, options.port, c);
   }
   c.ports.forEach((ports, e) => add(m, `IFCRELNESTS(${c.owner()},$,$,${ref(e)},${refs(ports)})`));
   c.layers.forEach((items, layer) => add(m, `IFCPRESENTATIONLAYERASSIGNMENT(${str(layer)},$,${refs(items)},$)`));
@@ -398,9 +399,9 @@ function element(m: MutableIfc, node: ElementNode, path: string, parent: IfcElem
  * A port nested in the element of each of the relation's groups that is one, placed relative to it, and the two ports connected when both are. The
  * relation's groups are its shape, merged into the first port relative to its placement, groups in them with an `id` or `name` are left out
  */
-function relationPorts(m: MutableIfc, relation: Relation, center: Vec3, sceneRot: Vec3, portType: IfcOptions["port"], c: IfcContext): void {
-  const pos = vec3TransRot(relation.pos, center, sceneRot);
-  const rot = vec3RotCombine(sceneRot, relation.rot ?? vec3Zero);
+function relationPorts(m: MutableIfc, relation: Relation, center: Vec3, portType: IfcOptions["port"], c: IfcContext): void {
+  const pos = vec3Add(relation.pos, center);
+  const rot = relation.rot ?? vec3Zero;
   const portInverse = vec3RotInverse(rot);
   const { predefinedType = "NOTDEFINED", systemType } = portType?.(relation) ?? (relation.airType ? ductPortByAirType[relation.airType] : {});
   const ends = [
@@ -416,8 +417,8 @@ function relationPorts(m: MutableIfc, relation: Relation, center: Vec3, sceneRot
     const meshes =
       i === 0
         ? (relation.groups ?? []).flatMap((g) => {
-            const groupPos = vec3Rot(vec3Sub(vec3TransRot(g.pos, center, sceneRot), pos), vec3Zero, portInverse);
-            const groupRot = vec3RotCombine(portInverse, vec3RotCombine(sceneRot, g.rot ?? vec3Zero));
+            const groupPos = vec3Rot(vec3Sub(vec3Add(g.pos, center), pos), vec3Zero, portInverse);
+            const groupRot = vec3RotCombine(portInverse, g.rot ?? vec3Zero);
             return elementContent(g, groupPos, groupRot, g.layer).meshes;
           })
         : [];

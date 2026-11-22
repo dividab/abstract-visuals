@@ -1,13 +1,7 @@
 export const demoLayers = {
-  center_deprecated: {
-    x: 0,
-    y: -150.63636363636357,
-    z: 30,
-  },
-  size_deprecated: {
-    x: 2440,
-    y: 1316.2727272727275,
-    z: 1380,
+  bounds: {
+    min: { x: -1220, y: -808.7727272727273, z: -660 },
+    max: { x: 1220, y: 507.50000000000017, z: 720 },
   },
   groups: [
     {
@@ -16517,7 +16511,7 @@ export const demoLayers = {
   ],
   id: "37662006-dfca-4278-ac1d-2a6565f125a9",
   type: "AirHandler",
-  dimensions_deprecated: {
+  dimensions: {
     dimensions: [
       {
         measurementStart: {
@@ -16767,11 +16761,6 @@ export const demoLayers = {
       opacity: 1,
       castShadow: false,
     },
-  },
-  rotation_deprecated: {
-    x: 0,
-    y: 0,
-    z: 0,
   },
   relations: [
     {

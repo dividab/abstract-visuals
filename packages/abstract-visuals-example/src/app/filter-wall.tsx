@@ -1,15 +1,9 @@
 import type { A3D } from "../../../abstract-3d/src/index.js";
 
 export const filterWall = {
-  center_deprecated: {
-    x: -150,
-    y: 250,
-    z: 0,
-  },
-  size_deprecated: {
-    x: 600,
-    y: 450,
-    z: 950,
+  bounds: {
+    min: { x: -450, y: 25, z: -475 },
+    max: { x: 150, y: 475, z: 475 },
   },
   groups: [
     {
@@ -206,7 +200,7 @@ export const filterWall = {
       ],
     },
   ],
-  dimensions_deprecated: {
+  dimensions: {
     dimensions: [],
     material: {
       opacity: 1,
@@ -214,10 +208,5 @@ export const filterWall = {
       metalness: 0,
       roughness: 1,
     },
-  },
-  rotation_deprecated: {
-    x: 0,
-    y: 0,
-    z: 0,
   },
 } satisfies A3D.Scene;

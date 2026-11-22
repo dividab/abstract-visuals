@@ -1,13 +1,7 @@
 export const templateScene = {
-  center_deprecated: {
-    x: 1660,
-    y: 205,
-    z: 25.5,
-  },
-  size_deprecated: {
-    x: 2030,
-    y: 1010,
-    z: 1301,
+  bounds: {
+    min: { x: 645, y: -300, z: -625 },
+    max: { x: 2675, y: 710, z: 676 },
   },
   groups: [
     {
@@ -412,7 +406,7 @@ export const templateScene = {
       groups: [],
     },
   ],
-  dimensions_deprecated: {
+  dimensions: {
     dimensions: [],
     material: {
       row_id: "516558f2-4752-4873-a561-be5cab97aef3",
@@ -424,10 +418,5 @@ export const templateScene = {
       metalness: 0,
       roughness: 0,
     },
-  },
-  rotation_deprecated: {
-    x: 0,
-    y: 0,
-    z: 0,
   },
 };

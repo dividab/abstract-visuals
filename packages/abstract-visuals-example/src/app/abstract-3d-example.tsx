@@ -26,11 +26,11 @@ import { getThemedScene, ThemeContext } from "./theme.js";
 
 // Each dimension gets the id of the group nearest along x, so clicking it selects that group
 function withDimensionIds(scene: Scene): Scene {
-  const dims = scene.dimensions_deprecated;
+  const dims = scene.dimensions;
   return dims
     ? {
         ...scene,
-        dimensions_deprecated: {
+        dimensions: {
           ...dims,
           dimensions: dims.dimensions.map((d) => (dimensionIsOfTypeAligned(d) ? { ...d, id: nearestGroupId(scene.groups, d.linePosition.x) } : d)),
         },

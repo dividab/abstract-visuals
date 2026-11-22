@@ -25,7 +25,7 @@ import {
   vec3TransRot,
   vec3Zero,
 } from "../../abstract-3d.js";
-import { type Optional, calculateVisibleViews } from "../../utils.js";
+import type { Optional } from "../../utils.js";
 import { dxfBuild } from "./dxf-encoding/dxf-build.js";
 import { dxfColor, dxfEncLayerDefs, type DxfColor } from "./dxf-encoding/dxf-color.js";
 import { DEFAULT_CIRCLE_SIDE_COUNT, type DxfOrigin, type Handle, dxfHandleInit } from "./dxf-encoding/dxf-common.js";
@@ -142,30 +142,18 @@ const renderInternal = (
   readonly textHeight: number;
 } => {
   const viewRotation = rotationForCameraPos(options.view);
-  const unitRot = vec3RotCombine(viewRotation, scene.rotation_deprecated ?? vec3Zero);
-  const unitCenter = scene.center_deprecated ?? vec3Zero;
-  const [size] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
+  const unitCenter = bounds3Center(scene.bounds);
+  const [size] = sizeBoundsForCameraPos(scene.bounds, viewRotation);
   const bounds = bounds3FromPosAndSize(unitCenter, size);
   const dxfOriginOffset = originOffsetFromBounds(bounds, options.origin);
   const pos = options.origin === "SameAsScene" ? vec3Zero : vec3NegateY(vec3Add(unitCenter, vec3Add(offset, dxfOriginOffset)));
-  const visibleViews = calculateVisibleViews(options.view, scene.rotation_deprecated);
   const textHeight = sceneTextHeight(scene.groups);
   return {
     groups: scene.groups.reduce(
-      (a, c) => a + dxfGroup(groupTextBackgrounds(c, textHeight), pos, unitRot, undefined, options, textHeight, handleRef),
+      (a, c) => a + dxfGroup(groupTextBackgrounds(c, textHeight), pos, viewRotation, undefined, options, textHeight, handleRef),
       ""
     ),
-    dimensions: dxfDimensions(
-      scene.dimensions_deprecated,
-      pos,
-      unitRot,
-      scene.rotation_deprecated ?? vec3Zero,
-      viewRotation,
-      visibleViews,
-      options,
-      textHeight,
-      handleRef
-    ),
+    dimensions: dxfDimensions(scene.dimensions, pos, viewRotation, options, textHeight, handleRef),
     size,
     center: pos,
     textHeight,
@@ -183,9 +171,7 @@ function vec3NegateY(vec: Vec3): Vec3 {
 function originOffsetFromScenes(scenes: ReadonlyArray<DxfScene>, origin: DxfOrigin): Vec3 {
   const allBounds = Array<Bounds3>();
   for (const scene of scenes) {
-    const center = scene.scene.center_deprecated ?? vec3Zero;
-    const size = scene.scene.size_deprecated;
-    allBounds.push(bounds3FromPosAndSize(center, size));
+    allBounds.push(scene.scene.bounds);
   }
   return originOffsetFromBounds(bounds3Merge(...allBounds), origin);
 }
@@ -307,10 +293,7 @@ function dxfGroup(
 function dxfDimensions(
   d: Dimensions | undefined,
   parentPos: Vec3,
-  parentRot: Vec3,
-  sceneRotation: Vec3,
   viewRotation: Vec3,
-  visibleViews: Record<string, boolean>,
   options: DxfOptions,
   textHeight: number,
   handleRef: Handle
@@ -326,9 +309,7 @@ function dxfDimensions(
   const placements = dimensionPlacements(d.dimensions, textHeight);
   return d.dimensions
     .flatMap((dim, i) =>
-      dim.views?.[0] && visibleViews[dim.views[0]] === true
-        ? [dxfDimension(dim, parentPos, parentRot, sceneRotation, viewRotation, textHeight, style, placements[i], handleRef)]
-        : []
+      dim.views?.[0] === options.view ? [dxfDimension(dim, parentPos, viewRotation, viewRotation, textHeight, style, placements[i], handleRef)] : []
     )
     .reduce<DxfDimensionDefinition>(
       (prev, curr) => ({
@@ -353,15 +334,14 @@ function optionsDef(options: Optional<DxfOptions> | undefined): DxfOptions {
 // This is the original
 export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string => {
   const opts = optionsDef(options);
-  const center = scene.center_deprecated ?? vec3Zero;
+  const center = bounds3Center(scene.bounds);
+  const size = bounds3ToSize(scene.bounds);
   const viewRotation = rotationForCameraPos(opts.view);
-  const unitRot = vec3RotCombine(viewRotation, scene.rotation_deprecated ?? vec3Zero);
-  const bounds = bounds3FromPosAndSize(center, scene.size_deprecated);
+  const bounds = scene.bounds;
   const offset = vec3Sub(opts.origin === "Center" ? vec3Zero : vec3(Math.abs(bounds.min.x), Math.abs(bounds.min.y), -bounds.max.z), center);
-  const dimensionsPos = vec3TransRot(center, offset, unitRot);
-  const visibleViews = calculateVisibleViews(opts.view, scene.rotation_deprecated);
+  const dimensionsPos = vec3TransRot(center, offset, viewRotation);
 
-  const bounds2 = bounds3FromPosAndSize(offset, scene.size_deprecated);
+  const bounds2 = bounds3FromPosAndSize(offset, size);
   const textHeight = sceneTextHeight(scene.groups);
   const groupRoot = group(
     [],
@@ -370,25 +350,15 @@ export const renderOld = (scene: Scene, options?: Optional<DxfOptions>): string 
     scene.groups.map((g) => groupTextBackgrounds(g, textHeight))
   );
   const handleRef = dxfHandleInit();
-  const dimensions = dxfDimensions(
-    scene.dimensions_deprecated,
-    dimensionsPos,
-    unitRot,
-    scene.rotation_deprecated ?? vec3Zero,
-    viewRotation,
-    visibleViews,
-    opts,
-    textHeight,
-    handleRef
-  );
+  const dimensions = dxfDimensions(scene.dimensions, dimensionsPos, viewRotation, opts, textHeight, handleRef);
   const layers = dxfEncLayerDefs(handleRef, options?.layers);
   return dxfBuild(
-    dxfGroup(groupRoot, center, unitRot, undefined, opts, textHeight, handleRef),
+    dxfGroup(groupRoot, center, viewRotation, undefined, opts, textHeight, handleRef),
     dimensions,
     layers,
     textHeight,
     bounds2,
-    scene.size_deprecated,
+    size,
     center
   );
 };

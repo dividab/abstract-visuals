@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { DimensionAligned, Mesh } from "./abstract-3d.js";
 import {
   alignedDimension,
+  bounds3FromPosAndSize,
   box,
   dimensionConvertToTypeMesh,
   dimensionPlacements,
@@ -48,9 +49,9 @@ describe("sceneTextHeight", () => {
   it("sizes the texts without a font size and the dimensions in the svg", () => {
     const image = render(
       {
-        size_deprecated: vec3(8200, 2000, 1000),
+        bounds: bounds3FromPosAndSize(vec3Zero, vec3(8200, 2000, 1000)),
         groups: [group([box(vec3(7200, 1000, 1000), material), text(vec3(0, 0, 600), "label", undefined, material)])],
-        dimensions_deprecated: { dimensions: [dim(-3000, 3000, -600)], material },
+        dimensions: { dimensions: [dim(-3000, 3000, -600)], material },
       },
       { view: "front" }
     ).image;
@@ -103,9 +104,7 @@ const dim = (from: number, to: number, y = -110): DimensionAligned =>
 
 const centred = { inward: false } as const;
 const geometries = (dims: ReadonlyArray<DimensionAligned>, i: number, textHeight?: number): ReadonlyArray<Mesh["geometry"]> =>
-  dimensionConvertToTypeMesh(dims[i] ?? dim(0, 0), vec3Zero, undefined, textHeight, dimensionPlacements(dims, textHeight)[i]).meshes.map(
-    (m) => m.geometry
-  );
+  dimensionConvertToTypeMesh(dims[i] ?? dim(0, 0), undefined, textHeight, dimensionPlacements(dims, textHeight)[i]).meshes.map((m) => m.geometry);
 
 // A run of neighbours `width` wide, `gap` apart, between a 1000 and the rest of 2000
 const run = (width: number, count: number, gap: number): ReadonlyArray<DimensionAligned> => [

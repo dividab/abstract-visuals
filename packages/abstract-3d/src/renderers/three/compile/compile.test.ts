@@ -1,12 +1,16 @@
 import { Matrix4, Vector3 } from "three";
 import { assert, describe, expect, it } from "vitest";
 import type { Group, Scene } from "../../../abstract-3d.js";
-import { alignedDimension, box, group, line, sphere, text, vec3, vec3Zero } from "../../../abstract-3d.js";
+import { alignedDimension, bounds3FromPosAndSize, box, group, line, sphere, text, vec3, vec3Zero } from "../../../abstract-3d.js";
 import type { CompiledScene, Item } from "./compile.js";
 import { compileScene, getItemMatrix } from "./compile.js";
 
 const red = { normal: "rgb(255, 0, 0)" };
-const scene = (groups: ReadonlyArray<Group>, rest: Partial<Scene> = {}): Scene => ({ size_deprecated: vec3(1, 1, 1), groups, ...rest });
+const scene = (groups: ReadonlyArray<Group>, rest: Partial<Scene> = {}): Scene => ({
+  bounds: bounds3FromPosAndSize(vec3Zero, vec3(1, 1, 1)),
+  groups,
+  ...rest,
+});
 const apply = (m: Matrix4 | undefined, x: number, y: number, z: number): ReadonlyArray<number> => {
   assert(m);
   return new Vector3(x, y, z)
@@ -39,12 +43,10 @@ describe("compileScene", () => {
     expect(apply(compiled.items.at(0)?.matrix, 1, 0, 0)).toEqual([5, 1, 0]);
   });
 
-  it("rotates the scene by its deprecated rotation, then moves it by minus its deprecated center", () => {
+  it("moves the scene by minus its bounds' center", () => {
     const g = group([box(vec3(1, 1, 1), red)], vec3(10, 0, 0));
-    const centered = compileScene(scene([g], { center_deprecated: vec3(10, 0, 0) }));
+    const centered = compileScene(scene([g], { bounds: bounds3FromPosAndSize(vec3(10, 0, 0), vec3(1, 1, 1)) }));
     expect(apply(centered.items.at(0)?.matrix, 0, 0, 0)).toEqual([0, 0, 0]);
-    const rotated = compileScene(scene([g], { center_deprecated: vec3(-10, 0, 0), rotation_deprecated: vec3(0, Math.PI, 0) }));
-    expect(apply(rotated.items.at(0)?.matrix, 1, 0, 0)).toEqual([-1, 0, 0]);
   });
 
   it("gives every item of a top-level group that group's target, and the data of the group it's in", () => {
@@ -101,7 +103,7 @@ describe("compileScene", () => {
 
   it("converts aligned dimensions to dimension items with a target per dimension", () => {
     const dimension = alignedDimension(vec3Zero, vec3(1000, 0, 0), vec3(0, -100, 0), "1000", ["front"], undefined, "fan");
-    const compiled = compileScene(scene([], { dimensions_deprecated: { dimensions: [dimension], material: red } }));
+    const compiled = compileScene(scene([], { dimensions: { dimensions: [dimension], material: red } }));
     const items = compiled.items.filter((i) => i.style === "dimension");
     expect(items.length).toBeGreaterThan(0);
     expect(new Set(items.map((i) => i.role))).toEqual(new Set(["line", "text", "solid"]));
@@ -126,7 +128,7 @@ describe("compileScene", () => {
   });
 
   it("keeps the world matrix of each top-level group for its tooltips", () => {
-    const compiled = compileScene(scene([group([], vec3(3, 0, 0))], { center_deprecated: vec3(1, 0, 0) }));
+    const compiled = compileScene(scene([group([], vec3(3, 0, 0))], { bounds: bounds3FromPosAndSize(vec3(1, 0, 0), vec3(1, 1, 1)) }));
     expect(apply(compiled.roots.at(0), 0, 0, 0)).toEqual([2, 0, 0]);
     expect(apply(compiled.matrix, 0, 0, 0)).toEqual([-1, 0, 0]);
   });

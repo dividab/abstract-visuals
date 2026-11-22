@@ -2,7 +2,13 @@
 import type { AbstractImage } from "abstract-image";
 
 export type Scene = {
-  readonly size_deprecated: Vec3; //move size calculation to every renderer??
+  /** What the renderers fit their view to and draw the scene around: the groups are drawn relative to its center */
+  readonly bounds: Bounds3;
+  /**
+   * The outer box of the external shell of the physical entity the scene is, around what's inside it, without the ducts that carry the air to and
+   * from it or what's only drawn, e.g. its dimensions
+   */
+  readonly boundsExternal?: Bounds3;
   readonly groups: ReadonlyArray<Group>;
   readonly relations?: ReadonlyArray<Relation>;
   /** What the scene is as a whole, e.g. a unit its groups are the parts of, which a relation can have as an end by its `id` */
@@ -10,11 +16,7 @@ export type Scene = {
   readonly name?: string;
   readonly type?: GroupType;
   readonly data?: Record<string, string>;
-  //should be removed
-  readonly center_deprecated?: Vec3;
-  readonly rotation_deprecated?: Vec3;
-  //might be removed
-  readonly dimensions_deprecated?: Dimensions;
+  readonly dimensions?: Dimensions;
 };
 
 export type Renderer = "react" | "ai_schematic" | "ai_detailed" | "dxf";
@@ -668,6 +670,24 @@ export function bounds3FromVec3Array(vec3Array: ReadonlyArray<Vec3>): Bounds3 {
   return bounds3(min, max);
 }
 
+/** The box around `bounds` turned by `rot` and moved by `pos`, as `vec3TransRot` places a point */
+export function bounds3TransRot(bounds: Bounds3, pos: Vec3, rot: Vec3): Bounds3 {
+  const { min, max } = bounds;
+  if (rot.x === 0 && rot.y === 0 && rot.z === 0) {
+    return pos.x === 0 && pos.y === 0 && pos.z === 0 ? bounds : bounds3(vec3Add(min, pos), vec3Add(max, pos));
+  }
+  return bounds3FromVec3Array([
+    vec3TransRot(vec3(min.x, min.y, min.z), pos, rot),
+    vec3TransRot(vec3(max.x, min.y, min.z), pos, rot),
+    vec3TransRot(vec3(min.x, max.y, min.z), pos, rot),
+    vec3TransRot(vec3(max.x, max.y, min.z), pos, rot),
+    vec3TransRot(vec3(min.x, min.y, max.z), pos, rot),
+    vec3TransRot(vec3(max.x, min.y, max.z), pos, rot),
+    vec3TransRot(vec3(min.x, max.y, max.z), pos, rot),
+    vec3TransRot(vec3(max.x, max.y, max.z), pos, rot),
+  ]);
+}
+
 export function boundsScene(scene: Scene): Bounds3 {
   const textHeight = sceneTextHeight(scene.groups);
   const bounds: Array<Bounds3> = [];
@@ -975,7 +995,7 @@ export function vec3Rot(point: Vec3, origin: Vec3, rotation: Vec3): Vec3 {
 
 export const vec3TransRot = (p: Vec3, pos: Vec3, rot: Vec3): Vec3 => {
   if (rot.x === 0 && rot.y === 0 && rot.z === 0) {
-    return vec3(p.x + pos.x, p.y + pos.y, p.z + pos.z);
+    return pos.x === 0 && pos.y === 0 && pos.z === 0 ? p : vec3(p.x + pos.x, p.y + pos.y, p.z + pos.z);
   }
   const c1 = Math.cos(rot.x / 2);
   const s1 = Math.sin(rot.x / 2);
@@ -1492,7 +1512,6 @@ export function dimensionPlacements(
 /** Draws the dimension as `placement` places it, its text `textHeight` high; as if alone on its line if not given */
 export function dimensionMeshifyAlignedDimension(
   dimension: DimensionAligned,
-  sceneRotation: Vec3,
   _viewRotation: Vec3,
   onCreateLine: (start: Vec3, end: Vec3, norm: Vec3, thickness: number, mat: Material) => void,
   onCreateText: (pos: Vec3, measurement: string, fontSize: number, mat: Material, rot: Vec3, dir: Vec3, normal: Vec3) => void,
@@ -1553,13 +1572,9 @@ export function dimensionMeshifyAlignedDimension(
     }
   }
 
-  const rotatedDirBetweenLines = vec3TransRot(dirBetweenLines, vec3Zero, sceneRotation);
-  const rotatedNormal = vec3TransRot(basis.normal, vec3Zero, sceneRotation);
-  const renderedBasis = getDimensionViewBasisFromNormal(rotatedNormal);
-  const renderedSide = getDimensionSide(rotatedDirBetweenLines, renderedBasis);
-  const desiredRenderedTextDir = getDimensionTextDirection(renderedSide, renderedBasis);
-  const inverseSceneRotation = vec3RotInverse(sceneRotation);
-  const textDir = vec3TransRot(desiredRenderedTextDir, vec3Zero, inverseSceneRotation);
+  const renderedBasis = getDimensionViewBasisFromNormal(basis.normal);
+  const renderedSide = getDimensionSide(dirBetweenLines, renderedBasis);
+  const textDir = getDimensionTextDirection(renderedSide, renderedBasis);
   const textRot = vec3BasisToEuler(textDir, basis.normal);
 
   const finalBasis = dimensionViewBasises.front;
@@ -1585,7 +1600,6 @@ export function dimensionMeshifyAlignedDimension(
 
 export function dimensionConvertToTypeMesh(
   dimension: Dimension,
-  sceneRotation: Vec3,
   dimensionsMaterial?: Material,
   textHeight?: number,
   placement?: DimensionPlacement
@@ -1604,17 +1618,7 @@ export function dimensionConvertToTypeMesh(
   const onCreatePolygon = (p1: Vec3, p2: Vec3, p3: Vec3, mat: Material): void => {
     meshes.push(polygon([p1, p2, p3], mat));
   };
-  dimensionMeshifyAlignedDimension(
-    dimension,
-    sceneRotation,
-    vec3Zero,
-    onCreateLine,
-    onCreateText,
-    onCreatePolygon,
-    dimensionsMaterial,
-    textHeight,
-    placement
-  );
+  dimensionMeshifyAlignedDimension(dimension, vec3Zero, onCreateLine, onCreateText, onCreatePolygon, dimensionsMaterial, textHeight, placement);
 
   return {
     meshes,
@@ -1677,14 +1681,14 @@ const dimensionViewBasises: Record<View, DimensionViewBias> = {
 
 // -- Camera
 
-export function sizeBoundsForCameraPos(size: Vec3, center: Vec3, rotation: Vec3): readonly [Vec3, Bounds3] {
+/** The size and the bounds of `bounds` turned by `rotation` about its center */
+export function sizeBoundsForCameraPos(bounds: Bounds3, rotation: Vec3): readonly [Vec3, Bounds3] {
   if (isZero(rotation.x) && isZero(rotation.y) && isZero(rotation.z)) {
-    return [size, bounds3FromPosAndSize(center, size)];
+    return [bounds3ToSize(bounds), bounds];
   }
 
-  const half = vec3Scale(size, 0.5);
-  const min = vec3Sub(center, half);
-  const max = vec3Add(center, half);
+  const center = bounds3Center(bounds);
+  const { min, max } = bounds;
   const v1 = vec3Rot(vec3(min.x, min.y, max.z), center, rotation);
   const v2 = vec3Rot(vec3(max.x, min.y, max.z), center, rotation);
   const v3 = vec3Rot(vec3(max.x, max.y, max.z), center, rotation);
@@ -1693,9 +1697,9 @@ export function sizeBoundsForCameraPos(size: Vec3, center: Vec3, rotation: Vec3)
   const v6 = vec3Rot(vec3(max.x, min.y, min.z), center, rotation);
   const v7 = vec3Rot(vec3(max.x, max.y, min.z), center, rotation);
   const v8 = vec3Rot(vec3(min.x, max.y, min.z), center, rotation);
-  const bounds = bounds3FromVec3Array([v1, v2, v3, v4, v5, v6, v7, v8]);
+  const turned = bounds3FromVec3Array([v1, v2, v3, v4, v5, v6, v7, v8]);
 
-  return [bounds3ToSize(bounds), bounds];
+  return [bounds3ToSize(turned), turned];
 }
 
 export function rotationForCameraPos(view: View): Vec3 {

@@ -1,15 +1,9 @@
 import type { A3D } from "../../../../abstract-3d/src/index.js";
 /* oxlint-disable max-lines */
 export const systemair5 = {
-  center_deprecated: {
-    x: 0,
-    y: 580.1,
-    z: 0,
-  },
-  size_deprecated: {
-    x: 4680,
-    y: 2452.2,
-    z: 1686,
+  bounds: {
+    min: { x: -2340, y: -645.9999999999999, z: -843 },
+    max: { x: 2340, y: 1806.1999999999998, z: 843 },
   },
   groups: [
     {
@@ -26782,7 +26776,7 @@ export const systemair5 = {
       ],
     },
   ],
-  dimensions_deprecated: {
+  dimensions: {
     dimensions: [
       {
         views: ["front"],
@@ -33654,11 +33648,6 @@ export const systemair5 = {
       metalness: 0,
       roughness: 1,
     },
-  },
-  rotation_deprecated: {
-    x: 0,
-    y: 0,
-    z: 0,
   },
   hotSpots_deprecated: [
     {

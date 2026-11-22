@@ -1,15 +1,9 @@
 /* oxlint-disable max-lines */
 export const systemairEmea1Rotated = {
   scene: {
-    center_deprecated: {
-      x: -520.5,
-      y: 25.00000000000007,
-      z: -44.5,
-    },
-    size_deprecated: {
-      x: 2422,
-      y: 2038,
-      z: 1303,
+    bounds: {
+      min: { x: -1731.5, y: -993.9999999999999, z: -696 },
+      max: { x: 690.5, y: 1044, z: 607 },
     },
     groups: [
       {
@@ -26664,7 +26658,7 @@ export const systemairEmea1Rotated = {
         ],
       },
     ],
-    dimensions_deprecated: {
+    dimensions: {
       dimensions: [
         {
           views: ["front"],
@@ -33111,11 +33105,6 @@ export const systemairEmea1Rotated = {
         metalness: 0,
         roughness: 0,
       },
-    },
-    rotation_deprecated: {
-      x: -3.141592653589793,
-      y: 0,
-      z: -3.141592653589793,
     },
     hotSpots_deprecated: [],
   },

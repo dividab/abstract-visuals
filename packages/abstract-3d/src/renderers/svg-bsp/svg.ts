@@ -9,6 +9,7 @@ import {
   vec3TransRot,
   rotationForCameraPos,
   sizeBoundsForCameraPos,
+  bounds3Center,
   bounds2FromPosAndSize,
   bounds2ToSize,
   bounds2Merge,
@@ -20,7 +21,6 @@ import {
   sceneTextHeight,
 } from "../../abstract-3d.js";
 import type { Optional } from "../../utils.js";
-import { calculateVisibleViews, isViewVisible } from "../../utils.js";
 import { svg } from "./svg-encoding.js";
 import type { SvgOptions, zOrderElement } from "./svg-geometries/shared.js";
 import { box } from "./svg-geometries/svg-box.js";
@@ -104,10 +104,9 @@ function renderInternal(
     : vec3Zero;
   const cameraRot = vec3RotCombine(angledRot, rotationForCameraPos(view));
   const viewRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), cameraRot) : cameraRot;
-  const unitRot = vec3RotCombine(viewRot, scene.rotation_deprecated ?? vec3Zero);
 
-  const unitCenter = vec3Rot(scene.center_deprecated ?? vec3Zero, vec3Zero, cameraRot);
-  const [unitSize] = sizeBoundsForCameraPos(scene.size_deprecated, unitCenter, unitRot);
+  const unitCenter = vec3Rot(bounds3Center(scene.bounds), vec3Zero, cameraRot);
+  const [unitSize] = sizeBoundsForCameraPos(scene.bounds, viewRot);
   const svgSize = vec2(unitSize.x + 1.5 * opts.stroke_thickness, unitSize.y + 1.5 * opts.stroke_thickness);
   const svgCenter = vec2(offset.x + opts.stroke_thickness * 0.75, offset.y + opts.stroke_thickness * 0.75);
   const point = (x: number, y: number): Vec2 => vec2(svgCenter.x + x, svgCenter.y - y);
@@ -116,29 +115,22 @@ function renderInternal(
   const textHeight = sceneTextHeight(scene.groups);
   const elements = [
     ...orderElements(
-      scene.groups.flatMap((g) => svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, unitRot, point, opts, textHeight)),
+      scene.groups.flatMap((g) => svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, viewRot, point, opts, textHeight)),
       point
     ),
   ];
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
-  const visibleViews = calculateVisibleViews(view, scene.rotation_deprecated);
 
   // Dimensions are drawn for the flat views
-  const dimensions = angled ? [] : (scene.dimensions_deprecated?.dimensions ?? []);
+  const dimensions = angled ? [] : (scene.dimensions?.dimensions ?? []);
   const placements = dimensionPlacements(dimensions, textHeight);
   for (const [i, dim] of dimensions.entries()) {
-    const d = dimensionConvertToTypeMesh(
-      dim,
-      scene.rotation_deprecated ?? vec3Zero,
-      scene.dimensions_deprecated?.material,
-      textHeight,
-      placements[i]
-    );
-    if (isViewVisible(d.views[0], visibleViews)) {
-      const pos = vec3TransRot(d.pos, unitCenterFlipped, unitRot);
-      const rot = vec3RotCombine(unitRot, d.rot);
+    const d = dimensionConvertToTypeMesh(dim, scene.dimensions?.material, textHeight, placements[i]);
+    if (d.views[0] === view) {
+      const pos = vec3TransRot(d.pos, unitCenterFlipped, viewRot);
+      const rot = vec3RotCombine(viewRot, d.rot);
       for (const m of d.meshes) {
-        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions_deprecated?.material ?? { normal: "" }, dimOpts, textHeight));
+        elements.push(...svgMesh(m, pos, rot, point, scene.dimensions?.material ?? { normal: "" }, dimOpts, textHeight));
       }
     }
   }

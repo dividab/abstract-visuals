@@ -2,15 +2,9 @@ import type { A3D } from "../../../../abstract-3d/src/index.js";
 
 /* oxlint-disable max-lines */
 export const systemair = {
-  center_deprecated: {
-    x: -41,
-    y: -59,
-    z: 0,
-  },
-  size_deprecated: {
-    x: 3271,
-    y: 1200,
-    z: 1196,
+  bounds: {
+    min: { x: -1676.5, y: -659, z: -598 },
+    max: { x: 1594.5, y: 541, z: 598 },
   },
   hotSpots_deprecated: [
     {
@@ -15972,7 +15966,7 @@ export const systemair = {
       ],
     },
   ],
-  dimensions_deprecated: {
+  dimensions: {
     dimensions: [
       {
         views: ["front"],
@@ -20143,11 +20137,6 @@ export const systemair = {
         },
       },
     },
-  },
-  rotation_deprecated: {
-    x: 0,
-    y: 0,
-    z: 0,
   },
   data: {},
 } as unknown as A3D.Scene;

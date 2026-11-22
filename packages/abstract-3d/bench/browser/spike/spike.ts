@@ -1,5 +1,6 @@
 import { AmbientLight, DirectionalLight, PerspectiveCamera, RenderTarget, Scene, WebGLRenderer, WebGLRenderTarget } from "three";
 import { WebGPURenderer } from "three/webgpu";
+import { bounds3ToSize } from "../../../src/abstract-3d.js";
 import { buildScene } from "../../../src/renderers/three/build/build.js";
 import { compileScene } from "../../../src/renderers/three/compile/compile.js";
 import { createGlyphAtlas } from "../../../src/renderers/three/text/text.js";
@@ -38,7 +39,7 @@ lights.forEach(([x, y, z, i]) => {
   light.position.set(x, y, z);
   scene.add(light);
 });
-const s = source.size_deprecated;
+const s = bounds3ToSize(source.bounds);
 const radius = Math.max(s.x, s.y, s.z) * 1.6;
 const camera = new PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, radius / 100, radius * 4);
 camera.position.set(0, radius * 0.3, radius);

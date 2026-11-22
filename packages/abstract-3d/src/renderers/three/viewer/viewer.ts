@@ -16,6 +16,7 @@ import {
 } from "three";
 import type { ViewportGizmo } from "three-viewport-gizmo";
 import type { View } from "../../../abstract-3d.js";
+import { bounds3ToSize } from "../../../abstract-3d.js";
 import type { StructureState } from "../appearance/appearance.js";
 import type { BuiltScene } from "../build/build.js";
 import { animateScene, buildScene, cullScene, disposeScene, getPickables, getPickedItem, paintScene } from "../build/build.js";
@@ -416,7 +417,7 @@ function fitPose<Content>(v: Viewer<Content>): void {
 
 function fitScene<Content>(v: Viewer<Content>, view: View | Quaternion = v.options.view ?? "front"): Placement | undefined {
   const { scene, bufferZones = {}, fitPadding = 0 } = v.options;
-  return scene && fitCamera(v.camera, { view, size: scene.size_deprecated, canvas: v.size, bufferZones, fitPadding });
+  return scene && fitCamera(v.camera, { view, size: bounds3ToSize(scene.bounds), canvas: v.size, bufferZones, fitPadding });
 }
 
 function updateGizmo<Content>(v: Viewer<Content>, fontsLoaded = false): void {

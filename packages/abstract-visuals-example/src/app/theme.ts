@@ -11,8 +11,8 @@ const darkDimensionColor = "rgb(220, 224, 230)";
 
 /** The scene as authored in the light theme, with light dimensions in the dark one; memoize it, as a new scene rebuilds the viewer */
 export function getThemedScene(scene: Scene, theme: Theme): Scene {
-  const dimensions = scene.dimensions_deprecated;
+  const dimensions = scene.dimensions;
   return theme === "light" || !dimensions
     ? scene
-    : { ...scene, dimensions_deprecated: { ...dimensions, material: { ...dimensions.material, normal: darkDimensionColor } } };
+    : { ...scene, dimensions: { ...dimensions, material: { ...dimensions.material, normal: darkDimensionColor } } };
 }

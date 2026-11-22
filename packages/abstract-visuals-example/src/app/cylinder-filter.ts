@@ -1,15 +1,9 @@
 import type { A3D } from "../../../abstract-3d/src/index.js";
 
 export const cylinderFilter = {
-  center_deprecated: {
-    x: 620,
-    y: 250,
-    z: 0,
-  },
-  size_deprecated: {
-    x: 300,
-    y: 448.0000000000001,
-    z: 949,
+  bounds: {
+    min: { x: 470, y: 25.999999999999943, z: -474.5 },
+    max: { x: 770, y: 474.00000000000006, z: 474.5 },
   },
   groups: [
     {
@@ -547,7 +541,7 @@ export const cylinderFilter = {
       ],
     },
   ],
-  dimensions_deprecated: {
+  dimensions: {
     dimensions: [],
     material: {
       sort_no: 2,

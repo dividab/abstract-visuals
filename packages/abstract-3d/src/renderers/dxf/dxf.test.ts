@@ -2,6 +2,8 @@ import { exhaustiveCheck } from "ts-exhaustive-check";
 import { describe, expect, it } from "vitest";
 import type { Mesh, Scene, Vec3, View } from "../../abstract-3d.js";
 import {
+  bounds3FromPosAndSize,
+  bounds3Zero,
   box,
   circleCurve,
   group,
@@ -48,10 +50,9 @@ const value = (entity: ReadonlyArray<readonly [string, string]>, code: string): 
 describe("dxf dimensions", () => {
   // A scene off the origin, so the DXF's coordinates differ from the scene's
   const scene: Scene = {
-    center_deprecated: vec3(1000, 2000, 0),
-    size_deprecated: vec3(400, 200, 100),
+    bounds: bounds3FromPosAndSize(vec3(1000, 2000, 0), vec3(400, 200, 100)),
     groups: [{ pos: vec3(1000, 2000, 0), meshes: [box(vec3(400, 200, 100), black)] }],
-    dimensions_deprecated: {
+    dimensions: {
       material: black,
       dimensions: [
         { measurementStart: vec3(800, 1900, 0), measurementEnd: vec3(1200, 1900, 0), linePosition: vec3(1000, 1800, 0), views: ["front"] },
@@ -96,10 +97,9 @@ describe("dxf dimensions", () => {
 describe("dxf dimension texts", () => {
   /** Four dimensions on each side of a 200 cube, above, below, left and right of its face as the side's view sees it, each named by its text */
   const cube: Scene = {
-    center_deprecated: vec3Zero,
-    size_deprecated: vec3(200, 200, 200),
+    bounds: bounds3FromPosAndSize(vec3Zero, vec3(200, 200, 200)),
     groups: [{ pos: vec3Zero, meshes: [box(vec3(200, 200, 200), black)] }],
-    dimensions_deprecated: {
+    dimensions: {
       material: black,
       dimensions: views.flatMap((view) => {
         const { right, up, normal } = dimensionViewBasis(view);
@@ -113,17 +113,9 @@ describe("dxf dimension texts", () => {
       }),
     },
   };
-  // A unit seen from its other side is turned half about y, as (-π, 0, -π); quarter turns aren't drawn, `calculateVisibleViews` keeping the view's
-  // own axis
-  const rotations: ReadonlyArray<readonly [string, Vec3]> = [
-    ["no rotation", vec3Zero],
-    ["a half turn about y", vec3(0, Math.PI, 0)],
-    ["a half turn about y as half turns about x and z", vec3(-Math.PI, 0, -Math.PI)],
-  ];
-
-  describe.each(rotations)("with %s", (_, rotation) => {
+  describe("each side", () => {
     it.each(views)("seen from the %s, read left to right over and under their lines, and up to the lines beside them", (view) => {
-      const all = entities(render({ ...cube, rotation_deprecated: rotation }, { view, origin: "Center" }));
+      const all = entities(render(cube, { view, origin: "Center" }));
       const named = (type: string, text: string): ReadonlyArray<readonly [string, string]> | undefined =>
         all.find((e) => e.at(0)?.[1] === type && e.some(([c, v]) => c === "1" && v === text));
       const dimensions = all.filter((e) => e.at(0)?.[1] === "DIMENSION");
@@ -150,7 +142,7 @@ describe("dxf dimension texts", () => {
 });
 
 const meshEntities = (mesh: Mesh): ReadonlyArray<ReadonlyArray<readonly [string, string]>> =>
-  entities(render({ size_deprecated: vec3Zero, groups: [group([mesh])] }, { origin: "SameAsScene" }));
+  entities(render({ bounds: bounds3Zero, groups: [group([mesh])] }, { origin: "SameAsScene" }));
 const pointKey = (p: Vec3): string => [p.x, p.y, p.z].map((n) => n.toFixed(2)).join();
 
 /** Each 3DFACE's corners, three if its last two are the same */

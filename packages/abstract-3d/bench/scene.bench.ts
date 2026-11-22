@@ -2,6 +2,7 @@
 import { PerspectiveCamera, Raycaster, Vector2 } from "three";
 import { test } from "vitest";
 import type { Scene } from "../src/abstract-3d.js";
+import { bounds3ToSize } from "../src/abstract-3d.js";
 import { buildScene, disposeScene, getPickables, paintScene } from "../src/renderers/three/build/build.js";
 import { compileScene } from "../src/renderers/three/compile/compile.js";
 import type { GlyphBitmap } from "../src/renderers/three/text/text.js";
@@ -45,7 +46,7 @@ repeated.forEach(([n, scene]) => {
     const built = build(scene);
     const flip = { target: 0 };
     const camera = new PerspectiveCamera(45, 16 / 9, 100, 100000);
-    camera.position.set(0, 0, scene.size_deprecated.x * 1.5);
+    camera.position.set(0, 0, bounds3ToSize(scene.bounds).x * 1.5);
     camera.updateMatrixWorld();
     built.root.updateMatrixWorld();
     const raycaster = new Raycaster();

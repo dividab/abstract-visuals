@@ -1,5 +1,5 @@
 import type { MaterialType, Scene } from "../../../abstract-3d/src/abstract-3d.js";
-import { box, cylinder, group, materialTypes, sphere, text, vec3, vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
+import { bounds3FromPosAndSize, box, cylinder, group, materialTypes, sphere, text, vec3, vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
 
 /** A row of samples, a rounded box, a sphere and a cylinder, of each material type, labelled on the floor, to compare the types' finishes */
 
@@ -19,8 +19,7 @@ const step = 450;
 const label = { normal: "rgb(90, 90, 90)" };
 
 export const materialsScene: Scene = {
-  size_deprecated: vec3(materialTypes.length * step, 320, 1300),
-  center_deprecated: vec3(((materialTypes.length - 1) * step) / 2, 160, -200),
+  bounds: bounds3FromPosAndSize(vec3(((materialTypes.length - 1) * step) / 2, 160, -200), vec3(materialTypes.length * step, 320, 1300)),
   groups: materialTypes.map((type, i) => {
     const material = { normal: colors[type], type };
     return group(

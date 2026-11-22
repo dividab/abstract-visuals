@@ -1,5 +1,5 @@
 import type { BoxEdge, Scene } from "../../../abstract-3d/src/abstract-3d.js";
-import { box, group, text, vec3, vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
+import { bounds3FromPosAndSize, box, group, text, vec3, vec3Zero } from "../../../abstract-3d/src/abstract-3d.js";
 
 /**
  * A corner piece, a cube with arms along x and z and a leg down, twice: with every edge rounded, so the seams between its boxes show, and with only
@@ -25,8 +25,7 @@ const legEdges: ReadonlyArray<BoxEdge> = [
 ];
 
 export const edgesScene: Scene = {
-  size_deprecated: vec3(500, 240, 300),
-  center_deprecated: vec3(180, 110, 20),
+  bounds: bounds3FromPosAndSize(vec3(180, 110, 20), vec3(500, 240, 300)),
   groups: [false, true].map((outer, i) =>
     group(
       [

@@ -1,7 +1,7 @@
 import { BatchedMesh, InstancedMesh, Matrix4, PerspectiveCamera, Raycaster, Vector2, Vector3, Vector4 } from "three";
 import { assert, describe, expect, it } from "vitest";
 import type { Group, Scene } from "../../../abstract-3d.js";
-import { alignedDimension, box, culledLine, group, image, sphere, text, vec3, vec3Zero } from "../../../abstract-3d.js";
+import { alignedDimension, bounds3FromPosAndSize, box, culledLine, group, image, sphere, text, vec3, vec3Zero } from "../../../abstract-3d.js";
 import type { PaintState, StructureState } from "../appearance/appearance.js";
 import type { CompiledScene } from "../compile/compile.js";
 import { compileScene } from "../compile/compile.js";
@@ -27,7 +27,11 @@ const rasterize = (): GlyphBitmap => {
   };
 };
 const idle: StructureState = { relationsActive: false };
-const scene = (groups: ReadonlyArray<Group>, rest: Partial<Scene> = {}): Scene => ({ size_deprecated: vec3(1, 1, 1), groups, ...rest });
+const scene = (groups: ReadonlyArray<Group>, rest: Partial<Scene> = {}): Scene => ({
+  bounds: bounds3FromPosAndSize(vec3Zero, vec3(1, 1, 1)),
+  groups,
+  ...rest,
+});
 const part = (id: string, x: number, material = red): Group => group([box(vec3(10, 10, 10), material)], vec3(x, 0, 0), vec3Zero, [], { id });
 // Destructured, as the build's and lint's compiler options disagree on reading an index signature by dot or bracket
 const groupId = (g: Group): string => {
@@ -137,7 +141,7 @@ describe("buildScene", () => {
   it("keeps dimensions in their own group, and doesn't pick hidden ones", () => {
     // Its text, the empty scene's 32 high, is centered a gap and half its height out from the line, over the origin
     const dimension = alignedDimension(vec3(-500, 100, 0), vec3(500, 100, 0), vec3(0, 30, 0), "1000", ["front"], undefined, "dim");
-    const built = build(scene([], { dimensions_deprecated: { dimensions: [dimension], material: red } }));
+    const built = build(scene([], { dimensions: { dimensions: [dimension], material: red } }));
     expect(built.dimensions.children.length).toBeGreaterThan(0);
     expect(pickId(built, 0)).toBe("dim");
     built.dimensions.visible = false;

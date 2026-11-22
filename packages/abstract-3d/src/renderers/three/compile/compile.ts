@@ -1,6 +1,7 @@
 import { Euler, Matrix4, Quaternion, Vector3 } from "three";
 import type { Bounds3, Group, Mesh, Relation, Scene, Vec2, Vec3 } from "../../../abstract-3d.js";
 import {
+  bounds3Center,
   dimensionConvertToTypeMesh,
   dimensionPlacements,
   groupTextBackgrounds,
@@ -81,9 +82,9 @@ const cornerSteps = 6;
 /** Targets are the top-level groups, then the dimensions, then the relations */
 export function compileScene(scene: Scene, createGroupId?: (g: Group) => string): CompiledScene {
   const out: Output = { items: [], animations: [], outline: outlineWidth * sceneTextHeight(scene.groups) };
-  const center = scene.center_deprecated ?? vec3Zero;
-  const matrix = new Matrix4().makeTranslation(-center.x, -center.y, -center.z).multiply(transform(vec3Zero, scene.rotation_deprecated));
-  const dimensions = scene.dimensions_deprecated?.dimensions ?? [];
+  const center = bounds3Center(scene.bounds);
+  const matrix = new Matrix4().makeTranslation(-center.x, -center.y, -center.z);
+  const dimensions = scene.dimensions?.dimensions ?? [];
   const relations = scene.relations ?? [];
   const targets: ReadonlyArray<Target> = [
     ...scene.groups.map((g, root): Target => ({ kind: "group", id: createGroupId?.(g) ?? "", root, rootData: g.data, bounds: g.bounds })),
@@ -94,13 +95,7 @@ export function compileScene(scene: Scene, createGroupId?: (g: Group) => string)
   scene.groups.forEach((g, i) => addGroup(out, groupTextBackgrounds(g, textHeight), matrix, undefined, "group", i));
   const placements = dimensionPlacements(dimensions, textHeight);
   dimensions.forEach((dimension, i) => {
-    const mesh = dimensionConvertToTypeMesh(
-      dimension,
-      scene.rotation_deprecated ?? vec3Zero,
-      scene.dimensions_deprecated?.material,
-      textHeight,
-      placements[i]
-    );
+    const mesh = dimensionConvertToTypeMesh(dimension, scene.dimensions?.material, textHeight, placements[i]);
     const base = { style: "dimension", target: scene.groups.length + i, data: undefined, animation: undefined } as const;
     addMeshes(out, mesh.meshes, matrix.clone().multiply(transform(mesh.pos, mesh.rot)), base);
   });

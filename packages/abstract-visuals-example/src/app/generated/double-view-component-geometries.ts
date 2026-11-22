@@ -30,15 +30,9 @@ export const componentGeometries = {
       scenes: [
         {
           scene: {
-            center_deprecated: {
-              x: 0,
-              y: 0,
-              z: 0,
-            },
-            size_deprecated: {
-              x: 2130,
-              y: 1100.0000000000002,
-              z: 1350.0000000000005,
+            bounds: {
+              min: { x: -1065, y: -550.0000000000001, z: -675.0000000000002 },
+              max: { x: 1065, y: 550.0000000000001, z: 675.0000000000002 },
             },
             groups: [
               {
@@ -3807,7 +3801,7 @@ export const componentGeometries = {
                 ],
               },
             ],
-            dimensions_deprecated: {
+            dimensions: {
               dimensions: [],
               material: {
                 row_id: "516558f2-4752-4873-a561-be5cab97aef3",
@@ -3819,11 +3813,6 @@ export const componentGeometries = {
                 metalness: 0,
                 roughness: 0,
               },
-            },
-            rotation_deprecated: {
-              x: 0,
-              y: 0,
-              z: 0,
             },
             hotSpots_deprecated: [],
           },
@@ -3855,15 +3844,9 @@ export const componentGeometries = {
         },
         {
           scene: {
-            center_deprecated: {
-              x: 0,
-              y: 0,
-              z: 0,
-            },
-            size_deprecated: {
-              x: 2130,
-              y: 1100.0000000000002,
-              z: 1350.0000000000005,
+            bounds: {
+              min: { x: -1065, y: -550.0000000000001, z: -675.0000000000002 },
+              max: { x: 1065, y: 550.0000000000001, z: 675.0000000000002 },
             },
             groups: [
               {
@@ -7632,7 +7615,7 @@ export const componentGeometries = {
                 ],
               },
             ],
-            dimensions_deprecated: {
+            dimensions: {
               dimensions: [],
               material: {
                 row_id: "516558f2-4752-4873-a561-be5cab97aef3",
@@ -7644,11 +7627,6 @@ export const componentGeometries = {
                 metalness: 0,
                 roughness: 0,
               },
-            },
-            rotation_deprecated: {
-              x: 0,
-              y: 0,
-              z: 0,
             },
             hotSpots_deprecated: [],
           },

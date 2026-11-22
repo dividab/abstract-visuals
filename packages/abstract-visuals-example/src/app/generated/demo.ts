@@ -1,14 +1,8 @@
 /* oxlint-disable max-lines */
 export const demo = {
-  center_deprecated: {
-    x: 0,
-    y: -202.49999999999997,
-    z: 29.999999999999943,
-  },
-  size_deprecated: {
-    x: 2540,
-    y: 1155,
-    z: 810.0000000000001,
+  bounds: {
+    min: { x: -1270, y: -780, z: -375.0000000000001 },
+    max: { x: 1270, y: 375, z: 435 },
   },
   groups: [
     {
@@ -13032,7 +13026,7 @@ export const demo = {
       ],
     },
   ],
-  dimensions_deprecated: {
+  dimensions: {
     dimensions: [
       {
         measurementStart: {
@@ -13316,11 +13310,6 @@ export const demo = {
       roughness: 0.4,
       metalness: 0.45,
     },
-  },
-  rotation_deprecated: {
-    x: 0,
-    y: 0,
-    z: 0,
   },
   hotSpots_deprecated: [],
 };

@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.0] - 2026-11-22
+
+- Changed (breaking): a scene's `bounds`, the box the renderers fit their view to and draw the scene around, replaces its `center_deprecated` and `size_deprecated`: `bounds3FromPosAndSize(center, size)` gives it from them
+- Changed (breaking): a scene's `dimensions_deprecated` is `dimensions`
+- Removed (breaking): a scene's `rotation_deprecated`, the scene is drawn as its coordinates are; `dimensionConvertToTypeMesh` and `dimensionMeshifyAlignedDimension` no longer take a scene rotation, and `Utils.calculateVisibleViews` and `Utils.isViewVisible` are gone, a dimension being drawn in the view its `views` start with
+- Added: `bounds3TransRot`, the box around a box turned and moved as `vec3TransRot` places a point, the same box when neither moved nor turned
+- Changed: `vec3TransRot` returns the same point when neither moved nor turned, rather than a copy
+- Changed (breaking): `sizeBoundsForCameraPos` takes the bounds to turn, about their center, rather than a size and a center
+- Added: a scene's `boundsExternal`, the outer box of the external shell of the physical entity the scene is, without the ducts that carry the air to and from it or what's only drawn, e.g. its dimensions
+
 ## [4.3.8] - 2026-11-20
 
 - Fixed: the viewer no longer logs "THREE.Object3D.add: object not an instance of THREE.Object3D" on each build without active relations
