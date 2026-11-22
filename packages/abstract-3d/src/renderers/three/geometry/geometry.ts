@@ -71,7 +71,7 @@ export function getSolidShape(g: Mesh["geometry"]): SolidShape | undefined {
       };
     }
     case "Shape":
-      return { key: JSON.stringify([g.type, g.points, g.thickness, g.holes]), local: transform(g.pos, g.rot) };
+      return { key: JSON.stringify([g.type, g.points, g.thickness, g.holes, g.radius]), local: transform(g.pos, g.rot) };
     case "Polygon":
       return { key: JSON.stringify([g.type, g.points]), local: transform(g.pos, g.rot) };
     case "Tube":
@@ -152,7 +152,7 @@ function createGeometry(g: Mesh["geometry"]): BufferGeometry {
       return mergeGeometries([mantle.toNonIndexed(), walls]);
     }
     case "Shape":
-      return extrude(new Shape(g.points.map((p) => new Vector2(p.x, p.y))), g.holes, g.thickness);
+      return extrude(new Shape(g.points.map((p) => new Vector2(p.x, p.y))), g.holes, g.thickness, g.radius);
     case "Polygon": {
       // A quad for 4 points, else a list of triangles, as the points are given
       const geometry = new BufferGeometry().setAttribute(
@@ -181,10 +181,20 @@ function createGeometry(g: Mesh["geometry"]): BufferGeometry {
   }
 }
 
-/** Extruded along z and centered on it */
-function extrude(shape: Shape, holes: ReadonlyArray<Hole> | undefined, depth: number): BufferGeometry {
+/** Extruded along z and centered on it, the edges around its faces rounded by `radius`, its outline kept by bevelling inwards */
+function extrude(shape: Shape, holes: ReadonlyArray<Hole> | undefined, depth: number, radius = 0): BufferGeometry {
   addHoles(holes, shape);
-  return new ExtrudeGeometry(shape, { depth, bevelEnabled: false }).translate(0, 0, -depth / 2);
+  const r = Math.min(radius, depth / 2);
+  return r > 0
+    ? new ExtrudeGeometry(shape, {
+        depth: depth - 2 * r,
+        bevelEnabled: true,
+        bevelThickness: r,
+        bevelSize: r,
+        bevelOffset: -r,
+        bevelSegments: 4,
+      }).translate(0, 0, -(depth - 2 * r) / 2)
+    : new ExtrudeGeometry(shape, { depth, bevelEnabled: false }).translate(0, 0, -depth / 2);
 }
 
 /** Disposes the cached geometries whose keys aren't in `keys` */

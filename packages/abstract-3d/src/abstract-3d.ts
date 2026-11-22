@@ -325,6 +325,11 @@ export type Shape = {
   readonly rot?: Vec3;
   readonly holes?: ReadonlyArray<Hole>;
   readonly thickness: number;
+  /**
+   * Rounds the edges around its two faces by this radius, at most half its thickness, keeping its outline; less than half its narrowest part. The
+   * three.js viewer draws it so, the other renderers with sharp edges
+   */
+  readonly radius?: number;
 };
 
 export type Plane = {
@@ -1240,8 +1245,9 @@ export const shape = (
   material: Material,
   thickness = 0,
   rot = vec3Zero,
-  holes: ReadonlyArray<Hole> = []
-): ShapeMesh => ({ geometry: { type: "Shape", points, pos, rot, thickness, holes }, material });
+  holes: ReadonlyArray<Hole> = [],
+  radius?: number
+): ShapeMesh => ({ geometry: { type: "Shape", points, pos, rot, thickness, holes, ...(radius === undefined ? {} : { radius }) }, material });
 
 export const polygon = (points: ReadonlyArray<Vec3>, material: Material, pos = vec3Zero, rot = vec3Zero): PolygonMesh => ({
   geometry: { type: "Polygon", points, pos, rot },

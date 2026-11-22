@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.0] - 2026-11-22
+
+- Added: a shape's `radius`, and `shape`'s, rounding the edges around its two faces, at most half its thickness, its outline kept; the viewer draws it so, the other renderers with sharp edges
+
 ## [5.1.0] - 2026-11-22
 
 - Added: the svg renderer draws a box's `radius`, each face's corners at its `roundedEdges` seen end-on rounded as quarter circles, at most half the shorter side; a rounded box's faces seen edge-on are left out, the faces they're between drawing its rounded outline
