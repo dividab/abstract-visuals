@@ -1,5 +1,5 @@
 import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
-import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight, bounds3Center } from "../../abstract-3d.js";
+import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight, bounds3Center, latheCylinders } from "../../abstract-3d.js";
 import { stlBox } from "./stl-geometries/stl-box.js";
 import { stlCone } from "./stl-geometries/stl-cone.js";
 import { stlCylinder } from "./stl-geometries/stl-cylinder.js";
@@ -29,6 +29,13 @@ function stlGroup(g: Group, parentPos: Vec3, parentRot: Vec3): string {
           return a + stlCylinder(m.geometry, m.material, 18, pos, rot);
         case "Cone":
           return a + stlCone(m.geometry, m.material, 18, pos, rot);
+        case "Lathe":
+          return (
+            a +
+            latheCylinders(m.geometry)
+              .map((c) => stlCylinder(c, m.material, 18, pos, rot))
+              .join("")
+          );
         case "Polygon":
           return a + stlPolygon(m.geometry, m.material, pos, rot);
         default:

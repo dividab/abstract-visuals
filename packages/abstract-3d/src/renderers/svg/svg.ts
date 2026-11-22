@@ -27,6 +27,7 @@ import { box } from "./svg-geometries/svg-box.js";
 import { cone } from "./svg-geometries/svg-cone.js";
 import { cylinder } from "./svg-geometries/svg-cylinder.js";
 import { image } from "./svg-geometries/svg-image.js";
+import { lathe } from "./svg-geometries/svg-lathe.js";
 import { line } from "./svg-geometries/svg-line.js";
 import { plane } from "./svg-geometries/svg-plane.js";
 import { polygon } from "./svg-geometries/svg-polygon.js";
@@ -88,6 +89,7 @@ function renderInternal(
     stroke_thickness: options?.stroke_thickness ?? 2,
     only_stroke: options?.only_stroke ?? false,
     gray_scale: options?.gray_scale ?? false,
+    stroke_color: options?.stroke_color ?? "",
     background: options?.background ?? "rgba(255,255,255,0)",
     font: options?.font ?? "",
     imageDataByUrl: options?.imageDataByUrl ?? {},
@@ -116,7 +118,7 @@ function renderInternal(
   for (const g of scene.groups) {
     elements.push(...svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, viewRot, point, opts, textHeight));
   }
-  const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
+  const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false, stroke_color: "" };
   elements.sort((a, b) => a.zOrder - b.zOrder);
 
   // Dimensions are drawn for the flat views
@@ -173,6 +175,8 @@ function svgMesh(
       return cylinder(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Cone":
       return cone(mesh.geometry, point, material, opts, parentPos, parentRot);
+    case "Lathe":
+      return lathe(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "CulledLine":
     case "Line":
       return line(mesh.geometry, point, material.normal, opts, parentPos, parentRot);

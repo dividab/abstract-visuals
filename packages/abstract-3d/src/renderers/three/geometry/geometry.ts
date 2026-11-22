@@ -6,6 +6,7 @@ import {
   CylinderGeometry,
   ExtrudeGeometry,
   Float32BufferAttribute,
+  LatheGeometry,
   type Matrix4,
   PlaneGeometry,
   Shape,
@@ -15,9 +16,9 @@ import {
   Vector3,
 } from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
-import type { Hole, Mesh } from "../../../abstract-3d.js";
-import { boxEdges, isZero, vec3, vec3Zero } from "../../../abstract-3d.js";
-import { addHoles, CircleCurve, CYLINDER_SEGMENTS, cylinderCutPositions, holeIsZero } from "../../shared/three-geometry.js";
+import type { Box, Hole, Mesh } from "../../../abstract-3d.js";
+import { boxEdgeRadius, boxEdges, isZero, vec3, vec3Zero } from "../../../abstract-3d.js";
+import { addHoles, CircleCurve, CYLINDER_SEGMENTS, cylinderCutPositions, holeIsZero, lathePoints } from "../../shared/three-geometry.js";
 import { transform } from "../compile/compile.js";
 
 /**
@@ -43,7 +44,7 @@ export function getSolidShape(g: Mesh["geometry"]): SolidShape | undefined {
       return g.holes?.some((h) => !holeIsZero(h))
         ? { key: JSON.stringify([g.type, g.size, g.holes]), local: transform(g.pos, g.rot) }
         : {
-            key: g.type === "Box" && g.radius ? `Box ${g.radius} ${g.roundedEdges?.join() ?? ""}` : g.type,
+            key: g.type === "Box" && (g.radius || g.edgeRadius) ? `Box ${boxBevel(g).join(" ")}` : g.type,
             local: transform(g.pos, g.rot, undefined, size),
           };
     }
@@ -75,6 +76,8 @@ export function getSolidShape(g: Mesh["geometry"]): SolidShape | undefined {
       return { key: JSON.stringify([g.type, g.points]), local: transform(g.pos, g.rot) };
     case "Tube":
       return { key: JSON.stringify([g.type, g.curve, g.radius]), local: transform(g.pos, g.rot) };
+    case "Lathe":
+      return { key: JSON.stringify([g.type, g.points, g.edgeRadius]), local: transform(g.pos, g.rot) };
     default:
       return undefined;
   }
@@ -95,10 +98,7 @@ export function createSolidGeometry(g: Mesh["geometry"]): BufferGeometry {
   }
   // The radius a unit box's edges are shaded as rounded by, 0 for sharp, and a bit per rounded edge, in the order of `boxEdges`; every geometry has
   // it, as a batch's geometries share their attributes
-  const bevel =
-    geometry instanceof BoxGeometry && g.type === "Box" && g.radius
-      ? [g.radius, boxEdges.reduce((edges, edge, i) => ((g.roundedEdges?.includes(edge) ?? true) ? edges + 2 ** i : edges), 0)]
-      : [0, 0];
+  const bevel = geometry instanceof BoxGeometry && g.type === "Box" && (g.radius || g.edgeRadius) ? boxBevel(g) : [0, 0];
   geometry.setAttribute("bevel", new Float32BufferAttribute(Array.from({ length: count }, () => bevel).flat(), 2));
   Object.keys(geometry.attributes).forEach((name) => {
     if (name !== "position" && name !== "normal" && name !== "uv" && name !== "bevel") {
@@ -171,6 +171,8 @@ function createGeometry(g: Mesh["geometry"]): BufferGeometry {
         9,
         false
       );
+    case "Lathe":
+      return new LatheGeometry([...lathePoints(g)], CYLINDER_SEGMENTS);
     default:
       return new BufferGeometry();
   }
@@ -190,4 +192,11 @@ export function keepGeometries(cache: Map<string, BufferGeometry>, keys: Readonl
       cache.delete(key);
     }
   });
+}
+
+// A rounded box's bevel: the largest of its edges' radii, which the shader rounds every rounded edge by, and a bit per rounded edge, in the order of
+// `boxEdges`
+function boxBevel(b: Box): [number, number] {
+  const radii = boxEdges.map((edge) => boxEdgeRadius(b, edge));
+  return [Math.max(...radii), radii.reduce((edges, r, i) => (r > 0 ? edges + 2 ** i : edges), 0)];
 }

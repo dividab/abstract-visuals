@@ -24,6 +24,7 @@ import {
   vec3Sub,
   vec3TransRot,
   vec3Zero,
+  latheCylinders,
 } from "../../abstract-3d.js";
 import type { Optional } from "../../utils.js";
 import { dxfBuild } from "./dxf-encoding/dxf-build.js";
@@ -247,6 +248,12 @@ function dxfGroup(
       }
       case "Cone": {
         dxf += dxfCone(mesh.geometry, entityStyle, options.cylinderSideCount, pos, rot, handleRef);
+        break;
+      }
+      case "Lathe": {
+        dxf += latheCylinders(mesh.geometry)
+          .map((c) => dxfCylinder(c, entityStyle, options.cylinderSideCount, pos, rot, handleRef))
+          .join("");
         break;
       }
       case "Polygon": {

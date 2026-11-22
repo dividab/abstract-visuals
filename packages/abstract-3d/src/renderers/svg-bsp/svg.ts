@@ -27,6 +27,7 @@ import { box } from "./svg-geometries/svg-box.js";
 import { cone } from "./svg-geometries/svg-cone.js";
 import { cylinder } from "./svg-geometries/svg-cylinder.js";
 import { image } from "./svg-geometries/svg-image.js";
+import { lathe } from "./svg-geometries/svg-lathe.js";
 import { line } from "./svg-geometries/svg-line.js";
 import { plane } from "./svg-geometries/svg-plane.js";
 import { polygon } from "./svg-geometries/svg-polygon.js";
@@ -175,6 +176,8 @@ function svgMesh(
       return cylinder(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "Cone":
       return cone(mesh.geometry, point, material, opts, parentPos, parentRot);
+    case "Lathe":
+      return lathe(mesh.geometry, point, material, opts, parentPos, parentRot);
     case "CulledLine":
     case "Line":
       return line(mesh.geometry, point, material.normal, opts, parentPos, parentRot);

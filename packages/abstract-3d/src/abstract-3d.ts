@@ -168,7 +168,7 @@ export type AirType = "fresh" | "supply" | "extract" | "exhaust";
 
 export type Mesh = {
   readonly material: Material;
-  readonly geometry: Cylinder | Cone | Box | Line | CulledLine | Text | Polygon | Plane | Tube | Sphere | Shape | ImageMesh;
+  readonly geometry: Cylinder | Cone | Box | Line | CulledLine | Text | Polygon | Plane | Tube | Sphere | Shape | Lathe | ImageMesh;
 };
 
 export type Material = {
@@ -244,6 +244,19 @@ export type Cylinder = {
   readonly open?: boolean;
   readonly angleStart?: number;
   readonly angleLength?: number;
+};
+
+/**
+ * A profile turned about the y axis, e.g. an arrow: each point's x its radius, from the -y end to the +y end, an end off the axis closed by a flat
+ * face. `edgeRadius` rounds its corners, less where a side is too short, and a tip on the axis. The three renderer and IFC draw it so; SVG draws it
+ * faceted with sharp edges; the others draw each side as a cylinder, with sharp edges
+ */
+export type Lathe = {
+  readonly type: "Lathe";
+  readonly pos: Vec3;
+  readonly rot?: Vec3;
+  readonly points: ReadonlyArray<Vec2>;
+  readonly edgeRadius?: number;
 };
 
 export type Sphere = {
@@ -355,7 +368,16 @@ export type Box = {
   readonly radius?: number;
   /** The edges `radius` rounds, all by default; e.g. only the outer ones of the boxes a corner piece is made of */
   readonly roundedEdges?: ReadonlyArray<BoxEdge>;
+  /**
+   * An edge's own radius instead of `radius`, e.g. 0 for a sharp one; the svg renderer draws each, the three.js viewer shades the rounded ones by the
+   * largest
+   */
+  readonly edgeRadius?: Partial<Record<BoxEdge, number>>;
 };
+
+/** The radius an edge of a box is rounded by, 0 for sharp: its `edgeRadius`, else `radius` if `roundedEdges` has it */
+export const boxEdgeRadius = (b: Box, edge: BoxEdge): number =>
+  b.edgeRadius?.[edge] ?? (b.roundedEdges?.includes(edge) === false ? 0 : (b.radius ?? 0));
 
 /** A box's edges, by the two sides they're between, front is +z; along x, y, then z */
 export type BoxEdge = (typeof boxEdges)[number];
@@ -431,6 +453,7 @@ export type PlaneMesh = { readonly geometry: Plane; readonly material: Material 
 export type BoxMesh = { readonly geometry: Box; readonly material: Material };
 export type CylinderMesh = { readonly geometry: Cylinder; readonly material: Material };
 export type ConeMesh = { readonly geometry: Cone; readonly material: Material };
+export type LatheMesh = { readonly geometry: Lathe; readonly material: Material };
 export type LineMesh = { readonly geometry: Line; readonly material: Material };
 export type CulledLineMesh = { readonly geometry: CulledLine; readonly material: Material };
 export type TextMesh = { readonly geometry: Text; readonly material: Material };
@@ -725,6 +748,10 @@ export function boundsGroup(group: Group, parentPos: Vec3, parentRot: Vec3, text
         bounds.push(boundsCone(childMesh.geometry, pos, rot));
         break;
       }
+      case "Lathe": {
+        bounds.push(...latheCylinders(childMesh.geometry).map((c) => boundsCylinder(c, pos, rot)));
+        break;
+      }
       case "Text": {
         bounds.push(boundsText(childMesh.geometry, pos, rot, textHeight));
         break;
@@ -779,6 +806,25 @@ export function boundsBox(b: Box, parentPos: Vec3, parentRot: Vec3): Bounds3 {
   ].map((p) => vec3Add(pos, vec3Rot(p, vec3Zero, rot)));
   return bounds3FromVec3Array(points);
 }
+
+/** A lathe's sides as cylinders, as the renderers that don't draw lathes draw them; a side across the axis is left out, the cylinders' ends close it */
+export const latheCylinders = (g: Lathe): ReadonlyArray<Cylinder> =>
+  g.points.slice(1).flatMap((end, i) => {
+    const start = g.points[i]!;
+    const [low, high] = start.y < end.y ? [start, end] : [end, start];
+    return isZero(high.y - low.y)
+      ? []
+      : [
+          {
+            type: "Cylinder" as const,
+            pos: vec3TransRot(vec3(0, (low.y + high.y) / 2, 0), g.pos, g.rot ?? vec3Zero),
+            rot: g.rot,
+            radius: low.x,
+            radiusEnd: high.x,
+            length: high.y - low.y,
+          },
+        ];
+  });
 
 export function boundsCylinder(c: Cylinder, parentPos: Vec3, parentRot: Vec3): Bounds3 {
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
@@ -1115,7 +1161,8 @@ export const box = (
   rot = vec3Zero,
   holes: ReadonlyArray<Hole> = [],
   radius?: number,
-  roundedEdges?: ReadonlyArray<BoxEdge>
+  roundedEdges?: ReadonlyArray<BoxEdge>,
+  edgeRadius?: Partial<Record<BoxEdge, number>>
 ): BoxMesh => ({
   geometry: {
     type: "Box",
@@ -1125,6 +1172,7 @@ export const box = (
     holes,
     ...(radius === undefined ? {} : { radius }),
     ...(roundedEdges === undefined ? {} : { roundedEdges }),
+    ...(edgeRadius === undefined ? {} : { edgeRadius }),
   },
   material,
 });
@@ -1157,6 +1205,11 @@ export const plane = (pos: Vec3, size: Vec2, material: Material, rot = vec3Zero,
 
 export const cone = (pos: Vec3, radius: number, length: number, material: Material, rot = vec3Zero): ConeMesh => ({
   geometry: { type: "Cone", pos, radius, length, rot },
+  material,
+});
+
+export const lathe = (pos: Vec3, points: ReadonlyArray<Vec2>, material: Material, rot = vec3Zero, edgeRadius?: number): LatheMesh => ({
+  geometry: { type: "Lathe", pos, rot, points, edgeRadius },
   material,
 });
 

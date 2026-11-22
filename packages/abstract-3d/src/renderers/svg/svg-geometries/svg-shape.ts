@@ -19,7 +19,7 @@ export function shape(
   const points = rotatedPoints.map(({ x, y }) => point(x, y));
   const color = material.normal;
   const [strokeColor, fill] = opts.only_stroke
-    ? [opts.gray_scale ? gray : color, opts.background]
+    ? [opts.stroke_color || (opts.gray_scale ? gray : color), opts.background]
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color];
   return [zElem(svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, 0), vec3ZMean(...rotatedPoints))];
 }

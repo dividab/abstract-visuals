@@ -1,6 +1,6 @@
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { Scene, Group, Vec3 } from "../../abstract-3d.js";
-import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight, bounds3Center } from "../../abstract-3d.js";
+import { vec3Zero, vec3TransRot, vec3RotCombine, groupTextBackgrounds, sceneTextHeight, bounds3Center, latheCylinders } from "../../abstract-3d.js";
 import type { MutableStep } from "./step-encoding.js";
 import {
   GEOMETRIC_REPRESENTATION_CONTEXT_3D,
@@ -71,6 +71,11 @@ function stepGroup(g: Group, parentPos: Vec3, parentRot: Vec3, m: MutableStep): 
         break;
       case "Cone":
         stepCone(mesh.geometry, mesh.material, pos, rot, m);
+        break;
+      case "Lathe":
+        for (const c of latheCylinders(mesh.geometry)) {
+          stepCylinder(c, mesh.material, pos, rot, m);
+        }
         break;
       case "Polygon":
         stepPolygon(mesh.geometry, mesh.material, pos, rot, m);

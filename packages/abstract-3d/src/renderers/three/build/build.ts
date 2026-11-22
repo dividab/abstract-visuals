@@ -306,7 +306,9 @@ function createPart(
       if (first.role === "solid") {
         const c = getMaterialClass(first, targetStates[first.target]!);
         const part = createSolidPart(entries, createClassMaterial(c, options.studio !== false));
-        Object.assign(part.object, { castShadow: c.castShadow, receiveShadow: c.lit, renderOrder: c.last ? 1 : 0 });
+        // See-through solids that don't write depth before the images, which don't either, so an image behind one isn't drawn over it
+        const renderOrder = c.last ? 1 : c.transparent && !c.depthWrite ? -0.5 : 0;
+        Object.assign(part.object, { castShadow: c.castShadow, receiveShadow: c.lit, renderOrder });
         return part;
       }
       // Images are hidden until their texture loads; a symbol in a state is drawn larger, framed and badged

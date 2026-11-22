@@ -5,6 +5,7 @@ import {
   ConeGeometry,
   CylinderGeometry,
   ExtrudeGeometry,
+  LatheGeometry,
   PlaneGeometry,
   Shape,
   ShapeGeometry,
@@ -16,7 +17,7 @@ import {
 import { exhaustiveCheck } from "ts-exhaustive-check";
 import type { Hole, Mesh, Vec2, Vec3 } from "../../abstract-3d.js";
 import { vec3, vec3TransRot, vec3RotCombine, vec3Zero, isZero } from "../../abstract-3d.js";
-import { addHoles, CircleCurve, CYLINDER_SEGMENTS, cylinderCutPositions, nonZeroHoles } from "../shared/three-geometry.js";
+import { addHoles, CircleCurve, CYLINDER_SEGMENTS, cylinderCutPositions, lathePoints, nonZeroHoles } from "../shared/three-geometry.js";
 import { point } from "./ifc-encoding.js";
 
 const CONE_SEGMENTS = 32;
@@ -103,6 +104,8 @@ function localPositions(g: Mesh["geometry"]): ReadonlyArray<number> | undefined 
     }
     case "Cone":
       return positions(new ConeGeometry(g.radius, g.length, CONE_SEGMENTS, 1));
+    case "Lathe":
+      return positions(new LatheGeometry([...lathePoints(g)], CYLINDER_SEGMENTS));
     case "Sphere":
       return positions(new SphereGeometry(g.radius, ...SPHERE_SEGMENTS));
     case "Shape": {

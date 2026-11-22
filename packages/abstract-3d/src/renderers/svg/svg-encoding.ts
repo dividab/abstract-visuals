@@ -21,15 +21,18 @@ export function svgPolygon(
   stroke: string,
   strokeWidth: number,
   holes?: ReadonlyArray<Hole>,
-  _parentPos?: Vec3
+  _parentPos?: Vec3,
+  path?: string
 ): string {
   const bounds = bounds2FromVec2Array(points);
   const size = vec2Sub(bounds.max, bounds.min);
   const pos = vec2Scale(vec2Add(bounds.max, bounds.min), 0.5);
   const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
-  const pol = `<polygon class="${classNames.stroke}" points="${points
-    .reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "")
-    .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
+  // A path's outline, e.g. with rounded corners, else the points', which bound it either way
+  const shape = path
+    ? `<path class="${classNames.stroke}" d="${path}"`
+    : `<polygon class="${classNames.stroke}" points="${points.reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "").slice(0, -1)}"`;
+  const pol = `${shape} fill="${fill}" fill-opacity="${opacity.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + pol + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
