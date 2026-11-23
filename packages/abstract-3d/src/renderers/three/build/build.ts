@@ -239,6 +239,31 @@ export function animateScene(built: BuiltScene, seconds: number): void {
   touched.forEach((part) => flushPart(part, true));
 }
 
+/** Moves the top-level groups of the id by the offset from where they're built, e.g. while dragged, their animated items as at `seconds` */
+export function moveGroups(built: BuiltScene, id: string, offset: Vector3, seconds: number): void {
+  const touched = new Set<Part>();
+  const translation = new Matrix4().makeTranslation(offset);
+  built.compiled.targets.forEach((target, t) => {
+    if (target.kind === "group" && target.id === id) {
+      built.itemsOfTarget[t]!.forEach((i) => {
+        const part = built.parts[built.partOfItem[i]!]!;
+        placeSlot(part, built.slotOfItem[i]!, getItemMatrix(built.compiled, built.compiled.items[i]!, seconds, world).premultiply(translation));
+        touched.add(part);
+      });
+    }
+  });
+  touched.forEach((part) => flushPart(part, true));
+}
+
+/** The world box around the targets' solids where they're placed */
+export function getSolidsBox(built: BuiltScene, targets: ReadonlyArray<number>): Box3 {
+  const bounds = new Box3();
+  targets.forEach((t) =>
+    built.itemsOfTarget[t]!.forEach((i) => addSlotBounds(built.parts[built.partOfItem[i]!]!, built.slotOfItem[i]!, identity, bounds))
+  );
+  return bounds;
+}
+
 export function cullScene(built: BuiltScene, cameraPosition: Vector3): void {
   built.parts.forEach((part) => cullLines(part, cameraPosition));
 }
@@ -358,4 +383,5 @@ function showImage(
 /** Of the scene's text height, so it grows with the unit as its texts do */
 const hotspotSymbolSize = 3.4;
 const world = new Matrix4();
+const identity = new Matrix4();
 const color = new Vector4();

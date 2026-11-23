@@ -13,6 +13,8 @@ export type StructureState = {
   readonly activeComponents?: Record<string, MaterialState>;
   /** Relations are active, e.g. to pick one to insert a component on, so only the groups whose material state is Accept can be clicked */
   readonly relationsActive: boolean;
+  /** The id of the groups dragged, drawn as they are while relations are active, rather than disabled */
+  readonly draggedId?: string;
 };
 
 /**
@@ -63,10 +65,10 @@ const outlineColor = "rgb(0, 0, 0)";
 /** Of an active relation's slab, solid while hovered */
 const relationOpacity = 0.7;
 export const selectColor = "rgb(14,82,184)";
-/** How far a selected group's symbols are tinted toward `selectColor` */
+/** How far a selected or accepting group's symbols are tinted toward `selectColor` or the Accept color */
 const symbolTint = 0.8;
 export const stateMaterials: Record<MaterialState, Material> = {
-  Accept: { normal: "rgb(0,148,91)", metalness: 0.5, roughness: 0.5 },
+  Accept: { normal: hotspotColor, metalness: 0.5, roughness: 0.5 },
   Error: { normal: "#ab0e0e", metalness: 0.5, roughness: 0.5 },
   Warning: { normal: "rgb(247, 215, 101)", metalness: 0.5, roughness: 0.5 },
 };
@@ -83,7 +85,7 @@ export function getTargetStates(targets: ReadonlyArray<Target>, items: ReadonlyA
   }
   return targets.map((target, t) => {
     const state = target.kind === "group" ? structure.activeComponents?.[target.id] : undefined;
-    const disabled = target.kind === "group" && structure.relationsActive && state !== "Accept";
+    const disabled = target.kind === "group" && structure.relationsActive && state !== "Accept" && target.id !== structure.draggedId;
     return state !== undefined && state !== "Accept" && hasSymbol[t] ? { symbolState: state, disabled } : { materialState: state, disabled };
   });
 }
@@ -147,12 +149,13 @@ export function getItemColor(item: Item, { materialState, disabled }: TargetStat
     case "dimension":
       return setColor(out, selected ? selectColor : material.normal, false, opacity);
     default: {
-      // A selected group's symbols tinted toward its box's blue
-      if (item.role === "image" && selected) {
-        const key = `selected ${material.normal}`;
-        const color = colors.get(key) ?? new Color(material.normal).lerp(new Color(selectColor), symbolTint);
-        colors.set(key, color);
-        return out.set(color.r, color.g, color.b, opacity);
+      // An accepting group's symbols tinted toward the hotspots' green, also while selected, else a selected group's toward its box's blue
+      const tint = materialState === "Accept" ? stateMaterials.Accept.normal : selected ? selectColor : undefined;
+      if (item.role === "image" && tint) {
+        const key = `${tint} ${material.normal}`;
+        const tinted = tints.get(key) ?? new Color(material.normal).lerp(new Color(tint), symbolTint).getStyle();
+        tints.set(key, tinted);
+        return setColor(out, tinted, hovered, opacity);
       }
       const style = materialState && item.role !== "image" ? stateMaterials[materialState].normal : material.normal;
       return item.role === "line"
@@ -168,6 +171,8 @@ function getOpacity(material: Material): number {
 }
 
 const colors = new Map<string, Color>();
+/** Symbols' colors tinted toward a highlight's, by the tint and their own color */
+const tints = new Map<string, string>();
 
 function setColor(out: Vector4, style: string, hovered: boolean, opacity: number): Vector4 {
   const key = hovered ? `hovered ${style}` : style;

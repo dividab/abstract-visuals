@@ -1,6 +1,6 @@
 export { createViewer, updateViewer, disposeViewer, invalidate, fitView } from "./viewer/viewer.js";
 export type { Viewer } from "./viewer/viewer.js";
-export type { ViewerOptions, Popover, SceneEvent } from "./viewer/options.js";
+export type { ViewerOptions, Popover, SceneEvent, DropTarget } from "./viewer/options.js";
 export type { MountedOverlay, MountOverlays } from "./viewer/overlays.js";
 export { compileScene } from "./compile/compile.js";
 export type { CompiledScene } from "./compile/compile.js";

@@ -156,7 +156,11 @@ describe("getItemColor", () => {
   });
 
   it("colors groups by their material state and fades disabled ones", () => {
-    expect(paint(solid({ normal: red }), group, { activeComponents: { fan: "Accept" } })).toEqual(rgba("rgb(0,148,91)"));
+    expect(paint(solid({ normal: red }), group, { activeComponents: { fan: "Accept" } })).toEqual(rgba("#188a72"));
+    const accepting = { relationsActive: true, activeComponents: { fan: "Accept" } } as const;
+    expect(paint(symbol, group, accepting)).not.toEqual(rgba("rgb(255, 255, 255)"));
+    expect(paint(symbol, group, { ...accepting, selectedIds: { fan: true } })).toEqual(paint(symbol, group, accepting));
+    expect(paint(symbol, group, { ...accepting, hoveredTarget: 0 })).not.toEqual(paint(symbol, group, accepting));
     expect(paint(solid({ normal: red, opacity: 0.8 }), group, { relationsActive: true })).toEqual(rgba(red, 0.1));
   });
 

@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.3.0] - 2026-11-23
+
+- Added: dragging groups in the viewer: a press on one of the `draggableIds` groups drags it rather than turning the camera; `onDragGroup` once the pointer moved past a click, e.g. to make the relations it can be dropped on active, and `onDropGroup` on its release, with the relation or group under the pointer, or none, also when Escape or the browser cancels it. A click on it still clicks. The dragged group follows the pointer, the point pressed under it on the plane facing the camera, its middle snapped onto an active relation's slab's while over it; it's drawn as it is while relations are active, not disabled. Dropped on a relation or group it stays there until the next scene, else it goes back
+- Changed: the Accept material state is the hotspots' green, `#188a72`, rather than `rgb(0,148,91)`, and an accepting group's symbols are tinted toward it, also while selected, as a selected group's are toward the selection's blue; tinted symbols are darkened while hovered, as the others are
+
 ## [5.2.0] - 2026-11-22
 
 - Added: a shape's `radius`, and `shape`'s, rounding the edges around its two faces, at most half its thickness, its outline kept; the viewer draws it so, the other renderers with sharp edges

@@ -29,6 +29,7 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
   const { scene, createGroupId, useAlphaTest, selectedIds, hoveredIdsExternal, onClickGroup, view, controls } = props;
   const { lights, environmentIntensity, studio, groundShadow, shadows, quality, showDimensions, popovers, getTooltips } = props;
   const { onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed, sceneFallback, className, style } = props;
+  const { draggableIds, onDragGroup, onDropGroup } = props;
   // Equal by value, so inline objects don't refit the camera, recreate the gizmo or rebuild the scene
   const camera = useStableValue(props.camera);
   const bufferZones = useStableValue(props.bufferZones);
@@ -95,6 +96,7 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
     () => updateViewer(viewer.current!, { onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed }),
     [onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed]
   );
+  useEffect(() => updateViewer(viewer.current!, { draggableIds, onDragGroup, onDropGroup }), [draggableIds, onDragGroup, onDropGroup]);
 
   return (
     <div ref={container} className={className} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden", ...style }}>

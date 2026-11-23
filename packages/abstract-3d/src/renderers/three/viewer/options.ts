@@ -20,6 +20,11 @@ export type SceneEvent = {
 /** A group's data: of the top-level group, and of the group the hit mesh is in */
 type Data = Record<string, string> | undefined;
 
+/** What a dragged group is released on, and where the pointer hit it, in world space */
+export type DropTarget =
+  | { readonly kind: "relation"; readonly relation: Relation; readonly point: Vec3 }
+  | { readonly kind: "group"; readonly id: string; readonly rootData: Data; readonly data: Data; readonly point: Vec3 };
+
 export type ViewerOptions<Content> = {
   /** Undefined shows the fallback */
   readonly scene?: Scene;
@@ -73,6 +78,12 @@ export type ViewerOptions<Content> = {
   readonly onClickRelation?: (relation: Relation, event: SceneEvent) => void;
   /** A click, not a drag, on nothing clickable, e.g. the background; r3f's Canvas event of the same name */
   readonly onPointerMissed?: (event: MouseEvent) => void;
+  /** The groups that pressing and moving the pointer on drags instead of turning the camera, e.g. the selected one; a click on them still clicks */
+  readonly draggableIds?: Record<string, boolean>;
+  /** A draggable group's drag started: the pointer moved past a click while pressed on it, e.g. to make the relations it can be dropped on active */
+  readonly onDragGroup?: (id: string, rootData: Data, data: Data, event: SceneEvent) => void;
+  /** The dragged group is released on the relation or group under the pointer, or on nothing, also when Escape or the browser cancels the drag */
+  readonly onDropGroup?: (id: string, target: DropTarget | undefined, event: MouseEvent | KeyboardEvent) => void;
 };
 
 /** What an update has to redo, in the order it's redone */
@@ -109,4 +120,7 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   onContextMenuGroup: [],
   onClickRelation: [],
   onPointerMissed: [],
+  draggableIds: [],
+  onDragGroup: [],
+  onDropGroup: [],
 };

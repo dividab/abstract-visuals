@@ -7,6 +7,7 @@ export type {
   ControlsOptions,
   MaterialState,
   SceneEvent,
+  DropTarget,
   Quality,
 } from "../three/index.js";
 export type { Viewer as ThreeViewer } from "../three/index.js";
