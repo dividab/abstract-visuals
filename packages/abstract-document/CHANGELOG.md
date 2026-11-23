@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.5.10] - 2026-11-23
+
+- Fixed: the PDF exporter aligns a line that ends in a line break, e.g. a `\n` in a text, by its text. It was measured with the line break as wide as an "A", so right aligned it ended that far before the edge and centered half as far to the left, and spaces before the break moved it further.
+- Fixed: a centered line is centered without the space it wrapped at, as right aligned and justified lines already were.
+- Fixed: the PDF exporter places right aligned and centered text between its paragraph's side margins. The left margin was left out and the right one taken off twice, so e.g. with a right margin of 20 right aligned text ended 40 from the edge.
+- Fixed: the PDF exporter fills the row with a justified line that ends in a line break. The space was spread over a gap too many, as if after the line break, so the line ended short of the edge.
+
 ## [20.5.8] - 2026-11-20
 
 - Changed: depends on pdfkit 0.21 instead of 0.20, and on linebreak 2 instead of 1, the version pdfkit wraps text with, so the rows the PDF exporter lays out break where pdfkit's do.

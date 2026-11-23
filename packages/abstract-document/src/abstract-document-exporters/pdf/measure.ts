@@ -399,7 +399,8 @@ function measureLineBreak(
     resources,
     lineBreak.nestedStyleNames ?? []
   ) as AD.TextStyle.TextStyle;
-  return measureText(pdfKit, "A", style, availableSize);
+  // As high as a line, so an empty line keeps its height, but no wider than nothing, so a line ending in a break is aligned by its text
+  return { width: 0, height: measureText(pdfKit, "A", style, availableSize).height };
 }
 
 function measureTextRun(

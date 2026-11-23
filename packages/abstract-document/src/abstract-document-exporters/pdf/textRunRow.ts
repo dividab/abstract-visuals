@@ -25,14 +25,19 @@ export function layoutParagraphRows(
   pdf: PDFKit.PDFDocument,
   resources: AD.Resources.Resources
 ): ParagraphRows {
+  const alignment = parseAlignment(style.alignment);
   const rows: Array<Array<AD.Atom.Atom>> = [];
   let currentRow: Array<AD.Atom.Atom> = [];
   let currentWidth = 0;
   let previousAtomType: string | undefined = undefined;
   for (const atom of children) {
     if (atom.type === "LineBreak") {
-      currentRow.push(atom);
-      rows.push(currentRow);
+      // Spaces before a line break would move the line off its alignment, so they're left out as at a wrap, see rowsSplit
+      const end =
+        alignment === "left"
+          ? currentRow.length
+          : currentRow.findLastIndex((a) => a.type !== "TextRun" || a.text.replaceAll(/[\p{Zs}]/gu, "").length > 0) + 1;
+      rows.push([...currentRow.slice(0, end), atom]);
       currentRow = [];
       continue;
     }
@@ -95,7 +100,6 @@ export function layoutParagraphRows(
     }
   }
   const hasWordWiderThanRow = wordsWiderThanRow.length > 0;
-  const alignment = parseAlignment(style.alignment);
   const splitRows = rowsSplit(rows, availableWidth, desiredSizes, alignment, pdf, resources, style);
   const { newDesiredSizes, combinedRows } = rowsCombineTextRuns(resources, pdf, splitRows, desiredSizes, alignment, style.textStyle);
   return { rows: combinedRows, desiredSizes: newDesiredSizes, hasWordWiderThanRow };
@@ -226,7 +230,7 @@ function rowsSplit(
         continue;
       }
 
-      newRows.push(lastSpace && (alignment === "right" || alignment === "justify") ? currentRow.slice(0, -1) : currentRow);
+      newRows.push(lastSpace && alignment !== "left" ? currentRow.slice(0, -1) : currentRow);
       currentRow = [atom];
       currentWidth = width;
     }

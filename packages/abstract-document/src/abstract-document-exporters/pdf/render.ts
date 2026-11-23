@@ -241,14 +241,12 @@ function renderParagraph(
 
     const rowWidth = row.reduce((a, b) => a + getDesiredSize(b, newDesiredSizes).width, 0);
     const remainingWidth = availableWidth - rowWidth;
-    const justificationWidth = !isLast && row.length > 1 ? remainingWidth / (row.length - 1) : 0;
-    let x = finalRect.x;
-
-    if (style.alignment === "Start" || style.alignment === "Justify") {
-      x += styleMargins.left;
-    } else if (style.alignment === "End") {
-      x -= styleMargins.right;
-    }
+    // The row's last atom drawn, before the line break that ends it, if one does
+    const lastIndex = row[row.length - 1]?.type === "LineBreak" ? row.length - 2 : row.length - 1;
+    // Spread over the gaps between the atoms drawn
+    const justificationWidth = !isLast && lastIndex > 0 ? remainingWidth / lastIndex : 0;
+    // The available width is between the side margins, so the row is placed in it from the left margin whatever its alignment
+    let x = finalRect.x + styleMargins.left;
 
     if (row.length > 1 || row[0]!.type === "Image" || row[0]!.type === "TextRun" || row[0]!.type === "TextField") {
       // Using continued with alignment "center" or "right" is broken:
@@ -265,7 +263,6 @@ function renderParagraph(
     }
 
     let rowHeight = 0;
-    const lastIndex = row[row.length - 1]?.type === "LineBreak" ? row.length - 2 : row.length - 1;
     for (const [i, atom] of row.entries()) {
       const atomSize = getDesiredSize(atom, newDesiredSizes);
       renderAtom(

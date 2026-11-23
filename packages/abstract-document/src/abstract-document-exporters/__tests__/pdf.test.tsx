@@ -229,6 +229,121 @@ describe("export pdf", () => {
     }
   });
 
+  test("a line ending in a line break, after spaces or not, is aligned by its text", async () => {
+    const end = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+        <TextRun text={"test1\ntest2 \ntest3"} />
+      </Paragraph>
+    );
+    expect(end.map((l) => l.text)).toEqual(["test1", "test2", "test3"]);
+    for (const l of end) {
+      expect(l.end).toBeCloseTo(end[2]!.end, 6);
+    }
+    const center = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+        <TextRun text={"test1\ntest2 \ntest3"} />
+      </Paragraph>
+    );
+    for (const l of center) {
+      expect(l.start + l.end).toBeCloseTo(center[2]!.start + center[2]!.end, 6);
+    }
+  });
+
+  test("a centered line is centered without the space it wrapped at", async () => {
+    const lines = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "Center" })}>
+        <TextRun text="alpha beta gamma delta epsilon zeta eta theta" />
+      </Paragraph>
+    );
+    expect(lines.length).toBeGreaterThan(2);
+    for (const l of lines) {
+      expect(l.text).toBe(l.text.trim());
+      expect(l.start + l.end).toBeCloseTo(lines[0]!.start + lines[0]!.end, 6);
+    }
+  });
+
+  test("right aligned lines end at the edge, wrapped or broken, also with text runs of different styles", async () => {
+    const [edge] = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+        <TextRun text="x" />
+      </Paragraph>
+    );
+    const lines = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+        <TextRun text="alpha beta " style={AD.TextStyle.create({ bold: true })} />
+        <TextRun text={"gamma delta epsilon zeta eta theta\niota kappa"} />
+      </Paragraph>
+    );
+    expect(lines.length).toBeGreaterThan(3);
+    for (const l of lines) {
+      expect(l.end).toBeCloseTo(edge!.end, 6);
+    }
+  });
+
+  test("justified lines fill the row, but the last line, which keeps its spacing", async () => {
+    const [edge] = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+        <TextRun text="x" />
+      </Paragraph>
+    );
+    const lines = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "Justify" })}>
+        <TextRun text="alpha beta gamma delta epsilon zeta eta theta iota kappa" />
+      </Paragraph>
+    );
+    const last = lines[lines.length - 1]!;
+    expect(lines.length).toBeGreaterThan(2);
+    for (const l of lines.slice(0, -1)) {
+      expect(l.start).toBeCloseTo(last.start, 6);
+      expect(l.end).toBeCloseTo(edge!.end, 6);
+    }
+    expect(last.end).toBeLessThan(edge!.end - 1);
+  });
+
+  test("a justified line ending in a line break fills the row, after spaces or not", async () => {
+    const [edge] = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+        <TextRun text="x" />
+      </Paragraph>
+    );
+    const lines = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "Justify" })}>
+        <TextRun text={"alpha beta gamma\ndelta epsilon \nzeta"} />
+      </Paragraph>
+    );
+    expect(lines.map((l) => l.text.replaceAll(" ", ""))).toEqual(["alphabetagamma", "deltaepsilon", "zeta"]);
+    for (const l of lines.slice(0, -1)) {
+      expect(l.start).toBeCloseTo(lines[2]!.start, 6);
+      expect(l.end).toBeCloseTo(edge!.end, 6);
+    }
+  });
+
+  test("right aligned and centered lines keep within the paragraph's side margins", async () => {
+    const margins = AD.LayoutFoundation.create({ left: 20, right: 10 });
+    const [start] = await drawnLines(
+      <Paragraph>
+        <TextRun text="x" />
+      </Paragraph>
+    );
+    const [edge] = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "End" })}>
+        <TextRun text="x" />
+      </Paragraph>
+    );
+    const [end] = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "End", margins })}>
+        <TextRun text="x" />
+      </Paragraph>
+    );
+    const [center] = await drawnLines(
+      <Paragraph style={AD.ParagraphStyle.create({ alignment: "Center", margins })}>
+        <TextRun text="x" />
+      </Paragraph>
+    );
+    expect(end!.end).toBeCloseTo(edge!.end - 10, 6);
+    expect(center!.start + center!.end).toBeCloseTo(start!.start + 20 + edge!.end - 10, 6);
+  });
+
   // "64559050/64559051" is about 94 pt wide in 10 pt Helvetica, wider than the 60 pt cell
   const longWord = "64559050/64559051";
 
@@ -499,6 +614,47 @@ async function cellRows(paragraph: React.JSX.Element, styles?: AD.Types.Indexer<
       .join("")
       .trim()
   );
+}
+
+type DrawnLine = { readonly text: string; readonly start: number; readonly end: number };
+
+/** Each line of the paragraph as pdfkit draws it in a 100 pt wide table cell, top to bottom: its text and where it starts and ends */
+async function drawnLines(paragraph: React.JSX.Element): Promise<ReadonlyArray<DrawnLine>> {
+  const drawn: Array<{ readonly text: string; readonly x: number; readonly y: number; readonly width: number }> = [];
+  const originalText = PDFDocument.prototype.text as (this: PDFKit.PDFDocument, ...args: ReadonlyArray<unknown>) => PDFKit.PDFDocument;
+  const spy = vi.spyOn(PDFDocument.prototype, "text").mockImplementation(function (this: PDFKit.PDFDocument, ...args: ReadonlyArray<unknown>) {
+    // A text given no position continues the one before it, where that one ended
+    const [t, x, y] = args;
+    const previous = drawn[drawn.length - 1];
+    if (typeof t === "string" && (typeof x === "number" || previous)) {
+      drawn.push(
+        typeof x === "number" && typeof y === "number"
+          ? { text: t, x, y, width: this.widthOfString(t) }
+          : { text: t, x: previous!.x + previous!.width, y: previous!.y, width: this.widthOfString(t) }
+      );
+    }
+    return originalText.call(this, ...args);
+  });
+  await exportToBytes(
+    render(
+      <AbstractDoc>
+        <Section>
+          <Table columnWidths={[100]}>
+            <TableRow>
+              <TableCell>{paragraph}</TableCell>
+            </TableRow>
+          </Table>
+        </Section>
+      </AbstractDoc>
+    )
+  );
+  spy.mockRestore();
+  return [...new Set(drawn.map((d) => d.y))]
+    .sort((a, b) => a - b)
+    .map((y) => {
+      const line = drawn.filter((d) => d.y === y);
+      return { text: line.map((d) => d.text).join(""), start: Math.min(...line.map((d) => d.x)), end: Math.max(...line.map((d) => d.x + d.width)) };
+    });
 }
 
 /** The number of rows of text on each page of the exported document */

@@ -33,14 +33,14 @@ export const testSingleTextRunWithAlignmentThatLinebreaks: ExportTestDef = {
         Fills: [],
         Texts: [
           {
-            x: 0.16899999999999998,
+            x: 0.256,
             y: -0.301,
-            w: 589.1,
+            w: 586.32,
             sw: 0.32553125,
             A: "left",
             R: [
               {
-                T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20",
+                T: "This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text%20This%20is%20a%20text",
                 S: -1,
                 TS: [0, 13, 0, 0],
               },

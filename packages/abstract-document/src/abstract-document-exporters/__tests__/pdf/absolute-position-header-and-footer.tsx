@@ -97,7 +97,7 @@ export const testAbsolutePositionHeaderAndFooter: ExportTestDef = {
             ],
           },
           {
-            x: 33.569,
+            x: 34.819,
             y: -0.301,
             w: 5.56,
             sw: 0.32553125,
@@ -112,7 +112,7 @@ export const testAbsolutePositionHeaderAndFooter: ExportTestDef = {
             ],
           },
           {
-            x: 33.916,
+            x: 35.166,
             y: -0.301,
             w: 2.78,
             sw: 0.32553125,
@@ -127,7 +127,7 @@ export const testAbsolutePositionHeaderAndFooter: ExportTestDef = {
             ],
           },
           {
-            x: 34.09,
+            x: 35.34,
             y: -0.301,
             w: 5.56,
             sw: 0.32553125,

@@ -238,14 +238,14 @@ export const testSimpleTableTextAlignmentInCellWrapping: ExportTestDef = {
             oc: undefined,
           },
           {
-            x: 12.605,
+            x: 12.692,
             y: 0.42100000000000004,
-            w: 83.93,
+            w: 81.15,
             sw: 0.32553125,
             A: "left",
             R: [
               {
-                T: "Center%20placed%20text%20",
+                T: "Center%20placed%20text",
                 S: -1,
                 TS: [0, 13, 0, 0],
               },
