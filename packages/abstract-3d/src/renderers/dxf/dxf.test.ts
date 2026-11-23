@@ -114,7 +114,7 @@ describe("dxf dimension texts", () => {
     },
   };
   describe("each side", () => {
-    it.each(views)("seen from the %s, read left to right over and under their lines, and up to the lines beside them", (view) => {
+    it.each(views)("seen from the %s, read left to right over and under their lines, and up along the lines beside them", (view) => {
       const all = entities(render(cube, { view, origin: "Center" }));
       const named = (type: string, text: string): ReadonlyArray<readonly [string, string]> | undefined =>
         all.find((e) => e.at(0)?.[1] === type && e.some(([c, v]) => c === "1" && v === text));
@@ -129,8 +129,8 @@ describe("dxf dimension texts", () => {
         const out = vec3Sub(vec3Sub(lp, ms), vec3Scale(along, vec3Dot(vec3Sub(lp, ms), along)));
         // In the drawing's plane, facing the camera
         expect([along.z, out.z, ms.z - lp.z].map((n) => Math.abs(n) < 1e-3)).toEqual([true, true, true]);
-        // Left to right over or under the line, up beside it on its left, down beside it on its right, so the text's top faces away from the part
-        const expected = Math.abs(out.y) >= Math.abs(out.x) ? vec3(1, 0, 0) : out.x < 0 ? vec3(0, 1, 0) : vec3(0, -1, 0);
+        // Left to right over or under the line, and bottom to top beside it on either side, as ISO 129's method 1
+        const expected = Math.abs(out.y) >= Math.abs(out.x) ? vec3(1, 0, 0) : vec3(0, 1, 0);
         const mtext = named("MTEXT", text);
         expect({ text, drawn: mtext !== undefined }).toEqual({ text, drawn: true });
         const dir = vec3(value(mtext!, "11"), value(mtext!, "21"), value(mtext!, "31"));

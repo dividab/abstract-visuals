@@ -98,8 +98,9 @@ describe("textSize", () => {
   });
 });
 
-// A dimension along x measured from `from` to `to`, its line at y, 110 and 220 out as products' rows
-const dim = (from: number, to: number, y = -110): DimensionAligned =>
+// A dimension along x measured from `from` to `to`, its line at y, 110 and 220 out as products' rows, over the measured points as a top row's, so its
+// text reads over the line out from it
+const dim = (from: number, to: number, y = 110): DimensionAligned =>
   alignedDimension(vec3(from, 0, 0), vec3(to, 0, 0), vec3(0, y, 0), `${Math.abs(to - from)}`, ["front"]);
 
 const centred = { inward: false } as const;
@@ -119,29 +120,40 @@ describe("dimensionPlacements", () => {
     // Extension lines from the measured points to marks 10 to each side of the line, arrows 22.5 long pointing at them, the text a gap of 8 and half the
     // text height of 44 out from it
     expect(geometries([dim(0, 1000)], 0)).toEqual([
-      expect.objectContaining({ type: "CulledLine", start: vec3(0, 0, 0), end: vec3(0, -100, 0) }),
-      expect.objectContaining({ type: "CulledLine", start: vec3(0, -100, 0), end: vec3(0, -120, 0) }),
-      expect.objectContaining({ type: "CulledLine", start: vec3(1000, 0, 0), end: vec3(1000, -100, 0) }),
-      expect.objectContaining({ type: "CulledLine", start: vec3(1000, -100, 0), end: vec3(1000, -120, 0) }),
-      expect.objectContaining({ type: "CulledLine", start: vec3(0, -110, 0), end: vec3(1000, -110, 0) }),
+      expect.objectContaining({ type: "CulledLine", start: vec3(0, 0, 0), end: vec3(0, 100, 0) }),
+      expect.objectContaining({ type: "CulledLine", start: vec3(0, 100, 0), end: vec3(0, 120, 0) }),
+      expect.objectContaining({ type: "CulledLine", start: vec3(1000, 0, 0), end: vec3(1000, 100, 0) }),
+      expect.objectContaining({ type: "CulledLine", start: vec3(1000, 100, 0), end: vec3(1000, 120, 0) }),
+      expect.objectContaining({ type: "CulledLine", start: vec3(0, 110, 0), end: vec3(1000, 110, 0) }),
       expect.objectContaining({
         type: "Polygon",
         points: expect.arrayContaining([
-          vec3(0, -110, 0),
-          vec3(44 * (22.5 / 44), -110 + 44 * (5.625 / 44), 0),
-          vec3(44 * (22.5 / 44), -110 - 44 * (5.625 / 44), 0),
+          vec3(0, 110, 0),
+          vec3(44 * (22.5 / 44), 110 + 44 * (5.625 / 44), 0),
+          vec3(44 * (22.5 / 44), 110 - 44 * (5.625 / 44), 0),
         ]),
       }),
       expect.objectContaining({
         type: "Polygon",
         points: expect.arrayContaining([
-          vec3(1000, -110, 0),
-          vec3(1000 - 44 * (22.5 / 44), -110 + 44 * (5.625 / 44), 0),
-          vec3(1000 - 44 * (22.5 / 44), -110 - 44 * (5.625 / 44), 0),
+          vec3(1000, 110, 0),
+          vec3(1000 - 44 * (22.5 / 44), 110 + 44 * (5.625 / 44), 0),
+          vec3(1000 - 44 * (22.5 / 44), 110 - 44 * (5.625 / 44), 0),
         ]),
       }),
-      expect.objectContaining({ type: "Text", pos: vec3(500, -140, 0) }),
+      expect.objectContaining({ type: "Text", pos: vec3(500, 140, 0) }),
     ]);
+  });
+
+  it("draws the text over the line as it reads, towards the measured points under them, and up beside a line on either side", () => {
+    // Under the measured points, as a bottom row's
+    expect(dimensionPlacements([dim(0, 1000, -110)]).map((p) => p?.text)).toEqual([{ inward: true }]);
+    expect(geometries([dim(0, 1000, -110)], 0)).toContainEqual(expect.objectContaining({ type: "Text", pos: vec3(500, -110 + 8 + 22, 0) }));
+    // Up along the lines left and right of the measured points, so over the left one out from it and over the right one towards them
+    const left = alignedDimension(vec3(0, 0, 0), vec3(0, 1000, 0), vec3(-110, 0, 0), "1000", ["front"]);
+    const right = alignedDimension(vec3(0, 0, 0), vec3(0, 1000, 0), vec3(110, 0, 0), "1000", ["front"]);
+    expect(dimensionPlacements([left, right]).map((p) => p?.text)).toEqual([{ inward: false }, { inward: true }]);
+    expect(geometries([right], 0)).toContainEqual(expect.objectContaining({ type: "Text", pos: vec3(110 - 8 - 22, 500, 0) }));
   });
 
   it("leaves the arrows out where they don't both fit with a gap between them", () => {
@@ -163,8 +175,8 @@ describe("dimensionPlacements", () => {
 
   it("leaves the room a text of several rows takes on both sides of the line", () => {
     // The outer line moved out past the inner line's text and a gap, and a gap and its text's two rows under the line, on the inner line's side too
-    const dims = [dim(0, 1000), alignedDimension(vec3Zero, vec3(1000, 0, 0), vec3(0, -150, 0), "1000\nkg\n10 kg", ["front"])];
-    expect(dimensionPlacements(dims).map((p) => p?.linePosition.y)).toEqual([-110, expect.closeTo(-(110 + 8 + 44 + 8 + 8 + 44 + 1.2 * 44))]);
+    const dims = [dim(0, 1000), alignedDimension(vec3Zero, vec3(1000, 0, 0), vec3(0, 150, 0), "1000\nkg\n10 kg", ["front"])];
+    expect(dimensionPlacements(dims).map((p) => p?.linePosition.y)).toEqual([110, expect.closeTo(110 + 8 + 44 + 8 + 8 + 44 + 1.2 * 44)]);
   });
 
   it("lets a text wider than its dimension overhang it where nothing's in the way", () => {
@@ -179,30 +191,33 @@ describe("dimensionPlacements", () => {
   it("breaks an extension line half a gap short of a text it'd cross", () => {
     // The 40's text, from 58 to 102 out, crosses the 100's extension line at 100
     expect(dimensionPlacements([dim(0, 100), dim(100, 140), dim(140, 1000)])[0]?.endLines).toEqual([
-      [vec3(0, 0, 0), vec3(0, -100, 0)],
-      [vec3(0, -100, 0), vec3(0, -120, 0)],
-      [vec3(100, 0, 0), vec3(100, -54, 0)],
-      [vec3(100, -100, 0), vec3(100, -120, 0)],
+      [vec3(0, 0, 0), vec3(0, 100, 0)],
+      [vec3(0, 100, 0), vec3(0, 120, 0)],
+      [vec3(100, 0, 0), vec3(100, 54, 0)],
+      [vec3(100, 100, 0), vec3(100, 120, 0)],
     ]);
   });
 
   it("alternates the texts of neighbours too narrow for them across the line, moving it out for the texts towards the measured points", () => {
-    const dims = run(30, 4, 10).map((d) => ({ ...d, linePosition: vec3(0, -50, 0) }));
+    const dims = run(30, 4, 10).map((d) => ({ ...d, linePosition: vec3(0, 50, 0) }));
     const placements = dimensionPlacements(dims);
     expect(placements.slice(1, 5).map((p) => p?.text.inward)).toEqual([false, true, false, true]);
     // A gap and the text height past the measured points, and a gap
-    expect(placements.map((p) => p?.linePosition.y)).toEqual(dims.map(() => -(8 + 44 + 8)));
-    expect(geometries(dims, 2)).toContainEqual(expect.objectContaining({ type: "Text", pos: vec3(1065, -60 + 8 + 22, 0) }));
+    expect(placements.map((p) => p?.linePosition.y)).toEqual(dims.map(() => 8 + 44 + 8));
+    expect(geometries(dims, 2)).toContainEqual(expect.objectContaining({ type: "Text", pos: vec3(1065, 60 - 8 - 22, 0) }));
   });
 
   it("alternates the texts even where every other one's still clash, rather than two neighbours' on one side", () => {
     // Four 30s at the text height 128, each text far wider than two of them
-    expect(dimensionPlacements([dim(0, 30, -300), dim(30, 60, -300), dim(60, 90, -300), dim(90, 120, -300)], 128).map((p) => p?.text.inward)).toEqual(
-      [false, true, false, true]
-    );
+    expect(dimensionPlacements([dim(0, 30, 300), dim(30, 60, 300), dim(60, 90, 300), dim(90, 120, 300)], 128).map((p) => p?.text.inward)).toEqual([
+      false,
+      true,
+      false,
+      true,
+    ]);
   });
 
-  it("keeps the text of a dimension at the end of a line out from it, with room past it, its neighbour's on the other side instead", () => {
+  it("keeps the text of a dimension at the end of a line over it, with room past it, its neighbour's on the other side instead", () => {
     expect(dimensionPlacements([dim(0, 1000), dim(1000, 1040), dim(1040, 1080)]).map((p) => p?.text.inward)).toEqual([false, true, false]);
     expect(dimensionPlacements([dim(0, 40), dim(40, 80), dim(80, 1000)]).map((p) => p?.text.inward)).toEqual([false, true, false]);
   });
@@ -215,39 +230,39 @@ describe("dimensionPlacements", () => {
   });
 
   it("moves a line out past the texts of the line inside it, a gap and its marks, and leaves it where there's room", () => {
-    expect(dimensionPlacements([dim(0, 1000), dim(0, 1000, -150), dim(0, 2000, -400)]).map((p) => p?.linePosition.y)).toEqual([
-      -110,
-      -(110 + 8 + 44 + 8 + 10),
-      -400,
+    expect(dimensionPlacements([dim(0, 1000), dim(0, 1000, 150), dim(0, 2000, 400)]).map((p) => p?.linePosition.y)).toEqual([
+      110,
+      110 + 8 + 44 + 8 + 10,
+      400,
     ]);
   });
 
   it("leaves the dimensions on another line out", () => {
-    expect(dimensionPlacements([dim(0, 1200), dim(1200, 1240, -220)]).map((p) => p?.text)).toEqual([centred, centred]);
+    expect(dimensionPlacements([dim(0, 1200), dim(1200, 1240, 220)]).map((p) => p?.text)).toEqual([centred, centred]);
   });
 
   it("bounds what a dimension draws, from its extension lines to its text's outer edge", () => {
-    expect(dimensionPlacements([dim(0, 1000)])[0]?.bounds).toEqual({ min: vec3(0, -110 - 8 - 44, 0), max: vec3(1000, 0, 0) });
+    expect(dimensionPlacements([dim(0, 1000)])[0]?.bounds).toEqual({ min: vec3(0, 0, 0), max: vec3(1000, 110 + 8 + 44, 0) });
     // The text past the dimension's ends
     expect(dimensionPlacements([dim(0, 20)])[0]?.bounds.min.x).toBeCloseTo(10 - (2 * (9 / 16) * 44) / 2);
   });
 
   it("sizes the text, gaps and marks by the text height", () => {
     expect(geometries([dim(0, 1000)], 0, 88)).toEqual([
-      expect.objectContaining({ start: vec3(0, 0, 0), end: vec3(0, -90, 0) }),
-      expect.objectContaining({ start: vec3(0, -90, 0), end: vec3(0, -130, 0) }),
+      expect.objectContaining({ start: vec3(0, 0, 0), end: vec3(0, 90, 0) }),
+      expect.objectContaining({ start: vec3(0, 90, 0), end: vec3(0, 130, 0) }),
       expect.anything(),
       expect.anything(),
       expect.anything(),
-      expect.objectContaining({ type: "Polygon", points: expect.arrayContaining([vec3(88 * (22.5 / 44), -110 + 88 * (5.625 / 44), 0)]) }),
+      expect.objectContaining({ type: "Polygon", points: expect.arrayContaining([vec3(88 * (22.5 / 44), 110 + 88 * (5.625 / 44), 0)]) }),
       expect.anything(),
-      expect.objectContaining({ type: "Text", fontSize: 88, pos: vec3(500, -110 - 16 - 44, 0) }),
+      expect.objectContaining({ type: "Text", fontSize: 88, pos: vec3(500, 110 + 16 + 44, 0) }),
     ]);
   });
 
   it("draws the dimension at its moved line", () => {
-    expect(geometries([dim(0, 1000), dim(0, 2000, -150)], 1)).toContainEqual(
-      expect.objectContaining({ type: "Text", pos: vec3(1000, -180 - 8 - 22, 0) })
+    expect(geometries([dim(0, 1000), dim(0, 2000, 150)], 1)).toContainEqual(
+      expect.objectContaining({ type: "Text", pos: vec3(1000, 180 + 8 + 22, 0) })
     );
   });
 });

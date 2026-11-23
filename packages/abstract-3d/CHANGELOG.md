@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.3.3] - 2026-11-23
+
+- Changed: a dimension's text is drawn over its line as it reads, as ISO 129's method 1, on every side: under the measured points over the line towards them, no longer out from it; a neighbour's in the way still puts it under the line, alternating
+- Changed: a vertical dimension's text reads bottom to top on both sides of the view; on the right it read top to bottom
+
 ## [5.3.2] - 2026-11-23
 
 - Fixed: the viewer draws only the nearest surface of a see-through solid, e.g. glass or a material with an opacity, so it no longer shows its own insides, such as a lathe's inner rings; disabled groups still show what's in them

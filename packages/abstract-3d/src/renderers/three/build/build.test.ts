@@ -139,8 +139,8 @@ describe("buildScene", () => {
   });
 
   it("keeps dimensions in their own group, and doesn't pick hidden ones", () => {
-    // Its text, the empty scene's 32 high, is centered a gap and half its height out from the line, over the origin
-    const dimension = alignedDimension(vec3(-500, 100, 0), vec3(500, 100, 0), vec3(0, 30, 0), "1000", ["front"], undefined, "dim");
+    // Its text, the empty scene's 32 high, is centered a gap and half its height over the line, 6 over the origin, so its glyphs cover it
+    const dimension = alignedDimension(vec3(-500, -100, 0), vec3(500, -100, 0), vec3(0, -18, 0), "1000", ["front"], undefined, "dim");
     const built = build(scene([], { dimensions: { dimensions: [dimension], material: red } }));
     expect(built.dimensions.children.length).toBeGreaterThan(0);
     expect(pickId(built, 0)).toBe("dim");

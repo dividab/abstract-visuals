@@ -41,8 +41,8 @@ export type DimensionPlacement = {
 };
 
 /**
- * The text a gap from the dimension line, out from its middle, out from the line or, `inward`, towards the measured points; a text of several rows
- * has its first row over the line, as the text reads, and the rest under it
+ * The text a gap from the dimension line, out from its middle, out from the line or, `inward`, towards the measured points, over the line as it reads
+ * unless its neighbours' are in the way; a text of several rows has its first row over the line and the rest under it
  */
 export type DimensionTextPlacement = { readonly inward: boolean };
 
@@ -1373,6 +1373,8 @@ type DimensionSpan = {
   readonly textWidth: number;
   /** A text of several rows, on both sides of the line */
   readonly split: boolean;
+  /** Over the line, as the text reads, is towards the measured points */
+  readonly overInward: boolean;
   /** How far the text takes out from each side of the line it's on */
   readonly textBlockHeight: number;
 };
@@ -1380,9 +1382,9 @@ type DimensionSpan = {
 /**
  * Where each dimension's line and text are drawn, decided for the dimensions on the same line together, undefined for a mesh dimension:
  *
- * - The text a gap out from the line, out from the dimension's middle, wider than the dimension where nothing's in the way
- * - Else on the other side of the line, towards the measured points, alternating with its neighbours'
- * - Placed together for the dimensions on a line, whichever together are the clearest: texts out from the line, and apart
+ * - The text a gap over the line as it reads, out from the dimension's middle, wider than the dimension where nothing's in the way
+ * - Else under the line, alternating with its neighbours'
+ * - Placed together for the dimensions on a line, whichever together are the clearest: texts over the line, and apart
  * - Each line moved out where it's too near the measured points or the line inside it on the same side for the texts between them
  */
 export function dimensionPlacements(
@@ -1404,9 +1406,11 @@ export function dimensionPlacements(
     const linePoint = vec3Sub(d.linePosition, vec3Scale(along, vec3Dot(d.linePosition, along)));
     const outward = vec3Normalize(vec3Sub(linePoint, vec3Sub(d.measurementStart, vec3Scale(along, start))));
     const { textWidth, rows } = dimensionMeasure(d, textHeight);
+    const view = d.views?.[0] ?? "front";
+    const basis = dimensionViewBasises[view];
     const span: DimensionSpan = {
       index,
-      view: d.views?.[0] ?? "front",
+      view,
       along,
       linePoint,
       linePosition: d.linePosition,
@@ -1420,6 +1424,8 @@ export function dimensionPlacements(
       startIsMin: start <= end,
       textWidth,
       split: rows.length > 1,
+      // The text's up, as `dimensionMeshifyAlignedDimension` turns it in the view, against the direction out to the line
+      overInward: vec3Dot(vec3Cross(basis.normal, getDimensionTextDirection(getDimensionSide(outward, basis), basis)), outward) < 0,
       // Its first row on one side, the rest on the other
       textBlockHeight: textHeight * (1 + dimensionTextRowStep * Math.max(0, rows.length - 2)),
     };
@@ -1446,9 +1452,9 @@ export function dimensionPlacements(
     const apart = (l: Placed, o: Placed): number => Math.abs((l.s.min + l.s.max) / 2 - (o.s.min + o.s.max) / 2) - (l.s.textWidth + o.s.textWidth) / 2;
     const sorted = line.toSorted((a, b) => a.min - b.min);
     // What makes a text unclear, worst first: across its neighbour's, so they alternate even where every other one's still clash, across another text,
-    // two texts on one side so close they read as one, and a text towards the measured points, more at an end of the line, with room past it
+    // two texts on one side so close they read as one, and a text under the line, more at an end of the line, with room past it
     const placeCost = (l: Placed, placed: ReadonlyArray<Placed>): number =>
-      (l.inward ? (l.s === sorted[0] || l.s === sorted.at(-1) ? 5 : 4) : 0) +
+      (l.inward !== l.s.overInward ? (l.s === sorted[0] || l.s === sorted.at(-1) ? 5 : 4) : 0) +
       placed
         .filter((o) => o.inward === l.inward || o.s.split || l.s.split)
         .reduce(
@@ -1688,15 +1694,12 @@ function getDimensionSide(dir: Vec3, basis: DimensionViewBias): DimensionSide {
   return up > 0 ? "top" : "bottom";
 }
 
+/** A dimension's text reads left to right, and bottom to top on either side of the view, as ISO 129's method 1 */
 function getDimensionTextDirection(side: DimensionSide, basis: DimensionViewBias): Vec3 {
   switch (side) {
-    case "top":
-    case "bottom":
-      return basis.right;
     case "left":
-      return basis.up;
     case "right":
-      return vec3Scale(basis.up, -1);
+      return basis.up;
     default:
       return basis.right;
   }
