@@ -115,7 +115,7 @@ export function getMaterialClass(item: Item, { materialState, disabled }: Target
       const type = item.role === "solid" && materialTypes.includes(mat.type as MaterialType) ? mat.type : undefined;
       const opacity = getOpacity(material);
       return {
-        lit: item.role === "solid",
+        lit: item.role === "solid" && material.lit !== false,
         ...(type ? { type, metalness: mat.metalness, roughness: mat.roughness } : { metalness: mat.metalness ?? 0, roughness: mat.roughness ?? 1 }),
         side: item.role === "text" || material.backfaceCulling ? "front" : "double",
         transparent: opacity < 1,

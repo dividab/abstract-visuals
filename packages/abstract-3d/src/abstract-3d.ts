@@ -187,6 +187,8 @@ export type Material = {
   readonly type?: MaterialType;
   /** False for parts that shouldn't cast shadows, e.g. symbols, markers and other abstract parts; the three.js viewer's shadows, on by default */
   readonly castShadow?: boolean;
+  /** False draws a solid in its flat color, without the lights and shadows, e.g. a drawing's faces; lit by default */
+  readonly lit?: boolean;
 };
 
 /**
