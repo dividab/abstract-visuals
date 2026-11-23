@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.3.4] - 2026-11-23
+
+- Added: a material's `lit`, false to draw a solid in its flat color without the viewer's lights and shadows, e.g. a drawing's white faces
+
 ## [5.3.3] - 2026-11-23
 
 - Changed: a dimension's text is drawn over its line as it reads, as ISO 129's method 1, on every side: under the measured points over the line towards them, no longer out from it; a neighbour's in the way still puts it under the line, alternating
