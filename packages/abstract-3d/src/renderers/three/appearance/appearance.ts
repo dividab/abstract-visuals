@@ -13,8 +13,8 @@ export type StructureState = {
   readonly activeComponents?: Record<string, MaterialState>;
   /** Relations are active, e.g. to pick one to insert a component on, so only the groups whose material state is Accept can be clicked */
   readonly relationsActive: boolean;
-  /** The id of the groups dragged, drawn as they are while relations are active, rather than disabled */
-  readonly draggedId?: string;
+  /** The target of the top-level group dragged, drawn as it is while relations are active, rather than disabled */
+  readonly draggedTarget?: number;
 };
 
 /**
@@ -85,7 +85,7 @@ export function getTargetStates(targets: ReadonlyArray<Target>, items: ReadonlyA
   }
   return targets.map((target, t) => {
     const state = target.kind === "group" ? structure.activeComponents?.[target.id] : undefined;
-    const disabled = target.kind === "group" && structure.relationsActive && state !== "Accept" && target.id !== structure.draggedId;
+    const disabled = target.kind === "group" && structure.relationsActive && state !== "Accept" && t !== structure.draggedTarget;
     return state !== undefined && state !== "Accept" && hasSymbol[t] ? { symbolState: state, disabled } : { materialState: state, disabled };
   });
 }

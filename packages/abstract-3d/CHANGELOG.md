@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.0.0] - 2026-11-23
+
+- Changed (breaking): the viewer's `canDragGroup(id, rootData, data)` tells whether the top-level group pressed is dragged, e.g. one of a component's boxes drawn as a piece of its own, replacing `draggableIds`
+- Changed: a drag moves the top-level group pressed, not the others of its id, e.g. one of a component's boxes; only it's drawn as it is while relations are active
+
 ## [5.3.0] - 2026-11-23
 
 - Added: dragging groups in the viewer: a press on one of the `draggableIds` groups drags it rather than turning the camera; `onDragGroup` once the pointer moved past a click, e.g. to make the relations it can be dropped on active, and `onDropGroup` on its release, with the relation or group under the pointer, or none, also when Escape or the browser cancels it. A click on it still clicks. The dragged group follows the pointer, the point pressed under it on the plane facing the camera, its middle snapped onto an active relation's slab's while over it; it's drawn as it is while relations are active, not disabled. Dropped on a relation or group it stays there until the next scene, else it goes back

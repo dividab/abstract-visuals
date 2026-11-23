@@ -29,7 +29,7 @@ import {
   getPickables,
   getPickedItem,
   getSolidsBox,
-  moveGroups,
+  moveTarget,
   paintScene,
 } from "../build/build.js";
 import type { TextureCache } from "../build/materials.js";
@@ -66,13 +66,14 @@ type Hit = { readonly item: number; readonly target: number; readonly point: Vec
 type GroupArgs = readonly [string, Record<string, string> | undefined, Record<string, string> | undefined];
 
 /**
- * The draggable group pressed, from its press until its release, and whether the pointer moved past a click since, which started its drag: the point
- * pressed, how far a drop had moved it from where it's built when pressed, the world box of the group's solids where it's built, and how far it's
- * moved
+ * The draggable top-level group pressed, from its press until its release, and whether the pointer moved past a click since, which started its drag:
+ * its target, the point pressed, how far a drop had moved it from where it's built when pressed, the world box of its solids where it's built, and
+ * how far it's moved
  */
 type Drag = {
   readonly pointerId: number;
   readonly args: GroupArgs;
+  readonly target: number;
   readonly point: Vector3;
   readonly base: Vector3;
   readonly box: Box3;
@@ -107,8 +108,8 @@ export type Viewer<Content> = {
     hovered?: Hit;
     frame: number;
     drag?: Drag;
-    /** The group dropped on a target, kept where it was dropped until a new scene, which places it as the drop changed it */
-    dropped?: { readonly id: string; readonly offset: Vector3 };
+    /** The top-level group dropped on a target, kept where it was dropped until a new scene, which places it as the drop changed it */
+    dropped?: { readonly target: number; readonly offset: Vector3 };
   };
   readonly loop: { frame: number; last: number; wasMoving: boolean; seconds: number };
   /** What the next frame redoes, from the options passed since the last */
@@ -271,7 +272,7 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
     v.structure = {
       activeComponents: options.activeComponents,
       relationsActive: options.activeRelations !== undefined,
-      draggedId: v.pointer.drag?.started ? v.pointer.drag.args[0] : v.pointer.dropped?.id,
+      draggedTarget: v.pointer.drag?.started ? v.pointer.drag.target : v.pointer.dropped?.target,
     };
     rebuild(v);
   }
@@ -414,9 +415,9 @@ function renderFrame<Content>(v: Viewer<Content>, now: number): void {
   // After animating, which places the animated items where they're built
   const { drag, dropped } = v.pointer;
   if (built && drag?.started) {
-    moveGroups(built, drag.args[0], drag.offset, loop.seconds);
+    moveTarget(built, drag.target, drag.offset, loop.seconds);
   } else if (built && dropped) {
-    moveGroups(built, dropped.id, dropped.offset, loop.seconds);
+    moveTarget(built, dropped.target, dropped.offset, loop.seconds);
   }
   camera.updateMatrixWorld();
   if (built) {
@@ -588,13 +589,22 @@ function onPointerDown<Content>(v: Viewer<Content>, event: PointerEvent): void {
     return;
   }
   v.pointer.down = { x: event.clientX, y: event.clientY };
-  const hit = event.button === 0 && v.options.draggableIds ? pick(v, event) : undefined;
+  const hit = event.button === 0 && v.options.canDragGroup ? pick(v, event) : undefined;
   const target = hit && v.compiled!.targets[hit.target];
-  if (hit && target?.kind === "group" && v.options.draggableIds?.[target.id]) {
-    const args: GroupArgs = [target.id, target.rootData, v.compiled!.items[hit.item]!.data];
+  const args: GroupArgs | undefined = hit && target?.kind === "group" ? [target.id, target.rootData, v.compiled!.items[hit.item]!.data] : undefined;
+  if (hit && args && v.options.canDragGroup?.(...args)) {
     const { dropped } = v.pointer;
-    const base = dropped?.id === target.id ? dropped.offset.clone() : new Vector3();
-    v.pointer.drag = { pointerId: event.pointerId, args, point: hit.point, base, box: new Box3(), offset: base.clone(), started: false };
+    const base = dropped?.target === hit.target ? dropped.offset.clone() : new Vector3();
+    v.pointer.drag = {
+      pointerId: event.pointerId,
+      args,
+      target: hit.target,
+      point: hit.point,
+      base,
+      box: new Box3(),
+      offset: base.clone(),
+      started: false,
+    };
     v.controls.orbit.enabled = false;
     // Captured, so its release is the canvas' also off it, before its drag started too
     v.canvas.setPointerCapture(event.pointerId);
@@ -606,8 +616,7 @@ function onPointerMove<Content>(v: Viewer<Content>, event: PointerEvent): void {
   const { drag, down } = v.pointer;
   if (drag?.pointerId === event.pointerId && !drag.started && down && Math.hypot(event.clientX - down.x, event.clientY - down.y) > clickTolerance) {
     drag.started = true;
-    const targets = v.compiled!.targets.flatMap((t, i) => (t.kind === "group" && t.id === drag.args[0] ? [i] : []));
-    const box = getSolidsBox(v.built!, targets);
+    const box = getSolidsBox(v.built!, [drag.target]);
     // Where it's placed, moved back by the drop's offset to where it's built
     drag.box.copy(box.isEmpty() ? box.setFromCenterAndSize(drag.point, new Vector3()) : box).translate(center.copy(drag.base).negate());
     v.options.onDragGroup?.(...drag.args, { nativeEvent: event, point: drag.point });
@@ -648,9 +657,9 @@ function endDrag<Content>(v: Viewer<Content>, drag: Drag, hit: Hit | undefined, 
           : undefined;
     // Kept where it was dropped on a target, else back where it was pressed, where the frames place it if a drop had moved it
     if (dropTarget) {
-      v.pointer.dropped = { id: drag.args[0], offset: drag.offset };
-    } else if (v.built && v.pointer.dropped?.id !== drag.args[0]) {
-      moveGroups(v.built, drag.args[0], new Vector3(), v.loop.seconds);
+      v.pointer.dropped = { target: drag.target, offset: drag.offset };
+    } else if (v.built && v.pointer.dropped?.target !== drag.target) {
+      moveTarget(v.built, drag.target, new Vector3(), v.loop.seconds);
     }
     invalidate(v);
     v.options.onDropGroup?.(drag.args[0], dropTarget, event);
@@ -742,7 +751,7 @@ function pick<Content>(v: Viewer<Content>, event: MouseEvent): Hit | undefined {
     const kind = target === undefined ? undefined : built.compiled.targets[target]!;
     const interactive =
       kind?.kind === "group"
-        ? kind.id !== "" && !built.targetStates[target!]!.disabled && !(v.pointer.drag?.started && kind.id === v.pointer.drag.args[0])
+        ? kind.id !== "" && !built.targetStates[target!]!.disabled && !(v.pointer.drag?.started && target === v.pointer.drag.target)
         : kind?.kind === "dimension"
           ? kind.id !== undefined && v.options.activeRelations === undefined && v.options.onClickGroup !== undefined
           : kind !== undefined;

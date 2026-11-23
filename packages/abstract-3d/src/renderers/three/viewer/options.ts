@@ -78,8 +78,11 @@ export type ViewerOptions<Content> = {
   readonly onClickRelation?: (relation: Relation, event: SceneEvent) => void;
   /** A click, not a drag, on nothing clickable, e.g. the background; r3f's Canvas event of the same name */
   readonly onPointerMissed?: (event: MouseEvent) => void;
-  /** The groups that pressing and moving the pointer on drags instead of turning the camera, e.g. the selected one; a click on them still clicks */
-  readonly draggableIds?: Record<string, boolean>;
+  /**
+   * Whether the top-level group pressed is dragged by moving the pointer, instead of the camera turned, e.g. one of a component's boxes drawn as a
+   * piece of its own; a click on it still clicks
+   */
+  readonly canDragGroup?: (id: string, rootData: Data, data: Data) => boolean;
   /** A draggable group's drag started: the pointer moved past a click while pressed on it, e.g. to make the relations it can be dropped on active */
   readonly onDragGroup?: (id: string, rootData: Data, data: Data, event: SceneEvent) => void;
   /** The dragged group is released on the relation or group under the pointer, or on nothing, also when Escape or the browser cancels the drag */
@@ -120,7 +123,7 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   onContextMenuGroup: [],
   onClickRelation: [],
   onPointerMissed: [],
-  draggableIds: [],
+  canDragGroup: [],
   onDragGroup: [],
   onDropGroup: [],
 };
