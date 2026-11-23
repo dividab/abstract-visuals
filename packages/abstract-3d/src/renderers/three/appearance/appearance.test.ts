@@ -84,8 +84,9 @@ describe("getMaterialClass", () => {
   });
 
   it("makes translucent materials and disabled groups transparent", () => {
-    expect(classify(solid({ normal: red, opacity: 0.5 }), group).transparent).toBe(true);
+    expect(classify(solid({ normal: red, opacity: 0.5 }), group)).toMatchObject({ transparent: true, nearestOnly: true });
     expect(classify(solid({ normal: red }), group, { relationsActive: true }).transparent).toBe(true);
+    expect(classify(solid({ normal: red }), group, { relationsActive: true }).nearestOnly).toBeUndefined();
     expect(classify(solid({ normal: red }), group, { relationsActive: true, activeComponents: { fan: "Accept" } }).transparent).toBe(false);
   });
 

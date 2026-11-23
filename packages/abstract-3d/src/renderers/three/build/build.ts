@@ -23,7 +23,15 @@ import type { Selection, SelectionBox } from "../selection/selection.js";
 import { createSelection, disposeSelection, setSelection } from "../selection/selection.js";
 import type { GlyphAtlas } from "../text/text.js";
 import type { TextureCache } from "./materials.js";
-import { createClassMaterial, createImageMaterial, getImageUrl, loadSymbolStateTexture, loadTexture, symbolStatePadding } from "./materials.js";
+import {
+  createClassMaterial,
+  createDepthMaterial,
+  createImageMaterial,
+  getImageUrl,
+  loadSymbolStateTexture,
+  loadTexture,
+  symbolStatePadding,
+} from "./materials.js";
 import type { Part } from "./parts.js";
 import {
   addSlotBounds,
@@ -326,10 +334,14 @@ function createPart(
       });
       if (first.role === "solid") {
         const c = getMaterialClass(first, targetStates[first.target]!);
-        const part = createSolidPart(entries, createClassMaterial(c, options.studio !== false));
+        const material = createClassMaterial(c, options.studio !== false);
+        const part = createSolidPart(entries, material, c.nearestOnly ? createDepthMaterial(material.side) : undefined);
         // See-through solids that don't write depth before the images, which don't either, so an image behind one isn't drawn over it
         const renderOrder = c.last ? 1 : c.transparent && !c.depthWrite ? -0.5 : 0;
         Object.assign(part.object, { castShadow: c.castShadow, receiveShadow: c.lit, renderOrder });
+        if (part.depth) {
+          part.depth.renderOrder = renderOrder;
+        }
         return part;
       }
       // Images are hidden until their texture loads; a symbol in a state is drawn larger, framed and badged

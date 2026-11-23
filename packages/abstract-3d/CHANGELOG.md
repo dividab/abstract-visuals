@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.3.2] - 2026-11-23
+
+- Fixed: the viewer draws only the nearest surface of a see-through solid, e.g. glass or a material with an opacity, so it no longer shows its own insides, such as a lathe's inner rings; disabled groups still show what's in them
+
 ## [5.3.1] - 2026-11-23
 
 - Changed: the viewer's `canDragGroup(id, rootData, data)` tells whether the top-level group pressed is dragged, e.g. one of a component's boxes drawn as a piece of its own, replacing `draggableIds`

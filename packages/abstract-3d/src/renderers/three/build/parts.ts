@@ -36,7 +36,13 @@ export type Segment = {
 export type TextEntry = { readonly text: string; readonly fontSize: number; readonly local: Matrix4 };
 
 export type Part =
-  | { readonly kind: "solid"; readonly object: BatchedMesh; readonly locals: ReadonlyArray<Matrix4> }
+  | {
+      readonly kind: "solid";
+      readonly object: BatchedMesh;
+      readonly locals: ReadonlyArray<Matrix4>;
+      /** A nearest-only class's depth, the same solids drawn just before them, a child of `object`, so not picked */
+      readonly depth?: BatchedMesh;
+    }
   | {
       readonly kind: "text";
       readonly object: InstancedMesh;
@@ -60,8 +66,29 @@ export type Part =
     }
   | { readonly kind: "image"; readonly object: Mesh<BufferGeometry, MeshBasicMaterial>; readonly local: Matrix4 };
 
-/** Per-instance color for hover and selection, as three.js's BatchedMesh examples color instances */
-export function createSolidPart(entries: ReadonlyArray<{ readonly geometry: BufferGeometry; readonly local: Matrix4 }>, material: Material): Part {
+/**
+ * Per-instance color for hover and selection, as three.js's BatchedMesh examples color instances; with a depth material, the depth batch is created
+ * first, so of the same render order and distance, as it has the same solids, three.js draws it just before them
+ */
+export function createSolidPart(
+  entries: ReadonlyArray<SolidEntry>,
+  material: Material,
+  depthMaterial: Material | undefined
+): Extract<Part, { readonly kind: "solid" }> {
+  const depth = depthMaterial && createBatch(entries, depthMaterial);
+  const batch = createBatch(entries, material);
+  if (!depth) {
+    return { kind: "solid", object: batch, locals: entries.map((e) => e.local) };
+  }
+  // Drawn in any order, as only its depth is
+  depth.sortObjects = false;
+  batch.add(depth);
+  return { kind: "solid", object: batch, locals: entries.map((e) => e.local), depth };
+}
+
+type SolidEntry = { readonly geometry: BufferGeometry; readonly local: Matrix4 };
+
+function createBatch(entries: ReadonlyArray<SolidEntry>, material: Material): BatchedMesh {
   const geometries = [...new Set(entries.map((e) => e.geometry))];
   const vertexCount = geometries.reduce((sum, g) => sum + g.getAttribute("position").count, 0);
   const batch = new BatchedMesh(
@@ -72,7 +99,7 @@ export function createSolidPart(entries: ReadonlyArray<{ readonly geometry: Buff
   );
   const ids = new Map(geometries.map((g) => [g, batch.addGeometry(g)]));
   entries.forEach((e) => batch.addInstance(ids.get(e.geometry)!));
-  return { kind: "solid", object: batch, locals: entries.map((e) => e.local) };
+  return batch;
 }
 
 export function createTextPart(entries: ReadonlyArray<TextEntry>, atlas: GlyphAtlas): Part {
@@ -135,6 +162,7 @@ export function placeSlot(part: Part, slot: number, matrix: Matrix4): void {
   switch (part.kind) {
     case "solid":
       part.object.setMatrixAt(slot, scratch.multiplyMatrices(matrix, part.locals[slot]!));
+      part.depth?.setMatrixAt(slot, scratch);
       break;
     case "text": {
       const text = scratch.multiplyMatrices(matrix, part.locals[slot]!);
@@ -198,6 +226,8 @@ export function flushPart(part: Part, moved: boolean): void {
       if (moved) {
         part.object.computeBoundingBox();
         part.object.computeBoundingSphere();
+        part.depth?.computeBoundingBox();
+        part.depth?.computeBoundingSphere();
       }
       break;
     case "text":
@@ -250,6 +280,8 @@ export function cullLines(part: Part, cameraPosition: Vector3): void {
 export function disposePart(part: Part): void {
   if (part.kind === "solid") {
     part.object.dispose();
+    part.depth?.dispose();
+    part.depth?.material.dispose();
   } else if (part.kind !== "image") {
     part.object.geometry.dispose();
   }

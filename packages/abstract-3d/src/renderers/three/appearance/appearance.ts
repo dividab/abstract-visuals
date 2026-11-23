@@ -49,6 +49,11 @@ export type MaterialClass = {
   readonly castShadow: boolean;
   /** Written to depth though transparent, e.g. a relation's slab, so its outline shows only around it */
   readonly depthWrite?: boolean;
+  /**
+   * See-through but only its nearest surface drawn, by its depth drawn first, so it doesn't show its own insides; not disabled groups, which show the
+   * relations in them
+   */
+  readonly nearestOnly?: boolean;
   /** Drawn after the other transparent classes, e.g. a relation's outline after its slab */
   readonly last?: boolean;
 };
@@ -108,12 +113,14 @@ export function getMaterialClass(item: Item, { materialState, disabled }: Target
       const mat = materialState ? stateMaterials[materialState] : material;
       // Only a known type, as data may have a type of its own, e.g. a number
       const type = item.role === "solid" && materialTypes.includes(mat.type as MaterialType) ? mat.type : undefined;
+      const opacity = getOpacity(material);
       return {
         lit: item.role === "solid",
         ...(type ? { type, metalness: mat.metalness, roughness: mat.roughness } : { metalness: mat.metalness ?? 0, roughness: mat.roughness ?? 1 }),
         side: item.role === "text" || material.backfaceCulling ? "front" : "double",
-        transparent: getOpacity(material) < 1,
-        castShadow: item.role === "solid" && getOpacity(material) === 1 && material.castShadow !== false,
+        transparent: opacity < 1,
+        ...(opacity < 1 ? { nearestOnly: true } : {}),
+        castShadow: item.role === "solid" && opacity === 1 && material.castShadow !== false,
       };
     }
   }

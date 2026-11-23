@@ -11,6 +11,7 @@ import {
   MeshPhysicalMaterial,
   type MeshPhysicalMaterialParameters,
   MeshStandardMaterial,
+  type Side,
   SRGBColorSpace,
   type Texture,
   TextureLoader,
@@ -27,7 +28,8 @@ import { stateMaterials } from "../appearance/appearance.js";
  */
 export function createClassMaterial(c: MaterialClass, reflections: boolean): Material {
   const side = c.side === "front" ? FrontSide : c.side === "back" ? BackSide : DoubleSide;
-  const common = { side, transparent: c.transparent, depthWrite: c.depthWrite ?? !c.transparent };
+  // A nearest-only class's back faces are behind its depth, so one pass rather than back faces then front faces
+  const common = { side, transparent: c.transparent, depthWrite: c.depthWrite ?? !c.transparent, forceSinglePass: c.nearestOnly === true };
   if (!c.lit) {
     return new MeshBasicMaterial(common);
   }
@@ -38,6 +40,19 @@ export function createClassMaterial(c: MaterialClass, reflections: boolean): Mat
     ? new MeshPhysicalMaterial({ ...common, ...finish, metalness: reflections ? metalness : Math.min(metalness, plainMetalness), roughness })
     : new MeshStandardMaterial({ ...common, metalness: reflections ? metalness : Math.min(metalness, plainMetalness), roughness });
   return Object.assign(material, { onBeforeCompile: c.type === "galvanized" ? galvanize : roundEdges });
+}
+
+/** Only the depth of a nearest-only class's solids, pushed back a little so their nearest surface, and images on it, still pass the depth test */
+export function createDepthMaterial(side: Side): Material {
+  return new MeshBasicMaterial({
+    side,
+    colorWrite: false,
+    transparent: true,
+    forceSinglePass: true,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  });
 }
 
 /** The most metalness without reflections */
