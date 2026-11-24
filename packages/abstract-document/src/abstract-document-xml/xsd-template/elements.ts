@@ -21,6 +21,7 @@ export const section = `<xs:complexType name="Section">
 		<xs:element name="Markdown" type="Markdown" minOccurs="0" />
 		<xs:element name="page" type="page" minOccurs="0" maxOccurs="1"></xs:element>
 	</xs:choice>
+	<xs:attribute name="restartPageNumbering" type="xs:boolean" use="optional"/>
 </xs:complexType>`;
 
 export const page = `<xs:complexType name="page">

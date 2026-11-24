@@ -362,6 +362,7 @@ export const propsCreators: Record<string, ADCreatorFn> = {
   keepTogetherSections: ((props: { readonly keepTogetherSections: string }): unknown => strToBool(props.keepTogetherSections)) as ADCreatorFn,
   keepTogether: ((props: { readonly keepTogether: string }): unknown => strToBool(props.keepTogether)) as ADCreatorFn,
   differentFirstPage: ((props: { readonly differentFirstPage: string }): unknown => strToBool(props.differentFirstPage)) as ADCreatorFn,
+  restartPageNumbering: ((props: { readonly restartPageNumbering: string }): unknown => strToBool(props.restartPageNumbering)) as ADCreatorFn,
 };
 
 function requireText(props: Record<string, unknown> | undefined): string {

@@ -172,7 +172,24 @@ function createPage(
       bottom: 0,
     },
   };
-  const pageNo = previousPage ? previousPage.pageNo + 1 : 1;
+
+  const calculatePageNumber = (): number => {
+    if (!previousPage) {
+      return 1;
+    }
+
+    /**
+     * Restart page numbering for sections that declare the restartPageNumbering attribute. But only for the first paginated part of the section. If
+     * the previous page was created from the same section, we shouldnt restart again.
+     */
+    if (section.restartPageNumbering && !(section === previousPage.section)) {
+      return 1;
+    }
+
+    return previousPage.pageNo + 1;
+  };
+
+  const pageNo = calculatePageNumber();
 
   const namedDestionations = [];
 

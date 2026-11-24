@@ -37,6 +37,7 @@ export const testSimpleDocument: ExportTestDef = {
           footer: [],
         },
         id: "",
+        restartPageNumbering: false,
         children: [
           {
             type: "Table",

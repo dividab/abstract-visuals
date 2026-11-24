@@ -140,6 +140,11 @@ function renderSection(section: AD.Section.Section, parentResources: AD.Resource
           header: pageHeaderMargins.top * abstractDocPixelToDocxDXARatio,
           footer: pageFooterMargins.bottom * abstractDocPixelToDocxDXARatio,
         },
+        pageNumbers: section.restartPageNumbering
+          ? {
+              start: 1,
+            }
+          : undefined,
       },
     },
     headers: {

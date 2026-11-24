@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.5.11] - 2026-11-24
+- Added: a new `restartPageNumbering` attribute on the section element to make it possible to reset the page number to 1 when encountered.
+
 ## [20.5.10] - 2026-11-23
 
 - Fixed: the PDF exporter aligns a line that ends in a line break, e.g. a `\n` in a text, by its text. It was measured with the line break as wide as an "A", so right aligned it ended that far before the edge and centered half as far to the left, and spaces before the break moved it further.

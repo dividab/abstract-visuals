@@ -35,7 +35,7 @@ function preProcessSection(s: AD.Section.Section, parentResources: AD.Resources.
     frontFooter: frontFooter,
   });
   const children = s.children.flatMap((e) => preProcessSectionElement(e, resources));
-  return AD.Section.create({ page: page, id: s.id }, children);
+  return AD.Section.create({ page: page, id: s.id, restartPageNumbering: s.restartPageNumbering }, children);
 }
 
 function preProcessSectionElement(
