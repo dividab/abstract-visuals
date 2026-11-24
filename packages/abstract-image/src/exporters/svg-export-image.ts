@@ -15,34 +15,44 @@ export type SvgOptions = {
   readonly imageDataByUrl: Record<string, `data:image/${string},${string}` | AbstractImage>;
   /** Its svg's class besides `classNames.root`, e.g. sized to fill its box */
   readonly className: string;
+  /**
+   * The decimals its coordinates, sizes and stroke widths are rounded to, in the image's units, a sub image's as many more as it's scaled up, e.g. 2
+   * for a hundredth of a pixel; not rounded without
+   */
+  readonly decimals: number;
+  /** False to leave out its namespace, e.g. for an svg put inside another; it's needed on its own, e.g. as a file or an image's source */
+  readonly namespace: boolean;
 };
 
-type ImageDataByUrl = SvgOptions["imageDataByUrl"];
+/** What its parts are drawn with: the images by url, and the decimals of a part's units, undefined for not rounded */
+type Context = { readonly imageDataByUrl: SvgOptions["imageDataByUrl"]; readonly decimals: number | undefined };
 
 /** Drawn with `classNames`' classes like ReactSvg, its svg's `classNames.root` and `className`, an embedded picture's `classNames.image` */
 export function createSVG(image: AbstractImage, options?: Optional<SvgOptions>): string {
   const className = options?.className ? `${classNames.root} ${options.className}` : classNames.root;
-  const width = options?.pixelWidth ?? image.size.width;
-  const height = options?.pixelHeight ?? image.size.height;
-  return svgElement(image, options?.imageDataByUrl ?? {}, ` class="${className}" width="${width}px" height="${height}px"`);
+  const context: Context = { imageDataByUrl: options?.imageDataByUrl ?? {}, decimals: options?.decimals };
+  const width = round(options?.pixelWidth ?? image.size.width, context);
+  const height = round(options?.pixelHeight ?? image.size.height, context);
+  const namespace = options?.namespace === false ? "" : ' xmlns="http://www.w3.org/2000/svg"';
+  return svgElement(image, context, `${namespace} class="${className}" width="${width}px" height="${height}px"`);
 }
 
-/** An image's svg, `attributes` its root's class and size, a sub image's its own size */
-function svgElement(image: AbstractImage, imageDataByUrl: ImageDataByUrl, attributes: string | undefined): string {
-  const { width, height } = image.size;
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg"${attributes ?? ` width="${width}px" height="${height}px"`} viewBox="0 0 ${width} ${height}">`;
+/** An image's svg, `attributes` its root's namespace, class and size, a sub image's its own size, inside the root's namespace */
+function svgElement(image: AbstractImage, context: Context, attributes: string | undefined): string {
+  const [width, height] = [round(image.size.width, context), round(image.size.height, context)];
+  let svg = `<svg${attributes ?? ` width="${width}px" height="${height}px"`} viewBox="0 0 ${width} ${height}">`;
   for (const c of image.components) {
-    svg += componentToSvg(c, imageDataByUrl);
+    svg += componentToSvg(c, context);
   }
   return svg + "</svg>";
 }
 
-function componentToSvg(component: Component, imageDataByUrl: ImageDataByUrl): string {
+function componentToSvg(component: Component, context: Context): string {
   switch (component.type) {
     case "group": {
       let g = component.name ? `<g name="${component.name}">` : "<g>";
       for (const c of component.children) {
-        g += componentToSvg(c, imageDataByUrl);
+        g += componentToSvg(c, context);
       }
       return g + "</g>";
     }
@@ -50,66 +60,66 @@ function componentToSvg(component: Component, imageDataByUrl: ImageDataByUrl): s
       const { x, y } = component.topLeft;
       const width = component.bottomRight.x - x;
       const height = component.bottomRight.y - y;
-      const data = component.data.type === "url" ? (imageDataByUrl[component.data.url] ?? component.data.url) : undefined;
+      const data = component.data.type === "url" ? (context.imageDataByUrl[component.data.url] ?? component.data.url) : undefined;
       if (typeof data === "object") {
-        const scale = Math.min(width / (data.size.width || 1), height / (data.size.height || 1));
-        return `<g transform="translate(${x}, ${y}) scale(${scale})">${svgElement(data, imageDataByUrl, undefined)}</g>`;
+        return scaledSvg(x, y, Math.min(width / (data.size.width || 1), height / (data.size.height || 1)), data, context);
       }
       const href = component.data.type === "url" ? data : getBinaryImageHref(component.format, component.data.bytes);
       if (href === undefined) {
         return "";
       }
-      return `<image x="${x}" y="${y}" width="${width}" height="${height}" class="${classNames.image}"${href ? ` href="${href}"` : ""}></image>`;
+      return `<image x="${round(x, context)}" y="${round(y, context)}" width="${round(width, context)}" height="${round(height, context)}" class="${classNames.image}"${href ? ` href="${href}"` : ""}/>`;
     }
     case "subimage": {
-      const scale = Math.min(component.size.width / (component.image.size.width || 1), component.size.height / (component.image.size.height || 1));
-      return `<g transform="translate(${component.topLeft.x}, ${component.topLeft.y}) scale(${scale})">${svgElement(component.image, imageDataByUrl, undefined)}</g>`;
+      const { topLeft, size, image } = component;
+      return scaledSvg(topLeft.x, topLeft.y, Math.min(size.width / (image.size.width || 1), size.height / (image.size.height || 1)), image, context);
     }
     case "line": {
       const { start, end } = component;
       const cap = component.strokeLineCap ? ` stroke-linecap="${component.strokeLineCap}"` : "";
-      return `<line x1="${start.x}" y1="${start.y}" x2="${end.x}" y2="${end.y}"${getStroke(component.strokeColor, component.strokeThickness)}${cap}${getDash(component.strokeDashStyle)}></line>`;
+      return `<line x1="${round(start.x, context)}" y1="${round(start.y, context)}" x2="${round(end.x, context)}" y2="${round(end.y, context)}"${getStroke(component.strokeColor, component.strokeThickness, context)}${cap}${getDash(component.strokeDashStyle)}/>`;
     }
     case "polyline": {
       const join = component.strokeLineJoin ? ` stroke-linejoin="${component.strokeLineJoin}"` : "";
       const cap = component.strokeLineCap ? ` stroke-linecap="${component.strokeLineCap}"` : "";
-      return `<polyline fill="none"${getPoints(component.points)}${getStroke(component.strokeColor, component.strokeThickness)}${join}${cap}${getDash(component.strokeDashStyle)}></polyline>`;
+      return `<polyline fill="none"${getPoints(component.points, context)}${getStroke(component.strokeColor, component.strokeThickness, context)}${join}${cap}${getDash(component.strokeDashStyle)}/>`;
     }
     case "polygon": {
       const join = component.strokeLineJoin ? ` stroke-linejoin="${component.strokeLineJoin}"` : "";
-      return `<polygon${getPoints(component.points)}${getStroke(component.strokeColor, component.strokeThickness)}${getFill(component.fillColor)}${join}${getDash(component.strokeDashStyle)}></polygon>`;
+      return `<polygon${getPoints(component.points, context)}${getStroke(component.strokeColor, component.strokeThickness, context)}${getFill(component.fillColor)}${join}${getDash(component.strokeDashStyle)}/>`;
     }
     case "ellipse": {
       const { topLeft, bottomRight } = component;
-      const rx = Math.abs(bottomRight.x - topLeft.x) * 0.5;
-      const ry = Math.abs(bottomRight.y - topLeft.y) * 0.5;
-      const cx = (bottomRight.x + topLeft.x) * 0.5;
-      const cy = (bottomRight.y + topLeft.y) * 0.5;
-      return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"${getStroke(component.strokeColor, component.strokeThickness)}${getFill(component.fillColor)}${getDash(component.strokeDashStyle)}></ellipse>`;
+      const rx = round(Math.abs(bottomRight.x - topLeft.x) * 0.5, context);
+      const ry = round(Math.abs(bottomRight.y - topLeft.y) * 0.5, context);
+      const cx = round((bottomRight.x + topLeft.x) * 0.5, context);
+      const cy = round((bottomRight.y + topLeft.y) * 0.5, context);
+      return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"${getStroke(component.strokeColor, component.strokeThickness, context)}${getFill(component.fillColor)}${getDash(component.strokeDashStyle)}/>`;
     }
     case "rectangle": {
       const { topLeft, bottomRight, radius } = component;
-      const width = Math.abs(bottomRight.x - topLeft.x);
-      const height = Math.abs(bottomRight.y - topLeft.y);
-      const r = radius ? ` rx="${radius.x}" ry="${radius.y}"` : "";
-      return `<rect x="${topLeft.x}" y="${topLeft.y}" width="${width}" height="${height}"${getStroke(component.strokeColor, component.strokeThickness)}${getFill(component.fillColor)}${r}${getDash(component.strokeDashStyle)}></rect>`;
+      const width = round(Math.abs(bottomRight.x - topLeft.x), context);
+      const height = round(Math.abs(bottomRight.y - topLeft.y), context);
+      const r = radius ? ` rx="${round(radius.x, context)}" ry="${round(radius.y, context)}"` : "";
+      return `<rect x="${round(topLeft.x, context)}" y="${round(topLeft.y, context)}" width="${width}" height="${height}"${getStroke(component.strokeColor, component.strokeThickness, context)}${getFill(component.fillColor)}${r}${getDash(component.strokeDashStyle)}/>`;
     }
     case "text": {
       if (!component.text) {
         return "";
       }
-      const { position, fontSize } = component;
+      const fontSize = round(component.fontSize, context);
+      const position = { x: round(component.position.x, context), y: round(component.position.y, context) };
       const alignmentBaseline = getBaselineAdjustment(component.verticalGrowthDirection);
       const font = `text-anchor:${getTextAnchor(component.horizontalGrowthDirection)};font-size:${fontSize}px;font-weight:${component.fontWeight};${component.fontFamily ? `font-family:${component.fontFamily};` : ""}`;
       const transform = ` transform="rotate(${component.clockwiseRotationDegrees} ${position.x} ${position.y})"`;
       // Its lines' tspans, each a tspan per run alternating outside and inside <sub>
       let tSpans = "";
       for (const [i, line] of component.text.split("\n").entries()) {
-        tSpans += `<tspan x="${position.x}" y="${position.y + i * fontSize}" height="${fontSize}px">`;
+        tSpans += `<tspan x="${position.x}" y="${round(position.y + i * fontSize, context)}" height="${fontSize}px">`;
         let inside = false;
         for (const run of line.split(/<\/?sub>/)) {
           tSpans += inside
-            ? `<tspan baseline-shift="sub" font-size="${fontSize * 0.8}" alignment-baseline="${alignmentBaseline}">${escapeXml(run)}</tspan>`
+            ? `<tspan baseline-shift="sub" font-size="${round(fontSize * 0.8, context)}" alignment-baseline="${alignmentBaseline}">${escapeXml(run)}</tspan>`
             : `<tspan alignment-baseline="${alignmentBaseline}">${escapeXml(run)}</tspan>`;
           inside = !inside;
         }
@@ -118,16 +128,23 @@ function componentToSvg(component: Component, imageDataByUrl: ImageDataByUrl): s
       const fill = `<text style="${font}fill:${colorToRgb(component.textColor)};fill-opacity:${component.textColor.a / 255};"${transform}>${tSpans}</text>`;
       const { strokeColor, strokeThickness } = component;
       return strokeThickness > 0
-        ? `<text style="${font}stroke:${colorToRgb(strokeColor)};stroke-opacity:${strokeColor.a / 255};stroke-width:${strokeThickness}px;"${transform}>${tSpans}</text>${fill}`
+        ? `<text style="${font}stroke:${colorToRgb(strokeColor)};stroke-opacity:${strokeColor.a / 255};stroke-width:${round(strokeThickness, context)}px;"${transform}>${tSpans}</text>${fill}`
         : fill;
     }
     default:
       return "";
   }
 }
+/** A sub image's svg, scaled from its own units */
+function scaledSvg(x: number, y: number, scale: number, image: AbstractImage, context: Context): string {
+  const { decimals } = context;
+  // As many more decimals as it's scaled up, as few less as it's scaled down
+  const inner = { ...context, decimals: decimals === undefined ? undefined : Math.max(0, decimals + Math.ceil(Math.log10(scale || 1))) };
+  return `<g transform="translate(${round(x, context)}, ${round(y, context)}) scale(${scale})">${svgElement(image, inner, undefined)}</g>`;
+}
 
-function getStroke(color: Color, thickness: number): string {
-  return ` stroke="${colorToRgb(color)}" stroke-opacity="${color.a / 255}" stroke-width="${thickness}"`;
+function getStroke(color: Color, thickness: number, context: Context): string {
+  return ` stroke="${colorToRgb(color)}" stroke-opacity="${color.a / 255}" stroke-width="${round(thickness, context)}"`;
 }
 
 function getFill(color: Color): string {
@@ -138,10 +155,10 @@ function getDash(dashStyle: DashStyle): string {
   return dashStyle.dashes.length > 0 ? ` stroke-dasharray="${dashStyle.dashes.join(" ")}" stroke-dashoffset="${dashStyle.offset}"` : "";
 }
 
-function getPoints(points: ReadonlyArray<Point>): string {
+function getPoints(points: ReadonlyArray<Point>, context: Context): string {
   let s = "";
   for (const p of points) {
-    s += s ? ` ${p.x},${p.y}` : `${p.x},${p.y}`;
+    s += s ? ` ${round(p.x, context)},${round(p.y, context)}` : `${round(p.x, context)},${round(p.y, context)}`;
   }
   return s ? ` points="${s}"` : "";
 }
@@ -154,4 +171,9 @@ const xmlEntities: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&
 
 function escapeXml(text: string): string {
   return text.replace(/[&<>"']/g, (c) => xmlEntities[c] ?? c);
+}
+
+/** To the context's decimals, without trailing zeros; as it is without */
+function round(value: number, { decimals }: Context): number {
+  return decimals === undefined ? value : Number(value.toFixed(decimals));
 }

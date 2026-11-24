@@ -68,9 +68,12 @@ export function encodeElements(elements: ReadonlyArray<zOrderElement>, point: (x
 function isConvex(points: ReadonlyArray<Vec2>): boolean {
   let [min, max] = [0, 0];
   for (let i = 0; i < points.length; i++) {
-    const [o, p, q] = [points[i]!, points[(i + 1) % points.length]!, points[(i + 2) % points.length]!];
+    const o = points[i]!;
+    const p = points[(i + 1) % points.length]!;
+    const q = points[(i + 2) % points.length]!;
     const turn = (p.x - o.x) * (q.y - p.y) - (p.y - o.y) * (q.x - p.x);
-    [min, max] = [Math.min(min, turn), Math.max(max, turn)];
+    min = Math.min(min, turn);
+    max = Math.max(max, turn);
   }
   return min === 0 || max === 0;
 }
@@ -84,7 +87,8 @@ function getPath(points: ReadonlyArray<Vec2>, edges: ReadonlyArray<boolean> | un
   const closed = !edges?.includes(false);
   let area = 0;
   for (let i = 0; i < n; i++) {
-    const [p, q] = [points[i]!, points[(i + 1) % n]!];
+    const p = points[i]!;
+    const q = points[(i + 1) % n]!;
     area += p.x * q.y - q.x * p.y;
   }
   // Backwards if it's closed and wound the other way; else from after an edge left out, so a run isn't broken where the points wrap around
@@ -93,12 +97,14 @@ function getPath(points: ReadonlyArray<Vec2>, edges: ReadonlyArray<boolean> | un
   let d = "";
   for (let k = 0; k < n; k++) {
     const i = (start + k * step) % n;
-    const [p, q] = [points[i]!, points[(i + step) % n]!];
+    const p = points[i]!;
+    const q = points[(i + step) % n]!;
     if (closed ? k === 0 : edges![i] && (k === 0 || !edges![(i + n - 1) % n])) {
       d += `M${p.x},${p.y}`;
     }
     if (closed ? k < n - 1 : edges![i]) {
-      const [dx, dy] = [q.x - p.x, q.y - p.y];
+      const dx = q.x - p.x;
+      const dy = q.y - p.y;
       d += dx === 0 && dy === 0 ? "" : dy === 0 ? `h${dx}` : dx === 0 ? `v${dy}` : `l${dx}${dy < 0 ? "" : ","}${dy}`;
     }
   }

@@ -17,7 +17,6 @@ export function cylinder(
   const radiusEnd = c.radiusEnd ?? c.radius;
   const pos = vec3TransRot(c.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, c.rot ?? vec3Zero);
-  const vec3tr = (p: Vec3): Vec3 => vec3TransRot(p, pos, rot);
 
   const color = material.normal;
   const opacity = material.opacity ?? 1.0;
@@ -39,8 +38,8 @@ export function cylinder(
   for (let i = 0; i <= sides; i++) {
     const sin = Math.sin(currentAngle);
     const cos = Math.cos(currentAngle);
-    const currBot = vec3tr(vec3(sin * c.radius, -half, cos * c.radius));
-    const currTop = vec3tr(vec3(sin * radiusEnd, half, cos * radiusEnd));
+    const currBot = vec3TransRot(vec3(sin * c.radius, -half, cos * c.radius), pos, rot);
+    const currTop = vec3TransRot(vec3(sin * radiusEnd, half, cos * radiusEnd), pos, rot);
     botVec3Array.push(currBot);
     topVec3Array.push(currTop);
     const mid = currentAngle - angleStep / 2;
@@ -55,8 +54,8 @@ export function cylinder(
   }
   if (!c.open) {
     // The near end: a circle when directly facing the camera, else seen at an angle, its ring of facet corners
-    const circleTop = vec3tr(vec3(0, half, 0));
-    const circleBottom = vec3tr(vec3(0, -half, 0));
+    const circleTop = vec3TransRot(vec3(0, half, 0), pos, rot);
+    const circleBottom = vec3TransRot(vec3(0, -half, 0), pos, rot);
     const [circlePos, circleRadius, ring] =
       circleTop.z > circleBottom.z ? [circleTop, radiusEnd, topVec3Array] : [circleBottom, c.radius, botVec3Array];
     if (equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1)) {

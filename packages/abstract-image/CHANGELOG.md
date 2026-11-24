@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [14.3.0] - 2026-11-24
+
+- Added: `createSVG`'s `decimals`, to which it rounds coordinates, sizes and stroke widths, e.g. `33.33` instead of `33.333333333333336` for 2, a sub image's to as many more as it's scaled up; not rounded without.
+- Added: `createSVG`'s `namespace`, false to leave out its `xmlns`, e.g. for an svg put inside another.
+- Changed: `createSVG` writes its shapes and images as self-closing tags, and a sub image's svg without the `xmlns` of the svg it's in.
+
 ## [14.2.1] - 2026-11-22
 
 - Changed: `createSVG` builds its markup about twice as fast, and `ReactSvg` renders each part as one element instead of a component each, and keeps them while its `image` and `imageDataByUrl` are the same, so React skips them when only its callbacks or class change.

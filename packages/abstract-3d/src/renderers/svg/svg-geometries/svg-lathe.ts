@@ -1,9 +1,9 @@
 import type { Lathe, Vec2, Vec3, Material } from "../../../abstract-3d.js";
 import { vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3ZMean, equals, isZero } from "../../../abstract-3d.js";
 import { rgbGrayScale } from "../../../utils.js";
-import { svgCircle, svgPolygon } from "../svg-encoding.js";
+import { svgCircle } from "../svg-encoding.js";
 import type { SvgOptions, zOrderElement } from "./shared.js";
-import { getArea, gray, isOpaque, stBW, transparent, zElem } from "./shared.js";
+import { getArea, gray, isOpaque, minArea, stBW, transparent, zElem } from "./shared.js";
 
 /**
  * Its profile turned like a cylinder's sides, a ring of facet corners at each point, so it's one solid without faces inside; its end nearer the
@@ -32,17 +32,21 @@ export function lathe(
 
   const sides = 8;
   const angleStep = (2 * Math.PI) / sides;
-  const rings = l.points.map((p) =>
-    Array.from({ length: sides + 1 }, (_, i) => vec3TransRot(vec3(Math.sin(i * angleStep) * p.x, p.y, Math.cos(i * angleStep) * p.x), pos, rot))
-  );
+  const rings: Array<ReadonlyArray<Vec3>> = [];
+  for (const p of l.points) {
+    const ring: Array<Vec3> = [];
+    for (let i = 0; i <= sides; i++) {
+      ring.push(vec3TransRot(vec3(Math.sin(i * angleStep) * p.x, p.y, Math.cos(i * angleStep) * p.x), pos, rot));
+    }
+    rings.push(ring);
+  }
   for (let r = 1; r < rings.length; r++) {
     const [bot, top] = [rings[r - 1]!, rings[r]!];
     // Not a side along the axis
     if (!isZero(l.points[r - 1]!.x) || !isZero(l.points[r]!.x)) {
       for (let i = 1; i <= sides; i++) {
         const polygon = [bot[i]!, bot[i - 1]!, top[i - 1]!, top[i]!];
-        const points = polygon.map((p) => point(p.x, p.y));
-        zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(...polygon), polygon, opaque, style));
+        zOrderComponents.push(zElem("", vec3ZMean(...polygon), polygon, opaque, style));
       }
     }
   }
@@ -56,12 +60,9 @@ export function lathe(
     if (!isZero(radius)) {
       if (equals(firstCenter.x, lastCenter.x, 0.1) && equals(firstCenter.y, lastCenter.y, 0.1)) {
         zOrderComponents.push(zElem(svgCircle(radius, rot, point(center.x, center.y), fill, opacity, stroke, stBW), center.z, ring, opaque));
-      } else {
-        const points = ring.map((p) => point(p.x, p.y));
+      } else if (Math.abs(getArea(ring)) >= minArea) {
         // Not seen edge on, when it's only a line along the facets' edges
-        if (Math.abs(getArea(points)) >= 1e-6) {
-          zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), center.z, ring, opaque, style));
-        }
+        zOrderComponents.push(zElem("", center.z, ring, opaque, style));
       }
     }
   }

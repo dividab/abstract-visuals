@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [20.5.11] - 2026-11-24
+
 - Added: a new `restartPageNumbering` attribute on the section element to make it possible to reset the page number to 1 when encountered.
 
 ## [20.5.10] - 2026-11-23

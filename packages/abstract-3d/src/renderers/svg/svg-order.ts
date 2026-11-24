@@ -189,7 +189,8 @@ function split(
   const first = getDistance(points[0]!, plane);
   let dp = first;
   for (let i = 0; i < points.length; i++) {
-    const [p, q] = [points[i]!, points[(i + 1) % points.length]!];
+    const p = points[i]!;
+    const q = points[(i + 1) % points.length]!;
     const dq = i + 1 < points.length ? getDistance(q, plane) : first;
     const own = edges?.[i] ?? true;
     const crosses = (dp < -eps && dq > eps) || (dp > eps && dq < -eps);
@@ -211,15 +212,22 @@ function split(
     }
     dp = dq;
   }
-  for (const [half, side] of [
-    [b, back],
-    [f, front],
-  ] as const) {
-    if (half.points.length >= 3 && isCovered(half.points, occluders)) {
-      culled.add(piece.element);
-    } else if (half.points.length >= 3) {
-      side.push({ ...piece, ...half });
-    }
+  addHalf(piece, b, back, occluders, culled);
+  addHalf(piece, f, front, occluders, culled);
+}
+
+/** A piece's half on a side of the plane, unless it's nothing, or left out inside one of the occluders */
+function addHalf(
+  piece: Piece,
+  half: Pick<Piece, "points" | "edges">,
+  side: Array<Piece>,
+  occluders: ReadonlyArray<Item>,
+  culled: Set<zOrderElement>
+): void {
+  if (half.points.length >= 3 && isCovered(half.points, occluders)) {
+    culled.add(piece.element);
+  } else if (half.points.length >= 3) {
+    side.push({ element: piece.element, points: half.points, plane: piece.plane, edges: half.edges });
   }
 }
 
@@ -227,8 +235,11 @@ function split(
 function getPlane(points: ReadonlyArray<Vec3>): Plane | undefined {
   let [x, y, z] = [0, 0, 0];
   for (let i = 0; i < points.length; i++) {
-    const [p, q] = [points[i]!, points[(i + 1) % points.length]!];
-    [x, y, z] = [x + (p.y - q.y) * (p.z + q.z), y + (p.z - q.z) * (p.x + q.x), z + (p.x - q.x) * (p.y + q.y)];
+    const p = points[i]!;
+    const q = points[(i + 1) % points.length]!;
+    x += (p.y - q.y) * (p.z + q.z);
+    y += (p.z - q.z) * (p.x + q.x);
+    z += (p.x - q.x) * (p.y + q.y);
   }
   const length = Math.hypot(x, y, z);
   if (points.length < 3 || length < eps || Math.abs(z) < 1e-6 * length) {
@@ -239,15 +250,19 @@ function getPlane(points: ReadonlyArray<Vec3>): Plane | undefined {
   return { normal: n, d: n.x * points[0]!.x + n.y * points[0]!.y + n.z * points[0]!.z };
 }
 
-const getDistance = (p: Vec3, { normal: n, d }: Plane): number => n.x * p.x + n.y * p.y + n.z * p.z - d;
+const getDistance = (p: Vec3, plane: Plane): number => plane.normal.x * p.x + plane.normal.y * p.y + plane.normal.z * p.z - plane.d;
 
 /** -1 if the points are all behind the plane, 1 if all in front of it, 0 if all in it, 2 if on both sides */
 function getSide(points: ReadonlyArray<Vec3>, plane: Plane): number {
-  let [min, max] = [Infinity, -Infinity];
+  let min = Infinity;
+  let max = -Infinity;
   for (const p of points) {
     const distance = getDistance(p, plane);
     min = Math.min(min, distance);
     max = Math.max(max, distance);
+    if (min < -eps && max > eps) {
+      return 2;
+    }
   }
   return min >= -eps ? (max > eps ? 1 : 0) : max <= eps ? -1 : 2;
 }
@@ -261,13 +276,18 @@ function getHidden(items: ReadonlyArray<Item>): Uint8Array {
   const state = new Uint8Array(items.length);
   let [minX, minY, maxX, maxY] = [Infinity, Infinity, -Infinity, -Infinity];
   for (const { min, max } of items) {
-    [minX, minY, maxX, maxY] = [Math.min(minX, min.x), Math.min(minY, min.y), Math.max(maxX, max.x), Math.max(maxY, max.y)];
+    minX = Math.min(minX, min.x);
+    minY = Math.min(minY, min.y);
+    maxX = Math.max(maxX, max.x);
+    maxY = Math.max(maxY, max.y);
   }
   const finest = Math.max(maxX - minX, maxY - minY, eps) / gridCells;
   const cells = new Map<number, Array<number>>();
   for (let i = items.length - 1; i >= 0; i--) {
     const a = items[i]!;
-    for (let level = 0; cells.size > 0 && level <= gridLevels && state[i] === 0; level++) {
+    // What contains it has a shorter side at least as long, so it's kept at its level or above
+    const own = Math.max(0, Math.ceil(Math.log2(Math.min(a.max.x - a.min.x, a.max.y - a.min.y) / finest)));
+    for (let level = own; cells.size > 0 && level <= gridLevels && state[i] === 0; level++) {
       const size = finest * 2 ** level;
       const cell = cells.get((level * 512 + Math.floor((a.min.x - minX) / size)) * 512 + Math.floor((a.min.y - minY) / size)) ?? noCell;
       for (let k = 0; k < cell.length && state[i] === 0; k++) {
@@ -278,11 +298,10 @@ function getHidden(items: ReadonlyArray<Item>): Uint8Array {
     }
     // What a hidden occluder hides is hidden by what hides it
     if (a.occluder !== 0 && state[i] === 0) {
-      const level = Math.max(0, Math.ceil(Math.log2(Math.min(a.max.x - a.min.x, a.max.y - a.min.y) / finest)));
-      const size = finest * 2 ** level;
+      const size = finest * 2 ** own;
       for (let x = Math.floor((a.min.x - minX) / size); x <= Math.floor((a.max.x - minX) / size); x++) {
         for (let y = Math.floor((a.min.y - minY) / size); y <= Math.floor((a.max.y - minY) / size); y++) {
-          const key = (level * 512 + x) * 512 + y;
+          const key = (own * 512 + x) * 512 + y;
           const cell = cells.get(key);
           if (cell) {
             cell.push(i);
@@ -357,13 +376,20 @@ function isCovered(points: ReadonlyArray<Vec3>, occluders: ReadonlyArray<Item>):
 }
 
 /** Whether the front's opaque convex polygon contains all of the points on screen, so they can't be seen; not for a single point, e.g. text */
-function covers({ points, occluder }: Item, back: ReadonlyArray<Vec3>): boolean {
+function covers({ points, min, max, occluder }: Item, back: ReadonlyArray<Vec3>): boolean {
   if (occluder === 0 || back.length < 2) {
     return false;
   }
+  // Most aren't inside its bounds, which is quicker to tell
+  for (const r of back) {
+    if (r.x < min.x - eps || r.x > max.x + eps || r.y < min.y - eps || r.y > max.y + eps) {
+      return false;
+    }
+  }
   for (let i = 0; i < points.length; i++) {
-    const [p, q] = [points[i]!, points[(i + 1) % points.length]!];
-    const tolerance = -eps * Math.hypot(q.x - p.x, q.y - p.y);
+    const p = points[i]!;
+    const q = points[(i + 1) % points.length]!;
+    const tolerance = -eps * Math.sqrt((q.x - p.x) ** 2 + (q.y - p.y) ** 2);
     for (const r of back) {
       if (occluder * ((q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x)) < tolerance) {
         return false;

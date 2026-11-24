@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 import { createServer } from "vite";
+import { vec3 } from "../src/abstract-3d.js";
 import type { SvgOptions } from "../src/renderers/svg/svg-geometries/shared.js";
 import type { render as Render } from "../src/renderers/svg/svg.js";
 import type { scenes as Scenes } from "./scenes.js";
@@ -18,13 +19,15 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const out = join(root, "bench", "out");
 const name = process.argv[2] ?? "systemair3";
 const sketch = { only_stroke: true, stroke_thickness: 3, background: "rgb(255,255,255)" } as const;
+const topLeft = vec3(Math.atan(1 / Math.SQRT2), Math.PI / 4, 0);
+const topRight = vec3(Math.atan(1 / Math.SQRT2), -Math.PI / 4, 0);
 const views: Record<string, Partial<SvgOptions>> = {
   front: {},
   "front-sketch": sketch,
-  "top-left": { view: "TopLeft" },
-  "top-left-sketch": { view: "TopLeft", ...sketch },
-  "top-right": { view: "TopRight" },
-  "top-right-sketch": { view: "TopRight", ...sketch },
+  "top-left": { view: topLeft },
+  "top-left-sketch": { view: topLeft, ...sketch },
+  "top-right": { view: topRight },
+  "top-right-sketch": { view: topRight, ...sketch },
 };
 
 // Through vite, which resolves the sources' .js imports to their .ts files

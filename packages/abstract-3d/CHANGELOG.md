@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.6.0] - 2026-11-24
+
+- Added: a view can be a rotation, the scene's from the front as it's seen, both the viewer's `view` and `fitView`, upright without its roll, and the svg renderer's, without dimensions, e.g. `vec3(Math.atan(1 / Math.SQRT2), Math.PI / 4, 0)` isometric from the top left, or `-Math.PI / 4` from the top right
+- Removed: the svg renderer's `TopLeft` and `TopRight` views, which are those rotations
+- Changed: the svg renderer embeds an abstract image with its numbers to a tenth of a unit as it's drawn and without the `xmlns` of the svg it's in, and writes its matrices without trailing zeros
+- Changed: the svg renderer draws the same svg a quarter to a half faster, creating fewer objects and ruling out most faces that can't hide one another by their bounds
+
 ## [5.5.0] - 2026-11-24
 
 - Changed: the svg renderer draws faces in the order a BSP tree of their planes gives, instead of by mean depth, which drew parts through long faces in the isometric views, e.g. a unit's insides through its top. A face is split where another's plane cuts it, its pieces stroked only along its own edges, and drawn whole again where nothing drawn between them overlaps it; what an opaque face drawn later covers is left out. The tree's work is limited by the number of faces, past which what's left, the farthest, is drawn by mean depth, so a unit takes tens of milliseconds

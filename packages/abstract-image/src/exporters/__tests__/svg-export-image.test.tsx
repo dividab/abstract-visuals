@@ -8,6 +8,7 @@ import { testSvgLine } from "./tests-svg-export-image/svg-line.js";
 import { testSvgPolygon } from "./tests-svg-export-image/svg-polygon.js";
 import { testSvgPolyline } from "./tests-svg-export-image/svg-polyline.js";
 import { testSvgRectangle } from "./tests-svg-export-image/svg-rectangle.js";
+import { testSvgRoundedNumbers, testSvgUnroundedNumbers } from "./tests-svg-export-image/svg-rounded-numbers.js";
 import { testSvgTextBold } from "./tests-svg-export-image/svg-text-bold.js";
 import { testSvgTextGrowthDirections } from "./tests-svg-export-image/svg-text-growth-directions.js";
 import { testSvgTextItalic } from "./tests-svg-export-image/svg-text-italic.js";
@@ -25,6 +26,8 @@ describe("svg-export-image", () => {
     testSvgPolygon,
     testSvgPolyline,
     testSvgRectangle,
+    testSvgRoundedNumbers,
+    testSvgUnroundedNumbers,
     testSvgTextBold,
     testSvgTextGrowthDirections,
     testSvgTextItalic,

@@ -43,7 +43,11 @@ export type ViewerOptions<Content> = {
   readonly showDimensions?: boolean;
   /** View, buffer zones and padding are read when the scene is fitted: first, and for a new camera or canvas aspect */
   readonly camera?: CameraOptions;
-  readonly view?: View;
+  /**
+   * A view, or the scene's rotation from the front as it's seen, e.g. `vec3(Math.atan(1 / Math.SQRT2), Math.PI / 4, 0)` isometric from the top left;
+   * without its roll, as the camera is kept upright
+   */
+  readonly view?: View | Vec3;
   readonly bufferZones?: BufferZones;
   readonly fitPadding?: FitPadding;
   readonly controls?: ControlsOptions;

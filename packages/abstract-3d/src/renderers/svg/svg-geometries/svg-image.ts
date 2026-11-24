@@ -17,18 +17,16 @@ export function image(
   const half = vec2Scale(i.size, 0.5);
   const pos = vec3TransRot(i.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, i.rot ?? vec3Zero);
-  const vec3tr = (x: number, y: number): Vec3 => vec3TransRot(vec3(x, y, 0), pos, rot);
-
-  const v2 = vec3tr(half.x, -half.y);
-  const v4 = vec3tr(-half.x, half.y);
-  const corners = [vec3tr(-half.x, -half.y), v2, vec3tr(half.x, half.y), v4];
+  const v2 = vec3TransRot(vec3(half.x, -half.y, 0), pos, rot);
+  const v4 = vec3TransRot(vec3(-half.x, half.y, 0), pos, rot);
+  const corners = [vec3TransRot(vec3(-half.x, -half.y, 0), pos, rot), v2, vec3TransRot(vec3(half.x, half.y, 0), pos, rot), v4];
   // Seen edge on, it can't be seen, and isn't loaded
   if (Math.abs(getArea(corners)) < minArea) {
     return [];
   }
   // A flipped image runs the other way from the opposite corner
   const sign = vec2(i.flip?.x ? -1 : 1, i.flip?.y ? -1 : 1);
-  const topLeft = vec3tr(-half.x * sign.x, half.y * sign.y);
+  const topLeft = vec3TransRot(vec3(-half.x * sign.x, half.y * sign.y, 0), pos, rot);
 
   switch (i.image.type) {
     case "AbstractImage": {
@@ -36,7 +34,9 @@ export function image(
         x: (sign.x * i.size.x) / i.image.image.size.width,
         y: (sign.y * i.size.y) / i.image.image.size.height,
       };
-      const svg = createSVG(i.image.image, opts);
+      // Within a tenth of a unit, finer than the svg's own whole units so that its parts line up as drawn
+      const decimals = Math.max(0, Math.ceil(Math.log10(10 * Math.max(Math.abs(scale.x), Math.abs(scale.y)) || 1)));
+      const svg = createSVG(i.image.image, { ...opts, decimals, namespace: false });
       const img = svgImage(point(topLeft.x, topLeft.y), i.size, rot, { type: "svg", svg }, opts.imageBg ? opts.background : undefined, scale);
       return [zElem(img, (v2.z + v4.z) / 2, corners)];
     }

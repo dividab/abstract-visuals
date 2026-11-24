@@ -32,6 +32,11 @@ describe("render", () => {
     );
   });
 
+  it("draws a view from a rotation of the scene, the top's as the top view", () => {
+    const options = { only_stroke: true, stroke_thickness: 1 };
+    expect(render(scene, { ...options, view: vec3(Math.PI / 2, 0, 0) }).image).toBe(render(scene, { ...options, view: "top" }).image);
+  });
+
   it("leaves out what can't be seen: an image or an unstroked shape seen edge on, and an empty text", () => {
     const side = vec3(0, Math.PI / 2, 0);
     const hidden: Scene = {

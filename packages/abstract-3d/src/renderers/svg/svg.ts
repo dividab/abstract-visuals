@@ -88,13 +88,10 @@ function renderInternal(
     imageBg: options?.imageBg ?? false,
     className: options?.className ?? "",
   };
-  // Isometric: the front turned 45° to show the side, and tilted by arctan(1/√2) to show the top, so the three axes are foreshortened alike
-  const isometric = opts.view === "TopLeft" || opts.view === "TopRight";
-  const view = isometric ? "front" : opts.view;
-  const isometricRot = isometric
-    ? vec3RotCombine(vec3(Math.atan(1 / Math.SQRT2), 0, 0), vec3(0, ((opts.view === "TopRight" ? -1 : 1) * Math.PI) / 4, 0))
-    : vec3Zero;
-  const cameraRot = vec3RotCombine(isometricRot, rotationForCameraPos(view));
+  // A rotation turns the front
+  const turned = typeof opts.view === "object";
+  const view = turned ? "front" : opts.view;
+  const cameraRot = turned ? opts.view : rotationForCameraPos(view);
   const viewRot = opts.rotation ? vec3RotCombine(vec3(0, 0, (opts.rotation * Math.PI) / 180), cameraRot) : cameraRot;
 
   const unitCenter = vec3Rot(bounds3Center(scene.bounds), vec3Zero, cameraRot);
@@ -105,15 +102,17 @@ function renderInternal(
   const unitCenterFlipped = vec3Flip(unitCenter);
 
   const textHeight = sceneTextHeight(scene.groups);
-  const ordered = orderElements(
-    scene.groups.flatMap((g) => svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, viewRot, point, opts, textHeight))
-  );
+  const elements: Array<zOrderElement> = [];
+  for (const g of scene.groups) {
+    svgGroup(groupTextBackgrounds(g, textHeight), unitCenterFlipped, viewRot, point, opts, textHeight, elements);
+  }
+  const ordered = orderElements(elements);
   // The dimensions' elements are drawn after the scene's, as they're given
   const dimensionElements: Array<zOrderElement> = [];
   const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
 
   // Dimensions are drawn for the flat views
-  const dimensions = isometric ? [] : (scene.dimensions?.dimensions ?? []);
+  const dimensions = turned ? [] : (scene.dimensions?.dimensions ?? []);
   const placements = dimensionPlacements(dimensions, textHeight);
   for (const [i, dim] of dimensions.entries()) {
     const d = dimensionConvertToTypeMesh(dim, scene.dimensions?.material, textHeight, placements[i]);
@@ -129,24 +128,26 @@ function renderInternal(
   return { content, size: svgSize, center: svgCenter };
 }
 
+/** The group's meshes' elements, then its subgroups', added to `elements` */
 function svgGroup(
   g: Group,
   parentPos: Vec3,
   parentRot: Vec3,
   point: (x: number, y: number) => Vec2,
   opts: SvgOptions,
-  textHeight: number
-): ReadonlyArray<zOrderElement> {
+  textHeight: number,
+  elements: Array<zOrderElement>
+): void {
   const pos = vec3TransRot(g.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, g.rot ?? vec3Zero);
-  const elements = Array<zOrderElement>();
   for (const m of g.meshes ?? []) {
-    elements.push(...svgMesh(m, pos, rot, point, m.material, opts, textHeight));
+    for (const e of svgMesh(m, pos, rot, point, m.material, opts, textHeight)) {
+      elements.push(e);
+    }
   }
   for (const sg of g.groups ?? []) {
-    elements.push(...svgGroup(sg, pos, rot, point, opts, textHeight));
+    svgGroup(sg, pos, rot, point, opts, textHeight, elements);
   }
-  return elements;
 }
 
 function svgMesh(

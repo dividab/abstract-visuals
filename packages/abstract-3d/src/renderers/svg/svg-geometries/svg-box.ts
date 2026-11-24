@@ -25,28 +25,35 @@ export function box(
     ? [opts.gray_scale ? gray : color, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(color) : color, 0];
   const opaque = isOpaque(fill, opacity);
+  const style = { fill, opacity, stroke: strokeColor, strokeWidth: strokeUse };
 
-  return faces.flatMap(([one, other], i) => {
+  const elements: Array<zOrderElement> = [];
+  for (let i = 0; i < faces.length; i++) {
+    const [one, other] = faces[i]!;
     const face = one.reduce((z, c) => z + corners[c]!.z, 0) > other.reduce((z, c) => z + corners[c]!.z, 0) ? one : other;
+    const sharp = face.map((c) => corners[c]!);
     // Seen edge on, a face is only a line along the edges of the box's other faces
-    if (Math.abs(getArea(face.map((c) => point(corners[c]!.x, corners[c]!.y)))) < minArea) {
-      return [];
+    if (Math.abs(getArea(sharp)) < minArea) {
+      continue;
     }
-    const polygon = b.radius ? getRounded(face, faceEdges[i]!, local, b, pos, rot) : face.map((c) => corners[c]!);
-    const points = polygon.map((c) => point(c.x, c.y));
+    const polygon = b.radius ? getRounded(face, faceEdges[i]!, local, b, pos, rot) : sharp;
     // Only the front and back have holes, which show what's behind them
     const holes = i === 0 ? b.holes : undefined;
     const plain = !holes?.length;
-    return [
-      zElem(
-        plain ? "" : svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes),
-        vec3ZMean(...polygon),
-        polygon,
-        opaque && plain,
-        plain ? { fill, opacity, stroke: strokeColor, strokeWidth: strokeUse } : undefined
-      ),
-    ];
-  });
+    const element = plain
+      ? ""
+      : svgPolygon(
+          rot,
+          polygon.map((c) => point(c.x, c.y)),
+          fill,
+          opacity,
+          strokeColor,
+          strokeUse,
+          holes
+        );
+    elements.push(zElem(element, vec3ZMean(...polygon), polygon, opaque && plain, plain ? style : undefined));
+  }
+  return elements;
 }
 
 const unitCorners = [
@@ -111,7 +118,10 @@ function getRounded(
     const steps = Math.ceil(Math.PI / 4 / Math.acos(Math.max(0, 1 - arcTolerance / r)));
     for (let k = 0; k <= steps; k++) {
       const a = (k / steps) * (Math.PI / 2);
-      outline.push(vec3TransRot(vec3Sub(center, vec3Add(vec3Scale(n, Math.cos(a)), vec3Scale(p, Math.sin(a)))), pos, rot));
+      const [cos, sin] = [Math.cos(a), Math.sin(a)];
+      outline.push(
+        vec3TransRot(vec3(center.x - n.x * cos - p.x * sin, center.y - n.y * cos - p.y * sin, center.z - n.z * cos - p.z * sin), pos, rot)
+      );
     }
   }
   return outline;

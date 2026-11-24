@@ -2,13 +2,15 @@ import {
   Box3,
   type BufferGeometry,
   DirectionalLight,
+  Euler,
   Group,
   HemisphereLight,
+  Matrix4,
   NeutralToneMapping,
   OrthographicCamera,
   PerspectiveCamera,
   Plane,
-  type Quaternion,
+  Quaternion,
   Raycaster,
   Scene as ThreeScene,
   Vector2,
@@ -17,7 +19,7 @@ import {
   type WebGLRenderTarget,
 } from "three";
 import type { ViewportGizmo } from "three-viewport-gizmo";
-import type { View } from "../../../abstract-3d.js";
+import type { Vec3, View } from "../../../abstract-3d.js";
 import { bounds3ToSize } from "../../../abstract-3d.js";
 import type { StructureState } from "../appearance/appearance.js";
 import type { BuiltScene } from "../build/build.js";
@@ -228,7 +230,7 @@ export function invalidate<Content>(v: Viewer<Content>): void {
  * Turns the camera to look from the view at the scene's center, and fits the scene inside the buffer zones, as a viewcube click that resets zoom and
  * pan; the view is kept for later fits, e.g. for a new canvas aspect
  */
-export function fitView<Content>(v: Viewer<Content>, view: View): void {
+export function fitView<Content>(v: Viewer<Content>, view: View | Vec3): void {
   v.options = { ...v.options, view };
   v.controls.orbit.target.set(0, 0, 0);
   fitPose(v);
@@ -475,9 +477,21 @@ function fitPose<Content>(v: Viewer<Content>): void {
   }
 }
 
-function fitScene<Content>(v: Viewer<Content>, view: View | Quaternion = v.options.view ?? "front"): Placement | undefined {
+function fitScene<Content>(
+  v: Viewer<Content>,
+  view: View | Quaternion = getOrientation(v.options.view ?? "front", v.camera.up)
+): Placement | undefined {
   const { scene, bufferZones = {}, fitPadding = 0 } = v.options;
   return scene && fitCamera(v.camera, { view, size: bounds3ToSize(scene.bounds), canvas: v.size, bufferZones, fitPadding });
+}
+
+/** A view, or for a rotation of the scene the camera's orientation that shows it so, upright as the controls keep it */
+function getOrientation(view: View | Vec3, up: Vector3): View | Quaternion {
+  if (typeof view === "string") {
+    return view;
+  }
+  const direction = new Vector3(0, 0, 1).applyQuaternion(new Quaternion().setFromEuler(new Euler(view.x, view.y, view.z)).invert());
+  return new Quaternion().setFromRotationMatrix(new Matrix4().lookAt(direction, new Vector3(), up));
 }
 
 function updateGizmo<Content>(v: Viewer<Content>, fontsLoaded = false): void {

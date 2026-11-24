@@ -18,9 +18,9 @@ export type PolygonStyle = { readonly fill: string; readonly opacity: number; re
 export const zElem = (element: string, zOrder: number, polygon?: ReadonlyArray<Vec3>, opaque?: boolean, style?: PolygonStyle): zOrderElement => ({
   element,
   zOrder,
-  ...(polygon && { polygon }),
-  ...(opaque && { opaque }),
-  ...(style && { style }),
+  polygon,
+  opaque,
+  style,
 });
 
 /** Whether a fill hides what's behind it: fully opaque, and not transparent, e.g. a sketch's default background */
@@ -47,8 +47,11 @@ export const black = "rgb(15, 15, 15)";
 
 export type ImageDataUri = `data:image/png;base64,${string}` | `data:image/jpeg;base64,${string}` | `data:image/svg+xml,${string}`;
 
-/** A view, or an isometric one from the front's top left or top right, which shows the front, the top and that side, foreshortened alike */
-export type SvgView = View | "TopLeft" | "TopRight";
+/**
+ * A view, or the scene's rotation from the front as it's seen, without dimensions, e.g. `vec3(Math.atan(1 / Math.SQRT2), Math.PI / 4, 0)` isometric
+ * from the top left, showing the front, the top and the left side foreshortened alike, or `-Math.PI / 4` from the top right
+ */
+export type SvgView = View | Vec3;
 
 export type SvgOptions = {
   readonly view: SvgView;
@@ -86,8 +89,6 @@ export function svgTrsMatrix(translation: Vec2, rotation: Vec3, scale?: Vec2): s
 }
 
 const svgNum = (num: number): string => {
-  if (Math.abs(num) < 1e-9) {
-    return "0";
-  }
-  return num.toFixed(6);
+  // Six decimals, without trailing zeros
+  return String(Math.round(num * 1e6) / 1e6);
 };

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { vec2 } from "../../abstract-3d.js";
-import { svg } from "./svg-encoding.js";
+import { vec2, vec3Zero } from "../../abstract-3d.js";
+import { svg, svgImage } from "./svg-encoding.js";
 
 const getChildren = (image: string): string => image.slice(image.indexOf(">") + 1, -"</svg>".length);
 
@@ -18,6 +18,11 @@ describe("svg", () => {
     const one = svg(vec2(0, 0), vec2(10, 10), `<path fill="red"/><path fill="red"/>`, "");
     const other = svg(vec2(0, 0), vec2(10, 10), `<circle fill="red"/><path fill="green"/><path fill="red"/>`, "");
     expect(/<style>(.*)<\/style>/.exec(one)?.[1]).toBe(/<style>(.*)<\/style>/.exec(other)?.[1]);
+  });
+
+  it("embeds an svg image by a matrix without trailing zeros", () => {
+    const image = svgImage(vec2(1.5, 2), vec2(10, 10), vec3Zero, { type: "svg", svg: `<svg viewBox="0 0 1 1"/>` });
+    expect(image).toBe(`<g transform="matrix(1 0 0 1 1.5 2)"><svg class="a3d-image" width="10" height="10"><svg viewBox="0 0 1 1"/></svg></g>`);
   });
 
   it("keeps style attributes on only one element as they are", () => {

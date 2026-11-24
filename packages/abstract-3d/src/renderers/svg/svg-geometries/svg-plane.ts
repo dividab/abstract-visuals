@@ -17,12 +17,10 @@ export function plane(
   const half = vec2Scale(p.size, 0.5);
   const pos = vec3TransRot(p.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, p.rot ?? vec3Zero);
-  const vec3tr = (x: number, y: number): Vec3 => vec3TransRot(vec3(x, y, 0), pos, rot);
-
-  const v1 = vec3tr(-half.x, -half.y);
-  const v2 = vec3tr(half.x, -half.y);
-  const v3 = vec3tr(half.x, half.y);
-  const v4 = vec3tr(-half.x, half.y);
+  const v1 = vec3TransRot(vec3(-half.x, -half.y, 0), pos, rot);
+  const v2 = vec3TransRot(vec3(half.x, -half.y, 0), pos, rot);
+  const v3 = vec3TransRot(vec3(half.x, half.y, 0), pos, rot);
+  const v4 = vec3TransRot(vec3(-half.x, half.y, 0), pos, rot);
 
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
     ? [opts.gray_scale ? gray : material.normal, opts.background, opts.stroke_thickness]
