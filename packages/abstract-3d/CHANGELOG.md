@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.4.0] - 2026-11-24
+
+- Added: the viewer's `onDropExternal`, a press outside the viewer released on it, with the relation or group under the pointer, or none, e.g. an item dragged from a menu to where it's inserted; the cursor grabbing while that press is held over it
+- Added: the viewer's `onHoverRelation`, the active relation under the pointer and its shape's middle in client pixels, which a dragged group's middle snaps to, e.g. to snap what's dragged from outside the viewer the same way
+
 ## [5.3.4] - 2026-11-23
 
 - Added: a material's `lit`, false to draw a solid in its flat color without the viewer's lights and shadows, e.g. a drawing's white faces

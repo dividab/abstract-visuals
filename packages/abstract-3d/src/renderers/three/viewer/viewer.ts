@@ -105,6 +105,8 @@ export type Viewer<Content> = {
   readonly pointer: {
     last?: PointerEvent;
     down?: { readonly x: number; readonly y: number };
+    /** The pointer pressed in the viewer, e.g. on the canvas or the gizmo, until its release, whose release isn't an external drop */
+    pressed?: number;
     hovered?: Hit;
     frame: number;
     drag?: Drag;
@@ -201,6 +203,9 @@ export function createViewer<Content>(container: HTMLElement, options: ViewerOpt
   canvas.addEventListener("click", (e) => onClick(v, e), signal);
   canvas.addEventListener("contextmenu", (e) => onContextMenu(v, e), signal);
   window.addEventListener("keydown", (e) => onKeyDown(v, e), signal);
+  // After the canvas' own, also for a release off it
+  window.addEventListener("pointerup", () => (v.pointer.pressed = undefined), signal);
+  window.addEventListener("pointercancel", () => (v.pointer.pressed = undefined), signal);
   v.resizeObserver.observe(container);
   return v;
 }
@@ -585,6 +590,7 @@ function setCameraPose<Content>(v: Viewer<Content>, { quaternion, target, distan
 
 /** A press on a draggable group disables the controls until its release, so moving the pointer drags the group rather than turning the camera */
 function onPointerDown<Content>(v: Viewer<Content>, event: PointerEvent): void {
+  v.pointer.pressed = event.pointerId;
   if (event.target !== v.canvas || v.pointer.drag) {
     return;
   }
@@ -625,10 +631,13 @@ function onPointerMove<Content>(v: Viewer<Content>, event: PointerEvent): void {
 }
 
 function onPointerUp<Content>(v: Viewer<Content>, event: PointerEvent): void {
-  const { drag } = v.pointer;
+  const { drag, pressed } = v.pointer;
   if (drag?.pointerId === event.pointerId) {
     // Picked while dragged, so not the dragged group under the pointer
     endDrag(v, drag, drag.started && event.type === "pointerup" ? pick(v, event) : undefined, event);
+  } else if (pressed !== event.pointerId && event.type === "pointerup" && event.button === 0) {
+    v.canvas.style.cursor = v.pointer.hovered ? "pointer" : "";
+    v.options.onDropExternal?.(getDropTarget(v, pick(v, event)), event);
   }
 }
 
@@ -647,14 +656,7 @@ function endDrag<Content>(v: Viewer<Content>, drag: Drag, hit: Hit | undefined, 
   if (drag.started) {
     // Not a click too, should the pointer have come back to where it was pressed
     v.pointer.down = undefined;
-    const target = hit && v.compiled!.targets[hit.target];
-    const args = hit && getGroupArgs(v, hit);
-    const dropTarget: DropTarget | undefined =
-      hit && target?.kind === "relation"
-        ? { kind: "relation", relation: target.relation, point: hit.point }
-        : hit && args
-          ? { kind: "group", id: args[0], rootData: args[1], data: args[2], point: hit.point }
-          : undefined;
+    const dropTarget = getDropTarget(v, hit);
     // Kept where it was dropped on a target, else back where it was pressed, where the frames place it if a drop had moved it
     if (dropTarget) {
       v.pointer.dropped = { target: drag.target, offset: drag.offset };
@@ -664,6 +666,17 @@ function endDrag<Content>(v: Viewer<Content>, drag: Drag, hit: Hit | undefined, 
     invalidate(v);
     v.options.onDropGroup?.(drag.args[0], dropTarget, event);
   }
+}
+
+/** The relation or group hit, what's dropped on it, or undefined for nothing */
+function getDropTarget<Content>(v: Viewer<Content>, hit: Hit | undefined): DropTarget | undefined {
+  const target = hit && v.compiled!.targets[hit.target];
+  const args = hit && getGroupArgs(v, hit);
+  return hit && target?.kind === "relation"
+    ? { kind: "relation", relation: target.relation, point: hit.point }
+    : hit && args
+      ? { kind: "group", id: args[0], rootData: args[1], data: args[2], point: hit.point }
+      : undefined;
 }
 
 /** One pick per frame at most, paused while the camera is dragged, as the r3f renderer's ControlsWrapper paused pointer events */
@@ -716,7 +729,9 @@ function onContextMenu<Content>(v: Viewer<Content>, event: MouseEvent): void {
 function setHovered<Content>(v: Viewer<Content>, hit: Hit | undefined, event: PointerEvent): void {
   const previous = v.pointer.hovered;
   v.pointer.hovered = hit;
-  v.canvas.style.cursor = v.pointer.drag?.started ? "grabbing" : hit ? "pointer" : "";
+  // Grabbing while a group is dragged, or while a press outside the viewer is held over it, e.g. an item dragged from a menu
+  const dragged = v.pointer.drag?.started ?? (event.buttons === 1 && v.pointer.pressed === undefined);
+  v.canvas.style.cursor = dragged ? "grabbing" : hit ? "pointer" : "";
   if (hit?.target === previous?.target) {
     return;
   }
@@ -726,6 +741,19 @@ function setHovered<Content>(v: Viewer<Content>, hit: Hit | undefined, event: Po
   const args = hit && getGroupArgs(v, hit);
   if (hit && args) {
     v.options.onHoverGroup?.(...args, { nativeEvent: event, point: hit.point });
+  }
+  const target = hit && v.compiled!.targets[hit.target];
+  if (hit && target?.kind === "relation") {
+    // Its shape's middle, as hoverAtPointer snaps a dragged group's, on the canvas
+    const middle = getSolidsBox(v.built!, [hit.target]).getCenter(new Vector3()).project(v.camera);
+    const rect = v.canvas.getBoundingClientRect();
+    v.options.onHoverRelation?.({
+      relation: target.relation,
+      x: rect.left + ((middle.x + 1) / 2) * rect.width,
+      y: rect.top + ((1 - middle.y) / 2) * rect.height,
+    });
+  } else if (previous && v.compiled!.targets[previous.target]?.kind === "relation") {
+    v.options.onHoverRelation?.(undefined);
   }
   v.pending.add("paint").add("overlays");
   invalidate(v);

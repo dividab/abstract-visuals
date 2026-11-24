@@ -28,8 +28,8 @@ export type ViewerProps = Omit<ViewerOptions<React.ReactNode>, "hoveredIds" | "o
 export function Viewer(props: ViewerProps): React.JSX.Element {
   const { scene, createGroupId, useAlphaTest, selectedIds, hoveredIdsExternal, onClickGroup, view, controls } = props;
   const { lights, environmentIntensity, studio, groundShadow, shadows, quality, showDimensions, popovers, getTooltips } = props;
-  const { onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed, sceneFallback, className, style } = props;
-  const { canDragGroup, onDragGroup, onDropGroup } = props;
+  const { onHoverGroup, onContextMenuGroup, onClickRelation, onHoverRelation, onPointerMissed, sceneFallback, className, style } = props;
+  const { canDragGroup, onDragGroup, onDropGroup, onDropExternal } = props;
   // Equal by value, so inline objects don't refit the camera, recreate the gizmo or rebuild the scene
   const camera = useStableValue(props.camera);
   const bufferZones = useStableValue(props.bufferZones);
@@ -93,10 +93,13 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
     [popovers, getTooltips]
   );
   useEffect(
-    () => updateViewer(viewer.current!, { onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed }),
-    [onHoverGroup, onContextMenuGroup, onClickRelation, onPointerMissed]
+    () => updateViewer(viewer.current!, { onHoverGroup, onContextMenuGroup, onClickRelation, onHoverRelation, onPointerMissed }),
+    [onHoverGroup, onContextMenuGroup, onClickRelation, onHoverRelation, onPointerMissed]
   );
-  useEffect(() => updateViewer(viewer.current!, { canDragGroup, onDragGroup, onDropGroup }), [canDragGroup, onDragGroup, onDropGroup]);
+  useEffect(
+    () => updateViewer(viewer.current!, { canDragGroup, onDragGroup, onDropGroup, onDropExternal }),
+    [canDragGroup, onDragGroup, onDropGroup, onDropExternal]
+  );
 
   return (
     <div ref={container} className={className} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden", ...style }}>

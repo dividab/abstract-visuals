@@ -76,6 +76,11 @@ export type ViewerOptions<Content> = {
   readonly onHoverGroup?: (id: string | undefined, rootData: Data, data: Data, event: SceneEvent) => void;
   readonly onContextMenuGroup?: (id: string, rootData: Data, data: Data, left: number, top: number, event: SceneEvent) => void;
   readonly onClickRelation?: (relation: Relation, event: SceneEvent) => void;
+  /**
+   * The active relation under the pointer, and its shape's middle in client pixels, which a dragged group's middle snaps to, e.g. to snap what's
+   * dragged from outside the viewer the same way; undefined once the pointer leaves it
+   */
+  readonly onHoverRelation?: (hovered: { readonly relation: Relation; readonly x: number; readonly y: number } | undefined) => void;
   /** A click, not a drag, on nothing clickable, e.g. the background; r3f's Canvas event of the same name */
   readonly onPointerMissed?: (event: MouseEvent) => void;
   /**
@@ -87,6 +92,11 @@ export type ViewerOptions<Content> = {
   readonly onDragGroup?: (id: string, rootData: Data, data: Data, event: SceneEvent) => void;
   /** The dragged group is released on the relation or group under the pointer, or on nothing, also when Escape or the browser cancels the drag */
   readonly onDropGroup?: (id: string, target: DropTarget | undefined, event: MouseEvent | KeyboardEvent) => void;
+  /**
+   * A press outside the viewer is released on it, on the relation or group under the pointer, or on nothing, e.g. an item dragged from a menu to
+   * where it's inserted
+   */
+  readonly onDropExternal?: (target: DropTarget | undefined, event: MouseEvent) => void;
 };
 
 /** What an update has to redo, in the order it's redone */
@@ -122,8 +132,10 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   onHoverGroup: [],
   onContextMenuGroup: [],
   onClickRelation: [],
+  onHoverRelation: [],
   onPointerMissed: [],
   canDragGroup: [],
   onDragGroup: [],
   onDropGroup: [],
+  onDropExternal: [],
 };
