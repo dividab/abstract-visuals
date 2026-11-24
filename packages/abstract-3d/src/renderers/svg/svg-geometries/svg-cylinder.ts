@@ -64,9 +64,10 @@ export function cylinder(
       circleTop.z > circleBottom.z ? [circleTop, radiusEnd, topVec3Array] : [circleBottom, c.radius, botVec3Array];
     if (facing) {
       const holes = radiusEnd === c.radius ? c.holes : undefined;
+      // Its holes are in its end's plane, its x and z, as the viewer cuts them
       zOrderComponents.push(
         zElem(
-          svgCircle(circleRadius, rot, point(circlePos.x, circlePos.y), fill, opacity, stroke, stBW, holes),
+          svgCircle(circleRadius, vec3RotCombine(rot, vec3(Math.PI / 2, 0, 0)), point(circlePos.x, circlePos.y), fill, opacity, stroke, stBW, holes),
           circlePos.z,
           ring,
           opaque && !holes?.length

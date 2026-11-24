@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.7.1] - 2026-11-24
+
+- Fixed: the svg renderer orders by a symbol's, image's or other unsplittable element's plane rather than one through it, which put it on the side of its center, partly behind a face it's in front of
+- Fixed: the svg renderer draws a hole in its face's plane, turned and foreshortened with it, where it is in 3D, its outline as thick as the face's; a plane's holes, which it left out; a cylinder end's in its plane
+- Fixed: `bounds2FromVec2Array` of points all left of or below 0, whose max it gave as 0
+
 ## [5.7.0] - 2026-11-24
 
 - Changed: the svg renderer draws a closed cylinder or cone as it's seen, its ends' ellipses joined by the lines touching both and the end toward the viewer, instead of its facets, where nothing else is drawn between its facets, else by its facets as before

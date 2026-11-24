@@ -71,8 +71,9 @@ export function svgPolygon(
 ): string {
   const bounds = bounds2FromVec2Array(points);
   const size = vec2Sub(bounds.max, bounds.min);
+  // A face's center, as its outline is symmetric about it
   const pos = vec2Scale(vec2Add(bounds.max, bounds.min), 0.5);
-  const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
+  const [mask, maskAttribute] = svgHoleMask(pos, rot, bounds.min, size, holes ?? []);
   const pol = `<polygon class="${classNames.stroke}" points="${points
     .reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "")
     .slice(0, -1)}" fill="${fill}" fill-opacity="${Number(opacity.toFixed(1))}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
@@ -161,59 +162,31 @@ export function svgCircle(
   strokeWidth: number,
   holes?: ReadonlyArray<Hole>
 ): string {
-  const size = vec2Scale(vec2(radius, radius), 2);
-  const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
+  const [mask, maskAttribute] = svgHoleMask(pos, rot, vec2(pos.x - radius, pos.y - radius), vec2(2 * radius, 2 * radius), holes ?? []);
   const cir = `<circle class="${classNames.stroke}" r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(0)}" fill="${fill}" fill-opacity="${Number(opacity.toFixed(1))}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + cir + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
-function svgStrokedHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, strokeColor: string, strokeThickness: number): string {
-  if (strokeThickness <= Number.EPSILON) {
-    return "";
-  }
+function svgStrokedHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, stroke: string, strokeWidth: number): string {
+  // As thick as the face's outline, though the holes are turned and scaled with it
+  const attributes = `class="${classNames.stroke}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" vector-effect="non-scaling-stroke"`;
+  return strokeWidth > 0 ? svgHoles(pos, rot, holes, attributes) : "";
+}
 
-  let svgHoles = "";
+/** The holes of a face turned by the rotation, its center at `pos` in the svg, drawn in its plane with the attributes */
+function svgHoles(pos: Vec2, rot: Vec3, holes: ReadonlyArray<Hole>, attributes: string): string {
+  let shapes = "";
   for (const hole of holes) {
-    const localSvg = vec3(hole.pos.x, -hole.pos.y, 0);
-    const rotated = vec3Rot(localSvg, vec3Zero, rot);
-    const holeCenter = vec2Add(vec2(pos.x, pos.y), vec2(rotated.x, rotated.y));
-    switch (hole.type) {
-      case "RoundHole": {
-        const matrix = svgTrsMatrix(holeCenter, vec3Zero);
-        svgHoles += `<circle
-          class="${classNames.stroke}"
-          r="${hole.radius.toFixed(0)}"
-          transform="${matrix}"
-          fill="none"
-          stroke="${strokeColor}"
-          stroke-width="${strokeThickness}"
-        />`;
-        break;
-      }
-
-      case "SquareHole": {
-        const half = vec2Scale(hole.size, 0.5);
-        const points = [vec2(-half.x, -half.y), vec2(half.x, -half.y), vec2(half.x, half.y), vec2(-half.x, half.y)]
-          .map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`)
-          .join(" ");
-
-        const matrix = svgTrsMatrix(holeCenter, rot);
-
-        svgHoles += `<polygon
-          class="${classNames.stroke}"
-          points="${points}"
-          transform="${matrix}"
-          fill="none"
-          stroke="${strokeColor}"
-          stroke-width="${strokeThickness}"
-        />`;
-        break;
-      }
-      default:
-        break;
+    const offset = vec3Rot(vec3(hole.pos.x, hole.pos.y, 0), vec3Zero, rot);
+    const transform = `transform="${svgTrsMatrix(vec2(pos.x + offset.x, pos.y - offset.y), rot)}"`;
+    if (hole.type === "RoundHole") {
+      shapes += `<circle r="${Number(hole.radius.toFixed(1))}" ${transform} ${attributes}/>`;
+    } else {
+      const [w, h] = [Number(hole.size.x.toFixed(1)), Number(hole.size.y.toFixed(1))];
+      shapes += `<rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" ${transform} ${attributes}/>`;
     }
   }
-  return svgHoles;
+  return shapes;
 }
 
 export const svgCircle2 = (radius: number, pos: Vec2, fill: string, stroke: string, strokeWidth: number, _holes?: ReadonlyArray<Hole>): string =>
@@ -221,47 +194,17 @@ export const svgCircle2 = (radius: number, pos: Vec2, fill: string, stroke: stri
     0
   )}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
 
-function svgHoleMask(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): [string, string] {
-  const id = `mask_${counter()}`;
-  return holes.length > 0
-    ? [
-        `<mask id="${id}" mask-type="luminance" maskContentUnits="objectBoundingBox">
-      <rect x="0" y="0" width="1" height="1" fill="white" />
-      ${svgMaskHoles(rot, size, holes)}
-    </mask>\n`,
-        `mask="url(#${id}) "`,
-      ]
-    : ["", ""];
-}
-
-function svgMaskHoles(rot: Vec3, size: Vec2, holes: ReadonlyArray<Hole>): string {
-  const holeMasks: Array<string> = [];
-  for (const hole of holes) {
-    const holePosRotated = vec3Rot(vec3(hole.pos.x, hole.pos.y, 0), vec3Zero, rot);
-    const holePos = vec2Add(holePosRotated, vec2Scale(size, 0.5));
-    switch (hole.type) {
-      case "RoundHole": {
-        holeMasks.push(
-          `<ellipse cx="${holePos.x / size.x}" cy="${holePos.y / size.y}" rx="${hole.radius / size.x}" ry="${hole.radius / size.y}" fill="black" />`
-        );
-        break;
-      }
-      case "SquareHole": {
-        const holeSizeRotated = vec3Rot(vec3(hole.size.x, hole.size.y, 0), vec3Zero, rot);
-        const holeSize = vec2(Math.abs(holeSizeRotated.x), Math.abs(holeSizeRotated.y));
-        const halfSize = vec2Scale(holeSize, 0.5);
-        holeMasks.push(
-          `<rect x="${(holePos.x - halfSize.x) / size.x}" y="${(holePos.y - halfSize.y) / size.y}" width="${
-            holeSize.x / size.x
-          }" height="${holeSize.y / size.y}" fill="black" />`
-        );
-        break;
-      }
-      default:
-        break;
-    }
+/**
+ * A mask leaving out the holes of a face turned by the rotation, its center at `pos` and its bounds from `min` by `size` in the svg, and the
+ * attribute applying it; white over the mask's region, the bounds and a tenth around them
+ */
+function svgHoleMask(pos: Vec2, rot: Vec3, min: Vec2, size: Vec2, holes: ReadonlyArray<Hole>): [string, string] {
+  if (holes.length === 0) {
+    return ["", ""];
   }
-  return holeMasks.join("\n");
+  const id = `mask_${counter()}`;
+  const white = `<rect x="${(min.x - size.x).toFixed(0)}" y="${(min.y - size.y).toFixed(0)}" width="${(3 * size.x).toFixed(0)}" height="${(3 * size.y).toFixed(0)}" fill="white"/>`;
+  return [`<mask id="${id}">${white}${svgHoles(pos, rot, holes, `fill="black"`)}</mask>`, `mask="url(#${id})"`];
 }
 
 export const svgText = (text: string, matrix: string, color: string, font: string, fontSize: number): string =>

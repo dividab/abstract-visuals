@@ -41,6 +41,8 @@ export function orderElements(elements: ReadonlyArray<zOrderElement>): ReadonlyA
 const eps = 1e-3;
 /** The planes tried at a node, spread over its pieces, of which the one splitting the fewest is taken */
 const candidates = 8;
+/** What a piece that can't be split, e.g. a symbol, counts as when a plane is through it, as it's then put on the side of its center */
+const wholeCost = 64;
 /**
  * The work a scene's tree gets, which takes up to a second: a piece sorted at a node is 1 and a split 16, this many per element, and as many more as
  * a small scene with faces through each other needs
@@ -159,25 +161,43 @@ function draw(pieces: ReadonlyArray<Piece>, drawn: Drawn): void {
   }
 }
 
-/** Of the candidates' planes, the one that the fewest pieces are on both sides of */
+/**
+ * Of the candidates' planes, the one through the fewest pieces, one that can't be split counting as `wholeCost`; the planes of the first of those are
+ * candidates too, as such a plane isn't through it
+ */
 function getSplitter(pieces: ReadonlyArray<Piece>): Plane | undefined {
   const step = Math.max(1, Math.floor(pieces.length / candidates));
   let best: Plane | undefined = undefined;
   let fewest = Infinity;
   for (let i = 0; i < pieces.length && fewest > 0;) {
     const plane = pieces[i]!.plane;
-    if (plane) {
-      let splits = 0;
-      for (const p of pieces) {
-        if (p.plane !== plane && getSide(p.points, plane) === 2 && ++splits >= fewest) {
-          break;
-        }
-      }
-      [best, fewest] = splits < fewest ? [plane, splits] : [best, fewest];
-    }
+    const cost = plane ? getCost(pieces, plane, fewest) : Infinity;
+    [best, fewest] = cost < fewest ? [plane, cost] : [best, fewest];
     i += plane ? step : 1;
   }
+  for (let i = 0, tried = 0; i < pieces.length && tried < candidates && fewest > 0; i++) {
+    const { plane, element, points } = pieces[i]!;
+    if (plane && !(element.style && points.length >= 3)) {
+      tried++;
+      const cost = getCost(pieces, plane, fewest);
+      [best, fewest] = cost < fewest ? [plane, cost] : [best, fewest];
+    }
+  }
   return best;
+}
+
+/** The pieces through the plane, one that can't be split counting as `wholeCost`, up to the limit */
+function getCost(pieces: ReadonlyArray<Piece>, plane: Plane, limit: number): number {
+  let cost = 0;
+  for (const p of pieces) {
+    if (p.plane !== plane && getSide(p.points, plane) === 2) {
+      cost += p.element.style && p.points.length >= 3 ? 1 : wholeCost;
+      if (cost >= limit) {
+        break;
+      }
+    }
+  }
+  return cost;
 }
 
 /**

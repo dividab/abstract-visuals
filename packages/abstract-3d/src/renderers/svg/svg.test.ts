@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Scene } from "../../abstract-3d.js";
-import { box, cylinder, group, image, shape, text, vec2, vec3, vec3Zero } from "../../abstract-3d.js";
+import { box, cylinder, group, image, line, plane, roundHole, shape, text, vec2, vec3, vec3TransRot, vec3Zero } from "../../abstract-3d.js";
 import { render } from "./svg.js";
 
 const teal = { normal: "rgb(43, 103, 119)" };
@@ -43,6 +43,22 @@ describe("render", () => {
     const turned = render(pipe, { ...options, view: vec3(0.5, 0.5, 0) }).image;
     expect(turned.match(/<[a-z]+ /g)).toEqual(["<svg ", "<path ", "<path "]);
     expect(turned).toMatch(/d="M[^"]*L[^"]*A10 [\d.]+ [-\d.]+ 0 0 [^"]*L[^"]*A10 [\d.]+ [-\d.]+ 0 0 [^"]*z"/);
+  });
+
+  it("draws a turned face's hole in its plane, where its center is in 3D, also left of the scene's center", () => {
+    const [pos, rot] = [vec3(-150, 0, 0), vec3(0.4, -0.6, 0.3)];
+    const center = vec3TransRot(vec3(-30, 20, 0), pos, rot);
+    const holed: Scene = {
+      bounds: { min: vec3(-260, -120, -120), max: vec3(0, 120, 120) },
+      groups: [
+        group([plane(pos, vec2(160, 140), teal, rot, [roundHole(vec2(-30, 20), 15)]), line(center, vec3(center.x + 1, center.y, center.z), 1, teal)]),
+      ],
+    };
+    const image = render(holed, { only_stroke: true, stroke_thickness: 1 }).image;
+    const [e = NaN, f = NaN] = /<circle[^>]* r="15" transform="matrix\(\S+ \S+ \S+ \S+ (\S+) (\S+)\)"/.exec(image)?.slice(1).map(Number) ?? [];
+    const [x1 = NaN, y1 = NaN] = /<line[^>]* x1="(-?\d+)" y1="(-?\d+)"/.exec(image)?.slice(1).map(Number) ?? [];
+    expect(Math.abs(e - x1)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(f - y1)).toBeLessThanOrEqual(0.5);
   });
 
   it("draws a view from a rotation of the scene, the top's as the top view", () => {

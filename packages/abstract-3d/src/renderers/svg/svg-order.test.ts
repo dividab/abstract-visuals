@@ -46,6 +46,15 @@ describe("orderElements", () => {
     expect(order(part, tilted)).toEqual(["face", "part"]);
   });
 
+  it("doesn't cut a symbol, which can't be split, by a plane when another will do, so it isn't drawn behind a face it's in front of", () => {
+    // The tilted face's plane cuts the symbol at x 3.25, its center behind it; the face behind the symbol is in front of the plane
+    const tilted = face("tilted", [vec3(2, 20, -20), vec3(4, 20, 20), vec3(4, 30, 20), vec3(2, 30, -20)], true, style("tilted"));
+    const symbol = zElem("symbol", 5, [vec3(0, 0, 5), vec3(10, 0, 5), vec3(10, 10, 5), vec3(0, 10, 5)]);
+    const behind = face("behind", [vec3(0, 0, 0), vec3(2, 0, 0), vec3(2, 10, 0), vec3(0, 10, 0)], true, style("behind"));
+    const ordered = order(tilted, symbol, behind);
+    expect(ordered.indexOf("behind")).toBeLessThan(ordered.indexOf("symbol"));
+  });
+
   it("keeps the mean depth order of elements that don't overlap on screen, or have no points", () => {
     expect(
       order(

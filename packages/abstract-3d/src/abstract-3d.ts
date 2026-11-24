@@ -644,10 +644,10 @@ export const bounds3Merge = (...bounds: ReadonlyArray<Bounds3>): Bounds3 => {
 };
 
 export function bounds2FromVec2Array(vec2Array: ReadonlyArray<Vec2>): Bounds2 {
-  let minX = Number.MAX_VALUE;
-  let minY = Number.MAX_VALUE;
-  let maxX = Number.MIN_VALUE;
-  let maxY = Number.MIN_VALUE;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
   for (const v of vec2Array) {
     if (v.x < minX) {
       minX = v.x;
