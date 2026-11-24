@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Scene } from "../../abstract-3d.js";
-import { box, cylinder, group, image, line, plane, roundHole, shape, text, vec2, vec3, vec3TransRot, vec3Zero } from "../../abstract-3d.js";
+import { box, cylinder, group, image, lathe, line, plane, roundHole, shape, text, vec2, vec3, vec3TransRot, vec3Zero } from "../../abstract-3d.js";
 import { render } from "./svg.js";
 
 const teal = { normal: "rgb(43, 103, 119)" };
@@ -42,7 +42,20 @@ describe("render", () => {
     expect(render(pipe, options).image.match(/<[a-z]+ /g)).toEqual(["<svg ", "<path "]);
     const turned = render(pipe, { ...options, view: vec3(0.5, 0.5, 0) }).image;
     expect(turned.match(/<[a-z]+ /g)).toEqual(["<svg ", "<path ", "<path "]);
-    expect(turned).toMatch(/d="M[^"]*L[^"]*A10 [\d.]+ [-\d.]+ 0 0 [^"]*L[^"]*A10 [\d.]+ [-\d.]+ 0 0 [^"]*z"/);
+    // Its ends' far halves, each half an ellipse, turning clockwise on screen
+    expect(turned).toMatch(/d="M[^"]*L[^"]*A10 [\d.]+ [-\d.]+ 0 1 [^"]*L[^"]*A10 [\d.]+ [-\d.]+ 0 1 [^"]*z"/);
+  });
+
+  it("draws a lathe whose profile goes one way along its axis, e.g. an arrow, as its sections' outlines, not its facets", () => {
+    const profile = [vec2(0, 0), vec2(20, 0), vec2(20, 90), vec2(45, 90), vec2(0, 160)];
+    const arrow: Scene = {
+      bounds: { min: vec3(-80, -50, -50), max: vec3(80, 50, 50) },
+      groups: [group([lathe(vec3(-80, 0, 0), profile, teal, vec3(0, 0, -Math.PI / 2))])],
+    };
+    const { image } = render(arrow, { only_stroke: true, stroke_thickness: 1, view: vec3(0.6, 0.8, 0) });
+    // The shaft's outline and its end, then the head's outline and its base, around the shaft
+    expect(image.match(/<[a-z]+ /g)).toEqual(["<svg ", "<path ", "<path ", "<path ", "<path "]);
+    expect(image.match(/ 1 [-\d]+,[-\d]+/g)?.length).toBeGreaterThan(4);
   });
 
   it("draws a turned face's hole in its plane, where its center is in 3D, also left of the scene's center", () => {

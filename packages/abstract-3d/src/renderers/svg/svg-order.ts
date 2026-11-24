@@ -20,7 +20,7 @@ export function orderElements(elements: ReadonlyArray<zOrderElement>): ReadonlyA
       pointless.push(element);
     }
   }
-  const drawn: Drawn = { pieces: [], items: [], spans: new Map(), culled: new Set(), coveredCylinders: new Set() };
+  const drawn: Drawn = { pieces: [], items: [], spans: new Map(), culled: new Set(), coveredCylinders: new Map() };
   draw(pieces, drawn);
   const state = getHidden(drawn.items);
   mergeSplit(drawn, state);
@@ -85,7 +85,7 @@ type Drawn = {
   readonly items: Array<Item>;
   readonly spans: Map<zOrderElement, { readonly first: number; readonly last: number }>;
   readonly culled: Set<zOrderElement>;
-  readonly coveredCylinders: Set<SvgCylinder>;
+  readonly coveredCylinders: Map<SvgCylinder, Array<zOrderElement>>;
 };
 
 /**
@@ -253,8 +253,13 @@ function addHalf(piece: Piece, half: Pick<Piece, "points" | "edges">, side: Arra
 /** An element with a piece left out inside the occluder, and its cylinder when the occluder isn't its own, as it then hides some of it */
 function cull(element: zOrderElement, occluder: Item, drawn: Drawn): void {
   drawn.culled.add(element);
-  if (element.cylinder && occluder.element?.cylinder !== element.cylinder) {
-    drawn.coveredCylinders.add(element.cylinder);
+  if (element.cylinder && occluder.element && occluder.element.cylinder !== element.cylinder) {
+    const occluders = drawn.coveredCylinders.get(element.cylinder);
+    if (occluders) {
+      occluders.push(occluder.element);
+    } else {
+      drawn.coveredCylinders.set(element.cylinder, [occluder.element]);
+    }
   }
 }
 
@@ -365,30 +370,48 @@ function mergeSplit({ pieces, items, spans, culled }: Drawn, state: Uint8Array):
 }
 
 /**
- * A cylinder whose facets have nothing else drawn between them that overlaps it on screen, and none left out as hidden by something else, is drawn
- * natively where its last facet is, its facets skipped, unless they're all hidden
+ * A cylinder whose facets have nothing else drawn between them that overlaps it on screen, and none left out as hidden by something drawn before its
+ * last, is drawn natively where its last facet is, its facets skipped, unless they're all hidden
  */
 function mergeCylinders({ pieces, items, coveredCylinders }: Drawn, state: Uint8Array): void {
   const spans = new Map<SvgCylinder, [first: number, last: number]>();
+  // Where each element's last piece is drawn, when one hides a piece of a cylinder
+  const lastDrawn = new Map<zOrderElement, number>();
   for (let k = 0; k < pieces.length; k++) {
-    const cylinder = pieces[k]!.element.cylinder;
-    const span = cylinder && spans.get(cylinder);
+    const { element } = pieces[k]!;
+    const span = element.cylinder && spans.get(element.cylinder);
     if (span) {
       span[1] = k;
-    } else if (cylinder) {
-      spans.set(cylinder, [k, k]);
+    } else if (element.cylinder) {
+      spans.set(element.cylinder, [k, k]);
+    }
+    if (coveredCylinders.size > 0) {
+      lastDrawn.set(element, k);
     }
   }
   for (const [cylinder, [first, last]] of spans) {
-    // Its ends' ellipses' bounds: their major axes across its axis on screen, their minor axes along it, h of the major
-    const { bottom, top, bottomRadius: r0, topRadius: r1 } = cylinder;
-    const [ax, ay, az] = [top.x - bottom.x, top.y - bottom.y, top.z - bottom.z];
+    // Its rings' ellipses' bounds: their major axes across its axis on screen, their minor axes along it, h of the major
+    const { rings } = cylinder;
+    const [start, end] = [rings[0]!.center, rings[rings.length - 1]!.center];
+    const [ax, ay, az] = [end.x - start.x, end.y - start.y, end.z - start.z];
     const across = Math.hypot(ax, ay);
     const h = Math.abs(az) / Math.hypot(across, az);
     const [ex, ey] = [Math.sqrt(ay * ay + h * h * ax * ax) / across, Math.sqrt(ax * ax + h * h * ay * ay) / across];
-    const min = { x: Math.min(bottom.x - r0 * ex, top.x - r1 * ex), y: Math.min(bottom.y - r0 * ey, top.y - r1 * ey) };
-    const max = { x: Math.max(bottom.x + r0 * ex, top.x + r1 * ex), y: Math.max(bottom.y + r0 * ey, top.y + r1 * ey) };
-    let [blocked, visible] = [coveredCylinders.has(cylinder), false];
+    const [min, max] = [
+      { x: Infinity, y: Infinity },
+      { x: -Infinity, y: -Infinity },
+    ];
+    for (const { center, radius } of rings) {
+      min.x = Math.min(min.x, center.x - radius * ex);
+      min.y = Math.min(min.y, center.y - radius * ey);
+      max.x = Math.max(max.x, center.x + radius * ex);
+      max.y = Math.max(max.y, center.y + radius * ey);
+    }
+    // What hides a piece of it is drawn over it when it's drawn after its last piece, else the cylinder would be drawn over it
+    let [blocked, visible] = [false, false];
+    for (const occluder of coveredCylinders.get(cylinder) ?? []) {
+      blocked ||= (lastDrawn.get(occluder) ?? -1) < last;
+    }
     for (let k = first; k <= last && !blocked; k++) {
       const own = pieces[k]!.element.cylinder === cylinder;
       visible ||= own && state[k] !== skip;

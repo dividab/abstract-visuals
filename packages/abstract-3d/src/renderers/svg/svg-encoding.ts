@@ -80,20 +80,48 @@ export function svgPolygon(
   return mask + pol + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 
-/** A closed cylinder or cone, by its ends' centers in view space and radii, drawn natively */
-export type SvgCylinder = {
-  readonly bottom: Vec3;
-  readonly top: Vec3;
-  readonly bottomRadius: number;
-  readonly topRadius: number;
-  readonly style: PolygonStyle;
-};
+/** A closed cylinder, cone or lathe, by its rings in order along its axis, one way along it, drawn natively */
+export type SvgCylinder = { readonly rings: ReadonlyArray<SvgRing>; readonly style: PolygonStyle };
+/** A ring's center in view space, and its radius */
+export type SvgRing = { readonly center: Vec3; readonly radius: number };
 
 /**
- * A closed cylinder or cone as seen: its ends' ellipses, their major axes across its axis on screen and their minor axes along it, joined by the
- * lines touching both, and over that the end toward the viewer. Not seen along its axis, when an end is a circle
+ * A closed cylinder, cone or lathe as seen: its sections between rings, farthest first, each a frustum; one without length, e.g. a lathe's step,
+ * drawn by the ends of those either side. Not seen along its axis, when a ring is a circle
  */
-export function svgCylinder({ bottom, top, bottomRadius: r0, topRadius: r1, style }: SvgCylinder, point: (x: number, y: number) => Vec2): string {
+export function svgCylinder({ rings, style }: SvgCylinder, point: (x: number, y: number) => Vec2): string {
+  const stroked = style.strokeWidth > 0 && isOpaque(style.stroke, 1);
+  const filled = style.opacity > 0 && isOpaque(style.fill, 1);
+  const opacity = filled && style.opacity < 1 ? ` fill-opacity="${Number(style.opacity.toFixed(1))}"` : "";
+  const attributes = `fill="${filled ? style.fill : "none"}"${opacity}${stroked ? ` stroke="${style.stroke}" stroke-width="${style.strokeWidth}"` : ""}`;
+  // Its rings go one way along its axis, so its sections are farthest first from its end farther from the viewer
+  const n = rings.length;
+  const forward = rings[0]!.center.z <= rings[n - 1]!.center.z;
+  let svg = "";
+  for (let k = 1; k < n; k++) {
+    const i = forward ? k : n - k;
+    const bottom = rings[i - 1]!;
+    const top = rings[i]!;
+    const length = Math.hypot(top.center.x - bottom.center.x, top.center.y - bottom.center.y, top.center.z - bottom.center.z);
+    // Not along the axis
+    if (length > 1e-6 && (bottom.radius > 0 || top.radius > 0)) {
+      svg += svgFrustum(bottom, top, attributes, stroked, point);
+    }
+  }
+  return svg;
+}
+
+/**
+ * A frustum as seen: its ends' ellipses, their major axes across its axis on screen and their minor axes along it, joined by the lines touching both,
+ * and over that the end toward the viewer
+ */
+function svgFrustum(
+  { center: bottom, radius: r0 }: SvgRing,
+  { center: top, radius: r1 }: SvgRing,
+  attributes: string,
+  stroked: boolean,
+  point: (x: number, y: number) => Vec2
+): string {
   const [ax, ay, az] = [top.x - bottom.x, top.y - bottom.y, top.z - bottom.z];
   const across = Math.hypot(ax, ay);
   const m = vec2(ax / across, ay / across);
@@ -110,10 +138,6 @@ export function svgCylinder({ bottom, top, bottomRadius: r0, topRadius: r1, styl
       ? getEllipse(cos > 0 ? bottom : top, Math.max(r0, r1), ends)
       : `M${getPoint(bottom, r0, a, ends)}L${getPoint(top, r1, a, ends)}${getArc(top, r1, b, 2 * theta, ends)}` +
         `L${getPoint(bottom, r0, b, ends)}${getArc(bottom, r0, a + 2 * Math.PI, 2 * Math.PI - 2 * theta, ends)}z`;
-  const stroked = style.strokeWidth > 0 && isOpaque(style.stroke, 1);
-  const filled = style.opacity > 0 && isOpaque(style.fill, 1);
-  const opacity = filled && style.opacity < 1 ? ` fill-opacity="${Number(style.opacity.toFixed(1))}"` : "";
-  const attributes = `fill="${filled ? style.fill : "none"}"${opacity}${stroked ? ` stroke="${style.stroke}" stroke-width="${style.strokeWidth}"` : ""}`;
   const [near, nearRadius] = az > 0 ? [top, r1] : [bottom, r0];
   // Not seen edge on, when it's the outline's end
   const cap =
@@ -121,10 +145,7 @@ export function svgCylinder({ bottom, top, bottomRadius: r0, topRadius: r1, styl
   return `<path${stroked ? ` class="${classNames.stroke}"` : ""} d="${outline}" ${attributes}/>${cap}`;
 }
 
-/**
- * A cylinder's ends' ellipses: their major and minor axes on screen, the minor's length over the major's, the major's angle in the svg, and its
- * points
- */
+/** A frustum's ends' ellipses: their major and minor axes on screen, the minor's length over the major's, the major's angle in the svg, and its points */
 type Ends = {
   readonly u: Vec2;
   readonly m: Vec2;
@@ -140,11 +161,11 @@ function getPoint(center: Vec3, radius: number, angle: number, { u, m, h, point 
   return `${p.x.toFixed(0)},${p.y.toFixed(0)}`;
 }
 
-/** Around an end's ellipse to the angle, by the span, unless it's a point */
+/** Around an end's ellipse to the angle, by the span, unless it's a point; clockwise on screen as the angle grows, from its major axis to its minor */
 function getArc(center: Vec3, radius: number, to: number, span: number, ends: Ends): string {
   const large = span > Math.PI ? 1 : 0;
   const [rx, ry, rotation] = [Number(radius.toFixed(1)), Number((radius * ends.h).toFixed(1)), Number(ends.rotation.toFixed(1))];
-  return radius > 0 ? `A${rx} ${ry} ${rotation} ${large} 0 ${getPoint(center, radius, to, ends)}` : "";
+  return radius > 0 ? `A${rx} ${ry} ${rotation} ${large} 1 ${getPoint(center, radius, to, ends)}` : "";
 }
 
 function getEllipse(center: Vec3, radius: number, ends: Ends): string {

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.7.2] - 2026-11-24
+
+- Fixed: the svg renderer draws a cylinder's or cone's curved ends turning the right way, which it drew bulging inward when they weren't seen side on
+- Changed: the svg renderer draws a lathe whose profile goes one way along its axis, e.g. an air arrow, as it's seen, each section between its profile's points as a cylinder or cone is, instead of its facets
+- Changed: the svg renderer draws a cylinder, cone or lathe partly hidden behind something drawn after it as it's seen, not by its facets
+
 ## [5.7.1] - 2026-11-24
 
 - Fixed: the svg renderer orders by a symbol's, image's or other unsplittable element's plane rather than one through it, which put it on the side of its center, partly behind a face it's in front of

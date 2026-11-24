@@ -29,6 +29,19 @@ export function lathe(
   const opaque = isOpaque(fill, opacity);
   const style = { fill, opacity, stroke, strokeWidth: stBW };
   const zOrderComponents = Array<zOrderElement>();
+  const [first, last] = [l.points[0], l.points[l.points.length - 1]];
+  const firstCenter = vec3TransRot(vec3(0, first?.y ?? 0, 0), pos, rot);
+  const lastCenter = vec3TransRot(vec3(0, last?.y ?? 0, 0), pos, rot);
+  const facing = equals(firstCenter.x, lastCenter.x, 0.1) && equals(firstCenter.y, lastCenter.y, 0.1);
+  // Its profile one way along its axis, a stack of frustums, e.g. an arrow, not a cup's wall turning back
+  let [up, down] = [false, false];
+  for (let i = 1; i < l.points.length; i++) {
+    up ||= l.points[i]!.y > l.points[i - 1]!.y;
+    down ||= l.points[i]!.y < l.points[i - 1]!.y;
+  }
+  // Not seen as its end's circle, drawn natively where nothing is drawn between its facets
+  const native =
+    facing || (up && down) ? undefined : { rings: l.points.map((p) => ({ center: vec3TransRot(vec3(0, p.y, 0), pos, rot), radius: p.x })), style };
 
   const sides = 8;
   const angleStep = (2 * Math.PI) / sides;
@@ -46,23 +59,20 @@ export function lathe(
     if (!isZero(l.points[r - 1]!.x) || !isZero(l.points[r]!.x)) {
       for (let i = 1; i <= sides; i++) {
         const polygon = [bot[i]!, bot[i - 1]!, top[i - 1]!, top[i]!];
-        zOrderComponents.push(zElem("", vec3ZMean(...polygon), polygon, opaque, style));
+        zOrderComponents.push(zElem("", vec3ZMean(...polygon), polygon, opaque, style, native));
       }
     }
   }
 
-  const [first, last] = [l.points[0], l.points[l.points.length - 1]];
   if (first && last) {
     // The end nearer the camera: a circle when directly facing it, else seen at an angle, its ring of facet corners, like a cylinder's
-    const firstCenter = vec3TransRot(vec3(0, first.y, 0), pos, rot);
-    const lastCenter = vec3TransRot(vec3(0, last.y, 0), pos, rot);
     const [center, radius, ring] = firstCenter.z > lastCenter.z ? [firstCenter, first.x, rings[0]!] : [lastCenter, last.x, rings[rings.length - 1]!];
     if (!isZero(radius)) {
-      if (equals(firstCenter.x, lastCenter.x, 0.1) && equals(firstCenter.y, lastCenter.y, 0.1)) {
+      if (facing) {
         zOrderComponents.push(zElem(svgCircle(radius, rot, point(center.x, center.y), fill, opacity, stroke, stBW), center.z, ring, opaque));
       } else if (Math.abs(getArea(ring)) >= minArea) {
         // Not seen edge on, when it's only a line along the facets' edges
-        zOrderComponents.push(zElem("", center.z, ring, opaque, style));
+        zOrderComponents.push(zElem("", center.z, ring, opaque, style, native));
       }
     }
   }

@@ -34,7 +34,11 @@ export function cone(
   const cylBottom = vec3TransRot(vec3(0, -half.y, 0), pos, rot);
   const facing = equals(topPos.x, cylBottom.x, 0.1) && equals(topPos.y, cylBottom.y, 0.1);
   // Not seen as its base's circle, drawn natively where nothing is drawn between its facets
-  const native = facing ? undefined : { bottom: cylBottom, top: topPos, bottomRadius: c.radius, topRadius: 0, style };
+  const rings = [
+    { center: cylBottom, radius: c.radius },
+    { center: topPos, radius: 0 },
+  ];
+  const native = facing ? undefined : { rings, style };
   const botVec3Array = Array<Vec3>();
   for (let i = 0; i <= sides; i++) {
     const currBot = vec3TransRot(vec3(Math.sin(currentAngle) * c.radius, -half.y, Math.cos(currentAngle) * c.radius), pos, rot);

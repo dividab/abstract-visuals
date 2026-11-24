@@ -31,8 +31,11 @@ export function cylinder(
   const circleBottom = vec3TransRot(vec3(0, -half, 0), pos, rot);
   const facing = equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1);
   // Closed, without holes, and not seen as its end's circle, drawn natively where nothing is drawn between its facets
-  const native =
-    c.open || c.holes?.length || facing ? undefined : { bottom: circleBottom, top: circleTop, bottomRadius: c.radius, topRadius: radiusEnd, style };
+  const rings = [
+    { center: circleBottom, radius: c.radius },
+    { center: circleTop, radius: radiusEnd },
+  ];
+  const native = c.open || c.holes?.length || facing ? undefined : { rings, style };
   const zOrderComponents = Array<zOrderElement>();
 
   const sides = 8;
