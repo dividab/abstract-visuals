@@ -1,7 +1,8 @@
 import type { Hole, Vec2, Vec3 } from "../../abstract-3d.js";
 import { bounds2FromVec2Array, vec2, vec2Add, vec2Scale, vec2Sub, vec3, vec3Rot, vec3Zero } from "../../abstract-3d.js";
 import { classNames } from "./class-names.js";
-import { svgTrsMatrix } from "./svg-geometries/shared.js";
+import type { PolygonStyle } from "./svg-geometries/shared.js";
+import { isOpaque, svgTrsMatrix } from "./svg-geometries/shared.js";
 
 export const svg = (min: Vec2, size: Vec2, children: string, className: string): string => {
   return `<svg xmlns="http://www.w3.org/2000/svg" class="${className ? `${classNames.root} ${className}` : classNames.root}" viewBox="${min.x.toFixed(0)} ${min.y.toFixed(0)} ${size.x.toFixed(
@@ -74,8 +75,80 @@ export function svgPolygon(
   const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
   const pol = `<polygon class="${classNames.stroke}" points="${points
     .reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "")
-    .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
+    .slice(0, -1)}" fill="${fill}" fill-opacity="${Number(opacity.toFixed(1))}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + pol + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
+}
+
+/** A closed cylinder or cone, by its ends' centers in view space and radii, drawn natively */
+export type SvgCylinder = {
+  readonly bottom: Vec3;
+  readonly top: Vec3;
+  readonly bottomRadius: number;
+  readonly topRadius: number;
+  readonly style: PolygonStyle;
+};
+
+/**
+ * A closed cylinder or cone as seen: its ends' ellipses, their major axes across its axis on screen and their minor axes along it, joined by the
+ * lines touching both, and over that the end toward the viewer. Not seen along its axis, when an end is a circle
+ */
+export function svgCylinder({ bottom, top, bottomRadius: r0, topRadius: r1, style }: SvgCylinder, point: (x: number, y: number) => Vec2): string {
+  const [ax, ay, az] = [top.x - bottom.x, top.y - bottom.y, top.z - bottom.z];
+  const across = Math.hypot(ax, ay);
+  const m = vec2(ax / across, ay / across);
+  const u = vec2(-m.y, m.x);
+  const ends: Ends = { u, m, h: Math.abs(az) / Math.hypot(across, az), rotation: (Math.atan2(-u.y, u.x) * 180) / Math.PI, point };
+  // The lines touch the ellipses where outer tangents would were they circles: θ either side of the minor axis, its cosine the ends' difference
+  // in radius over their distance, the axis's length on screen over h
+  const cos = ((r0 - r1) * ends.h) / across;
+  const theta = Math.acos(Math.max(-1, Math.min(1, cos)));
+  const [a, b] = [Math.PI / 2 - theta, Math.PI / 2 + theta];
+  // Along one line, around the top's far side, back along the other, around the bottom's; with one end inside the other, its ellipse
+  const outline =
+    Math.abs(cos) >= 1
+      ? getEllipse(cos > 0 ? bottom : top, Math.max(r0, r1), ends)
+      : `M${getPoint(bottom, r0, a, ends)}L${getPoint(top, r1, a, ends)}${getArc(top, r1, b, 2 * theta, ends)}` +
+        `L${getPoint(bottom, r0, b, ends)}${getArc(bottom, r0, a + 2 * Math.PI, 2 * Math.PI - 2 * theta, ends)}z`;
+  const stroked = style.strokeWidth > 0 && isOpaque(style.stroke, 1);
+  const filled = style.opacity > 0 && isOpaque(style.fill, 1);
+  const opacity = filled && style.opacity < 1 ? ` fill-opacity="${Number(style.opacity.toFixed(1))}"` : "";
+  const attributes = `fill="${filled ? style.fill : "none"}"${opacity}${stroked ? ` stroke="${style.stroke}" stroke-width="${style.strokeWidth}"` : ""}`;
+  const [near, nearRadius] = az > 0 ? [top, r1] : [bottom, r0];
+  // Not seen edge on, when it's the outline's end
+  const cap =
+    stroked && nearRadius > 0 && ends.h > 1e-6 ? `<path class="${classNames.stroke}" d="${getEllipse(near, nearRadius, ends)}" ${attributes}/>` : "";
+  return `<path${stroked ? ` class="${classNames.stroke}"` : ""} d="${outline}" ${attributes}/>${cap}`;
+}
+
+/**
+ * A cylinder's ends' ellipses: their major and minor axes on screen, the minor's length over the major's, the major's angle in the svg, and its
+ * points
+ */
+type Ends = {
+  readonly u: Vec2;
+  readonly m: Vec2;
+  readonly h: number;
+  readonly rotation: number;
+  readonly point: (x: number, y: number) => Vec2;
+};
+
+/** The point of an end's ellipse at the angle from its major axis toward its minor, in the svg */
+function getPoint(center: Vec3, radius: number, angle: number, { u, m, h, point }: Ends): string {
+  const [x, y] = [radius * Math.cos(angle), radius * h * Math.sin(angle)];
+  const p = point(center.x + u.x * x + m.x * y, center.y + u.y * x + m.y * y);
+  return `${p.x.toFixed(0)},${p.y.toFixed(0)}`;
+}
+
+/** Around an end's ellipse to the angle, by the span, unless it's a point */
+function getArc(center: Vec3, radius: number, to: number, span: number, ends: Ends): string {
+  const large = span > Math.PI ? 1 : 0;
+  const [rx, ry, rotation] = [Number(radius.toFixed(1)), Number((radius * ends.h).toFixed(1)), Number(ends.rotation.toFixed(1))];
+  return radius > 0 ? `A${rx} ${ry} ${rotation} ${large} 0 ${getPoint(center, radius, to, ends)}` : "";
+}
+
+function getEllipse(center: Vec3, radius: number, ends: Ends): string {
+  const start = getPoint(center, radius, 0, ends);
+  return `M${start}${getArc(center, radius, Math.PI, Math.PI, ends)}${getArc(center, radius, 2 * Math.PI, Math.PI, ends)}z`;
 }
 
 export function svgCircle(
@@ -90,9 +163,7 @@ export function svgCircle(
 ): string {
   const size = vec2Scale(vec2(radius, radius), 2);
   const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
-  const cir = `<circle class="${classNames.stroke}" r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(0)}" fill="${fill}" fill-opacity="${opacity.toFixed(
-    1
-  )}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
+  const cir = `<circle class="${classNames.stroke}" r="${radius.toFixed(0)}" cx="${pos.x.toFixed(0)}" cy="${pos.y.toFixed(0)}" fill="${fill}" fill-opacity="${Number(opacity.toFixed(1))}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + cir + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 

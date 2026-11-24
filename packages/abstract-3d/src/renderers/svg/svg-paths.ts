@@ -1,5 +1,6 @@
 import type { Vec2 } from "../../abstract-3d.js";
 import { classNames } from "./class-names.js";
+import { svgCylinder } from "./svg-encoding.js";
 import type { zOrderElement } from "./svg-geometries/shared.js";
 import { isOpaque } from "./svg-geometries/shared.js";
 
@@ -13,7 +14,7 @@ export function encodeElements(elements: ReadonlyArray<zOrderElement>, point: (x
   // The run of polygons of one style so far: its attributes, whether it's one path, the class of its stroked paths, and its path data or paths
   let [attributes, merged, stroke, paths, count] = ["", false, "", "", 0];
   for (let i = 0; i <= elements.length; i++) {
-    const { element = "", polygon = [], style, edges }: Partial<zOrderElement> = elements[i] ?? {};
+    const { element = "", polygon = [], style, edges, cylinder }: Partial<zOrderElement> = elements[i] ?? {};
     const plain = style && polygon.length >= 3;
     const stroked = plain && style.strokeWidth > 0 && isOpaque(style.stroke, 1);
     const filled = plain && style.opacity > 0 && isOpaque(style.fill, 1);
@@ -24,7 +25,7 @@ export function encodeElements(elements: ReadonlyArray<zOrderElement>, point: (x
       ? ""
       : !filled
         ? `fill="none"`
-        : `fill="${style.fill}"${style.opacity < 1 ? ` fill-opacity="${style.opacity.toFixed(1)}"` : ""}`;
+        : `fill="${style.fill}"${style.opacity < 1 ? ` fill-opacity="${Number(style.opacity.toFixed(1))}"` : ""}`;
     const own = stroked ? `${fill} stroke="${style.stroke}" stroke-width="${style.strokeWidth}"` : fill;
     // Rounded as toFixed(0) rounds the other elements, a half away from zero
     const screen: Array<Vec2> = [];
@@ -48,7 +49,8 @@ export function encodeElements(elements: ReadonlyArray<zOrderElement>, point: (x
       [attributes, merged, stroke, paths, count] = [next, one, stroked ? `class="${classNames.stroke}" ` : "", "", 0];
     }
     if (!plain || alone) {
-      svg += plain ? `<path d="${getPath(screen, undefined)}" ${own}/>` : element;
+      // A cylinder without points is drawn natively
+      svg += plain ? `<path d="${getPath(screen, undefined)}" ${own}/>` : cylinder && !polygon.length ? svgCylinder(cylinder, point) : element;
       continue;
     }
     if (merged) {

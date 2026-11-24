@@ -5,9 +5,7 @@ import type { SvgOptions, zOrderElement } from "./shared.js";
 import { svgTrsMatrix, zElem } from "./shared.js";
 
 const SVG_FORWARD: Vec3 = vec3(0.0, 0.0, 1.0);
-const SVG_DOT_OPPOSITE_THRESHOLD: number = -0.9;
 
-// dummy
 export function text(
   t: Text,
   point: (x: number, y: number) => Vec2,
@@ -22,8 +20,8 @@ export function text(
 
   const textForward = vec3Rot({ x: 0, y: 0, z: 1 }, vec3Zero, rot);
 
-  //discard texts that are pointing away
-  if (vec3Dot(textForward, SVG_FORWARD) <= SVG_DOT_OPPOSITE_THRESHOLD) {
+  // Only its front side is drawn, as in the viewer: seen from behind, or edge on, it's left out
+  if (vec3Dot(textForward, SVG_FORWARD) <= 0) {
     return [];
   }
 

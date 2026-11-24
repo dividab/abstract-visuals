@@ -1,4 +1,5 @@
 import type { Vec2, Vec3 } from "../../abstract-3d.js";
+import type { SvgCylinder } from "./svg-encoding.js";
 import type { zOrderElement } from "./svg-geometries/shared.js";
 
 /**
@@ -19,14 +20,17 @@ export function orderElements(elements: ReadonlyArray<zOrderElement>): ReadonlyA
       pointless.push(element);
     }
   }
-  const drawn: Drawn = { pieces: [], items: [], spans: new Map(), culled: new Set() };
+  const drawn: Drawn = { pieces: [], items: [], spans: new Map(), culled: new Set(), coveredCylinders: new Set() };
   draw(pieces, drawn);
   const state = getHidden(drawn.items);
   mergeSplit(drawn, state);
+  mergeCylinders(drawn, state);
   const ordered: Array<zOrderElement> = [];
   for (let i = 0; i < drawn.pieces.length; i++) {
     const p = drawn.pieces[i]!;
-    if (state[i] !== skip) {
+    if (state[i] === native) {
+      ordered.push({ element: "", zOrder: p.element.zOrder, cylinder: p.element.cylinder });
+    } else if (state[i] !== skip) {
       ordered.push(state[i] === whole || !p.edges ? p.element : { ...p.element, polygon: p.points, edges: p.edges });
     }
   }
@@ -47,8 +51,8 @@ const maxOccluders = 8;
 /** The cells along the screen of the finest grid of occluders, a level up halving them; 2 to the power of its levels */
 const [gridCells, gridLevels] = [256, 8];
 const noCell: ReadonlyArray<number> = [];
-/** A drawn piece's state: drawn as it is, left out, or drawn as its whole element */
-const [skip, whole] = [1, 2];
+/** A drawn piece's state: drawn as it is, left out, drawn as its whole element, or as its cylinder */
+const [skip, whole, native] = [1, 2, 3];
 
 /** A plane oriented toward the viewer, at +z */
 type Plane = { readonly normal: Vec3; readonly d: number };
@@ -65,15 +69,21 @@ type Item = {
   readonly max: Vec2;
   /** The winding on screen of an opaque convex polygon, 1 or -1, by which it can hide others; 0 for others */
   readonly occluder: number;
+  /** Of an occluder, whose it is */
+  readonly element?: zOrderElement;
 };
 /** A node's pieces, and the opaque faces of the nearest plane they're all behind, which hide the pieces inside them on screen */
 type Task = { readonly pieces: ReadonlyArray<Piece>; readonly occluders: ReadonlyArray<Item>; readonly inPlane?: boolean };
-/** Pieces in drawing order, their items, of each split element the first and last of its pieces, and the elements with a piece left out as hidden */
+/**
+ * Pieces in drawing order, their items, of each split element the first and last of its pieces, the elements with a piece left out as hidden, and the
+ * cylinders with a piece left out as hidden by something else
+ */
 type Drawn = {
   readonly pieces: Array<Piece>;
   readonly items: Array<Item>;
   readonly spans: Map<zOrderElement, { readonly first: number; readonly last: number }>;
   readonly culled: Set<zOrderElement>;
+  readonly coveredCylinders: Set<SvgCylinder>;
 };
 
 /**
@@ -96,11 +106,11 @@ function draw(pieces: ReadonlyArray<Piece>, drawn: Drawn): void {
         const side = p.plane === plane ? 0 : getSide(p.points, plane);
         if (side === 2 && p.element.style && p.points.length >= 3 && work > 0) {
           work -= workPerSplit;
-          split(p, plane, back, front, task.occluders, drawn.culled);
+          split(p, plane, back, front, task.occluders, drawn);
         } else {
           (side === 0 ? inPlane : side < 0 ? back : side === 1 ? front : across).push(p);
         }
-        const occluder = side === 0 && p.element.opaque ? createItem(p.points, true) : undefined;
+        const occluder = side === 0 && p.element.opaque ? createItem(p.points, true, p.element) : undefined;
         if (occluder && occluder.occluder !== 0) {
           occluders.push(occluder);
         }
@@ -110,8 +120,9 @@ function draw(pieces: ReadonlyArray<Piece>, drawn: Drawn): void {
       // What's behind the plane and inside one of its opaque faces can't be seen
       let kept = 0;
       for (const p of back) {
-        if (isCovered(p.points, occluders)) {
-          drawn.culled.add(p.element);
+        const cover = getCover(p.points, occluders);
+        if (cover) {
+          cull(p.element, cover, drawn);
         } else {
           back[kept++] = p;
         }
@@ -144,7 +155,7 @@ function draw(pieces: ReadonlyArray<Piece>, drawn: Drawn): void {
       drawn.spans.set(p.element, { first: drawn.spans.get(p.element)?.first ?? drawn.pieces.length, last: drawn.pieces.length });
     }
     drawn.pieces.push(p);
-    drawn.items.push(createItem(p.points, !!p.element.opaque));
+    drawn.items.push(createItem(p.points, !!p.element.opaque, p.element));
   }
 }
 
@@ -173,14 +184,7 @@ function getSplitter(pieces: ReadonlyArray<Piece>): Plane | undefined {
  * Sutherland–Hodgman against the plane, both ways; an edge of a piece along the cut isn't the element's own. A piece inside one of the occluders,
  * which it's behind, is left out
  */
-function split(
-  piece: Piece,
-  plane: Plane,
-  back: Array<Piece>,
-  front: Array<Piece>,
-  occluders: ReadonlyArray<Item>,
-  culled: Set<zOrderElement>
-): void {
+function split(piece: Piece, plane: Plane, back: Array<Piece>, front: Array<Piece>, occluders: ReadonlyArray<Item>, drawn: Drawn): void {
   const { points, edges } = piece;
   const [b, f] = [
     { points: Array<Vec3>(), edges: Array<boolean>() },
@@ -212,22 +216,25 @@ function split(
     }
     dp = dq;
   }
-  addHalf(piece, b, back, occluders, culled);
-  addHalf(piece, f, front, occluders, culled);
+  addHalf(piece, b, back, occluders, drawn);
+  addHalf(piece, f, front, occluders, drawn);
 }
 
 /** A piece's half on a side of the plane, unless it's nothing, or left out inside one of the occluders */
-function addHalf(
-  piece: Piece,
-  half: Pick<Piece, "points" | "edges">,
-  side: Array<Piece>,
-  occluders: ReadonlyArray<Item>,
-  culled: Set<zOrderElement>
-): void {
-  if (half.points.length >= 3 && isCovered(half.points, occluders)) {
-    culled.add(piece.element);
+function addHalf(piece: Piece, half: Pick<Piece, "points" | "edges">, side: Array<Piece>, occluders: ReadonlyArray<Item>, drawn: Drawn): void {
+  const cover = half.points.length >= 3 ? getCover(half.points, occluders) : undefined;
+  if (cover) {
+    cull(piece.element, cover, drawn);
   } else if (half.points.length >= 3) {
     side.push({ element: piece.element, points: half.points, plane: piece.plane, edges: half.edges });
+  }
+}
+
+/** An element with a piece left out inside the occluder, and its cylinder when the occluder isn't its own, as it then hides some of it */
+function cull(element: zOrderElement, occluder: Item, drawn: Drawn): void {
+  drawn.culled.add(element);
+  if (element.cylinder && occluder.element?.cylinder !== element.cylinder) {
+    drawn.coveredCylinders.add(element.cylinder);
   }
 }
 
@@ -337,8 +344,47 @@ function mergeSplit({ pieces, items, spans, culled }: Drawn, state: Uint8Array):
   }
 }
 
-/** In one pass over the points: their bounds on screen, and whether they're a convex polygon */
-function createItem(points: ReadonlyArray<Vec3>, opaque: boolean): Item {
+/**
+ * A cylinder whose facets have nothing else drawn between them that overlaps it on screen, and none left out as hidden by something else, is drawn
+ * natively where its last facet is, its facets skipped, unless they're all hidden
+ */
+function mergeCylinders({ pieces, items, coveredCylinders }: Drawn, state: Uint8Array): void {
+  const spans = new Map<SvgCylinder, [first: number, last: number]>();
+  for (let k = 0; k < pieces.length; k++) {
+    const cylinder = pieces[k]!.element.cylinder;
+    const span = cylinder && spans.get(cylinder);
+    if (span) {
+      span[1] = k;
+    } else if (cylinder) {
+      spans.set(cylinder, [k, k]);
+    }
+  }
+  for (const [cylinder, [first, last]] of spans) {
+    // Its ends' ellipses' bounds: their major axes across its axis on screen, their minor axes along it, h of the major
+    const { bottom, top, bottomRadius: r0, topRadius: r1 } = cylinder;
+    const [ax, ay, az] = [top.x - bottom.x, top.y - bottom.y, top.z - bottom.z];
+    const across = Math.hypot(ax, ay);
+    const h = Math.abs(az) / Math.hypot(across, az);
+    const [ex, ey] = [Math.sqrt(ay * ay + h * h * ax * ax) / across, Math.sqrt(ax * ax + h * h * ay * ay) / across];
+    const min = { x: Math.min(bottom.x - r0 * ex, top.x - r1 * ex), y: Math.min(bottom.y - r0 * ey, top.y - r1 * ey) };
+    const max = { x: Math.max(bottom.x + r0 * ex, top.x + r1 * ex), y: Math.max(bottom.y + r0 * ey, top.y + r1 * ey) };
+    let [blocked, visible] = [coveredCylinders.has(cylinder), false];
+    for (let k = first; k <= last && !blocked; k++) {
+      const own = pieces[k]!.element.cylinder === cylinder;
+      visible ||= own && state[k] !== skip;
+      blocked = !own && state[k] !== skip && overlaps(items[k]!, { min, max });
+    }
+    if (!blocked) {
+      for (let k = first; k <= last; k++) {
+        state[k] = pieces[k]!.element.cylinder === cylinder ? skip : state[k]!;
+      }
+      state[last] = visible ? native : skip;
+    }
+  }
+}
+
+/** In one pass over the points: their bounds on screen, and whether they're a convex polygon, an occluder's of the element */
+function createItem(points: ReadonlyArray<Vec3>, opaque: boolean, element?: zOrderElement): Item {
   const [min, max] = [
     { x: Infinity, y: Infinity },
     { x: -Infinity, y: -Infinity },
@@ -359,20 +405,21 @@ function createItem(points: ReadonlyArray<Vec3>, opaque: boolean): Item {
     maxTurn = Math.max(maxTurn, turn);
   }
   const convex = points.length >= 3 && (minTurn >= -eps || maxTurn <= eps) && Math.abs(area) > eps;
-  return { points, min, max, occluder: opaque && convex ? Math.sign(area) : 0 };
+  const occluder = opaque && convex ? Math.sign(area) : 0;
+  return { points, min, max, occluder, element: occluder !== 0 ? element : undefined };
 }
 
 const overlaps = (a: Pick<Item, "min" | "max">, b: Pick<Item, "min" | "max">): boolean =>
   a.min.x < b.max.x - eps && b.min.x < a.max.x - eps && a.min.y < b.max.y - eps && b.min.y < a.max.y - eps;
 
-/** Whether one of the occluders, which the points are behind, contains them all on screen */
-function isCovered(points: ReadonlyArray<Vec3>, occluders: ReadonlyArray<Item>): boolean {
+/** The first of the occluders, which the points are behind, that contains them all on screen */
+function getCover(points: ReadonlyArray<Vec3>, occluders: ReadonlyArray<Item>): Item | undefined {
   for (const occluder of occluders) {
     if (covers(occluder, points)) {
-      return true;
+      return occluder;
     }
   }
-  return false;
+  return undefined;
 }
 
 /** Whether the front's opaque convex polygon contains all of the points on screen, so they can't be seen; not for a single point, e.g. text */

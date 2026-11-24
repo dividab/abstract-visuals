@@ -31,20 +31,23 @@ export function cone(
   let currentAngle = 0;
 
   const topPos = vec3TransRot(vec3(0, half.y, 0), pos, rot);
+  const cylBottom = vec3TransRot(vec3(0, -half.y, 0), pos, rot);
+  const facing = equals(topPos.x, cylBottom.x, 0.1) && equals(topPos.y, cylBottom.y, 0.1);
+  // Not seen as its base's circle, drawn natively where nothing is drawn between its facets
+  const native = facing ? undefined : { bottom: cylBottom, top: topPos, bottomRadius: c.radius, topRadius: 0, style };
   const botVec3Array = Array<Vec3>();
   for (let i = 0; i <= sides; i++) {
     const currBot = vec3TransRot(vec3(Math.sin(currentAngle) * c.radius, -half.y, Math.cos(currentAngle) * c.radius), pos, rot);
     botVec3Array.push(currBot);
     if (i !== 0) {
       const prevBot = botVec3Array[i - 1]!;
-      zOrderComponents.push(zElem("", vec3ZMean(currBot, prevBot, topPos), [currBot, prevBot, topPos], opaque, style));
+      zOrderComponents.push(zElem("", vec3ZMean(currBot, prevBot, topPos), [currBot, prevBot, topPos], opaque, style, native));
     }
     currentAngle += angleStep;
   }
 
   // Add circle if direcly facing camera
-  const cylBottom = vec3TransRot(vec3(0, -half.y, 0), pos, rot);
-  if (equals(topPos.x, cylBottom.x, 0.1) && equals(topPos.y, cylBottom.y, 0.1)) {
+  if (facing) {
     zOrderComponents.push(
       zElem(svgCircle(c.radius, rot, point(cylBottom.x, cylBottom.y), fill, opacity, stroke, stBW), cylBottom.z, botVec3Array, opaque)
     );

@@ -1,10 +1,12 @@
 import type { Vec2, Vec3, View } from "../../../abstract-3d.js";
 import { vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
+import type { SvgCylinder } from "../svg-encoding.js";
 
 /**
  * An element and its mean depth, and the points it covers in view space (x right, y up, z toward the viewer), by which it's ordered when given,
  * whether it hides what's behind it, and the style of a plain polygon, without holes, by which it's drawn as a path, also its pieces when it's split.
- * `edges` is of a piece, whether the edge from each point to the next is the polygon's own, not a cut
+ * `edges` is of a piece, whether the edge from each point to the next is the polygon's own, not a cut. `cylinder` is of a facet of a cylinder or
+ * cone, drawn natively instead of its facets where nothing else is drawn between them
  */
 export type zOrderElement = {
   readonly element: string;
@@ -13,15 +15,17 @@ export type zOrderElement = {
   readonly opaque?: boolean;
   readonly style?: PolygonStyle;
   readonly edges?: ReadonlyArray<boolean>;
+  readonly cylinder?: SvgCylinder;
 };
 export type PolygonStyle = { readonly fill: string; readonly opacity: number; readonly stroke: string; readonly strokeWidth: number };
-export const zElem = (element: string, zOrder: number, polygon?: ReadonlyArray<Vec3>, opaque?: boolean, style?: PolygonStyle): zOrderElement => ({
-  element,
-  zOrder,
-  polygon,
-  opaque,
-  style,
-});
+export const zElem = (
+  element: string,
+  zOrder: number,
+  polygon?: ReadonlyArray<Vec3>,
+  opaque?: boolean,
+  style?: PolygonStyle,
+  cylinder?: SvgCylinder
+): zOrderElement => ({ element, zOrder, polygon, opaque, style, cylinder });
 
 /** Whether a fill hides what's behind it: fully opaque, and not transparent, e.g. a sketch's default background */
 export const isOpaque = (fill: string, opacity: number): boolean => opacity >= 1 && !/^(transparent|none|rgba\(.*,\s*0(\.0*)?\s*\))$/.test(fill);

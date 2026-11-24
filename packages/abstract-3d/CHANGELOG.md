@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.7.0] - 2026-11-24
+
+- Changed: the svg renderer draws a closed cylinder or cone as it's seen, its ends' ellipses joined by the lines touching both and the end toward the viewer, instead of its facets, where nothing else is drawn between its facets, else by its facets as before
+- Changed: the svg renderer leaves out text seen from behind, as the viewer does, which it drew mirrored
+- Changed: the svg renderer writes its numbers without trailing zeros, e.g. a `fill-opacity` of `1` instead of `1.0`
+
 ## [5.6.0] - 2026-11-24
 
 - Added: a view can be a rotation, the scene's from the front as it's seen, both the viewer's `view` and `fitView`, upright without its roll, and the svg renderer's, without dimensions, e.g. `vec3(Math.atan(1 / Math.SQRT2), Math.PI / 4, 0)` isometric from the top left, or `-Math.PI / 4` from the top right

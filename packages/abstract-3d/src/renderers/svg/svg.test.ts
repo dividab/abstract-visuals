@@ -32,6 +32,19 @@ describe("render", () => {
     );
   });
 
+  it("draws a cylinder as its outline, by arcs, not its facets, with its end toward the viewer, when nothing is drawn between them", () => {
+    const pipe: Scene = {
+      bounds: { min: vec3(-50, -10, -10), max: vec3(50, 10, 10) },
+      groups: [group([cylinder(vec3Zero, 10, 100, teal, vec3(0, 0, Math.PI / 2))])],
+    };
+    const options = { only_stroke: true, stroke_thickness: 1 };
+    // Side on, its ends are lines; turned toward the viewer, the near end is drawn over it
+    expect(render(pipe, options).image.match(/<[a-z]+ /g)).toEqual(["<svg ", "<path "]);
+    const turned = render(pipe, { ...options, view: vec3(0.5, 0.5, 0) }).image;
+    expect(turned.match(/<[a-z]+ /g)).toEqual(["<svg ", "<path ", "<path "]);
+    expect(turned).toMatch(/d="M[^"]*L[^"]*A10 [\d.]+ [-\d.]+ 0 0 [^"]*L[^"]*A10 [\d.]+ [-\d.]+ 0 0 [^"]*z"/);
+  });
+
   it("draws a view from a rotation of the scene, the top's as the top view", () => {
     const options = { only_stroke: true, stroke_thickness: 1 };
     expect(render(scene, { ...options, view: vec3(Math.PI / 2, 0, 0) }).image).toBe(render(scene, { ...options, view: "top" }).image);

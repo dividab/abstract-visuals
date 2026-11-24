@@ -27,6 +27,12 @@ export function cylinder(
   const style = { fill, opacity, stroke, strokeWidth: stBW };
   // A closed opaque cylinder's facets turned away are hidden by those toward the viewer and its near end
   const cullBack = opaque && !c.open;
+  const circleTop = vec3TransRot(vec3(0, half, 0), pos, rot);
+  const circleBottom = vec3TransRot(vec3(0, -half, 0), pos, rot);
+  const facing = equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1);
+  // Closed, without holes, and not seen as its end's circle, drawn natively where nothing is drawn between its facets
+  const native =
+    c.open || c.holes?.length || facing ? undefined : { bottom: circleBottom, top: circleTop, bottomRadius: c.radius, topRadius: radiusEnd, style };
   const zOrderComponents = Array<zOrderElement>();
 
   const sides = 8;
@@ -47,18 +53,16 @@ export function cylinder(
       const polygon = [currBot, botVec3Array[i - 1]!, topVec3Array[i - 1]!, currTop];
       // Seen edge on, a closed cylinder's facet is only a line along its end
       if (c.open || Math.abs(getArea(polygon)) >= minArea) {
-        zOrderComponents.push(zElem("", vec3ZMean(...polygon), polygon, opaque, style));
+        zOrderComponents.push(zElem("", vec3ZMean(...polygon), polygon, opaque, style, native));
       }
     }
     currentAngle += angleStep;
   }
   if (!c.open) {
     // The near end: a circle when directly facing the camera, else seen at an angle, its ring of facet corners
-    const circleTop = vec3TransRot(vec3(0, half, 0), pos, rot);
-    const circleBottom = vec3TransRot(vec3(0, -half, 0), pos, rot);
     const [circlePos, circleRadius, ring] =
       circleTop.z > circleBottom.z ? [circleTop, radiusEnd, topVec3Array] : [circleBottom, c.radius, botVec3Array];
-    if (equals(circleTop.x, circleBottom.x, 0.1) && equals(circleTop.y, circleBottom.y, 0.1)) {
+    if (facing) {
       const holes = radiusEnd === c.radius ? c.holes : undefined;
       zOrderComponents.push(
         zElem(
@@ -70,7 +74,7 @@ export function cylinder(
       );
     } else if (Math.abs(getArea(ring)) >= minArea) {
       // Not seen edge on, when it's only a line along the facets' edges
-      zOrderComponents.push(zElem("", circlePos.z, ring, opaque && !c.holes?.length, style));
+      zOrderComponents.push(zElem("", circlePos.z, ring, opaque && !c.holes?.length, style, native));
     }
   }
   return zOrderComponents;
