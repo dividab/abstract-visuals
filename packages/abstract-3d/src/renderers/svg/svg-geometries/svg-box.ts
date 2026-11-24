@@ -3,10 +3,7 @@ import { vec3Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3ZMean, vec
 import { rgbGrayScale } from "../../../utils.js";
 import { svgPolygon } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
-import { gray, black, zElem } from "./shared.js";
-
-// A cubic Bézier's control points this far from its ends towards the corner draw a quarter circle
-const arcControl = 0.5523;
+import { gray, black, zElem, getArea, isOpaque, minArea } from "./shared.js";
 
 export function box(
   b: Box,
@@ -19,145 +16,103 @@ export function box(
   const half = vec3Scale(b.size, 0.5);
   const pos = vec3TransRot(b.pos, parentPos, parentRot);
   const rot = vec3RotCombine(parentRot, b.rot ?? vec3Zero);
-  const vec3tr = (p: Vec3): Vec3 => vec3TransRot(p, pos, rot);
-
-  // The corners in the box's own coordinates, each face's in order around it with the edge seen end-on from it at each, which rounds that corner
-  const c1 = vec3(-half.x, -half.y, half.z);
-  const c2 = vec3(half.x, -half.y, half.z);
-  const c3 = vec3(half.x, half.y, half.z);
-  const c4 = vec3(-half.x, half.y, half.z);
-  const c5 = vec3(-half.x, -half.y, -half.z);
-  const c6 = vec3(half.x, -half.y, -half.z);
-  const c7 = vec3(half.x, half.y, -half.z);
-  const c8 = vec3(-half.x, half.y, -half.z);
-  const v1 = vec3tr(c1);
-  const v2 = vec3tr(c2);
-  const v3 = vec3tr(c3);
-  const v4 = vec3tr(c4);
-  const v5 = vec3tr(c5);
-  const v6 = vec3tr(c6);
-  const v7 = vec3tr(c7);
-  const v8 = vec3tr(c8);
-
-  const frontMean = vec3ZMean(v1, v2, v3, v4);
-  const backMean = vec3ZMean(v5, v6, v7, v8);
-  const [frontBackCorners, frontBackMean]: [Corners, number] =
-    frontMean > backMean
-      ? [
-          [
-            [c1, "BottomLeft"],
-            [c2, "BottomRight"],
-            [c3, "TopRight"],
-            [c4, "TopLeft"],
-          ],
-          frontMean,
-        ]
-      : [
-          [
-            [c5, "BottomLeft"],
-            [c6, "BottomRight"],
-            [c7, "TopRight"],
-            [c8, "TopLeft"],
-          ],
-          backMean,
-        ];
-  const topMean = vec3ZMean(v8, v7, v3, v4);
-  const botMean = vec3ZMean(v5, v6, v2, v1);
-  const [topBotCorners, topBotMean]: [Corners, number] =
-    topMean > botMean
-      ? [
-          [
-            [c8, "BackLeft"],
-            [c7, "BackRight"],
-            [c3, "FrontRight"],
-            [c4, "FrontLeft"],
-          ],
-          topMean,
-        ]
-      : [
-          [
-            [c5, "BackLeft"],
-            [c6, "BackRight"],
-            [c2, "FrontRight"],
-            [c1, "FrontLeft"],
-          ],
-          botMean,
-        ];
-
-  const rightMean = vec3ZMean(v6, v2, v3, v7);
-  const leftMean = vec3ZMean(v5, v1, v4, v8);
-  const [rightLeftCorners, rightLeftMean]: [Corners, number] =
-    rightMean > leftMean
-      ? [
-          [
-            [c6, "BottomBack"],
-            [c2, "BottomFront"],
-            [c3, "TopFront"],
-            [c7, "TopBack"],
-          ],
-          rightMean,
-        ]
-      : [
-          [
-            [c5, "BottomBack"],
-            [c1, "BottomFront"],
-            [c4, "TopFront"],
-            [c8, "TopBack"],
-          ],
-          leftMean,
-        ];
+  const local = unitCorners.map((c) => vec3(c.x * half.x, c.y * half.y, c.z * half.z));
+  const corners = local.map((c) => vec3TransRot(c, pos, rot));
 
   const color = material.normal;
   const opacity = material.opacity ?? 1.0;
   const [strokeColor, fill, strokeUse] = opts.only_stroke
     ? [opts.gray_scale ? gray : color, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(color) : color, 0];
+  const opaque = isOpaque(fill, opacity);
 
-  const faces: ReadonlyArray<[Corners, number, Box["holes"]]> = [
-    [frontBackCorners, frontBackMean, b.holes],
-    [topBotCorners, topBotMean, undefined],
-    [rightLeftCorners, rightLeftMean, undefined],
-  ];
-  const elements = Array<zOrderElement>();
-  for (const [corners, mean, holes] of faces) {
-    const points = corners.map(([c]) => {
-      const v = vec3tr(c);
-      return point(v.x, v.y);
-    });
-    if (!b.radius) {
-      elements.push(zElem(svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes, parentPos), mean));
-      continue;
+  return faces.flatMap(([one, other], i) => {
+    const face = one.reduce((z, c) => z + corners[c]!.z, 0) > other.reduce((z, c) => z + corners[c]!.z, 0) ? one : other;
+    // Seen edge on, a face is only a line along the edges of the box's other faces
+    if (Math.abs(getArea(face.map((c) => point(corners[c]!.x, corners[c]!.y)))) < minArea) {
+      return [];
     }
-    // A rounded box's face seen edge-on is left out, the faces it's between drawing its rounded outline
-    const area = points.reduce((a, p, i) => a + p.x * points[(i + 1) % points.length]!.y - points[(i + 1) % points.length]!.x * p.y, 0);
-    if (Math.abs(area) < 1) {
-      continue;
-    }
-    // A rounded corner a quarter circle of the radius, at most half its shorter side, between the points that far along its two sides
-    const d = corners
-      .map(([c, edge], i) => {
-        const prev = corners[(i + corners.length - 1) % corners.length]![0];
-        const next = corners[(i + 1) % corners.length]![0];
-        const radius = (b.roundedEdges?.includes(edge) ?? true) ? (b.radius ?? 0) : 0;
-        const r = Math.min(radius, vec3Length(vec3Sub(prev, c)) / 2, vec3Length(vec3Sub(next, c)) / 2);
-        if (r <= 0) {
-          return svgPoint(point, vec3tr(c));
-        }
-        const start = vec3Add(c, vec3Scale(vec3Sub(prev, c), r / vec3Length(vec3Sub(prev, c))));
-        const end = vec3Add(c, vec3Scale(vec3Sub(next, c), r / vec3Length(vec3Sub(next, c))));
-        const startControl = vec3Add(start, vec3Scale(vec3Sub(c, start), arcControl));
-        const endControl = vec3Add(end, vec3Scale(vec3Sub(c, end), arcControl));
-        return `${svgPoint(point, vec3tr(start))} C ${svgPoint(point, vec3tr(startControl))} ${svgPoint(point, vec3tr(endControl))} ${svgPoint(point, vec3tr(end))}`;
-      })
-      .join(" L ");
-    elements.push(zElem(svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes, parentPos, `M ${d} Z`), mean));
-  }
-  return elements;
+    const polygon = b.radius ? getRounded(face, faceEdges[i]!, local, b, pos, rot) : face.map((c) => corners[c]!);
+    const points = polygon.map((c) => point(c.x, c.y));
+    // Only the front and back have holes, which show what's behind them
+    const holes = i === 0 ? b.holes : undefined;
+    const plain = !holes?.length;
+    return [
+      zElem(
+        plain ? "" : svgPolygon(rot, points, fill, opacity, strokeColor, strokeUse, holes),
+        vec3ZMean(...polygon),
+        polygon,
+        opaque && plain,
+        plain ? { fill, opacity, stroke: strokeColor, strokeWidth: strokeUse } : undefined
+      ),
+    ];
+  });
 }
 
-type Corners = ReadonlyArray<readonly [Vec3, BoxEdge]>;
+const unitCorners = [
+  vec3(-1, -1, 1),
+  vec3(1, -1, 1),
+  vec3(1, 1, 1),
+  vec3(-1, 1, 1),
+  vec3(-1, -1, -1),
+  vec3(1, -1, -1),
+  vec3(1, 1, -1),
+  vec3(-1, 1, -1),
+];
+/** Pairs of opposite faces by their corners, front and back, top and bottom, right and left, of which the one toward the viewer is drawn */
+const faces: ReadonlyArray<readonly [ReadonlyArray<number>, ReadonlyArray<number>]> = [
+  [
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+  ],
+  [
+    [7, 6, 2, 3],
+    [4, 5, 1, 0],
+  ],
+  [
+    [5, 1, 2, 6],
+    [4, 0, 3, 7],
+  ],
+];
+/** Of each face in `faces`, the edge seen end on at each of its corners, which `roundedEdges` names */
+const faceEdges: ReadonlyArray<ReadonlyArray<BoxEdge>> = [
+  ["BottomLeft", "BottomRight", "TopRight", "TopLeft"],
+  ["BackLeft", "BackRight", "FrontRight", "FrontLeft"],
+  ["BottomBack", "BottomFront", "TopFront", "TopBack"],
+];
+/** How far a rounded corner's lines may be from its quarter circle, half the svg's precision, as its points are rounded to whole units */
+const arcTolerance = 0.5;
 
-const svgPoint = (point: (x: number, y: number) => Vec2, v: Vec3): string => {
-  const p = point(v.x, v.y);
-  return `${p.x.toFixed(0)},${p.y.toFixed(0)}`;
-};
+/** A face's outline, each corner whose edge is rounded a quarter circle of the radius, at most half its shorter side */
+function getRounded(
+  face: ReadonlyArray<number>,
+  edges: ReadonlyArray<BoxEdge>,
+  local: ReadonlyArray<Vec3>,
+  b: Box,
+  pos: Vec3,
+  rot: Vec3
+): ReadonlyArray<Vec3> {
+  const outline: Array<Vec3> = [];
+  for (let i = 0; i < face.length; i++) {
+    const c = local[face[i]!]!;
+    const prev = vec3Sub(local[face[(i + face.length - 1) % face.length]!]!, c);
+    const next = vec3Sub(local[face[(i + 1) % face.length]!]!, c);
+    const [lp, ln] = [vec3Length(prev), vec3Length(next)];
+    const r = (b.roundedEdges?.includes(edges[i]!) ?? true) ? Math.min(b.radius ?? 0, lp / 2, ln / 2) : 0;
+    // A corner as far from its quarter circle as the tolerance stays sharp
+    if (r * (Math.SQRT2 - 1) <= arcTolerance) {
+      outline.push(vec3TransRot(c, pos, rot));
+      continue;
+    }
+    // From the point r along the side to the previous corner, about the center r in from both sides, to the point r along the next, in as few
+    // lines as stay within the tolerance of it
+    const [p, n] = [vec3Scale(prev, r / lp), vec3Scale(next, r / ln)];
+    const center = vec3Add(c, vec3Add(p, n));
+    const steps = Math.ceil(Math.PI / 4 / Math.acos(Math.max(0, 1 - arcTolerance / r)));
+    for (let k = 0; k <= steps; k++) {
+      const a = (k / steps) * (Math.PI / 2);
+      outline.push(vec3TransRot(vec3Sub(center, vec3Add(vec3Scale(n, Math.cos(a)), vec3Scale(p, Math.sin(a)))), pos, rot));
+    }
+  }
+  return outline;
+}

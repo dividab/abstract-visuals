@@ -3,7 +3,7 @@ import { vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3ZMean } fr
 import { rgbGrayScale } from "../../../utils.js";
 import { svgPolygon } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
-import { gray, black, zElem } from "./shared.js";
+import { gray, black, isOpaque, zElem } from "./shared.js";
 
 export function plane(
   p: Plane,
@@ -24,10 +24,28 @@ export function plane(
   const v3 = vec3tr(half.x, half.y);
   const v4 = vec3tr(-half.x, half.y);
 
-  const points = [point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)];
-
   const [strokeColor, fill, strokeThickness] = opts.only_stroke
     ? [opts.gray_scale ? gray : material.normal, opts.background, opts.stroke_thickness]
     : [black, opts.gray_scale ? rgbGrayScale(material.normal) : material.normal, 0];
-  return [zElem(svgPolygon(rot, points, fill, material.opacity ?? 1.0, strokeColor, strokeThickness, holes), vec3ZMean(v1, v2, v3, v4))];
+  const opacity = material.opacity ?? 1.0;
+  const plain = !holes?.length;
+  return [
+    zElem(
+      plain
+        ? ""
+        : svgPolygon(
+            rot,
+            [point(v1.x, v1.y), point(v2.x, v2.y), point(v3.x, v3.y), point(v4.x, v4.y)],
+            fill,
+            opacity,
+            strokeColor,
+            strokeThickness,
+            holes
+          ),
+      vec3ZMean(v1, v2, v3, v4),
+      [v1, v2, v3, v4],
+      isOpaque(fill, opacity) && plain,
+      plain ? { fill, opacity, stroke: strokeColor, strokeWidth: strokeThickness } : undefined
+    ),
+  ];
 }

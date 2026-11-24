@@ -5,7 +5,7 @@ import { vec2, vec2Scale, vec3TransRot, vec3RotCombine, vec3Zero, vec3 } from ".
 import type { EmbededImage } from "../svg-encoding.js";
 import { rawSvgPrefix, svgImage } from "../svg-encoding.js";
 import type { zOrderElement, SvgOptions } from "./shared.js";
-import { zElem } from "./shared.js";
+import { getArea, minArea, zElem } from "./shared.js";
 
 export function image(
   i: ImageMesh,
@@ -21,6 +21,11 @@ export function image(
 
   const v2 = vec3tr(half.x, -half.y);
   const v4 = vec3tr(-half.x, half.y);
+  const corners = [vec3tr(-half.x, -half.y), v2, vec3tr(half.x, half.y), v4];
+  // Seen edge on, it can't be seen, and isn't loaded
+  if (Math.abs(getArea(corners)) < minArea) {
+    return [];
+  }
   // A flipped image runs the other way from the opposite corner
   const sign = vec2(i.flip?.x ? -1 : 1, i.flip?.y ? -1 : 1);
   const topLeft = vec3tr(-half.x * sign.x, half.y * sign.y);
@@ -33,7 +38,7 @@ export function image(
       };
       const svg = createSVG(i.image.image, opts);
       const img = svgImage(point(topLeft.x, topLeft.y), i.size, rot, { type: "svg", svg }, opts.imageBg ? opts.background : undefined, scale);
-      return [zElem(img, (v2.z + v4.z) / 2)];
+      return [zElem(img, (v2.z + v4.z) / 2, corners)];
     }
     case "Url": {
       const imageData = opts.imageDataByUrl[i.image.url];
@@ -48,7 +53,7 @@ export function image(
 
       if (image) {
         const img = svgImage(point(topLeft.x, topLeft.y), i.size, rot, image, opts.imageBg ? opts.background : undefined, sign);
-        return [zElem(img, (v2.z + v4.z) / 2)];
+        return [zElem(img, (v2.z + v4.z) / 2, corners)];
       }
       return [];
     }

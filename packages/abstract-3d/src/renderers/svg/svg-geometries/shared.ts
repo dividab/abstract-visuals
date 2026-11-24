@@ -1,8 +1,41 @@
 import type { Vec2, Vec3, View } from "../../../abstract-3d.js";
 import { vec3TransRot, vec3Zero } from "../../../abstract-3d.js";
 
-export type zOrderElement = { readonly element: string; readonly zOrder: number };
-export const zElem = (element: string, zOrder: number): zOrderElement => ({ element, zOrder });
+/**
+ * An element and its mean depth, and the points it covers in view space (x right, y up, z toward the viewer), by which it's ordered when given,
+ * whether it hides what's behind it, and the style of a plain polygon, without holes, by which it's drawn as a path, also its pieces when it's split.
+ * `edges` is of a piece, whether the edge from each point to the next is the polygon's own, not a cut
+ */
+export type zOrderElement = {
+  readonly element: string;
+  readonly zOrder: number;
+  readonly polygon?: ReadonlyArray<Vec3>;
+  readonly opaque?: boolean;
+  readonly style?: PolygonStyle;
+  readonly edges?: ReadonlyArray<boolean>;
+};
+export type PolygonStyle = { readonly fill: string; readonly opacity: number; readonly stroke: string; readonly strokeWidth: number };
+export const zElem = (element: string, zOrder: number, polygon?: ReadonlyArray<Vec3>, opaque?: boolean, style?: PolygonStyle): zOrderElement => ({
+  element,
+  zOrder,
+  ...(polygon && { polygon }),
+  ...(opaque && { opaque }),
+  ...(style && { style }),
+});
+
+/** Whether a fill hides what's behind it: fully opaque, and not transparent, e.g. a sketch's default background */
+export const isOpaque = (fill: string, opacity: number): boolean => opacity >= 1 && !/^(transparent|none|rgba\(.*,\s*0(\.0*)?\s*\))$/.test(fill);
+
+/** Of a face on screen, in the scene's units squared, below which it's seen edge on */
+export const minArea = 1e-6;
+
+/** Twice the signed area of a polygon on screen */
+export function getArea(points: ReadonlyArray<Vec2>): number {
+  return points.reduce((sum, p, i) => {
+    const q = points[(i + 1) % points.length]!;
+    return sum + p.x * q.y - q.x * p.y;
+  }, 0);
+}
 
 export const stBW = 0.7;
 export const stN = 0.1;

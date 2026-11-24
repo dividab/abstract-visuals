@@ -32,8 +32,10 @@ export function text(
   const strings = t.text.split("\n");
   let posY = strings.length === 1 ? 0 : (fontSize * strings.length - fontSize) / 2;
   for (const s of strings) {
-    const matrix = svgTrsMatrix(point(pos.x, pos.y + posY), rot);
-    texts.push(zElem(svgText(s, matrix, fill, opts.font, fontSize), pos.z));
+    if (s.trim()) {
+      const matrix = svgTrsMatrix(point(pos.x, pos.y + posY), rot);
+      texts.push(zElem(svgText(s, matrix, fill, opts.font, fontSize), pos.z, [pos]));
+    }
     posY -= fontSize * 1.2;
   }
 

@@ -3,11 +3,12 @@ import { vec3, vec3TransRot, vec3RotCombine, vec3Zero, vec3ZMean, equals, isZero
 import { rgbGrayScale } from "../../../utils.js";
 import { svgCircle, svgPolygon } from "../svg-encoding.js";
 import type { SvgOptions, zOrderElement } from "./shared.js";
-import { gray, stBW, transparent, zElem } from "./shared.js";
+import { getArea, gray, isOpaque, stBW, transparent, zElem } from "./shared.js";
 
 /**
  * Its profile turned like a cylinder's sides, a ring of facet corners at each point, so it's one solid without faces inside; its end nearer the
- * camera closed while off the axis
+ * camera closed while off the axis. Its facets not culled, a step across the axis facing along it, not out like a cylinder's, the ordering hiding
+ * them
  */
 export function lathe(
   l: Lathe,
@@ -25,6 +26,8 @@ export function lathe(
   const [stroke, fill] = opts.only_stroke
     ? [opts.gray_scale ? gray : color, opts.background]
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color];
+  const opaque = isOpaque(fill, opacity);
+  const style = { fill, opacity, stroke, strokeWidth: stBW };
   const zOrderComponents = Array<zOrderElement>();
 
   const sides = 8;
@@ -37,21 +40,29 @@ export function lathe(
     // Not a side along the axis
     if (!isZero(l.points[r - 1]!.x) || !isZero(l.points[r]!.x)) {
       for (let i = 1; i <= sides; i++) {
-        const [currBot, prevBot, prevTop, currTop] = [bot[i]!, bot[i - 1]!, top[i - 1]!, top[i]!];
-        const points = [point(currBot.x, currBot.y), point(prevBot.x, prevBot.y), point(prevTop.x, prevTop.y), point(currTop.x, currTop.y)];
-        zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(currBot, prevBot, currTop, prevTop)));
+        const polygon = [bot[i]!, bot[i - 1]!, top[i - 1]!, top[i]!];
+        const points = polygon.map((p) => point(p.x, p.y));
+        zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), vec3ZMean(...polygon), polygon, opaque, style));
       }
     }
   }
 
   const [first, last] = [l.points[0], l.points[l.points.length - 1]];
   if (first && last) {
-    // The end nearer the camera, a circle when directly facing it, like a cylinder's
+    // The end nearer the camera: a circle when directly facing it, else seen at an angle, its ring of facet corners, like a cylinder's
     const firstCenter = vec3TransRot(vec3(0, first.y, 0), pos, rot);
     const lastCenter = vec3TransRot(vec3(0, last.y, 0), pos, rot);
-    const [center, radius] = firstCenter.z > lastCenter.z ? [firstCenter, first.x] : [lastCenter, last.x];
-    if (!isZero(radius) && equals(firstCenter.x, lastCenter.x, 0.1) && equals(firstCenter.y, lastCenter.y, 0.1)) {
-      zOrderComponents.push(zElem(svgCircle(radius, rot, point(center.x, center.y), fill, opacity, stroke, stBW), center.z));
+    const [center, radius, ring] = firstCenter.z > lastCenter.z ? [firstCenter, first.x, rings[0]!] : [lastCenter, last.x, rings[rings.length - 1]!];
+    if (!isZero(radius)) {
+      if (equals(firstCenter.x, lastCenter.x, 0.1) && equals(firstCenter.y, lastCenter.y, 0.1)) {
+        zOrderComponents.push(zElem(svgCircle(radius, rot, point(center.x, center.y), fill, opacity, stroke, stBW), center.z, ring, opaque));
+      } else {
+        const points = ring.map((p) => point(p.x, p.y));
+        // Not seen edge on, when it's only a line along the facets' edges
+        if (Math.abs(getArea(points)) >= 1e-6) {
+          zOrderComponents.push(zElem(svgPolygon(rot, points, fill, opacity, stroke, stBW), center.z, ring, opaque, style));
+        }
+      }
     }
   }
   return zOrderComponents;

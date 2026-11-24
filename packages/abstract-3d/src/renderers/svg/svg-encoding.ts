@@ -6,8 +6,53 @@ import { svgTrsMatrix } from "./svg-geometries/shared.js";
 export const svg = (min: Vec2, size: Vec2, children: string, className: string): string => {
   return `<svg xmlns="http://www.w3.org/2000/svg" class="${className ? `${classNames.root} ${className}` : classNames.root}" viewBox="${min.x.toFixed(0)} ${min.y.toFixed(0)} ${size.x.toFixed(
     0
-  )} ${size.y.toFixed(0)}" width="${size.x.toFixed(0)}px" height="${size.y.toFixed(0)}px">${children}</svg>`;
+  )} ${size.y.toFixed(0)}" width="${size.x.toFixed(0)}px" height="${size.y.toFixed(0)}px">${shareStyles(children)}</svg>`;
 };
+
+const tagPattern = /<[a-z]+\b[^>]*>/g;
+const styleAttributePattern = / (?:fill|fill-opacity|stroke|stroke-width|stroke-opacity|stroke-linecap|stroke-linejoin)="[^"]*"/g;
+
+/**
+ * The elements with each set of style attributes that's on more than one of them given once, in the svg's style, by a class named by its hash, the
+ * same in every svg, so that svgs on one page share it
+ */
+function shareStyles(children: string): string {
+  const tags = [...children.matchAll(tagPattern)];
+  const keys: Array<string> = [];
+  const counts = new Map<string, number>();
+  for (const [tag] of tags) {
+    const key = tag.match(styleAttributePattern)?.join("") ?? "";
+    keys.push(key);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  const names = new Map<string, string>();
+  let [rules, shared, from] = ["", "", 0];
+  for (let i = 0; i < tags.length; i++) {
+    const [tag, key] = [tags[i]![0], keys[i]!];
+    if (!key || counts.get(key)! < 2) {
+      continue;
+    }
+    let name = names.get(key);
+    if (!name) {
+      // FNV-1a
+      // oxlint-disable no-bitwise
+      let hash = 0x811c9dc5;
+      for (let k = 0; k < key.length; k++) {
+        hash = Math.imul(hash ^ key.charCodeAt(k), 0x01000193);
+      }
+      name = `a3d-${(hash >>> 0).toString(36)}`;
+      // oxlint-enable no-bitwise
+      names.set(key, name);
+      rules += `.${name}{${key.replace(/ ([a-z-]+)="([^"]*)"/g, ";$1:$2").slice(1)}}`;
+    }
+    const plain = tag.replace(styleAttributePattern, "");
+    const classed = plain.includes(' class="') ? plain.replace(' class="', ` class="${name} `) : plain.replace(/^<[a-z]+/, `$& class="${name}"`);
+    shared += children.slice(from, tags[i]!.index) + classed;
+    from = tags[i]!.index + tag.length;
+  }
+  shared += children.slice(from);
+  return rules ? `<style>${rules}</style>${shared}` : shared;
+}
 export const svgLine = (p1: Vec2, p2: Vec2, stroke: string, strokeWidth: number): string =>
   `<line class="${classNames.stroke}" x1="${p1.x.toFixed(0)}" y1="${p1.y.toFixed(0)}" x2="${p2.x.toFixed(0)}" y2="${p2.y.toFixed(
     0
@@ -21,18 +66,15 @@ export function svgPolygon(
   stroke: string,
   strokeWidth: number,
   holes?: ReadonlyArray<Hole>,
-  _parentPos?: Vec3,
-  path?: string
+  _parentPos?: Vec3
 ): string {
   const bounds = bounds2FromVec2Array(points);
   const size = vec2Sub(bounds.max, bounds.min);
   const pos = vec2Scale(vec2Add(bounds.max, bounds.min), 0.5);
   const [mask, maskAttribute] = svgHoleMask(rot, size, holes ?? []);
-  // A path's outline, e.g. with rounded corners, else the points', which bound it either way
-  const shape = path
-    ? `<path class="${classNames.stroke}" d="${path}"`
-    : `<polygon class="${classNames.stroke}" points="${points.reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "").slice(0, -1)}"`;
-  const pol = `${shape} fill="${fill}" fill-opacity="${opacity.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
+  const pol = `<polygon class="${classNames.stroke}" points="${points
+    .reduce((a, c) => (a += `${c.x.toFixed(0)},${c.y.toFixed(0)} `), "")
+    .slice(0, -1)}" fill="${fill}" fill-opacity="${opacity.toFixed(1)}" stroke="${stroke}" stroke-width="${strokeWidth}" ${maskAttribute}/>`;
   return mask + pol + svgStrokedHoles(pos, rot, holes ?? [], stroke, strokeWidth);
 }
 

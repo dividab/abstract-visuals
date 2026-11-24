@@ -15,5 +15,7 @@ export function line(
 ): ReadonlyArray<zOrderElement> {
   const v1 = vec3TransRot(l.start, parentPos, parentRot);
   const v2 = vec3TransRot(l.end, parentPos, parentRot);
-  return [zElem(svgLine(point(v1.x, v1.y), point(v2.x, v2.y), opts.gray_scale ? rgbGrayScale(fill) : fill, l.thickness), vec3ZMean(v1, v2))];
+  return [
+    zElem(svgLine(point(v1.x, v1.y), point(v2.x, v2.y), opts.gray_scale ? rgbGrayScale(fill) : fill, l.thickness), vec3ZMean(v1, v2), [v1, v2]),
+  ];
 }

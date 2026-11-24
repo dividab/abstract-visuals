@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.5.0] - 2026-11-24
+
+- Changed: the svg renderer draws faces in the order a BSP tree of their planes gives, instead of by mean depth, which drew parts through long faces in the isometric views, e.g. a unit's insides through its top. A face is split where another's plane cuts it, its pieces stroked only along its own edges, and drawn whole again where nothing drawn between them overlaps it; what an opaque face drawn later covers is left out. The tree's work is limited by the number of faces, past which what's left, the farthest, is drawn by mean depth, so a unit takes tens of milliseconds
+- Changed: the svg renderer draws polygons as paths: those of one style drawn one after the other share its attributes in a group, and are one path when they're unstroked and opaque, or stroked and not filled; polygons neither filled nor stroked are left out
+- Changed: style attributes on more than one element of an svg are given once, in its own `<style>`, by a class of `a3d-` and their hash, the same in every svg, so svgs on one page share it. The page overrides them with a selector of more than one class, e.g. `.a3d-root .a3d-stroke`
+- Changed: the svg renderer draws a box's rounded corners as lines within half a unit of their quarter circle, a radius too small for that as a sharp corner
+- Changed: the svg renderer leaves out what can't be seen: an image or a shape seen edge on, so the image isn't loaded, and an empty line of text
+- Removed: `abstract-3d/svg-bsp`, as `abstract-3d/svg` orders its faces by a BSP tree
+
 ## [5.4.0] - 2026-11-24
 
 - Added: the viewer's `onDropExternal`, a press outside the viewer released on it, with the relation or group under the pointer, or none, e.g. an item dragged from a menu to where it's inserted; the cursor grabbing while that press is held over it
