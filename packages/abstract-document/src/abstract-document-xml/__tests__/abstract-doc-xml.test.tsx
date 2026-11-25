@@ -1,11 +1,24 @@
 import { describe, test, expect } from "vitest";
 import { HyperLink } from "../../abstract-document/index.js";
-import { abstractDocXml } from "../abstract-doc-of-xml/abstract-doc-of-xml.js";
+import { abstractDocXml, abstractDocsXml } from "../abstract-doc-of-xml/abstract-doc-of-xml.js";
 import { testSimpleDocument } from "./simple-document.js";
 
 describe("abstract-doc-xml", () => {
   test("empty input produces an empty document", () => {
     expect(abstractDocXml("", {}, {})).toEqual([{ children: [] }, {}, {}]);
+  });
+
+  test("restartPageNumbering of a template input restarts the page numbering at its first section only", async () => {
+    const template = "<AbstractDoc><Section><Paragraph/></Section><Section><Paragraph/></Section></AbstractDoc>";
+    const docs = await abstractDocsXml(
+      [
+        { template, data: {}, partials: {} },
+        { template, data: {}, partials: {}, restartPageNumbering: true },
+      ],
+      async () => ({})
+    );
+
+    expect(docs.type === "Ok" && docs.value.children.map((s) => s.restartPageNumbering)).toEqual([false, false, true, false]);
   });
 
   test("HyperLink becomes an atom with its text, target, and default style", () => {

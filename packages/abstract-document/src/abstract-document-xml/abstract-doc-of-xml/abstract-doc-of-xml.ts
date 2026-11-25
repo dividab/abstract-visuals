@@ -12,6 +12,8 @@ export type TemplateInput = {
   readonly template: string;
   readonly data: unknown;
   readonly partials: Record<string, string>;
+  /** Restarts the page numbering at its document's first section, as that section's restartPageNumbering attribute */
+  readonly restartPageNumbering?: boolean;
 };
 
 export type AbstractDoxXmlsResult =
@@ -30,7 +32,11 @@ export async function abstractDocsXml(
     const fontFamilies: Record<string, Partial<Record<keyof Font, boolean>>> = {};
     for (const r of templateInputs) {
       const [ad, newImageUrls, newFontFamilies] = abstractDocXml(r.template, r.data, r.partials);
-      abstractDocs.push(ad);
+      abstractDocs.push(
+        r.restartPageNumbering
+          ? { ...ad, children: ad.children.map((s, i) => (i === 0 ? { ...s, restartPageNumbering: true } : s)) }
+          : ad
+      );
       imageUrls = { ...imageUrls, ...newImageUrls };
       Object.entries(newFontFamilies).forEach(([font, types]) => (fontFamilies[font] = { ...fontFamilies[font], ...types }));
     }
