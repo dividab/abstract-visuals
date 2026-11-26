@@ -152,16 +152,16 @@ vAnchorDepth = 0.5 * anchorClip.z / anchorClip.w + 0.5;`
 export function getHotspotHit(hotspots: Hotspots, raycaster: Raycaster, hits: ReadonlyArray<Intersection>): Intersection | undefined {
   const [symbol] = hotspots.object.visible ? raycaster.intersectObjects(hotspots.symbols, false) : [];
   const depth = symbol ? raycaster.ray.origin.distanceTo(symbol.object.position) - anchorBias * symbol.object.scale.x : 0;
-  const hidden = hits.some((hit) => {
-    const { material } = hit.object as Mesh;
-    return hit.distance < depth && !Array.isArray(material) && material.visible && material.depthWrite;
-  });
+  const hidden = hits.some(
+    ({ object, distance }) =>
+      distance < depth && object instanceof Mesh && !Array.isArray(object.material) && object.material.visible && object.material.depthWrite
+  );
   return hidden ? undefined : symbol;
 }
 
 /** The compiled item, the relation's shape, of the hotspot whose symbol is `object` */
 export function getHotspotItem(hotspots: Hotspots, object: Object3D): number | undefined {
-  return hotspots.boxes[hotspots.symbols.indexOf(object as Mesh<PlaneGeometry, MeshBasicMaterial>)]?.item;
+  return hotspots.boxes[hotspots.symbols.findIndex((symbol) => symbol === object)]?.item;
 }
 
 export function disposeHotspots(hotspots: Hotspots): void {

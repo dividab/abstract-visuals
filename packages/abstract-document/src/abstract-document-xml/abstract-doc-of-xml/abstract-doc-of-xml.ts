@@ -33,9 +33,7 @@ export async function abstractDocsXml(
     for (const r of templateInputs) {
       const [ad, newImageUrls, newFontFamilies] = abstractDocXml(r.template, r.data, r.partials);
       abstractDocs.push(
-        r.restartPageNumbering
-          ? { ...ad, children: ad.children.map((s, i) => (i === 0 ? { ...s, restartPageNumbering: true } : s)) }
-          : ad
+        r.restartPageNumbering ? { ...ad, children: ad.children.map((s, i) => (i === 0 ? { ...s, restartPageNumbering: true } : s)) } : ad
       );
       imageUrls = { ...imageUrls, ...newImageUrls };
       Object.entries(newFontFamilies).forEach(([font, types]) => (fontFamilies[font] = { ...fontFamilies[font], ...types }));
