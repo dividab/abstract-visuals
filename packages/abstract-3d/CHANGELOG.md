@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Changed: the svg renderer draws texts and dimensions in gray scale too, with `gray_scale`, texts in the strokes' gray. A text kept its color and dimensions all their colors, e.g. an air stream's name in a black and white drawing
+
+## [5.7.4] - 2026-11-26
+
 - Changed: the svg renderer's gray scale strokes with `only_stroke` are darker, rgb(40, 40, 40) instead of rgb(85, 85, 85), so outline drawings read clearly when printed
 - Fixed: the svg renderer strokes a shape with `only_stroke`, as it does a box, polygon or plane. It drew the shape's outline 0 wide, so with its fill the background it couldn't be seen, e.g. a plate heat exchanger's package
 

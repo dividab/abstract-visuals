@@ -2,7 +2,7 @@ import type { Text, Vec2, Vec3 } from "../../../abstract-3d.js";
 import { vec3TransRot, vec3RotCombine, vec3Zero, vec3, vec3Dot, vec3Rot } from "../../../abstract-3d.js";
 import { svgText } from "../svg-encoding.js";
 import type { SvgOptions, zOrderElement } from "./shared.js";
-import { svgTrsMatrix, zElem } from "./shared.js";
+import { gray, svgTrsMatrix, zElem } from "./shared.js";
 
 const SVG_FORWARD: Vec3 = vec3(0.0, 0.0, 1.0);
 
@@ -32,7 +32,7 @@ export function text(
   for (const s of strings) {
     if (s.trim()) {
       const matrix = svgTrsMatrix(point(pos.x, pos.y + posY), rot);
-      texts.push(zElem(svgText(s, matrix, fill, opts.font, fontSize), pos.z, [pos]));
+      texts.push(zElem(svgText(s, matrix, opts.gray_scale ? gray : fill, opts.font, fontSize), pos.z, [pos]));
     }
     posY -= fontSize * 1.2;
   }

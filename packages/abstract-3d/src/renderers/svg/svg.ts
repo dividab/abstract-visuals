@@ -109,7 +109,7 @@ function renderInternal(
   const ordered = orderElements(elements);
   // The dimensions' elements are drawn after the scene's, as they're given
   const dimensionElements: Array<zOrderElement> = [];
-  const dimOpts: SvgOptions = { ...opts, only_stroke: false, gray_scale: false };
+  const dimOpts: SvgOptions = { ...opts, only_stroke: false };
 
   // Dimensions are drawn for the flat views
   const dimensions = turned ? [] : (scene.dimensions?.dimensions ?? []);
