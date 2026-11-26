@@ -161,6 +161,21 @@ describe("abstract-doc-xml", () => {
   });
 
   test.each([
+    ["6", { topLeft: 6, topRight: 6, bottomRight: 6, bottomLeft: 6 }],
+    ["6 2", { topLeft: 6, topRight: 2, bottomRight: 6, bottomLeft: 2 }],
+    ["6 2 4", { topLeft: 6, topRight: 2, bottomRight: 4, bottomLeft: 2 }],
+    [" 6  6 0 0 ", { topLeft: 6, topRight: 6, bottomRight: 0, bottomLeft: 0 }],
+  ])('table cell borderRadius="%s" sets the corners as in CSS', (borderRadius, expected) => {
+    const [doc] = abstractDocXml(
+      `<AbstractDoc><Section><Table columnWidths="100"><TableRow><TableCell><style background="#eee" borderRadius="${borderRadius}"/></TableCell></TableRow></Table></Section></AbstractDoc>`,
+      {},
+      {}
+    );
+
+    expect(doc.children[0]?.children[0]).toMatchObject({ children: [{ children: [{ style: { background: "#eee", borderRadius: expected } }] }] });
+  });
+
+  test.each([
     ["HyperLink", '<Paragraph><HyperLink text="Visit us"/></Paragraph>'],
     ["HyperLinkParagraph", '<HyperLinkParagraph text="Visit us"/>'],
     ["HyperLinkCell", '<Table columnWidths="100"><TableRow><HyperLinkCell text="Visit us"/></TableRow></Table>'],

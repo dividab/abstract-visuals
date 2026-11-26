@@ -18,6 +18,7 @@ export * as Length from "./primitives/length.js";
 export * as ImageResource from "./primitives/image-resource.js";
 export * as LayoutFoundation from "./primitives/layout-foundation.js";
 export * as LayoutFoundationColor from "./primitives/layout-foundation-color.js";
+export * as CornerRadius from "./primitives/corner-radius.js";
 export * as Point from "./primitives/point.js";
 export * as Rect from "./primitives/rect.js";
 export * as Size from "./primitives/size.js";

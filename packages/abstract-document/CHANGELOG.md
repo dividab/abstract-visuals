@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [20.5.14] - 2026-11-26
+
+- Added: a `borderRadius` on table cell styles that rounds the corners of the cell's background in the PDF exporter, e.g. `borderRadius="6"` or per corner `borderRadius="6 6 0 0"` (top left, top right, bottom right, bottom left, or 1-3 values as in CSS). A radius is capped at half the cell's shorter side. Borders stay straight, and the DOCX exporter ignores it since Word can't round cell shading.
+
 ## [20.5.13] - 2026-11-25
 
 - Added: a `restartPageNumbering` option on `abstractDocsXml`'s template inputs, which restarts the page numbering at the first section of that input's document, e.g. at each unit's first report in a document of several units' reports, without a section of its own and its empty page.

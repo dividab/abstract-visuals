@@ -285,6 +285,11 @@ export const propsCreators: Record<string, ADCreatorFn> = {
     margins.right = Number(props.marginRight);
     return margins;
   }) as ADCreatorFn,
+  // CSS shorthand order: "all", "topLeft/bottomRight topRight/bottomLeft", "topLeft topRight/bottomLeft bottomRight" or all four corners
+  borderRadius: ((props: { readonly borderRadius: string }): unknown => {
+    const [topLeft = 0, topRight = topLeft, bottomRight = topLeft, bottomLeft = topRight] = props.borderRadius.trim().split(/\s+/).map(strToNum);
+    return { topLeft, topRight, bottomRight, bottomLeft };
+  }) as ADCreatorFn,
   borderColors: ((props: { readonly borderColors: string }): unknown => {
     const borderColors: { [k: string]: string } = { top: "", right: "", bottom: "", left: "" };
     props.borderColors.split(" ").forEach((item: string, index) => {

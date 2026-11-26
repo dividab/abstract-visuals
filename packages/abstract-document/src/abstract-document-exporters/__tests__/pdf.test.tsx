@@ -161,6 +161,25 @@ describe("export pdf", () => {
     expect(diffJson(outputs[0], outputs[1])).toBe("");
   });
 
+  test("a table cell background with a borderRadius is filled as a rounded path, capped at half the shorter side", async () => {
+    const borderRadius = AD.CornerRadius.create({ topLeft: 10, topRight: 100, bottomRight: 0, bottomLeft: 0 });
+    const document = render(
+      <AbstractDoc>
+        <Section>
+          <Table columnWidths={[100]}>
+            <TableRow>
+              <TableCell style={AD.TableCellStyle.create({ background: "red", borderRadius, padding: AD.LayoutFoundation.create({ bottom: 40 }) })} />
+            </TableRow>
+          </Table>
+        </Section>
+      </AbstractDoc>
+    );
+    const content = new TextDecoder("latin1").decode(await exportToBytes(document));
+
+    expect(content).toContain("10 0 m\n80 0 l\n91.045695 0 100 8.954305 100 20 c\n100 40 l\n");
+    expect(content).toContain("0 10 l\n0 4.477153 4.477153 0 10 0 c\nh\n");
+  });
+
   test("header and footer are laid out and placed within their own margins when they differ from the content margins", async () => {
     const pageStyle = AD.PageStyle.create({
       contentMargins: { top: 100, bottom: 100, left: 100, right: 100 },

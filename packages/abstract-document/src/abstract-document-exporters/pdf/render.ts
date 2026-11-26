@@ -703,7 +703,29 @@ function renderCell(
 ): void {
   const style = AD.Resources.getStyle(tableCellStyle, cell.style, "TableCellStyle", cell.styleName, resources) as AD.TableCellStyle.TableCellStyle;
   if (style.background) {
-    pdf.rect(finalRect.x, finalRect.y, finalRect.width, finalRect.height).fill(style.background);
+    const { topLeft = 0, topRight = 0, bottomRight = 0, bottomLeft = 0 } = style.borderRadius ?? {};
+    if (topLeft > 0 || topRight > 0 || bottomRight > 0 || bottomLeft > 0) {
+      // A radius is capped at half the shorter side, so corners never overlap
+      const max = Math.min(finalRect.width, finalRect.height) / 2;
+      const [tl, tr, br, bl] = [Math.min(topLeft, max), Math.min(topRight, max), Math.min(bottomRight, max), Math.min(bottomLeft, max)];
+      const { x, y } = finalRect;
+      const right = x + finalRect.width;
+      const bottom = y + finalRect.height;
+      pdf
+        .moveTo(x + tl, y)
+        .lineTo(right - tr, y)
+        .bezierCurveTo(right - tr * bezierArcOffset, y, right, y + tr * bezierArcOffset, right, y + tr)
+        .lineTo(right, bottom - br)
+        .bezierCurveTo(right, bottom - br * bezierArcOffset, right - br * bezierArcOffset, bottom, right - br, bottom)
+        .lineTo(x + bl, bottom)
+        .bezierCurveTo(x + bl * bezierArcOffset, bottom, x, bottom - bl * bezierArcOffset, x, bottom - bl)
+        .lineTo(x, y + tl)
+        .bezierCurveTo(x, y + tl * bezierArcOffset, x + tl * bezierArcOffset, y, x + tl, y)
+        .closePath()
+        .fill(style.background);
+    } else {
+      pdf.rect(finalRect.x, finalRect.y, finalRect.width, finalRect.height).fill(style.background);
+    }
   }
 
   const borders = AD.LayoutFoundation.orDefault(style.borders);
@@ -774,6 +796,9 @@ function renderCell(
       .stroke(borderColor(style, "top"));
   }
 }
+
+// Distance from a rounded corner's ends to its bezier control points, as a fraction of the radius, for a quarter circle
+const bezierArcOffset = 1 - 0.5522847498;
 
 function borderColor(style: AD.TableCellStyle.TableCellStyle, edge: "top" | "bottom" | "left" | "right"): string {
   if (style.borderColors?.[edge]) {

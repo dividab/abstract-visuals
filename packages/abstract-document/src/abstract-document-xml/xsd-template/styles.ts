@@ -55,6 +55,7 @@ export const StyleName = `<xs:complexType name="StyleName">
 	<xs:attribute name="margins" type="xs:string" />
 	<xs:attribute name="position" type="Position"/>
 	<xs:attribute name="background" type="xs:string" />
+	<xs:attribute name="borderRadius" type="xs:string" />
 	<xs:attribute name="border" type="xs:string" />
 	<xs:attribute name="borders" type="xs:string" />
 	<xs:attribute name="borderColor" type="xs:string" />
@@ -141,6 +142,11 @@ export const tableCellStyle = `<xs:complexType name="TableCellStyle">
 		<xs:documentation>Table cell style</xs:documentation>
 	</xs:annotation>
 	<xs:attribute name="background" type="xs:string" />
+	<xs:attribute name="borderRadius" type="xs:string" >
+		<xs:annotation>
+			<xs:documentation>Background corner radius (PDF only) "topLeft topRight bottomRight bottomLeft", or 1-3 values as in CSS</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>
 	<xs:attribute name="border" type="xs:string" >
 		<xs:annotation>
 			<xs:documentation>Border "top right bottom left"</xs:documentation>

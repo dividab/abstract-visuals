@@ -1,3 +1,4 @@
+import * as CornerRadius from "../primitives/corner-radius.js";
 import * as LayoutFoundationColor from "../primitives/layout-foundation-color.js";
 import * as LayoutFoundation from "../primitives/layout-foundation.js";
 
@@ -6,6 +7,7 @@ export type RowAlignment = "Top" | "Middle" | "Bottom";
 export interface TableCellStyle {
   readonly type: "TableCellStyle";
   readonly background?: string;
+  readonly borderRadius?: CornerRadius.CornerRadius;
   readonly borders?: LayoutFoundation.LayoutFoundation;
   readonly borderColor?: string;
   readonly borderColors?: LayoutFoundationColor.LayoutFoundationColor;
@@ -15,6 +17,7 @@ export interface TableCellStyle {
 
 export interface TableCellStyleProps {
   readonly background?: string;
+  readonly borderRadius?: CornerRadius.CornerRadius;
   readonly borders?: LayoutFoundation.LayoutFoundation;
   readonly borderColor?: string;
   readonly borderColors?: LayoutFoundationColor.LayoutFoundationColor;
@@ -23,10 +26,11 @@ export interface TableCellStyleProps {
 }
 
 export function create(props?: TableCellStyleProps): TableCellStyle {
-  const { background, borders, borderColor, borderColors, padding, verticalAlignment } = props ?? {};
+  const { background, borderRadius, borders, borderColor, borderColors, padding, verticalAlignment } = props ?? {};
   return {
     type: "TableCellStyle",
     background,
+    borderRadius,
     borders,
     borderColor,
     borderColors,
@@ -40,6 +44,7 @@ export function overrideWith(overrider: TableCellStyle | undefined, toOverride: 
   const b: TableCellStyleProps = toOverride ?? {};
   return create({
     background: a.background ?? b.background,
+    borderRadius: CornerRadius.overrideWith(a.borderRadius, b.borderRadius),
     borders: LayoutFoundation.overrideWith(a.borders, b.borders),
     borderColor: a.borderColor ?? b.borderColor,
     borderColors: LayoutFoundationColor.overrideWith(a.borderColors, b.borderColors),
