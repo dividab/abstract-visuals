@@ -13,7 +13,7 @@ export function shape(s: Shape, material: Material, opts: SvgOptions, parentPos:
     ? [opts.gray_scale ? gray : color, opts.background]
     : [transparent, opts.gray_scale ? rgbGrayScale(color) : color];
   const opacity = material.opacity ?? 1.0;
-  // Unstroked, seen edge on it can't be seen
+  // Seen edge on it has no area to draw
   if (Math.abs(getArea(rotatedPoints)) < minArea) {
     return [];
   }
@@ -22,7 +22,7 @@ export function shape(s: Shape, material: Material, opts: SvgOptions, parentPos:
       fill,
       opacity,
       stroke: strokeColor,
-      strokeWidth: 0,
+      strokeWidth: opts.only_stroke ? opts.stroke_thickness : 0,
     }),
   ];
 }

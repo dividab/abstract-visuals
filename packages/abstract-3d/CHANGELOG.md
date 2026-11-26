@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+- Changed: the svg renderer's gray scale strokes with `only_stroke` are darker, rgb(40, 40, 40) instead of rgb(85, 85, 85), so outline drawings read clearly when printed
+- Fixed: the svg renderer strokes a shape with `only_stroke`, as it does a box, polygon or plane. It drew the shape's outline 0 wide, so with its fill the background it couldn't be seen, e.g. a plate heat exchanger's package
+
 ## [5.7.2] - 2026-11-24
 
 - Fixed: the svg renderer draws a cylinder's or cone's curved ends turning the right way, which it drew bulging inward when they weren't seen side on

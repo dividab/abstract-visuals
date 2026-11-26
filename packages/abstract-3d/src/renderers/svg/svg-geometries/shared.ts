@@ -44,7 +44,7 @@ export function getArea(points: ReadonlyArray<Vec2>): number {
 export const stBW = 0.7;
 export const stN = 0.1;
 
-export const gray = "rgb(85, 85, 85)";
+export const gray = "rgb(40, 40, 40)";
 export const white = "rgb(255, 255, 255)";
 export const transparent = "rgba(255, 255, 255, 0)";
 export const black = "rgb(15, 15, 15)";
