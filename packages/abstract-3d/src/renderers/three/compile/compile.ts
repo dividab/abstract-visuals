@@ -32,6 +32,8 @@ export type Target =
       readonly type?: GroupType;
       /** The top-level group's own extent, boxed when it's selected */
       readonly bounds?: Bounds3;
+      /** How it's boxed when it's selected, see the group's `selection` */
+      readonly selection?: "box" | "solids";
     }
   | { readonly kind: "dimension"; readonly id: string | undefined }
   | { readonly kind: "relation"; readonly relation: Relation };
@@ -96,6 +98,7 @@ export function compileScene(scene: Scene, createGroupId?: (g: Group) => string)
       rootData: g.data,
       type: g.type,
       bounds: g.bounds,
+      selection: g.selection,
     })),
     ...dimensions.map((d): Target => ({ kind: "dimension", id: d.id })),
     ...relations.map((relation): Target => ({ kind: "relation", relation })),

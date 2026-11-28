@@ -114,6 +114,11 @@ export type Group = {
    * viewer boxes when a top-level group is selected instead of its solids' bounds
    */
   readonly bounds?: Bounds3;
+  /**
+   * How the three.js viewer boxes the top-level group while it's selected: `box` one box round it, the default, `solids` a box round each of its
+   * solids, e.g. along a cable's parts, which one box round would hide
+   */
+  readonly selection?: "box" | "solids";
   /** The application's own data, not read by the renderers */
   readonly data?: Record<string, string>;
   readonly animation?: Animation;

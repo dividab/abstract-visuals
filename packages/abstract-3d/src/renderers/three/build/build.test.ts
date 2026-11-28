@@ -125,6 +125,16 @@ describe("buildScene", () => {
     expect(built.selection.object.visible).toBe(false);
   });
 
+  it("boxes each solid of a selected group whose selection is solids", () => {
+    const cable: Group = {
+      ...group([box(vec3(100, 2, 2), red), box(vec3(2, 50, 2), red, vec3(50, 25, 0))], vec3Zero, vec3Zero, [], { id: "a" }),
+      selection: "solids",
+    };
+    const built = build(scene([cable]));
+    paintScene(built, { ...idle, dimensionsClickable: true, selectedIds: { a: true } });
+    expect([built.selection.volumes.children.length, built.selection.front.geometry.getAttribute("instanceStart").count]).toEqual([2, 24]);
+  });
+
   it("boxes a selected group on its own bounds, where it has them, in the axes its position is in, not turned with it", () => {
     const turned: Group = {
       ...group([box(vec3(10, 20, 30), red)], vec3(100, 0, 0), vec3(0, Math.PI / 2, 0), [], { id: "a" }),

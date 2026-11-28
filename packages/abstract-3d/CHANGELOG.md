@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ## [Unreleased]
 
+- Added: a group's `selection`, how the three.js viewer boxes the top-level group while it's selected: `box` one box round it, as before, or `solids` a box round each of its solids, e.g. along a cable's parts
 - Added: the viewer's `visibleTypes`, the types of the top-level groups shown as they are, e.g. `["Cable"]` to see the cables inside a unit; the other groups are faded and can't be clicked or hovered, as while relations are active
 - Added: the group type `Cable`, an `IfcCableSegment` in IFC
 - Changed: the svg renderer draws texts and dimensions in gray scale too, with `gray_scale`, texts in the strokes' gray. A text kept its color and dimensions all their colors, e.g. an air stream's name in a black and white drawing

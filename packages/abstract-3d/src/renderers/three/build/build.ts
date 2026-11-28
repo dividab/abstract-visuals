@@ -83,8 +83,8 @@ export type BuiltScene = {
   readonly selection: Selection;
   /** The active relations' insertion symbols */
   readonly hotspots: Hotspots;
-  /** Each group target's box, once it's been selected */
-  readonly boxes: Array<SelectionBox | undefined>;
+  /** Each group target's boxes, once it's been selected */
+  readonly boxes: Array<ReadonlyArray<SelectionBox> | undefined>;
   readonly partOfObject: ReadonlyMap<Object3D, number>;
   readonly state: { disposed: boolean };
 };
@@ -205,11 +205,14 @@ export function paintScene(built: BuiltScene, state: PaintState): void {
     const boxes: Array<SelectionBox> = [];
     compiled.targets.forEach((target, t) => {
       if (target.kind === "group" && highlights[t]! >= SELECTED) {
-        const box = built.boxes[t] ?? getTargetBox(built, t, target);
-        built.boxes[t] = box;
-        if (!box.bounds.isEmpty()) {
-          boxes.push(box);
-        }
+        // one box round the group, or with its selection `solids` one round each of its solids
+        const targetBoxes =
+          built.boxes[t] ??
+          (target.selection === "solids"
+            ? built.itemsOfTarget[t]!.flatMap((i) => getSlotBox(built.parts[built.partOfItem[i]!]!, built.slotOfItem[i]!) ?? [])
+            : [getTargetBox(built, t, target)]);
+        built.boxes[t] = targetBoxes;
+        boxes.push(...targetBoxes.filter((box) => !box.bounds.isEmpty()));
       }
     });
     setSelection(built.selection, boxes);
