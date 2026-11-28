@@ -1,5 +1,5 @@
 import { Color, type Vector4 } from "three";
-import type { Material, MaterialType } from "../../../abstract-3d.js";
+import type { GroupType, Material, MaterialType } from "../../../abstract-3d.js";
 import { materialTypes } from "../../../abstract-3d.js";
 import { shade } from "../../../utils.js";
 import type { Item, Target } from "../compile/compile.js";
@@ -13,13 +13,15 @@ export type StructureState = {
   readonly activeComponents?: Record<string, MaterialState>;
   /** Relations are active, e.g. to pick one to insert a component on, so only the groups whose material state is Accept can be clicked */
   readonly relationsActive: boolean;
+  /** While defined, the top-level groups of other types are disabled */
+  readonly visibleTypes?: ReadonlyArray<GroupType>;
   /** The target of the top-level group dragged, drawn as it is while relations are active, rather than disabled */
   readonly draggedTarget?: number;
 };
 
 /**
  * A target's material state, filling its solids, or for an error or warning on a group with symbol images, shown on those instead, framed and badged;
- * and whether it's disabled: faded and not clickable while relations are active
+ * and whether it's disabled: faded and not clickable, while relations are active or when its type isn't one of the visible types
  */
 export type TargetState = { readonly materialState?: MaterialState; readonly symbolState?: SymbolState; readonly disabled: boolean };
 
@@ -90,7 +92,11 @@ export function getTargetStates(targets: ReadonlyArray<Target>, items: ReadonlyA
   }
   return targets.map((target, t) => {
     const state = target.kind === "group" ? structure.activeComponents?.[target.id] : undefined;
-    const disabled = target.kind === "group" && structure.relationsActive && state !== "Accept" && t !== structure.draggedTarget;
+    const disabled =
+      target.kind === "group" &&
+      t !== structure.draggedTarget &&
+      ((structure.relationsActive && state !== "Accept") ||
+        (structure.visibleTypes !== undefined && !(target.type !== undefined && structure.visibleTypes.includes(target.type))));
     return state !== undefined && state !== "Accept" && hasSymbol[t] ? { symbolState: state, disabled } : { materialState: state, disabled };
   });
 }

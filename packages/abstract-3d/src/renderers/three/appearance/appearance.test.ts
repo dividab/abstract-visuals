@@ -121,6 +121,16 @@ describe("getMaterialClass", () => {
     ]);
   });
 
+  it("disables the groups whose type isn't visible, those without a type too, and keeps their material state", () => {
+    const fan = solid({ normal: red });
+    const cable: Target = { ...group, id: "cable", type: "Cable" };
+    const fanGroup: Target = { ...group, type: "Fan" };
+    const states = getTargetStates([cable, fanGroup, group], [fan], { ...idle, visibleTypes: ["Cable"], activeComponents: { fan: "Error" } });
+    expect(states.map((s) => s.disabled)).toEqual([false, true, true]);
+    expect(states[1]).toEqual({ materialState: "Error", disabled: true });
+    expect(getTargetStates([fanGroup], [fan], idle)).toEqual([{ disabled: false }]);
+  });
+
   it("draws relations unlit on both sides, see-through but hiding their outlines, drawn after them, which show only around them", () => {
     expect(classify(solid({ normal: red }, "relation"), relation)).toMatchObject({ lit: false, side: "double", transparent: true, depthWrite: true });
     expect(classify(solid({ normal: red }, "outline"), relation)).toMatchObject({ lit: false, side: "back", transparent: true, last: true });

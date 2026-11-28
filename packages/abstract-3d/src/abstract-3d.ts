@@ -161,6 +161,7 @@ export type GroupType =
   | "Humidifier"
   | "SteamHumidifier"
   | "SprayHumidifier"
+  | "Cable"
   | "Part";
 
 /** The air through a relation by where the unit's air comes in or goes out: fresh air and extract air in, supply air and exhaust air out */

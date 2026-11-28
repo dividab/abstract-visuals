@@ -1,5 +1,5 @@
 import type { Object3D } from "three";
-import type { Group, Relation, Scene, Vec3, View } from "../../../abstract-3d.js";
+import type { Group, GroupType, Relation, Scene, Vec3, View } from "../../../abstract-3d.js";
 import type { MaterialState } from "../appearance/appearance.js";
 import type { BufferZones, CameraOptions, FitPadding } from "../camera/camera.js";
 import type { ControlsOptions } from "../camera/controls.js";
@@ -40,6 +40,11 @@ export type ViewerOptions<Content> = {
    * groups whose material state is Accept can be clicked
    */
   readonly activeRelations?: ReadonlyArray<string>;
+  /**
+   * The types of the top-level groups shown as they are, e.g. `["Cable"]` to see the cables inside a unit; while defined, the other groups are faded
+   * and can't be clicked or hovered, as while relations are active
+   */
+  readonly visibleTypes?: ReadonlyArray<GroupType>;
   readonly showDimensions?: boolean;
   /** View, buffer zones and padding are read when the scene is fitted: first, and for a new camera or canvas aspect */
   readonly camera?: CameraOptions;
@@ -112,6 +117,7 @@ export const effects: { readonly [K in keyof ViewerOptions<unknown>]-?: Readonly
   createGroupId: ["compile", "build"],
   activeComponents: ["build"],
   activeRelations: ["build"],
+  visibleTypes: ["build"],
   useAlphaTest: ["build"],
   selectedIds: ["paint"],
   hoveredIds: ["paint"],

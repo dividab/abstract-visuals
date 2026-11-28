@@ -37,6 +37,7 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
   const gizmo = useStableValue(props.controlsHelper);
   const activeComponents = useStableValue(props.activeComponents);
   const activeRelations = useStableValue(props.activeRelations);
+  const visibleTypes = useStableValue(props.visibleTypes);
   const container = useRef<HTMLDivElement>(null);
   const viewer = useRef<ThreeViewer<string> | undefined>(undefined);
   const [overlays, setOverlays] = useState<ReadonlyArray<MountedOverlay<string>>>([]);
@@ -68,8 +69,8 @@ export function Viewer(props: ViewerProps): React.JSX.Element {
   );
   useEffect(() => updateViewer(viewer.current!, { scene, createGroupId: stableGroupId }), [scene, stableGroupId]);
   useEffect(
-    () => updateViewer(viewer.current!, { activeComponents, activeRelations, useAlphaTest }),
-    [activeComponents, activeRelations, useAlphaTest]
+    () => updateViewer(viewer.current!, { activeComponents, activeRelations, visibleTypes, useAlphaTest }),
+    [activeComponents, activeRelations, visibleTypes, useAlphaTest]
   );
   useEffect(
     () => updateViewer(viewer.current!, { selectedIds, hoveredIds: hoveredIdsExternal, onClickGroup }),

@@ -1,5 +1,5 @@
 import { Euler, Matrix4, Quaternion, Vector3 } from "three";
-import type { Bounds3, Group, Mesh, Relation, Scene, Vec2, Vec3 } from "../../../abstract-3d.js";
+import type { Bounds3, Group, GroupType, Mesh, Relation, Scene, Vec2, Vec3 } from "../../../abstract-3d.js";
 import {
   bounds3Center,
   dimensionConvertToTypeMesh,
@@ -28,6 +28,8 @@ export type Target =
       readonly id: string;
       readonly root: number;
       readonly rootData: Record<string, string> | undefined;
+      /** The top-level group's type, which the viewer's `visibleTypes` are */
+      readonly type?: GroupType;
       /** The top-level group's own extent, boxed when it's selected */
       readonly bounds?: Bounds3;
     }
@@ -87,7 +89,14 @@ export function compileScene(scene: Scene, createGroupId?: (g: Group) => string)
   const dimensions = scene.dimensions?.dimensions ?? [];
   const relations = scene.relations ?? [];
   const targets: ReadonlyArray<Target> = [
-    ...scene.groups.map((g, root): Target => ({ kind: "group", id: createGroupId?.(g) ?? "", root, rootData: g.data, bounds: g.bounds })),
+    ...scene.groups.map((g, root): Target => ({
+      kind: "group",
+      id: createGroupId?.(g) ?? "",
+      root,
+      rootData: g.data,
+      type: g.type,
+      bounds: g.bounds,
+    })),
     ...dimensions.map((d): Target => ({ kind: "dimension", id: d.id })),
     ...relations.map((relation): Target => ({ kind: "relation", relation })),
   ];

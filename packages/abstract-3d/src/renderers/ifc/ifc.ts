@@ -78,6 +78,7 @@ type PredefinedTypes = {
     | "ASSISTEDPROPANE"
     | "ASSISTEDBUTANE"
     | "ASSISTEDSTEAM";
+  readonly IfcCableSegment: "BUSBARSEGMENT" | "CABLESEGMENT" | "CONDUCTORSEGMENT" | "CORESEGMENT";
 };
 
 /** An element class, all with the attributes GlobalId, ..., Tag, PredefinedType, and one of its PredefinedTypes, which defaults to NOTDEFINED */
@@ -155,6 +156,7 @@ const entityByType: Record<GroupType, IfcEntity> = {
   Humidifier: { entity: "IfcHumidifier" },
   SteamHumidifier: { entity: "IfcHumidifier", predefinedType: "STEAMINJECTION" },
   SprayHumidifier: { entity: "IfcHumidifier", predefinedType: "ADIABATICATOMIZING" },
+  Cable: { entity: "IfcCableSegment", predefinedType: "CABLESEGMENT" },
   Part: { entity: "IfcBuildingElementPart" },
 };
 

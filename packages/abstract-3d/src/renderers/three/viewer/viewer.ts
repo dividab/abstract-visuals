@@ -183,7 +183,11 @@ export function createViewer<Content>(container: HTMLElement, options: ViewerOpt
     loop: { frame: 0, last: 0, wasMoving: false, seconds: 0 },
     pending: new Set(["compile", "build", "camera", "controls", "gizmo", "lights", "quality", "paint", "overlays"]),
     stats: { frames: 0, frameMs: 0, drawCalls: 0, pickMs: 0, paintMs: 0 },
-    structure: { activeComponents: options.activeComponents, relationsActive: options.activeRelations !== undefined },
+    structure: {
+      activeComponents: options.activeComponents,
+      relationsActive: options.activeRelations !== undefined,
+      visibleTypes: options.visibleTypes,
+    },
     studio: {},
     retired: {},
     loaded: false,
@@ -279,6 +283,7 @@ function apply<Content>(v: Viewer<Content>, changes: ReadonlySet<Change>): void 
     v.structure = {
       activeComponents: options.activeComponents,
       relationsActive: options.activeRelations !== undefined,
+      visibleTypes: options.visibleTypes,
       draggedTarget: v.pointer.drag?.started ? v.pointer.drag.target : v.pointer.dropped?.target,
     };
     rebuild(v);
